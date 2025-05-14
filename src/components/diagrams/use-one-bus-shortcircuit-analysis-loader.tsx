@@ -9,10 +9,14 @@ import { UUID } from 'crypto';
 import { ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { Chip, darken, lighten, Theme } from '@mui/material';
 import { setOneBusShortcircuitAnalysisDiagram } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
+import {
+    isOneBusShortCircuitFailedNotification,
+    isOneBusShortCircuitResultNotification,
+} from 'types/notification-types';
 
 /**
  * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader
@@ -86,18 +90,14 @@ export function useOneBusShortcircuitAnalysisLoader(
     }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
-
-            if (studyUpdatedEventData.headers.rootNetworkUuid !== rootNetworkUuid) {
+        if (
+            (studyUpdatedForce && isOneBusShortCircuitResultNotification(studyUpdatedForce.eventData)) ||
+            isOneBusShortCircuitFailedNotification(studyUpdatedForce.eventData)
+        ) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== rootNetworkUuid) {
                 return;
             }
-            if (
-                studyUpdatedEventData.headers.updateType === 'oneBusShortCircuitAnalysisResult' ||
-                studyUpdatedEventData.headers.updateType === 'oneBusShortCircuitAnalysis_failed'
-            ) {
-                resetOneBusShortcircuitAnalysisLoader();
-            }
+            resetOneBusShortcircuitAnalysisLoader();
         }
     }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce, rootNetworkUuid]);
 
