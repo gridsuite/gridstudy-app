@@ -92,17 +92,6 @@ export interface LccConverterStationFormInfos {
     connectablePosition: ConnectablePositionInfos;
     shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
-
-export interface LccCommonFormInfos {
-    id: string;
-    name: string;
-    nominalV: number;
-    r: number;
-    maxP: number;
-    convertersMode: string;
-    activePowerSetpoint: number;
-}
-
 export interface LccFormInfos {
     id: string;
     name: string;
