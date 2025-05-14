@@ -222,8 +222,8 @@ export const getConcatenatedShuntCompensatorOnSideInfos = (
     infosMap?: LccShuntCompensatorInfos[]
 ) => {
     const result: LccShuntCompensatorModificationInfos[] | null = mergeModificationAndEquipmentShuntCompensatorInfos(
-        infos,
-        infosMapServer
+        infosModification,
+        infosMap
     );
     return (
         result?.map((shuntCp) => ({
