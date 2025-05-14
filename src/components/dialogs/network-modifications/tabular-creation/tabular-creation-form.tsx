@@ -21,7 +21,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';

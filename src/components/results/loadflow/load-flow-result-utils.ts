@@ -10,7 +10,7 @@ import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -28,7 +28,6 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import { convertDuration, formatNAValue } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
@@ -36,6 +35,7 @@ import {
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
