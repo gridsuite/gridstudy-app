@@ -88,22 +88,19 @@ export const updateFilters = (api: GridApi | undefined, filters: FilterConfig[] 
     // Retrieve the current column definitions from AG Grid
     const currentColumnDefs = api.getColumns();
 
-    // Check if all filters' columns exist in the current column definitions
-    const allColumnsExist = filters.every((filter) =>
-        currentColumnDefs?.some((col) => {
-            return (
-                // Ensure the column definition has a 'colId' property
-                // and it matches the filter's column field
-                col.getColId() === filter.column
-            );
-        })
+    // Filter out any filters that reference columns which are not visible or don't exist in the current column definitions
+    const validFilters = filters.filter((filter) =>
+        currentColumnDefs?.some((col) => col.getColId() === filter.column && col.isVisible())
     );
 
-    // If all columns referenced by the filters exist, apply the filters
-    if (allColumnsExist) {
-        const filterWithTolerance = addToleranceToFilter(filters);
-        // Format the filters for AG Grid and apply them using setFilterModel
+    // If we have any valid filters, apply them
+    if (validFilters.length > 0) {
+        const filterWithTolerance = addToleranceToFilter(validFilters);
+        // Format the valid filters for AG Grid and apply them using setFilterModel
         const formattedFilters = formatCustomFiltersForAgGrid(filterWithTolerance);
         api.setFilterModel(formattedFilters);
+    } else {
+        // Clear filters if no valid filters exist
+        api.setFilterModel(null);
     }
 };

@@ -194,7 +194,7 @@ export const SpreadsheetContent = React.memo(
                 return;
             }
             updateFilters(api, filters);
-        }, [filters, gridRef, isGridReady, equipments]);
+        }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
         return (
             <>
