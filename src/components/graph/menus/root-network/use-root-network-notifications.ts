@@ -5,11 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SetStateAction, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { SetStateAction, useCallback, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 
-import { NotificationType, RootNetworksDeletionStartedEventData, RootNetworksUpdatedEventData } from 'redux/reducer';
+import {
+    AppState,
+    NotificationType,
+    RootNetworksDeletionStartedEventData,
+    RootNetworksUpdatedEventData,
+} from 'redux/reducer';
 
 import { useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchRootNetworks } from 'services/root-network';
@@ -18,22 +23,25 @@ import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-u
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 type UseRootNetworkNotificationsProps = {
-    studyUuid: UUID | null;
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
-    rootNetworksRef: React.MutableRefObject<RootNetworkMetadata[]>;
-    currentRootNetworkUuidRef: React.MutableRefObject<UUID | null>;
     updateSelectedItems?: (items: RootNetworkMetadata[]) => void;
 };
 
 export const useRootNetworkNotifications = ({
-    studyUuid,
     setIsRootNetworksProcessing,
-    rootNetworksRef,
-    currentRootNetworkUuidRef,
     updateSelectedItems,
 }: UseRootNetworkNotificationsProps) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+
+    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
+    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
+
+    const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
+    rootNetworksRef.current = rootNetworks;
 
     const doFetchRootNetworks = useCallback(() => {
         if (studyUuid) {
