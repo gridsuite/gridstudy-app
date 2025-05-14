@@ -226,7 +226,7 @@ export const getConcatenatedShuntCompensatorOnSideInfos = (
         infosMap
     );
     return (
-        result?.map((shuntCp) => ({
+        mergeResult?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
