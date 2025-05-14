@@ -12,6 +12,7 @@ import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-con
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { useRootNetworkNotifications } from './use-root-network-notifications';
 import ModificationsPanel from './root-network-panel-search';
 
 const styles = {
@@ -46,6 +47,12 @@ const RootNetworkPanel: FunctionComponent = () => {
             minHeight,
         };
     }, [isRootNetworkPanelMinimized, isMonoRootStudy, theme]);
+
+    //handle root network notifications
+    useRootNetworkNotifications({
+        setIsRootNetworksProcessing,
+    });
+
     const closeSearchPanel = useCallback(() => {
         if (isSearchActive) {
             setIsSearchActive(false);
