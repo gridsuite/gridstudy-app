@@ -244,8 +244,8 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
 
     if (!infosModification) {
         if (infosMap) {
-            //we only consider infosMapServer
-            for (const info of infosMapServer) {
+            //we only consider infosMap
+            for (const info of infosMap) {
                 result.set(info.id, {
                     ...info,
                     connectedToHvdc: null,
