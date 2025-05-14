@@ -262,7 +262,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                 solver={
                                     parameters
                                         ? {
-                                              solverId: parameters.solverId as string,
+                                              solverId: parameters.solverId,
                                               solvers: parameters.solvers as Record<string, any>[],
                                           }
                                         : undefined
