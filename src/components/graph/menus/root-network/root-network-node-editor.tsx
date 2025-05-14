@@ -26,7 +26,7 @@ import {
     Tooltip,
 } from '@mui/material';
 
-import { SetStateAction, useCallback, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -109,20 +109,17 @@ const ItemLabelSecondary = (item: RootNetworkMetadata) => {
 interface RootNetworkNodeEditorProps {
     isRootNetworksProcessing: boolean;
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
-    selectedItems: RootNetworkMetadata[];
-    setSelectedItems: React.Dispatch<SetStateAction<RootNetworkMetadata[]>>;
 }
 
 const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     isRootNetworksProcessing,
     setIsRootNetworksProcessing,
-    selectedItems,
-    setSelectedItems,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -173,6 +170,11 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         },
         [currentRootNetworkUuid, dispatch, isRootNetworksProcessing]
     );
+
+    useEffect(() => {
+        const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
+        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
+    }, [rootNetworks]);
 
     const renderRootNetworksList = () => {
         return (

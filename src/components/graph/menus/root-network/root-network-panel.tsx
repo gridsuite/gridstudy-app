@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
 
 const styles = {
@@ -30,12 +29,6 @@ const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
-    const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
-
-    const updateSelectedItems = useCallback((rootNetworks: RootNetworkMetadata[]) => {
-        const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
-        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
-    }, []);
 
     const theme = useTheme();
     // Set the panel's width and height based on designer's proposed values
@@ -56,7 +49,6 @@ const RootNetworkPanel: FunctionComponent = () => {
     //handle root network notifications
     useRootNetworkNotifications({
         setIsRootNetworksProcessing,
-        updateSelectedItems,
     });
 
     return (
@@ -72,8 +64,6 @@ const RootNetworkPanel: FunctionComponent = () => {
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}
                     setIsRootNetworksProcessing={setIsRootNetworksProcessing}
-                    selectedItems={selectedItems}
-                    setSelectedItems={setSelectedItems}
                 />
             )}
         </Paper>

@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SetStateAction, useCallback, useRef } from 'react';
+import { SetStateAction, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { UUID } from 'crypto';
 
 import {
     AppState,
@@ -36,12 +35,6 @@ export const useRootNetworkNotifications = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-
-    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
-    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
-
-    const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
-    rootNetworksRef.current = rootNetworks;
 
     const doFetchRootNetworks = useCallback(() => {
         if (studyUuid) {
@@ -97,19 +90,16 @@ export const useRootNetworkNotifications = ({
             const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
-                if (!rootNetworksRef.current) {
+                if (!rootNetworks) {
                     return;
                 }
                 // If the current root network isn't going to be deleted, we don't need to do anything
                 const deletedRootNetworksUuids = eventData.headers.rootNetworksUuids;
-                if (
-                    currentRootNetworkUuidRef.current &&
-                    !deletedRootNetworksUuids.includes(currentRootNetworkUuidRef.current)
-                ) {
+                if (currentRootNetworkUuid && !deletedRootNetworksUuids.includes(currentRootNetworkUuid)) {
                     return;
                 }
                 // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
-                const newSelectedRootNetwork = rootNetworksRef.current.find(
+                const newSelectedRootNetwork = rootNetworks.find(
                     (rootNetwork) => !deletedRootNetworksUuids.includes(rootNetwork.rootNetworkUuid)
                 );
                 if (newSelectedRootNetwork) {
@@ -117,7 +107,7 @@ export const useRootNetworkNotifications = ({
                 }
             }
         },
-        [currentRootNetworkUuidRef, dispatch, rootNetworksRef]
+        [currentRootNetworkUuid, dispatch, rootNetworks]
     );
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
