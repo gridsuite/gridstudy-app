@@ -235,8 +235,9 @@ export function ModificationFiltersShuntCompensatorTable({
                             </TableCell>
                         ))}
                         <TableCell sx={{ width: '10%', textAlign: 'right' }}>
-                            {/*   TODO : uncomment this code when we can add new shunt compensators
-                                                      <Tooltip
+                            {/* TODO : uncomment this code when we can add new shunt compensator */}
+                            {/*
+                            <Tooltip
                                 title={intl.formatMessage({
                                     id: 'AddRows',
                                 })}
@@ -246,7 +247,8 @@ export function ModificationFiltersShuntCompensatorTable({
                                         <AddCircleIcon />
                                     </IconButton>
                                 </span>
-                            </Tooltip>*/}
+                            </Tooltip>
+                            */}
                         </TableCell>
                     </TableRow>
                 </TableHead>
