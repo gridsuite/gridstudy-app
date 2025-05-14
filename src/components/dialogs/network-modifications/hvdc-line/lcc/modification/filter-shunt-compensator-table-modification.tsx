@@ -9,7 +9,7 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow }
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { useIntl } from 'react-intl';
-import { useCallback, useMemo, useState } from 'react';
+import { ComponentType, useCallback, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import {
@@ -28,160 +28,108 @@ import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nulla
 import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 
-interface ModificationFiltersShuntCompensatorTableProps {
+const SHUNT_COLUMNS_DEFINITION = [
+    {
+        label: SHUNT_COMPENSATOR_ID,
+        dataKey: SHUNT_COMPENSATOR_ID,
+        initialValue: '',
+        width: '25%',
+    },
+    {
+        label: SHUNT_COMPENSATOR_NAME,
+        dataKey: SHUNT_COMPENSATOR_NAME,
+        initialValue: '',
+        width: '20%',
+    },
+    {
+        label: MAX_Q_AT_NOMINAL_V,
+        dataKey: MAX_Q_AT_NOMINAL_V,
+        initialValue: null,
+        width: '25%',
+    },
+    {
+        label: 'previousConnection',
+        dataKey: PREVIOUS_SHUNT_COMPENSATOR_SELECTED,
+        initialValue: null,
+        width: '20%',
+    },
+    {
+        label: 'connected',
+        dataKey: SHUNT_COMPENSATOR_SELECTED,
+        initialValue: true,
+        width: '10%',
+    },
+];
+
+type RowFormProps<T> = {
     id: string;
-    previousValues?: LccShuntCompensatorInfos[];
-}
-export function ModificationFiltersShuntCompensatorTable({
-    id,
-    previousValues,
-}: Readonly<ModificationFiltersShuntCompensatorTableProps>) {
+    deletionMark: boolean;
+    previousValues?: T;
+};
+
+function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProps<LccShuntCompensatorInfos>>) {
     const intl = useIntl();
-    const { fields: rows } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
-    console.log('------------Rendering');
-    const watchedRows = useWatch({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
-    const { getValues, setValue } = useFormContext();
-    const [hoveredRow, setHoveredRow] = useState<number>(-1);
-    const columnsDefinition = useMemo(() => {
-        return [
-            {
-                label: SHUNT_COMPENSATOR_ID,
-                dataKey: SHUNT_COMPENSATOR_ID,
-                initialValue: '',
-                width: '25%',
-            },
-            {
-                label: SHUNT_COMPENSATOR_NAME,
-                dataKey: SHUNT_COMPENSATOR_NAME,
-                initialValue: '',
-                width: '20%',
-            },
-            {
-                label: MAX_Q_AT_NOMINAL_V,
-                dataKey: MAX_Q_AT_NOMINAL_V,
-                initialValue: null,
-                width: '25%',
-            },
-            {
-                label: 'previousConnection',
-                dataKey: PREVIOUS_SHUNT_COMPENSATOR_SELECTED,
-                initialValue: null,
-                width: '20%',
-            },
-            {
-                label: 'connected',
-                dataKey: SHUNT_COMPENSATOR_SELECTED,
-                initialValue: true,
-                width: '10%',
-            },
-        ].map((column) => ({
-            ...column,
-            label: intl.formatMessage({ id: column.label }),
-        }));
-    }, [intl]);
+    const { getValues } = useFormContext();
 
-    const markRowToDeleteOrRestore = useCallback(
-        (index: number) => {
-            const newDeleteMark = !getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`);
-            setValue(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${DELETION_MARK}`, newDeleteMark, {
-                shouldDirty: true,
-            });
-        },
-        [getValues, id, setValue]
-    );
+    const PreviousConnection = useCallback(() => {
+        let previousValue: boolean | null = null;
 
-    const PreviousConnection = useCallback(
-        ({ index }: { index: number }) => {
-            const currentId = getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`);
-            const filteredValues = previousValues?.filter((value) => value.id === currentId);
-            let previousValue: boolean | null = null;
+        if (previousValues) {
+            previousValue = previousValues?.connectedToHvdc ?? false;
+        }
 
-            if (filteredValues?.length === 1) {
-                previousValue = filteredValues[0]?.connectedToHvdc ?? false;
-            }
-            const value = previousValue
-                ? intl.formatMessage({ id: 'connected' })
-                : previousValue === false
-                  ? intl.formatMessage({ id: 'disconnected' })
-                  : '';
+        const value = previousValue
+            ? intl.formatMessage({ id: 'connected' })
+            : previousValue === false
+              ? intl.formatMessage({ id: 'disconnected' })
+              : '';
 
-            return (
-                <TextField
-                    size="small"
-                    fullWidth
-                    value={value}
-                    name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
-                    disabled
-                    variant="standard"
-                    InputProps={{
-                        disableUnderline: true,
-                    }}
-                />
-            );
-        },
-        [getValues, id, intl, previousValues]
-    );
+        return (
+            <TextField
+                size="small"
+                fullWidth
+                value={value}
+                name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
+                disabled
+                variant="standard"
+                InputProps={{
+                    disableUnderline: true,
+                }}
+            />
+        );
+    }, [id, intl, previousValues]);
 
-    const IdField = useCallback(
-        ({ index }: { index: number }) => {
-            return (
-                <TextField
-                    fullWidth
-                    size="small"
-                    value={
-                        getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`) ?? ''
-                    }
-                    disabled
-                />
-            );
-        },
-        [getValues, id]
-    );
+    const IdField = useCallback(() => {
+        return <TextField fullWidth size="small" value={getValues(`${id}.${SHUNT_COMPENSATOR_ID}`) ?? ''} disabled />;
+    }, [getValues, id]);
 
     const NameField = useCallback(
-        ({ index, disabled }: { index: number; disabled: boolean }) => {
+        ({ disabled }: { disabled: boolean }) => {
             return disabled ? (
-                <TextField
-                    fullWidth
-                    size="small"
-                    value={getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`)}
-                    disabled
-                />
+                <TextField fullWidth size="small" value={getValues(`${id}.${SHUNT_COMPENSATOR_NAME}`)} disabled />
             ) : (
-                <TextInput name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`} />
+                <TextInput name={`${id}.${SHUNT_COMPENSATOR_NAME}`} />
             );
         },
         [getValues, id]
     );
 
     const NominalVoltageField = useCallback(
-        ({ index, disabled }: { index: number; disabled: boolean }) => {
+        ({ disabled }: { disabled: boolean }) => {
             return disabled ? (
-                <TextField
-                    fullWidth
-                    size="small"
-                    value={getValues(`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`)}
-                    disabled
-                />
+                <TextField fullWidth size="small" value={getValues(`${id}.${MAX_Q_AT_NOMINAL_V}`)} disabled />
             ) : (
-                <FloatInput
-                    name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
-                    adornment={ReactivePowerAdornment}
-                />
+                <FloatInput name={`${id}.${MAX_Q_AT_NOMINAL_V}`} adornment={ReactivePowerAdornment} />
             );
         },
         [getValues, id]
     );
 
-    const DeleteOrRestoreIcon = useCallback((shouldDelete: boolean) => {
-        return !shouldDelete ? <DeleteIcon /> : <RestoreFromTrashIcon />;
-    }, []);
-
     const ShuntCompensatorSelectedField = useCallback(
-        ({ index, disabled }: { index: number; disabled: boolean }) => {
+        ({ disabled }: { disabled: boolean }) => {
             return (
                 <CheckboxNullableInput
-                    name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                    name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
                     label=""
                     nullDisabled={false}
                     disabled={disabled}
@@ -191,38 +139,96 @@ export function ModificationFiltersShuntCompensatorTable({
         [id]
     );
 
-    const shouldDeleteRow = useCallback(
-        (index: number) => {
-            return watchedRows?.[index].deletionMark ?? false;
-        },
-        [watchedRows]
-    );
+    const FieldList = useCallback(() => {
+        return SHUNT_COLUMNS_DEFINITION.map((column) => (
+            <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
+                {column.dataKey === SHUNT_COMPENSATOR_ID && <IdField />}
+                {column.dataKey === SHUNT_COMPENSATOR_NAME && <NameField disabled={deletionMark} />}
+                {column.dataKey === MAX_Q_AT_NOMINAL_V && <NominalVoltageField disabled={deletionMark} />}
+                {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && <PreviousConnection />}
+                {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
+                    <ShuntCompensatorSelectedField disabled={deletionMark} />
+                )}
+            </TableCell>
+        ));
+    }, [IdField, NameField, NominalVoltageField, PreviousConnection, ShuntCompensatorSelectedField, deletionMark]);
+    return <FieldList />;
+}
 
-    const TableCellList = useCallback(
-        ({ index }: { index: number }) => {
-            const disabled = shouldDeleteRow(index);
-            return columnsDefinition.map((column) => (
-                <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                    {column.dataKey === SHUNT_COMPENSATOR_ID && <IdField index={index} />}
-                    {column.dataKey === SHUNT_COMPENSATOR_NAME && <NameField index={index} disabled={disabled} />}
-                    {column.dataKey === MAX_Q_AT_NOMINAL_V && <NominalVoltageField index={index} disabled={disabled} />}
-                    {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && <PreviousConnection index={index} />}
-                    {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
-                        <ShuntCompensatorSelectedField index={index} disabled={disabled} />
-                    )}
-                </TableCell>
-            ));
-        },
-        [
-            IdField,
-            NameField,
-            NominalVoltageField,
-            PreviousConnection,
-            ShuntCompensatorSelectedField,
-            columnsDefinition,
-            shouldDeleteRow,
-        ]
+type DeletableMarkRowProps<T> = {
+    id: string;
+    RowForm: ComponentType<RowFormProps<T>>;
+    rowFormProps: Omit<RowFormProps<T>, 'id' | 'deletionMark'>;
+};
+
+function DeletableMarkRow<T>({ id, RowForm, rowFormProps }: Readonly<DeletableMarkRowProps<T>>) {
+    const intl = useIntl();
+
+    const [hoveredRow, setHoveredRow] = useState<boolean>(false);
+
+    const { getValues, setValue } = useFormContext();
+
+    const watchedDeletionMark =
+        useWatch({
+            name: `${id}.${DELETION_MARK}`,
+        }) ?? false;
+
+    const markRowToDeleteOrRestore = useCallback(() => {
+        const newDeleteMark = !getValues(`${id}.${DELETION_MARK}`);
+        setValue(`${id}.${DELETION_MARK}`, newDeleteMark, {
+            shouldDirty: true,
+        });
+    }, [getValues, id, setValue]);
+
+    return (
+        <TableRow
+            onMouseEnter={() => {
+                setHoveredRow(true);
+            }}
+            onMouseLeave={() => {
+                setHoveredRow(false);
+            }}
+        >
+            <RowForm id={id} deletionMark={watchedDeletionMark} {...rowFormProps} />
+            <TableCell>
+                {hoveredRow && (
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: !watchedDeletionMark ? 'DeleteRows' : 'button.restore',
+                        })}
+                    >
+                        <IconButton onClick={() => markRowToDeleteOrRestore()}>
+                            {!watchedDeletionMark ? <DeleteIcon /> : <RestoreFromTrashIcon />}
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </TableCell>
+        </TableRow>
     );
+}
+
+interface ModificationFiltersShuntCompensatorTableProps {
+    id: string;
+    previousValues?: LccShuntCompensatorInfos[];
+}
+
+export default function ModificationFiltersShuntCompensatorTable({
+    id,
+    previousValues,
+}: Readonly<ModificationFiltersShuntCompensatorTableProps>) {
+    const intl = useIntl();
+
+    const { getValues } = useFormContext();
+
+    const shuntTableId = `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}`;
+    const { fields: rows } = useFieldArray({ name: shuntTableId });
+
+    const columnsDefinition = useMemo(() => {
+        return SHUNT_COLUMNS_DEFINITION.map((column) => ({
+            ...column,
+            label: intl.formatMessage({ id: column.label }),
+        }));
+    }, [intl]);
 
     return (
         <TableContainer>
@@ -253,29 +259,19 @@ export function ModificationFiltersShuntCompensatorTable({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row: Record<'id', string>, index: number) => (
-                        <TableRow
-                            key={row.id}
-                            className={hoveredRow === index ? 'hover-row' : ''}
-                            onMouseEnter={() => setHoveredRow(index)}
-                            onMouseLeave={() => setHoveredRow(-1)}
-                        >
-                            <TableCellList index={index} />
-                            <TableCell>
-                                {hoveredRow === index && (
-                                    <Tooltip
-                                        title={intl.formatMessage({
-                                            id: !shouldDeleteRow(index) ? 'DeleteRows' : 'button.restore',
-                                        })}
-                                    >
-                                        <IconButton onClick={() => markRowToDeleteOrRestore(index)}>
-                                            {DeleteOrRestoreIcon(shouldDeleteRow(index))}
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                    {rows.map((row: Record<'id', string>, index: number) => {
+                        const id = `${shuntTableId}[${index}]`;
+                        const shuntId = getValues(`${id}.${SHUNT_COMPENSATOR_ID}`);
+                        const previousShuntValues = previousValues?.find((shuntInfos) => shuntInfos.id === shuntId);
+                        return (
+                            <DeletableMarkRow
+                                key={row.id}
+                                id={id}
+                                RowForm={ShuntRowForm}
+                                rowFormProps={{ previousValues: previousShuntValues }}
+                            />
+                        );
+                    })}
                 </TableBody>
             </Table>
         </TableContainer>
