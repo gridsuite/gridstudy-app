@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, Parameter, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, mergeSx, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     Delete as DeleteIcon,
@@ -26,25 +26,19 @@ import {
     Tooltip,
 } from '@mui/material';
 
-import { SetStateAction, useCallback, useRef, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
-import {
-    AppState,
-    NotificationType,
-    RootNetworksDeletionStartedEventData,
-    RootNetworksUpdatedEventData,
-} from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 import { getCaseImportParameters } from 'services/network-conversion';
-import { deleteRootNetworks, fetchRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
+import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
+import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
-import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 
 const styles = {
@@ -62,6 +56,23 @@ const styles = {
         marginLeft: theme.spacing(1),
         alignItems: 'center',
         justifyContent: 'space-between',
+    }),
+    rootNetworkMonoRoot: (theme: Theme) => ({
+        display: 'flex',
+        padding: theme.spacing(1),
+        overflow: 'hidden',
+        borderTop: `1px solid ${theme.palette.divider}`,
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: theme.spacing(2),
+    }),
+    rootNetworkMonoRootHover: (theme: Theme) => ({
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
     }),
     toolbar: (theme: Theme) => ({
         '&': {
@@ -107,110 +118,15 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const currentRootNetworkUuidRef = useRef<UUID | null>(null);
-    currentRootNetworkUuidRef.current = currentRootNetworkUuid;
-
-    const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
 
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
     const dispatch = useDispatch();
-
-    const rootNetworksRef = useRef<RootNetworkMetadata[]>([]);
-    rootNetworksRef.current = rootNetworks;
-
-    const updateSelectedItems = useCallback((rootNetworks: RootNetworkMetadata[]) => {
-        const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
-        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
-    }, []);
-
-    const dofetchRootNetworks = useCallback(() => {
-        if (studyUuid) {
-            fetchRootNetworks(studyUuid)
-                .then((res: RootNetworkMetadata[]) => {
-                    updateSelectedItems(res);
-                    dispatch(setRootNetworks(res));
-                    // This is used to hide the loader for creation, update and deletion of the root networks.
-                    // All the root networks must be fully established before the loader can be safely removed.
-                    if (res.every((network) => !network.isCreating)) {
-                        setIsRootNetworksProcessing(false);
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                    });
-                });
-        }
-    }, [studyUuid, updateSelectedItems, dispatch, setIsRootNetworksProcessing, snackError]);
-
-    const rootNetworkModifiedNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
-                dofetchRootNetworks();
-            }
-        },
-        [dofetchRootNetworks]
-    );
-    const rootNetworksUpdateFailedNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
-                dofetchRootNetworks();
-                snackError({
-                    messageId: 'importCaseFailure',
-                    headerId: 'createRootNetworksError',
-                });
-            }
-        },
-        [dofetchRootNetworks, snackError]
-    );
-    const rootNetworkDeletionStartedNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
-                if (!rootNetworksRef.current) {
-                    return;
-                }
-                // If the current root network isn't going to be deleted, we don't need to do anything
-                const deletedRootNetworksUuids = eventData.headers.rootNetworksUuids;
-                if (
-                    currentRootNetworkUuidRef.current &&
-                    !deletedRootNetworksUuids.includes(currentRootNetworkUuidRef.current)
-                ) {
-                    return;
-                }
-                // Choice: if the current root network is going to be deleted, we select the first root network that won't be deleted
-                const newSelectedRootNetwork = rootNetworksRef.current.find(
-                    (rootNetwork) => !deletedRootNetworksUuids.includes(rootNetwork.rootNetworkUuid)
-                );
-                if (newSelectedRootNetwork) {
-                    dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
-                }
-            }
-        },
-        [dispatch]
-    );
-
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: rootNetworkModifiedNotification,
-    });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: rootNetworksUpdateFailedNotification,
-    });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
-        listenerCallbackMessage: rootNetworkDeletionStartedNotification,
-    });
 
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
@@ -255,6 +171,11 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         [currentRootNetworkUuid, dispatch, isRootNetworksProcessing]
     );
 
+    useEffect(() => {
+        const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
+        setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
+    }, [rootNetworks]);
+
     const renderRootNetworksList = () => {
         return (
             <CheckBoxList
@@ -297,6 +218,37 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 )}
             </Box>
         );
+    };
+    const renderRootNetworkForMonoRootStudy = () => {
+        return (
+            <Box
+                sx={mergeSx(
+                    styles.rootNetworkMonoRoot,
+                    isRootNetworksProcessing ? undefined : styles.rootNetworkMonoRootHover
+                )}
+                onClick={handleMonoRootUpdate}
+            >
+                <Typography
+                    noWrap
+                    style={{
+                        opacity: isRootNetworksProcessing ? 0.5 : 1,
+                    }}
+                >
+                    {rootNetworks[0].name}
+                </Typography>
+                {isRootNetworksProcessing && (
+                    <span>
+                        <CircularProgress size={'1em'} sx={styles.toolbarCircularProgress} />
+                    </span>
+                )}
+            </Box>
+        );
+    };
+    const handleMonoRootUpdate = () => {
+        if (!isRootNetworksProcessing) {
+            setEditedRootNetwork(rootNetworks[0]);
+            setRootNetworkModificationDialogOpen(true);
+        }
     };
 
     const renderRootNetworkModificationDialog = () => {
@@ -346,37 +298,40 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     return (
         <>
-            <Toolbar sx={styles.toolbar}>
-                <Checkbox
-                    disabled={isRootNetworksProcessing}
-                    checked={isChecked(selectedItems.length)}
-                    indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
-                    disableRipple
-                    onClick={toggleSelectAllRootNetworks}
-                />
-                <Box sx={styles.filler} />
-                <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
-                    <span>
-                        <IconButton
-                            onClick={doDeleteRootNetwork}
-                            size={'small'}
-                            sx={styles.toolbarIcon}
-                            disabled={
-                                selectedItems.length === 0 ||
-                                !currentNode ||
-                                rootNetworks.length === selectedItems.length ||
-                                isRootNetworksProcessing
-                            }
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </span>
-                </Tooltip>
-            </Toolbar>
-            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
-            {renderRootNetworksListTitle()}
+            {!isMonoRootStudy && (
+                <Toolbar sx={styles.toolbar}>
+                    <Checkbox
+                        disabled={isRootNetworksProcessing}
+                        checked={isChecked(selectedItems.length)}
+                        indeterminate={isPartial(selectedItems.length, rootNetworks?.length)}
+                        disableRipple
+                        onClick={toggleSelectAllRootNetworks}
+                    />
+                    <Box sx={styles.filler} />
+                    <Tooltip title={<FormattedMessage id={'deleteNetwork'} values={{ count: selectedItems.length }} />}>
+                        <span>
+                            <IconButton
+                                onClick={doDeleteRootNetwork}
+                                size={'small'}
+                                sx={styles.toolbarIcon}
+                                disabled={
+                                    selectedItems.length === 0 ||
+                                    !currentNode ||
+                                    rootNetworks.length === selectedItems.length ||
+                                    isRootNetworksProcessing
+                                }
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                </Toolbar>
+            )}
 
-            {renderRootNetworksList()}
+            {rootNetworkModificationDialogOpen && renderRootNetworkModificationDialog()}
+            {!isMonoRootStudy && renderRootNetworksListTitle()}
+
+            {isMonoRootStudy ? renderRootNetworkForMonoRootStudy() : renderRootNetworksList()}
         </>
     );
 };

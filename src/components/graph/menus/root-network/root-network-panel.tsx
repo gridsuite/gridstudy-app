@@ -5,11 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import { FunctionComponent, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import RootNetworkNodeEditor from './root-network-node-editor';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import { useRootNetworkNotifications } from './use-root-network-notifications';
 
 const styles = {
     paper: {
@@ -25,16 +28,29 @@ const styles = {
 const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const theme = useTheme();
-
+    // Set the panel's width and height based on designer's proposed values
     const panelStyle = useMemo(() => {
+        const width = theme.spacing(isRootNetworkPanelMinimized ? 22 : 38);
+
+        const minHeight = theme.spacing(
+            isRootNetworkPanelMinimized ? (isMonoRootStudy ? 6 : 12) : isMonoRootStudy ? 14 : 38
+        );
+
         return {
             ...styles.paper,
-            width: isRootNetworkPanelMinimized ? theme.spacing(22) : theme.spacing(38),
-            minHeight: isRootNetworkPanelMinimized ? theme.spacing(12) : theme.spacing(38),
+            width,
+            minHeight,
         };
-    }, [isRootNetworkPanelMinimized, theme]);
+    }, [isRootNetworkPanelMinimized, isMonoRootStudy, theme]);
+
+    //handle root network notifications
+    useRootNetworkNotifications({
+        setIsRootNetworksProcessing,
+    });
+
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader
@@ -43,10 +59,8 @@ const RootNetworkPanel: FunctionComponent = () => {
                 isRootNetworkPanelMinimized={isRootNetworkPanelMinimized}
                 setIsRootNetworkPanelMinimized={setIsRootNetworkPanelMinimized}
             />
-
-            {isRootNetworkPanelMinimized ? (
-                <RootNetworkMinimizedPanelContent />
-            ) : (
+            {isRootNetworkPanelMinimized && !isMonoRootStudy && <RootNetworkMinimizedPanelContent />}
+            {!isRootNetworkPanelMinimized && (
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}
                     setIsRootNetworksProcessing={setIsRootNetworksProcessing}

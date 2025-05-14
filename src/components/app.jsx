@@ -40,8 +40,11 @@ import { fetchConfigParameter, fetchConfigParameters } from '../services/config'
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    addFilterForNewSpreadsheet,
     attemptLeaveParametersTab,
     initTableDefinitions,
+    renameTableDefinition,
+    saveSpreadsheetGsFilters,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -55,13 +58,18 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { StudyView } from './utils/utils';
-import { NotificationType } from '../redux/reducer.js';
+import { NotificationType } from '../redux/reducer';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
-} from '../services/study-config.js';
+} from '../services/study-config';
+import {
+    extractColumnsFilters,
+    mapColumnsDto,
+    processSpreadsheetsCollectionData,
+} from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
 
@@ -145,27 +153,11 @@ const App = () => {
         listenerCallbackMessage: updateConfig,
     });
 
-    const mapColumns = (columns) => {
-        return columns.map((column) => {
-            return {
-                ...column,
-                dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-            };
-        });
-    };
-
     const resetTableDefinitions = useCallback(
         (collection) => {
-            const tableDefinitions = collection.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                return {
-                    uuid: spreadsheetConfig.id,
-                    index: index,
-                    name: spreadsheetConfig.name,
-                    columns: mapColumns(spreadsheetConfig.columns),
-                    type: spreadsheetConfig.sheetType,
-                };
-            });
-            dispatch(initTableDefinitions(collection.id, tableDefinitions));
+            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                processSpreadsheetsCollectionData(collection);
+            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
         },
         [dispatch]
     );
@@ -175,7 +167,14 @@ const App = () => {
             console.debug('Update spreadsheet tab on notification', configUuid);
             getSpreadsheetModel(configUuid)
                 .then((model) => {
-                    dispatch(updateTableColumns(model));
+                    const tabUuid = model.id;
+                    const formattedColumns = mapColumnsDto(model.columns);
+                    const columnsFilters = extractColumnsFilters(model.columns);
+                    const formattedGlobalFilters = model.globalFilters ?? [];
+                    dispatch(renameTableDefinition(tabUuid, model.name));
+                    dispatch(updateTableColumns(tabUuid, formattedColumns));
+                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(saveSpreadsheetGsFilters(tabUuid, formattedGlobalFilters));
                 })
                 .catch((error) => {
                     snackError({

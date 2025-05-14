@@ -14,8 +14,6 @@ import { setModificationsDrawerOpen } from '../../../../redux/actions';
 import { updateTreeNode } from '../../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -32,7 +30,7 @@ const NodeEditor = () => {
     const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
@@ -57,7 +55,7 @@ const NodeEditor = () => {
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
-                showRootNetworkSelection={enableDeveloperMode}
+                showRootNetworkSelection={!isMonoRootStudy}
             />
             <NetworkModificationNodeEditor />
         </Box>

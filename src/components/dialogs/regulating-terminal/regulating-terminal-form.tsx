@@ -97,7 +97,7 @@ export function RegulatingTerminalForm({
     }, [id, setValue]);
 
     return (
-        <Grid container direction={direction ?? 'row'} spacing={2}>
+        <Grid container direction={direction ?? 'row'} spacing={1}>
             <Grid
                 item
                 xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
@@ -122,8 +122,8 @@ export function RegulatingTerminalForm({
                         onChangeCallback={resetEquipment}
                         previousValue={regulatingTerminalVlId ?? undefined}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-                            is created in the options list with a value equal to the input value
-                            */
+    is created in the options list with a value equal to the input value
+    */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
                             if (
@@ -191,8 +191,8 @@ export function RegulatingTerminalForm({
                             );
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-                            is created in the options list with a value equal to the input value
-                         */
+    is created in the options list with a value equal to the input value
+ */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
                             if (

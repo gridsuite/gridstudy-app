@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
@@ -26,7 +26,7 @@ import {
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { MessageLogCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { useFilterSelector } from '../../hooks/use-filter-selector';
 import { FilterConfig, FilterType } from '../../types/custom-aggrid-types';
@@ -105,6 +105,11 @@ const LogTable = ({
     const gridRef = useRef<AgGridReact>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
+
+    // Reset filtersInitialized when reportType changes
+    useEffect(() => {
+        setFiltersInitialized(false);
+    }, [reportType]);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
