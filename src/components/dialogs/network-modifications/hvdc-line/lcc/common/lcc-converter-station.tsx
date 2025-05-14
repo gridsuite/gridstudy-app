@@ -112,7 +112,7 @@ export default function LccConverterStation({
         />
     );
 
-    const ShuntCompensatorField = isModification ? (
+    const ShuntCompensatorSection = isModification ? (
         <ModificationFiltersShuntCompensatorTable
             id={`${id}`}
             previousValues={previousValues?.shuntCompensatorsOnSide}
