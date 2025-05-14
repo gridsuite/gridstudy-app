@@ -93,7 +93,6 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
                 InputProps={{
                     disableUnderline: true,
                 }}
-                sx={{ textAlign: 'end' }}
             />
         );
     }, [id, intl, previousValues]);
