@@ -7,37 +7,24 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
-import { evaluateFilters, SpreadsheetGlobalFilter } from '../../services/study/filter';
+import { IdentifiableAttributes } from '../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 
 export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tabUuid]);
 
-    const applyGsFilter = useCallback(
-        async (filters: SpreadsheetGlobalFilter[]) => {
-            if (!filters?.length || !currentRootNetworkUuid) {
-                setFilterIds([]);
-                return;
-            }
-
-            const filtersUuid = filters.map((filter) => filter.filterId);
-            if (filtersUuid.length > 0) {
-                const response = await evaluateFilters(studyUuid as UUID, currentRootNetworkUuid, filtersUuid);
-                const equipmentsIds = response.flatMap((filterEquipments) =>
-                    filterEquipments.identifiableAttributes.map((attr) => attr.id)
-                );
-                setFilterIds(equipmentsIds);
-            }
-        },
-        [currentRootNetworkUuid, studyUuid]
-    );
+    const applyGsFilter = useCallback(async (filters: IdentifiableAttributes[]) => {
+        const filtersUuid = filters.map((filter) => filter.id);
+        if (filtersUuid.length > 0) {
+            setFilterIds(filtersUuid);
+        }
+    }, []);
 
     useEffect(() => {
+        console.log(gsFilterSpreadsheetState);
         applyGsFilter(gsFilterSpreadsheetState);
     }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
 

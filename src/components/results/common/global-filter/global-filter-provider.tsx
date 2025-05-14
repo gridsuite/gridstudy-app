@@ -20,7 +20,11 @@ import { HttpStatusCode } from '../../../../utils/http-status-code';
 export default function GlobalFilterProvider({
     children,
     onChange: handleChange,
-}: PropsWithChildren & { onChange: (globalFilters: GlobalFilter[]) => void }) {
+    filterCategories,
+}: PropsWithChildren & {
+    onChange: (globalFilters: GlobalFilter[]) => void;
+    filterCategories: string[];
+}) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -103,8 +107,16 @@ export default function GlobalFilterProvider({
             selectedGlobalFilters,
             setSelectedGlobalFilters,
             onChange,
+            filterCategories,
         }),
-        [openedDropdown, directoryItemSelectorOpen, filterGroupSelected, selectedGlobalFilters, onChange]
+        [
+            openedDropdown,
+            directoryItemSelectorOpen,
+            filterGroupSelected,
+            selectedGlobalFilters,
+            onChange,
+            filterCategories,
+        ]
     );
 
     return <GlobalFilterContext.Provider value={value}>{children}</GlobalFilterContext.Provider>;

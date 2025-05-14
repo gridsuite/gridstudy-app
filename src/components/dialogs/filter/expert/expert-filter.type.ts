@@ -20,6 +20,7 @@ export enum OperatorType {
     EXISTS = 'EXISTS',
     IN = 'IN',
     NOT_IN = 'NOT_IN',
+    IS_PART_OF = 'IS_PART_OF',
 }
 
 export enum CombinatorType {
@@ -31,6 +32,8 @@ export enum FieldType {
     ID = 'ID',
     NAME = 'NAME',
     NOMINAL_VOLTAGE = 'NOMINAL_VOLTAGE',
+    NOMINAL_VOLTAGE_1 = 'NOMINAL_VOLTAGE_1',
+    NOMINAL_VOLTAGE_2 = 'NOMINAL_VOLTAGE_2',
     MIN_P = 'MIN_P',
     MAX_P = 'MAX_P',
     TARGET_V = 'TARGET_V',
@@ -38,6 +41,8 @@ export enum FieldType {
     TARGET_Q = 'TARGET_Q',
     ENERGY_SOURCE = 'ENERGY_SOURCE',
     COUNTRY = 'COUNTRY',
+    COUNTRY_1 = 'COUNTRY_1',
+    COUNTRY_2 = 'COUNTRY_2',
     VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
     PLANNED_ACTIVE_POWER_SET_POINT = 'PLANNED_ACTIVE_POWER_SET_POINT',
     VOLTAGE_LEVEL_ID = 'VOLTAGE_LEVEL_ID',
@@ -49,6 +54,7 @@ export enum DataType {
     NUMBER = 'NUMBER',
     BOOLEAN = 'BOOLEAN',
     COMBINATOR = 'COMBINATOR',
+    FILTER_UUID = 'FILTER_UUID',
 }
 
 export interface RuleTypeExport {

@@ -522,7 +522,11 @@
     "results.globalFilter.recent": "Recent",
     "results.globalFilter.genericFilter": "Generic",
     "results.globalFilter.country": "Countries",
+    "results.globalFilter.country1": "Countries 1",
+    "results.globalFilter.country2": "Countries 2",
     "results.globalFilter.voltageLevel": "Voltage levels",
+    "results.globalFilter.voltageLevel1": "Voltage levels 1",
+    "results.globalFilter.voltageLevel2": "Voltage levels 2",
     "results.globalFilter.nonApplicable": "Filtering {filterName} is not applicable for the current results table and is inactive",
     "results.globalFilter.nonApplicableExtra": "Filtering {filterName} and {extraFiltersNum} others are not applicable for the current results table and are inactive",
 

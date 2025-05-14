@@ -17,8 +17,9 @@ export default function GlobalFilterSelector({
     filterableEquipmentTypes,
     filters,
 }: Readonly<GlobalFilterSelectorProps>) {
+    const filterCategories = filters.map(filter => filter.filterType);
     return (
-        <GlobalFilterProvider onChange={onChange}>
+        <GlobalFilterProvider onChange={onChange} filterCategories={filterCategories}>
             <GlobalFilterAutocomplete filters={filters} filterableEquipmentTypes={filterableEquipmentTypes} />
         </GlobalFilterProvider>
     );
