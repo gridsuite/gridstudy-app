@@ -135,7 +135,7 @@ export default function LccConverterStation({
                 <GridItem size={4}>{powerFactorField}</GridItem>
             </Grid>
             <GridSection title={'Filters'} />
-            {ShuntCompensatorField}
+            {ShuntCompensatorSection}
         </Grid>
     );
 }
