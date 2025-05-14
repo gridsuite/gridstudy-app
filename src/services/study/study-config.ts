@@ -9,7 +9,7 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '../../components/dialogs/parameters/network-visualizations/network-visualizations.types';
-import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { SpreadsheetGlobalFilter } from './filter';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID) {

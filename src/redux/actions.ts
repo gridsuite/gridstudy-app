@@ -53,7 +53,7 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
@@ -219,12 +219,12 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
 
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>;
     nodeId: UUID;
 };
 
 export function updateEquipments(
-    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>,
     nodeId: UUID
 ): UpdateEquipmentsAction {
     return {
