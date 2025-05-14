@@ -267,8 +267,8 @@ export const mergeModificationAndEquipmentShuntCompensatorInfos = (
     }
 
     // Add map server infos
-    if (infosMapServer) {
-        infosMapServer.forEach((value: LccShuntCompensatorInfos) => {
+    if (infosMap) {
+        infosMap.forEach((value: LccShuntCompensatorInfos) => {
             if (value.id !== null) {
                 // If the property is present in the modification and in the equipment
                 if (!result.has(value.id)) {
