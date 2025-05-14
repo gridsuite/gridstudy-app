@@ -101,7 +101,7 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
     return SHUNT_COLUMNS_DEFINITION.map((column) => (
         <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
             {column.dataKey === SHUNT_COMPENSATOR_ID && (
-                <TextInput name={`${id}.${SHUNT_COMPENSATOR_ID}`} disabled={deletionMark} />
+                <TextInput name={`${id}.${SHUNT_COMPENSATOR_ID}`} disabled />
             )}
             {column.dataKey === SHUNT_COMPENSATOR_NAME && (
                 <TextInput name={`${id}.${SHUNT_COMPENSATOR_NAME}`} disabled={deletionMark} />
