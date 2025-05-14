@@ -23,13 +23,9 @@ import { RootNetworkMetadata } from '../network-modifications/network-modificati
 
 type UseRootNetworkNotificationsProps = {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
-    updateSelectedItems?: (items: RootNetworkMetadata[]) => void;
 };
 
-export const useRootNetworkNotifications = ({
-    setIsRootNetworksProcessing,
-    updateSelectedItems,
-}: UseRootNetworkNotificationsProps) => {
+export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: UseRootNetworkNotificationsProps) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -40,9 +36,6 @@ export const useRootNetworkNotifications = ({
         if (studyUuid) {
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
-                    if (updateSelectedItems) {
-                        updateSelectedItems(res);
-                    }
                     dispatch(setRootNetworks(res));
 
                     // This is used to hide the loader for creation, update and deletion of the root networks.
@@ -55,7 +48,7 @@ export const useRootNetworkNotifications = ({
                     snackError({ messageTxt: error.message });
                 });
         }
-    }, [studyUuid, updateSelectedItems, dispatch, setIsRootNetworksProcessing, snackError]);
+    }, [studyUuid, dispatch, setIsRootNetworksProcessing, snackError]);
 
     const rootNetworkModifiedNotification = useCallback(
         (event: MessageEvent<string>) => {

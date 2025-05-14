@@ -145,7 +145,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
-    }, [rootNetworks, setSelectedItems]);
+    }, [rootNetworks]);
 
     const handleSecondaryAction = useCallback(
         (rootNetwork: RootNetworkMetadata) => {
