@@ -6,7 +6,7 @@
  */
 
 import { backendFetchJson } from '@gridsuite/commons-ui';
-import { SpreadsheetCollectionDto, SpreadsheetConfigDto } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetCollectionDto, SpreadsheetConfigDto } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { UUID } from 'crypto';
 
 const PREFIX_STUDY_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study-config';

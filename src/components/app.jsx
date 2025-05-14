@@ -58,18 +58,18 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { StudyView } from './utils/utils';
-import { NotificationType } from '../redux/reducer.js';
+import { NotificationType } from '../redux/reducer';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
-} from '../services/study-config.js';
+} from '../services/study-config';
 import {
     extractColumnsFilters,
     mapColumnsDto,
     processSpreadsheetsCollectionData,
-} from './spreadsheet/custom-spreadsheet/custom-spreadsheet-utils';
+} from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
 
