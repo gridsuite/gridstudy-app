@@ -219,7 +219,7 @@ export const MessageLogCellRenderer = ({
                     ref={textRef}
                     sx={{
                         ...styles.overflow,
-                        marginLeft: marginLeft,
+                        marginLeft,
                     }}
                 >
                     {renderHighlightedText(param.value)}
