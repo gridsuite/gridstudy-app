@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import { FunctionComponent, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { useRootNetworkNotifications } from './use-root-network-notifications';
 
 const styles = {
     paper: {
@@ -44,6 +45,11 @@ const RootNetworkPanel: FunctionComponent = () => {
             minHeight,
         };
     }, [isRootNetworkPanelMinimized, isMonoRootStudy, theme]);
+
+    //handle root network notifications
+    useRootNetworkNotifications({
+        setIsRootNetworksProcessing,
+    });
 
     return (
         <Paper elevation={3} sx={panelStyle}>
