@@ -7,18 +7,15 @@
 
 import { SetStateAction, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import {
     AppState,
     NotificationType,
     RootNetworksDeletionStartedEventData,
     RootNetworksUpdatedEventData,
 } from 'redux/reducer';
-
-import { useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchRootNetworks } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
-import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 type UseRootNetworkNotificationsProps = {
@@ -103,13 +100,13 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
         [currentRootNetworkUuid, dispatch, rootNetworks]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkModifiedNotification,
     });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworksUpdateFailedNotification,
     });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkDeletionStartedNotification,
     });
 };
