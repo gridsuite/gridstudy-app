@@ -5,16 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Identifiable, useNotificationsListener } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import { type Identifiable, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
-import { AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
-import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { type AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
+import type { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { NOTIFICATIONS_URL_KEYS } from '../../../../utils/notificationsProvider-utils';
-import { NodeAlias } from '../../../types/node-alias.type';
+import type { NodeAlias } from '../../../types/node-alias.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
 import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
 import { NodeType } from '../../../../graph/tree-node.type';
@@ -253,7 +252,7 @@ export const useSpreadsheetEquipments = (
         [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerUpdateEquipmentsLocal,
     });
 
