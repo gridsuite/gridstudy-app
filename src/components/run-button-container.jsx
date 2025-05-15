@@ -172,7 +172,23 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         null,
-                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
+                        () => {},
+                        null,
+                        'startLoadFlowError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id));
+                },
+            },
+            [ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER]: {
+                messageId: 'LoadFlowWithoutTapChanger',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER,
+                        null,
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
                         () => {},
                         null,
                         'startLoadFlowError'
@@ -340,6 +356,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         (computingType) => {
             switch (computingType) {
                 case ComputingType.LOAD_FLOW:
+                case ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER:
                     return loadFlowStatus;
                 case ComputingType.SECURITY_ANALYSIS:
                     return securityAnalysisStatus;
@@ -378,6 +395,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const activeRunnables = useMemo(() => {
         return [
             ComputingType.LOAD_FLOW,
+            ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER,
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]

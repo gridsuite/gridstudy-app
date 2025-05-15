@@ -450,6 +450,7 @@ export type StudyUpdated = {
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
+    [ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
@@ -728,6 +729,7 @@ const initialState: AppState = {
     gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
+        [ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
