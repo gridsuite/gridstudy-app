@@ -8,7 +8,7 @@
 import { ColDef, GridApi, IFilterOptionDef } from 'ag-grid-community';
 import { FilterParams } from '../../../types/custom-aggrid-types';
 import React, { ComponentType } from 'react';
-import { CustomColumnConfigProps } from '../custom-column-menu';
+import { ColumnMenuProps } from '../../spreadsheet-view/columns/column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
 import { UUID } from 'crypto';
@@ -58,7 +58,7 @@ export interface ColumnContext<F extends CustomAggridFilterParams = CustomAggrid
     forceDisplayFilterIcon?: boolean;
     tabIndex?: number;
     isCustomColumn?: boolean;
-    Menu?: React.FC<CustomColumnConfigProps>;
+    Menu?: React.FC<ColumnMenuProps>;
     filterComponent?: ComponentType<F>;
     //We omit colId and api here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
     filterComponentParams?: Omit<F, 'colId' | 'api'>;

@@ -22,7 +22,7 @@ const useNotificationsUrlGenerator = (): Record<NOTIFICATIONS_URL_KEYS, string |
     const tokenId = useSelector((state: AppState) => state.user?.id_token);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    // return a mapper with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
+    // return a mapColumns with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
     // it will be used to register listeners as soon as possible.
     return useMemo(
         () => ({
