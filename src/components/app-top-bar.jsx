@@ -6,13 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import {
-    fetchAppsMetadata,
-    LIGHT_THEME,
-    logout,
-    OverflowableText,
-    TopBar,
-} from '@gridsuite/commons-ui';
+import { fetchAppsMetadata, LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
@@ -28,7 +22,6 @@ import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
-
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
