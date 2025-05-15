@@ -13,7 +13,6 @@ import { AppState } from 'redux/reducer';
 
 const styles = {
     minimizedPanel: (theme: Theme) => ({
-        flexGrow: 1,
         marginLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',

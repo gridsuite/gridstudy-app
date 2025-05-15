@@ -53,6 +53,7 @@ interface RootNetworkPanelHeaderProps {
     isRootNetworkPanelMinimized: boolean;
     setIsRootNetworkPanelMinimized: React.Dispatch<SetStateAction<boolean>>;
     setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
+    closeSearchPanel: () => void;
 }
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
@@ -61,6 +62,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     isRootNetworkPanelMinimized,
     setIsRootNetworkPanelMinimized,
     setIsSearchActive,
+    closeSearchPanel,
 }) => {
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -95,7 +97,8 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
-    }, []);
+        closeSearchPanel();
+    }, [closeSearchPanel]);
 
     const confirmRootNetworkCreation = () => {
         if (formData) {

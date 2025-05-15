@@ -1526,6 +1526,7 @@
     "createRootNetworksError": "An error occurred while creating the root network",
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
+    "rootNetwork.modificationsInfos": "TODO....",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 

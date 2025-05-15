@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
@@ -46,7 +46,11 @@ const RootNetworkPanel: FunctionComponent = () => {
             minHeight,
         };
     }, [isRootNetworkPanelMinimized, isMonoRootStudy, theme]);
-
+    const closeSearchPanel = useCallback(() => {
+        if (isSearchActive) {
+            setIsSearchActive(false);
+        }
+    }, [isSearchActive]);
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader
@@ -55,8 +59,9 @@ const RootNetworkPanel: FunctionComponent = () => {
                 isRootNetworkPanelMinimized={isRootNetworkPanelMinimized}
                 setIsRootNetworkPanelMinimized={setIsRootNetworkPanelMinimized}
                 setIsSearchActive={setIsSearchActive}
+                closeSearchPanel={closeSearchPanel}
             />
-            {isRootNetworkPanelMinimized && !isMonoRootStudy && <RootNetworkMinimizedPanelContent />}
+            {isRootNetworkPanelMinimized && !isMonoRootStudy && !isSearchActive && <RootNetworkMinimizedPanelContent />}
             {!isSearchActive && !isRootNetworkPanelMinimized && (
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}
