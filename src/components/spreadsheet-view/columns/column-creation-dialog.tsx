@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
@@ -67,7 +67,7 @@ export type ColumnCreationDialogProps = {
 const styles = {
     dialogContent: {
         width: '40%',
-        height: '65%',
+        height: '72%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -177,7 +177,6 @@ export default function ColumnCreationDialog({
                 type: 'validate',
                 message: 'spreadsheet/custom_column/column_name_already_exist',
             });
-            return false;
         }
 
         if (columnIdAlreadyExist) {
@@ -185,20 +184,29 @@ export default function ColumnCreationDialog({
                 type: 'validate',
                 message: 'spreadsheet/custom_column/column_id_already_exist',
             });
-            return false;
         }
 
         const newItems: Item[] = [...columnsDefinitions, newParams];
-        if (hasCyclicDependencies(newItems)) {
+        const cycleError = hasCyclicDependencies(newItems);
+        if (cycleError) {
             setError(COLUMN_DEPENDENCIES, {
                 type: 'validate',
                 message: 'spreadsheet/custom_column/creates_cyclic_dependency',
             });
-            return false;
         }
 
-        return true;
+        return !(columnNameAlreadyExist || columnIdAlreadyExist || cycleError);
     };
+
+    const onClose = useCallback(
+        (event_: React.MouseEvent, reason: string) => {
+            // don't close the dialog for outside click
+            if (reason !== 'backdropClick') {
+                open.setFalse();
+            }
+        },
+        [open]
+    );
 
     const onSubmit = useCallback(
         async (newParams: ColumnCreationForm) => {
@@ -293,7 +301,7 @@ export default function ColumnCreationDialog({
             <Dialog
                 id="custom-column-dialog-edit"
                 open={open.value}
-                onClose={open.setFalse}
+                onClose={onClose}
                 aria-labelledby="custom-column-dialog-edit-title"
                 PaperProps={{ sx: styles.dialogContent }}
             >
@@ -304,7 +312,7 @@ export default function ColumnCreationDialog({
                             : 'spreadsheet/custom_column/edit_columns',
                     })}
                 </DialogTitle>
-                <DialogContent dividers>
+                <DialogContent>
                     <Grid container spacing={2} direction="column" alignItems="center">
                         <Typography align={'justify'} sx={styles.columnDescription}>
                             <FormattedMessage
