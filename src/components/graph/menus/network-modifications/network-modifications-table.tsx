@@ -28,8 +28,6 @@ import {
     NetworkModificationEditorNameHeader,
     NetworkModificationEditorNameHeaderProps,
 } from './network-modification-node-editor-name-header';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
@@ -76,8 +74,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 }) => {
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
-
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -131,39 +127,38 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 width: 60,
             },
         ];
-        const dynamicColumns: ColDef<NetworkModificationInfos>[] =
-            enableDeveloperMode && !isMonoRootStudy
-                ? rootNetworks.map((rootNetwork) => {
-                      const rootNetworkUuid = rootNetwork.rootNetworkUuid;
-                      const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
-                      return {
-                          colId: rootNetworkUuid,
-                          cellRenderer: RootNetworkChipCellRenderer,
-                          cellRendererParams: {
-                              rootNetwork: rootNetwork,
-                              setModifications: setModifications,
-                          },
-                          cellStyle: { textAlign: 'center' },
-                          headerStyle: { padding: 0 },
-                          width: 72,
-                          headerComponent: () =>
-                              isCurrentRootNetwork &&
-                              modifications.length >= 1 && (
-                                  <Box
-                                      sx={{
-                                          width: '100%',
-                                          display: 'flex',
-                                          justifyContent: 'center',
-                                      }}
-                                  >
-                                      <Badge overlap="circular" color="primary" variant="dot">
-                                          <RemoveRedEyeIcon />
-                                      </Badge>
-                                  </Box>
-                              ),
-                      };
-                  })
-                : [];
+        const dynamicColumns: ColDef<NetworkModificationInfos>[] = !isMonoRootStudy
+            ? rootNetworks.map((rootNetwork) => {
+                  const rootNetworkUuid = rootNetwork.rootNetworkUuid;
+                  const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
+                  return {
+                      colId: rootNetworkUuid,
+                      cellRenderer: RootNetworkChipCellRenderer,
+                      cellRendererParams: {
+                          rootNetwork: rootNetwork,
+                          setModifications: setModifications,
+                      },
+                      cellStyle: { textAlign: 'center' },
+                      headerStyle: { padding: 0 },
+                      width: 72,
+                      headerComponent: () =>
+                          isCurrentRootNetwork &&
+                          modifications.length >= 1 && (
+                              <Box
+                                  sx={{
+                                      width: '100%',
+                                      display: 'flex',
+                                      justifyContent: 'center',
+                                  }}
+                              >
+                                  <Badge overlap="circular" color="primary" variant="dot">
+                                      <RemoveRedEyeIcon />
+                                  </Badge>
+                              </Box>
+                          ),
+                  };
+              })
+            : [];
 
         return [...staticColumns, ...dynamicColumns];
     }, [
@@ -171,7 +166,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         modifications?.length,
         nameHeaderProps,
         setModifications,
-        enableDeveloperMode,
         isMonoRootStudy,
         rootNetworks,
         getModificationLabel,

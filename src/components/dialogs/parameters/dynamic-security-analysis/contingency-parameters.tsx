@@ -7,8 +7,7 @@
 
 import { Grid } from '@mui/material';
 import { makeComponents, TYPES } from '../util/make-component-utils';
-import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementType, ParameterLineDirectoryItemsInput } from '@gridsuite/commons-ui';
 
 export const CONTINGENCIES_START_TIME = 'contingenciesStartTime';
 export const CONTINGENCIES_LIST_INFOS = 'contingencyListInfos';

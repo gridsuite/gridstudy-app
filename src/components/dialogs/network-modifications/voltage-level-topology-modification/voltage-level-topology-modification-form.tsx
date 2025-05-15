@@ -86,7 +86,8 @@ export function VoltageLevelTopologyModificationForm({
                     if (data.type === 'SEPARATOR') {
                         return null;
                     } else {
-                        return intl.formatMessage({ id: data[PREV_CONNECTION_STATUS] });
+                        // PREV_CONNECTION_STATUS presents 'open'
+                        return intl.formatMessage({ id: data[PREV_CONNECTION_STATUS] ? 'Open' : 'Closed' });
                     }
                 },
                 headerComponentParams: {
@@ -132,12 +133,8 @@ export function VoltageLevelTopologyModificationForm({
             if (row.type === 'SEPARATOR') {
                 return;
             }
-            let newValue = null;
-            if (row[PREV_CONNECTION_STATUS] === 'Open') {
-                newValue = true;
-            } else if (row[PREV_CONNECTION_STATUS] === 'Closed') {
-                newValue = false;
-            }
+            // should revert because CURRENT_CONNECTION_STATUS presents 'close' while PREV_CONNECTION_STATUS presents 'open'
+            const newValue = !row[PREV_CONNECTION_STATUS];
             setValue(`${TOPOLOGY_MODIFICATION_TABLE}[${index}].${CURRENT_CONNECTION_STATUS}`, newValue, {
                 shouldDirty: true,
             });
