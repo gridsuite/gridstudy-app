@@ -49,6 +49,7 @@ import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filt
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { fetchSubstationPropertiesGlobalFilters } from '../common/global-filter/global-filter-utils';
 
 const styles = {
     flexWrapper: {
@@ -87,7 +88,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
-
+    // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
+    const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
     const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
@@ -125,6 +127,22 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     headerId: 'FetchNominalVoltagesError',
                 });
             });
+
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            const propertiesGlobalFilters: GlobalFilter[] = [];
+            if (substationPropertiesGlobalFilters) {
+                for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
+                    propertyValues.forEach((propertyValue) => {
+                        propertiesGlobalFilters.push({
+                            label: propertyValue,
+                            filterType: FilterType.SUBSTATION_PROPERTY,
+                            filterSubtype: propertyName,
+                        });
+                    });
+                }
+            }
+            setPropertiesFilter(propertiesGlobalFilters);
+        });
     }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError, loadFlowStatus]);
 
     const getGlobalFilterParameter = useCallback(
@@ -134,7 +152,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 if (
                     (globalFilter.countryCode && globalFilter.countryCode.length > 0) ||
                     (globalFilter.nominalV && globalFilter.nominalV.length > 0) ||
-                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0)
+                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0) ||
+                    globalFilter.substationProperty
                 ) {
                     shouldSentParameter = true;
                 }
@@ -266,9 +285,27 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
                     .map((filter: GlobalFilter) => filter.label)
             );
+            // extract the substation properties and sort them by property name (ie filterSubtype)
+            const substationProperties: Map<string, string[]> = new Map();
+            value
+                .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
+                .forEach((filter: GlobalFilter) => {
+                    if (filter.filterSubtype) {
+                        const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
+                        if (subtypeSubstationProperties) {
+                            subtypeSubstationProperties.push(filter.label);
+                        } else {
+                            substationProperties.set(filter.filterSubtype, [filter.label]);
+                        }
+                    }
+                });
+
             newGlobalFilter.nominalV = [...nominalVs];
             newGlobalFilter.countryCode = [...countryCodes];
             newGlobalFilter.genericFilter = [...genericFilters];
+            if (substationProperties.size > 0) {
+                newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
+            }
         }
         setGlobalFilter(newGlobalFilter);
     }, []);
@@ -297,11 +334,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         () => (
             <GlobalFilterSelector
                 onChange={handleGlobalFilterChange}
-                filters={[...voltageLevelsFilter, ...countriesFilter]}
+                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
                 filterableEquipmentTypes={filterableEquipmentTypes}
             />
         ),
-        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter]
+        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
     );
 
     return (
