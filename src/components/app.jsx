@@ -221,7 +221,7 @@ const App = () => {
         [studyUuid, updateSpreadsheetCollectionOnNotification, updateSpreadsheetTabOnNotification]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: onSpreadsheetNotification,
     });
 

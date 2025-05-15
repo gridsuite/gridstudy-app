@@ -16,7 +16,7 @@ import { fetchAllEquipments } from 'services/study/network-map';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
 import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
-import type { NodeType } from '../../../../graph/tree-node.type';
+import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from 'services/study/network';
