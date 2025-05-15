@@ -42,8 +42,8 @@ const formSchema = yup.object().shape({
         .of(
             yup.object().shape({
                 [SWITCH_ID]: yup.string(),
-                [PREV_CONNECTION_STATUS]: yup.string(),
-                [CURRENT_CONNECTION_STATUS]: yup.boolean().nullable(),
+                [PREV_CONNECTION_STATUS]: yup.boolean().nullable(), // presents 'open'
+                [CURRENT_CONNECTION_STATUS]: yup.boolean().nullable(), // presents 'close'
             })
         )
         .required(),
@@ -53,7 +53,7 @@ const emptyFormData = {
     [TOPOLOGY_MODIFICATION_TABLE]: [
         {
             [SWITCH_ID]: '',
-            [PREV_CONNECTION_STATUS]: '',
+            [PREV_CONNECTION_STATUS]: null,
             [CURRENT_CONNECTION_STATUS]: null,
         },
     ],
@@ -119,7 +119,7 @@ export default function VoltageLevelTopologyModificationDialog({
                                 {
                                     [TOPOLOGY_MODIFICATION_TABLE]: switchesInfos?.map((row) => ({
                                         [SWITCH_ID]: row.id,
-                                        [PREV_CONNECTION_STATUS]: row.open ? 'Open' : 'Closed',
+                                        [PREV_CONNECTION_STATUS]: row.open,
                                         [CURRENT_CONNECTION_STATUS]: null,
                                     })),
                                 },
@@ -158,27 +158,18 @@ export default function VoltageLevelTopologyModificationDialog({
             if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
                 equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
                     (item) => {
-                        if (
+                        return !(
                             item === null ||
                             item.currentConnectionStatus === null ||
                             item.currentConnectionStatus === undefined
-                        ) {
-                            return false;
-                        }
-
-                        const prevStatusIsClosed = item.prevConnectionStatus === 'Closed';
-                        const prevStatusIsOpen = item.prevConnectionStatus === 'Open';
-
-                        return (
-                            item.currentConnectionStatus !== prevStatusIsClosed ||
-                            item.currentConnectionStatus !== prevStatusIsOpen
                         );
                     }
                 ).map((item) => ({
                     type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
                     equipmentId: item.switchId ?? '',
                     equipmentAttributeName: 'open',
-                    equipmentAttributeValue: Boolean(item.currentConnectionStatus),
+                    // Note that 'currentConnectionStatus' which presents 'close' should be inverted when submitting open attribute
+                    equipmentAttributeValue: Boolean(!item.currentConnectionStatus),
                     equipmentType: EquipmentType.SWITCH,
                 }));
             }
@@ -247,7 +238,7 @@ export default function VoltageLevelTopologyModificationDialog({
                         intl.formatMessage({ id: 'modifiedSwitchesSeparatorTitle' }) + ` (${modifiedSwitches.length})`,
                     count: modifiedSwitches.length,
                     [SWITCH_ID]: '',
-                    [PREV_CONNECTION_STATUS]: '',
+                    [PREV_CONNECTION_STATUS]: null,
                     [CURRENT_CONNECTION_STATUS]: null,
                 });
 
@@ -257,22 +248,21 @@ export default function VoltageLevelTopologyModificationDialog({
                         (attr) => attr.equipmentId === sw.switchId
                     );
 
-                    const currentConnectionStatus = isNodeBuilt(currentNode)
+                    const open = isNodeBuilt(currentNode)
                         ? matchingSwitchInfos?.open
                         : (matchingAttributeEditData?.equipmentAttributeValue ?? matchingSwitchInfos?.open);
+
+                    // Note that 'open' should be inverted when initializing CURRENT_CONNECTION_STATUS which presents 'close'
                     result.push({
                         ...sw,
                         type: SWITCH_TYPE,
                         isModified: false,
-                        [CURRENT_CONNECTION_STATUS]: currentConnectionStatus,
+                        [CURRENT_CONNECTION_STATUS]: !open,
                     });
                     const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
                     const index = formValues?.findIndex((item) => item.switchId === sw.switchId);
                     if (index !== -1) {
-                        setValue(
-                            `${TOPOLOGY_MODIFICATION_TABLE}.${index}.${CURRENT_CONNECTION_STATUS}`,
-                            currentConnectionStatus
-                        );
+                        setValue(`${TOPOLOGY_MODIFICATION_TABLE}.${index}.${CURRENT_CONNECTION_STATUS}`, !open);
                     }
                 });
 
@@ -285,7 +275,7 @@ export default function VoltageLevelTopologyModificationDialog({
                             ` (${unmodifiedSwitches.length})`,
                         count: unmodifiedSwitches.length,
                         [SWITCH_ID]: '',
-                        [PREV_CONNECTION_STATUS]: '',
+                        [PREV_CONNECTION_STATUS]: null,
                         [CURRENT_CONNECTION_STATUS]: null,
                     });
 
