@@ -57,8 +57,6 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
-    DELETED_OR_RENAMED_NODES,
-    DeletedOrRenamedNodesAction,
     DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     DynamicSimulationResultFilterAction,
@@ -154,38 +152,34 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EDIT_NAD_MODE,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
-    SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
-    SET_RELOAD_MAP_NEEDED,
-    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SET_ROOT_NETWORKS,
+    SET_RELOAD_MAP_NEEDED,
     SET_STUDY_DISPLAY_MODE,
+    SET_ROOT_NETWORK_INDEXATION_STATUS,
     SetAppTabIndexAction,
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
-    SetEditNadModeAction,
     SetEventScenarioDrawerOpenAction,
     SetFullscreenDiagramAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
-    SetMonoRootStudyAction,
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
-    SetReloadMapNeededAction,
-    SetRootNetworkIndexationStatusAction,
     SetRootNetworksAction,
+    SetReloadMapNeededAction,
     SetStudyDisplayModeAction,
+    SetRootNetworkIndexationStatusAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -207,15 +201,23 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     UpdateColumnsDefinitionsAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
-    UpdateTableColumnsAction,
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    SET_EDIT_NAD_MODE,
+    SetEditNadModeAction,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
+    REMOVE_EQUIPMENT_DATA,
+    RemoveEquipmentDataAction,
+    UPDATE_TABLE_COLUMNS,
+    UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -254,7 +256,6 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
-import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -302,13 +303,14 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
+import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
+import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -1714,6 +1716,13 @@ export const reducer = createReducer(initialState, (builder) => {
         );
     });
 
+    builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
+        state.spreadsheetNetwork[action.equipmentType] = {
+            nodesId: [],
+            equipmentsByNodeId: {},
+        };
+    });
+
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
         // for now, this action receives an object containing all equipments from a substation
         // it will be modified when the notifications received after a network modification will be more precise
@@ -1731,7 +1740,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = formatFetchedEquipments(
+            const formattedEquipments = mapSpreadsheetEquipments(
                 // @ts-expect-error TODO manage undefined value case
                 equipmentType,
                 equipments

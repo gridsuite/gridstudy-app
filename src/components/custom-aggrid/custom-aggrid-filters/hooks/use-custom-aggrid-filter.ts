@@ -107,19 +107,14 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        if (!filters?.length) {
+        const filterObject = filters?.find((filter) => filter.column === colId);
+        if (filterObject) {
+            setSelectedFilterData(filterObject.value);
+            setSelectedFilterComparator(filterObject.type ?? '');
+        } else {
             setSelectedFilterData(undefined);
-        } else if (selectedFilterData === undefined) {
-            // selectedFilterData == undefined => the filter page just opened so we want to display up-to-date filters
-            // but while the filter page stays open we don't take into account other modification (what may happen because of notification)
-            // so that the input isn't modified by external sources while the user is interacting with it
-            const filterObject = filters?.find((filter) => filter.column === colId);
-            if (filterObject) {
-                setSelectedFilterData(filterObject.value);
-                setSelectedFilterComparator((selectedFilterComparator || filterObject.type) ?? '');
-            }
         }
-    }, [filters, colId, selectedFilterComparator, selectedFilterData]);
+    }, [filters, colId]);
 
     return {
         selectedFilterData,

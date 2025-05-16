@@ -20,6 +20,7 @@ const formatLog = (reportLog: ReportLog, formattedLogs: Log[]) => {
     formattedLogs.push({
         message: reportLog.message,
         severity: Object.values(REPORT_SEVERITY).find((s) => reportLog.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN,
+        depth: reportLog.depth,
         parentId: reportLog.parentId,
     });
 };

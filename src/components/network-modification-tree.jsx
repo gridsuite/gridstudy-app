@@ -31,8 +31,6 @@ import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { useParameterState } from './dialogs/parameters/use-parameters-state';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -52,7 +50,6 @@ const NetworkModificationTree = ({
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
     const { setViewport, fitView, setCenter, getZoom } = useReactFlow();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const draggedBranchIdRef = useRef(null);
 
@@ -361,7 +358,7 @@ const NetworkModificationTree = ({
                     </TreeControlButton>
                 </Controls>
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
-                {enableDeveloperMode && <RootNetworkPanel />}
+                <RootNetworkPanel />
             </ReactFlow>
         </Box>
     );
