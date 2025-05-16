@@ -73,7 +73,7 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
         let previousValue: boolean | null = null;
 
         if (previousValues) {
-            previousValue = previousValues?.connectedToHvdc ?? false;
+            previousValue = previousValues?.terminalConnected ?? false;
         }
 
         const value = previousValue

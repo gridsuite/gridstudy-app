@@ -373,6 +373,7 @@ export interface LccShuntCompensatorInfos {
     name?: string | null;
     maxQAtNominalV: number;
     connectedToHvdc?: boolean | null;
+    terminalConnected?: boolean | null;
     type?: string;
 }
 
