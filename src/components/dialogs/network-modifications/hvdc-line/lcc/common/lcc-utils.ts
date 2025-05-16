@@ -164,7 +164,7 @@ export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: 
             [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
             [SHUNT_COMPENSATOR_NAME]: shuntCp?.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? true,
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.terminalConnected ?? true, //TODO : rename field to terminalConnected
         })) ?? []
     );
 };
