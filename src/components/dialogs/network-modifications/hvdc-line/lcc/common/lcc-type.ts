@@ -7,12 +7,50 @@
 import { Property } from '../../../common/properties/property-utils';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
+import {
+    ACTIVE_POWER_SETPOINT,
+    ADDITIONAL_PROPERTIES,
+    CONVERTER_STATION_1,
+    CONVERTER_STATION_2,
+    CONVERTER_STATION_NAME,
+    CONVERTERS_MODE,
+    EQUIPMENT_NAME,
+    FILTERS_SHUNT_COMPENSATOR_TABLE,
+    HVDC_LINE_TAB,
+    LOSS_FACTOR,
+    MAX_P,
+    NOMINAL_V,
+    POWER_FACTOR,
+    R,
+} from '../../../../../utils/field-constants';
+import { LccShuntCompensatorInfos } from '../../../../../../services/network-modification-types';
 
-export const LccCreationDialogTab = {
+export const LccDialogTab = {
     HVDC_LINE_TAB: 0,
     CONVERTER_STATION_1: 1,
     CONVERTER_STATION_2: 2,
 };
+
+export type LccModificationSchemaForm = {
+    [EQUIPMENT_NAME]?: string;
+    [HVDC_LINE_TAB]: {
+        [NOMINAL_V]?: number;
+        [R]?: number;
+        [MAX_P]?: number;
+        [CONVERTERS_MODE]?: string;
+        [ACTIVE_POWER_SETPOINT]?: number;
+        [ADDITIONAL_PROPERTIES]?: Property[];
+    };
+    [CONVERTER_STATION_1]: ConverterStationType;
+    [CONVERTER_STATION_2]: ConverterStationType;
+};
+
+interface ConverterStationType {
+    [CONVERTER_STATION_NAME]?: string;
+    [LOSS_FACTOR]?: number;
+    [POWER_FACTOR]?: number;
+    [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormSchema[];
+}
 
 export interface LccCreationInfos {
     uuid: string;
@@ -40,28 +78,20 @@ export interface LccConverterStationCreationInfos {
     connectionDirection: string | null;
     connectionName: string | null;
     connectionPosition: number | null;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
-}
-
-export interface ShuntCompensatorInfos {
-    id: string;
-    name?: string | null;
-    maxQAtNominalV: number;
-    connectedToHvdc?: boolean;
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
 
 export interface LccConverterStationFormInfos {
     id: string;
-    name: string | null;
+    name: string;
     lossFactor: number;
     powerFactor: number;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
-
 export interface LccFormInfos {
     id: string;
     name: string;
@@ -80,5 +110,9 @@ export interface ShuntCompensatorFormSchema {
     shuntCompensatorId: string;
     shuntCompensatorName?: string | null;
     maxQAtNominalV: number;
-    connectedToHvdc?: boolean;
+    connectedToHvdc?: boolean | null;
+}
+
+export interface ShuntCompensatorModificationFormSchema extends ShuntCompensatorFormSchema {
+    deletionMark: boolean;
 }
