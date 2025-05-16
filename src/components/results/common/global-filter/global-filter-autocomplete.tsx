@@ -125,7 +125,8 @@ function GlobalFilterAutocomplete({
             .filter(
                 (filter) =>
                     filter.equipmentType &&
-                    !filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType)
+                    (!filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType) ||
+                        (filter.equipmentType === 'VOLTAGE_LEVEL' && filter.filterTypeFromMetadata === 'EXPERT')) // expert filter on voltage level non applicable
             )
             .map((filter) => filter.label);
 
