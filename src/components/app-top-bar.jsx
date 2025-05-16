@@ -6,13 +6,13 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
+import { fetchAppsMetadata, LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME, PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
@@ -22,9 +22,7 @@ import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
-
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementType, RadioInput } from '@gridsuite/commons-ui';
+import { ElementType, ParameterLineDirectoryItemsInput, RadioInput } from '@gridsuite/commons-ui';
 import { Alert, DialogContent, Grid, Theme } from '@mui/material';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -16,7 +16,6 @@ import {
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
 } from 'components/utils/field-constants';
-import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
 import { FormattedMessage } from 'react-intl';
 
 const equipmentsSelectionStyles = {
