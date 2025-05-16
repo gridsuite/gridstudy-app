@@ -14,7 +14,7 @@ import {
 } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import { PropsWithChildren, RefObject, useCallback, useContext, useMemo } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
@@ -36,7 +36,11 @@ const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 4.5;
 
-function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
+type GlobalFilterPaperProps = PropsWithChildren<{
+    autocompleteRef?: RefObject<HTMLElement>;
+}>;
+
+function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {
     const {
         setOpenedDropdown,
         directoryItemSelectorOpen,
@@ -100,7 +104,13 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
         <>
             <ClickAwayListener
                 mouseEvent="onMouseDown"
-                onClickAway={() => {
+                onClickAway={(event) => {
+                    const target = event.target as HTMLElement;
+                    // The autocomplete is considered "outside" of the dropdown
+                    // so if the click is triggered on the autocomplete we don't close the dropdown
+                    if (autocompleteRef?.current?.contains(target)) {
+                        return;
+                    }
                     if (!directoryItemSelectorOpen) {
                         setOpenedDropdown(false);
                     }
