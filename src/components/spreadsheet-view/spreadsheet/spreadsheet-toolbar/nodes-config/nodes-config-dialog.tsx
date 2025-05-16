@@ -6,9 +6,8 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
-import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { Grid } from '@mui/material';
+import { CustomFormProvider, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import NodeConfigTable from './node-config-table';
 import { UUID } from 'crypto';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { initialNodesForm, NODES_ALIASES, NodesForm, nodesFormSchema } from './nodes-config-dialog.utils';
@@ -33,17 +33,18 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-    field: { width: '70%' },
-    actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 };
 
 const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
     return { [NODES_ALIASES]: nodeAliases };
 };
 
-export default function NodesConfigDialog({ open, nodeAliases, updateNodeAliases }: Readonly<NodesConfigDialogProps>) {
-    const intl = useIntl();
-
+export default function NodesConfigDialog({
+    open,
+    nodeAliases,
+    updateNodeAliases,
+    ...dialogProps
+}: Readonly<NodesConfigDialogProps>) {
     const formMethods = useForm<NodesForm>({
         defaultValues: initialNodesForm,
         resolver: yupResolver(nodesFormSchema),
@@ -58,7 +59,7 @@ export default function NodesConfigDialog({ open, nodeAliases, updateNodeAliases
         [treeModel]
     );
 
-    const { reset, handleSubmit } = formMethods;
+    const { reset } = formMethods;
 
     const onValidate = (data: NodesForm) => {
         onClose();
@@ -89,34 +90,19 @@ export default function NodesConfigDialog({ open, nodeAliases, updateNodeAliases
 
     return (
         <CustomFormProvider validationSchema={nodesFormSchema} {...formMethods}>
-            <Dialog
-                id="custom-column-nodes-dialog-edit"
+            <ModificationDialog
+                titleId={'spreadsheet/custom_column/parameter_nodes'}
                 open={open.value}
                 onClose={onClose}
-                aria-labelledby="custom-column-dialog-edit-title"
+                onSave={onValidate}
+                onClear={() => null}
                 PaperProps={{ sx: styles.dialogContent }}
+                {...dialogProps}
             >
-                <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({
-                        id: 'spreadsheet/custom_column/parameter_nodes',
-                    })}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid container>
-                        <NodeConfigTable />
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Grid container spacing={0.5}>
-                        <Grid item xs>
-                            <Box sx={styles.actionButtons}>
-                                <CancelButton onClick={onClose} />
-                                <SubmitButton onClick={handleSubmit(onValidate)} variant="outlined" />
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </DialogActions>
-            </Dialog>
+                <Grid container>
+                    <NodeConfigTable />
+                </Grid>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 }

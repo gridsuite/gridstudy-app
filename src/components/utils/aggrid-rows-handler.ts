@@ -52,6 +52,7 @@ export const useIntlResultStatusMessages = (intl: IntlShape, hasNoData: boolean 
         | { noLimitViolation: string }
         | { fetching: string } => {
         if (hasNoData) {
+            // TODO: maybe just fallback to ag-grid default message (ie. `undefined`)?
             return { noData: intl.formatMessage({ id: 'grid.noRowsToShow' }) };
         }
         return { noLimitViolation: intl.formatMessage({ id: 'grid.noLimitViolation' }) };

@@ -9,11 +9,10 @@ import { AppState, NotificationType } from '../../../redux/reducer';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
-import { useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from '../types/node-alias.type';
 import { UUID } from 'crypto';
 import { deletedOrRenamedNodes } from 'redux/actions';
-import { NOTIFICATIONS_URL_KEYS } from '../../utils/notificationsProvider-utils';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
@@ -86,7 +85,7 @@ export const useNodeAliases = () => {
         [fetchNodeAliases, studyUuid]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerAliasesUpdated,
     });
 

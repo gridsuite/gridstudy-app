@@ -6,15 +6,13 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
-    CancelButton,
     CustomFormProvider,
     DirectoryItemsInput,
     ElementType,
     PopupConfirmationDialog,
     RadioInput,
-    SubmitButton,
     UseStateBooleanReturn,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -22,10 +20,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
 import { UUID } from 'crypto';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import { SpreadsheetCollectionDto, SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { ResetNodeAliasCallback } from 'components/spreadsheet-view/hooks/use-node-aliases';
@@ -52,6 +51,7 @@ export default function AddSpreadsheetsFromCollectionDialog({
     open,
     resetTabIndex,
     resetNodeAliases,
+    ...dialogProps
 }: Readonly<AddSpreadsheetsFromCollectionDialogProps>) {
     const dispatch = useDispatch();
     const intl = useIntl();
@@ -70,9 +70,9 @@ export default function AddSpreadsheetsFromCollectionDialog({
         resolver: yupResolver(formSchema),
     });
 
-    const { handleSubmit, reset } = formMethods;
+    const { reset } = formMethods;
 
-    // Reset form when dialog opens
+    // Reset form when the dialog opens
     useEffect(() => {
         reset(initialSpreadsheetCollectionForm);
     }, [open.value, reset]);
@@ -146,43 +146,28 @@ export default function AddSpreadsheetsFromCollectionDialog({
     return (
         <>
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-                <Dialog
-                    id="spreadsheet-collection-dialog"
+                <ModificationDialog
+                    titleId={'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection'}
                     open={open.value}
                     onClose={open.setFalse}
-                    aria-labelledby="spreadsheet-collection-dialog-title"
+                    onSave={onSubmit}
+                    onClear={() => null}
                     PaperProps={{ sx: dialogStyles.dialogContent }}
+                    {...dialogProps}
                 >
-                    <DialogTitle id="spreadsheet-collection-dialog-title">
-                        <FormattedMessage id="spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection" />
-                    </DialogTitle>
-
-                    <DialogContent dividers>
-                        <Grid container spacing={2} direction="column">
-                            <Grid item>{updateModeSelectionField}</Grid>
-                            <Grid item xs>
-                                <DirectoryItemsInput
-                                    name={SPREADSHEET_COLLECTION}
-                                    elementType={ElementType.SPREADSHEET_CONFIG_COLLECTION}
-                                    titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
-                                    label="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
-                                    allowMultiSelect={false}
-                                />
-                            </Grid>
+                    <Grid container spacing={2} direction="column">
+                        <Grid item>{updateModeSelectionField}</Grid>
+                        <Grid item xs>
+                            <DirectoryItemsInput
+                                name={SPREADSHEET_COLLECTION}
+                                elementType={ElementType.SPREADSHEET_CONFIG_COLLECTION}
+                                titleId="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
+                                label="spreadsheet/create_new_spreadsheet/select_spreadsheet_collection"
+                                allowMultiSelect={false}
+                            />
                         </Grid>
-                    </DialogContent>
-
-                    <DialogActions>
-                        <Grid container spacing={0.5}>
-                            <Grid item xs>
-                                <Box sx={dialogStyles.actionButtons}>
-                                    <CancelButton onClick={open.setFalse} />
-                                    <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </DialogActions>
-                </Dialog>
+                    </Grid>
+                </ModificationDialog>
             </CustomFormProvider>
 
             {confirmationDialogOpen && (
