@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
@@ -37,7 +37,6 @@ import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { GlobalFilterContext } from './global-filter-context';
 
 const TAG_LIMIT_NUMBER: number = 4;
-const TAG_LABEL_LENGTH_LIMIT: number = 5;
 
 const emptyArray: GlobalFilter[] = [];
 
@@ -198,21 +197,14 @@ function GlobalFilterAutocomplete({
     );
 
     const inputFieldChip = useCallback(
-        (
-            element: GlobalFilter,
-            maxLabelLength: number,
-            index: number,
-            getTagsProps: AutocompleteRenderGetTagProps,
-            filtersNumber: number
-        ) => {
+        (element: GlobalFilter, index: number, getTagsProps: AutocompleteRenderGetTagProps, filtersNumber: number) => {
             const label = getOptionLabel(element, translate);
-            const truncate = label.length >= maxLabelLength;
             const key: string = `inputFieldChip_${element.label}`;
             if (index < TAG_LIMIT_NUMBER) {
                 return (
                     <Chip
                         size="small"
-                        label={truncate ? `${label.slice(0, maxLabelLength)}` : label}
+                        label={label}
                         {...getTagsProps({ index })}
                         key={key}
                         sx={getResultsGlobalFiltersChipStyle(element.filterType)}
@@ -255,11 +247,21 @@ function GlobalFilterAutocomplete({
                 // renderTags : the chips in the inputField
                 // only a small subset is displayed because all of them are displayed in the dropdown when the field is focused
                 renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
-                    const tooManyTags = filters.length > TAG_LIMIT_NUMBER;
-                    const maxLabelLength = tooManyTags ? TAG_LABEL_LENGTH_LIMIT : TAG_LABEL_LENGTH_LIMIT + 2;
-                    return filters.map((element: GlobalFilter, index: number) => {
-                        return inputFieldChip(element, maxLabelLength, index, getTagsProps, filters.length);
-                    });
+                    return (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                overflowX: 'auto',
+                                flexWrap: 'nowrap',
+                                maxWidth: '90%',
+                            }}
+                        >
+                            {filters.map((element, index) => {
+                                return inputFieldChip(element, index, getTagsProps, filters.length);
+                            })}
+                        </Box>
+                    );
                 }}
                 // an "empty" renderGroup is needed in order to avoid the default behavior
                 renderGroup={(item: AutocompleteRenderGroupParams) => {
