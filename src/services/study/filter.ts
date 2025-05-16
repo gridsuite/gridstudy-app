@@ -38,7 +38,7 @@ export interface IdentifiableAttributes {
     distributionKey: number;
 }
 
-export function evaluateJsonFilter(
+export async function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
@@ -59,7 +59,7 @@ export function evaluateJsonFilter(
     });
 }
 
-export function evaluateFilters(
+export async function evaluateFilters(
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
     filters: UUID[]

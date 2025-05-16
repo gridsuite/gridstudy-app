@@ -46,11 +46,19 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
         selectedGlobalFilters,
         setSelectedGlobalFilters,
         onChange,
+        filterCategories,
     } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
 
-    const categories: string[] = useMemo(() => [RECENT_FILTER, ...Object.values(FilterType)], []);
+    const categories: string[] = useMemo(
+        () => [
+            RECENT_FILTER,
+            ...Object.values(FilterType).filter((category) => filterCategories.includes(category as FilterType)),
+            FilterType.GENERIC_FILTER,
+        ],
+        [filterCategories]
+    );
 
     const filtersMsg: string = useMemo(
         () =>

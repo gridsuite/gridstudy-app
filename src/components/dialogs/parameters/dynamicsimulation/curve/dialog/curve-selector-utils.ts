@@ -34,7 +34,12 @@ export const getTopologyKindIfNecessary = (equipmentType: string) => {
 export const buildExpertRules = (
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
-    nominalVoltages: number[] | undefined
+    countries1: string[] | undefined,
+    countries2: string[] | undefined,
+    nominalVoltages: number[] | undefined,
+    nominalVoltages1: number[] | undefined,
+    nominalVoltages2: number[] | undefined,
+    ids: string[] | undefined
 ) => {
     const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
 
@@ -60,6 +65,28 @@ export const buildExpertRules = (
         rules.push(countriesRule);
     }
 
+    // create rule IN for countries1
+    if (countries1?.length) {
+        const countriesRule = {
+            field: FieldType.COUNTRY_1,
+            operator: OperatorType.IN,
+            values: countries1,
+            dataType: DataType.ENUM,
+        };
+        rules.push(countriesRule);
+    }
+
+    // create rule IN for countries2
+    if (countries2?.length) {
+        const countriesRule = {
+            field: FieldType.COUNTRY_2,
+            operator: OperatorType.IN,
+            values: countries2,
+            dataType: DataType.ENUM,
+        };
+        rules.push(countriesRule);
+    }
+
     // create rule IN for nominalVoltages
     if (nominalVoltages?.length) {
         const nominalVoltagesRule = {
@@ -69,6 +96,39 @@ export const buildExpertRules = (
             dataType: DataType.NUMBER,
         };
         rules.push(nominalVoltagesRule);
+    }
+
+    // create rule IN for nominalVoltages1
+    if (nominalVoltages1?.length) {
+        const nominalVoltagesRule = {
+            field: FieldType.NOMINAL_VOLTAGE_1,
+            operator: OperatorType.IN,
+            values: nominalVoltages1,
+            dataType: DataType.NUMBER,
+        };
+        rules.push(nominalVoltagesRule);
+    }
+
+    // create rule IN for nominalVoltages2
+    if (nominalVoltages2?.length) {
+        const nominalVoltagesRule = {
+            field: FieldType.NOMINAL_VOLTAGE_2,
+            operator: OperatorType.IN,
+            values: nominalVoltages2,
+            dataType: DataType.NUMBER,
+        };
+        rules.push(nominalVoltagesRule);
+    }
+
+    // create rule IN for ids
+    if (ids?.length) {
+        const idsRule = {
+            field: FieldType.ID,
+            operator: OperatorType.IN,
+            values: ids,
+            dataType: DataType.STRING,
+        };
+        rules.push(idsRule);
     }
 
     return {
@@ -82,13 +142,27 @@ export const buildExpertFilter = (
     equipmentType: string,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
-    nominalVoltages: number[] | undefined
+    countries1: string[] | undefined,
+    countries2: string[] | undefined,
+    nominalVoltages: number[] | undefined,
+    nominalVoltages1: number[] | undefined,
+    nominalVoltages2: number[] | undefined,
+    ids: string[] | undefined
 ): ExpertFilter => {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
         type: 'EXPERT',
         equipmentType: equipmentType,
-        rules: buildExpertRules(voltageLevelIds, countries, nominalVoltages),
+        rules: buildExpertRules(
+            voltageLevelIds,
+            countries,
+            countries1,
+            countries2,
+            nominalVoltages,
+            nominalVoltages1,
+            nominalVoltages2,
+            ids
+        ),
     };
 };
 

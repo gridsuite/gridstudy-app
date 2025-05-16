@@ -7,6 +7,7 @@
 
 import { createContext } from 'react';
 import { GlobalFilter } from './global-filter-types';
+import { FilterType } from '../utils';
 
 export const GlobalFilterContext = createContext<{
     // manage internal states
@@ -20,6 +21,7 @@ export const GlobalFilterContext = createContext<{
     setSelectedGlobalFilters: (selectedGlobalFilters: GlobalFilter[]) => void;
     // callback to communicate to parent component
     onChange: (globalFilters: GlobalFilter[]) => void;
+    filterCategories: string[];
 }>({
     openedDropdown: false,
     setOpenedDropdown: () => {},
@@ -30,4 +32,5 @@ export const GlobalFilterContext = createContext<{
     selectedGlobalFilters: [],
     setSelectedGlobalFilters: () => {},
     onChange: () => {},
+    filterCategories: [],
 });
