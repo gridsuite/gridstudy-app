@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-
 import React, { useCallback, useContext, useMemo, useRef } from 'react';
-
 import {
     Autocomplete,
     AutocompleteCloseReason,
