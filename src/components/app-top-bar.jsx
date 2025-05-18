@@ -85,83 +85,81 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
     }, [user]);
 
     return (
-        <>
-            <TopBar
-                appName="Study"
-                appColor="#0CA789"
-                appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
-                onLogoutClick={() => logout(dispatch, userManager.instance)}
-                user={user}
-                appsAndUrls={appsAndUrls}
-                onThemeClick={handleChangeTheme}
-                appVersion={AppPackage.version}
-                appLicense={AppPackage.license}
-                globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
-                additionalModulesPromise={getServersInfos}
-                theme={themeLocal}
-                onDeveloperModeClick={handleChangeDeveloperMode}
-                developerMode={enableDeveloperModeLocal}
-                onEquipmentLabellingClick={handleChangeUseName}
-                equipmentLabelling={useNameLocal}
-                onLanguageClick={handleChangeLanguage}
-                language={languageLocal}
-            >
-                {/* Add current Node name between Logo and Tabs */}
-                {user && currentNode && (
-                    <Box sx={styles.currentNodeBox}>
-                        {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
-                        <OverflowableText
-                            sx={styles.currentNodeLabel}
-                            text={
-                                currentNode?.data?.label === ROOT_NODE_LABEL
-                                    ? intl.formatMessage({ id: 'root' })
-                                    : currentNode?.data?.label
+        <TopBar
+            appName="Study"
+            appColor="#0CA789"
+            appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
+            onLogoutClick={() => logout(dispatch, userManager.instance)}
+            user={user}
+            appsAndUrls={appsAndUrls}
+            onThemeClick={handleChangeTheme}
+            appVersion={AppPackage.version}
+            appLicense={AppPackage.license}
+            globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
+            additionalModulesPromise={getServersInfos}
+            theme={themeLocal}
+            onDeveloperModeClick={handleChangeDeveloperMode}
+            developerMode={enableDeveloperModeLocal}
+            onEquipmentLabellingClick={handleChangeUseName}
+            equipmentLabelling={useNameLocal}
+            onLanguageClick={handleChangeLanguage}
+            language={languageLocal}
+        >
+            {/* Add current Node name between Logo and Tabs */}
+            {user && currentNode && (
+                <Box sx={styles.currentNodeBox}>
+                    {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
+                    <OverflowableText
+                        sx={styles.currentNodeLabel}
+                        text={
+                            currentNode?.data?.label === ROOT_NODE_LABEL
+                                ? intl.formatMessage({ id: 'root' })
+                                : currentNode?.data?.label
+                        }
+                    />
+                </Box>
+            )}
+            {user && studyUuid && currentRootNetworkUuid && (
+                <Box sx={styles.boxContent}>
+                    <Tabs
+                        value={appTabIndex}
+                        variant="scrollable"
+                        onChange={(event, newTabIndex) => {
+                            onChangeTab(newTabIndex);
+                        }}
+                        aria-label="views"
+                        sx={styles.tabs}
+                    >
+                        {STUDY_VIEWS.map((tabName) => {
+                            let label;
+                            let style;
+                            if (tabName === StudyView.RESULTS && notificationsCount > 0) {
+                                label = (
+                                    <Badge badgeContent={notificationsCount} color="secondary">
+                                        <FormattedMessage id={tabName} />
+                                    </Badge>
+                                );
+                            } else if (tabName === StudyView.PARAMETERS) {
+                                label = <Settings />;
+                                style = { minWidth: 'initial' };
+                            } else {
+                                label = <FormattedMessage id={tabName} />;
                             }
+                            return <Tab sx={style} key={tabName} label={label} />;
+                        })}
+                    </Tabs>
+
+                    <Box sx={styles.runButtonContainer}>
+                        <RunButtonContainer
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
                         />
                     </Box>
-                )}
-                {user && studyUuid && currentRootNetworkUuid && (
-                    <Box sx={styles.boxContent}>
-                        <Tabs
-                            value={appTabIndex}
-                            variant="scrollable"
-                            onChange={(event, newTabIndex) => {
-                                onChangeTab(newTabIndex);
-                            }}
-                            aria-label="views"
-                            sx={styles.tabs}
-                        >
-                            {STUDY_VIEWS.map((tabName) => {
-                                let label;
-                                let style;
-                                if (tabName === StudyView.RESULTS && notificationsCount > 0) {
-                                    label = (
-                                        <Badge badgeContent={notificationsCount} color="secondary">
-                                            <FormattedMessage id={tabName} />
-                                        </Badge>
-                                    );
-                                } else if (tabName === StudyView.PARAMETERS) {
-                                    label = <Settings />;
-                                    style = { minWidth: 'initial' };
-                                } else {
-                                    label = <FormattedMessage id={tabName} />;
-                                }
-                                return <Tab sx={style} key={tabName} label={label} />;
-                            })}
-                        </Tabs>
-
-                        <Box sx={styles.runButtonContainer}>
-                            <RunButtonContainer
-                                studyUuid={studyUuid}
-                                currentNode={currentNode}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
-                                disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
-                            />
-                        </Box>
-                    </Box>
-                )}
-            </TopBar>
-        </>
+                </Box>
+            )}
+        </TopBar>
     );
 };
 
