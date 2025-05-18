@@ -1179,19 +1179,17 @@ export const NetworkMapTab = ({
     }
     function renderSearchEquipment() {
         return (
-            <>
-                <Box sx={styles.divSearchIcon}>
-                    <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
-                        <Button
-                            color="inherit"
-                            sx={{ minWidth: 'auto', padding: '6px 1Opx', marginRight: '5px' }}
-                            onClick={() => setIsDialogSearchOpen(true)}
-                        >
-                            <Search />
-                        </Button>
-                    </Tooltip>
-                </Box>
-            </>
+            <Box sx={styles.divSearchIcon}>
+                <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
+                    <Button
+                        color="inherit"
+                        sx={{ minWidth: 'auto', padding: '6px 1Opx', marginRight: '5px' }}
+                        onClick={() => setIsDialogSearchOpen(true)}
+                    >
+                        <Search />
+                    </Button>
+                </Tooltip>
+            </Box>
         );
     }
 
