@@ -6,6 +6,7 @@
  */
 
 export const grid_en = {
+    'grid.noRowsToShow': 'No data',
     'grid.noCalculation': 'No calculation',
     'grid.failed': 'Calculation failed',
     'grid.running': 'In progress...',

@@ -127,10 +127,12 @@ const LogTable = ({
             return;
         }
         fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
+            const minDepth = Math.min(...reportLogs.map((log) => log.depth ?? 0));
             const transformedLogs = reportLogs.map(
                 (log) =>
                     ({
                         severity: log.severity.name,
+                        depth: (log.depth ?? 0) - minDepth,
                         message: log.message,
                         parentId: log.parentId,
                         backgroundColor: log.severity.colorName,

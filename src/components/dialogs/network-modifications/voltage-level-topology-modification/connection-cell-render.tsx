@@ -18,9 +18,10 @@ export default function ConnectionCellRenderer({ name }: Readonly<ConnectionCell
     return (
         <CheckboxNullableInput
             name={name}
-            label={(value: boolean | null) =>
-                value !== null
-                    ? intl.formatMessage({ id: value ? 'Open' : 'Closed' })
+            label={(checked: boolean | null) =>
+                // cell value presents 'close'
+                checked !== null
+                    ? intl.formatMessage({ id: checked ? 'Closed' : 'Open' })
                     : intl.formatMessage({ id: 'NoModification' })
             }
         />

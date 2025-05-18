@@ -37,6 +37,7 @@ import {
     useNotificationsListener,
     useSnackMessage,
     EquipmentInfos,
+    NotificationsUrlKeys,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
@@ -58,7 +59,6 @@ import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState, LoadflowResultEventData, NotificationType, RootNetworksUpdatedEventData } from 'redux/reducer';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
@@ -878,10 +878,10 @@ export const NetworkMapTab = ({
         [currentRootNetworkUuid, dispatch, isInitialized]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: loadflowResultNotification,
     });
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkModifiedNotification,
     });
 

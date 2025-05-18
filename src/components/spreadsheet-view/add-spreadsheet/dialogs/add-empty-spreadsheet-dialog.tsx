@@ -6,13 +6,11 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
-    CancelButton,
     CustomFormProvider,
     EquipmentType,
     SelectInput,
-    SubmitButton,
     TextInput,
     UseStateBooleanReturn,
     useSnackMessage,
@@ -22,9 +20,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { AppState } from 'redux/reducer';
-import { FormattedMessage } from 'react-intl';
 import { UUID } from 'crypto';
 import { dialogStyles } from '../styles/styles';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { getEmptySpreadsheetFormSchema, initialEmptySpreadsheetForm, SPREADSHEET_NAME } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 
@@ -55,7 +53,7 @@ const TABLES_TYPES = [
 /**
  * Dialog for creating an empty spreadsheet
  */
-export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpreadsheetDialogProps>) {
+export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Readonly<AddEmptySpreadsheetDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -71,7 +69,7 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpr
         resolver: yupResolver(formSchema),
     });
 
-    const { handleSubmit, reset } = formMethods;
+    const { reset } = formMethods;
 
     // Reset form when dialog opens
     useEffect(() => {
@@ -104,51 +102,36 @@ export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpr
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Dialog
-                id="empty-spreadsheet-dialog"
+            <ModificationDialog
+                titleId={'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet'}
                 open={open.value}
                 onClose={open.setFalse}
-                aria-labelledby="empty-spreadsheet-dialog-title"
+                onSave={onSubmit}
+                onClear={() => null}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
+                {...dialogProps}
             >
-                <DialogTitle id="empty-spreadsheet-dialog-title">
-                    <FormattedMessage id="spreadsheet/create_new_spreadsheet/create_empty_spreadsheet" />
-                </DialogTitle>
-
-                <DialogContent dividers>
-                    <Grid container spacing={2} direction="column">
-                        <Grid item xs>
-                            <TextInput
-                                name={SPREADSHEET_NAME}
-                                label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
-                                formProps={{ autoFocus: true }}
-                            />
-                        </Grid>
-                        <Grid item xs>
-                            <SelectInput
-                                options={Object.values(TABLES_TYPES).map((equipmentType) => ({
-                                    id: equipmentType,
-                                    label: equipmentType,
-                                }))}
-                                name={EQUIPMENT_TYPE_FIELD}
-                                label="spreadsheet/create_new_spreadsheet/equipment_type"
-                                size="small"
-                            />
-                        </Grid>
+                <Grid container spacing={2} direction="column" marginTop="auto">
+                    <Grid item xs>
+                        <TextInput
+                            name={SPREADSHEET_NAME}
+                            label="spreadsheet/create_new_spreadsheet/spreadsheet_name"
+                            formProps={{ autoFocus: true }}
+                        />
                     </Grid>
-                </DialogContent>
-
-                <DialogActions>
-                    <Grid container spacing={0.5}>
-                        <Grid item xs>
-                            <Box sx={dialogStyles.actionButtons}>
-                                <CancelButton onClick={open.setFalse} />
-                                <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined" />
-                            </Box>
-                        </Grid>
+                    <Grid item xs>
+                        <SelectInput
+                            options={Object.values(TABLES_TYPES).map((equipmentType) => ({
+                                id: equipmentType,
+                                label: equipmentType,
+                            }))}
+                            name={EQUIPMENT_TYPE_FIELD}
+                            label="spreadsheet/create_new_spreadsheet/equipment_type"
+                            size="small"
+                        />
                     </Grid>
-                </DialogActions>
-            </Dialog>
+                </Grid>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 }

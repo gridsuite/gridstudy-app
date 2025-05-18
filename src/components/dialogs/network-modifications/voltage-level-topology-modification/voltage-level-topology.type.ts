@@ -7,7 +7,7 @@
 
 export type SwitchRowForm = {
     switchId?: string;
-    prevConnectionStatus?: string;
+    prevConnectionStatus?: boolean | null;
     currentConnectionStatus?: boolean | null;
     type?: string;
     isModified?: boolean;
