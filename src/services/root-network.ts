@@ -8,6 +8,7 @@
 import { PREFIX_STUDY_QUERIES, getStudyUrl } from './study';
 import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
+import { SpreadsheetConfigDto } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 export function fetchRootNetworks(studyUuid: UUID) {
     console.info('Fetching root networks for studyUuid : ', studyUuid);
@@ -117,5 +118,25 @@ export function checkRootNetworkTagExistence(studyUuid: UUID, tag: string): Prom
     console.debug(checkRootNetworkTagExistenceUrl);
     return backendFetch(checkRootNetworkTagExistenceUrl, { method: 'head' }).then((response) => {
         return response.status !== 204;
+    });
+}
+
+export function getModifications(
+    studyUuid: UUID,
+    rootNetworkUuid: UUID,
+    userInput: string
+): Promise<SpreadsheetConfigDto> {
+    const fetchUrl =
+        getStudyUrl(studyUuid) +
+        `/root-networks/${encodeURIComponent(rootNetworkUuid)}/modifications/indexation-infos` +
+        new URLSearchParams({
+            userInput: userInput,
+        });
+
+    return backendFetchJson(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 }

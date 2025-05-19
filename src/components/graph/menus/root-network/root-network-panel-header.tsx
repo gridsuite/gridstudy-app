@@ -26,6 +26,9 @@ import { customizeCurrentParameters, formatCaseImportParameters } from '../../ut
 import { useDispatch, useSelector } from 'react-redux';
 import { setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
+import SearchIcon from '@mui/icons-material/Search';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -51,6 +54,8 @@ interface RootNetworkPanelHeaderProps {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
     isRootNetworkPanelMinimized: boolean;
     setIsRootNetworkPanelMinimized: React.Dispatch<SetStateAction<boolean>>;
+    setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
+    closeSearchPanel: () => void;
 }
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
@@ -58,11 +63,14 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     setIsRootNetworksProcessing,
     isRootNetworkPanelMinimized,
     setIsRootNetworkPanelMinimized,
+    setIsSearchActive,
+    closeSearchPanel,
 }) => {
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const dispatch = useDispatch();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const intl = useIntl();
 
@@ -92,7 +100,8 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
-    }, []);
+        closeSearchPanel();
+    }, [closeSearchPanel]);
 
     const confirmRootNetworkCreation = () => {
         if (formData) {
@@ -173,6 +182,11 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         setIsRootNetworkPanelMinimized((prev) => !prev);
     }, [setIsRootNetworkPanelMinimized]);
 
+    const openSearch = useCallback(() => {
+        setIsSearchActive(true);
+        setIsRootNetworkPanelMinimized(false);
+    }, [setIsRootNetworkPanelMinimized, setIsSearchActive]);
+
     return (
         <>
             <Box sx={styles.headerPanel}>
@@ -191,6 +205,11 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                             </IconButton>
                         </span>
                     </Tooltip>
+                    {enableDeveloperMode && (
+                        <IconButton size={'small'} onClick={openSearch}>
+                            <SearchIcon />
+                        </IconButton>
+                    )}
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
                     {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}
