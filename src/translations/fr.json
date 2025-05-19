@@ -831,6 +831,7 @@
     "FillAllFields": "Veuillez remplir tous les champs",
     "ModifySubstation": "Modifier un site",
     "ModifyVsc": "Modifier une HVDC (VSC)",
+    "ModifyLcc": "Modifier une HVDC (LCC)",
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
@@ -1516,6 +1517,8 @@
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
+    "previousConnection" : "Connexion préc.",
+
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
     "TapsSection": "Prises",
