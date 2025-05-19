@@ -28,6 +28,7 @@ import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlin
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
+import DiagramLayout from './diagrams/diagram-layout';
 
 const styles = {
     map: {
@@ -256,11 +257,17 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === StudyDisplayMode.TREE || studyDisplayMode === StudyDisplayMode.HYBRID
+                            studyDisplayMode === StudyDisplayMode.TREE ||
+                            studyDisplayMode === StudyDisplayMode.HYBRID ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
+                        flexBasis:
+                            studyDisplayMode === StudyDisplayMode.HYBRID ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                                ? '50%'
+                                : '100%',
                     }}
                 >
                     <ReactFlowProvider>
@@ -271,10 +278,28 @@ const MapViewer = ({
                         />
                     </ReactFlowProvider>
                 </Box>
+                {/* Diagram Layout */}
+                <Box
+                    sx={{
+                        display:
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                                ? 'flex'
+                                : 'none',
+                        height: '100%',
+                        flexDirection: 'column',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE ? '50%' : '100%',
+                    }}
+                >
+                    <DiagramLayout></DiagramLayout>
+                </Box>
                 {/* Map */}
                 <Box
                     sx={{
-                        display: studyDisplayMode !== StudyDisplayMode.TREE ? 'flex' : 'none',
+                        display:
+                            studyDisplayMode === StudyDisplayMode.MAP || studyDisplayMode === StudyDisplayMode.HYBRID
+                                ? 'flex'
+                                : 'none',
                         flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
                         height: '100%',
                     }}

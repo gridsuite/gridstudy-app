@@ -56,7 +56,6 @@ import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
 import { CurrentTreeNode } from '../graph/tree-node.type';
-import { useDiagramModel } from './hooks/use-diagram-model';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
@@ -404,8 +403,6 @@ type DiagramView = {
     fetchSvg?: () => Promise<Partial<DiagramView>>;
 };
 
-const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NAD_FROM_CONFIG];
-
 export function DiagramPane({
     studyUuid,
     currentNode,
@@ -444,8 +441,6 @@ export function DiagramPane({
     currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
-
-    useDiagramModel({ diagramTypes: diagramTypes });
 
     /**
      * Check if we need to add new diagrams in the 'views' and add them if necessary.

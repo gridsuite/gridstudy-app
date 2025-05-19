@@ -73,6 +73,7 @@ export type DiagramParams =
 // diagrams model
 export type DiagramBase = {
     diagramUuid: UUID;
+    name: string;
     type: DiagramType;
     svg: Svg | null;
 };

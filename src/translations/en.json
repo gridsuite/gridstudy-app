@@ -1595,5 +1595,7 @@
     "previousStatus": "Previous status",
     "currentStatus": "Modified status",
     "Open": "Open",
-    "Closed": "Closed"
+    "Closed": "Closed",
+    "DiagramLayout": "Diagram layout",
+    "DiagramLayoutAndTree": "Diagram layout and tree"
 }
