@@ -37,7 +37,7 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: Spreadsheet
                 let genericFiltersIdentifiablesIds: string[] = [];
 
                 if (genericFilters?.length > 0) {
-                    //We pre evaluate generic filters because expert filters currently can't they can't be referenced by other expert filters
+                    //We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
                     const filtersUuids = genericFilters.flatMap((filter) => filter.uuid);
                     const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids as UUID[]);
                     genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>

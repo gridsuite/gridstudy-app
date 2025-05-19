@@ -161,6 +161,7 @@ const App = () => {
                 processSpreadsheetsCollectionData(collection);
 
             const formattedGlobalFilters = [];
+            //A formating step is required to map filter uuid to its corresponding field because of a naming overlap in the backend model
             for (const [key, value] of Object.entries(tableGlobalFilters)) {
                 formattedGlobalFilters[key] = formatGlobalFilters(value);
             }

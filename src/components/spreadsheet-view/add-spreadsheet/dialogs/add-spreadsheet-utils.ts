@@ -87,6 +87,7 @@ export const extractColumnsFilters = (columns: ColumnDefinitionDto[]): FilterCon
         }));
 };
 
+// Global filter model backend model has an additional uuid field which we need to filter out
 export const formatGlobalFilters = (filters: SpreadsheetGlobalFilter[]): GlobalFilter[] => {
     return filters.map((filter) => ({
         uuid: filter.filterUuid,

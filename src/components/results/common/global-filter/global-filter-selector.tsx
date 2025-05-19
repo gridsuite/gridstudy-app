@@ -21,6 +21,7 @@ export default function GlobalFilterSelector({
     preloadedGlobalFilters,
     filters,
 }: Readonly<GlobalFilterSelectorProps>) {
+    // Global filter autocomplete displayed categories are dynamically provided from the on hand filters, GENERIC_FILTER gets manually added
     const filterCategories = useMemo(() => {
         let categories: string[] = filters.map((filter) => filter.filterType);
         if (!categories.includes(FilterType.GENERIC_FILTER as string)) {
@@ -28,6 +29,7 @@ export default function GlobalFilterSelector({
         }
         return categories;
     }, [filters]);
+
     return (
         <GlobalFilterProvider
             onChange={onChange}

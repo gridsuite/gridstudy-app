@@ -55,13 +55,13 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
 
-    const categories: string[] = useMemo(
-        () => [
-            RECENT_FILTER,
-            ...Object.values(FilterType).filter((category) => filterCategories.includes(category as FilterType)),
-        ],
-        [filterCategories]
-    );
+    const categories: string[] = useMemo(() => {
+        const allCategories = Object.values(FilterType) as string[];
+        const filteredCategories = allCategories.filter((category) =>
+            filterCategories.includes(category as FilterType)
+        );
+        return [RECENT_FILTER, ...filteredCategories];
+    }, [filterCategories]);
 
     const filtersMsg: string = useMemo(
         () =>
