@@ -13,12 +13,8 @@ export const RECENT_FILTER: string = 'recent';
 export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) => string): string => {
     switch (option.filterType) {
         case FilterType.COUNTRY:
-        case FilterType.COUNTRY_1:
-        case FilterType.COUNTRY_2:
             return translate(option.label);
         case FilterType.VOLTAGE_LEVEL:
-        case FilterType.VOLTAGE_LEVEL_1:
-        case FilterType.VOLTAGE_LEVEL_2:
             return option.label + ' kV';
         case FilterType.GENERIC_FILTER:
             return option.label;

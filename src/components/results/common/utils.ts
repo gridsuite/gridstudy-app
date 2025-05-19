@@ -33,10 +33,6 @@ export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape
 
 export enum FilterType {
     VOLTAGE_LEVEL = 'voltageLevel',
-    VOLTAGE_LEVEL_1 = 'voltageLevel1',
-    VOLTAGE_LEVEL_2 = 'voltageLevel2',
     COUNTRY = 'country',
-    COUNTRY_1 = 'country1',
-    COUNTRY_2 = 'country2',
     GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
 }
