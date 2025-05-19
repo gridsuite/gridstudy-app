@@ -203,7 +203,7 @@ function GlobalFilterAutocomplete({
                     return 0;
                 }),
         ],
-        [filters, recentGlobalFilters, translate]
+        [filterCategories, filters, recentGlobalFilters, translate]
     );
 
     const inputFieldChip = useCallback(
