@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Paper, useTheme } from '@mui/material';
 import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
@@ -14,6 +14,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
 import ModificationsPanel from './root-network-panel-search';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
+import { TAB_VALUES } from '../../../dialogs/parameters/sensi/columns-definitions';
 
 const styles = {
     paper: {
@@ -31,6 +34,7 @@ const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const [isSearchActive, setIsSearchActive] = useState(false);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const theme = useTheme();
     // Set the panel's width and height based on designer's proposed values
@@ -53,11 +57,18 @@ const RootNetworkPanel: FunctionComponent = () => {
         setIsRootNetworksProcessing,
     });
 
+    useEffect(() => {
+        if (!enableDeveloperMode) {
+            setIsSearchActive(false);
+        }
+    }, [enableDeveloperMode]);
+
     const closeSearchPanel = useCallback(() => {
         if (isSearchActive) {
             setIsSearchActive(false);
         }
     }, [isSearchActive]);
+
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader
@@ -75,7 +86,7 @@ const RootNetworkPanel: FunctionComponent = () => {
                     setIsRootNetworksProcessing={setIsRootNetworksProcessing}
                 />
             )}
-            {isSearchActive && <ModificationsPanel setIsSearchActive={(value) => setIsSearchActive(value)} />}
+            {enableDeveloperMode && isSearchActive && <ModificationsPanel setIsSearchActive={setIsSearchActive} />}
         </Paper>
     );
 };

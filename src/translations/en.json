@@ -1468,6 +1468,9 @@
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
     "rootNetwork.modificationsInfos": "TODO....",
+    "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
+    "rootNetwork.modificationTab": "Modifications",
+
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 

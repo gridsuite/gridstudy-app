@@ -1467,6 +1467,9 @@
     "importCaseFailure": "Impossible d'importer la situation",
     "modificationActivationByRootNetworkError": "Une erreur est survenue lors de l'activation / désactivation de la modification par réseau racine",
     "rootNetwork.modificationsInfos": "Rechercher les modifications qui impactent un ouvrage seulement en amont des noeuds réalisé et dans ceux-ci",
+    "rootNetwork.searchPlaceholder": "Rechercher un ouvrage modifié…",
+    "rootNetwork.modificationTab": "Modifications",
+
     "unlimited": "Illimité",
     "forbidden": "Interdit",
 

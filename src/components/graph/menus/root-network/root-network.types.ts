@@ -8,6 +8,7 @@ export interface BasicNodeInfos {
 export interface Modification {
     modificationUuid: UUID;
     messageValues: string;
+    messageType: string;
 }
 
 export interface ModificationsSearchResult {
