@@ -8,6 +8,8 @@
 import GlobalFilterProvider from './global-filter-provider';
 import GlobalFilterAutocomplete, { GlobalFilterAutocompleteProps } from './global-filter-autocomplete';
 import { GlobalFilter } from './global-filter-types';
+import { useMemo } from 'react';
+import { FilterType } from '../utils';
 
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
@@ -19,7 +21,13 @@ export default function GlobalFilterSelector({
     preloadedGlobalFilters,
     filters,
 }: Readonly<GlobalFilterSelectorProps>) {
-    const filterCategories = filters.map((filter) => filter.filterType);
+    const filterCategories = useMemo(() => {
+        let categories: string[] = filters.map((filter) => filter.filterType);
+        if (!categories.includes(FilterType.GENERIC_FILTER as string)) {
+            categories.push(FilterType.GENERIC_FILTER as string);
+        }
+        return categories;
+    }, [filters]);
     return (
         <GlobalFilterProvider
             onChange={onChange}

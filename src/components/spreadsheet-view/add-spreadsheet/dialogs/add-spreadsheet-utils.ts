@@ -29,6 +29,7 @@ import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
 import { GsFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
 import { SpreadsheetGlobalFilter } from 'services/study/filter';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
+import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 
 const createNewTableDefinition = (
     columns: ColumnDefinition[],
@@ -86,6 +87,17 @@ export const extractColumnsFilters = (columns: ColumnDefinitionDto[]): FilterCon
         }));
 };
 
+export const formatGlobalFilters = (filters: SpreadsheetGlobalFilter[]): GlobalFilter[] => {
+    return filters.map((filter) => ({
+        uuid: filter.filterUuid,
+        label: filter.label,
+        filterType: filter.filterType,
+        recent: filter.recent,
+        path: filter.path,
+        equipmentType: filter.equipmentType,
+    }));
+};
+
 const createSpreadsheetConfig = (
     columns: ColumnDefinitionDto[],
     globalFilters: SpreadsheetGlobalFilter[],
@@ -119,7 +131,7 @@ const handleSuccess = (
                 locked: false,
             }));
             const columnsFilters = extractColumnsFilters(model.columns);
-            const formattedGlobalFilters = model.globalFilters ?? [];
+            const formattedGlobalFilters = model.globalFilters ? formatGlobalFilters(model.globalFilters) : [];
             dispatch(updateTableDefinition(newTableDefinition));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
             dispatch(saveSpreadsheetGsFilters(uuid, formattedGlobalFilters));

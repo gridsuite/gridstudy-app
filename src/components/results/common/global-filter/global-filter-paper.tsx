@@ -59,7 +59,6 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         () => [
             RECENT_FILTER,
             ...Object.values(FilterType).filter((category) => filterCategories.includes(category as FilterType)),
-            FilterType.GENERIC_FILTER,
         ],
         [filterCategories]
     );

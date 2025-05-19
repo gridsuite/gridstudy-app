@@ -67,7 +67,7 @@ import {
     getSpreadsheetModel,
 } from '../services/study-config';
 import {
-    extractColumnsFilters,
+    extractColumnsFilters, formatGlobalFilters,
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
@@ -158,7 +158,12 @@ const App = () => {
         (collection) => {
             const { tablesFilters, tableGlobalFilters, tableDefinitions } =
                 processSpreadsheetsCollectionData(collection);
-            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
+
+            const formattedGlobalFilters = [];
+            for (const [key, value] of Object.entries(tableGlobalFilters)) {
+                formattedGlobalFilters[key] = formatGlobalFilters(value);
+            }
+            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, formattedGlobalFilters));
         },
         [dispatch]
     );
@@ -171,7 +176,7 @@ const App = () => {
                     const tabUuid = model.id;
                     const formattedColumns = mapColumnsDto(model.columns);
                     const columnsFilters = extractColumnsFilters(model.columns);
-                    const formattedGlobalFilters = model.globalFilters ?? [];
+                    const formattedGlobalFilters = model.globalFilters ? formatGlobalFilters(model.globalFilters) : [];
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));

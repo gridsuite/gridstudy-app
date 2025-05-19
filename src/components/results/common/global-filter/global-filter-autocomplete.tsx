@@ -224,6 +224,14 @@ function GlobalFilterAutocomplete({
         [translate]
     );
 
+    const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
+        if (option.filterType === FilterType.GENERIC_FILTER) {
+            return option.label === value.label && option.filterType === value.filterType && option.uuid === value.uuid;
+        } else {
+            return option.label === value.label && option.filterType === value.filterType;
+        }
+    }, []);
+
     return (
         <>
             <div ref={autocompleteRef}>
@@ -284,11 +292,7 @@ function GlobalFilterAutocomplete({
                         );
                     }}
                     // Allows to find the corresponding chips without taking into account the recent status
-                    isOptionEqualToValue={(option: GlobalFilter, value: GlobalFilter) =>
-                        option.label === value.label &&
-                        option.filterType === value.filterType &&
-                        option.uuid === value.uuid
-                    }
+                    isOptionEqualToValue={isOptionEqualToValue}
                     filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                         filterOptions(options, state)
                     }

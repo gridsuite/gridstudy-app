@@ -40,7 +40,7 @@ export default function GlobalFilterProvider({
         async (selectedFilters: GlobalFilter[]) => {
             const notFoundGenericFilterUuids: UUID[] = [];
             const genericFiltersUuids: UUID[] = selectedFilters
-                .filter((globalFilter) => globalFilter.filterType === 'generic')
+                .filter((globalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 

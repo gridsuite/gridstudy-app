@@ -668,7 +668,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
 };
 
 export type SpreadsheetGlobalFilterState = SpreadsheetGlobalFilter[];
-export type GsFilterSpreadsheetState = Record<UUID, SpreadsheetGlobalFilterState>;
+export type GsFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
 const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
 
 interface TablesState {

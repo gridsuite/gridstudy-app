@@ -8,7 +8,7 @@
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AppState } from '../../../../../redux/reducer';
@@ -19,12 +19,15 @@ import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../../servi
 import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
+import { addToRecentGlobalFilters } from '../../../../../redux/actions';
 
 export type SpreadsheetGsFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
 };
 
 export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<SpreadsheetGsFilterProps>) {
+    const dispatch = useDispatch();
+
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -110,6 +113,16 @@ export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<Spread
                 return [...voltageLevelsFilter, ...countriesFilter];
         }
     }, [countriesFilter, tableDefinition.type, voltageLevelsFilter]);
+
+    useEffect(() => {
+        if (gsFilterSpreadsheetState) {
+            dispatch(
+                addToRecentGlobalFilters(
+                    gsFilterSpreadsheetState?.filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
+                )
+            );
+        }
+    }, [dispatch, gsFilterSpreadsheetState]);
 
     return (
         <GlobalFilterSelector

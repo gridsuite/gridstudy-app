@@ -26,7 +26,7 @@ export interface GlobalFilters {
 export interface GlobalFilter {
     label: string;
     filterType: string;
-    filterTypeFromMetadata: string; // only useful for generic filters
+    filterTypeFromMetadata?: string; // only useful for generic filters
     recent?: boolean;
     uuid?: UUID; // only useful for generic filters
     equipmentType?: string; // only useful for generic filters

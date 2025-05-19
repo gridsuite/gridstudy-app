@@ -13,6 +13,7 @@ import { AppState, SpreadsheetGlobalFilterState } from '../../../../../redux/red
 import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';
 import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 
 export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: SpreadsheetEquipmentType) => {
     const [filterIds, setFilterIds] = useState<string[]>([]);
@@ -23,21 +24,21 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: Spreadsheet
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const applyGsFilter = useCallback(
-        async (globalFilters: SpreadsheetGlobalFilterState) => {
+        async (globalFilters: GlobalFilter[]) => {
             if (studyUuid && currentNode && currentRootNetworkUuid) {
                 const countries = globalFilters
-                    .filter((filter) => filter.filterType === 'country')
+                    ?.filter((filter) => filter.filterType === 'country')
                     .map((filter) => filter.label);
                 const nominalVoltages = globalFilters
-                    .filter((filter) => filter.filterType === 'voltageLevel')
+                    ?.filter((filter) => filter.filterType === 'voltageLevel')
                     .map((filter) => Number(filter.label));
-                const genericFilters = globalFilters.filter((filter) => filter.filterType === 'genericFilter');
+                const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
 
                 let genericFiltersIdentifiablesIds: string[] = [];
 
-                if (genericFilters.length > 0) {
+                if (genericFilters?.length > 0) {
                     //We pre evaluate generic filters because expert filters currently can't they can't be referenced by other expert filters
-                    const filtersUuids = genericFilters.flatMap((filter) => filter.filterUuid);
+                    const filtersUuids = genericFilters.flatMap((filter) => filter.uuid);
                     const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids as UUID[]);
                     genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>
                         filterEquipments.identifiableAttributes.flatMap((identifiable) => identifiable.id)
@@ -74,7 +75,7 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: Spreadsheet
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState.length > 0, [gsFilterSpreadsheetState]);
+    const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState?.length > 0, [gsFilterSpreadsheetState]);
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 };

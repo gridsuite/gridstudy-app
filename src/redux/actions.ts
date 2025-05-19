@@ -1426,12 +1426,12 @@ export function setStateEstimationResultFilter(
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: SpreadsheetGlobalFilter[];
+    filters: GlobalFilter[];
 };
 
 export function saveSpreadsheetGsFilters(
     tabUuid: UUID,
-    filters: SpreadsheetGlobalFilter[]
+    filters: GlobalFilter[]
 ): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
