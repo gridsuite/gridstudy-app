@@ -26,8 +26,8 @@ import type {
     GsFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
-    RootNetworkIndexationStatus,
     SpreadsheetFilterState,
+    RootNetworkIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
@@ -49,8 +49,8 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
-    ColumnDefinition,
     SpreadsheetEquipmentsByNodes,
+    ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
