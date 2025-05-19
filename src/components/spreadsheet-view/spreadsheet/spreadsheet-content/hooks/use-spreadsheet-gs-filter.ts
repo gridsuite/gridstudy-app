@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { AppState, SpreadsheetGlobalFilterState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer';
 import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';
 import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';

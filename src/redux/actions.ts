@@ -56,7 +56,6 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -1429,10 +1428,7 @@ export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSH
     filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
-    tabUuid: UUID,
-    filters: GlobalFilter[]
-): SaveSpreadSheetGsFilterAction {
+export function saveSpreadsheetGsFilters(tabUuid: UUID, filters: GlobalFilter[]): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
