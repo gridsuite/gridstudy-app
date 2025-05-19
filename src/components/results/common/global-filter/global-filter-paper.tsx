@@ -89,6 +89,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                         equipmentType: element.specificMetadata?.equipmentType,
                         label: element.elementName,
                         filterType: FilterType.GENERIC_FILTER,
+                        filterTypeFromMetadata: element.specificMetadata?.type,
                         recent: true,
                     });
                 }
