@@ -74,8 +74,10 @@ export const useReportFetcher = (
         reportId: string,
         severityList: string[],
         reportType: ReportType,
-        filterMessage: string
-    ) => Promise<Log[]> | undefined,
+        filterMessage: string,
+        page?: number,
+        size?: number
+    ) => Promise<any> | undefined,
     (reportId: string, reportType?: ReportType) => Promise<SeverityLevel[]> | undefined,
 ] => {
     const [isLoading, setIsLoading] = useState(false);
@@ -135,7 +137,14 @@ export const useReportFetcher = (
     );
 
     const fetchReportLogs = useCallback(
-        (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
+        (
+            reportId: string,
+            severityList: string[],
+            reportType: ReportType,
+            messageFilter: string,
+            page?: number,
+            size?: number
+        ) => {
             if (!studyUuid || !currentRootNetworkUuid) {
                 return;
             }
@@ -149,7 +158,9 @@ export const useReportFetcher = (
                         null,
                         severityList,
                         messageFilter,
-                        true
+                        true,
+                        page,
+                        size
                     );
             } else {
                 fetchPromise = (severityList: string[], reportId: string) =>
@@ -160,11 +171,16 @@ export const useReportFetcher = (
                         reportId,
                         severityList,
                         messageFilter,
-                        false
+                        false,
+                        page,
+                        size
                     );
             }
-            return fetchPromise(severityList, reportId).then((r) => {
-                return mapReportLogs(prettifyReportLogMessage(r, nodesNames));
+            return fetchPromise(severityList, reportId).then((r: any) => {
+                return {
+                    ...r,
+                    content: mapReportLogs(prettifyReportLogMessage(r.content, nodesNames)),
+                };
             });
         },
         [currentNode, currentRootNetworkUuid, studyUuid, nodesNames]

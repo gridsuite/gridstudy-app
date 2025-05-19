@@ -35,6 +35,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
+import CustomTablePagination from 'components/utils/custom-table-pagination';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -70,6 +71,8 @@ const styles = {
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
+const PAGE_OPTIONS = [5, 10, 25, 50];
+const DEFAULT_PAGE_COUNT = 10;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
@@ -105,6 +108,9 @@ const LogTable = ({
     const gridRef = useRef<AgGridReact>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
+    const [count, setCount] = useState<number>(0);
 
     // Reset filtersInitialized when reportType changes
     useEffect(() => {
@@ -126,21 +132,37 @@ const LogTable = ({
             resetSearch();
             return;
         }
-        fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
-            const transformedLogs = reportLogs.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    }) as unknown as ReportLog
-            );
-            setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
-            resetSearch();
-        });
-    }, [severityFilter, fetchReportLogs, selectedReport, messageFilter, resetSearch]);
+        fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter, page, rowsPerPage)?.then(
+            (pagedReports: any) => {
+                const { content: reportLogs, totalElements, totalPages } = pagedReports;
+                if (totalPages < page) {
+                    setPage(0);
+                }
+                setCount(totalElements);
+                const transformedLogs = reportLogs.map(
+                    (log: any) =>
+                        ({
+                            severity: log.severity.name,
+                            message: log.message,
+                            parentId: log.parentId,
+                            backgroundColor: log.severity.colorName,
+                        }) as unknown as ReportLog
+                );
+                setSelectedRowIndex(-1);
+                setRowData(transformedLogs);
+                resetSearch();
+            }
+        );
+    }, [
+        severityFilter,
+        fetchReportLogs,
+        selectedReport.id,
+        selectedReport.type,
+        messageFilter,
+        page,
+        rowsPerPage,
+        resetSearch,
+    ]);
 
     useEffect(() => {
         if (severities && severities.length > 0) {
@@ -337,6 +359,15 @@ const LogTable = ({
         [dispatch, reportType, severityFilter, messageFilter]
     );
 
+    const handleChangePage = useCallback((_: any, newPage: number) => {
+        setPage(newPage);
+    }, []);
+
+    const handleChangeRowsPerPage = useCallback((event: any) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    }, []);
+
     return (
         <Box
             sx={{
@@ -380,6 +411,15 @@ const LogTable = ({
                     overrideLocales={AGGRID_LOCALES}
                 />
             </Box>
+            <CustomTablePagination
+                rowsPerPageOptions={PAGE_OPTIONS}
+                count={count}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPageId="reportLogsPaginationRowsPerPage"
+            />
         </Box>
     );
 };

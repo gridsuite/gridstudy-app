@@ -119,7 +119,9 @@ export function fetchNodeReportLogs(
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
-    isGlobalLogs: boolean
+    isGlobalLogs: boolean,
+    page?: number,
+    size?: number
 ) {
     let url;
     if (isGlobalLogs) {
@@ -136,6 +138,9 @@ export function fetchNodeReportLogs(
     }
     if (messageFilter && messageFilter !== '') {
         url += '&message=' + encodeURIComponent(messageFilter);
+    }
+    if (page !== undefined && size !== undefined) {
+        url += '&paged=true&page=' + page + '&size=' + size;
     }
 
     return backendFetchJson(url);
