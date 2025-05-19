@@ -11,6 +11,8 @@ export enum StudyDisplayMode {
     TREE = 'Tree',
     HYBRID = 'Hybrid',
     DRAW = 'Draw',
+    DIAGRAM_LAYOUT = 'DiagramLayout',
+    DIAGRAM_LAYOUT_AND_TREE = 'DiagramLayoutAndTree',
 }
 
 export enum CopyType {
