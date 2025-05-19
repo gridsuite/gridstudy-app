@@ -151,6 +151,7 @@ export const MessageLogCellRenderer = ({
     currentResultIndex?: number;
     searchResults?: number[];
 }) => {
+    const marginLeft = (param.data?.depth ?? 0) * 2; // add indentation based on depth
     const textRef = useRef<HTMLDivElement>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
 
@@ -218,6 +219,7 @@ export const MessageLogCellRenderer = ({
                     ref={textRef}
                     sx={{
                         ...styles.overflow,
+                        marginLeft,
                     }}
                 >
                     {renderHighlightedText(param.value)}

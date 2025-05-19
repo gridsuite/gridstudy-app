@@ -23,8 +23,7 @@ import CurvePreview, { Curve, CurveHandler } from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import { mergeSx } from '@gridsuite/commons-ui';
-import { styles } from 'components/dialogs/parameters/parameters-style';
+import { mergeSx, parametersStyles } from '@gridsuite/commons-ui';
 
 interface CurveSelectorDialogProps {
     open: boolean;
@@ -81,14 +80,14 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
     return (
         <Dialog open={open} aria-labelledby="curve-selector-dialog-title" maxWidth={'xl'} fullWidth={true}>
             <DialogTitle id="curve-selector-dialog-title">
-                <Typography component="span" variant="h5" sx={styles.title}>
+                <Typography component="span" variant="h5" sx={parametersStyles.title}>
                     <FormattedMessage id="DynamicSimulationCurveSelectorDialogTitle" />
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
                 <Grid
                     container
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parametersStyles.scrollableGrid, {
                         maxWidth: 'xl',
                         height: '100%',
                         maxHeight: '100%',

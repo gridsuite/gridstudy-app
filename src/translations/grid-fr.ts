@@ -6,8 +6,9 @@
  */
 
 export const grid_fr = {
+    'grid.noRowsToShow': 'Aucune donnée',
     'grid.noCalculation': 'Pas de calcul lancé',
-    'grid.failed': 'Echec du calcul',
+    'grid.failed': 'Échec du calcul',
     'grid.running': 'Calcul en cours...',
     'grid.noLimitViolation': 'Pas de contrainte',
 };
