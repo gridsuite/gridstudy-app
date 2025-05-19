@@ -58,7 +58,7 @@ export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<Spread
             setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, formattedFilters).catch((error) =>
                 console.error('Failed to update global filters:', error)
             );
-        }, 800),
+        }, 600),
         []
     );
 
