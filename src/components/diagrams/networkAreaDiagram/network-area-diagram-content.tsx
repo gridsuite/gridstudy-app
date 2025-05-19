@@ -37,7 +37,7 @@ import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/com
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-import { useDiagram } from '../use-diagram';
+import { useDiagramApi } from '../use-diagram-api';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -141,8 +141,8 @@ const equipmentsWithPopover = [
 
 type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
-    readonly svg?: string;
-    readonly svgMetadata?: DiagramMetadata;
+    readonly svg: string | null;
+    readonly svgMetadata: DiagramMetadata | null;
     readonly svgScalingFactor?: number;
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
@@ -172,7 +172,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
-    const { loadNadFromConfigView } = useDiagram();
+    const { loadNadFromConfigView } = useDiagramApi();
 
     const nadIdentifier = useMemo(() => {
         if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
