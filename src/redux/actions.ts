@@ -144,7 +144,8 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
-    | DeletedOrRenamedNodesAction;
+    | DeletedOrRenamedNodesAction
+    | RemoveEquipmentDataAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -214,6 +215,18 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
+    };
+}
+
+export const REMOVE_EQUIPMENT_DATA = 'REMOVE_EQUIPMENT_DATA';
+export type RemoveEquipmentDataAction = Readonly<Action<typeof REMOVE_EQUIPMENT_DATA>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function removeEquipmentData(equipmentType: SpreadsheetEquipmentType): RemoveEquipmentDataAction {
+    return {
+        type: REMOVE_EQUIPMENT_DATA,
+        equipmentType: equipmentType,
     };
 }
 

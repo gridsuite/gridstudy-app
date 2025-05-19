@@ -57,8 +57,6 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
-    DELETED_OR_RENAMED_NODES,
-    DeletedOrRenamedNodesAction,
     DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     DynamicSimulationResultFilterAction,
@@ -154,13 +152,11 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EDIT_NAD_MODE,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
-    SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
@@ -172,13 +168,11 @@ import {
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
-    SetEditNadModeAction,
     SetEventScenarioDrawerOpenAction,
     SetFullscreenDiagramAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
-    SetMonoRootStudyAction,
     SetOneBusShortcircuitAnalysisDiagramAction,
     SetOptionalServicesAction,
     SetParamsLoadedAction,
@@ -207,15 +201,23 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     UpdateColumnsDefinitionsAction,
     UpdateEquipmentsAction,
     UpdateNetworkVisualizationParametersAction,
-    UpdateTableColumnsAction,
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    SET_EDIT_NAD_MODE,
+    SetEditNadModeAction,
+    DELETED_OR_RENAMED_NODES,
+    DeletedOrRenamedNodesAction,
+    REMOVE_EQUIPMENT_DATA,
+    RemoveEquipmentDataAction,
+    UPDATE_TABLE_COLUMNS,
+    UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1706,6 +1708,13 @@ export const reducer = createReducer(initialState, (builder) => {
             },
             {} as Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>
         );
+    });
+
+    builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
+        state.spreadsheetNetwork[action.equipmentType] = {
+            nodesId: [],
+            equipmentsByNodeId: {},
+        };
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
