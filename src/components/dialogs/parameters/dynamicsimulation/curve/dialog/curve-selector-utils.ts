@@ -130,7 +130,6 @@ export const buildExpertRules = (
         rules.push(idsRule);
     }
 
-    console.log(rules);
     return {
         combinator: CombinatorType.AND,
         dataType: DataType.COMBINATOR,
