@@ -43,31 +43,46 @@ const styles = {
     }),
 };
 
+const DEFAULT_WIDTH = 2;
+const DEFAULT_HEIGHT = 2;
+
+const initialLayouts = {
+    // RGL will attempt to interpolate the rest of breakpoints based on this one
+    lg: [
+        {
+            i: 'Adder',
+            x: 0,
+            y: 0,
+            w: 1,
+            h: 1,
+        },
+    ],
+};
+
 function DiagramLayout() {
     const theme = useTheme();
-    const [layouts, setLayouts] = useState<Layouts>({});
-    const [cols, setCols] = useState<number>();
-    const [breakpoints, setBreakpoint] = useState<string>('lg');
+    const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
+    const [cols, setCols] = useState<number>(4);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const onBreakpointChange = (newBreakpoint: string, cols: number) => {
-        setBreakpoint(newBreakpoint);
         setCols(cols);
     };
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const new_layouts = { ...old_layouts };
+            const new_lg_layouts = old_layouts.lg.filter((layout) => layout.i !== 'Adder');
 
             const layoutItem = {
                 i: diagram.diagramUuid,
-                x: (old_layouts.lg.length * 2) % (cols || 12),
+                x: (new_lg_layouts.length * DEFAULT_WIDTH) % cols,
                 y: Infinity,
-                w: 2,
-                h: 2,
+                w: DEFAULT_WIDTH,
+                h: DEFAULT_HEIGHT,
             };
-            Object.values(new_layouts).map((layout) => layout.push(layoutItem));
-
-            return new_layouts;
+            console.log('SBO onAddDiagram', layoutItem);
+            new_lg_layouts.push(layoutItem);
+            console.log('SBO new_layouts', new_lg_layouts);
+            return { lg: new_lg_layouts };
         });
     };
     const { diagrams, removeDiagram, createDiagram } = useDiagramModel({ diagramTypes: diagramTypes, onAddDiagram });
@@ -76,11 +91,11 @@ function DiagramLayout() {
         (diagramUuid: UUID) => {
             console.log('SBO removing', diagramUuid);
             setLayouts((old_layouts) => {
-                const new_layouts = { ...old_layouts };
-                Object.values(new_layouts).forEach(
-                    (layout) => (layout = layout.filter((layout: Layout) => layout.i !== diagramUuid))
-                );
-                return new_layouts;
+                const new_lg_layouts = old_layouts.lg.filter((layout: Layout) => layout.i !== diagramUuid);
+                if (new_lg_layouts.length === 0) {
+                    return initialLayouts;
+                }
+                return { lg: new_lg_layouts };
             });
             removeDiagram(diagramUuid);
         },
@@ -89,6 +104,7 @@ function DiagramLayout() {
 
     const showVoltageLevelDiagram = useCallback(
         (element: EquipmentInfos) => {
+            console.log('SBO showVoltageLevelDiagram', element);
             if (element.type === EquipmentType.VOLTAGE_LEVEL) {
                 const diagram: DiagramParams = {
                     type: DiagramType.VOLTAGE_LEVEL,
@@ -106,6 +122,9 @@ function DiagramLayout() {
         [createDiagram]
     );
     const renderDiagramAdder = useCallback(() => {
+        if (Object.values(diagrams).length > 0) {
+            return;
+        }
         return (
             <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'lightblue' }}>
                 <Box sx={styles.header}>
@@ -135,14 +154,13 @@ function DiagramLayout() {
                 </Box>
             </div>
         );
-    }, []);
+    }, [diagrams]);
 
     const renderDiagrams = useCallback(() => {
         if (Object.values(diagrams).length === 0) {
             return;
         }
-        return layouts[breakpoints].map((item) => {
-            const diagram: Diagram = diagrams[item.i as UUID];
+        return Object.values(diagrams).map((diagram) => {
             if (!diagram) {
                 return null;
             }
@@ -171,7 +189,7 @@ function DiagramLayout() {
                 </div>
             );
         });
-    }, [breakpoints, diagrams, layouts, onRemoveItem]);
+    }, [diagrams, onRemoveItem]);
     console.log('SBO diagrams', diagrams);
     console.log('SBO layouts', layouts);
 
@@ -181,7 +199,7 @@ function DiagramLayout() {
                 className="layout"
                 breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
                 cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
-                compactType={'horizontal'}
+                compactType={undefined}
                 onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
                 layouts={layouts}
                 onBreakpointChange={onBreakpointChange}
@@ -205,8 +223,8 @@ function DiagramLayout() {
                     }
                 }}
             >
-                {renderDiagrams()}
                 {renderDiagramAdder()}
+                {renderDiagrams()}
             </ResponsiveGridLayout>
             <TopBarEquipmentSearchDialog
                 showVoltageLevelDiagram={showVoltageLevelDiagram}

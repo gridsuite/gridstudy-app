@@ -29,7 +29,11 @@ const DiagramGridItem = ({ diagram }: DiagramGridItemProps) => {
     const diagramViewerRef = useRef<SingleLineDiagramViewer>();
 
     useLayoutEffect(() => {
-        if (diagram.svg && svgRef.current && diagram.type === DiagramType.VOLTAGE_LEVEL) {
+        if (
+            diagram.svg &&
+            svgRef.current &&
+            (diagram.type === DiagramType.VOLTAGE_LEVEL || diagram.type === DiagramType.SUBSTATION)
+        ) {
             // const isReadyForInteraction =
             //     !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !props.loadingState;
 

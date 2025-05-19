@@ -197,7 +197,6 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
 
 export interface SldAdditionalMetadata {
     id: string;
-    country: string;
     substationId?: string;
 }
 
