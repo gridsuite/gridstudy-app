@@ -67,7 +67,8 @@ import {
     getSpreadsheetModel,
 } from '../services/study-config';
 import {
-    extractColumnsFilters, formatGlobalFilters,
+    extractColumnsFilters,
+    formatGlobalFilters,
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
