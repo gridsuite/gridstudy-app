@@ -6,40 +6,36 @@
  */
 
 import type { UUID } from 'crypto';
-import { useCallback, useEffect, useMemo } from 'react';
-import { Box, debounce } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { CustomFormProvider, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
-import { saveSpreadsheetGsFilters } from '../../../../../redux/actions';
-import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import {
-    toFormFormat,
-    initialSpreadsheetGsFilterForm,
-    SpreadsheetGsFilterForm,
-    spreadsheetGsFilterFormSchema,
-} from './spreadsheet-gs-filter.utils';
-import { SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { debounce } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AppState } from '../../../../../redux/reducer';
-import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
+import { SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
+import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../../services/study/network-map';
+import { FilterType } from '../../../../results/common/utils';
+import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
+import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 
 export type SpreadsheetGsFilterProps = {
-    equipmentType: SpreadsheetEquipmentType;
-    uuid: UUID;
+    tableDefinition: SpreadsheetTabDefinition;
 };
 
-export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<SpreadsheetGsFilterProps>) {
-    const dispatch = useDispatch();
-    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[uuid]);
+export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<SpreadsheetGsFilterProps>) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const gsFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.gsFilterSpreadsheetState[tableDefinition.uuid]
+    );
 
-    const formMethods = useForm<SpreadsheetGsFilterForm>({
-        defaultValues: initialSpreadsheetGsFilterForm,
-        resolver: yupResolver(spreadsheetGsFilterFormSchema),
-    });
-    const { reset } = formMethods;
+    const { snackError } = useSnackMessage();
+
+    const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(
@@ -47,39 +43,80 @@ export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<Sp
             if (!studyUuid) {
                 return;
             }
-            setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, filters).catch((error) =>
+
+            const formattedFilters = filters.map((filter) => ({
+                filterType: filter.filterType,
+                label: filter.label,
+                recent: filter.recent,
+                filterUuid: filter.uuid,
+                equipmentType: filter.equipmentType,
+                path: filter.path,
+            }));
+            setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, formattedFilters).catch((error) =>
                 console.error('Failed to update global filters:', error)
             );
         }, 300),
         []
     );
 
-    const handleChange = useCallback(
-        (values: ExpertFilter[]) => {
-            const filters = values.map(({ id, name }) => ({ filterId: id, name }) as SpreadsheetGlobalFilter);
-            dispatch(saveSpreadsheetGsFilters(uuid, filters));
-            debouncedSetFilters(uuid, filters);
+    useEffect(() => {
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
+            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
+                .then((countryCodes) => {
+                    setCountriesFilter(
+                        countryCodes.map((countryCode: string) => ({
+                            label: countryCode,
+                            filterType: FilterType.COUNTRY,
+                        }))
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'FetchCountryError',
+                    });
+                });
+
+            fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
+                .then((nominalVoltages) => {
+                    setVoltageLevelsFilter(
+                        nominalVoltages.map((nominalV: number) => ({
+                            label: nominalV.toString(),
+                            filterType: FilterType.VOLTAGE_LEVEL,
+                        }))
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'FetchNominalVoltagesError',
+                    });
+                });
+        }
+    }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
+
+    const handleFilterChange = useCallback(
+        async (globalFilters: GlobalFilter[]) => {
+            debouncedSetFilters(tableDefinition.uuid, globalFilters);
         },
-        [dispatch, uuid, debouncedSetFilters]
+        [debouncedSetFilters, tableDefinition.uuid]
     );
 
-    useEffect(() => {
-        reset(toFormFormat(gsFilterSpreadsheetState ?? []));
-    }, [uuid, reset, gsFilterSpreadsheetState]);
+    const filters = useMemo(() => {
+        switch (tableDefinition.type) {
+            case EQUIPMENT_TYPES.SUBSTATION:
+                return countriesFilter;
+            default:
+                return [...voltageLevelsFilter, ...countriesFilter];
+        }
+    }, [countriesFilter, tableDefinition.type, voltageLevelsFilter]);
 
     return (
-        <CustomFormProvider validationSchema={spreadsheetGsFilterFormSchema} {...formMethods}>
-            <Box minWidth="12em" /* TODO add sx props to DirectoryItemsInput in commons-ui to remove this div */>
-                <DirectoryItemsInput
-                    name={SPREADSHEET_GS_FILTER}
-                    titleId="FiltersListsSelection"
-                    label="filter"
-                    elementType={ElementType.FILTER}
-                    equipmentTypes={useMemo(() => [equipmentType], [equipmentType])}
-                    labelRequiredFromContext={false}
-                    onChange={handleChange}
-                />
-            </Box>
-        </CustomFormProvider>
+        <GlobalFilterSelector
+            filterableEquipmentTypes={[tableDefinition.type as unknown as EQUIPMENT_TYPES]}
+            filters={filters}
+            onChange={handleFilterChange}
+            preloadedGlobalFilters={gsFilterSpreadsheetState}
+        />
     );
 }

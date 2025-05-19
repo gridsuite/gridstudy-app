@@ -107,7 +107,10 @@ export const SpreadsheetContent = React.memo(
             tableDefinition
         );
 
-        const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(tableDefinition?.uuid);
+        const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(
+            tableDefinition?.uuid,
+            tableDefinition?.type
+        );
 
         const { modificationDialog, handleOpenModificationDialog, isModificationDialogForEquipmentType } =
             useEquipmentModification({

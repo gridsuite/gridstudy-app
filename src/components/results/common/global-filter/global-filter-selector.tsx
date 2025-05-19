@@ -11,15 +11,21 @@ import { GlobalFilter } from './global-filter-types';
 
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
+    preloadedGlobalFilters?: GlobalFilter[];
 };
 export default function GlobalFilterSelector({
     onChange,
     filterableEquipmentTypes,
+    preloadedGlobalFilters,
     filters,
 }: Readonly<GlobalFilterSelectorProps>) {
-    const filterCategories = filters.map(filter => filter.filterType);
+    const filterCategories = filters.map((filter) => filter.filterType);
     return (
-        <GlobalFilterProvider onChange={onChange} filterCategories={filterCategories}>
+        <GlobalFilterProvider
+            onChange={onChange}
+            filterCategories={filterCategories}
+            preloadedGlobalFilters={preloadedGlobalFilters}
+        >
             <GlobalFilterAutocomplete filters={filters} filterableEquipmentTypes={filterableEquipmentTypes} />
         </GlobalFilterProvider>
     );

@@ -20,10 +20,12 @@ import { HttpStatusCode } from '../../../../utils/http-status-code';
 export default function GlobalFilterProvider({
     children,
     onChange: handleChange,
+    preloadedGlobalFilters = [],
     filterCategories,
 }: PropsWithChildren & {
     onChange: (globalFilters: GlobalFilter[]) => void;
     filterCategories: string[];
+    preloadedGlobalFilters?: GlobalFilter[];
 }) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
@@ -32,12 +34,13 @@ export default function GlobalFilterProvider({
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
-    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
+    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters);
 
     const checkSelectedFiltersPromise = useCallback(
         async (selectedFilters: GlobalFilter[]) => {
             const notFoundGenericFilterUuids: UUID[] = [];
             const genericFiltersUuids: UUID[] = selectedFilters
+                .filter((globalFilter) => globalFilter.filterType === 'generic')
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 

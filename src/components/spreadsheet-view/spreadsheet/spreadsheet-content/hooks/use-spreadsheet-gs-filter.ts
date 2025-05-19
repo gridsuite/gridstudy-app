@@ -7,30 +7,74 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { IRowNode } from 'ag-grid-community';
-import { IdentifiableAttributes } from '../../../../../services/study/filter';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState, SpreadsheetGlobalFilterState } from '../../../../../redux/reducer';
+import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';
+import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
+import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 
-export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
+export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: SpreadsheetEquipmentType) => {
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tabUuid]);
 
-    const applyGsFilter = useCallback(async (filters: IdentifiableAttributes[]) => {
-        const filtersUuid = filters.map((filter) => filter.id);
-        if (filtersUuid.length > 0) {
-            setFilterIds(filtersUuid);
-        }
-    }, []);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+
+    const applyGsFilter = useCallback(
+        async (globalFilters: SpreadsheetGlobalFilterState) => {
+            if (studyUuid && currentNode && currentRootNetworkUuid) {
+                const countries = globalFilters
+                    .filter((filter) => filter.filterType === 'country')
+                    .map((filter) => filter.label);
+                const nominalVoltages = globalFilters
+                    .filter((filter) => filter.filterType === 'voltageLevel')
+                    .map((filter) => Number(filter.label));
+                const genericFilters = globalFilters.filter((filter) => filter.filterType === 'genericFilter');
+
+                let genericFiltersIdentifiablesIds: string[] = [];
+
+                if (genericFilters.length > 0) {
+                    //We pre evaluate generic filters because expert filters currently can't they can't be referenced by other expert filters
+                    const filtersUuids = genericFilters.flatMap((filter) => filter.filterUuid);
+                    const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids as UUID[]);
+                    genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>
+                        filterEquipments.identifiableAttributes.flatMap((identifiable) => identifiable.id)
+                    );
+                }
+
+                const computedFilter = buildExpertFilter(
+                    equipmentType,
+                    undefined,
+                    countries,
+                    nominalVoltages,
+                    genericFiltersIdentifiablesIds
+                );
+
+                if (computedFilter.rules.rules && computedFilter.rules.rules.length > 0) {
+                    const identifiables = await evaluateJsonFilter(
+                        studyUuid,
+                        currentNode?.id,
+                        currentRootNetworkUuid,
+                        computedFilter
+                    );
+                    setFilterIds(identifiables.map((identifiable) => identifiable.id));
+                } else {
+                    setFilterIds([]);
+                }
+            }
+        },
+        [currentNode, currentRootNetworkUuid, equipmentType, studyUuid]
+    );
 
     useEffect(() => {
-        console.log(gsFilterSpreadsheetState);
         applyGsFilter(gsFilterSpreadsheetState);
     }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState?.length > 0, [gsFilterSpreadsheetState]);
+    const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState.length > 0, [gsFilterSpreadsheetState]);
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 };

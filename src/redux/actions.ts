@@ -26,8 +26,8 @@ import type {
     GsFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
-    SpreadsheetFilterState,
     RootNetworkIndexationStatus,
+    SpreadsheetFilterState,
     StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
@@ -49,14 +49,14 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
-    SpreadsheetEquipmentsByNodes,
     ColumnDefinition,
+    SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { IdentifiableAttributes, SpreadsheetGlobalFilter } from '../services/study/filter';
+import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -1413,12 +1413,12 @@ export function setStateEstimationResultFilter(
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
 export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: IdentifiableAttributes[];
+    filters: SpreadsheetGlobalFilter[];
 };
 
 export function saveSpreadsheetGsFilters(
     tabUuid: UUID,
-    filters: IdentifiableAttributes[]
+    filters: SpreadsheetGlobalFilter[]
 ): SaveSpreadSheetGsFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
