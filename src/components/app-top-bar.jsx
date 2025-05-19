@@ -11,7 +11,7 @@ import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -23,7 +23,6 @@ import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
@@ -63,7 +62,6 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 
 const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
-    const intl = useIntl();
     const { openDiagramView } = useDiagram();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
@@ -129,14 +127,7 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
                 {user && currentNode && (
                     <Box sx={styles.currentNodeBox}>
                         {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
-                        <OverflowableText
-                            sx={styles.currentNodeLabel}
-                            text={
-                                currentNode?.data?.label === ROOT_NODE_LABEL
-                                    ? intl.formatMessage({ id: 'root' })
-                                    : currentNode?.data?.label
-                            }
-                        />
+                        <OverflowableText sx={styles.currentNodeLabel} text="" />
                     </Box>
                 )}
                 {user && studyUuid && currentRootNetworkUuid && (

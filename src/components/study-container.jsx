@@ -37,7 +37,7 @@ import {
 } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
-import { computeFullPath, computePageTitle } from '../utils/compute-title';
+import { computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
@@ -304,7 +304,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 setStudyName(studyName);
                 setStudyPath(path);
 
-                document.title = computePageTitle(initialTitle, studyName, parentDirectoriesNames);
+                document.title = studyName;
             })
             .catch((error) => {
                 document.title = initialTitle;
