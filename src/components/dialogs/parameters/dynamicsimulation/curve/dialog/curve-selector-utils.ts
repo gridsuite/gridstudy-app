@@ -11,6 +11,7 @@ import {
     COUNTRY_TWO_SIDED_EQUIPMENTS,
     EQUIPMENT_TYPES,
     NOMINAL_VOLTAGE_ONE_SIDED_EQUIPMENTS,
+    NOMINAL_VOLTAGE_THREE_SIDED_EQUIPMENTS,
     NOMINAL_VOLTAGE_TWO_SIDED_EQUIPMENTS,
 } from '../../../../../utils/equipment-types';
 import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
@@ -110,6 +111,32 @@ export const buildExpertRules = (
                 },
                 {
                     field: FieldType.NOMINAL_VOLTAGE_2,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+            ],
+        };
+        rules.push(nominalVoltagesRule);
+    } else if (nominalVoltages?.length && NOMINAL_VOLTAGE_THREE_SIDED_EQUIPMENTS.includes(equipmentType)) {
+        const nominalVoltagesRule = {
+            combinator: CombinatorType.OR,
+            dataType: DataType.COMBINATOR,
+            rules: [
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_1,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_2,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_3,
                     operator: OperatorType.IN,
                     values: nominalVoltages,
                     dataType: DataType.NUMBER,
