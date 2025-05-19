@@ -112,8 +112,14 @@ function GlobalFilterAutocomplete({
     filterableEquipmentTypes,
     filters = emptyArray,
 }: Readonly<GlobalFilterAutocompleteProps>) {
-    const { openedDropdown, setOpenedDropdown, filterGroupSelected, selectedGlobalFilters, onChange } =
-        useContext(GlobalFilterContext);
+    const {
+        openedDropdown,
+        setOpenedDropdown,
+        filterGroupSelected,
+        selectedGlobalFilters,
+        onChange,
+        filterCategories,
+    } = useContext(GlobalFilterContext);
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
@@ -172,9 +178,11 @@ function GlobalFilterAutocomplete({
 
     const options = useMemo(
         () => [
-            ...recentGlobalFilters.map((filter) => {
-                return { ...filter, recent: true };
-            }),
+            ...recentGlobalFilters
+                .filter((filter) => filterCategories.includes(filter.filterType))
+                .map((filter) => {
+                    return { ...filter, recent: true };
+                }),
             // recent generic filters are displayed 2 times : once in the recent filters (see above) and also in the generic filters :
             ...recentGlobalFilters
                 .filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
