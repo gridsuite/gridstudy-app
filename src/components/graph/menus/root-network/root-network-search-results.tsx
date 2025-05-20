@@ -63,8 +63,10 @@ export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> =
             {results.map((result, key) => (
                 <Box key={key} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
-                        <DeviceHubIcon style={{ width: 15, height: 15 }} />
-                        <Typography color="textSecondary">{result.basicNodeInfos.name}</Typography>
+                        <DeviceHubIcon />
+                        <Typography color="textSecondary" sx={{ marginLeft: '5px' }}>
+                            {result.basicNodeInfos.name}
+                        </Typography>
                     </Box>
                     <ModificationResults modifications={result.modifications} />
                     <Divider sx={{ mt: 2 }} />
