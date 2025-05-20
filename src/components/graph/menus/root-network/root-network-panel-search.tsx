@@ -203,9 +203,12 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
     const resetSearch = useCallback(() => {
         setResults([]);
         setSearchTerm('');
-        setIsSearchActive(false);
-    }, [setIsSearchActive]);
+    }, []);
 
+    const leaveSearch = useCallback(() => {
+        resetSearch();
+        setIsSearchActive(false);
+    }, [resetSearch, setIsSearchActive]);
     //reset the search result for : build/unbuild, root network update, create and update modifications and renaming the node.
     //The current behavior is subject to change in future user stories.
     useRootNetworkNotifications({
@@ -285,7 +288,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                         ),
                     }}
                 />
-                <IconButton size="small" onClick={resetSearch}>
+                <IconButton size="small" onClick={leaveSearch}>
                     <CloseIcon />
                 </IconButton>
             </Box>
