@@ -38,9 +38,11 @@ export default function GlobalFilterProvider({
 
     const checkSelectedFiltersPromise = useCallback(
         async (selectedFilters: GlobalFilter[]) => {
+            const mutableFilters: GlobalFilter[] = selectedFilters.map((filter) => ({ ...filter }));
+
             const notFoundGenericFilterUuids: UUID[] = [];
-            const genericFiltersUuids: UUID[] = selectedFilters
-                .filter((globalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER && globalFilter.path)
+            const genericFiltersUuids: UUID[] = mutableFilters
+                .filter((globalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
@@ -50,7 +52,7 @@ export default function GlobalFilterProvider({
                     const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
                     const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = selectedFilters.find(
+                    const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
                         (globalFilter) => globalFilter.uuid === genericFilterUuid
                     );
                     if (fetchedFilter && !fetchedFilter.path) {
@@ -63,7 +65,7 @@ export default function GlobalFilterProvider({
                         dispatch(removeFromRecentGlobalFilters(genericFilterUuid));
                         notFoundGenericFilterUuids.push(genericFilterUuid);
                         snackError({
-                            messageTxt: selectedFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
+                            messageTxt: mutableFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
                             headerId: 'ComputationFilterResultsError',
                         });
                     } else {
@@ -77,7 +79,7 @@ export default function GlobalFilterProvider({
             }
 
             // Updates the "recent" filters unless they have not been found
-            const validSelectedFilters: GlobalFilter[] = selectedFilters.filter(
+            const validSelectedFilters: GlobalFilter[] = mutableFilters.filter(
                 (filter) => !filter.uuid || !notFoundGenericFilterUuids.includes(filter.uuid)
             );
             dispatch(addToRecentGlobalFilters(validSelectedFilters));
