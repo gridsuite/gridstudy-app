@@ -218,6 +218,8 @@ import {
     UpdateTableColumnsAction,
     SET_MONO_ROOT_STUDY,
     SetMonoRootStudyAction,
+    RESET_DIAGRAM_EVENT,
+    ResetDiagramEventAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -485,6 +487,52 @@ export type DiagramState = {
     name?: string;
 };
 
+export enum DiagramEventType {
+    CREATE = 'create',
+    REMOVE = 'remove',
+}
+
+type DiagramEventBase = {
+    diagramType: DiagramType;
+    eventType: DiagramEventType;
+};
+
+type RemoveDiagramEvent = DiagramEventBase & {
+    eventType: DiagramEventType.REMOVE;
+    diagramUuid: UUID;
+};
+
+type CreateDiagramEvent = DiagramEventBase & {
+    eventType: DiagramEventType.CREATE;
+};
+
+type CreateVoltageLevelSLDDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.VOLTAGE_LEVEL;
+    voltageLevelId: string;
+};
+
+type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.SUBSTATION;
+    substationId: string;
+};
+
+type CreateNADDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
+    voltageLevelIds: string[];
+};
+
+type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NAD_FROM_CONFIG;
+    nadFromConfigUuid: UUID;
+};
+
+export type DiagramEvent =
+    | RemoveDiagramEvent
+    | CreateVoltageLevelSLDDiagramEvent
+    | CreateSubstationSLDDiagramEvent
+    | CreateNADDiagramEvent
+    | CreateNADFromConfigDiagramEvent;
+
 export type NadNodeMovement = {
     nadIdentifier: string;
     equipmentId: string;
@@ -570,6 +618,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
+    lastDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
@@ -718,6 +767,7 @@ const initialState: AppState = {
     isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
+    lastDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
@@ -1466,6 +1516,26 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
         state.diagramStates = diagramStates;
+
+        if (action.svgType === DiagramType.SUBSTATION) {
+            state.lastDiagramEvent = {
+                diagramType: action.svgType,
+                eventType: DiagramEventType.CREATE,
+                substationId: action.id as UUID,
+            };
+        } else if (action.svgType === DiagramType.VOLTAGE_LEVEL) {
+            state.lastDiagramEvent = {
+                diagramType: action.svgType,
+                eventType: DiagramEventType.CREATE,
+                voltageLevelId: action.id as UUID,
+            };
+        } else if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+            state.lastDiagramEvent = {
+                diagramType: action.svgType,
+                eventType: DiagramEventType.CREATE,
+                voltageLevelIds: [action.id as UUID],
+            };
+        }
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
@@ -1481,6 +1551,11 @@ export const reducer = createReducer(initialState, (builder) => {
                 state: ViewState.OPENED,
             }))
         );
+        state.lastDiagramEvent = {
+            diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
+            eventType: DiagramEventType.CREATE,
+            voltageLevelIds: uniqueIds as UUID[],
+        };
     });
 
     builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
@@ -1593,6 +1668,11 @@ export const reducer = createReducer(initialState, (builder) => {
             state: ViewState.OPENED,
         });
         state.diagramStates = diagramStates;
+        state.lastDiagramEvent = {
+            diagramType: DiagramType.NAD_FROM_CONFIG,
+            eventType: DiagramEventType.CREATE,
+            nadFromConfigUuid: action.nadConfigUuid as UUID,
+        };
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
@@ -1977,6 +2057,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DELETED_OR_RENAMED_NODES, (state, action: DeletedOrRenamedNodesAction) => {
         state.deletedOrRenamedNodes = action.deletedOrRenamedNodes;
+    });
+
+    builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
+        state.lastDiagramEvent = undefined;
     });
 });
 
