@@ -58,9 +58,7 @@ export const useRootNetworkNotifications = ({
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
                 doFetchRootNetworks();
-                if (resetSearch) {
-                    resetSearch();
-                }
+                resetSearch?.();
             }
         },
         [doFetchRootNetworks, resetSearch]
@@ -102,12 +100,55 @@ export const useRootNetworkNotifications = ({
                 if (newSelectedRootNetwork) {
                     dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
                 }
-                if (resetSearch) {
-                    resetSearch();
-                }
+                resetSearch?.();
             }
         },
         [currentRootNetworkUuid, dispatch, rootNetworks, resetSearch]
+    );
+
+    const handleBuildNodeNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+
+            if (
+                updateTypeHeader === NotificationType.BUILD_COMPLETED ||
+                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED
+            ) {
+                resetSearch?.();
+            }
+        },
+        [resetSearch]
+    );
+
+    const handleNodeNetworkModificationNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+
+            if (
+                updateTypeHeader === NotificationType.DELETE_FINISHED ||
+                updateTypeHeader === NotificationType.UPDATE_FINISHED
+            ) {
+                resetSearch?.();
+            }
+        },
+        [resetSearch]
+    );
+
+    const handleRenameNodeNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const parsedEventData: unknown = JSON.parse(event.data);
+            const eventData = parsedEventData as RootNetworksUpdatedEventData;
+            const updateTypeHeader = eventData.headers.updateType;
+
+            if (updateTypeHeader === NotificationType.NODE_RENAMED) {
+                resetSearch?.();
+            }
+        },
+        [resetSearch]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -118,5 +159,14 @@ export const useRootNetworkNotifications = ({
     });
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkDeletionStartedNotification,
+    });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleBuildNodeNotification,
+    });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleNodeNetworkModificationNotification,
+    });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: handleRenameNodeNotification,
     });
 };

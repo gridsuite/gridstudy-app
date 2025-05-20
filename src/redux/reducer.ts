@@ -327,6 +327,7 @@ export enum NotificationType {
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
     UPDATE_FINISHED = 'UPDATE_FINISHED',
     DELETE_FINISHED = 'DELETE_FINISHED',
+    NODE_RENAMED = 'nodeRenamed',
 }
 
 export enum RootNetworkIndexationStatus {

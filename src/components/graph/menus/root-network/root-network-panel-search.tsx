@@ -207,44 +207,8 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
         setIsSearchActive(false);
     }, [setIsSearchActive]);
 
-    const handleBuildNode = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-
-            if (
-                updateTypeHeader === NotificationType.BUILD_COMPLETED ||
-                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED
-            ) {
-                resetSearch();
-            }
-        },
-        [resetSearch]
-    );
-    const handleNodeNetworkModification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-
-            if (
-                updateTypeHeader === NotificationType.DELETE_FINISHED ||
-                updateTypeHeader === NotificationType.UPDATE_FINISHED
-            ) {
-                resetSearch();
-            }
-        },
-        [resetSearch]
-    );
-
-    //reset the search result for : build/unbuild, root network update, create and update modifications
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: handleBuildNode,
-    });
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: handleNodeNetworkModification,
-    });
+    //reset the search result for : build/unbuild, root network update, create and update modifications and renaming the node.
+    //The current behavior is subject to change in future user stories.
     useRootNetworkNotifications({
         resetSearch,
     });
