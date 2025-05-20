@@ -38,8 +38,10 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: Spreadsheet
 
                 if (genericFilters?.length > 0) {
                     //We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
-                    const filtersUuids = genericFilters.flatMap((filter) => filter.uuid);
-                    const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids as UUID[]);
+                    const filtersUuids = genericFilters
+                        .flatMap((filter) => filter.uuid)
+                        .filter((uuid): uuid is UUID => uuid !== undefined);
+                    const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids);
                     genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>
                         filterEquipments.identifiableAttributes.flatMap((identifiable) => identifiable.id)
                     );

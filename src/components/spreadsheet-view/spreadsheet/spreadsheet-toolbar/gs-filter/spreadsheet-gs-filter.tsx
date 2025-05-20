@@ -96,11 +96,10 @@ export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<Spread
     );
 
     const filters = useMemo(() => {
-        switch (tableDefinition.type) {
-            case EQUIPMENT_TYPES.SUBSTATION:
-                return countriesFilter;
-            default:
-                return [...voltageLevelsFilter, ...countriesFilter];
+        if (tableDefinition.type === EQUIPMENT_TYPES.SUBSTATION) {
+            return countriesFilter;
+        } else {
+            return [...voltageLevelsFilter, ...countriesFilter];
         }
     }, [countriesFilter, tableDefinition.type, voltageLevelsFilter]);
 
