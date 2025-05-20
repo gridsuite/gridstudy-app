@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
-    Equipment,
     EquipmentInfos,
     EquipmentItem,
     equipmentStyles,
@@ -32,7 +31,7 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
-    showVoltageLevelDiagram: (element: Equipment) => void;
+    showVoltageLevelDiagram: (element: EquipmentInfos) => void;
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }

@@ -34,14 +34,15 @@ import { PARAM_USE_NAME } from '../../utils/config-params';
 import {
     type Equipment,
     EquipmentType,
-    NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
+    EquipmentInfos,
+    NotificationsUrlKeys,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
-import { Box, LinearProgress, useTheme } from '@mui/material';
+import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -59,6 +60,11 @@ import { UUID } from 'crypto';
 import { AppState, LoadflowResultEventData, NotificationType, RootNetworksUpdatedEventData } from 'redux/reducer';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { isReactFlowRootNodeData } from 'redux/utils';
+import { FormattedMessage } from 'react-intl';
+import { Search } from '@mui/icons-material';
+import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
+import { DiagramType } from 'components/diagrams/diagram.type';
+import { useDiagram } from 'components/diagrams/use-diagram';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -76,10 +82,31 @@ const styles = {
             zIndex: 2,
         },
     },
+    divSearchIcon: {
+        position: 'absolute',
+        right: 0,
+        top: '100px',
+        zIndex: 0,
+        '&:hover': {
+            zIndex: 2,
+        },
+    },
+
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
         zIndex: 2,
+    },
+
+    searchButton: {
+        minWidth: 'auto',
+        padding: '3px 2px 2px 3px',
+        marginRight: '10px',
+        color: '#555',
+        backgroundColor: 'white',
+        '&:hover': {
+            backgroundColor: '#f2f2f2',
+        },
     },
 };
 
@@ -157,6 +184,8 @@ export const NetworkMapTab = ({
     const basicDataReady = mapEquipments && geoData;
 
     const lineFullPathRef = useRef<boolean>();
+    const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const { openDiagramView } = useDiagram();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -1159,6 +1188,35 @@ export const NetworkMapTab = ({
             </Box>
         );
     }
+    function renderSearchEquipment() {
+        return (
+            <Box sx={styles.divSearchIcon}>
+                <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
+                    <Button
+                        color="inherit"
+                        sx={styles.searchButton}
+                        size="small"
+                        onClick={() => setIsDialogSearchOpen(true)}
+                        variant="contained"
+                    >
+                        <Search />
+                    </Button>
+                </Tooltip>
+            </Box>
+        );
+    }
+
+    const showVoltageLevelDiagram = useCallback(
+        // TODO code factorization for displaying a VL via a hook
+        (optionInfos: EquipmentInfos) => {
+            if (optionInfos.type === EquipmentType.SUBSTATION) {
+                openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
+            } else if (optionInfos.voltageLevelId) {
+                openDiagramView(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL);
+            }
+        },
+        [openDiagramView]
+    );
 
     return (
         <>
@@ -1172,7 +1230,15 @@ export const NetworkMapTab = ({
                     {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
                 </>
             )}
+            {renderSearchEquipment()}
             {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
+            {studyUuid && (
+                <TopBarEquipmentSearchDialog
+                    showVoltageLevelDiagram={showVoltageLevelDiagram}
+                    isDialogSearchOpen={isDialogSearchOpen}
+                    setIsDialogSearchOpen={setIsDialogSearchOpen}
+                />
+            )}
         </>
     );
 };
