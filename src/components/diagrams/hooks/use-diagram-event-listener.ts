@@ -18,7 +18,7 @@ type UseDiagramEventListenerProps = {
 
 export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDiagramEventListenerProps) => {
     const dispatch = useDispatch();
-    const lastEvent = useSelector((state: AppState) => state.lastDiagramEvent);
+    const latestDiagramEvent = useSelector((state: AppState) => state.lastestDiagramEvent);
 
     const createDiagramFromEvent = useCallback(
         (diagramEvent: DiagramEvent) => {
@@ -52,20 +52,20 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
     );
 
     useEffect(() => {
-        if (!lastEvent) {
+        if (!latestDiagramEvent) {
             return;
         }
-        switch (lastEvent.eventType) {
+        switch (latestDiagramEvent.eventType) {
             case DiagramEventType.CREATE:
-                createDiagramFromEvent(lastEvent);
+                createDiagramFromEvent(latestDiagramEvent);
                 break;
             case DiagramEventType.REMOVE:
-                if (!lastEvent.diagramUuid) {
+                if (!latestDiagramEvent.diagramUuid) {
                     return;
                 }
-                removeDiagram(lastEvent.diagramUuid);
+                removeDiagram(latestDiagramEvent.diagramUuid);
                 break;
         }
         dispatch(resetDiagramEvent());
-    }, [createDiagramFromEvent, dispatch, lastEvent, removeDiagram]);
+    }, [createDiagramFromEvent, dispatch, latestDiagramEvent, removeDiagram]);
 };
