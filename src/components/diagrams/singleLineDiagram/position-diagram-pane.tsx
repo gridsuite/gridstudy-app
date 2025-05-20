@@ -6,7 +6,7 @@
  */
 
 import Dialog from '@mui/material/Dialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
