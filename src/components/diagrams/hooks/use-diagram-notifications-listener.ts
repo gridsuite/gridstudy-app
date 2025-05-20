@@ -7,8 +7,7 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState, StudyUpdatedEventData } from 'redux/reducer';
-import { useNotificationsListener } from '@gridsuite/commons-ui';
-import { NOTIFICATIONS_URL_KEYS } from 'components/utils/notificationsProvider-utils';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 
 type UseDiagramNotificationsListenerProps = {
     updateAllDiagrams: () => void;
@@ -30,5 +29,5 @@ export const useDiagramNotificationsListener = ({ updateAllDiagrams }: UseDiagra
         },
         [currentRootNetworkUuid, updateAllDiagrams]
     );
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, { listenerCallbackMessage: updateDiagramsCallback });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: updateDiagramsCallback });
 };
