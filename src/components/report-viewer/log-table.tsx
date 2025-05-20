@@ -416,9 +416,15 @@ const LogTable = ({
         [dispatch, reportType, severityFilter, messageFilter]
     );
 
-    const handleChangePage = useCallback((_: any, newPage: number) => {
-        setPage(newPage);
-    }, []);
+    const handleChangePage = useCallback(
+        (_: any, newPage: number) => {
+            setPage(newPage);
+            // find index of the first element in searchMatches
+            const firstMatchIndex = searchMatches.findIndex((match) => match.page === newPage);
+            setCurrentResultIndex(firstMatchIndex);
+        },
+        [searchMatches]
+    );
 
     const handleChangeRowsPerPage = useCallback(
         (event: any) => {
