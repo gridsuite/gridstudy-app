@@ -97,6 +97,17 @@ const styles = {
         width: '100%',
         zIndex: 2,
     },
+
+    searchButton: {
+        minWidth: 'auto',
+        padding: '3px 2px 2px 3px',
+        marginRight: '10px',
+        color: '#555',
+        backgroundColor: 'white',
+        '&:hover': {
+            backgroundColor: '#f2f2f2',
+        },
+    },
 };
 
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
@@ -1183,8 +1194,10 @@ export const NetworkMapTab = ({
                 <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
                     <Button
                         color="inherit"
-                        sx={{ minWidth: 'auto', padding: '6px 1Opx', marginRight: '5px' }}
+                        sx={styles.searchButton}
+                        size="small"
                         onClick={() => setIsDialogSearchOpen(true)}
+                        variant="contained"
                     >
                         <Search />
                     </Button>
