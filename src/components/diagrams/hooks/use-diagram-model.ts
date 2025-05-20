@@ -39,7 +39,7 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
     const prevCurrentNodeId = useRef<UUID | undefined>();
     const prevCurrentNodeStatus = useRef<BUILD_STATUS | undefined>();
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const prevcurrentRootNetworkUuid = useRef<UUID | null>();
+    const prevCurrentRootNetworkUuid = useRef<UUID | null>();
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
@@ -314,11 +314,11 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
     }, [currentNode, updateAllDiagrams]);
 
     useEffect(() => {
-        if (currentRootNetworkUuid === prevcurrentRootNetworkUuid.current) {
+        if (currentRootNetworkUuid === prevCurrentRootNetworkUuid.current) {
             return;
         }
         // Logic to update the diagrams when the current root network changes
-        prevcurrentRootNetworkUuid.current = currentRootNetworkUuid;
+        prevCurrentRootNetworkUuid.current = currentRootNetworkUuid;
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
