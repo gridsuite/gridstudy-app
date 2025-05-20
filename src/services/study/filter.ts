@@ -20,16 +20,6 @@ export interface ExpertFilter {
     topologyKind?: string; // TODO must be TopologyKind enum
 }
 
-export interface SpreadsheetGlobalFilter {
-    uuid?: UUID;
-    filterType: string;
-    label: string;
-    recent?: boolean;
-    filterUuid?: UUID;
-    equipmentType?: string;
-    path?: string;
-}
-
 export interface FilterEquipments {
     filterId: UUID;
     identifiableAttributes: IdentifiableAttributes[];

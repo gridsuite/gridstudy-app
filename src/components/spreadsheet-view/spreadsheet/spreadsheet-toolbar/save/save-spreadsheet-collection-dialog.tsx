@@ -31,7 +31,7 @@ import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { SpreadsheetGlobalFilter } from 'services/study/filter';
+import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
@@ -170,7 +170,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     );
 
     const getTableGlobalFilters = useCallback(
-        (tableIndex: number): SpreadsheetGlobalFilter[] => {
+        (tableIndex: number): GlobalFilter[] => {
             const tableUuid = tables[tableIndex].uuid;
             return tablesFiltersState[tableUuid] ?? [];
         },

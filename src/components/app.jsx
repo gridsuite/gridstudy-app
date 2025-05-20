@@ -68,7 +68,6 @@ import {
 } from '../services/study-config';
 import {
     extractColumnsFilters,
-    formatGlobalFilters,
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
@@ -159,13 +158,7 @@ const App = () => {
         (collection) => {
             const { tablesFilters, tableGlobalFilters, tableDefinitions } =
                 processSpreadsheetsCollectionData(collection);
-
-            const formattedGlobalFilters = [];
-            //A formating step is required to map filter uuid to its corresponding field because of a naming overlap in the backend model
-            for (const [key, value] of Object.entries(tableGlobalFilters)) {
-                formattedGlobalFilters[key] = formatGlobalFilters(value);
-            }
-            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, formattedGlobalFilters));
+            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
         },
         [dispatch]
     );
@@ -178,13 +171,14 @@ const App = () => {
                     const tabUuid = model.id;
                     const formattedColumns = mapColumnsDto(model.columns);
                     const columnsFilters = extractColumnsFilters(model.columns);
-                    const formattedGlobalFilters = model.globalFilters ? formatGlobalFilters(model.globalFilters) : [];
+                    const formattedGlobalFilters = model.globalFilters ?? [];
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
                     dispatch(saveSpreadsheetGsFilters(tabUuid, formattedGlobalFilters));
                 })
                 .catch((error) => {
+                    console.error(error);
                     snackError({
                         messageTxt: error,
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',

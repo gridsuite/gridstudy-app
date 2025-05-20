@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AppState } from '../../../../../redux/reducer';
-import { SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../../services/study/network-map';
@@ -42,20 +41,11 @@ export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<Spread
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(
-        debounce((uuid: UUID, filters: SpreadsheetGlobalFilter[]) => {
+        debounce((uuid: UUID, filters: GlobalFilter[]) => {
             if (!studyUuid) {
                 return;
             }
-
-            const formattedFilters = filters.map((filter) => ({
-                filterType: filter.filterType,
-                label: filter.label,
-                recent: filter.recent,
-                filterUuid: filter.uuid,
-                equipmentType: filter.equipmentType,
-                path: filter.path,
-            }));
-            setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, formattedFilters).catch((error) =>
+            setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, filters).catch((error) =>
                 console.error('Failed to update global filters:', error)
             );
         }, 600),

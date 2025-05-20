@@ -27,7 +27,6 @@ import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
 import { GsFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
-import { SpreadsheetGlobalFilter } from 'services/study/filter';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 
@@ -87,21 +86,9 @@ export const extractColumnsFilters = (columns: ColumnDefinitionDto[]): FilterCon
         }));
 };
 
-// Global filter model backend model has an additional uuid field which we need to filter out
-export const formatGlobalFilters = (filters: SpreadsheetGlobalFilter[]): GlobalFilter[] => {
-    return filters.map((filter) => ({
-        uuid: filter.filterUuid,
-        label: filter.label,
-        filterType: filter.filterType,
-        recent: filter.recent,
-        path: filter.path,
-        equipmentType: filter.equipmentType,
-    }));
-};
-
 const createSpreadsheetConfig = (
     columns: ColumnDefinitionDto[],
-    globalFilters: SpreadsheetGlobalFilter[],
+    globalFilters: GlobalFilter[],
     sheetType: SpreadsheetEquipmentType,
     tabName: string
 ) => ({
@@ -132,7 +119,7 @@ const handleSuccess = (
                 locked: false,
             }));
             const columnsFilters = extractColumnsFilters(model.columns);
-            const formattedGlobalFilters = model.globalFilters ? formatGlobalFilters(model.globalFilters) : [];
+            const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
             dispatch(saveSpreadsheetGsFilters(uuid, formattedGlobalFilters));
@@ -152,7 +139,7 @@ const handleSuccess = (
 interface AddNewSpreadsheetParams {
     studyUuid: UUID;
     columns: ColumnDefinitionDto[];
-    globalFilters?: SpreadsheetGlobalFilter[];
+    globalFilters?: GlobalFilter[];
     sheetType: SpreadsheetEquipmentType;
     tabIndex: number;
     tabName: string;
