@@ -20,7 +20,15 @@ import {
 } from '../../../../services/study/dynamic-security-analysis';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import { CustomFormProvider, isObjectEmpty, mergeSx, SubmitButton } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    isObjectEmpty,
+    mergeSx,
+    SubmitButton,
+    ProviderParam,
+    useParametersBackend,
+    parametersStyles,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
@@ -30,9 +38,9 @@ import { User } from 'oidc-client';
 import { LabelledButton, TabPanel } from '../parameters';
 import ContingencyParameters, { CONTINGENCIES_LIST_INFOS, CONTINGENCIES_START_TIME } from './contingency-parameters';
 import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
-import ProviderParam from '../common/ProviderParam';
-import { styles } from '../parameters-style';
-import { useParametersBackend } from '../use-parameters-backend';
+import { useSelector } from 'react-redux';
+import type { AppState } from '../../../../redux/reducer';
+import { useParametersNotification } from '../use-parameters-notification';
 
 const scenarioFormSchema = yup
     .object()
@@ -92,9 +100,11 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     setHaveDirtyFields,
 }) => {
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const [providers, provider, , resetProvider, parameters, updateParameters, resetParameters] = useParametersBackend(
+    const dynamicSecurityParametersBackend = useParametersBackend(
         user,
+        studyUuid,
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
         dynamicSecurityAnalysisAvailability,
         fetchDynamicSecurityAnalysisProviders,
@@ -104,6 +114,14 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
         fetchDynamicSecurityAnalysisParameters,
         updateDynamicSecurityAnalysisParameters
     );
+    useParametersNotification(
+        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        dynamicSecurityAnalysisAvailability,
+        dynamicSecurityParametersBackend
+    );
+
+    const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
+        dynamicSecurityParametersBackend;
 
     const formattedProviders = useMemo(
         () =>
@@ -198,7 +216,7 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                 <ProviderParam options={formattedProviders} />
                 <Grid
                     key="dsaParameters"
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parametersStyles.scrollableGrid, {
                         height: '100%',
                         paddingTop: 0,
                     })}
@@ -224,7 +242,12 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingTop: 4 })}>
+            <Grid
+                container
+                sx={mergeSx(parametersStyles.controlParametersItem, parametersStyles.marginTopButton, {
+                    paddingTop: 4,
+                })}
+            >
                 <LabelledButton callback={handleResetParametersAndProvider} label="resetToDefault" />
                 <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
                     <FormattedMessage id={'validate'} />
