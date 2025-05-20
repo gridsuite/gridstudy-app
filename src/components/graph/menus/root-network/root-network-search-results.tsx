@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Divider, Typography } from '@mui/material';
-import { NetworkNodeIcon, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import { DeviceHubIcon, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { Modification, ModificationsSearchResult } from './root-network.types';
 import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
@@ -63,7 +63,7 @@ export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> =
             {results.map((result, key) => (
                 <Box key={key} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
-                        <NetworkNodeIcon />
+                        <DeviceHubIcon style={{ width: 15, height: 15 }} />
                         <Typography color="textSecondary">{result.basicNodeInfos.name}</Typography>
                     </Box>
                     <ModificationResults modifications={result.modifications} />
