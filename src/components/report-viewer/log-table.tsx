@@ -20,6 +20,7 @@ import { AgGridReact } from 'ag-grid-react';
 import {
     ComputingAndNetworkModificationType,
     ReportLog,
+    ReportType,
     SelectedReportLog,
     SeverityLevel,
 } from 'utils/report/report.type';
@@ -35,6 +36,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
+import CustomTablePagination from 'components/utils/custom-table-pagination';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -70,6 +72,8 @@ const styles = {
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
+const PAGE_OPTIONS = [15, 30, 50, 100];
+const DEFAULT_PAGE_COUNT = 15;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
@@ -94,17 +98,23 @@ const LogTable = ({
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
+    const [, , fetchReportLogs, , fetchPagedReportLogs, fetchLogMatches] = useReportFetcher(
+        reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
+    );
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
     const [rowData, setRowData] = useState<ReportLog[] | null>(null);
+    const [searchMatches, setSearchMatches] = useState<{ rowIndex: number; page: number }[]>([]);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
+    const [count, setCount] = useState<number>(0);
 
     // Reset filtersInitialized when reportType changes
     useEffect(() => {
@@ -115,17 +125,13 @@ const LogTable = ({
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
 
     const resetSearch = useCallback(() => {
+        setSearchMatches([]);
         setSearchResults([]);
         setCurrentResultIndex(-1);
         setSearchTerm('');
     }, []);
 
-    const refreshLogsOnSelectedReport = useCallback(() => {
-        if (severityFilter.length === 0) {
-            setRowData([]);
-            resetSearch();
-            return;
-        }
+    const getReportLogs = useCallback(() => {
         fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
             const minDepth = Math.min(...reportLogs.map((log) => log.depth ?? 0));
             const transformedLogs = reportLogs.map(
@@ -142,7 +148,43 @@ const LogTable = ({
             setRowData(transformedLogs);
             resetSearch();
         });
-    }, [severityFilter, fetchReportLogs, selectedReport, messageFilter, resetSearch]);
+    }, [fetchReportLogs, messageFilter, resetSearch, selectedReport.id, selectedReport.type, severityFilter]);
+
+    const getPagedReportLogs = useCallback(() => {
+        fetchPagedReportLogs(selectedReport.id, severityFilter, messageFilter, page, rowsPerPage)?.then((pagedLogs) => {
+            const { content, totalElements, totalPages } = pagedLogs;
+            if (totalPages < page) {
+                setPage(0);
+            }
+            setCount(totalElements);
+            const minDepth = Math.min(...content.map((log) => log.depth ?? 0));
+            const transformedLogs = content.map(
+                (log) =>
+                    ({
+                        severity: log.severity.name,
+                        depth: (log.depth ?? 0) - minDepth,
+                        message: log.message,
+                        parentId: log.parentId,
+                        backgroundColor: log.severity.colorName,
+                    }) as unknown as ReportLog
+            );
+            setSelectedRowIndex(-1);
+            setRowData(transformedLogs);
+        });
+    }, [fetchPagedReportLogs, messageFilter, page, rowsPerPage, selectedReport.id, severityFilter]);
+
+    const refreshLogsOnSelectedReport = useCallback(() => {
+        if (severityFilter.length === 0) {
+            setRowData([]);
+            resetSearch();
+            return;
+        }
+        if (selectedReport.type === ReportType.GLOBAL) {
+            getReportLogs();
+        } else {
+            getPagedReportLogs();
+        }
+    }, [severityFilter.length, selectedReport.type, resetSearch, getReportLogs, getPagedReportLogs]);
 
     useEffect(() => {
         if (severities && severities.length > 0) {
@@ -175,7 +217,8 @@ const LogTable = ({
 
     useEffect(() => {
         onFiltersChanged();
-    }, [filters, onFiltersChanged]);
+        resetSearch();
+    }, [filters, onFiltersChanged, resetSearch]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -267,6 +310,18 @@ const LogTable = ({
         api.ensureIndexVisible(matches[index], 'middle');
     }, []);
 
+    const handleSearchResults = useCallback(
+        (matches: number[]) => {
+            setSearchResults(matches);
+            setCurrentResultIndex(matches.length > 0 ? 0 : -1);
+
+            if (matches.length > 0) {
+                highlightAndScrollToMatch(0, matches);
+            }
+        },
+        [highlightAndScrollToMatch]
+    );
+
     const handleSearch = useCallback(
         (searchTerm: string) => {
             if (!gridRef.current || !searchTerm) {
@@ -275,22 +330,40 @@ const LogTable = ({
             }
             setSearchTerm(searchTerm);
             const api = gridRef.current.api;
-            const matches: number[] = [];
+            let matches: number[] = [];
             const searchTermLower = searchTerm.toLowerCase();
-            api.forEachNode((node: IRowNode) => {
-                const { message } = node.data;
-                if (node.rowIndex !== null && message?.toLowerCase().includes(searchTermLower)) {
-                    matches.push(node.rowIndex);
-                }
-            });
-            setSearchResults(matches);
-            setCurrentResultIndex(matches.length > 0 ? 0 : -1);
 
-            if (matches.length > 0) {
-                highlightAndScrollToMatch(0, matches);
+            if (selectedReport.type === ReportType.GLOBAL) {
+                api.forEachNode((node: IRowNode) => {
+                    const { message } = node.data;
+                    if (node.rowIndex !== null && message?.toLowerCase().includes(searchTermLower)) {
+                        matches.push(node.rowIndex);
+                    }
+                });
+                handleSearchResults(matches);
+            } else {
+                fetchLogMatches(selectedReport.id, severityFilter, messageFilter, searchTerm, rowsPerPage)?.then(
+                    (matchesPositions) => {
+                        setSearchMatches(matchesPositions);
+                        matches = matchesPositions.map((match: { rowIndex: number; page: number }) => match.rowIndex);
+                        if (matches.length > 0) {
+                            setPage(matchesPositions[0].page);
+                        }
+                        handleSearchResults(matches);
+                    }
+                );
             }
         },
-        [highlightAndScrollToMatch, resetSearch]
+        [
+            fetchLogMatches,
+            handleSearchResults,
+            messageFilter,
+            resetSearch,
+            rowsPerPage,
+            selectedReport.id,
+            selectedReport.type,
+            severityFilter,
+        ]
     );
 
     const handleNavigate = useCallback(
@@ -307,10 +380,14 @@ const LogTable = ({
                 newIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
             }
 
+            if (selectedReport.type === ReportType.NODE) {
+                setPage(searchMatches[newIndex].page);
+            }
+
             setCurrentResultIndex(newIndex);
             highlightAndScrollToMatch(newIndex, searchResults);
         },
-        [currentResultIndex, searchResults, highlightAndScrollToMatch]
+        [searchResults, selectedReport.type, highlightAndScrollToMatch, currentResultIndex, searchMatches]
     );
 
     const handleChipClick = useCallback(
@@ -337,6 +414,19 @@ const LogTable = ({
             );
         },
         [dispatch, reportType, severityFilter, messageFilter]
+    );
+
+    const handleChangePage = useCallback((_: any, newPage: number) => {
+        setPage(newPage);
+    }, []);
+
+    const handleChangeRowsPerPage = useCallback(
+        (event: any) => {
+            resetSearch();
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        },
+        [resetSearch]
     );
 
     return (
@@ -382,6 +472,17 @@ const LogTable = ({
                     overrideLocales={AGGRID_LOCALES}
                 />
             </Box>
+            {selectedReport.type === ReportType.NODE && (
+                <CustomTablePagination
+                    rowsPerPageOptions={PAGE_OPTIONS}
+                    count={count}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    labelRowsPerPageId="reportLogsPerPage"
+                />
+            )}
         </Box>
     );
 };

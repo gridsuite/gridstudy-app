@@ -1425,6 +1425,7 @@
     "searchPlaceholder": "Search",
     "searchPlaceholderLog": "Search in Logs",
     "searchPlaceholderLogsTreeStructure": "Search in tree structure",
+    "reportLogsPerPage": "Logs per page",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant": "{symbol} Click on the map to start drawing a polygon.",
