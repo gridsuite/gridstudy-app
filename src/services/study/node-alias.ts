@@ -7,7 +7,7 @@
 import { UUID } from 'crypto';
 import { backendFetch, backendFetchJson } from '../utils';
 import { getStudyUrl } from './index';
-import { NodeAlias } from '../../components/spreadsheet/custom-columns/node-alias.type';
+import { NodeAlias } from '../../components/spreadsheet-view/types/node-alias.type';
 
 function getNodeAliasUrl(studyUuid: UUID) {
     return getStudyUrl(studyUuid) + '/node-aliases';

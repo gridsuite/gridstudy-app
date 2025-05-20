@@ -7,7 +7,7 @@
 
 import { IntlShape } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 
 export const stateEstimationQualityCriterionColumnsDefinition = (intl: IntlShape): ColDef[] => {
     return [

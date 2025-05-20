@@ -286,7 +286,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         switch (tabIndex) {
             case 0:
-                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
             case 1:
                 return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
         }

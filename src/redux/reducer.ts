@@ -212,6 +212,8 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
+    REMOVE_EQUIPMENT_DATA,
+    RemoveEquipmentDataAction,
     UPDATE_TABLE_COLUMNS,
     UpdateTableColumnsAction,
     SET_MONO_ROOT_STUDY,
@@ -256,7 +258,6 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
-import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -304,13 +305,14 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
+import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
+import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -1793,6 +1795,13 @@ export const reducer = createReducer(initialState, (builder) => {
         );
     });
 
+    builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
+        state.spreadsheetNetwork[action.equipmentType] = {
+            nodesId: [],
+            equipmentsByNodeId: {},
+        };
+    });
+
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
         // for now, this action receives an object containing all equipments from a substation
         // it will be modified when the notifications received after a network modification will be more precise
@@ -1810,7 +1819,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = formatFetchedEquipments(
+            const formattedEquipments = mapSpreadsheetEquipments(
                 // @ts-expect-error TODO manage undefined value case
                 equipmentType,
                 equipments
