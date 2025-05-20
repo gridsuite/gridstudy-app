@@ -6,7 +6,7 @@
  */
 
 import Dialog from '@mui/material/Dialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
@@ -20,7 +20,7 @@ import { DiagramType } from '../diagram.type';
 interface PositionDiagramPaneProps {
     open: boolean;
     onClose: () => void;
-    voltageLevelId?: { id: UUID };
+    voltageLevelId: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
@@ -38,54 +38,45 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
-    const [svgUrl, setSvgUrl] = useState<string | null>(null);
     const handleClose = () => {
-        setSvgUrl(null);
         onClose();
     };
 
-    const getVoltageLevelSingleLineDiagramUrl = useCallback(
-        () =>
-            getVoltageLevelSingleLineDiagram({
-                studyUuid: studyUuid,
-                currentNodeUuid: currentNodeUuid,
-                currentRootNetworkUuid: currentRootNetworkUuid,
-                voltageLevelId: voltageLevelId?.id,
-                useName: useName,
-                centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
-                diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
-                language: language,
-            }),
-        [
-            studyUuid,
-            currentNodeUuid,
-            currentRootNetworkUuid,
-            voltageLevelId?.id,
-            useName,
-            networkVisuParams.singleLineDiagramParameters.centerLabel,
-            networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-            networkVisuParams.singleLineDiagramParameters.componentLibrary,
-            language,
-        ]
-    );
-
-    useEffect(() => {
-        if (voltageLevelId?.id !== undefined) {
-            if (open) {
-                setSvgUrl(getVoltageLevelSingleLineDiagramUrl());
-            }
+    const getVoltageLevelSingleLineDiagramUrl = useCallback(() => {
+        if (!voltageLevelId) {
+            return '';
         }
-    }, [getVoltageLevelSingleLineDiagramUrl, open, svgUrl, voltageLevelId?.id]);
+        return getVoltageLevelSingleLineDiagram({
+            studyUuid: studyUuid,
+            currentNodeUuid: currentNodeUuid,
+            currentRootNetworkUuid: currentRootNetworkUuid,
+            voltageLevelId: voltageLevelId,
+            useName: useName,
+            centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+            diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+            componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+            sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
+            language: language,
+        });
+    }, [
+        voltageLevelId,
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        useName,
+        networkVisuParams.singleLineDiagramParameters.centerLabel,
+        networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+        networkVisuParams.singleLineDiagramParameters.componentLibrary,
+        language,
+    ]);
 
     return (
         <Dialog onClose={handleClose} open={open} maxWidth="md" scroll="body">
-            {voltageLevelId?.id && open && (
+            {voltageLevelId && open && (
                 <PositionDiagram
                     onClose={handleClose}
-                    diagramTitle={voltageLevelId?.id ?? ''}
-                    svgUrl={svgUrl}
+                    diagramTitle={voltageLevelId}
+                    svgUrl={getVoltageLevelSingleLineDiagramUrl()}
                     svgType={DiagramType.VOLTAGE_LEVEL}
                 />
             )}

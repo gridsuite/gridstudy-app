@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
-    Equipment,
     EquipmentInfos,
     EquipmentItem,
     equipmentStyles,

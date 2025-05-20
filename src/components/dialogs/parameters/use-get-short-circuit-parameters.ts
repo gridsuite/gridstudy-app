@@ -12,10 +12,10 @@ import { getShortCircuitParameters } from '../../../services/study/short-circuit
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import ComputingType from '../../computing-status/computing-type';
-import { isComputationParametersUpdated } from './common/computation-parameters-util';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
+import { isComputationParametersUpdated } from './use-parameters-notification';
 
 export type UseGetShortCircuitParametersProps = [
     ShortCircuitParametersInfos | null,
