@@ -16,7 +16,6 @@ import { useRootNetworkNotifications } from './use-root-network-notifications';
 import ModificationsPanel from './root-network-panel-search';
 import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
-import { TAB_VALUES } from '../../../dialogs/parameters/sensi/columns-definitions';
 
 const styles = {
     paper: {

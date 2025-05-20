@@ -8,12 +8,11 @@ import { SetStateAction, useCallback, useState } from 'react';
 import { Box, Typography, TextField, InputAdornment, IconButton, Tabs, Tab, Theme, Tooltip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import { NotificationsUrlKeys, useDebounce, useNotificationsListener } from '@gridsuite/commons-ui';
+import { useDebounce } from '@gridsuite/commons-ui';
 import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import { useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
-import { NotificationType, RootNetworksUpdatedEventData } from '../../../../redux/reducer';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
 import { RootNetworkSearchResults } from './root-network-search-results';
 

@@ -42,8 +42,7 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
             }
 
             // @ts-ignore
-            //TODO: switch the order
-            return intl.formatMessage({ id: 'network_modifications.' + modif.messageType }, { ...computeLabel(modif) });
+            return intl.formatMessage({ id: 'root_network.' + modif.messageType }, { ...computeLabel(modif) });
         },
         [computeLabel, intl]
     );
