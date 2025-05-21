@@ -660,6 +660,8 @@ export function StudyContainer({ view, onChangeTab }) {
         >
             <StudyPane
                 studyUuid={studyUuid}
+                studyName={studyName}
+                studyPath={studyPath}
                 currentNode={currentNode}
                 view={view}
                 currentRootNetworkUuid={currentRootNetworkUuid}

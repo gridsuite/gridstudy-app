@@ -45,7 +45,7 @@ const styles = {
     },
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, studyName, studyPath, currentRootNetworkUuid, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -80,6 +80,8 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                    studyName={studyName}
+                    studyPath={studyPath}
                     view={props.view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}

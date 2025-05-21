@@ -20,6 +20,8 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import Breadcrumbs from './breadcrumbs.tsx';
+import { Grid } from '@mui/material';
 
 const styles = {
     selected: (theme) => ({
@@ -36,7 +38,7 @@ const styles = {
     },
 };
 
-export function HorizontalToolbar() {
+export function HorizontalToolbar({ studyName, studyPath }) {
     const intl = useIntl();
     const dispatch = useDispatch();
 
@@ -69,163 +71,168 @@ export function HorizontalToolbar() {
     }
 
     return (
-        <List
-            style={{
-                marginLeft: 'auto',
-                marginRight: '20px',
-                display: 'flex',
-                flexDirection: 'row',
-            }}
-        >
-            {enableDeveloperMode && (
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'DynamicSimulationEventScenario',
-                    })}
-                    placement="right"
-                    arrow
-                    enterDelay={TOOLTIP_DELAY}
-                    enterNextDelay={TOOLTIP_DELAY}
-                    slotProps={{
-                        popper: {
-                            sx: {
-                                '& .MuiTooltip-tooltip': styles.tooltip,
-                            },
-                        },
-                    }}
+        <Grid container alignItems="center">
+            <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
+                <Breadcrumbs studyName={studyName} studyPath={studyPath} />
+            </Grid>
+            <Grid sx={{ marginLeft: 'auto', marginRight: '20px' }}>
+                <List
                     style={{
-                        marginRight: '8px',
+                        display: 'flex',
+                        flexDirection: 'row',
                     }}
                 >
-                    <span>
+                    {enableDeveloperMode && (
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'DynamicSimulationEventScenario',
+                            })}
+                            placement="right"
+                            arrow
+                            enterDelay={TOOLTIP_DELAY}
+                            enterNextDelay={TOOLTIP_DELAY}
+                            slotProps={{
+                                popper: {
+                                    sx: {
+                                        '& .MuiTooltip-tooltip': styles.tooltip,
+                                    },
+                                },
+                            }}
+                            style={{
+                                marginRight: '8px',
+                            }}
+                        >
+                            <span>
+                                <IconButton
+                                    size={'small'}
+                                    sx={isEventScenarioDrawerOpen ? styles.selected : styles.notSelected}
+                                    disabled={
+                                        studyDisplayMode === StudyDisplayMode.MAP ||
+                                        currentNode === null ||
+                                        currentNode?.type !== 'NETWORK_MODIFICATION'
+                                    }
+                                    onClick={toggleEventScenarioDrawer}
+                                >
+                                    <OfflineBoltOutlinedIcon />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    )}
+                    <Tooltip
+                        title={intl.formatMessage({ id: 'NetworkModifications' })}
+                        placement="right"
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                        slotProps={{
+                            popper: {
+                                sx: {
+                                    '& .MuiTooltip-tooltip': styles.tooltip,
+                                },
+                            },
+                        }}
+                        style={{
+                            marginRight: '20px',
+                        }}
+                    >
+                        <span>
+                            <IconButton
+                                size={'small'}
+                                sx={isModificationsDrawerOpen ? styles.selected : styles.notSelected}
+                                disabled={
+                                    studyDisplayMode === StudyDisplayMode.MAP ||
+                                    currentNode === null ||
+                                    currentNode?.type !== 'NETWORK_MODIFICATION'
+                                }
+                                onClick={toggleModificationsDrawer}
+                            >
+                                <ListIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                    <Divider orientation="vertical" flexItem />
+                    <Tooltip
+                        title={intl.formatMessage({ id: 'NetworkModificationTree' })}
+                        placement="right"
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                        slotProps={{
+                            popper: {
+                                sx: {
+                                    '& .MuiTooltip-tooltip': styles.tooltip,
+                                },
+                            },
+                        }}
+                        style={{
+                            marginLeft: '20px',
+                            marginRight: '8px',
+                        }}
+                    >
                         <IconButton
                             size={'small'}
-                            sx={isEventScenarioDrawerOpen ? styles.selected : styles.notSelected}
-                            disabled={
-                                studyDisplayMode === StudyDisplayMode.MAP ||
-                                currentNode === null ||
-                                currentNode?.type !== 'NETWORK_MODIFICATION'
-                            }
-                            onClick={toggleEventScenarioDrawer}
+                            sx={studyDisplayMode === StudyDisplayMode.TREE ? styles.selected : styles.notSelected}
+                            onClick={setTreeDisplay}
                         >
-                            <OfflineBoltOutlinedIcon />
+                            <AccountTreeIcon />
                         </IconButton>
-                    </span>
-                </Tooltip>
-            )}
-            <Tooltip
-                title={intl.formatMessage({ id: 'NetworkModifications' })}
-                placement="right"
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-                slotProps={{
-                    popper: {
-                        sx: {
-                            '& .MuiTooltip-tooltip': styles.tooltip,
-                        },
-                    },
-                }}
-                style={{
-                    marginRight: '20px',
-                }}
-            >
-                <span>
-                    <IconButton
-                        size={'small'}
-                        sx={isModificationsDrawerOpen ? styles.selected : styles.notSelected}
-                        disabled={
-                            studyDisplayMode === StudyDisplayMode.MAP ||
-                            currentNode === null ||
-                            currentNode?.type !== 'NETWORK_MODIFICATION'
-                        }
-                        onClick={toggleModificationsDrawer}
+                    </Tooltip>
+
+                    <Tooltip
+                        title={intl.formatMessage({ id: 'HybridDisplay' })}
+                        placement="right"
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                        slotProps={{
+                            popper: {
+                                sx: {
+                                    '& .MuiTooltip-tooltip': styles.tooltip,
+                                },
+                            },
+                        }}
+                        style={{
+                            marginRight: '8px',
+                        }}
                     >
-                        <ListIcon />
-                    </IconButton>
-                </span>
-            </Tooltip>
-            <Divider orientation="vertical" flexItem />
-            <Tooltip
-                title={intl.formatMessage({ id: 'NetworkModificationTree' })}
-                placement="right"
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-                slotProps={{
-                    popper: {
-                        sx: {
-                            '& .MuiTooltip-tooltip': styles.tooltip,
-                        },
-                    },
-                }}
-                style={{
-                    marginLeft: '20px',
-                    marginRight: '8px',
-                }}
-            >
-                <IconButton
-                    size={'small'}
-                    sx={studyDisplayMode === StudyDisplayMode.TREE ? styles.selected : styles.notSelected}
-                    onClick={setTreeDisplay}
-                >
-                    <AccountTreeIcon />
-                </IconButton>
-            </Tooltip>
+                        <IconButton
+                            size={'small'}
+                            sx={studyDisplayMode === StudyDisplayMode.HYBRID ? styles.selected : styles.notSelected}
+                            onClick={setHybridDisplay}
+                        >
+                            <AccountTreeIcon />
+                            <PublicIcon />
+                        </IconButton>
+                    </Tooltip>
 
-            <Tooltip
-                title={intl.formatMessage({ id: 'HybridDisplay' })}
-                placement="right"
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-                slotProps={{
-                    popper: {
-                        sx: {
-                            '& .MuiTooltip-tooltip': styles.tooltip,
-                        },
-                    },
-                }}
-                style={{
-                    marginRight: '8px',
-                }}
-            >
-                <IconButton
-                    size={'small'}
-                    sx={studyDisplayMode === StudyDisplayMode.HYBRID ? styles.selected : styles.notSelected}
-                    onClick={setHybridDisplay}
-                >
-                    <AccountTreeIcon />
-                    <PublicIcon />
-                </IconButton>
-            </Tooltip>
-
-            <Tooltip
-                title={intl.formatMessage({ id: 'Map' })}
-                placement="right"
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-                slotProps={{
-                    popper: {
-                        sx: {
-                            '& .MuiTooltip-tooltip': styles.tooltip,
-                        },
-                    },
-                }}
-                style={{
-                    marginRight: '8px',
-                }}
-            >
-                <IconButton
-                    size={'small'}
-                    sx={studyDisplayMode === StudyDisplayMode.MAP ? styles.selected : styles.notSelected}
-                    onClick={setMapDisplay}
-                >
-                    <PublicIcon />
-                </IconButton>
-            </Tooltip>
-        </List>
+                    <Tooltip
+                        title={intl.formatMessage({ id: 'Map' })}
+                        placement="right"
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                        slotProps={{
+                            popper: {
+                                sx: {
+                                    '& .MuiTooltip-tooltip': styles.tooltip,
+                                },
+                            },
+                        }}
+                        style={{
+                            marginRight: '8px',
+                        }}
+                    >
+                        <IconButton
+                            size={'small'}
+                            sx={studyDisplayMode === StudyDisplayMode.MAP ? styles.selected : styles.notSelected}
+                            onClick={setMapDisplay}
+                        >
+                            <PublicIcon />
+                        </IconButton>
+                    </Tooltip>
+                </List>
+            </Grid>
+        </Grid>
     );
 }
 

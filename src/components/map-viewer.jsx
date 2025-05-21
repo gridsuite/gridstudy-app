@@ -131,6 +131,8 @@ export const Content = () => (
 
 const MapViewer = ({
     studyUuid,
+    studyName,
+    studyPath,
     currentNode,
     currentRootNetworkUuid,
     view,
@@ -243,10 +245,12 @@ const MapViewer = ({
             : networkMapref.current.getSelectedSubstations();
     };
 
+    console.log('-----------currentRootNetworkUuid : ', currentRootNetworkUuid);
+
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
-                <HorizontalToolbar />
+                <HorizontalToolbar studyName={studyName} studyPath={studyPath} />
             </Box>
             <Box sx={styles.mapAndTreeContainer}>
                 {/* Waiting for map geodata is unnecessary. The map has is proper loader implementation */}
