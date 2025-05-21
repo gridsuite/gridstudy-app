@@ -5,19 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as React from 'react';
 import { Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
 import { ArrowForwardIos, MoreHoriz, RemoveRedEye } from '@mui/icons-material';
-import Tooltip from '@mui/material/Tooltip';
-import { Box, Select } from '@mui/material';
+import { MenuItem, Tooltip, ListItemText, Box, Select } from '@mui/material';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { RootNetworkMetadata } from './graph/menus/network-modifications/network-modification-menu.type';
-import MenuItem from '@mui/material/MenuItem';
 import { UUID } from 'crypto';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
-import ListItemText from '@mui/material/ListItemText';
 
 export interface BreadcrumbsProps {
     studyName: string;
