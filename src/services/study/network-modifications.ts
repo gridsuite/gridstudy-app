@@ -2006,12 +2006,14 @@ export function createTabularCreation(
 }
 
 export function createCouplingDevice({
+    voltageLevelId,
     studyUuid,
     nodeUuid,
     modificationUuid = undefined,
     busbarSectionId1,
     busbarSectionId2,
 }: CouplingDeviceCreationInfo) {
+    console.log('Creating coupling device', voltageLevelId, busbarSectionId1, busbarSectionId2);
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -2030,8 +2032,9 @@ export function createCouplingDevice({
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.COUPLING_DEVICE_CREATION.type,
-            busbarSectionId1: busbarSectionId1,
-            busbarSectionId2: busbarSectionId2,
+            voltageLevelId: voltageLevelId,
+            busOrBbsId1: busbarSectionId1,
+            busOrBbsId2: busbarSectionId2,
         }),
     });
 }

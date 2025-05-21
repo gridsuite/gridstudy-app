@@ -15,12 +15,13 @@ import { ModificationDialog } from '../../commons/modificationDialog.js';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from '../../../network/constants.js';
-import {createCouplingDevice, modifyVoltageLevel} from '../../../../services/study/network-modifications.js';
+import { createCouplingDevice } from '../../../../services/study/network-modifications.js';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config.js';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
 import { isNodeBuilt } from '../../../graph/util/model-functions.js';
 import { CouplingDeviceForm } from './coupling-device-form.jsx';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
@@ -45,6 +46,7 @@ export const CouplingDeviceDialog = ({
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
+    const intl = useIntl();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -55,12 +57,12 @@ export const CouplingDeviceDialog = ({
 
     useEffect(() => {
         if (editData) {
-            if (editData?.equipmentId) {
-                setSelectedId(editData.equipmentId);
+            if (editData?.voltageLevelId) {
+                setSelectedId(editData.voltageLevelId);
             }
             reset({
-                [BUS_BAR_SECTION_ID1]: editData?.busbarSectionId1?.value ?? '',
-                [BUS_BAR_SECTION_ID1]: editData?.busbarSectionId2?.value ?? '',
+                [BUS_BAR_SECTION_ID1]: editData?.busOrBbsId1 ?? '',
+                [BUS_BAR_SECTION_ID2]: editData?.busOrBbsId1 ?? '',
             });
         }
     }, [editData, reset]);
@@ -77,20 +79,24 @@ export const CouplingDeviceDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const onSubmit = useCallback(() => {
-        createCouplingDevice({
-            studyUuid: studyUuid,
-            nodeUuid: currentNodeUuid,
-            modificationUuid: editData?.uuid,
-            busbarSectionId1: editData?.busbarSectionId1,
-            busbarSectionId2: editData?.busbarSectionId2,
-        }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'CouplingDeviceCreationError',
+    const onSubmit = useCallback(
+        (couplingDevice) => {
+            createCouplingDevice({
+                voltageLevelId: selectedId,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                busbarSectionId1: couplingDevice[BUS_BAR_SECTION_ID1]?.id,
+                busbarSectionId2: couplingDevice[BUS_BAR_SECTION_ID2]?.id,
+            }).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'CouplingDeviceCreationError',
+                });
             });
-        });
-    }, [editData, studyUuid, currentNodeUuid, snackError]);
+        },
+        [editData, studyUuid, currentNodeUuid, snackError, selectedId]
+    );
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
@@ -114,7 +120,7 @@ export const CouplingDeviceDialog = ({
                 setBusOrBusbarSectionOptions([]);
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, setDataFetchStatus, busOrBusbarSectionOptions]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, setDataFetchStatus]
     );
 
     useEffect(() => {
@@ -137,7 +143,7 @@ export const CouplingDeviceDialog = ({
                 onSave={onSubmit}
                 maxWidth={'md'}
                 open={open}
-                titleId="CouplingDeviceCreation"
+                titleId={intl.formatMessage({ id: 'CouplingDeviceCreation' }, { voltageLevelId: selectedId })}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={

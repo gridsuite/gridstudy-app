@@ -8,10 +8,10 @@
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import GridItem from '../../commons/grid-item.js';
-import {getObjectId} from "../../../utils/utils.js";
+import { getObjectId } from '../../../utils/utils.js';
+import { Grid } from '@mui/material';
 
-export const CouplingDeviceForm = ({ index, sectionOptions }) => {
-    console.log('toto', sectionOptions);
+export const CouplingDeviceForm = ({ sectionOptions }) => {
     const busBarSectionId1Field = (
         <AutocompleteInput
             allowNewValue
@@ -37,8 +37,10 @@ export const CouplingDeviceForm = ({ index, sectionOptions }) => {
 
     return (
         <>
-            <GridItem size={4}>{busBarSectionId1Field}</GridItem>
-            <GridItem size={4}>{busBarSectionId2Field}</GridItem>
+            <Grid container>
+                <GridItem size={12}>{busBarSectionId1Field}</GridItem>
+                <GridItem size={12}>{busBarSectionId2Field}</GridItem>
+            </Grid>
         </>
     );
 };

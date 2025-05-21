@@ -1544,5 +1544,5 @@
     "Open": "Open",
     "Closed": "Closed",
 
-    "CouplingDeviceCreation" : "add a coupling device"
+    "CouplingDeviceCreation" : "add a coupling device on voltage level {voltageLevelId}"
 }

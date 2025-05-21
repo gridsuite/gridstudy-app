@@ -1540,5 +1540,5 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
 
-    "CouplingDeviceCreation" : "Ajouter un couplage ou un omnibus"
+    "CouplingDeviceCreation" : "Ajouter un couplage ou un omnibus sur le poste de {voltageLevelId}"
 }
