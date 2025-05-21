@@ -20,7 +20,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import Breadcrumbs from './breadcrumbs.tsx';
+import Breadcrumbs from './breadcrumbs';
 import { Grid } from '@mui/material';
 
 const styles = {
