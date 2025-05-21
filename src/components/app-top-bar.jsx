@@ -56,7 +56,6 @@ const styles = {
 
 const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
-
     const theme = useSelector((state) => state[PARAM_THEME]);
     const appTabIndex = useSelector((state) => state.appTabIndex);
     const studyUuid = useSelector((state) => state.studyUuid);

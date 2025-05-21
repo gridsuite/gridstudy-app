@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ArrowForwardIos, MoreHoriz, RemoveRedEye, VisibilityOff } from '@mui/icons-material';
+import { MoreHoriz, RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { MenuItem, Tooltip, ListItemText, Box, Select, Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,15 +13,21 @@ import { AppState } from '../redux/reducer';
 import { RootNetworkMetadata } from './graph/menus/network-modifications/network-modification-menu.type';
 import { UUID } from 'crypto';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { User } from 'oidc-client';
 
 export interface BreadcrumbsProps {
     studyName: string;
     studyPath: string;
 }
 
-function NetworkSelect() {
-    const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
+function NetworkSelect({
+    currentRootNetworkUuid,
+    rootNetworks,
+}: {
+    currentRootNetworkUuid: UUID | null;
+    rootNetworks: RootNetworkMetadata[];
+}) {
     const dispatch = useDispatch();
 
     return rootNetworks && rootNetworks.length > 1 ? (
@@ -42,7 +48,7 @@ function NetworkSelect() {
                     );
                 }}
             >
-                {rootNetworks?.map(
+                {rootNetworks.map(
                     (item: RootNetworkMetadata) =>
                         item.rootNetworkUuid !== currentRootNetworkUuid && (
                             <MenuItem value={item.rootNetworkUuid} sx={{ gap: 1 }}>
@@ -53,20 +59,43 @@ function NetworkSelect() {
                 )}
             </Select>
         </Box>
-    ) : undefined;
+    ) : null;
 }
 
 export default function Breadcrumbs({ studyName, studyPath }: Readonly<BreadcrumbsProps>) {
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
+    const user: User | null = useSelector((state: AppState) => state.user);
+    const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
+    const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return (
-        <MuiBreadcrumbs aria-label="breadcrumb" separator={<ArrowForwardIos fontSize="small" />}>
-            <Tooltip title={`${studyPath}/${studyName}`}>
+        <MuiBreadcrumbs aria-label="breadcrumb" separator={<KeyboardArrowRightIcon fontSize="small" />}>
+            <Tooltip
+                title={
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
+                        {user?.profile.name}
+                        <KeyboardArrowRightIcon />
+                        <span>{studyPath}</span>
+                        <KeyboardArrowRightIcon />
+                        <span>{studyName}</span>
+                        <KeyboardArrowRightIcon />
+                        <span>{currentNode?.data.label}</span>
+                        <KeyboardArrowRightIcon />
+                        <span>{currentRootNetworktag}</span>
+                    </div>
+                }
+            >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
             </Tooltip>
             <Box>{studyName}</Box>
             <Box>{currentNode?.data?.label}</Box>
-            <NetworkSelect />
+            <NetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
         </MuiBreadcrumbs>
     );
 }
