@@ -12,7 +12,7 @@ import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
 
-const keyToKeepInSessionStorage = ['type', 'voltageLevelId', 'substationId', 'voltageLevelIds']; // satic
+const keyToKeepInSessionStorage = ['type', 'voltageLevelId', 'substationId', 'voltageLevelIds', 'depth']; // static
 
 type useDiagramSessionStorageProps = {
     diagrams: Record<UUID, Diagram>;

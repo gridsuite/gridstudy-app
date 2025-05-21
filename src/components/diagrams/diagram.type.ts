@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'crypto';
-import { Svg } from './diagram-common';
+import { DiagramSvg, SldSvg, Svg } from './diagram-common';
 
 export enum ViewState {
     PINNED = 'pinned',
@@ -81,19 +81,23 @@ export type DiagramBase = {
 export type VoltageLevelDiagram = DiagramBase & {
     type: DiagramType.VOLTAGE_LEVEL;
     voltageLevelId: string;
+    svg: SldSvg | null;
 };
 export type SubstationDiagram = DiagramBase & {
     type: DiagramType.SUBSTATION;
     substationId: string;
+    svg: SldSvg | null;
 };
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
     depth: number;
+    svg: DiagramSvg | null;
 };
 export type NetworkAreaDiagramFromConfig = DiagramBase & {
     type: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    svg: DiagramSvg | null;
 };
 
 export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram | NetworkAreaDiagramFromConfig;

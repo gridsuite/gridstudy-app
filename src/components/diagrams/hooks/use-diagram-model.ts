@@ -225,10 +225,18 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             // make url from type
             const url = getUrl(diagram);
             console.log('SBO fetch', url);
+            let fetchOptions: RequestInit = { method: 'GET' };
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                fetchOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(diagram.voltageLevelIds),
+                };
+            }
 
             if (url) {
                 // fetch the svg
-                fetchSvg(url).then((data) => {
+                fetchSvg(url, fetchOptions).then((data) => {
                     if (data !== null) {
                         setDiagrams((diagrams) => {
                             if (!diagrams[diagram.diagramUuid]) {

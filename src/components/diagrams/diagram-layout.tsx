@@ -15,17 +15,31 @@ import CloseIcon from '@mui/icons-material/Close';
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import { UUID } from 'crypto';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import DiagramGridItem from './diagram-grid-item';
-
+import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
+import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
-const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NAD_FROM_CONFIG];
+const diagramTypes = [
+    DiagramType.VOLTAGE_LEVEL,
+    DiagramType.SUBSTATION,
+    DiagramType.NETWORK_AREA_DIAGRAM,
+    DiagramType.NAD_FROM_CONFIG,
+];
 
 const styles = {
     itemContainer: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'lightblue',
+    }),
+    diagramContainer: (theme: Theme) => ({
+        flexGrow: 1,
+        overflow: 'hidden',
+        position: 'relative',
+        backgroundColor:
+            theme.palette.mode === 'light'
+                ? theme.palette.background.paper
+                : theme.networkModificationPanel.backgroundColor,
     }),
     header: (theme: Theme) => ({
         // // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
@@ -43,7 +57,7 @@ const styles = {
     }),
 };
 
-const DEFAULT_WIDTH = 2;
+const DEFAULT_WIDTH = 1;
 const DEFAULT_HEIGHT = 2;
 
 const initialLayouts = {
@@ -59,7 +73,13 @@ const initialLayouts = {
     ],
 };
 
-function DiagramLayout() {
+interface DiagramLayoutProps {
+    studyUuid: UUID;
+    showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    visible: boolean;
+}
+
+function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutProps) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [cols, setCols] = useState<number>(4);
@@ -78,6 +98,8 @@ function DiagramLayout() {
                 y: Infinity,
                 w: DEFAULT_WIDTH,
                 h: DEFAULT_HEIGHT,
+                minH: DEFAULT_HEIGHT,
+                minW: DEFAULT_WIDTH,
             };
             console.log('SBO onAddDiagram', layoutItem);
             new_lg_layouts.push(layoutItem);
@@ -126,7 +148,7 @@ function DiagramLayout() {
             return;
         }
         return (
-            <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'lightblue' }}>
+            <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column' }}>
                 <Box sx={styles.header}>
                     <OverflowableText
                         className="react-grid-dragHandle"
@@ -155,6 +177,11 @@ function DiagramLayout() {
             </div>
         );
     }, [diagrams]);
+
+    // This function is called by the diagram's contents, when they get their sizes from the backend.
+    const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
+        console.log('SBO setDiagramSize', diagramId, diagramType, width, height);
+    }, []);
 
     const renderDiagrams = useCallback(() => {
         if (Object.values(diagrams).length === 0) {
@@ -185,11 +212,43 @@ function DiagramLayout() {
                             <CloseIcon fontSize="small" />
                         </IconButton>
                     </Box>
-                    <DiagramGridItem diagram={diagram} />
+                    <Box sx={styles.diagramContainer}>
+                        {(diagram.type === DiagramType.VOLTAGE_LEVEL || diagram.type === DiagramType.SUBSTATION) && (
+                            <SingleLineDiagramContent
+                                showInSpreadsheet={showInSpreadsheet}
+                                studyUuid={studyUuid}
+                                diagramId={diagram.diagramUuid}
+                                svg={diagram.svg?.svg ?? undefined}
+                                svgType={diagram.type}
+                                svgMetadata={diagram.svg?.metadata ?? undefined}
+                                loadingState={false} // TODO
+                                diagramSizeSetter={setDiagramSize}
+                                visible={visible}
+                            />
+                        )}
+                        {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
+                            diagram.type === DiagramType.NAD_FROM_CONFIG) && (
+                            <NetworkAreaDiagramContent
+                                diagramId={diagram.diagramUuid}
+                                svg={diagram.svg?.svg ?? undefined}
+                                svgType={diagram.type}
+                                svgMetadata={diagram.svg?.metadata ?? undefined}
+                                svgScalingFactor={diagram.svg?.additionalMetadata?.scalingFactor ?? undefined}
+                                svgVoltageLevels={
+                                    diagram.svg?.additionalMetadata?.voltageLevels
+                                        .map((vl) => vl.id)
+                                        .filter((vlId) => vlId !== undefined) as string[]
+                                }
+                                loadingState={false} // TODO
+                                diagramSizeSetter={setDiagramSize}
+                                visible={visible}
+                            />
+                        )}
+                    </Box>
                 </div>
             );
         });
-    }, [diagrams, onRemoveItem]);
+    }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
     console.log('SBO diagrams', diagrams);
     console.log('SBO layouts', layouts);
 
@@ -207,7 +266,7 @@ function DiagramLayout() {
                     backgroundColor:
                         theme.palette.mode === 'light'
                             ? darken(theme.palette.background.paper, 0.1)
-                            : theme.palette.background.paper,
+                            : theme.reactflow.backgroundColor,
                     flexGrow: 1,
                     overflow: 'auto',
                 }}

@@ -291,7 +291,14 @@ const MapViewer = ({
                         flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE ? '50%' : '100%',
                     }}
                 >
-                    <DiagramLayout></DiagramLayout>
+                    <DiagramLayout
+                        studyUuid={studyUuid}
+                        visible={
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                        }
+                        showInSpreadsheet={showInSpreadsheet}
+                    ></DiagramLayout>
                 </Box>
                 {/* Map */}
                 <Box
