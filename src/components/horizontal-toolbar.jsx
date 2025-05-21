@@ -22,6 +22,8 @@ import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import Breadcrumbs from './breadcrumbs';
 import { Grid } from '@mui/material';
+import { STUDY_VIEWS, StudyView } from './utils/utils.js';
+import useStudyPath from '../hooks/use-study-path.js';
 
 const styles = {
     selected: (theme) => ({
@@ -38,13 +40,15 @@ const styles = {
     },
 };
 
-export function HorizontalToolbar({ studyName, studyPath }) {
+export function HorizontalToolbar({ appTabIndex }) {
     const intl = useIntl();
     const dispatch = useDispatch();
 
+    const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const { studyName, studyPath } = useStudyPath(studyUuid);
 
     const isModificationsDrawerOpen = useSelector((state) => state.isModificationsDrawerOpen);
 
@@ -69,13 +73,15 @@ export function HorizontalToolbar({ studyName, studyPath }) {
     function setHybridDisplay() {
         dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
     }
-
     return (
         <Grid container alignItems="center">
             <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
                 <Breadcrumbs studyName={studyName} studyPath={studyPath} />
             </Grid>
-            <Grid sx={{ marginLeft: 'auto', marginRight: '20px' }}>
+            <Grid
+                sx={{ marginLeft: 'auto', marginRight: '20px' }}
+                display={STUDY_VIEWS?.[appTabIndex] !== StudyView.MAP && 'none'}
+            >
                 <List
                     style={{
                         display: 'flex',

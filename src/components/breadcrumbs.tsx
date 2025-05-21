@@ -60,7 +60,7 @@ export default function Breadcrumbs({ studyName, studyPath }: Readonly<Breadcrum
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
 
     return (
-        <MuiBreadcrumbs aria-label="breadcrumb" separator={<ArrowForwardIos />}>
+        <MuiBreadcrumbs aria-label="breadcrumb" separator={<ArrowForwardIos fontSize="small" />}>
             <Tooltip title={`${studyPath}/${studyName}`}>
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
             </Tooltip>

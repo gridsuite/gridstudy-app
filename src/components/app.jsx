@@ -59,7 +59,7 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { StudyView } from './utils/utils';
+import { STUDY_VIEWS, StudyView } from './utils/utils';
 import { NotificationType } from '../redux/reducer';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -70,10 +70,9 @@ import {
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
+import HorizontalToolbar from './horizontal-toolbar';
 
 const noUserManager = { instance: null, error: null };
-
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
 const App = () => {
     const { snackError } = useSnackMessage();
@@ -378,6 +377,7 @@ const App = () => {
             }}
         >
             <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <HorizontalToolbar studyName="" studyPath="" appTabIndex={appTabIndex} />
             <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div

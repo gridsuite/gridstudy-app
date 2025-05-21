@@ -22,7 +22,7 @@ import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { StudyView } from './utils/utils';
+import { STUDY_VIEWS, StudyView } from './utils/utils';
 
 const styles = {
     currentNodeBox: {
@@ -53,8 +53,6 @@ const styles = {
         flexShrink: 0,
     },
 };
-
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
 const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
