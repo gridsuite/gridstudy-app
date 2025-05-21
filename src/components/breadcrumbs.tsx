@@ -19,7 +19,7 @@ import { UUID } from 'crypto';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import ListItemText from '@mui/material/ListItemText';
 
-export interface AppBreadCrumbsProps {
+export interface BreadcrumbsProps {
     studyName: string;
     studyPath: string;
 }
