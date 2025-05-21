@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { fetchAppsMetadata, LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
+import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Tab, Tabs } from '@mui/material';
