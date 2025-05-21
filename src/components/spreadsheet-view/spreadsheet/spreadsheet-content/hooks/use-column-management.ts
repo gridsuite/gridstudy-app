@@ -55,37 +55,53 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
-            if (studyUuid && colId && event.finished && event.toIndex !== undefined) {
-                // Adjust toIndex to account for the row index column which is always first
-                // When moving a column, we need to subtract 1 from AG Grid's toIndex
-                // because our tableDefinition doesn't include the row index column
-                const adjustedToIndex = Math.max(0, event.toIndex - 1);
-
-                let reorderedTableDefinitionIndexesTemp = [...tableDefinition.columns];
-                const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.id === colId);
-                const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(sourceIndex, 1);
-                reorderedTableDefinitionIndexesTemp.splice(adjustedToIndex, 0, reorderedItem);
-
-                reorderSpreadsheetColumns(
-                    studyUuid,
-                    tableDefinition.uuid,
-                    reorderedTableDefinitionIndexesTemp.map((col) => col.uuid)
-                )
-                    .then(() => {
-                        dispatch(
-                            updateTableDefinition({
-                                ...tableDefinition,
-                                columns: reorderedTableDefinitionIndexesTemp,
-                            })
-                        );
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error,
-                            headerId: 'spreadsheet/reorder_columns/error',
-                        });
-                    });
+            if (!studyUuid || !colId || !event.finished || event.toIndex === undefined) {
+                return;
             }
+            // Adjust toIndex to account for the row index column which is always first
+            // When moving a column, we need to subtract 1 from AG Grid's toIndex
+            // because our tableDefinition doesn't include the row index column
+            const adjustedToIndex = Math.max(0, event.toIndex - 1);
+
+            // Move the dragged column in the full array
+            const allColumns = [...tableDefinition.columns];
+            const sourceIndex = allColumns.findIndex((col) => col.id === colId);
+
+            const [movedColumn] = allColumns.splice(sourceIndex, 1);
+            allColumns.splice(adjustedToIndex, 0, movedColumn);
+
+            // Restore invisible columns to their original positions
+            const originalColumns = tableDefinition.columns;
+            const reordered = [...allColumns];
+            originalColumns.forEach((col, idx) => {
+                if (!col.visible) {
+                    const currentIdx = reordered.findIndex((c) => c.id === col.id);
+                    if (currentIdx !== -1) {
+                        const [invisibleCol] = reordered.splice(currentIdx, 1);
+                        reordered.splice(idx, 0, invisibleCol);
+                    }
+                }
+            });
+
+            reorderSpreadsheetColumns(
+                studyUuid,
+                tableDefinition.uuid,
+                reordered.map((col) => col.uuid)
+            )
+                .then(() => {
+                    dispatch(
+                        updateTableDefinition({
+                            ...tableDefinition,
+                            columns: reordered,
+                        })
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/reorder_columns/error',
+                    });
+                });
         },
         [studyUuid, tableDefinition, dispatch, snackError]
     );
