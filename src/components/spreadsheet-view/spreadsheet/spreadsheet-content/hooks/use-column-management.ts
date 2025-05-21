@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ColumnMovedEvent, ColumnState } from 'ag-grid-community';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
@@ -52,15 +52,6 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
         });
     }, [tableDefinition, gridRef]);
 
-    // Create a map to store the original positions of all columns
-    const originalColumnPositions = useMemo(() => {
-        const positions = new Map<string, number>();
-        tableDefinition?.columns.forEach((col, index) => {
-            positions.set(col.id, index);
-        });
-        return positions;
-    }, [tableDefinition?.columns]);
-
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
             const colId = event.column?.getColId();
@@ -70,32 +61,21 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
                 // because our tableDefinition doesn't include the row index column
                 const adjustedToIndex = Math.max(0, event.toIndex - 1);
 
-                let reorderedTableDefinitionIndexesTemp = [...tableDefinition.columns.filter((col) => col.visible)];
+                let reorderedTableDefinitionIndexesTemp = [...tableDefinition.columns];
                 const sourceIndex = reorderedTableDefinitionIndexesTemp.findIndex((col) => col.id === colId);
                 const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(sourceIndex, 1);
                 reorderedTableDefinitionIndexesTemp.splice(adjustedToIndex, 0, reorderedItem);
 
-                // Reinsert invisible columns in their original positions
-                const updatedColumns = [...reorderedTableDefinitionIndexesTemp];
-                tableDefinition.columns.forEach((col) => {
-                    if (!col.visible) {
-                        const originalIndex = originalColumnPositions.get(col.id);
-                        if (originalIndex !== undefined) {
-                            updatedColumns.splice(originalIndex, 0, col);
-                        }
-                    }
-                });
-
                 reorderSpreadsheetColumns(
                     studyUuid,
                     tableDefinition.uuid,
-                    updatedColumns.map((col) => col.uuid)
+                    reorderedTableDefinitionIndexesTemp.map((col) => col.uuid)
                 )
                     .then(() => {
                         dispatch(
                             updateTableDefinition({
                                 ...tableDefinition,
-                                columns: updatedColumns,
+                                columns: reorderedTableDefinitionIndexesTemp,
                             })
                         );
                     })
@@ -107,7 +87,7 @@ export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, table
                     });
             }
         },
-        [studyUuid, tableDefinition, originalColumnPositions, dispatch, snackError]
+        [studyUuid, tableDefinition, dispatch, snackError]
     );
 
     return {
