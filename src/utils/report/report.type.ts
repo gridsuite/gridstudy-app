@@ -8,7 +8,7 @@
 import ComputingType from 'components/computing-status/computing-type';
 import { NETWORK_MODIFICATION } from './report.constant';
 
-export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
+export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'DETAIL' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
 
 export type ComputingAndNetworkModificationType = ComputingType | typeof NETWORK_MODIFICATION;
 
