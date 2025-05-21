@@ -39,6 +39,7 @@ export const resultsGlobalFilterStyles = {
         width: AUTOCOMPLETE_WIDTH + 'px',
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
+            maxHeight: '40px',
         },
         '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
             position: 'absolute',

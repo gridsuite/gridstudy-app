@@ -14,12 +14,14 @@ import {
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
+    AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    useSnackMessage,
+    NotificationsUrlKeys,
     useNotificationsListener,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -35,7 +37,6 @@ import {
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
-import { fetchValidateUser } from '../services/user-admin';
 import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
@@ -57,7 +58,6 @@ import {
     setUpdateNetworkVisualizationParameters,
     updateTableColumns,
 } from '../redux/actions';
-import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { StudyView } from './utils/utils';
 import { NotificationType } from '../redux/reducer';
@@ -149,7 +149,7 @@ const App = () => {
         [snackError, updateParams]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
+    useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: updateConfig,
     });
 
@@ -220,7 +220,7 @@ const App = () => {
         [studyUuid, updateSpreadsheetCollectionOnNotification, updateSpreadsheetTabOnNotification]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.STUDY, {
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: onSpreadsheetNotification,
     });
 
@@ -257,7 +257,6 @@ const App = () => {
                         dispatch,
                         initialMatchSilentRenewCallbackUrl != null,
                         fetchIdpSettings,
-                        fetchValidateUser,
                         initialMatchSigninCallbackUrl != null
                     ),
                     error: null,
@@ -379,6 +378,7 @@ const App = () => {
             }}
         >
             <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
