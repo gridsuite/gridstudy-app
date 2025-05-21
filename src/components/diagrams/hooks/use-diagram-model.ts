@@ -224,7 +224,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         (diagram: Diagram) => {
             // make url from type
             const url = getUrl(diagram);
-            console.log('SBO fetch', url);
             let fetchOptions: RequestInit = { method: 'GET' };
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 fetchOptions = {
@@ -263,8 +262,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
             return null;
         }
-        console.log('SBO updateAllDiagrams');
-
         Object.values(diagrams).forEach((diagram) => {
             fetchDiagramSvg(diagram);
         });
@@ -305,7 +302,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                 return;
             }
             const diagram = createPendingDiagram(diagramParams);
-            console.log('SBO createDiagram');
 
             fetchDiagramSvg(diagram);
         },

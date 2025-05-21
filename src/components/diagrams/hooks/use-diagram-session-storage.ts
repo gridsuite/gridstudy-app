@@ -28,7 +28,6 @@ export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }:
             return;
         }
         const diagrams: DiagramParams[] = loadDiagramsFromSessionStorage(studyUuid);
-        console.log('SBO loadDiagramsFromSessionStorage');
         diagrams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

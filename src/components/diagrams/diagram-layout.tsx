@@ -42,15 +42,9 @@ const styles = {
                 : theme.networkModificationPanel.backgroundColor,
     }),
     header: (theme: Theme) => ({
-        // // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
-        // position: 'absolute',
-        // width: '100%',
-        // ////
         padding: theme.spacing(0.5),
         display: 'flex',
         alignItems: 'center',
-        // flexDirection: 'row',
-        // wordBreak: 'break-all',
         backgroundColor: theme.palette.background.default,
         borderBottom: 'solid 1px',
         borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
@@ -101,9 +95,7 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                 minH: DEFAULT_HEIGHT,
                 minW: DEFAULT_WIDTH,
             };
-            console.log('SBO onAddDiagram', layoutItem);
             new_lg_layouts.push(layoutItem);
-            console.log('SBO new_layouts', new_lg_layouts);
             return { lg: new_lg_layouts };
         });
     };
@@ -111,7 +103,6 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
 
     const onRemoveItem = useCallback(
         (diagramUuid: UUID) => {
-            console.log('SBO removing', diagramUuid);
             setLayouts((old_layouts) => {
                 const new_lg_layouts = old_layouts.lg.filter((layout: Layout) => layout.i !== diagramUuid);
                 if (new_lg_layouts.length === 0) {
@@ -126,7 +117,6 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
 
     const showVoltageLevelDiagram = useCallback(
         (element: EquipmentInfos) => {
-            console.log('SBO showVoltageLevelDiagram', element);
             if (element.type === EquipmentType.VOLTAGE_LEVEL) {
                 const diagram: DiagramParams = {
                     type: DiagramType.VOLTAGE_LEVEL,
@@ -167,7 +157,6 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                 >
                     <IconButton
                         onClick={(e) => {
-                            console.log('SBO click to add diagram');
                             setIsDialogSearchOpen(true);
                         }}
                     >
@@ -180,7 +169,8 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
-        console.log('SBO setDiagramSize', diagramId, diagramType, width, height);
+        console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
+        // TODO adapt the layout w and h cnsidering those values
     }, []);
 
     const renderDiagrams = useCallback(() => {
@@ -249,8 +239,6 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
             );
         });
     }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
-    console.log('SBO diagrams', diagrams);
-    console.log('SBO layouts', layouts);
 
     return (
         <>
@@ -258,7 +246,7 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                 className="layout"
                 breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
                 cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
-                compactType={undefined}
+                compactType={'vertical'}
                 onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
                 layouts={layouts}
                 onBreakpointChange={onBreakpointChange}
