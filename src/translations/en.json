@@ -1544,5 +1544,9 @@
     "Open": "Open",
     "Closed": "Closed",
 
-    "CouplingDeviceCreation" : "add a coupling device on voltage level {voltageLevelId}"
+    "CouplingDeviceCreation" : "Add a coupling device on voltage level {voltageLevelId}",
+    "CouplingDeviceCreationEditor" : "Add a coupling device",
+    "CouplingDeviceCreationDiagramButton" : "show voltage level diagram",
+    "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
+    "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch"
 }

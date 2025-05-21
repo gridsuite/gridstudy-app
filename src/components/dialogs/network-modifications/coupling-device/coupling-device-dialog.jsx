@@ -19,9 +19,9 @@ import { createCouplingDevice } from '../../../../services/study/network-modific
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config.js';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
-import { isNodeBuilt } from '../../../graph/util/model-functions.js';
 import { CouplingDeviceForm } from './coupling-device-form.jsx';
 import { useIntl } from 'react-intl';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
@@ -62,7 +62,7 @@ export const CouplingDeviceDialog = ({
             }
             reset({
                 [BUS_BAR_SECTION_ID1]: editData?.busOrBbsId1 ?? '',
-                [BUS_BAR_SECTION_ID2]: editData?.busOrBbsId1 ?? '',
+                [BUS_BAR_SECTION_ID2]: editData?.busOrBbsId2 ?? '',
             });
         }
     }, [editData, reset]);
@@ -108,6 +108,7 @@ export const CouplingDeviceDialog = ({
                     currentRootNetworkUuid,
                     equipmentId
                 ).then((busesOrbusbarSections) => {
+                    console.log('busesOrbusbarSections', busesOrbusbarSections);
                     setBusOrBusbarSectionOptions(
                         busesOrbusbarSections?.map((busesOrbusbarSection) => ({
                             id: busesOrbusbarSection.id,
@@ -159,7 +160,17 @@ export const CouplingDeviceDialog = ({
                         fillerHeight={4}
                     />
                 )}
-                {selectedId != null && <CouplingDeviceForm sectionOptions={busOrBusbarSectionOptions} />}
+                {selectedId != null && (
+                    <CouplingDeviceForm
+                        sectionOptions={busOrBusbarSectionOptions}
+                        studyUuid={studyUuid}
+                        voltageLevelId={selectedId}
+                        currentNodeUuid={currentNodeUuid}
+                        currentNode={currentNode}
+                        isNodeBuilt={isNodeBuilt(currentNode)}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
+                )}
             </ModificationDialog>
         </CustomFormProvider>
     );

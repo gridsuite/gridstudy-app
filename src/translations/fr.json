@@ -1540,5 +1540,9 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
 
-    "CouplingDeviceCreation" : "Ajouter un couplage ou un omnibus sur le poste de {voltageLevelId}"
+    "CouplingDeviceCreation" : "Ajouter un couplage ou un omnibus sur le poste de {voltageLevelId}",
+    "CouplingDeviceCreationEditor" : "Ajouter un couplage ou un omnibus",
+    "CouplingDeviceCreationDiagramButton" : "Visualiser le diagramme du poste",
+    "builtNodeTooltipForDiagram" : "Diagramme courant prenant en compte toutes les modifications réalisées",
+    "notBuiltNodeTooltipForDiagram" : "Diagramme du dernier nœud réalisé de la branche courante"
 }
