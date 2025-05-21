@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo, useRef } from 'react';
 import {
     Autocomplete,
     AutocompleteCloseReason,
@@ -117,6 +117,7 @@ function GlobalFilterAutocomplete({
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
+    const autocompleteRef = useRef<HTMLDivElement>(null);
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
@@ -124,7 +125,8 @@ function GlobalFilterAutocomplete({
             .filter(
                 (filter) =>
                     filter.equipmentType &&
-                    !filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType)
+                    (!filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType) ||
+                        (filter.equipmentType === 'VOLTAGE_LEVEL' && filter.filterTypeFromMetadata === 'EXPERT')) // expert filter on voltage level non applicable
             )
             .map((filter) => filter.label);
 
@@ -224,85 +226,87 @@ function GlobalFilterAutocomplete({
 
     return (
         <>
-            <Autocomplete
-                value={selectedGlobalFilters}
-                open={openedDropdown}
-                onOpen={() => setOpenedDropdown(true)}
-                onClose={(_event, reason: AutocompleteCloseReason) => {
-                    // the 'blur' (click away) closing of the dropdown is controlled by the PaperComponent (which is the dropdown itself)
-                    if (reason !== 'selectOption' && reason !== 'blur') {
-                        setOpenedDropdown(false);
+            <div ref={autocompleteRef}>
+                <Autocomplete
+                    value={selectedGlobalFilters}
+                    open={openedDropdown}
+                    onOpen={() => setOpenedDropdown(true)}
+                    onClose={(_event, reason: AutocompleteCloseReason) => {
+                        // the 'blur' (click away) closing of the dropdown is controlled by the PaperComponent (which is the dropdown itself)
+                        if (reason !== 'selectOption' && reason !== 'blur') {
+                            setOpenedDropdown(false);
+                        }
+                    }}
+                    sx={resultsGlobalFilterStyles.autocomplete}
+                    multiple
+                    id="result-global-filter"
+                    size="small"
+                    openOnFocus
+                    disableCloseOnSelect
+                    options={options}
+                    onChange={(_e, value) => onChange(value)}
+                    groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
+                    renderInput={RenderInput}
+                    renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
+                        return (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    overflowX: 'auto',
+                                    flexWrap: 'nowrap',
+                                    maxWidth: '90%',
+                                }}
+                            >
+                                {filters.map((element, index) => {
+                                    return inputFieldChip(element, index, getTagsProps, filters.length);
+                                })}
+                            </Box>
+                        );
+                    }}
+                    // an "empty" renderGroup is needed in order to avoid the default behavior
+                    renderGroup={(item: AutocompleteRenderGroupParams) => {
+                        const { group, children } = item;
+                        return <Box key={'keyBoxGroup_' + group}>{children}</Box>;
+                    }}
+                    // renderOption : the checkboxes visible when we focus on the AutoComplete
+                    renderOption={(props, option: GlobalFilter, { selected }) => {
+                        const { key, children, color, ...otherProps } = props;
+                        // recent selected options are not displayed in the recent tab :
+                        const hideOption = selected && option.recent;
+                        return (
+                            !hideOption && (
+                                <ListItemButton key={key} selected={selected} component="li" {...otherProps}>
+                                    <Checkbox size="small" checked={selected} />
+                                    <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
+                                </ListItemButton>
+                            )
+                        );
+                    }}
+                    // Allows to find the corresponding chips without taking into account the recent status
+                    isOptionEqualToValue={(option: GlobalFilter, value: GlobalFilter) =>
+                        option.label === value.label &&
+                        option.filterType === value.filterType &&
+                        option.uuid === value.uuid
                     }
-                }}
-                sx={resultsGlobalFilterStyles.autocomplete}
-                multiple
-                id="result-global-filter"
-                size="small"
-                openOnFocus
-                disableCloseOnSelect
-                options={options}
-                onChange={(_e, value) => onChange(value)}
-                groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
-                renderInput={RenderInput}
-                // renderTags : the chips in the inputField
-                // only a small subset is displayed because all of them are displayed in the dropdown when the field is focused
-                renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
-                    return (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                overflowX: 'auto',
-                                flexWrap: 'nowrap',
-                                maxWidth: '90%',
-                            }}
-                        >
-                            {filters.map((element, index) => {
-                                return inputFieldChip(element, index, getTagsProps, filters.length);
-                            })}
-                        </Box>
-                    );
-                }}
-                // an "empty" renderGroup is needed in order to avoid the default behavior
-                renderGroup={(item: AutocompleteRenderGroupParams) => {
-                    const { group, children } = item;
-                    return <Box key={'keyBoxGroup_' + group}>{children}</Box>;
-                }}
-                // renderOption : the checkboxes visible when we focus on the AutoComplete
-                renderOption={(props, option: GlobalFilter, { selected }) => {
-                    const { key, children, color, ...otherProps } = props;
-                    // recent selected options are not displayed in the recent tab :
-                    const hideOption = selected && option.recent;
-                    return (
-                        !hideOption && (
-                            <ListItemButton key={key} selected={selected} component="li" {...otherProps}>
-                                <Checkbox size="small" checked={selected} />
-                                <OverflowableText text={getOptionLabel(option, translate) ?? ''} />
-                            </ListItemButton>
-                        )
-                    );
-                }}
-                // Allows to find the corresponding chips without taking into account the recent status
-                isOptionEqualToValue={(option: GlobalFilter, value: GlobalFilter) =>
-                    option.label === value.label && option.filterType === value.filterType && option.uuid === value.uuid
-                }
-                filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
-                    filterOptions(options, state)
-                }
-                // dropdown paper
-                PaperComponent={GlobalFilterPaper}
-                ListboxProps={{
-                    sx: {
-                        '& .MuiAutocomplete-option': {
-                            paddingLeft: 0,
+                    filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
+                        filterOptions(options, state)
+                    }
+                    // dropdown paper
+                    PaperComponent={(props) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />}
+                    ListboxProps={{
+                        sx: {
+                            '& .MuiAutocomplete-option': {
+                                paddingLeft: 0,
+                            },
+                            height: '100%',
+                            maxHeight: '100%',
+                            overflowY: 'auto',
                         },
-                        height: '100%',
-                        maxHeight: '100%',
-                        overflowY: 'auto',
-                    },
-                }}
-                noOptionsText={''}
-            />
+                    }}
+                    noOptionsText={''}
+                />
+            </div>
             {warningEquipmentTypeMessage && (
                 <WarningTooltip warningEquipmentTypeMessage={warningEquipmentTypeMessage} />
             )}

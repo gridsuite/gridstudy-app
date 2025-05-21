@@ -37,7 +37,6 @@ import {
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
-import { fetchValidateUser } from '../services/user-admin';
 import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
@@ -258,7 +257,6 @@ const App = () => {
                         dispatch,
                         initialMatchSilentRenewCallbackUrl != null,
                         fetchIdpSettings,
-                        fetchValidateUser,
                         initialMatchSigninCallbackUrl != null
                     ),
                     error: null,
