@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
 import { ArrowForwardIos, MoreHoriz, RemoveRedEye, VisibilityOff } from '@mui/icons-material';
-import { MenuItem, Tooltip, ListItemText, Box, Select } from '@mui/material';
+import { MenuItem, Tooltip, ListItemText, Box, Select, Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
