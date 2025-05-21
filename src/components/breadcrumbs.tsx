@@ -6,7 +6,7 @@
  */
 
 import { Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
-import { ArrowForwardIos, MoreHoriz, RemoveRedEye } from '@mui/icons-material';
+import { ArrowForwardIos, MoreHoriz, RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { MenuItem, Tooltip, ListItemText, Box, Select } from '@mui/material';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { useDispatch, useSelector } from 'react-redux';
@@ -43,11 +43,15 @@ function NetworkSelect() {
                     );
                 }}
             >
-                {rootNetworks?.map((item: RootNetworkMetadata) => (
-                    <MenuItem value={item.rootNetworkUuid}>
-                        <ListItemText primary={item.tag} />
-                    </MenuItem>
-                ))}
+                {rootNetworks?.map(
+                    (item: RootNetworkMetadata) =>
+                        item.rootNetworkUuid !== currentRootNetworkUuid && (
+                            <MenuItem value={item.rootNetworkUuid} sx={{ gap: 1 }}>
+                                <VisibilityOff />
+                                <ListItemText primary={item.tag} />
+                            </MenuItem>
+                        )
+                )}
             </Select>
         </Box>
     ) : undefined;

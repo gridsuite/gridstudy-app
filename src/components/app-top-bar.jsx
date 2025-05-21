@@ -37,7 +37,7 @@ const styles = {
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
     }),
-    boxContent: { display: 'flex', width: '100%' },
+    boxContent: { display: 'flex', width: '100%', marginLeft: '50px' },
     tabs: {},
     searchButton: {
         marginTop: 'auto',
@@ -103,13 +103,6 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
         >
-            {/* Add current Node name between Logo and Tabs */}
-            {user && currentNode && (
-                <Box sx={styles.currentNodeBox}>
-                    {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
-                    <OverflowableText sx={styles.currentNodeLabel} text="" />
-                </Box>
-            )}
             {user && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
                     <Tabs
