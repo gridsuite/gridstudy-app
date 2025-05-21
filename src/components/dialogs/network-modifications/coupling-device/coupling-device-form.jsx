@@ -6,17 +6,20 @@
  */
 
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2, COUPLING_OMNIBUS } from 'components/utils/field-constants';
+import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import GridItem from '../../commons/grid-item.js';
+import {getObjectId} from "../../../utils/utils.js";
 
 export const CouplingDeviceForm = ({ index, sectionOptions }) => {
+    console.log('toto', sectionOptions);
     const busBarSectionId1Field = (
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
-            name={`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID1}`}
-            label="SectionID1"
+            name={`${BUS_BAR_SECTION_ID1}`}
+            label="BusBarSectionID1"
             options={sectionOptions ?? []}
+            getOptionLabel={getObjectId}
             size={'small'}
         />
     );
@@ -24,9 +27,10 @@ export const CouplingDeviceForm = ({ index, sectionOptions }) => {
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
-            name={`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`}
-            label="SectionID2"
+            name={`${BUS_BAR_SECTION_ID2}`}
+            label="BusBarSectionID2"
             options={sectionOptions ?? []}
+            getOptionLabel={getObjectId}
             size={'small'}
         />
     );

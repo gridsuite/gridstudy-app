@@ -5,62 +5,156 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {BUS_BAR_COUNT, COUPLING_OMNIBUS, EQUIPMENT_ID, SECTION_COUNT,} from 'components/utils/field-constants';
-import {CouplingDeviceDialog} from './coupling-device-dialog.jsx';
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import {useForm, useFormContext, useWatch} from 'react-hook-form';
-import {FetchStatus} from "../../../../services/utils.js";
-import {EquipmentIdSelector} from "../../equipment-id/equipment-id-selector.js";
-import {EQUIPMENT_TYPES} from "../../../utils/equipment-types.js";
-import {ModificationDialog} from "../../commons/modificationDialog.js";
-import {yupResolver} from "@hookform/resolvers/yup";
+import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FetchStatus } from '../../../../services/utils.js';
+import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector.js';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types.js';
+import { ModificationDialog } from '../../commons/modificationDialog.js';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from '../../../network/constants.js';
+import {createCouplingDevice, modifyVoltageLevel} from '../../../../services/study/network-modifications.js';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import yup from '../../../utils/yup-config.js';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
+import { isNodeBuilt } from '../../../graph/util/model-functions.js';
+import { CouplingDeviceForm } from './coupling-device-form.jsx';
 
-export const CouplingDeviceForm = (...dialogProps) => {
-    const { setValue } = useFormContext();
+const emptyFormData = {
+    [BUS_BAR_SECTION_ID1]: null,
+    [BUS_BAR_SECTION_ID2]: null,
+};
+const formSchema = yup.object().shape({
+    [BUS_BAR_SECTION_ID1]: yup.object().required().nullable(),
+    [BUS_BAR_SECTION_ID2]: yup.object().required().nullable(),
+});
+export const CouplingDeviceDialog = ({
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
+    currentNode,
+    currentRootNetworkUuid,
+    studyUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}) => {
+    const currentNodeUuid = currentNode?.id;
+    const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-
-    const { reset, getValues } = formMethods;
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
+    const { reset } = formMethods;
+
+    useEffect(() => {
+        if (editData) {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            reset({
+                [BUS_BAR_SECTION_ID1]: editData?.busbarSectionId1?.value ?? '',
+                [BUS_BAR_SECTION_ID1]: editData?.busbarSectionId2?.value ?? '',
+            });
+        }
+    }, [editData, reset]);
+
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
+    });
+
+    const onSubmit = useCallback(() => {
+        createCouplingDevice({
+            studyUuid: studyUuid,
+            nodeUuid: currentNodeUuid,
+            modificationUuid: editData?.uuid,
+            busbarSectionId1: editData?.busbarSectionId1,
+            busbarSectionId2: editData?.busbarSectionId2,
+        }).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'CouplingDeviceCreationError',
+            });
+        });
+    }, [editData, studyUuid, currentNodeUuid, snackError]);
+
+    const onEquipmentIdChange = useCallback(
+        (equipmentId) => {
+            if (equipmentId) {
+                setDataFetchStatus(FetchStatus.RUNNING);
+                fetchBusesOrBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    equipmentId
+                ).then((busesOrbusbarSections) => {
+                    setBusOrBusbarSectionOptions(
+                        busesOrbusbarSections?.map((busesOrbusbarSection) => ({
+                            id: busesOrbusbarSection.id,
+                            label: busesOrbusbarSection?.name ?? '',
+                        })) || []
+                    );
+                    setDataFetchStatus(FetchStatus.SUCCEED);
+                });
+            } else {
+                setBusOrBusbarSectionOptions([]);
+            }
+        },
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, setDataFetchStatus, busOrBusbarSectionOptions]
+    );
+
     useEffect(() => {
-        // the cleanup function is triggered every time sectionOptions changes and when unmounting
-        return () => setValue(COUPLING_OMNIBUS, []);
-    }, [sectionOptions, setValue]);
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     return (
-        <ModificationDialog
-            fullWidth
-            onClear={clear}
-            onSave={onSubmit}
-            maxWidth={'md'}
-            open={open}
-            titleId="CouplingDeviceCreation"
-            keepMounted={true}
-            showNodeNotBuiltWarning={selectedId != null}
-            isDataFetching={
-                isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
-            }
-            {...dialogProps}
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
         >
-            {selectedId == null && (
-                <EquipmentIdSelector
-                    defaultValue={selectedId}
-                    setSelectedId={setSelectedId}
-                    equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
-                    fillerHeight={4}
-                />
-            )}
-            {selectedId != null && (
-                <CouplingDeviceDialog equipmentId={selectedId} />
-            )}
-        </ModificationDialog>
+            <ModificationDialog
+                fullWidth
+                onClear={clear}
+                onSave={onSubmit}
+                maxWidth={'md'}
+                open={open}
+                titleId="CouplingDeviceCreation"
+                keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
+                isDataFetching={
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
+                }
+                {...dialogProps}
+            >
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                        fillerHeight={4}
+                    />
+                )}
+                {selectedId != null && <CouplingDeviceForm sectionOptions={busOrBusbarSectionOptions} />}
+            </ModificationDialog>
+        </CustomFormProvider>
     );
 };

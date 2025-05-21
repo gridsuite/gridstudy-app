@@ -789,3 +789,11 @@ export interface TopologyVoltageLevelModificationInfos {
     equipmentId: string;
     equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }
+
+export interface CouplingDeviceCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    modificationUuid: UUID;
+    busbarSectionId1: string;
+    busbarSectionId2: string;
+}
