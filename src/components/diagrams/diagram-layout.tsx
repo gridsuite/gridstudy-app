@@ -82,13 +82,40 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
         setCols(cols);
     };
 
+    const FindNextXPositionForItem = useCallback(
+        (layoutItems: Layout[]) => {
+            if (layoutItems.length === 0) {
+                return 0;
+            }
+            let nextXPosition = 0;
+            let lineItems = new Map<number, Layout[]>();
+            layoutItems.forEach((item) => {
+                if (!lineItems.get(item.y)) {
+                    lineItems.set(item.y, [item]);
+                } else {
+                    lineItems.get(item.y)?.push(item);
+                }
+            });
+            for (let [, items] of lineItems) {
+                const itemWithMaxX = items.sort((a, b) => a.x - b.x).slice(-1)[0];
+                const sum = items.reduce((acc, item) => acc + item.w, 0);
+                if (sum + DEFAULT_WIDTH <= cols) {
+                    // then we have the space somewhere
+                    nextXPosition = itemWithMaxX.x + itemWithMaxX.w;
+                    break;
+                }
+            }
+            return nextXPosition;
+        },
+        [cols]
+    );
+
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
             const new_lg_layouts = old_layouts.lg.filter((layout) => layout.i !== 'Adder');
-
-            const layoutItem = {
+            const layoutItem: Layout = {
                 i: diagram.diagramUuid,
-                x: (new_lg_layouts.length * DEFAULT_WIDTH) % cols,
+                x: FindNextXPositionForItem(new_lg_layouts),
                 y: Infinity,
                 w: DEFAULT_WIDTH,
                 h: DEFAULT_HEIGHT,
