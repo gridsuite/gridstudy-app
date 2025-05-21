@@ -57,7 +57,7 @@ function NetworkSelect() {
     ) : undefined;
 }
 
-export default function Breadcrumbs({ studyName, studyPath }: Readonly<AppBreadCrumbsProps>) {
+export default function Breadcrumbs({ studyName, studyPath }: Readonly<BreadcrumbsProps>) {
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
 
     return (
