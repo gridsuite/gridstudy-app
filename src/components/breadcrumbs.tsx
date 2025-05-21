@@ -54,7 +54,7 @@ function NetworkSelect() {
                 ))}
             </Select>
         </Box>
-    ) : null;
+    ) : undefined;
 }
 
 export default function Breadcrumbs({ studyName, studyPath }: Readonly<AppBreadCrumbsProps>) {
