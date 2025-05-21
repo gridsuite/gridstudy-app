@@ -245,8 +245,6 @@ const MapViewer = ({
             : networkMapref.current.getSelectedSubstations();
     };
 
-    console.log('-----------currentRootNetworkUuid : ', currentRootNetworkUuid);
-
     return (
         <Box sx={styles.table}>
             <Box sx={styles.horizontalToolbar}>
