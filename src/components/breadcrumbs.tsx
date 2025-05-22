@@ -24,8 +24,6 @@ import { RootNetworkMetadata } from './graph/menus/network-modifications/network
 import { UUID } from 'crypto';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 const toolTipStyle = {
     display: 'flex',
@@ -91,7 +89,6 @@ export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Reado
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
     const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
-    const [isDeveloperModeEnabled] = useParameterState(PARAM_DEVELOPER_MODE);
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" color="text" separator={<KeyboardArrowRightIcon fontSize="small" />}>
@@ -120,7 +117,7 @@ export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Reado
             </NoMaxWidthTooltip>
             <Box>{studyName}</Box>
             <Box>{currentNode?.data?.label}</Box>
-            {rootNetworks && rootNetworks.length > 1 && isDeveloperModeEnabled && (
+            {rootNetworks && rootNetworks.length > 1 && (
                 <NetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
             )}
         </MuiBreadcrumbs>
