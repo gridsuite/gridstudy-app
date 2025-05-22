@@ -18,7 +18,7 @@ type UseDiagramEventListenerProps = {
 
 export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDiagramEventListenerProps) => {
     const dispatch = useDispatch();
-    const latestDiagramEvent = useSelector((state: AppState) => state.lastestDiagramEvent);
+    const latestDiagramEvent = useSelector((state: AppState) => state.latestDiagramEvent);
 
     const createDiagramFromEvent = useCallback(
         (diagramEvent: DiagramEvent) => {
