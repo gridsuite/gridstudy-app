@@ -27,12 +27,28 @@ import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { v4 } from 'uuid';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
+import { useIntl } from 'react-intl';
+
+const makeDiagramName = (diagram: Diagram): string => {
+    if (diagram.type === DiagramType.VOLTAGE_LEVEL) {
+        return `${diagram.voltageLevelId}`;
+    } else if (diagram.type === DiagramType.SUBSTATION) {
+        return `${diagram.substationId}`;
+    } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+        return `${diagram.voltageLevelIds.join(', ')}`;
+    } else if (diagram.type === DiagramType.NAD_FROM_CONFIG) {
+        return `${diagram.nadFromConfigUuid}`;
+    }
+    return `diagram type unknown`;
+};
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
+    onAddDiagram: (diagram: Diagram) => void;
 };
 
-export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
+export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelProps) => {
+    const intl = useIntl();
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -58,19 +74,24 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
         [diagramTypes]
     );
 
-    const createPendingDiagram = useCallback((diagramParams: DiagramParams) => {
-        const pendingDiagram: Diagram = {
-            ...diagramParams,
-            diagramUuid: v4() as UUID,
-            svg: null,
-        };
-        setDiagrams((diagrams) => {
-            const newDiagrams = { ...diagrams };
-            newDiagrams[pendingDiagram.diagramUuid] = pendingDiagram;
-            return newDiagrams;
-        });
-        return pendingDiagram;
-    }, []);
+    const createPendingDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            const pendingDiagram: Diagram = {
+                ...diagramParams,
+                diagramUuid: v4() as UUID,
+                name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramParams.type }),
+                svg: null,
+            };
+            setDiagrams((diagrams) => {
+                const newDiagrams = { ...diagrams };
+                newDiagrams[pendingDiagram.diagramUuid] = pendingDiagram;
+                return newDiagrams;
+            });
+            onAddDiagram(pendingDiagram);
+            return pendingDiagram;
+        },
+        [intl, onAddDiagram]
+    );
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (diagram: VoltageLevelDiagram) => {
@@ -205,10 +226,18 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
         (diagram: Diagram) => {
             // make url from type
             const url = getUrl(diagram);
+            let fetchOptions: RequestInit = { method: 'GET' };
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                fetchOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(diagram.voltageLevelIds),
+                };
+            }
 
             if (url) {
                 // fetch the svg
-                fetchSvg(url).then((data) => {
+                fetchSvg(url, fetchOptions).then((data) => {
                     if (data !== null) {
                         setDiagrams((diagrams) => {
                             if (!diagrams[diagram.diagramUuid]) {
@@ -220,6 +249,7 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
                             newDiagrams[diagram.diagramUuid] = {
                                 ...diagrams[diagram.diagramUuid],
                                 svg: data,
+                                name: makeDiagramName(diagram),
                             };
                             return newDiagrams;
                         });
@@ -234,7 +264,6 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
             return null;
         }
-
         Object.values(diagrams).forEach((diagram) => {
             fetchDiagramSvg(diagram);
         });
@@ -322,5 +351,5 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
-    return { diagrams };
+    return { diagrams, removeDiagram, createDiagram };
 };
