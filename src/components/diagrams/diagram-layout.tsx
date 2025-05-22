@@ -19,6 +19,7 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
+// Diagram types to manage here
 const diagramTypes = [
     DiagramType.VOLTAGE_LEVEL,
     DiagramType.SUBSTATION,
@@ -76,47 +77,15 @@ interface DiagramLayoutProps {
 function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutProps) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
-    const [cols, setCols] = useState<number>(4);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
-    const onBreakpointChange = (newBreakpoint: string, cols: number) => {
-        setCols(cols);
-    };
-
-    const FindNextXPositionForItem = useCallback(
-        (layoutItems: Layout[]) => {
-            if (layoutItems.length === 0) {
-                return 0;
-            }
-            let nextXPosition = 0;
-            let lineItems = new Map<number, Layout[]>();
-            layoutItems.forEach((item) => {
-                if (!lineItems.get(item.y)) {
-                    lineItems.set(item.y, [item]);
-                } else {
-                    lineItems.get(item.y)?.push(item);
-                }
-            });
-            for (let [, items] of lineItems) {
-                const itemWithMaxX = items.sort((a, b) => a.x - b.x).slice(-1)[0];
-                const sum = items.reduce((acc, item) => acc + item.w, 0);
-                if (sum + DEFAULT_WIDTH <= cols) {
-                    // then we have the space somewhere
-                    nextXPosition = itemWithMaxX.x + itemWithMaxX.w;
-                    break;
-                }
-            }
-            return nextXPosition;
-        },
-        [cols]
-    );
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
             const new_lg_layouts = old_layouts.lg.filter((layout) => layout.i !== 'Adder');
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
-                x: FindNextXPositionForItem(new_lg_layouts),
-                y: Infinity,
+                x: Infinity,
+                y: 0,
                 w: DEFAULT_WIDTH,
                 h: DEFAULT_HEIGHT,
                 minH: DEFAULT_HEIGHT,
@@ -273,10 +242,9 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                 className="layout"
                 breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
                 cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
-                compactType={'vertical'}
+                compactType={'horizontal'}
                 onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
                 layouts={layouts}
-                onBreakpointChange={onBreakpointChange}
                 style={{
                     backgroundColor:
                         theme.palette.mode === 'light'
