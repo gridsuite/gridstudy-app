@@ -70,7 +70,6 @@ import {
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
-import HorizontalToolbar from './horizontal-toolbar';
 
 const noUserManager = { instance: null, error: null };
 
@@ -377,7 +376,6 @@ const App = () => {
             }}
         >
             <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
-            <HorizontalToolbar studyName="" studyPath="" appTabIndex={appTabIndex} />
             <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div

@@ -6,7 +6,17 @@
  */
 
 import { MoreHoriz, RemoveRedEye, VisibilityOff } from '@mui/icons-material';
-import { MenuItem, Tooltip, ListItemText, Box, Select, Breadcrumbs as MuiBreadcrumbs } from '@mui/material';
+import {
+    MenuItem,
+    Tooltip,
+    ListItemText,
+    Box,
+    Select,
+    Breadcrumbs as MuiBreadcrumbs,
+    styled,
+    TooltipProps,
+    tooltipClasses,
+} from '@mui/material';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
@@ -16,11 +26,6 @@ import { setCurrentRootNetworkUuid } from 'redux/actions';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-
-export interface BreadcrumbsProps {
-    studyName: string;
-    parentDirectoriesNames: string[];
-}
 
 function NetworkSelect({
     currentRootNetworkUuid,
@@ -64,6 +69,19 @@ function NetworkSelect({
     ) : null;
 }
 
+export interface BreadcrumbsProps {
+    studyName: string | undefined;
+    parentDirectoriesNames: string[];
+}
+
+const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))({
+    [`& .${tooltipClasses.tooltip}`]: {
+        maxWidth: 'none',
+    },
+});
+
 export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Readonly<BreadcrumbsProps>) {
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -78,29 +96,29 @@ export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Reado
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" separator={<KeyboardArrowRightIcon fontSize="small" />}>
-            <Tooltip
+            <NoMaxWidthTooltip
                 title={
                     <Box sx={toolTipStyle}>
                         {parentDirectoriesNames?.map((directoryName: string) => (
                             <Box sx={toolTipStyle}>
                                 {directoryName}
-                                <KeyboardArrowRightIcon />
+                                <KeyboardArrowRightIcon fontSize="small" />
                             </Box>
                         ))}
                         <Box sx={toolTipStyle}>
                             {studyName}
-                            <KeyboardArrowRightIcon />
+                            <KeyboardArrowRightIcon fontSize="small" />
                         </Box>
                         <Box sx={toolTipStyle}>
                             {currentNode?.data.label}
-                            <KeyboardArrowRightIcon />
+                            <KeyboardArrowRightIcon fontSize="small" />
                         </Box>
                         <Box sx={toolTipStyle}>{currentRootNetworktag}</Box>
                     </Box>
                 }
             >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />
-            </Tooltip>
+            </NoMaxWidthTooltip>
             <Box>{studyName}</Box>
             <Box>{currentNode?.data?.label}</Box>
             <NetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />

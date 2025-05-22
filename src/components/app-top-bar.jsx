@@ -32,11 +32,6 @@ const styles = {
         justifyContent: 'center',
         borderColor: '#123456',
     },
-    currentNodeLabel: (theme) => ({
-        color: theme.palette.primary.main,
-        margin: theme.spacing(1.5),
-        fontWeight: 'bold',
-    }),
     boxContent: { display: 'flex', width: '100%', marginLeft: '50px' },
     tabs: {},
     searchButton: {

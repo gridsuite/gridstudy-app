@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';
 
-export default function useStudyPath(studyUuid: UUID) {
+export default function useStudyPath(studyUuid: UUID | null) {
     const [studyName, setStudyName] = useState<string>();
     const prevStudyName = usePrevious(studyName);
     const [studyPath, setStudyPath] = useState<string>();
@@ -37,31 +37,32 @@ export default function useStudyPath(studyUuid: UUID) {
     const studyParentDirectoriesUuidsRef = useRef<UUID[]>([]);
 
     const fetchStudyPath = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid)
-            .then((response) => {
-                const parentDirectoriesNames = response
-                    .slice(0, response.length - 1)
-                    .map((parent) => parent.elementName);
-                setParentDirectoriesNames(parentDirectoriesNames);
-                const parentDirectoriesUuid = response
-                    .slice(0, response.length - 1)
-                    .map((parent) => parent.elementUuid);
-                studyParentDirectoriesUuidsRef.current = parentDirectoriesUuid;
+        studyUuid &&
+            fetchDirectoryElementPath(studyUuid)
+                .then((response) => {
+                    const parentDirectoriesNames = response
+                        .slice(0, response.length - 1)
+                        .map((parent) => parent.elementName);
+                    setParentDirectoriesNames(parentDirectoriesNames);
+                    const parentDirectoriesUuid = response
+                        .slice(0, response.length - 1)
+                        .map((parent) => parent.elementUuid);
+                    studyParentDirectoriesUuidsRef.current = parentDirectoriesUuid;
 
-                const studyName = response[response.length - 1]?.elementName;
-                const path = computeFullPath(parentDirectoriesNames);
-                setStudyName(studyName);
-                setStudyPath(path);
+                    const studyName = response[response.length - 1]?.elementName;
+                    const path = computeFullPath(parentDirectoriesNames);
+                    setStudyName(studyName);
+                    setStudyPath(path);
 
-                document.title = studyName;
-            })
-            .catch((error) => {
-                document.title = initialTitle;
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LoadStudyAndParentsInfoError',
+                    document.title = studyName;
+                })
+                .catch((error) => {
+                    document.title = initialTitle;
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'LoadStudyAndParentsInfoError',
+                    });
                 });
-            });
     }, [initialTitle, snackError, studyUuid]);
     const onStudyUpdated = useCallback(
         (event: any) => {

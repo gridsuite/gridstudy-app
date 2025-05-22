@@ -12,12 +12,13 @@ import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view.js';
+import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import { useDiagram } from './diagrams/use-diagram';
+import HorizontalToolbar from './horizontal-toolbar';
 
 const styles = {
     map: {
@@ -69,6 +70,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
 
     return (
         <>
+            <HorizontalToolbar />
             {/*Rendering the map is slow, do it once and keep it display:none*/}
             <div
                 className="singlestretch-child"

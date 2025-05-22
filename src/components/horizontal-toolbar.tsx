@@ -21,15 +21,16 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import Breadcrumbs from './breadcrumbs';
-import { Grid } from '@mui/material';
+import { Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
+import { AppState } from '../redux/reducer';
 
 const styles = {
-    selected: (theme) => ({
+    selected: (theme: Theme) => ({
         color: theme.palette.action.active,
     }),
-    notSelected: (theme) => ({
+    notSelected: (theme: Theme) => ({
         color: theme.palette.action.disabled,
     }),
     tooltip: {
@@ -40,19 +41,20 @@ const styles = {
     },
 };
 
-export function HorizontalToolbar({ appTabIndex }) {
+export function HorizontalToolbar() {
     const intl = useIntl();
     const dispatch = useDispatch();
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
 
-    const isModificationsDrawerOpen = useSelector((state) => state.isModificationsDrawerOpen);
+    const isModificationsDrawerOpen = useSelector((state: AppState) => state.isModificationsDrawerOpen);
 
-    const isEventScenarioDrawerOpen = useSelector((state) => state.isEventScenarioDrawerOpen);
+    const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
 
     const toggleModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
@@ -80,8 +82,11 @@ export function HorizontalToolbar({ appTabIndex }) {
                 <Breadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
             </Grid>
             <Grid
-                sx={{ marginLeft: 'auto', marginRight: '20px' }}
-                display={STUDY_VIEWS?.[appTabIndex] !== StudyView.MAP && 'none'}
+                sx={{
+                    marginLeft: 'auto',
+                    marginRight: '20px',
+                    visibility: STUDY_VIEWS?.[appTabIndex] !== StudyView.MAP ? 'hidden' : 'visible',
+                }}
             >
                 <List
                     style={{
