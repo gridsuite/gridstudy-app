@@ -1638,17 +1638,11 @@ export const reducer = createReducer(initialState, (builder) => {
         }
 
         state.diagramStates = diagramStates;
-        // state.lastestDiagramEvent = {
-        //     diagramType: action.svgType,
-        //     diagramUuid: action.id as UUID, // TODO get the diagramUuid
-        //     eventType: DiagramEventType.REMOVE,
-        // };
     });
 
     builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
         const idsToClose = new Set(action.ids);
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
-        // TODO remove not used ?
     });
 
     builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
