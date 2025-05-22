@@ -7,6 +7,7 @@
 
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 
 export const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';
@@ -42,4 +43,4 @@ export const columnCreationFormSchema = yup.object().shape({
     [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()).required(),
 });
 
-export type ColumnCreationForm = yup.InferType<typeof columnCreationFormSchema>;
+export type ColumnCreationForm = InferType<typeof columnCreationFormSchema>;

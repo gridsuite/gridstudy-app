@@ -7,6 +7,7 @@
 
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { FILTERS, ID, NAME, SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
 
 export type ExpertFilterForm = Omit<ExpertFilter, 'type' | 'equipmentType' | 'topologyKind' | 'rules'>;
@@ -30,7 +31,7 @@ export const spreadsheetGsFilterFormSchema = yup.object({
         .required(),
 });
 
-export type SpreadsheetGsFilterForm = yup.InferType<typeof spreadsheetGsFilterFormSchema>;
+export type SpreadsheetGsFilterForm = InferType<typeof spreadsheetGsFilterFormSchema>;
 
 export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> = {
     [SPREADSHEET_GS_FILTER]: [],

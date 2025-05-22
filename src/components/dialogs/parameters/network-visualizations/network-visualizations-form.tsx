@@ -18,6 +18,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { TabValue } from './network-visualizations-utils';
 
 export const initialNetworkVisualizationParametersForm: NetworkVisualizationParametersForm = {
@@ -58,4 +59,4 @@ export const networkVisualizationParametersSchema = yup.object().shape({
     }),
 });
 
-export type NetworkVisualizationParametersForm = yup.InferType<typeof networkVisualizationParametersSchema>;
+export type NetworkVisualizationParametersForm = InferType<typeof networkVisualizationParametersSchema>;

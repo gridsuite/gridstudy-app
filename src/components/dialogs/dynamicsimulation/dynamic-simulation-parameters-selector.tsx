@@ -6,6 +6,7 @@
  */
 
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { useCallback, useEffect, useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -31,7 +32,7 @@ const formSchema = yup.object().shape({
     [MAPPING]: yup.string().required(),
 });
 
-type MappingFormData = yup.InferType<typeof formSchema>;
+type MappingFormData = InferType<typeof formSchema>;
 
 const emptyFormData: MappingFormData = {
     [MAPPING]: '',

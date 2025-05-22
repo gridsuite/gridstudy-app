@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'crypto';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { EquipmentType } from '@gridsuite/commons-ui';
 import {
     DESTINATION_FOLDER,
@@ -16,7 +18,6 @@ import {
     SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { SELECTION_TYPES } from './selection-types';
-import type { UUID } from 'crypto';
 
 export type DestinationFolder = {
     [FOLDER_ID]: UUID;
@@ -55,7 +56,7 @@ const formSchema = yup.object().shape({
 export const getSelectionCreationSchema = () => formSchema;
 
 // used for useForm typing
-export type SelectionCreationPanelFormSchema = yup.InferType<typeof formSchema>;
+export type SelectionCreationPanelFormSchema = InferType<typeof formSchema>;
 
 export type SelectionCreationPanelNadFields = SelectionCreationPanelFormSchema & {
     [SELECTION_TYPE]: SELECTION_TYPES.NAD;

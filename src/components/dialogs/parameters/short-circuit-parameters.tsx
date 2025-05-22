@@ -26,6 +26,7 @@ import {
 } from '../../../services/study/short-circuit-analysis';
 import { fetchShortCircuitParameters } from '../../../services/short-circuit-analysis';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     SHORT_CIRCUIT_PREDEFINED_PARAMS,
@@ -91,7 +92,7 @@ const prepareDataToSend = (
     };
 };
 
-type ShortCircuitParametersFormProps = yup.InferType<typeof formSchema>;
+type ShortCircuitParametersFormProps = InferType<typeof formSchema>;
 
 interface ShortCircuitParametersProps {
     useShortCircuitParameters: UseGetShortCircuitParametersProps;

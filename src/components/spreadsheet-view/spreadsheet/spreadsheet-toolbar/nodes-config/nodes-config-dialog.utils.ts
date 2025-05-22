@@ -6,6 +6,7 @@
  */
 
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { areArrayElementsUnique } from '../../../../utils/utils';
 
 export const NODE_ALIAS = 'alias';
@@ -48,4 +49,4 @@ export const nodesFormSchema = yup.object().shape({
         }),
 });
 
-export type NodesForm = yup.InferType<typeof nodesFormSchema>;
+export type NodesForm = InferType<typeof nodesFormSchema>;

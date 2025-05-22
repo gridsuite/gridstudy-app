@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import {
     DEFAULT_BOUNDS,
     DEFAULT_FIXED_BOUNDS,
@@ -386,4 +387,4 @@ export const stateEstimationParametersFormSchema = yup.object().shape({
     }),
 });
 
-export type StateEstimationParametersForm = yup.InferType<typeof stateEstimationParametersFormSchema>;
+export type StateEstimationParametersForm = InferType<typeof stateEstimationParametersFormSchema>;

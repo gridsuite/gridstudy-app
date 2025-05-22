@@ -36,6 +36,7 @@ import {
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 
 export type UseGetNonEvacuatedEnergyParametersReturnProps = [
@@ -283,4 +284,4 @@ export const formSchema = yup
     })
     .required();
 
-export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
+export type NonEvacuatedEnergyParametersForm = InferType<typeof formSchema>;

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { PROVIDER } from '../../../utils/field-constants';
 import {
     curveFormSchema,
@@ -38,4 +39,4 @@ export const formSchema = yup.object().shape({
     [TAB_VALUES.CURVE]: curveFormSchema,
 });
 
-export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
+export type DynamicSimulationForm = InferType<typeof formSchema>;

@@ -14,6 +14,7 @@ import {
     SEGMENT_TYPE_VALUE,
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 
 export const SegmentSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
@@ -30,7 +31,7 @@ export const SegmentSchema = yup.object().shape({
     [SEGMENT_SUSCEPTANCE]: yup.number().required(),
 });
 
-export type SegmentFormData = yup.InferType<typeof SegmentSchema>;
+export type SegmentFormData = InferType<typeof SegmentSchema>;
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,

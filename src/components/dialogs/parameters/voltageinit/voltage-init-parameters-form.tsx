@@ -6,6 +6,7 @@
  */
 
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import {
     FILTERS,
     GENERATORS_SELECTION_TYPE,
@@ -25,7 +26,6 @@ import {
 } from '../../../utils/field-constants';
 import { isBlankOrEmpty } from '../../../utils/validation-functions';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
-
 import { EquipmentsSelectionType } from './voltage-init.type';
 
 export const GENERAL = 'GENERAL';
@@ -138,4 +138,4 @@ export const voltageInitParametersFormSchema = yup.object().shape({
     ),
 });
 
-export type VoltageInitParametersForm = yup.InferType<typeof voltageInitParametersFormSchema>;
+export type VoltageInitParametersForm = InferType<typeof voltageInitParametersFormSchema>;

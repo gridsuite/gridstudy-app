@@ -6,9 +6,9 @@
  */
 
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import ScenarioParameters, { SCENARIO_DURATION } from './scenario-parameters';
 import {
@@ -34,7 +34,6 @@ import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
-
 import { LabelledButton, TabPanel } from '../parameters';
 import ContingencyParameters, { CONTINGENCIES_LIST_INFOS, CONTINGENCIES_START_TIME } from './contingency-parameters';
 import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
@@ -93,7 +92,7 @@ const emptyFormData = {
     [TAB_VALUES.CONTINGENCY]: { ...contingencyEmptyFormData },
 };
 
-export type DynamicSecurityAnalysisParametersForm = yup.InferType<typeof formSchema>;
+export type DynamicSecurityAnalysisParametersForm = InferType<typeof formSchema>;
 
 const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalysisParametersProps> = ({
     user,

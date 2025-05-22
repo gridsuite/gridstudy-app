@@ -33,6 +33,7 @@ import {
     SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 
 export const getSensiHVDCsFormSchema = () => ({
     [PARAMETER_SENSI_HVDC]: yup.array().of(
@@ -438,4 +439,4 @@ export const formSchema = yup
         ...getSensiNodesFormSchema(),
     })
     .required();
-export type SensitivityAnalysisParametersFormSchema = yup.InferType<typeof formSchema>;
+export type SensitivityAnalysisParametersFormSchema = InferType<typeof formSchema>;

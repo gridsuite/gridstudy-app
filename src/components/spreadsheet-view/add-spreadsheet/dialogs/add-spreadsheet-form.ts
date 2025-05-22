@@ -7,6 +7,7 @@
 
 import { EQUIPMENT_TYPE_FIELD, ID, NAME } from 'components/utils/field-constants';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 
 export const SPREADSHEET_NAME = 'spreadsheetName';
 export const SPREADSHEET_MODEL = 'spreadsheetModel';
@@ -86,6 +87,6 @@ export const getSpreadsheetCollectionFormSchema = () => {
     });
 };
 
-export type SpreadsheetFromModelForm = yup.InferType<ReturnType<typeof getSpreadsheetFromModelFormSchema>>;
-export type EmptySpreadsheetForm = yup.InferType<ReturnType<typeof getEmptySpreadsheetFormSchema>>;
-export type SpreadsheetCollectionForm = yup.InferType<ReturnType<typeof getSpreadsheetCollectionFormSchema>>;
+export type SpreadsheetFromModelForm = InferType<ReturnType<typeof getSpreadsheetFromModelFormSchema>>;
+export type EmptySpreadsheetForm = InferType<ReturnType<typeof getEmptySpreadsheetFormSchema>>;
+export type SpreadsheetCollectionForm = InferType<ReturnType<typeof getSpreadsheetCollectionFormSchema>>;

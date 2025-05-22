@@ -22,6 +22,7 @@ import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -62,7 +63,7 @@ const emptyFormData = {
 export type VoltageLevelTopologyModificationDialogProps = EquipmentModificationDialogProps & {
     editData: TopologyVoltageLevelModificationInfos;
 };
-export type VoltageLevelTopologyModificationFormSchemaType = yup.InferType<typeof formSchema>;
+export type VoltageLevelTopologyModificationFormSchemaType = InferType<typeof formSchema>;
 
 /**
  * Dialog to delete a list of equipment by filter.

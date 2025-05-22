@@ -6,7 +6,7 @@
  */
 
 import { COUPLING_OMNIBUS, BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
-import * as yup from 'yup';
+import { ValidationError } from 'yup';
 
 const buildValidationError = (errors, field) => {
     return errors.length === 0
@@ -37,8 +37,8 @@ export const controlCouplingOmnibusBetweenSections = (values, message) => {
     const indexes = findBusBarSectionIndexesItSelf(values);
     if (indexes?.length > 0) {
         indexes.forEach((index) => {
-            errors.push(new yup.ValidationError(message, null, `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID1}`));
-            errors.push(new yup.ValidationError(message, null, `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID2}`));
+            errors.push(new ValidationError(message, null, `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID1}`));
+            errors.push(new ValidationError(message, null, `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID2}`));
         });
     }
 
