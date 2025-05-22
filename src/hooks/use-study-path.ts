@@ -26,6 +26,7 @@ export default function useStudyPath(studyUuid: UUID) {
     const prevStudyName = usePrevious(studyName);
     const [studyPath, setStudyPath] = useState<string>();
     const prevStudyPath = usePrevious(studyPath);
+    const [parentDirectoriesNames, setParentDirectoriesNames] = useState<string[]>([]);
 
     const { snackError, snackInfo } = useSnackMessage();
     const [initialTitle] = useState(document.title);
@@ -41,6 +42,7 @@ export default function useStudyPath(studyUuid: UUID) {
                 const parentDirectoriesNames = response
                     .slice(0, response.length - 1)
                     .map((parent) => parent.elementName);
+                setParentDirectoriesNames(parentDirectoriesNames);
                 const parentDirectoriesUuid = response
                     .slice(0, response.length - 1)
                     .map((parent) => parent.elementUuid);
@@ -125,5 +127,5 @@ export default function useStudyPath(studyUuid: UUID) {
             }
         }
     }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
-    return { studyName: studyName, studyPath: studyPath };
+    return { studyName: studyName, parentDirectoriesNames: parentDirectoriesNames };
 }

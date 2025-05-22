@@ -14,11 +14,12 @@ import { RootNetworkMetadata } from './graph/menus/network-modifications/network
 import { UUID } from 'crypto';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { User } from 'oidc-client';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 export interface BreadcrumbsProps {
     studyName: string;
-    studyPath: string;
+    parentDirectoriesNames: string[];
 }
 
 function NetworkSelect({
@@ -29,8 +30,9 @@ function NetworkSelect({
     rootNetworks: RootNetworkMetadata[];
 }) {
     const dispatch = useDispatch();
+    const [isDeveloperModeEnabled] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    return rootNetworks && rootNetworks.length > 1 ? (
+    return rootNetworks && rootNetworks.length > 1 && isDeveloperModeEnabled ? (
         <Box sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
             <Select
                 size="small"
@@ -62,33 +64,39 @@ function NetworkSelect({
     ) : null;
 }
 
-export default function Breadcrumbs({ studyName, studyPath }: Readonly<BreadcrumbsProps>) {
+export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Readonly<BreadcrumbsProps>) {
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
-    const user: User | null = useSelector((state: AppState) => state.user);
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
     const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
+
+    const toolTipStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'nowrap',
+    };
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" separator={<KeyboardArrowRightIcon fontSize="small" />}>
             <Tooltip
                 title={
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
-                        {user?.profile.name}
-                        <KeyboardArrowRightIcon />
-                        <span>{studyPath}</span>
-                        <KeyboardArrowRightIcon />
-                        <span>{studyName}</span>
-                        <KeyboardArrowRightIcon />
-                        <span>{currentNode?.data.label}</span>
-                        <KeyboardArrowRightIcon />
-                        <span>{currentRootNetworktag}</span>
-                    </div>
+                    <Box sx={toolTipStyle}>
+                        {parentDirectoriesNames?.map((directoryName: string) => (
+                            <Box sx={toolTipStyle}>
+                                {directoryName}
+                                <KeyboardArrowRightIcon />
+                            </Box>
+                        ))}
+                        <Box sx={toolTipStyle}>
+                            {studyName}
+                            <KeyboardArrowRightIcon />
+                        </Box>
+                        <Box sx={toolTipStyle}>
+                            {currentNode?.data.label}
+                            <KeyboardArrowRightIcon />
+                        </Box>
+                        <Box sx={toolTipStyle}>{currentRootNetworktag}</Box>
+                    </Box>
                 }
             >
                 <MoreHoriz sx={{ display: 'flex', alignItems: 'center' }} />

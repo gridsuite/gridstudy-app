@@ -48,7 +48,7 @@ export function HorizontalToolbar({ appTabIndex }) {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const { studyName, studyPath } = useStudyPath(studyUuid);
+    const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
 
     const isModificationsDrawerOpen = useSelector((state) => state.isModificationsDrawerOpen);
 
@@ -73,10 +73,11 @@ export function HorizontalToolbar({ appTabIndex }) {
     function setHybridDisplay() {
         dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
     }
+
     return (
         <Grid container alignItems="center">
             <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
-                <Breadcrumbs studyName={studyName} studyPath={studyPath} />
+                <Breadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
             </Grid>
             <Grid
                 sx={{ marginLeft: 'auto', marginRight: '20px' }}
