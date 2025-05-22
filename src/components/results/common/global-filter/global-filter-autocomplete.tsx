@@ -160,7 +160,6 @@ function GlobalFilterAutocomplete({
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
-            console.log(options);
             return (
                 options
                     // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
