@@ -42,7 +42,7 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { isDistantRegulationForPhase } from '../tap-changer-pane-utils.js';
+import { isDistantRegulationForPhase } from '../tap-changer-pane-utils';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup

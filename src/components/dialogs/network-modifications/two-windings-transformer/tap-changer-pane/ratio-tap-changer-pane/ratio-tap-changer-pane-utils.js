@@ -41,7 +41,7 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { isDistantRegulationForRatio, isLocalRegulation } from '../tap-changer-pane-utils.js';
+import { isDistantRegulationForRatio, isLocalRegulation } from '../tap-changer-pane-utils';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
