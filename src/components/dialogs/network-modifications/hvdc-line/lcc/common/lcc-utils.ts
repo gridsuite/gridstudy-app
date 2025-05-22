@@ -101,7 +101,11 @@ export const getLccConverterStationModificationSchema = () =>
         [CONVERTER_STATION_ID]: yup.string().nullable(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
         [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
-        [POWER_FACTOR]: yup.number().nullable().min(-1, 'powerFactorMinValueError').max(1, 'powerFactorMaxValueError'),
+        [POWER_FACTOR]: yup
+            .number()
+            .nullable()
+            .min(0, 'powerFactorIntervalValueError')
+            .max(1, 'powerFactorIntervalValueError'),
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
             .array()
             .of(
