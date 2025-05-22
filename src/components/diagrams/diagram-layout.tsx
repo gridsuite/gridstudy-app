@@ -30,11 +30,10 @@ const diagramTypes = [
 ];
 
 const styles = {
-    itemContainer: (theme: Theme) => ({
+    window: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'lightblue',
-    }),
+    },
     diagramContainer: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
@@ -180,10 +179,7 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                 return null;
             }
             return (
-                <div
-                    key={diagram.diagramUuid}
-                    style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'lightblue' }}
-                >
+                <Box key={diagram.diagramUuid} sx={styles.window}>
                     <Box sx={styles.header}>
                         <OverflowableText
                             className="react-grid-dragHandle"
@@ -236,7 +232,7 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                             />
                         )}
                     </Box>
-                </div>
+                </Box>
             );
         });
     }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
