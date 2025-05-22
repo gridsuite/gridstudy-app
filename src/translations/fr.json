@@ -1470,7 +1470,8 @@
     "rootNetwork.modificationsInfos": "Rechercher les modifications qui impactent un ouvrage seulement en amont des noeuds réalisé et dans ceux-ci",
     "rootNetwork.searchPlaceholder": "Rechercher un ouvrage modifié…",
     "rootNetwork.modificationTab": "Modifications",
-
+    "rootNetwork.results": "résultats",
+    "rootNetwork.loading": "Chargement...",
     "unlimited": "Illimité",
     "forbidden": "Interdit",
 

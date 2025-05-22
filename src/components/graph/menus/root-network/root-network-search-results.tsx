@@ -9,6 +9,9 @@ import { DeviceHubIcon, useModificationLabelComputer } from '@gridsuite/commons-
 import { Modification, ModificationsSearchResult } from './root-network.types';
 import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import type { AppState } from '../../../../redux/reducer';
+import { UUID } from 'crypto';
 
 const styles = {
     container: {
@@ -40,9 +43,14 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
             if (!modif) {
                 return '';
             }
-
-            // @ts-ignore
-            return intl.formatMessage({ id: 'root_network.' + modif.messageType }, { ...computeLabel(modif) });
+            return intl.formatMessage(
+                { id: 'network_modifications.' + modif.messageType },
+                {
+                    ...modif,
+                    // @ts-ignore
+                    ...computeLabel(modif),
+                }
+            );
         },
         [computeLabel, intl]
     );
@@ -58,6 +66,18 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
 };
 
 export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> = ({ results }) => {
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    //get the name based on the node tree
+    const getName = useCallback(
+        (idToFind: UUID) => {
+            if (!treeNodes) {
+                return null;
+            }
+            const node = treeNodes.find((node) => node.id === idToFind);
+            return node?.data.label;
+        },
+        [treeNodes]
+    );
     return (
         <Box sx={styles.container}>
             {results.map((result, key) => (
@@ -65,7 +85,7 @@ export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> =
                     <Box sx={styles.rootNameTitle}>
                         <DeviceHubIcon />
                         <Typography color="textSecondary" sx={{ marginLeft: '5px' }}>
-                            {result.basicNodeInfos.name}
+                            {getName(result.nodeUuid)}
                         </Typography>
                     </Box>
                     <ModificationResults modifications={result.modifications} />

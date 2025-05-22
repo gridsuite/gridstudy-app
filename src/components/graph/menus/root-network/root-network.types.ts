@@ -6,18 +6,14 @@
  */
 import { UUID } from 'crypto';
 
-export interface BasicNodeInfos {
-    nodeUuid: UUID;
-    name: string;
-}
-
 export interface Modification {
     modificationUuid: UUID;
+    impactedEquipmentId: string;
     messageValues: string;
     messageType: string;
 }
 
 export interface ModificationsSearchResult {
-    basicNodeInfos: BasicNodeInfos;
+    nodeUuid: UUID;
     modifications: Modification[];
 }

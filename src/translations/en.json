@@ -1471,7 +1471,8 @@
     "rootNetwork.modificationsInfos": "TODO....",
     "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
     "rootNetwork.modificationTab": "Modifications",
-
+    "rootNetwork.results": "results",
+    "rootNetwork.loading": "Loading...",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 

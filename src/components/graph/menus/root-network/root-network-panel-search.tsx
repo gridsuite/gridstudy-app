@@ -15,6 +15,9 @@ import { useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
 import { RootNetworkSearchResults } from './root-network-search-results';
+import { UUID } from 'crypto';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
 const styles = {
     root: (theme: Theme) => ({
@@ -44,142 +47,130 @@ function createPromise(): Promise<ModificationsSearchResult[]> {
         setTimeout(() => {
             const functionsList = [
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2' },
+                    nodeUuid: 'bf9c436b-c90a-4c49-8cef-ea3db7ebd407',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
+                            impactedEquipmentId: 'PENL5(1)',
+                            type: 'SUBSTATION_CREATION',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
+                            impactedEquipmentId: 'PENL5(1)',
+                            type: 'SUBSTATION_CREATION',
                         },
                     ],
                 },
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2' },
+                    nodeUuid: 'e4080cb0-9dd2-4cb4-ba40-aa0d9d4b2c1e',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
+                            impactedEquipmentId: 'PENL5',
+                            type: 'SUBSTATION_CREATION',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
+                            impactedEquipmentId: 'PENL5',
+                            type: 'SUBSTATION_CREATION',
                         },
                     ],
                 },
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2' },
+                    nodeUuid: '217ca2ba-a31e-4632-9554-47885cc02e97',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                     ],
                 },
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2' },
+                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                     ],
                 },
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2' },
+                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                     ],
                 },
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2' },
+                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                     ],
                 },
+
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'N2-3-4' },
+                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"action":"LOCKOUT","equipmentId":"CHOUYL31V.COT"}',
-                            messageType: 'OPERATING_STATUS_MODIFICATION',
+                            impactedEquipmentId: 'PENL5',
+                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                     ],
                 },
+
                 {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440000', name: 'Dopler 10' },
+                    nodeUuid: '550e8400-e29b-41d4-a716-446655440004',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                        },
-                    ],
-                },
-                {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440009', name: 'N3' },
-                    modifications: [
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440003',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                         {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440002',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
+                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
+                            impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                        },
-                    ],
-                },
-                {
-                    basicNodeInfos: { nodeUuid: '550e8400-e29b-41d4-a716-446655440004', name: 'N1' },
-                    modifications: [
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440002',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
-                        },
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440001',
-                            messageValues: '{"equipmentId":"PENL5(1)"}',
-                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
                         },
                     ],
                 },
@@ -199,6 +190,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
     const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState([] as ModificationsSearchResult[]);
     const intl = useIntl();
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const resetSearch = useCallback(() => {
         setResults([]);
@@ -215,23 +207,42 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
         resetSearch,
     });
 
-    //TODO: to be removed
-    const searchMatchingElements = useCallback((newSearchTerm: string) => {
-        if (newSearchTerm === '' || newSearchTerm?.length === 0) {
-            setResults([]);
-            return;
+    const reOrderSearchResults = useCallback((results: ModificationsSearchResult[], currentNodeUuid?: UUID) => {
+        if (!results || results.length === 0) {
+            return [];
         }
-        setIsLoading(true);
-        createPromise()
-            .then((data) => {
-                const res = data?.filter((item) => item?.basicNodeInfos?.name?.includes(newSearchTerm));
-                setResults(res);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                setIsLoading(false);
-            });
+
+        const foundCurrentNodeResults = results.find((result) => result.nodeUuid === currentNodeUuid);
+
+        if (!foundCurrentNodeResults) {
+            return [...results];
+        }
+
+        const otherNodesResults = results.filter((result) => result.nodeUuid !== currentNodeUuid);
+
+        return [foundCurrentNodeResults, ...otherNodesResults];
     }, []);
+
+    //TODO: to be removed
+    const searchMatchingElements = useCallback(
+        (newSearchTerm: string) => {
+            if (newSearchTerm === '' || newSearchTerm?.length === 0) {
+                setResults([]);
+                return;
+            }
+            setIsLoading(true);
+            createPromise()
+                .then((data) => {
+                    const res = data?.filter((item) => item?.nodeUuid !== newSearchTerm);
+                    setResults(reOrderSearchResults(res, currentNode?.id));
+                    setIsLoading(false);
+                })
+                .catch((err) => {
+                    setIsLoading(false);
+                });
+        },
+        [currentNode?.id, reOrderSearchResults]
+    );
 
     //TODO: replace searchMatchingElements with the real api.
     const debouncedHandleChange = useDebounce(searchMatchingElements, 700);
@@ -294,12 +305,17 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             </Box>
             {!isLoading && searchTerm.trim() !== '' && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {results?.length} résultats
+                    {results?.length}{' '}
+                    {intl.formatMessage({
+                        id: 'rootNetwork.results',
+                    })}
                 </Typography>
             )}
             {isLoading && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    Loading...
+                    {intl.formatMessage({
+                        id: 'rootNetwork.loading',
+                    })}
                 </Typography>
             )}
             <RootNetworkSearchResults results={results} />
