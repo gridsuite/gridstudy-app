@@ -66,10 +66,13 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     // fetches extra global filter subcategories if there are some in the local config
     useEffect(() => {
         fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-            setCategories([
+            const sortedCategories = [
                 ...standardCategories,
                 ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
-            ]);
+            ]
+                // generic filters always at the end of the menus
+                .sort((a) => (a === FilterType.GENERIC_FILTER ? 1 : -1));
+            setCategories(sortedCategories);
         });
     }, [standardCategories]);
 
