@@ -23,7 +23,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import RunningStatus from './running-status';
 import { useSelector } from 'react-redux';
-import { MouseEvent, useRef, useState } from 'react';
+import { MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 import { AppState } from 'redux/reducer';
 import { Theme } from '@mui/material';
 import { mergeSx } from '@gridsuite/commons-ui';
@@ -159,13 +159,13 @@ const SplitButton = ({
 
     const anchorRef = useRef<HTMLDivElement | null>(null);
 
-    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: ReactMouseEvent<HTMLButtonElement>) => {
         if (onClick) {
             onClick(event.ctrlKey);
         }
     };
 
-    const handleMenuItemClick = (event: React.MouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
+    const handleMenuItemClick = (event: ReactMouseEvent<HTMLLIElement, MouseEvent>, index: number) => {
         if (runningStatus === RunningStatus.RUNNING) {
             actionOnRunnable();
         } else {
