@@ -75,7 +75,7 @@ interface DiagramLayoutProps {
     visible: boolean;
 }
 
-function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutProps) {
+function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramLayoutProps>) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
