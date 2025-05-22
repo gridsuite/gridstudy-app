@@ -56,7 +56,7 @@ const DEFAULT_WIDTH = 1;
 const DEFAULT_HEIGHT = 2;
 
 const initialLayouts = {
-    // RGL will attempt to interpolate the rest of breakpoints based on this one
+    // ResponsiveGridLayout will attempt to interpolate the rest of breakpoints based on this one
     lg: [
         {
             i: 'Adder',
