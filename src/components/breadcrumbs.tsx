@@ -7,15 +7,15 @@
 
 import { MoreHoriz, RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import {
-    MenuItem,
-    Tooltip,
-    ListItemText,
     Box,
-    Select,
     Breadcrumbs as MuiBreadcrumbs,
+    ListItemText,
+    MenuItem,
+    Select,
     styled,
-    TooltipProps,
+    Tooltip,
     tooltipClasses,
+    TooltipProps,
 } from '@mui/material';
 import { CurrentTreeNode } from './graph/tree-node.type';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,13 +27,18 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
-function NetworkSelect({
-    currentRootNetworkUuid,
-    rootNetworks,
-}: {
+const toolTipStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+};
+
+interface NetworkSelectProps {
     currentRootNetworkUuid: UUID | null;
     rootNetworks: RootNetworkMetadata[];
-}) {
+}
+
+function NetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<NetworkSelectProps>) {
     const dispatch = useDispatch();
     const [isDeveloperModeEnabled] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -69,11 +74,6 @@ function NetworkSelect({
     ) : null;
 }
 
-export interface BreadcrumbsProps {
-    studyName: string | undefined;
-    parentDirectoriesNames: string[];
-}
-
 const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip {...props} classes={{ popper: className }} />
 ))({
@@ -82,17 +82,16 @@ const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
     },
 });
 
+export interface BreadcrumbsProps {
+    studyName: string | undefined;
+    parentDirectoriesNames: string[];
+}
+
 export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Readonly<BreadcrumbsProps>) {
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
     const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
-
-    const toolTipStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'nowrap',
-    };
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" separator={<KeyboardArrowRightIcon fontSize="small" />}>
