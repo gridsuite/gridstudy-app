@@ -41,7 +41,17 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID) => {
         applyGsFilter(gsFilterSpreadsheetState);
     }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
 
-    const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
+    const doesFormulaFilteringPass = useCallback(
+        (node: IRowNode) =>
+            filterIds.includes(node.data.id) ||
+            (node.data.voltageLevelId && filterIds.includes(node.data.voltageLevelId)) ||
+            (node.data.voltageLevelId1 && filterIds.includes(node.data.voltageLevelId1)) ||
+            (node.data.voltageLevelId2 && filterIds.includes(node.data.voltageLevelId2)) ||
+            (node.data.substationId && filterIds.includes(node.data.substationId)) ||
+            (node.data.substationId1 && filterIds.includes(node.data.substationId1)) ||
+            (node.data.substationId2 && filterIds.includes(node.data.substationId2)),
+        [filterIds]
+    );
 
     const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState?.length > 0, [gsFilterSpreadsheetState]);
 
