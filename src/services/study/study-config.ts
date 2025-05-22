@@ -8,17 +8,18 @@
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
-import { NetworkVisualizationParameters } from '../../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { SpreadsheetGlobalFilter } from './filter';
+import { NetworkVisualizationParameters } from '@gridsuite/commons-ui';
 
-export function getNetworkVisualizationParameters(studyUuid: UUID) {
+export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
     const url = getStudyUrl(studyUuid) + '/network-visualizations/parameters';
     console.debug(url);
     return backendFetchJson(url);
 }
 
+// TODO DBR remove
 export function setNetworkVisualizationParameters(studyUuid: UUID, newParams: NetworkVisualizationParameters) {
     console.info('set network visualization parameters');
     const url = getStudyUrl(studyUuid) + '/network-visualizations/parameters';
