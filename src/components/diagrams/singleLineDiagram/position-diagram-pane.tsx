@@ -6,7 +6,7 @@
  */
 
 import Dialog from '@mui/material/Dialog';
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
@@ -20,7 +20,7 @@ import { DiagramType } from '../diagram.type';
 interface PositionDiagramPaneProps {
     open: boolean;
     onClose: () => void;
-    voltageLevelId: UUID;
+    voltageLevelId: string;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
@@ -38,11 +38,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
-    const handleClose = () => {
-        onClose();
-    };
-
-    const getVoltageLevelSingleLineDiagramUrl = useCallback(() => {
+    const voltageLevelSingleLineDiagramUrl = useMemo(() => {
         if (!voltageLevelId) {
             return '';
         }
@@ -71,12 +67,12 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     ]);
 
     return (
-        <Dialog onClose={handleClose} open={open} maxWidth="md" scroll="body">
+        <Dialog onClose={onClose} open={open} maxWidth="md" scroll="body">
             {voltageLevelId && open && (
                 <PositionDiagram
-                    onClose={handleClose}
+                    onClose={onClose}
                     diagramTitle={voltageLevelId}
-                    svgUrl={getVoltageLevelSingleLineDiagramUrl()}
+                    svgUrl={voltageLevelSingleLineDiagramUrl}
                     svgType={DiagramType.VOLTAGE_LEVEL}
                 />
             )}
