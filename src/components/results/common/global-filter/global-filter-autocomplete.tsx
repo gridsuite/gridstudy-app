@@ -169,7 +169,10 @@ function GlobalFilterAutocomplete({
                         // recent filters are a group in itself
                         option?.recent
                             ? filterGroupSelected === RECENT_FILTER
-                            : option.filterType === filterGroupSelected
+                            : // if the filter has a subtype it should be filtered through it instead of filterType
+                              option.filterSubtype
+                              ? option.filterSubtype === filterGroupSelected
+                              : option.filterType === filterGroupSelected
                     )
             );
         },
@@ -234,9 +237,18 @@ function GlobalFilterAutocomplete({
 
     const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
         if (option.filterType === FilterType.GENERIC_FILTER) {
-            return option.label === value.label && option.filterType === value.filterType && option.uuid === value.uuid;
+            return (
+                option.label === value.label &&
+                option.filterType === value.filterType &&
+                option.filterSubtype === value.filterSubtype &&
+                option.uuid === value.uuid
+            );
         } else {
-            return option.label === value.label && option.filterType === value.filterType;
+            return (
+                option.label === value.label &&
+                option.filterType === value.filterType &&
+                option.filterSubtype === value.filterSubtype
+            );
         }
     }, []);
 
@@ -261,7 +273,14 @@ function GlobalFilterAutocomplete({
                     disableCloseOnSelect
                     options={options}
                     onChange={(_e, value) => onChange(value)}
-                    groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
+                    groupBy={(option: GlobalFilter): string =>
+                        option.recent
+                            ? RECENT_FILTER
+                            : // if the filter has a subtype it should be grouped by it instead of filterType
+                              option.filterSubtype
+                              ? option.filterSubtype
+                              : option.filterType
+                    }
                     renderInput={RenderInput}
                     renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
                         return (
@@ -269,7 +288,7 @@ function GlobalFilterAutocomplete({
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    overflowX: 'auto',
+                                    overflowX: 'hidden',
                                     flexWrap: 'nowrap',
                                     maxWidth: '90%',
                                 }}

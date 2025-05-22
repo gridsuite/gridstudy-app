@@ -1927,7 +1927,10 @@ export const reducer = createReducer(initialState, (builder) => {
             if (
                 !newRecentGlobalFilters.some(
                     (obj) =>
-                        obj.label === filter.label && obj.filterType === filter.filterType && obj.uuid === filter.uuid
+                        obj.label === filter.label &&
+                        obj.filterType === filter.filterType &&
+                        obj.filterSubtype === filter.filterSubtype &&
+                        obj.uuid === filter.uuid
                 )
             ) {
                 newRecentGlobalFilters.push(filter);

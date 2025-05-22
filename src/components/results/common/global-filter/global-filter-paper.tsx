@@ -14,12 +14,12 @@ import {
 } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { PropsWithChildren, RefObject, useCallback, useContext, useMemo } from 'react';
+import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
-import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
+import { fetchSubstationPropertiesGlobalFilters, getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
@@ -54,14 +54,26 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
+    const [categories, setCategories] = useState<string[]>([]);
 
-    const categories: string[] = useMemo(() => {
+    const standardCategories: string[] = useMemo(() => {
         const allCategories = Object.values(FilterType) as string[];
-        const filteredCategories = allCategories.filter((category) =>
-            filterCategories.includes(category as FilterType)
+        const filteredCategories = allCategories.filter(
+            (category) =>
+                filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
         );
         return [RECENT_FILTER, ...filteredCategories];
     }, [filterCategories]);
+
+    // fetches extra global filter subcategories if there are some in the local config
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            setCategories([
+                ...standardCategories,
+                ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
+            ]);
+        });
+    }, [standardCategories]);
 
     const filtersMsg: string = useMemo(
         () =>
