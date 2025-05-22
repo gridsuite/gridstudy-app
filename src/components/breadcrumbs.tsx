@@ -40,9 +40,8 @@ interface NetworkSelectProps {
 
 function NetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<NetworkSelectProps>) {
     const dispatch = useDispatch();
-    const [isDeveloperModeEnabled] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    return rootNetworks && rootNetworks.length > 1 && isDeveloperModeEnabled ? (
+    return (
         <Box sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
             <Select
                 size="small"
@@ -71,7 +70,7 @@ function NetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<Networ
                 )}
             </Select>
         </Box>
-    ) : null;
+    );
 }
 
 const NoMaxWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -92,6 +91,7 @@ export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Reado
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
     const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
+    const [isDeveloperModeEnabled] = useParameterState(PARAM_DEVELOPER_MODE);
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" color="text" separator={<KeyboardArrowRightIcon fontSize="small" />}>
@@ -120,7 +120,9 @@ export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Reado
             </NoMaxWidthTooltip>
             <Box>{studyName}</Box>
             <Box>{currentNode?.data?.label}</Box>
-            <NetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
+            {rootNetworks && rootNetworks.length > 1 && isDeveloperModeEnabled && (
+                <NetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
+            )}
         </MuiBreadcrumbs>
     );
 }
