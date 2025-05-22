@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'crypto';
-import { DiagramSvg, SldSvg, Svg } from './diagram-common';
+import { Svg } from './diagram-common';
 
 export enum ViewState {
     PINNED = 'pinned',
