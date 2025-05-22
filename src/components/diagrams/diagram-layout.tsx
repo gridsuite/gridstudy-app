@@ -17,6 +17,8 @@ import { UUID } from 'crypto';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
+import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
+import { DiagramAdditionalMetadata } from './diagram-common';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -206,7 +208,7 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                                 diagramId={diagram.diagramUuid}
                                 svg={diagram.svg?.svg ?? undefined}
                                 svgType={diagram.type}
-                                svgMetadata={diagram.svg?.metadata ?? undefined}
+                                svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
                                 loadingState={false} // TODO
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
@@ -218,10 +220,13 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                                 diagramId={diagram.diagramUuid}
                                 svg={diagram.svg?.svg ?? undefined}
                                 svgType={diagram.type}
-                                svgMetadata={diagram.svg?.metadata ?? undefined}
-                                svgScalingFactor={diagram.svg?.additionalMetadata?.scalingFactor ?? undefined}
+                                svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
+                                svgScalingFactor={
+                                    (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.scalingFactor ??
+                                    undefined
+                                }
                                 svgVoltageLevels={
-                                    diagram.svg?.additionalMetadata?.voltageLevels
+                                    (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels
                                         .map((vl) => vl.id)
                                         .filter((vlId) => vlId !== undefined) as string[]
                                 }
