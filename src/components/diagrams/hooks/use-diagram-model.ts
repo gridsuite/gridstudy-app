@@ -27,6 +27,7 @@ import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { v4 } from 'uuid';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
+import { useIntl } from 'react-intl';
 
 const makeDiagramName = (diagram: Diagram): string => {
     if (diagram.type === DiagramType.VOLTAGE_LEVEL) {
@@ -47,6 +48,7 @@ type UseDiagramModelProps = {
 };
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelProps) => {
+    const intl = useIntl();
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -77,7 +79,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             const pendingDiagram: Diagram = {
                 ...diagramParams,
                 diagramUuid: v4() as UUID,
-                name: `loading...`,
+                name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramParams.type }),
                 svg: null,
             };
             setDiagrams((diagrams) => {
@@ -88,7 +90,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             onAddDiagram(pendingDiagram);
             return pendingDiagram;
         },
-        [onAddDiagram]
+        [intl, onAddDiagram]
     );
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
