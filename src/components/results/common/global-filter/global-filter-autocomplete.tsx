@@ -163,7 +163,10 @@ function GlobalFilterAutocomplete({
                         // recent filters are a group in itself
                         option?.recent
                             ? filterGroupSelected === RECENT_FILTER
-                            : option.filterType === filterGroupSelected
+                            : // if the filter has a subtype it should be filtered through it instead of filterType
+                              option.filterSubtype
+                              ? option.filterSubtype === filterGroupSelected
+                              : option.filterType === filterGroupSelected
                     )
             );
         },
@@ -245,7 +248,14 @@ function GlobalFilterAutocomplete({
                     disableCloseOnSelect
                     options={options}
                     onChange={(_e, value) => onChange(value)}
-                    groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
+                    groupBy={(option: GlobalFilter): string =>
+                        option.recent
+                            ? RECENT_FILTER
+                            : // if the filter has a subtype it should be grouped by it instead of filterType
+                              option.filterSubtype
+                              ? option.filterSubtype
+                              : option.filterType
+                    }
                     renderInput={RenderInput}
                     renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
                         return (
@@ -287,6 +297,7 @@ function GlobalFilterAutocomplete({
                     isOptionEqualToValue={(option: GlobalFilter, value: GlobalFilter) =>
                         option.label === value.label &&
                         option.filterType === value.filterType &&
+                        option.filterSubtype === value.filterSubtype &&
                         option.uuid === value.uuid
                     }
                     filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
