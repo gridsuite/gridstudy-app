@@ -156,7 +156,7 @@ function GlobalFilterAutocomplete({
             }
         }
         return '';
-    }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
+    }, [genericFiltersStrictMode, selectedGlobalFilters, filterableEquipmentTypes, intl]);
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
@@ -184,7 +184,7 @@ function GlobalFilterAutocomplete({
                     )
             );
         },
-        [filterGroupSelected, translate]
+        [filterGroupSelected, filterableEquipmentTypes, genericFiltersStrictMode, translate]
     );
 
     const options = useMemo(

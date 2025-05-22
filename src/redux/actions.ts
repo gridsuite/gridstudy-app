@@ -1428,7 +1428,10 @@ export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPRE
     filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGlobalFilters(tabUuid: UUID, filters: GlobalFilter[]): SaveSpreadSheetGlobalFilterAction {
+export function saveSpreadsheetGlobalFilters(
+    tabUuid: UUID,
+    filters: GlobalFilter[]
+): SaveSpreadSheetGlobalFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,

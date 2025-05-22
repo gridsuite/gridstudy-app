@@ -77,7 +77,10 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(() => globalFilterSpreadsheetState?.length > 0, [globalFilterSpreadsheetState]);
+    const isExternalFilterPresent = useCallback(
+        () => globalFilterSpreadsheetState?.length > 0,
+        [globalFilterSpreadsheetState]
+    );
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 };

@@ -122,7 +122,10 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
 
-    const allowedEquipmentTypes = useMemo(() => (genericFiltersStrictMode ? equipmentTypes : undefined), [equipmentTypes, genericFiltersStrictMode]);
+    const allowedEquipmentTypes = useMemo(
+        () => (genericFiltersStrictMode ? equipmentTypes : undefined),
+        [equipmentTypes, genericFiltersStrictMode]
+    );
 
     return (
         <>

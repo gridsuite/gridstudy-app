@@ -21,7 +21,7 @@ export const GlobalFilterContext = createContext<{
     // callback to communicate to parent component
     onChange: (globalFilters: GlobalFilter[]) => void;
     filterCategories: string[];
-    genericFiltersStrictMode: boolean,
+    genericFiltersStrictMode: boolean;
     equipmentTypes: string[] | undefined;
 }>({
     openedDropdown: false,
