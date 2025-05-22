@@ -19,9 +19,11 @@ import { createCouplingDevice } from '../../../../services/study/network-modific
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config.js';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
-import { CouplingDeviceForm } from './coupling-device-form.jsx';
+import { CouplingDeviceForm } from './coupling-device-form.js';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
+import { CouplingDeviceCreationInfo } from '../../../../services/network-modification-types';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
@@ -31,7 +33,10 @@ const formSchema = yup.object().shape({
     [BUS_BAR_SECTION_ID1]: yup.object().required().nullable(),
     [BUS_BAR_SECTION_ID2]: yup.object().required().nullable(),
 });
-export const CouplingDeviceDialog = ({
+export type CouplingDeviceCreationDialogProps = EquipmentModificationDialogProps & {
+    editData?: CouplingDeviceCreationInfo;
+};
+export const CouplingDeviceCreationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
@@ -40,7 +45,7 @@ export const CouplingDeviceDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<CouplingDeviceCreationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);

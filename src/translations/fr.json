@@ -861,7 +861,7 @@
     "DuplicateId": "Identifiant non unique",
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
     "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
-    "CouplingDeviceCreationError": "Erreur lors de la modification d'un omnibus/couplage",
+    "CouplingDeviceCreationError": "Erreur lors de l'ajout d'un omnibus/couplage",
     "BusBarSectionID1": "ID de la section de jeu de barre 1",
     "BusBarSectionID2": "ID de la section de jeu de barre 2",
     "BusBarSectionsCopyingNotSupported": "La copie des sections de jeux de barres n'est pas supportée pour ce poste : des valeurs par défaut ont été renseignées",
@@ -1540,9 +1540,9 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
 
-    "CouplingDeviceCreation" : "Ajouter un couplage ou un omnibus sur le poste de {voltageLevelId}",
+    "CouplingDeviceCreation" : "Ajouter un couplage ou un omnibus sur le poste {voltageLevelId}",
     "CouplingDeviceCreationEditor" : "Ajouter un couplage ou un omnibus",
-    "CouplingDeviceCreationDiagramButton" : "Voir du poste",
+    "CouplingDeviceCreationDiagramButton" : "Voir le poste",
     "builtNodeTooltipForDiagram" : "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram" : "Diagramme du dernier nœud réalisé de la branche courante"
 }
