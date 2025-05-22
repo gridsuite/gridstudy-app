@@ -20,18 +20,18 @@ import GlobalFilterSelector from '../../../../results/common/global-filter/globa
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
 
-export type SpreadsheetGsFilterProps = {
+export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
 };
 
-export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<SpreadsheetGsFilterProps>) {
+export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<SpreadsheetGlobalFilterProps>) {
     const dispatch = useDispatch();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const gsFilterSpreadsheetState = useSelector(
-        (state: AppState) => state.gsFilterSpreadsheetState[tableDefinition.uuid]
+    const globalFilterSpreadsheetState = useSelector(
+        (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
     );
 
     const { snackError } = useSnackMessage();
@@ -104,21 +104,22 @@ export default function SpreadsheetGsFilter({ tableDefinition }: Readonly<Spread
     }, [countriesFilter, tableDefinition.type, voltageLevelsFilter]);
 
     useEffect(() => {
-        if (gsFilterSpreadsheetState) {
+        if (globalFilterSpreadsheetState) {
             dispatch(
                 addToRecentGlobalFilters(
-                    gsFilterSpreadsheetState?.filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
+                    globalFilterSpreadsheetState?.filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
                 )
             );
         }
-    }, [dispatch, gsFilterSpreadsheetState]);
+    }, [dispatch, globalFilterSpreadsheetState]);
 
     return (
         <GlobalFilterSelector
             filterableEquipmentTypes={[tableDefinition.type as unknown as EQUIPMENT_TYPES]}
             filters={filters}
             onChange={handleFilterChange}
-            preloadedGlobalFilters={gsFilterSpreadsheetState}
+            preloadedGlobalFilters={globalFilterSpreadsheetState}
+            genericFiltersStrictMode={true}
         />
     );
 }

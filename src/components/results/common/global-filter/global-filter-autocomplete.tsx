@@ -119,6 +119,7 @@ function GlobalFilterAutocomplete({
         selectedGlobalFilters,
         onChange,
         filterCategories,
+        genericFiltersStrictMode,
     } = useContext(GlobalFilterContext);
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
@@ -127,36 +128,39 @@ function GlobalFilterAutocomplete({
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
-        const inappropriateFilters: string[] = selectedGlobalFilters
-            .filter(
-                (filter) =>
-                    filter.equipmentType &&
-                    (!filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType) ||
-                        (filter.equipmentType === 'VOLTAGE_LEVEL' && filter.filterTypeFromMetadata === 'EXPERT')) // expert filter on voltage level non applicable
-            )
-            .map((filter) => filter.label);
+        if (!genericFiltersStrictMode) {
+            const inappropriateFilters: string[] = selectedGlobalFilters
+                .filter(
+                    (filter) =>
+                        filter.equipmentType &&
+                        (!filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType) ||
+                            (filter.equipmentType === 'VOLTAGE_LEVEL' && filter.filterTypeFromMetadata === 'EXPERT')) // expert filter on voltage level non applicable
+                )
+                .map((filter) => filter.label);
 
-        if (inappropriateFilters.length > 0) {
-            if (inappropriateFilters.length > 1) {
+            if (inappropriateFilters.length > 0) {
+                if (inappropriateFilters.length > 1) {
+                    return intl.formatMessage(
+                        {
+                            id: 'results.globalFilter.nonApplicableExtra',
+                        },
+                        { filterName: inappropriateFilters[0], extraFiltersNum: inappropriateFilters.length - 1 }
+                    );
+                }
                 return intl.formatMessage(
                     {
-                        id: 'results.globalFilter.nonApplicableExtra',
+                        id: 'results.globalFilter.nonApplicable',
                     },
-                    { filterName: inappropriateFilters[0], extraFiltersNum: inappropriateFilters.length - 1 }
+                    { filterName: inappropriateFilters[0] }
                 );
             }
-            return intl.formatMessage(
-                {
-                    id: 'results.globalFilter.nonApplicable',
-                },
-                { filterName: inappropriateFilters[0] }
-            );
         }
         return '';
     }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
+            console.log(options);
             return (
                 options
                     // Allows to find the translated countries (and not their countryCodes) when the user inputs a search value
@@ -173,6 +177,11 @@ function GlobalFilterAutocomplete({
                               option.filterSubtype
                               ? option.filterSubtype === filterGroupSelected
                               : option.filterType === filterGroupSelected
+                    )
+                    .filter((option: GlobalFilter) =>
+                        genericFiltersStrictMode && option.filterType === FilterType.GENERIC_FILTER
+                            ? filterableEquipmentTypes.includes(option.equipmentType as EQUIPMENT_TYPES)
+                            : true
                     )
             );
         },

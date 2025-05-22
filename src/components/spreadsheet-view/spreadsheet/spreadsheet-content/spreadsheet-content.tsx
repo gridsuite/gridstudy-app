@@ -18,7 +18,7 @@ import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { RowClickedEvent } from 'ag-grid-community';
 import { NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
-import { useSpreadsheetGsFilter } from './hooks/use-spreadsheet-gs-filter';
+import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
@@ -107,7 +107,7 @@ export const SpreadsheetContent = React.memo(
             tableDefinition
         );
 
-        const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGsFilter(
+        const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGlobalFilter(
             tableDefinition?.uuid,
             tableDefinition?.type
         );

@@ -70,7 +70,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
     const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);
-    const tablesFiltersState = useSelector((state: AppState) => state.gsFilterSpreadsheetState);
+    const tablesFiltersState = useSelector((state: AppState) => state.globalFilterSpreadsheetState);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [localTablesState, setLocalTablesState] = useState<TableState[]>([]);

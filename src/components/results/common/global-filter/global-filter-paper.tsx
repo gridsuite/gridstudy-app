@@ -51,6 +51,8 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         setSelectedGlobalFilters,
         onChange,
         filterCategories,
+        genericFiltersStrictMode,
+        equipmentTypes,
     } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
@@ -119,6 +121,8 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         },
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
+
+    const allowedEquipmentTypes = useMemo(() => (genericFiltersStrictMode ? equipmentTypes : undefined), [equipmentTypes, genericFiltersStrictMode]);
 
     return (
         <>
@@ -220,6 +224,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
+                equipmentTypes={allowedEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}
                 multiSelect
             />

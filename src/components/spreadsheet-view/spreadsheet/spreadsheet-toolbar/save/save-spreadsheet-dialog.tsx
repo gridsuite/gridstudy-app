@@ -30,7 +30,7 @@ export type SaveSpreadsheetDialogProps = {
 export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
-    const tableGlobalFilters = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tableDefinition.uuid]);
+    const tableGlobalFilters = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [includeFilters, setIncludeFilters] = useState(false);

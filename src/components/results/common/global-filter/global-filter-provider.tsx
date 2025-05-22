@@ -22,10 +22,14 @@ export default function GlobalFilterProvider({
     onChange: handleChange,
     preloadedGlobalFilters = [],
     filterCategories,
+    genericFiltersStrictMode = false,
+    equipmentTypes = undefined,
 }: PropsWithChildren & {
     onChange: (globalFilters: GlobalFilter[]) => void;
     filterCategories: string[];
     preloadedGlobalFilters?: GlobalFilter[];
+    genericFiltersStrictMode: boolean;
+    equipmentTypes: string[] | undefined;
 }) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
@@ -113,6 +117,8 @@ export default function GlobalFilterProvider({
             setSelectedGlobalFilters,
             onChange,
             filterCategories,
+            genericFiltersStrictMode,
+            equipmentTypes,
         }),
         [
             openedDropdown,
@@ -121,6 +127,8 @@ export default function GlobalFilterProvider({
             selectedGlobalFilters,
             onChange,
             filterCategories,
+            genericFiltersStrictMode,
+            equipmentTypes,
         ]
     );
 

@@ -14,7 +14,7 @@ import ColumnCreationButton from './column-creation-button';
 import NodesConfigButton from './nodes-config/nodes-config-button';
 import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
-import SpreadsheetGsFilter from './gs-filter/spreadsheet-gs-filter';
+import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 
 const styles = {
     toolbar: (theme: Theme) => ({
@@ -50,7 +50,7 @@ export const SpreadsheetToolbar = ({
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
             <Grid item sx={styles.filterContainer}>
-                <SpreadsheetGsFilter tableDefinition={tableDefinition} />
+                <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
                 <ColumnsConfig

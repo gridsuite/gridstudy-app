@@ -15,15 +15,15 @@ import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulat
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 
-export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: SpreadsheetEquipmentType) => {
+export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: SpreadsheetEquipmentType) => {
     const [filterIds, setFilterIds] = useState<string[]>([]);
-    const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[tabUuid]);
+    const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const applyGsFilter = useCallback(
+    const applyGlobalFilter = useCallback(
         async (globalFilters: GlobalFilter[]) => {
             if (studyUuid && currentNode && currentRootNetworkUuid) {
                 const countries = globalFilters
@@ -72,12 +72,12 @@ export const useSpreadsheetGsFilter = (tabUuid: UUID, equipmentType: Spreadsheet
     );
 
     useEffect(() => {
-        applyGsFilter(gsFilterSpreadsheetState);
-    }, [applyGsFilter, tabUuid, gsFilterSpreadsheetState]);
+        applyGlobalFilter(globalFilterSpreadsheetState);
+    }, [applyGlobalFilter, tabUuid, globalFilterSpreadsheetState]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
-    const isExternalFilterPresent = useCallback(() => gsFilterSpreadsheetState?.length > 0, [gsFilterSpreadsheetState]);
+    const isExternalFilterPresent = useCallback(() => globalFilterSpreadsheetState?.length > 0, [globalFilterSpreadsheetState]);
 
     return { doesFormulaFilteringPass, isExternalFilterPresent };
 };
