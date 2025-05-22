@@ -11,7 +11,7 @@ import {
     getPowerWithValidityEmptyFormData,
     getPowerWithValidityValidationSchema,
 } from './power-with-validity-utils';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 
 export function getInjectionActiveReactivePowerEmptyFormDataProperties() {
     return {

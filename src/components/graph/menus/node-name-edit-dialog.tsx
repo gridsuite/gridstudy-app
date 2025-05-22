@@ -11,7 +11,7 @@ import { Grid } from '@mui/material';
 import { NAME } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { UniqueCheckNameInput } from 'components/graph/menus/unique-check-name-input';

@@ -23,7 +23,7 @@ import {
     POWER_FACTOR,
     R,
 } from '../../../../../utils/field-constants';
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';

@@ -17,7 +17,7 @@ import {
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 import { TabValue } from './network-visualizations-utils';
 
 export const initialNetworkVisualizationParametersForm: NetworkVisualizationParametersForm = {

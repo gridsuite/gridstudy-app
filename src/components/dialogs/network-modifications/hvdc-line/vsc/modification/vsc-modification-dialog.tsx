@@ -12,7 +12,7 @@ import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selec
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,

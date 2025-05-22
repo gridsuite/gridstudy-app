@@ -24,7 +24,7 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_LEVEL_ID,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';

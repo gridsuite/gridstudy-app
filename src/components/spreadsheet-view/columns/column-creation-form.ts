@@ -6,7 +6,7 @@
  */
 
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 
 export const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';

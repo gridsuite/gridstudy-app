@@ -21,7 +21,7 @@ import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,

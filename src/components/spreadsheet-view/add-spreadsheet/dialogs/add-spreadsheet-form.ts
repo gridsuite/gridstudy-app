@@ -6,7 +6,7 @@
  */
 
 import { EQUIPMENT_TYPE_FIELD, ID, NAME } from 'components/utils/field-constants';
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 
 export const SPREADSHEET_NAME = 'spreadsheetName';
 export const SPREADSHEET_MODEL = 'spreadsheetModel';

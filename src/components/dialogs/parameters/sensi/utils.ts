@@ -32,7 +32,7 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 
 export const getSensiHVDCsFormSchema = () => ({
     [PARAMETER_SENSI_HVDC]: yup.array().of(

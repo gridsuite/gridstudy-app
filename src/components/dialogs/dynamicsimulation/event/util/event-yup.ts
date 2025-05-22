@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { EventPropertyDefinition, PrimitiveTypes } from '../types/event.type';
-import { Schema } from 'yup';
-import yup from '../../../../utils/yup-config';
+import type { Schema } from 'yup';
+import * as yup from 'yup';
 
 export const getSchema = (eventPropertyDefinition: EventPropertyDefinition) => {
     let schema: Schema;

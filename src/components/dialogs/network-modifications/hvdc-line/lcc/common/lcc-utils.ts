@@ -33,7 +33,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
 } from '../../../../connectivity/connectivity-form-utils';
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,

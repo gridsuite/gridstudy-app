@@ -6,7 +6,7 @@
  */
 
 import { toNumber, validateValueIsANumber } from 'components/utils/validation-functions';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     MAX_Q,
     MIN_Q,

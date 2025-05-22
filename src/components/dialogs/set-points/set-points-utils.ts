@@ -12,7 +12,7 @@ import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 
 export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: null,

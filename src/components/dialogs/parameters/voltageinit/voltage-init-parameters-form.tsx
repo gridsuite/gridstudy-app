@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     FILTERS,
     GENERATORS_SELECTION_TYPE,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { TYPES } from '../../util/make-component-utils';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 
 const COMMON_F_NORM_TOL_ALG = 'fNormTolAlg';
 const COMMON_INITIAL_ADD_TOL_ALG = 'initialAddTolAlg';

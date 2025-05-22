@@ -23,9 +23,9 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { REGULATION_TYPES } from '../../../../network/constants';
-import { Schema } from 'yup';
+import type { Schema } from 'yup';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {

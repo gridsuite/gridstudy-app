@@ -8,7 +8,7 @@ import { UUID } from 'crypto';
 import { mixed, string } from 'yup';
 import { EquipmentInfos, EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { APP_NAME } from 'utils/config-params';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 
 const MAX_SEARCH_EQUIPMENT_HISTORY_SIZE = 5;
 

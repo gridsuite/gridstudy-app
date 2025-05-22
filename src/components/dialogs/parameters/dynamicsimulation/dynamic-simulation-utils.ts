@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
 import { getFormSchema as getCommonSolverFormSchema } from './solver/common-solver-parameters';
 

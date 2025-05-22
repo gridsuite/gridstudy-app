@@ -6,7 +6,7 @@
  */
 
 import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 
 const characteristicsValidationSchema = (isModification, additionalFields) => ({
     [CHARACTERISTICS]: yup.object().shape({

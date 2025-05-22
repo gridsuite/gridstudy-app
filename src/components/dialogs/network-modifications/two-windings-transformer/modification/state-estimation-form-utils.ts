@@ -6,7 +6,7 @@
  */
 
 import { TO_BE_ESTIMATED } from 'components/utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     getBranchActiveReactivePowerEditDataProperties,
     getBranchActiveReactivePowerEmptyFormDataProperties,

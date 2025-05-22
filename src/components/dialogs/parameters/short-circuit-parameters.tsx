@@ -25,7 +25,7 @@ import {
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
 import { fetchShortCircuitParameters } from '../../../services/short-circuit-analysis';
-import yup from '../../utils/yup-config';
+import * as yup from 'yup';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     SHORT_CIRCUIT_PREDEFINED_PARAMS,

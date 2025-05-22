@@ -14,7 +14,7 @@ import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
 import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types/event.type';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
 import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../../../services/dynamic-simulation';

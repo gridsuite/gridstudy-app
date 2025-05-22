@@ -12,7 +12,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, fetchDefaultCountry, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationCreationForm from './substation-creation-form';

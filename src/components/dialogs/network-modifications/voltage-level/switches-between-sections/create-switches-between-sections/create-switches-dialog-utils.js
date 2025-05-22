@@ -6,7 +6,7 @@
  */
 
 import { SWITCH_KINDS, SWITCH_KIND } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 
 export const getCreateSwitchesValidationSchema = (id = SWITCH_KINDS) => {
     return {

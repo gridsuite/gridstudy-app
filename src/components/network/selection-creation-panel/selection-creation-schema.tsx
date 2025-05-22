@@ -4,7 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, yupConfig as yup } from '@gridsuite/commons-ui';
+
+import * as yup from 'yup';
+import { EquipmentType } from '@gridsuite/commons-ui';
 import {
     DESTINATION_FOLDER,
     EQUIPMENT_TYPE_FIELD,
@@ -14,7 +16,7 @@ import {
     SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { SELECTION_TYPES } from './selection-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 
 export type DestinationFolder = {
     [FOLDER_ID]: UUID;

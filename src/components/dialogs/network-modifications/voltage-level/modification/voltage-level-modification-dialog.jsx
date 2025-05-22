@@ -19,7 +19,7 @@ import {
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     convertInputValue,

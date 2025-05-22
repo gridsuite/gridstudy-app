@@ -6,7 +6,7 @@
  */
 
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
-import yup from '../../../../utils/yup-config';
+import * as yup from 'yup';
 import { FILTERS, ID, NAME, SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
 
 export type ExpertFilterForm = Omit<ExpertFilter, 'type' | 'equipmentType' | 'topologyKind' | 'rules'>;

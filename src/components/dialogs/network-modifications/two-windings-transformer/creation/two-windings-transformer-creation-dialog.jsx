@@ -72,7 +72,7 @@ import {
     SIDE,
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import {

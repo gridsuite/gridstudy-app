@@ -29,7 +29,7 @@ import {
 import { Box, Grid } from '@mui/material';
 import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';

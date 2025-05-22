@@ -12,7 +12,7 @@ import CreateSwitchesDialogSubmitButton from './create-switches-dialog-submit-bu
 import CreateSwitchesForm from './create-switches-form';
 import { getCreateSwitchesEmptyFormData, getCreateSwitchesValidationSchema } from './create-switches-dialog-utils';
 import { SWITCH_KINDS } from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { useEffect } from 'react';
 import { CancelButton, CustomFormProvider } from '@gridsuite/commons-ui';
 

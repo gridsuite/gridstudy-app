@@ -16,7 +16,7 @@ import {
     getReactiveCapabilityCurveValidationSchema,
     getRowEmptyFormData,
 } from './reactive-capability-curve/reactive-capability-utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { ReactiveCapabilityCurvePoints } from './reactive-limits.type';
 
 export const getReactiveLimitsFormData = ({

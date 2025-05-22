@@ -6,7 +6,7 @@
  */
 
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
-import yup from '../../../../../utils/yup-config';
+import * as yup from 'yup';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTED,

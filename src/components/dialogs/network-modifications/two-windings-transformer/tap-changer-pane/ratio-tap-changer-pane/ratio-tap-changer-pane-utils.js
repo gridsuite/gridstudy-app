@@ -35,7 +35,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,

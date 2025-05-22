@@ -22,6 +22,7 @@ import {
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
+    useYupIntl,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -77,6 +78,7 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, St
 
 const App = () => {
     const { snackError } = useSnackMessage();
+    useYupIntl();
 
     const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);

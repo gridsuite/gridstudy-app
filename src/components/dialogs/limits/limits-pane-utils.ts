@@ -24,7 +24,7 @@ import {
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
-import yup from 'components/utils/yup-config';
+import * as yup from 'yup';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';

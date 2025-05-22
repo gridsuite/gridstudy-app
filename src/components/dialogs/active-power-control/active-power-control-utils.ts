@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import * as yup from 'yup';
 import { DROOP, FREQUENCY_REGULATION } from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
 
 export const getActivePowerControlEmptyFormData = (isEquipmentModification = false) => ({
     [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,

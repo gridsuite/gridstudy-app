@@ -35,7 +35,7 @@ import {
     STAGES_DEFINITION_INDEX,
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
+import * as yup from 'yup';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 
 export type UseGetNonEvacuatedEnergyParametersReturnProps = [
