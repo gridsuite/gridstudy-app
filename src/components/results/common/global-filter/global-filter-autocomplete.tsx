@@ -253,7 +253,7 @@ function GlobalFilterAutocomplete({
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    overflowX: 'auto',
+                                    overflowX: 'hidden',
                                     flexWrap: 'nowrap',
                                     maxWidth: '90%',
                                 }}
