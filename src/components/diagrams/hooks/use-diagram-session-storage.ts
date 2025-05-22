@@ -12,7 +12,7 @@ import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
 
-const keyToKeepInSessionStorage = ['type', 'voltageLevelId', 'substationId', 'voltageLevelIds']; // satic
+const keyToKeepInSessionStorage = ['type', 'voltageLevelId', 'substationId', 'voltageLevelIds', 'depth']; // static
 
 type useDiagramSessionStorageProps = {
     diagrams: Record<UUID, Diagram>;
@@ -29,7 +29,8 @@ export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }:
         }
         const diagrams: DiagramParams[] = loadDiagramsFromSessionStorage(studyUuid);
         diagrams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // at update
     useEffect(() => {
