@@ -304,7 +304,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                 return;
             }
             const diagram = createPendingDiagram(diagramParams);
-
             fetchDiagramSvg(diagram);
         },
         [createPendingDiagram, diagramAlreadyExists, fetchDiagramSvg, filterDiagramParams]
