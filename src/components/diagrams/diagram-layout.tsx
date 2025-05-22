@@ -19,6 +19,8 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -77,6 +79,7 @@ interface DiagramLayoutProps {
 
 function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramLayoutProps>) {
     const theme = useTheme();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
@@ -96,7 +99,10 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<Diagr
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, removeDiagram, createDiagram } = useDiagramModel({ diagramTypes: diagramTypes, onAddDiagram });
+    const { diagrams, removeDiagram, createDiagram } = useDiagramModel({
+        diagramTypes: enableDeveloperMode ? diagramTypes : [],
+        onAddDiagram,
+    });
 
     const onRemoveItem = useCallback(
         (diagramUuid: UUID) => {
