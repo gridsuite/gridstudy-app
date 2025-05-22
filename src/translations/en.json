@@ -1546,7 +1546,7 @@
 
     "CouplingDeviceCreation" : "Add a coupling device on voltage level {voltageLevelId}",
     "CouplingDeviceCreationEditor" : "Add a coupling device",
-    "CouplingDeviceCreationDiagramButton" : "show voltage level diagram",
+    "CouplingDeviceCreationDiagramButton" : "show voltage level",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
     "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch"
 }

@@ -9,7 +9,7 @@ import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import GridItem from '../../commons/grid-item.js';
 import { getObjectId } from '../../../utils/utils.js';
-import { Grid, Tooltip } from '@mui/material';
+import { Box, Grid, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane.js';
 import { useCallback, useState } from 'react';
@@ -55,7 +55,7 @@ export const CouplingDeviceForm = ({
             options={sectionOptions ?? []}
             getOptionLabel={getObjectId}
             size={'small'}
-            sx={{ paddingTop: 2 }}
+            sx={{ paddingTop: 2, paddingRight: 4 }}
         />
     );
 
@@ -82,25 +82,29 @@ export const CouplingDeviceForm = ({
     return (
         <>
             <Grid container>
-                <GridItem size={6}>{busBarSectionId1Field}</GridItem>
-                <GridItem size={6}>{busBarSectionId2Field}</GridItem>
+                <GridItem size={4.5}>{busBarSectionId1Field}</GridItem>
+                <GridItem size={4.5}>{busBarSectionId2Field}</GridItem>
                 {isNodeBuilt && (
-                    <Grid paddingTop={2}>
-                        <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                            <FormattedMessage id={'CouplingDeviceCreationDiagramButton'} />
-                        </Button>
-                        {stackHelper}
-                    </Grid>
+                    <GridItem size={2}>
+                        <Grid sx={{ paddingTop: 2 }}>
+                            <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                                <FormattedMessage id={'CouplingDeviceCreationDiagramButton'} />
+                            </Button>
+                            {stackHelper}
+                        </Grid>
+                    </GridItem>
                 )}
             </Grid>
-            <PositionDiagramPane
-                studyUuid={studyUuid}
-                open={isDiagramPaneOpen}
-                onClose={handleCloseDiagramPane}
-                voltageLevelId={{ id: voltageLevelId }}
-                currentNodeUuid={currentNodeUuid}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-            />
+            <Box>
+                <PositionDiagramPane
+                    studyUuid={studyUuid}
+                    open={isDiagramPaneOpen}
+                    onClose={handleCloseDiagramPane}
+                    voltageLevelId={{ id: voltageLevelId }}
+                    currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Box>
         </>
     );
 };
