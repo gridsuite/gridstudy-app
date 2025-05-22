@@ -256,12 +256,12 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: DiagramLayoutP
                 draggableHandle=".react-grid-dragHandle"
                 onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
                     if (e.target) {
-                        e.target.style.cursor = 'grabbing';
+                        (e.target as HTMLElement).style.cursor = 'grabbing';
                     }
                 }}
                 onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
                     if (e.target) {
-                        e.target.style.cursor = 'default';
+                        (e.target as HTMLElement).style.cursor = 'default';
                     }
                 }}
             >
