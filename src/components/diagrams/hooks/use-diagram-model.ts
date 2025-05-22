@@ -302,7 +302,7 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
         // Logic to update the diagrams when the current node changes
         prevCurrentNodeId.current = currentNode?.id;
         updateAllDiagrams();
-    }, [currentNode, updateAllDiagrams]);
+    }, [currentNode?.id, updateAllDiagrams]);
 
     useEffect(() => {
         if (!isStatusBuilt(currentNode?.data?.globalBuildStatus) || isStatusBuilt(prevCurrentNodeStatus.current)) {
@@ -311,7 +311,7 @@ export const useDiagramModel = ({ diagramTypes }: UseDiagramModelProps) => {
         // Logic to update the diagrams when the current node satus changes
         prevCurrentNodeStatus.current = currentNode?.data?.globalBuildStatus;
         updateAllDiagrams();
-    }, [currentNode, updateAllDiagrams]);
+    }, [currentNode?.data?.globalBuildStatus, updateAllDiagrams]);
 
     useEffect(() => {
         if (currentRootNetworkUuid === prevCurrentRootNetworkUuid.current) {
