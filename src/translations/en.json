@@ -1540,6 +1540,6 @@
     "currentStatus": "Modified status",
     "Open": "Open",
     "Closed": "Closed",
-    "DiagramLayout": "Diagram layout",
-    "DiagramLayoutAndTree": "Diagram layout and tree"
+    "DiagramGridLayout": "Diagram grid layout",
+    "DiagramGridLayoutAndTree": "Diagram grid layout and tree"
 }

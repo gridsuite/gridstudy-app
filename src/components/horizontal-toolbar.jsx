@@ -71,18 +71,18 @@ export function HorizontalToolbar() {
         dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
     }
 
-    function setDiagramLayoutDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_LAYOUT));
+    function setDiagramGridLayoutDisplay() {
+        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT));
     }
-    function setDiagramLayoutAndTreeDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE));
+    function setDiagramGridLayoutAndTreeDisplay() {
+        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE));
     }
 
     useEffect(() => {
         if (!enableDeveloperMode) {
             if (
-                studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT ||
-                studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
             ) {
                 dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
             }
@@ -250,7 +250,7 @@ export function HorizontalToolbar() {
             {enableDeveloperMode && (
                 <Tooltip
                     title={intl.formatMessage({
-                        id: 'DiagramLayout',
+                        id: 'DiagramGridLayout',
                     })}
                     placement="right"
                     arrow
@@ -271,11 +271,11 @@ export function HorizontalToolbar() {
                         <IconButton
                             size={'small'}
                             sx={
-                                studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT
+                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT
                                     ? styles.selected
                                     : styles.notSelected
                             }
-                            onClick={setDiagramLayoutDisplay}
+                            onClick={setDiagramGridLayoutDisplay}
                         >
                             <DashboardCustomizeOutlinedIcon />
                         </IconButton>
@@ -285,7 +285,7 @@ export function HorizontalToolbar() {
             {enableDeveloperMode && (
                 <Tooltip
                     title={intl.formatMessage({
-                        id: 'DiagramLayoutAndTree',
+                        id: 'DiagramGridLayoutAndTree',
                     })}
                     placement="right"
                     arrow
@@ -306,11 +306,11 @@ export function HorizontalToolbar() {
                         <IconButton
                             size={'small'}
                             sx={
-                                studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                     ? styles.selected
                                     : styles.notSelected
                             }
-                            onClick={setDiagramLayoutAndTreeDisplay}
+                            onClick={setDiagramGridLayoutAndTreeDisplay}
                         >
                             <AutoAwesomeMosaicOutlinedIcon />
                         </IconButton>

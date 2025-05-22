@@ -28,7 +28,7 @@ import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlin
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
-import DiagramLayout from './diagrams/diagram-layout';
+import DiagramGridLayout from './diagrams/diagram-grid-layout';
 
 const styles = {
     map: {
@@ -259,13 +259,13 @@ const MapViewer = ({
                         display:
                             studyDisplayMode === StudyDisplayMode.TREE ||
                             studyDisplayMode === StudyDisplayMode.HYBRID ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
                         flexBasis:
                             studyDisplayMode === StudyDisplayMode.HYBRID ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? '50%'
                                 : '100%',
                     }}
@@ -278,27 +278,27 @@ const MapViewer = ({
                         />
                     </ReactFlowProvider>
                 </Box>
-                {/* Diagram Layout */}
+                {/* Diagram Grid Layout */}
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
                         flexDirection: 'column',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE ? '50%' : '100%',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE ? '50%' : '100%',
                     }}
                 >
-                    <DiagramLayout
+                    <DiagramGridLayout
                         studyUuid={studyUuid}
                         visible={
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                         }
                         showInSpreadsheet={showInSpreadsheet}
-                    ></DiagramLayout>
+                    ></DiagramGridLayout>
                 </Box>
                 {/* Map */}
                 <Box

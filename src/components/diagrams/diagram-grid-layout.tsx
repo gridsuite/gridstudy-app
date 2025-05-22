@@ -71,13 +71,13 @@ const initialLayouts = {
     ],
 };
 
-interface DiagramLayoutProps {
+interface DiagramGridLayoutProps {
     studyUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
 
-function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramLayoutProps>) {
+function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
@@ -285,4 +285,4 @@ function DiagramLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<Diagr
     );
 }
 
-export default DiagramLayout;
+export default DiagramGridLayout;
