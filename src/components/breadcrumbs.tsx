@@ -94,7 +94,7 @@ export default function Breadcrumbs({ studyName, parentDirectoriesNames }: Reado
     const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return (
-        <MuiBreadcrumbs aria-label="breadcrumb" separator={<KeyboardArrowRightIcon fontSize="small" />}>
+        <MuiBreadcrumbs aria-label="breadcrumb" color="text" separator={<KeyboardArrowRightIcon fontSize="small" />}>
             <NoMaxWidthTooltip
                 title={
                     <Box sx={toolTipStyle}>
