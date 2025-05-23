@@ -181,7 +181,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     const minimizeRootNetworkPanel = useCallback(() => {
         setIsSearchActive(false);
         setIsRootNetworkPanelMinimized((prev) => !prev);
-    }, [setIsRootNetworkPanelMinimized]);
+    }, [setIsRootNetworkPanelMinimized, setIsSearchActive]);
 
     const openSearch = useCallback(() => {
         setIsSearchActive(true);
