@@ -47,7 +47,10 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }, [selectedRunnable, getStatus]);
 
     function isButtonDisable() {
-        if (selectedRunnable === ComputingType.LOAD_FLOW) {
+        if (
+            selectedRunnable === ComputingType.LOAD_FLOW ||
+            selectedRunnable === ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER
+        ) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
         }
