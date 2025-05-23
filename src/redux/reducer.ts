@@ -618,7 +618,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
-    lastDiagramEvent: DiagramEvent | undefined;
+    latestDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
@@ -767,7 +767,7 @@ const initialState: AppState = {
     isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
-    lastDiagramEvent: undefined,
+    latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
@@ -1518,19 +1518,19 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = diagramStates;
 
         if (action.svgType === DiagramType.SUBSTATION) {
-            state.lastDiagramEvent = {
+            state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
                 substationId: action.id as UUID,
             };
         } else if (action.svgType === DiagramType.VOLTAGE_LEVEL) {
-            state.lastDiagramEvent = {
+            state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
                 voltageLevelId: action.id as UUID,
             };
         } else if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            state.lastDiagramEvent = {
+            state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
                 voltageLevelIds: [action.id as UUID],
@@ -1551,7 +1551,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state: ViewState.OPENED,
             }))
         );
-        state.lastDiagramEvent = {
+        state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
             voltageLevelIds: uniqueIds as UUID[],
@@ -1668,7 +1668,7 @@ export const reducer = createReducer(initialState, (builder) => {
             state: ViewState.OPENED,
         });
         state.diagramStates = diagramStates;
-        state.lastDiagramEvent = {
+        state.latestDiagramEvent = {
             diagramType: DiagramType.NAD_FROM_CONFIG,
             eventType: DiagramEventType.CREATE,
             nadFromConfigUuid: action.nadConfigUuid as UUID,
@@ -2063,7 +2063,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
-        state.lastDiagramEvent = undefined;
+        state.latestDiagramEvent = undefined;
     });
 });
 
