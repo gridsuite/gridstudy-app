@@ -6,11 +6,22 @@
  */
 
 import { useDispatch } from 'react-redux';
-import { Box, ListItemText, MenuItem, Select } from '@mui/material';
+import { Box, ListItemText, MenuItem, Select, Theme } from '@mui/material';
 import { setCurrentRootNetworkUuid } from '../../redux/actions';
 import { UUID } from 'crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
+
+const styles = {
+    selectRoot: (theme: Theme) => ({
+        height: theme.spacing(4),
+        width: theme.spacing(15),
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
+    }),
+    selectInput: { display: 'flex', gap: 1, alignItems: 'center' },
+    selectItem: { gap: 1 },
+};
 
 interface RootNetworkSelectProps {
     currentRootNetworkUuid: UUID | null;
@@ -21,33 +32,31 @@ export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks
     const dispatch = useDispatch();
 
     return (
-        <Box sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
-            <Select
-                size="small"
-                id="breadCrumbsSelect"
-                sx={{ height: '36px' }}
-                value={currentRootNetworkUuid}
-                onChange={(event) => dispatch(setCurrentRootNetworkUuid(event.target.value as UUID))}
-                renderValue={(value) => {
-                    const tag = rootNetworks.find((item) => item.rootNetworkUuid === value)?.tag;
-                    return (
-                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                            <RemoveRedEye />
-                            <ListItemText primary={tag} />
-                        </Box>
-                    );
-                }}
-            >
-                {rootNetworks.map(
-                    (item: RootNetworkMetadata) =>
-                        item.rootNetworkUuid !== currentRootNetworkUuid && (
-                            <MenuItem value={item.rootNetworkUuid} sx={{ gap: 1 }}>
-                                <VisibilityOff />
-                                <ListItemText primary={item.tag} />
-                            </MenuItem>
-                        )
-                )}
-            </Select>
-        </Box>
+        <Select
+            size="small"
+            id="breadCrumbsSelect"
+            sx={styles.selectRoot}
+            value={currentRootNetworkUuid}
+            onChange={(event) => dispatch(setCurrentRootNetworkUuid(event.target.value as UUID))}
+            renderValue={(value) => {
+                const tag = rootNetworks.find((item) => item.rootNetworkUuid === value)?.tag;
+                return (
+                    <Box sx={styles.selectInput}>
+                        <RemoveRedEye />
+                        <ListItemText primary={tag} />
+                    </Box>
+                );
+            }}
+        >
+            {rootNetworks.map(
+                (item: RootNetworkMetadata) =>
+                    item.rootNetworkUuid !== currentRootNetworkUuid && (
+                        <MenuItem key={item.rootNetworkUuid} value={item.rootNetworkUuid} sx={styles.selectItem}>
+                            <VisibilityOff />
+                            <ListItemText primary={item.tag} />
+                        </MenuItem>
+                    )
+            )}
+        </Select>
     );
 }

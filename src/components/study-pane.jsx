@@ -21,10 +21,8 @@ import { useDiagram } from './diagrams/use-diagram';
 import HorizontalToolbar from './horizontal-toolbar';
 
 const styles = {
-    map: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '100%',
+    tabsContainer: {
+        flexGrow: 1,
     },
     error: (theme) => ({
         padding: theme.spacing(2),
@@ -39,7 +37,7 @@ const styles = {
             },
         },
     },
-    table: {
+    paneContainer: {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -69,9 +67,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
     }, []);
 
     return (
-        <Box sx={styles.table}>
+        <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={styles.tabsContainer}>
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
                 <div
                     className="singlestretch-child"
@@ -101,15 +99,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         onEquipmentScrolled={unsetTableEquipment}
                     />
                 </TabPanelLazy>
-                <TabPanelLazy
-                    key={`results-${currentNode?.id}`}
-                    selected={props.view === StudyView.RESULTS}
-                    sx={{
-                        height: '100%',
-                        flexDirection: 'column',
-                        display: props.view === StudyView.RESULTS ? 'flex' : 'none',
-                    }}
-                >
+                <TabPanelLazy key={`results-${currentNode?.id}`} selected={props.view === StudyView.RESULTS}>
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}

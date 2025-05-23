@@ -82,13 +82,13 @@ export const tabStyles = {
         position: 'relative',
         padding: 0,
     }),
-    contentBox: {
-        paddingTop: 2,
-        paddingBottom: 2,
-        paddingLeft: 8,
-        paddingRight: 8,
+    contentBox: (theme: Theme) => ({
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        paddingLeft: theme.spacing(8),
+        paddingRight: theme.spacing(8),
         height: '100%',
-    },
+    }),
     dividerTab: (theme: Theme) => ({
         padding: 0,
         minHeight: theme.spacing(1),

@@ -6,7 +6,7 @@
  */
 
 import { MoreHoriz } from '@mui/icons-material';
-import { Box, Breadcrumbs as MuiBreadcrumbs, Tooltip, tooltipClasses } from '@mui/material';
+import { Box, Breadcrumbs as MuiBreadcrumbs, Tooltip } from '@mui/material';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
@@ -15,10 +15,12 @@ import { UUID } from 'crypto';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import RootNetworkSelect from './root-network-select';
 
-const toolTipStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    flexWrap: 'nowrap',
+const styles = {
+    tooltipItem: {
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'nowrap',
+    },
 };
 
 export interface StudyPathBreadcrumbsProps {
@@ -38,28 +40,30 @@ export default function StudyPathBreadcrumbs({
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" color="text" separator={<KeyboardArrowRightIcon fontSize="small" />}>
             <Tooltip
-                sx={{
-                    [`& .${tooltipClasses.tooltip}`]: {
-                        maxWidth: 'none',
+                componentsProps={{
+                    tooltip: {
+                        sx: {
+                            maxWidth: 'none', //  to override background of text is auto cut
+                        },
                     },
                 }}
                 title={
-                    <Box sx={toolTipStyle}>
+                    <Box sx={styles.tooltipItem}>
                         {parentDirectoriesNames?.map((directoryName: string) => (
-                            <Box sx={toolTipStyle}>
+                            <Box sx={styles.tooltipItem}>
                                 {directoryName}
                                 <KeyboardArrowRightIcon fontSize="small" />
                             </Box>
                         ))}
-                        <Box sx={toolTipStyle}>
+                        <Box sx={styles.tooltipItem}>
                             {studyName}
                             <KeyboardArrowRightIcon fontSize="small" />
                         </Box>
-                        <Box sx={toolTipStyle}>
+                        <Box sx={styles.tooltipItem}>
                             {currentNode?.data.label}
                             <KeyboardArrowRightIcon fontSize="small" />
                         </Box>
-                        <Box sx={toolTipStyle}>{currentRootNetworktag}</Box>
+                        <Box sx={styles.tooltipItem}>{currentRootNetworktag}</Box>
                     </Box>
                 }
             >

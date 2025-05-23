@@ -19,10 +19,10 @@ import {
     resetEquipmentsPostLoadflow,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
-    setRootNetworks,
-    setRootNetworkIndexationStatus,
-    studyUpdated,
     setMonoRootStudy,
+    setRootNetworkIndexationStatus,
+    setRootNetworks,
+    studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
 

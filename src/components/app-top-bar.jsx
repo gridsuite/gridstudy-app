@@ -25,7 +25,7 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
 
 const styles = {
-    boxContent: (theme) => ({ display: 'flex', width: '100%', marginLeft: theme.spacing(10) }),
+    boxContent: (theme) => ({ display: 'flex', width: '100%', marginLeft: theme.spacing(4) }),
     tabs: {},
     searchButton: {
         marginTop: 'auto',
