@@ -160,7 +160,7 @@ export function fetchLogMatches(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
         '/report/' +
         reportId +
-        '/logs/search-term-matches?';
+        '/logs/search?';
 
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
