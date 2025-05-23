@@ -101,15 +101,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         onEquipmentScrolled={unsetTableEquipment}
                     />
                 </TabPanelLazy>
-                <TabPanelLazy
-                    key={`results-${currentNode?.id}`}
-                    selected={props.view === StudyView.RESULTS}
-                    sx={{
-                        height: '100%',
-                        flexDirection: 'column',
-                        display: props.view === StudyView.RESULTS ? 'flex' : 'none',
-                    }}
-                >
+                <TabPanelLazy key={`results-${currentNode?.id}`} selected={props.view === StudyView.RESULTS}>
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
