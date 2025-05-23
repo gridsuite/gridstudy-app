@@ -96,6 +96,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                 setResults([]);
                 return;
             }
+            setIsLoading(true);
             if (studyUuid && currentRootNetworkUuid) {
                 getModifications(studyUuid, currentRootNetworkUuid, newSearchTerm)
                     .then((results: ModificationsSearchResult[]) => {
