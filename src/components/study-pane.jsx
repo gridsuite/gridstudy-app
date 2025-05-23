@@ -45,7 +45,7 @@ const styles = {
     },
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = StudyView.MAP, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -73,14 +73,14 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
             <div
                 className="singlestretch-child"
                 style={{
-                    display: props.view === StudyView.MAP ? null : 'none',
+                    display: view === StudyView.MAP ? null : 'none',
                 }}
             >
                 <MapViewer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    view={props.view}
+                    view={view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}
                     onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
@@ -88,7 +88,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                 ></MapViewer>
             </div>
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
-            <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
+            <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
                     <SpreadsheetView
                         studyUuid={studyUuid}
@@ -104,36 +104,28 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                 sx={{
                     height: '100%',
                     flexDirection: 'column',
-                    display: props.view === StudyView.RESULTS ? 'flex' : 'none',
+                    display: view === StudyView.RESULTS ? 'flex' : 'none',
                 }}
             >
-                <TabPanelLazy key={`results-${currentNode?.id}`} selected={props.view === StudyView.RESULTS}>
+                <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
-                        view={props.view}
+                        view={view}
                     />
                 </TabPanelLazy>
             </Box>
-            <TabPanelLazy selected={props.view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
-                <ReportViewerTab
-                    visible={props.view === StudyView.LOGS}
-                    currentNode={currentNode}
-                    disabled={disabled}
-                />
+            <TabPanelLazy selected={view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
+                <ReportViewerTab visible={view === StudyView.LOGS} currentNode={currentNode} disabled={disabled} />
             </TabPanelLazy>
-            <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={props.view === StudyView.PARAMETERS}>
-                <ParametersTabs view={props.view} />
+            <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={view === StudyView.PARAMETERS}>
+                <ParametersTabs view={view} />
             </TabPanelLazy>
         </>
     );
-};
-
-StudyPane.defaultProps = {
-    view: StudyView.MAP,
 };
 
 StudyPane.propTypes = {
