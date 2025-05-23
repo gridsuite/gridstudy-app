@@ -18,6 +18,7 @@ import {
     FilterOptionsState,
     InputAdornment,
     ListItemButton,
+    PaperProps,
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
@@ -227,6 +228,11 @@ function GlobalFilterAutocomplete({
         [translate]
     );
 
+    const PaperComponentMemo = useCallback(
+        (props: PaperProps) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />,
+        [autocompleteRef]
+    );
+
     return (
         <>
             <div ref={autocompleteRef}>
@@ -304,7 +310,7 @@ function GlobalFilterAutocomplete({
                         filterOptions(options, state)
                     }
                     // dropdown paper
-                    PaperComponent={(props) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />}
+                    PaperComponent={PaperComponentMemo}
                     ListboxProps={{
                         sx: {
                             '& .MuiAutocomplete-option': {
