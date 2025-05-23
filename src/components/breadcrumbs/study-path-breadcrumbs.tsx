@@ -49,8 +49,8 @@ export default function StudyPathBreadcrumbs({
                 }}
                 title={
                     <Box sx={styles.tooltipItem}>
-                        {parentDirectoriesNames?.map((directoryName: string) => (
-                            <Box sx={styles.tooltipItem}>
+                        {parentDirectoriesNames?.map((directoryName: string, index) => (
+                            <Box key={`${directoryName}-${index}`} sx={styles.tooltipItem}>
                                 {directoryName}
                                 <KeyboardArrowRightIcon fontSize="small" />
                             </Box>

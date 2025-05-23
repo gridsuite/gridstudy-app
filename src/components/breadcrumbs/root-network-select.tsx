@@ -11,6 +11,7 @@ import { setCurrentRootNetworkUuid } from '../../redux/actions';
 import { UUID } from 'crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
+import { useMemo } from 'react';
 
 const styles = {
     selectRoot: (theme: Theme) => ({
@@ -31,6 +32,10 @@ interface RootNetworkSelectProps {
 export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<RootNetworkSelectProps>) {
     const dispatch = useDispatch();
 
+    const filteredRootNetworks = useMemo(() => {
+        return rootNetworks.filter((item) => item.rootNetworkUuid !== currentRootNetworkUuid);
+    }, [rootNetworks, currentRootNetworkUuid]);
+
     return (
         <Select
             size="small"
@@ -48,15 +53,12 @@ export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks
                 );
             }}
         >
-            {rootNetworks.map(
-                (item: RootNetworkMetadata) =>
-                    item.rootNetworkUuid !== currentRootNetworkUuid && (
-                        <MenuItem key={item.rootNetworkUuid} value={item.rootNetworkUuid} sx={styles.selectItem}>
-                            <VisibilityOff />
-                            <ListItemText primary={item.tag} />
-                        </MenuItem>
-                    )
-            )}
+            {filteredRootNetworks.map((item: RootNetworkMetadata) => (
+                <MenuItem key={item.rootNetworkUuid} value={item.rootNetworkUuid} sx={styles.selectItem}>
+                    <VisibilityOff />
+                    <ListItemText primary={item.tag} />
+                </MenuItem>
+            ))}
         </Select>
     );
 }
