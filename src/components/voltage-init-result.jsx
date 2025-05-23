@@ -79,7 +79,7 @@ const styles = {
     },
 };
 
-const VoltageInitResult = ({ result, status }) => {
+const VoltageInitResult = ({ result = null, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -406,10 +406,6 @@ const VoltageInitResult = ({ result, status }) => {
     }
 
     return renderTabs();
-};
-
-VoltageInitResult.defaultProps = {
-    result: null,
 };
 
 VoltageInitResult.propTypes = {
