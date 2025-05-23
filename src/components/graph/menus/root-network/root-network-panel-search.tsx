@@ -198,6 +198,20 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
     }, []);
 
     //TODO: to be removed
+    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    //get the name based on the node tree
+    const getName = useCallback(
+        (idToFind: UUID) => {
+            if (!treeNodes) {
+                return null;
+            }
+            const node = treeNodes.find((node) => node.id === idToFind);
+            return node?.data.label;
+        },
+        [treeNodes]
+    );
+
+    //TODO: to be removed
     const searchMatchingElements = useCallback(
         (newSearchTerm: string) => {
             if (newSearchTerm === '' || newSearchTerm?.length === 0) {
@@ -207,8 +221,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             setIsLoading(true);
             createPromise()
                 .then((data) => {
-                    const res = data?.filter((item) => item?.nodeUuid !== newSearchTerm);
-                    //setResults(reOrderSearchResults(res, currentNode?.id));
+                    const res = data?.filter((item) => getName(item.nodeUuid) === newSearchTerm);
                     setResults(res);
                     setIsLoading(false);
                 })
@@ -216,19 +229,17 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                     setIsLoading(false);
                 });
         },
-        //[currentNode?.id, reOrderSearchResults]
-        []
+        [getName]
     );
     useEffect(() => {
-        if (results?.length > 0 && currentNode?.id && results[0].nodeUuid !== currentNode?.id) {
-            console.log(' im in : ');
-            console.log(' leng: ', results?.length > 0);
-            console.log(' currentNode?.id: ', currentNode?.id);
-            console.log(' results[0].nodeUuid: ', results[0].nodeUuid);
-            console.log(' results : ', results);
-
+        // We need to reorder the results so the currentNode appears at the top of the list.
+        // If the currentNode isn't in the results, display them as is.
+        if (!results.find((item) => item.nodeUuid === currentNode?.id)) {
+            return;
+        }
+        const shouldReorderResults = results.length > 0 && currentNode?.id && results[0].nodeUuid !== currentNode?.id;
+        if (shouldReorderResults) {
             setResults(reOrderSearchResults(results, currentNode?.id));
-            console.log(' results  apres : ', reOrderSearchResults(results, currentNode?.id));
         }
     }, [currentNode?.id, reOrderSearchResults, results]);
 
