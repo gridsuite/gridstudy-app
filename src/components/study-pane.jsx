@@ -24,9 +24,6 @@ const styles = {
     tabsContainer: {
         flexGrow: 1,
     },
-    error: (theme) => ({
-        padding: theme.spacing(2),
-    }),
     '@global': {
         '@keyframes spin': {
             '0%': {

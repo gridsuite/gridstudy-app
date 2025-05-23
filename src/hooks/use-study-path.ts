@@ -65,7 +65,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
                 });
     }, [initialTitle, snackError, studyUuid]);
     const onStudyUpdated = useCallback(
-        (event: any) => {
+        (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             dispatch(studyUpdated(eventData));
             if (eventData.headers) {
