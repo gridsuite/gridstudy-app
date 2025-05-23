@@ -10,11 +10,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { ReactFlowProvider } from '@xyflow/react';
-import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import NetworkMapTab from './network/network-map-tab';
 import { DiagramPane } from './diagrams/diagram-pane';
-import { darken } from '@mui/material/styles';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -37,11 +35,6 @@ const styles = {
         flexDirection: 'row',
         height: '100%',
     },
-    horizontalToolbar: (theme) => ({
-        backgroundColor: darken(theme.palette.background.paper, 0.2),
-        display: 'flex',
-        flexDirection: 'row',
-    }),
     table: {
         display: 'flex',
         flexDirection: 'column',
@@ -246,9 +239,6 @@ const MapViewer = ({
 
     return (
         <Box sx={styles.table}>
-            <Box sx={styles.horizontalToolbar}>
-                <HorizontalToolbar />
-            </Box>
             <Box sx={styles.mapAndTreeContainer}>
                 {/* Waiting for map geodata is unnecessary. The map has is proper loader implementation */}
                 {/* This WaitingLoader is placed here to block functionnalities, hiding under components with some opacity*/}
