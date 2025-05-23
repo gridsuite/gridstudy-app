@@ -4,8 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Grid, SxProps, Theme } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { Box, Grid, SxProps, Theme, Tooltip } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { InfoOutlined } from '@mui/icons-material';
 
 export interface GridSectionProps {
     title: string;
@@ -14,12 +15,25 @@ export interface GridSectionProps {
     customStyle?: SxProps<Theme>;
 }
 
-export default function GridSection({ title, heading = 3, size = 12, customStyle }: Readonly<GridSectionProps>) {
+export default function GridSection({
+    title,
+    heading = 3,
+    size = 12,
+    customStyle,
+    enableToolType = false,
+    toolTypeMessage,
+}: Readonly<GridSectionProps>) {
+    const intl = useIntl();
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
                 <Box sx={customStyle} component={`h${heading}`}>
                     <FormattedMessage id={title} />
+                    {enableToolType && (
+                        <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: toolTypeMessage })}>
+                            <InfoOutlined color="info" fontSize="medium" />
+                        </Tooltip>
+                    )}
                 </Box>
             </Grid>
         </Grid>

@@ -790,7 +790,7 @@ export interface TopologyVoltageLevelModificationInfos {
     equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }
 
-export interface CouplingDeviceCreationInfo {
+export interface AddCouplingDeviceInfo {
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid: UUID;

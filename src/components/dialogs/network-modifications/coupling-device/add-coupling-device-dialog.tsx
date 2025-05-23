@@ -20,10 +20,9 @@ import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config.js';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
 import { CouplingDeviceForm } from './coupling-device-form.js';
-import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { CouplingDeviceCreationInfo } from '../../../../services/network-modification-types';
+import { AddCouplingDeviceInfo } from '../../../../services/network-modification-types';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
@@ -33,10 +32,10 @@ const formSchema = yup.object().shape({
     [BUS_BAR_SECTION_ID1]: yup.object().required().nullable(),
     [BUS_BAR_SECTION_ID2]: yup.object().required().nullable(),
 });
-export type CouplingDeviceCreationDialogProps = EquipmentModificationDialogProps & {
-    editData?: CouplingDeviceCreationInfo;
+export type AddCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
+    editData?: AddCouplingDeviceInfo;
 };
-export const CouplingDeviceCreationDialog = ({
+export const AddCouplingDeviceDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
@@ -45,13 +44,12 @@ export const CouplingDeviceCreationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: Readonly<CouplingDeviceCreationDialogProps>) => {
+}: Readonly<AddCouplingDeviceDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
-    const intl = useIntl();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -96,7 +94,7 @@ export const CouplingDeviceCreationDialog = ({
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'CouplingDeviceCreationError',
+                    headerId: 'AddCouplingDeviceError',
                 });
             });
         },
@@ -149,7 +147,7 @@ export const CouplingDeviceCreationDialog = ({
                 onSave={onSubmit}
                 maxWidth={'md'}
                 open={open}
-                titleId={intl.formatMessage({ id: 'CouplingDeviceCreation' }, { voltageLevelId: selectedId })}
+                titleId={'AddCouplingDevice'}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={

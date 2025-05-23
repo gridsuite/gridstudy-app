@@ -867,7 +867,7 @@
     "DuplicateId": "Duplicate id",
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
-    "CouplingDeviceCreationError": "Error while creating a coupling device",
+    "AddCouplingDeviceError": "Error while creating a coupling device",
     "BusBarSectionID1": "BusBar Section ID 1",
     "BusBarSectionID2": "BusBar Section ID 2",
     "BusBarSectionsCopyingNotSupported": "Copying bus bar sections is not supported for this voltage level : values were set to their default",
@@ -1544,9 +1544,11 @@
     "Open": "Open",
     "Closed": "Closed",
 
-    "CouplingDeviceCreation" : "Add a coupling device on voltage level {voltageLevelId}",
-    "CouplingDeviceCreationEditor" : "Add a coupling device",
-    "CouplingDeviceCreationDiagramButton" : "Show voltage level",
+    "AddCouplingDevice": "Add a coupling device",
+    "AddCouplingDeviceEditor": "Add a coupling device",
+    "AddCouplingDeviceDiagramButton": "Show voltage level",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
-    "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch"
+    "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch",
+    "CouplingDeviceText" : "Bus bar sections",
+    "CouplingDeviceBusBarSectionToolTipText" : "If both bus bar sections have a different section number it creates an omnibus otherwise a coupling device"
 }

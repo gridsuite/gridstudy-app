@@ -17,7 +17,7 @@ import {
     AttachLineInfo,
     BatteryCreationInfos,
     BatteryModificationInfos,
-    CouplingDeviceCreationInfo,
+    AddCouplingDeviceInfo,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -2012,7 +2012,7 @@ export function createCouplingDevice({
     modificationUuid = undefined,
     busbarSectionId1,
     busbarSectionId2,
-}: CouplingDeviceCreationInfo) {
+}: AddCouplingDeviceInfo) {
     console.log('Creating coupling device', voltageLevelId, busbarSectionId1, busbarSectionId2);
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
