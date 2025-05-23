@@ -67,7 +67,7 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
 
 export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> = ({ results }) => {
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-    //get the name based on the node tree
+    //get the name based on the node uuid from the node tree
     const getName = useCallback(
         (idToFind: UUID) => {
             if (!treeNodes) {

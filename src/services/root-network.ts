@@ -121,11 +121,7 @@ export function checkRootNetworkTagExistence(studyUuid: UUID, tag: string): Prom
     });
 }
 
-export function getModifications(
-    studyUuid: UUID,
-    rootNetworkUuid: UUID,
-    userInput: string
-): Promise<SpreadsheetConfigDto> {
+export function getModifications(studyUuid: UUID, rootNetworkUuid: UUID, userInput: string) {
     const fetchUrl =
         getStudyUrl(studyUuid) +
         `/root-networks/${encodeURIComponent(rootNetworkUuid)}/modifications/indexation-infos` +
