@@ -175,7 +175,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
         resetSearch();
         setIsSearchActive(false);
     }, [resetSearch, setIsSearchActive]);
-    //reset the search result for : build/unbuild, root network update, create and update modifications and renaming the node.
+    //reset the search result for : build/unbuild, root network update, create and update modifications.
     //The current behavior is subject to change in future user stories.
     useRootNetworkNotifications({
         resetSearch,
