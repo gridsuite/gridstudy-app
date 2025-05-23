@@ -7,8 +7,7 @@
 
 import { useController } from 'react-hook-form';
 import { InputAdornment, TextField, useTheme } from '@mui/material';
-import { genHelperError } from '@gridsuite/commons-ui';
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 interface ButtonReadOnlyInputProps extends PropsWithChildren {
     name: string;
@@ -54,7 +53,8 @@ export function ButtonReadOnlyInput({ name, isNumerical = false, children }: But
             size="small"
             fullWidth
             value={value}
-            {...genHelperError(error?.message)}
+            error={error !== undefined}
+            helperText={error?.message}
         />
     );
 }

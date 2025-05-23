@@ -7,7 +7,6 @@
 
 import { useController } from 'react-hook-form';
 import { TextField } from '@mui/material';
-import { genHelperError } from '@gridsuite/commons-ui';
 
 interface ReadOnlyInputProps {
     name: string;
@@ -36,7 +35,8 @@ export function ReadOnlyInput({ name, isNumerical = false }: ReadOnlyInputProps)
             fullWidth
             value={value}
             variant="standard"
-            {...genHelperError(error?.message)}
+            error={error !== undefined}
+            helperText={error?.message}
         />
     );
 }
