@@ -19,10 +19,10 @@ import { createCouplingDevice } from '../../../../services/study/network-modific
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config.js';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
-import { CouplingDeviceForm } from './coupling-device-form.js';
+import { CreateCouplingDeviceForm } from './create-coupling-device-form.js';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { AddCouplingDeviceInfo } from '../../../../services/network-modification-types';
+import { CreateCouplingDeviceInfo } from '../../../../services/network-modification-types';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
@@ -32,10 +32,10 @@ const formSchema = yup.object().shape({
     [BUS_BAR_SECTION_ID1]: yup.object().required().nullable(),
     [BUS_BAR_SECTION_ID2]: yup.object().required().nullable(),
 });
-export type AddCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
-    editData?: AddCouplingDeviceInfo;
+export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
+    editData?: CreateCouplingDeviceInfo;
 };
-export const AddCouplingDeviceDialog = ({
+export const CreateCouplingDeviceDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
@@ -44,7 +44,7 @@ export const AddCouplingDeviceDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: Readonly<AddCouplingDeviceDialogProps>) => {
+}: Readonly<CreateCouplingDeviceDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
@@ -164,7 +164,7 @@ export const AddCouplingDeviceDialog = ({
                     />
                 )}
                 {selectedId != null && (
-                    <CouplingDeviceForm
+                    <CreateCouplingDeviceForm
                         sectionOptions={busOrBusbarSectionOptions}
                         studyUuid={studyUuid}
                         voltageLevelId={selectedId}

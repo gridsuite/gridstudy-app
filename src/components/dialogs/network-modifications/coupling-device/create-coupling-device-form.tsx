@@ -17,15 +17,26 @@ import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { filledTextField } from '../../dialog-utils';
 import GridSection from '../../commons/grid-section';
+import {
+    EquipmentModificationDialogProps
+} from "../../../graph/menus/network-modifications/network-modification-menu.type";
 
-export const CouplingDeviceForm = ({
+export type CreateCouplingDeviceFormProps = EquipmentModificationDialogProps & {
+    sectionOptions: Array[];
+    studyUuid: string;
+    voltageLevelId: string;
+    currentNodeUuid: string;
+    currentRootNetworkUuid: string;
+    isNodeBuilt: boolean;
+};
+export const CreateCouplingDeviceForm = ({
     sectionOptions,
     studyUuid,
     voltageLevelId,
     currentNodeUuid,
     currentRootNetworkUuid,
     isNodeBuilt,
-}) => {
+}: Readonly<CreateCouplingDeviceFormProps>) => {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
 

@@ -100,7 +100,7 @@ import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
-import { AddCouplingDeviceDialog } from '../../../dialogs/network-modifications/coupling-device/add-coupling-device-dialog';
+import { CreateCouplingDeviceDialog } from '../../../dialogs/network-modifications/coupling-device/create-coupling-device-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -328,7 +328,7 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                     label: 'AddCouplingDevice',
-                    action: () => withDefaultParams(AddCouplingDeviceDialog),
+                    action: () => withDefaultParams(CreateCouplingDeviceDialog),
                 },
             ],
         },
