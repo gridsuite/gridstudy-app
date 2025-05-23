@@ -1543,9 +1543,9 @@
     "DiagramGridLayout": "Grille des diagrammes",
     "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
 
-    "AddCouplingDevice": "Ajouter un couplage ou un omnibus",
-    "AddCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
-    "AddCouplingDeviceDiagramButton": "Voir le poste",
+    "CreateCouplingDevice": "Ajouter un couplage ou un omnibus",
+    "CreateCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
+    "CreateCouplingDeviceDiagramButton": "Voir le poste",
     "builtNodeTooltipForDiagram" : "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram" : "Diagramme du dernier nœud réalisé de la branche courante",
     "CouplingDeviceText" : "Sections de jeu de barre",

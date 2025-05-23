@@ -327,7 +327,7 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
-                    label: 'AddCouplingDevice',
+                    label: 'CreateCouplingDevice',
                     action: () => withDefaultParams(CreateCouplingDeviceDialog),
                 },
             ],

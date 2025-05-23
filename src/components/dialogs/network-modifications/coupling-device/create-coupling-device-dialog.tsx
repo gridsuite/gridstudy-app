@@ -94,7 +94,7 @@ export const CreateCouplingDeviceDialog = ({
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'AddCouplingDeviceError',
+                    headerId: 'CreateCouplingDeviceError',
                 });
             });
         },
@@ -147,7 +147,7 @@ export const CreateCouplingDeviceDialog = ({
                 onSave={onSubmit}
                 maxWidth={'md'}
                 open={open}
-                titleId={'AddCouplingDevice'}
+                titleId={'CreateCouplingDevice'}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={

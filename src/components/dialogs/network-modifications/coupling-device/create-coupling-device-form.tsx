@@ -100,7 +100,7 @@ export const CreateCouplingDeviceForm = ({
                     <GridItem size={3}>
                         <Grid sx={{ paddingTop: 1 }}>
                             <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                                <FormattedMessage id={'AddCouplingDeviceDiagramButton'} />
+                                <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
                             </Button>
                             {diagramToolTip}
                         </Grid>

@@ -1547,9 +1547,9 @@
     "DiagramGridLayout": "Diagram grid layout",
     "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
 
-    "AddCouplingDevice": "Add a coupling device",
-    "AddCouplingDeviceEditor": "Add a coupling device",
-    "AddCouplingDeviceDiagramButton": "Show voltage level",
+    "CreateCouplingDevice": "Add a coupling device",
+    "CreateCouplingDeviceEditor": "Add a coupling device",
+    "CreateCouplingDeviceDiagramButton": "Show voltage level",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
     "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch",
     "CouplingDeviceText" : "Bus bar sections",
