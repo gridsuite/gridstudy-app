@@ -16,7 +16,7 @@ import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaic
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import Divider from '@mui/material/Divider';
-import { setModificationsDrawerOpen, setStudyDisplayMode, setEventScenarioDrawerOpen } from '../redux/actions';
+import { setEventScenarioDrawerOpen, setModificationsDrawerOpen, setStudyDisplayMode } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
@@ -24,12 +24,15 @@ import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { useEffect } from 'react';
-import { Grid, Theme } from '@mui/material';
+import { darken, Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
 
 const styles = {
+    horizontalToolbar: (theme: Theme) => ({
+        backgroundColor: darken(theme.palette.background.paper, 0.2),
+    }),
     selected: (theme: Theme) => ({
         color: theme.palette.action.active,
     }),
@@ -99,7 +102,7 @@ export function HorizontalToolbar() {
     }, [enableDeveloperMode, dispatch, studyDisplayMode]);
 
     return (
-        <Grid container alignItems="center">
+        <Grid container alignItems="center" sx={styles.horizontalToolbar}>
             <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
                 <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
             </Grid>
