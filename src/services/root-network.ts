@@ -119,3 +119,19 @@ export function checkRootNetworkTagExistence(studyUuid: UUID, tag: string): Prom
         return response.status !== 204;
     });
 }
+
+export function getModifications(studyUuid: UUID, rootNetworkUuid: UUID, userInput: string) {
+    const fetchUrl =
+        getStudyUrl(studyUuid) +
+        `/root-networks/${encodeURIComponent(rootNetworkUuid)}/modifications/indexation-infos?` +
+        new URLSearchParams({
+            userInput: userInput,
+        });
+
+    return backendFetchJson(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}

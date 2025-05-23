@@ -325,6 +325,11 @@ export enum NotificationType {
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
+    BUILD_COMPLETED = 'buildCompleted',
+    NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    UPDATE_FINISHED = 'UPDATE_FINISHED',
+    DELETE_FINISHED = 'DELETE_FINISHED',
+    NODE_RENAMED = 'nodeRenamed',
 }
 
 export enum RootNetworkIndexationStatus {
