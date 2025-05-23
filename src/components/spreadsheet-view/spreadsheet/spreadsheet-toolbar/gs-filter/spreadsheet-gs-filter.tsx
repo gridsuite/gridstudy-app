@@ -15,15 +15,16 @@ import { CustomFormProvider, DirectoryItemsInput, ElementType } from '@gridsuite
 import { saveSpreadsheetGsFilters } from '../../../../../redux/actions';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import {
-    toFormFormat,
     initialSpreadsheetGsFilterForm,
     SpreadsheetGsFilterForm,
     spreadsheetGsFilterFormSchema,
+    toFormFormat,
 } from './spreadsheet-gs-filter.utils';
 import { SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
 import { AppState } from '../../../../../redux/reducer';
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
@@ -75,7 +76,10 @@ export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<Sp
                     titleId="FiltersListsSelection"
                     label="filter"
                     elementType={ElementType.FILTER}
-                    equipmentTypes={useMemo(() => [equipmentType], [equipmentType])}
+                    equipmentTypes={useMemo(
+                        () => [equipmentType, EQUIPMENT_TYPES.SUBSTATION, EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+                        [equipmentType]
+                    )}
                     labelRequiredFromContext={false}
                     onChange={handleChange}
                 />
