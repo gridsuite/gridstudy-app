@@ -138,19 +138,6 @@ export const useRootNetworkNotifications = ({
         [resetSearch]
     );
 
-    const handleRenameNodeNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-
-            if (updateTypeHeader === NotificationType.NODE_RENAMED) {
-                resetSearch?.();
-            }
-        },
-        [resetSearch]
-    );
-
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkModifiedNotification,
     });
@@ -165,8 +152,5 @@ export const useRootNetworkNotifications = ({
     });
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: handleNodeNetworkModificationNotification,
-    });
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: handleRenameNodeNotification,
     });
 };

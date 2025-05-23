@@ -39,16 +39,16 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
     const { computeLabel } = useModificationLabelComputer();
 
     const getModificationLabel = useCallback(
-        (modif?: Modification): React.ReactNode => {
-            if (!modif) {
+        (modification?: Modification): React.ReactNode => {
+            if (!modification) {
                 return '';
             }
+
             return intl.formatMessage(
-                { id: 'network_modifications.' + modif.messageType },
+                { id: 'network_modifications.' + modification.messageType },
                 {
-                    ...modif,
                     // @ts-ignore
-                    ...computeLabel(modif),
+                    ...computeLabel(modification),
                 }
             );
         },
@@ -58,7 +58,7 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
         <>
             {modifications.map((modification, key) => (
                 <Typography key={key} variant="body2">
-                    {getModificationLabel(modification)}
+                    <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
                 </Typography>
             ))}
         </>

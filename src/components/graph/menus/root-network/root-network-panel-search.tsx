@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SetStateAction, useCallback, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { Box, Typography, TextField, InputAdornment, IconButton, Tabs, Tab, Theme, Tooltip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -47,130 +47,104 @@ function createPromise(): Promise<ModificationsSearchResult[]> {
         setTimeout(() => {
             const functionsList = [
                 {
+                    nodeUuid: '7fc73769-94fd-42a4-a162-557ebf287a71',
+                    modifications: [
+                        {
+                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
+                            impactedEquipmentId: 'PENL5',
+                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
+                        },
+                        {
+                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
+                            impactedEquipmentId: 'PENL5',
+                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"qqxx"}',
+                        },
+                    ],
+                },
+                {
                     nodeUuid: 'bf9c436b-c90a-4c49-8cef-ea3db7ebd407',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            impactedEquipmentId: 'PENL5(1)',
-                            type: 'SUBSTATION_CREATION',
-                        },
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            impactedEquipmentId: 'PENL5(1)',
-                            type: 'SUBSTATION_CREATION',
-                        },
-                    ],
-                },
-                {
-                    nodeUuid: 'e4080cb0-9dd2-4cb4-ba40-aa0d9d4b2c1e',
-                    modifications: [
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
-                            type: 'SUBSTATION_CREATION',
+                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"N012"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
-                            type: 'SUBSTATION_CREATION',
+                            messageType: 'SUBSTATION_CREATION',
+                            messageValues: '{"equipmentId":"N012"}',
                         },
                     ],
                 },
                 {
-                    nodeUuid: '217ca2ba-a31e-4632-9554-47885cc02e97',
+                    nodeUuid: '46a141a7-4503-4780-9ddb-e72399c432cd',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N9"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N9"}',
                         },
                     ],
                 },
                 {
-                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
+                    nodeUuid: 'a85aeb78-170a-473c-a62c-571925834fa3',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N2"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N2"}',
                         },
                     ],
                 },
                 {
-                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
+                    nodeUuid: '6cc19a1f-ea51-45ad-a94a-f5284836823a',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N3"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N3"}',
                         },
                     ],
                 },
                 {
-                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
+                    nodeUuid: 'ebdbd10d-4710-4656-831c-638520449973',
                     modifications: [
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N4"}',
                         },
                         {
                             modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
                             impactedEquipmentId: 'PENL5',
                             messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
-                        },
-                    ],
-                },
-
-                {
-                    nodeUuid: '550e8400-e29b-41d4-a716-446655440000',
-                    modifications: [
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            impactedEquipmentId: 'PENL5',
-                            messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
-                        },
-                    ],
-                },
-
-                {
-                    nodeUuid: '550e8400-e29b-41d4-a716-446655440004',
-                    modifications: [
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            impactedEquipmentId: 'PENL5',
-                            messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
-                        },
-                        {
-                            modificationUuid: '550e8400-e29b-41d4-a716-446655440000',
-                            impactedEquipmentId: 'PENL5',
-                            messageType: 'SUBSTATION_CREATION',
-                            messageValues: '{"equipmentId":"qqxx"}',
+                            messageValues: '{"equipmentId":"N4"}',
                         },
                     ],
                 },
@@ -234,15 +208,29 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             createPromise()
                 .then((data) => {
                     const res = data?.filter((item) => item?.nodeUuid !== newSearchTerm);
-                    setResults(reOrderSearchResults(res, currentNode?.id));
+                    //setResults(reOrderSearchResults(res, currentNode?.id));
+                    setResults(res);
                     setIsLoading(false);
                 })
                 .catch((err) => {
                     setIsLoading(false);
                 });
         },
-        [currentNode?.id, reOrderSearchResults]
+        //[currentNode?.id, reOrderSearchResults]
+        []
     );
+    useEffect(() => {
+        if (results?.length > 0 && currentNode?.id && results[0].nodeUuid !== currentNode?.id) {
+            console.log(' im in : ');
+            console.log(' leng: ', results?.length > 0);
+            console.log(' currentNode?.id: ', currentNode?.id);
+            console.log(' results[0].nodeUuid: ', results[0].nodeUuid);
+            console.log(' results : ', results);
+
+            setResults(reOrderSearchResults(results, currentNode?.id));
+            console.log(' results  apres : ', reOrderSearchResults(results, currentNode?.id));
+        }
+    }, [currentNode?.id, reOrderSearchResults, results]);
 
     //TODO: replace searchMatchingElements with the real api.
     const debouncedHandleChange = useDebounce(searchMatchingElements, 700);
