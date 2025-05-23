@@ -126,7 +126,7 @@ const RatioTapChangerPane = ({
             label={'RegulationMode'}
             options={Object.values(RATIO_REGULATION_MODES)}
             size="small"
-            disabled={!ratioTapChangerEnabledWatcher}
+            disabled={!isRatioTapLoadTapChangingCapabilitiesOn}
             previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.ratioTapChanger)}
         />
     );
@@ -136,10 +136,8 @@ const RatioTapChangerPane = ({
             name={`${id}.${TARGET_V}`}
             label="TargetVoltage"
             adornment={VoltageAdornment}
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
             previousValue={previousValues?.ratioTapChanger?.targetV}
+            disabled={!isRatioTapLoadTapChangingCapabilitiesOn}
         />
     );
 
@@ -148,10 +146,8 @@ const RatioTapChangerPane = ({
             name={`${id}.${TARGET_DEADBAND}`}
             label="Deadband"
             adornment={VoltageAdornment}
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
             previousValue={previousValues?.ratioTapChanger?.targetDeadband}
+            disabled={!isRatioTapLoadTapChangingCapabilitiesOn}
         />
     );
 
@@ -159,26 +155,22 @@ const RatioTapChangerPane = ({
         <>
             <GridItem size={4}>{ratioTapLoadTapChangingCapabilitiesField}</GridItem>
 
-            {isRatioTapLoadTapChangingCapabilitiesOn && (
-                <>
-                    <GridSection title="RegulationSection" heading={4} />
-                    <Grid item container spacing={1}>
-                        <GridItem size={4}>{regulationModeField}</GridItem>
-                        <GridItem size={4}>{targetVoltage1Field}</GridItem>
-                        <GridItem size={4}>{targetDeadbandField}</GridItem>
-                    </Grid>
-                    <RegulatedTerminalSection
-                        id={id}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        voltageLevelOptions={voltageLevelOptions}
-                        previousValues={previousValues}
-                        tapChangerEnabledWatcher={ratioTapChangerEnabledWatcher}
-                        regulationType={regulationType}
-                    />
-                </>
-            )}
+            <GridSection title="RegulationSection" heading={4} />
+            <Grid item container spacing={1}>
+                <GridItem size={4}>{regulationModeField}</GridItem>
+                <GridItem size={4}>{targetVoltage1Field}</GridItem>
+                <GridItem size={4}>{targetDeadbandField}</GridItem>
+            </Grid>
+            <RegulatedTerminalSection
+                id={id}
+                studyUuid={studyUuid}
+                currentNode={currentNode}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                voltageLevelOptions={voltageLevelOptions}
+                previousValues={previousValues}
+                tapChangerEnabled={isRatioTapLoadTapChangingCapabilitiesOn}
+                regulationType={regulationType}
+            />
 
             <GridSection title="TapsSection" heading={4} />
             <RatioTapChangerPaneSteps
