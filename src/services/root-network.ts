@@ -8,7 +8,6 @@
 import { PREFIX_STUDY_QUERIES, getStudyUrl } from './study';
 import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
-import { SpreadsheetConfigDto } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 export function fetchRootNetworks(studyUuid: UUID) {
     console.info('Fetching root networks for studyUuid : ', studyUuid);
