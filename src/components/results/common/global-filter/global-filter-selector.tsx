@@ -21,6 +21,7 @@ export default function GlobalFilterSelector({
     filterableEquipmentTypes,
     preloadedGlobalFilters,
     filters,
+    //If this parameter is enabled, only generic filters of the same type as those provided in filterableEquipmentTypes will be available
     genericFiltersStrictMode = false,
 }: Readonly<GlobalFilterSelectorProps>) {
     // Global filter autocomplete displayed categories are dynamically provided from the on hand filters, GENERIC_FILTER gets manually added
