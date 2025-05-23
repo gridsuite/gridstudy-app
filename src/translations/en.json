@@ -1469,7 +1469,7 @@
     "createRootNetworksError": "An error occurred while creating the root network",
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
-    "rootNetwork.modificationsInfos": "TODO....",
+    "rootNetwork.modificationsInfos": "Only modifications in built nodes and their parent nodes will appear in the results.",
     "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "results",

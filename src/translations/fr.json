@@ -1468,7 +1468,7 @@
     "visibleRootNetwork": "Réseau Visible : ",
     "importCaseFailure": "Impossible d'importer la situation",
     "modificationActivationByRootNetworkError": "Une erreur est survenue lors de l'activation / désactivation de la modification par réseau racine",
-    "rootNetwork.modificationsInfos": "Rechercher les modifications qui impactent un ouvrage seulement en amont des noeuds réalisé et dans ceux-ci",
+    "rootNetwork.modificationsInfos": "Seules les modifications dans les noeuds réalisés et leurs noeuds parents apparaitront dans les résultats.",
     "rootNetwork.searchPlaceholder": "Rechercher un ouvrage modifié…",
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "résultats",
