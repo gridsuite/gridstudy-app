@@ -1540,5 +1540,7 @@
     "previousStatus": "Previous status",
     "currentStatus": "Modified status",
     "Open": "Open",
-    "Closed": "Closed"
+    "Closed": "Closed",
+    "DiagramGridLayout": "Diagram grid layout",
+    "DiagramGridLayoutAndTree": "Diagram grid layout and tree"
 }

@@ -1536,5 +1536,7 @@
     "previousStatus": "État précédent",
     "currentStatus": "État modifié",
     "Open": "Ouvert",
-    "Closed": "Fermé"
+    "Closed": "Fermé",
+    "DiagramGridLayout": "Grille des diagrammes",
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
 }
