@@ -101,24 +101,24 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, ...props })
                         onEquipmentScrolled={unsetTableEquipment}
                     />
                 </TabPanelLazy>
-                <Box
+                <TabPanelLazy
+                    key={`results-${currentNode?.id}`}
+                    selected={props.view === StudyView.RESULTS}
                     sx={{
                         height: '100%',
                         flexDirection: 'column',
                         display: props.view === StudyView.RESULTS ? 'flex' : 'none',
                     }}
                 >
-                    <TabPanelLazy key={`results-${currentNode?.id}`} selected={props.view === StudyView.RESULTS}>
-                        <ResultViewTab
-                            studyUuid={studyUuid}
-                            currentNode={currentNode}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                            openVoltageLevelDiagram={openVoltageLevelDiagram}
-                            disabled={disabled}
-                            view={props.view}
-                        />
-                    </TabPanelLazy>
-                </Box>
+                    <ResultViewTab
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
+                        disabled={disabled}
+                        view={props.view}
+                    />
+                </TabPanelLazy>
                 <TabPanelLazy selected={props.view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
                     <ReportViewerTab
                         visible={props.view === StudyView.LOGS}
