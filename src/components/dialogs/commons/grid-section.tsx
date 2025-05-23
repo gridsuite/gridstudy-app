@@ -13,6 +13,8 @@ export interface GridSectionProps {
     heading?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: number;
     customStyle?: SxProps<Theme>;
+    enableToolType?: boolean,
+    toolTypeMessage?: string;
 }
 
 export default function GridSection({
