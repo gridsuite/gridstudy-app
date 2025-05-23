@@ -59,7 +59,7 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { StudyView } from './utils/utils';
+import { STUDY_VIEWS, StudyView } from './utils/utils';
 import { NotificationType } from '../redux/reducer';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -72,8 +72,6 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
-
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
 const App = () => {
     const { snackError } = useSnackMessage();

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme, darken, lighten } from '@mui/material';
+import { darken, lighten, Theme } from '@mui/material';
 
 const styles = {
     tabWithError: (theme: Theme) => ({
@@ -82,13 +82,13 @@ export const tabStyles = {
         position: 'relative',
         padding: 0,
     }),
-    contentBox: {
-        paddingTop: 6,
-        paddingBottom: 2,
-        paddingLeft: 8,
-        paddingRight: 8,
+    contentBox: (theme: Theme) => ({
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        paddingLeft: theme.spacing(8),
+        paddingRight: theme.spacing(8),
         height: '100%',
-    },
+    }),
     dividerTab: (theme: Theme) => ({
         padding: 0,
         minHeight: theme.spacing(1),

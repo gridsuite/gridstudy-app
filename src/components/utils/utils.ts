@@ -278,6 +278,14 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
+export const STUDY_VIEWS = [
+    StudyView.MAP,
+    StudyView.SPREADSHEET,
+    StudyView.RESULTS,
+    StudyView.LOGS,
+    StudyView.PARAMETERS,
+];
+
 export type StudyViewType = (typeof StudyView)[keyof typeof StudyView];
 
 export const addSelectedFieldToRows = <T>(rows: T[]): (T & { selected: boolean })[] => {
