@@ -13,8 +13,8 @@ export interface GridSectionProps {
     heading?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: number;
     customStyle?: SxProps<Theme>;
-    enableToolType?: boolean,
-    toolTypeMessage?: string;
+    tooltipEnabled?: boolean,
+    tooltipMessage?: string;
 }
 
 export default function GridSection({
@@ -22,8 +22,8 @@ export default function GridSection({
     heading = 3,
     size = 12,
     customStyle,
-    enableToolType = false,
-    toolTypeMessage,
+    tooltipEnabled = false,
+    tooltipMessage,
 }: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
@@ -31,8 +31,8 @@ export default function GridSection({
             <Grid item xs={size}>
                 <Box sx={customStyle} component={`h${heading}`}>
                     <FormattedMessage id={title} />
-                    {enableToolType && (
-                        <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: toolTypeMessage })}>
+                    {tooltipEnabled && (
+                        <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
                             <InfoOutlined color="info" fontSize="medium" />
                         </Tooltip>
                     )}

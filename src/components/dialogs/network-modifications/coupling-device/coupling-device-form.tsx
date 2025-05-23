@@ -98,8 +98,8 @@ export const CouplingDeviceForm = ({
             </Grid>
             <GridSection
                 title={'CouplingDeviceText'}
-                enableToolType={true}
-                toolTypeMessage={'CouplingDeviceBusBarSectionToolTipText'}
+                tooltipEnabled={true}
+                tooltipMessage={'CouplingDeviceBusBarSectionToolTipText'}
             />
             <Grid container>
                 <GridItem size={4}>{busBarSectionId1Field}</GridItem>
