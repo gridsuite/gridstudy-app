@@ -22,8 +22,8 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { useEffect } from 'react';
-import Breadcrumbs from './breadcrumbs';
 import { Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
@@ -101,7 +101,7 @@ export function HorizontalToolbar() {
     return (
         <Grid container alignItems="center">
             <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
-                <Breadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
+                <StudyPathBreadcrumbs studyName={studyName} parentDirectoriesNames={parentDirectoriesNames} />
             </Grid>
             <Grid
                 sx={{

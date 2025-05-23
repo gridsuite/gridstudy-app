@@ -25,14 +25,7 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
 
 const styles = {
-    currentNodeBox: {
-        width: '15%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderColor: '#123456',
-    },
-    boxContent: { display: 'flex', width: '100%', marginLeft: '50px' },
+    boxContent: (theme) => ({ display: 'flex', width: '100%', marginLeft: theme.spacing(2) }),
     tabs: {},
     searchButton: {
         marginTop: 'auto',
