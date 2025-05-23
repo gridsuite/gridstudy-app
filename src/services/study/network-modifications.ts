@@ -2031,7 +2031,7 @@ export function createCouplingDevice({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.COUPLING_DEVICE_CREATION.type,
+            type: MODIFICATION_TYPES.ADD_COUPLING_DEVICE.type,
             voltageLevelId: voltageLevelId,
             busOrBbsId1: busbarSectionId1,
             busOrBbsId2: busbarSectionId2,
