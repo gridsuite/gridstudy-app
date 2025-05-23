@@ -84,7 +84,7 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import {
@@ -100,6 +100,7 @@ import {
 } from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useIntl } from 'react-intl';
 
 /**
  * Dialog to modify a line in the network
@@ -123,6 +124,7 @@ const LineModificationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
+    const intl = useIntl();
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
@@ -143,17 +145,21 @@ const LineModificationDialog = ({
         [displayConnectivity]
     );
 
-    const formSchema = yup
-        .object()
-        .shape({
-            [EQUIPMENT_NAME]: yup.string(),
-            ...getCon1andCon2WithPositionValidationSchema(true),
-            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
-            ...getLimitsValidationSchema(true),
-            ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
-        })
-        .concat(modificationPropertiesSchema)
-        .required();
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getCon1andCon2WithPositionValidationSchema(true),
+                    ...getCharacteristicsValidationSchema(intl, CHARACTERISTICS, displayConnectivity, true),
+                    ...getLimitsValidationSchema(intl, true),
+                    ...getBranchActiveReactivePowerValidationSchema(STATE_ESTIMATION),
+                })
+                .concat(getModificationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

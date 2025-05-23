@@ -35,7 +35,7 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
+import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
 import * as yup from 'yup';
 import {
     getRegulatingTerminalEmptyFormData,
@@ -43,205 +43,215 @@ import {
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 
-const phaseTapChangerValidationSchema = (id) => ({
-    [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
-        [REGULATION_MODE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED], {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
-        [REGULATION_TYPE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) => enabled && regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
-                then: (schema) => schema.required(),
-            }),
-        [REGULATION_SIDE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.LOCAL.id,
-                then: (schema) => schema.required(),
-            }),
-        [CURRENT_LIMITER_REGULATING_VALUE]: yup
-            .number()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
-                    enabled && regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id,
-                then: (schema) => schema.positive('CurrentLimiterMustBeGreaterThanZero').required(),
-            }),
-        [FLOW_SET_POINT_REGULATING_VALUE]: yup
-            .number()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
-                    enabled && regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
-                then: (schema) => schema.required(),
-            }),
-        [TARGET_DEADBAND]: yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
-        [LOW_TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .when(ENABLED, {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
-        [HIGH_TAP_POSITION]: yup.number().nullable(),
-        [TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .when(ENABLED, {
-                is: true,
-                then: (schema) =>
-                    schema
-                        .required()
-                        .min(yup.ref(LOW_TAP_POSITION), 'TapPositionMustBeBetweenLowAndHighTapPositionValue')
-                        .max(yup.ref(HIGH_TAP_POSITION), 'TapPositionMustBeBetweenLowAndHighTapPositionValue'),
-            }),
-        [STEPS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [STEPS_TAP]: yup.number().required(),
-                    [STEPS_RESISTANCE]: yup.number(),
-                    [STEPS_REACTANCE]: yup.number(),
-                    [STEPS_CONDUCTANCE]: yup.number(),
-                    [STEPS_SUSCEPTANCE]: yup.number(),
-                    [STEPS_RATIO]: yup.number(),
-                    [STEPS_ALPHA]: yup.number(),
+export function getPhaseTapChangerValidationSchema(intl, id = PHASE_TAP_CHANGER) {
+    return {
+        [id]: yup.object().shape({
+            [ENABLED]: yup.bool().required(),
+            [REGULATION_MODE]: yup
+                .string()
+                .nullable()
+                .when([ENABLED], {
+                    is: true,
+                    then: (schema) => schema.required(),
+                }),
+            [REGULATION_TYPE]: yup
+                .string()
+                .nullable()
+                .when([ENABLED, REGULATION_MODE], {
+                    is: (enabled, regulationMode) => enabled && regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
+                    then: (schema) => schema.required(),
+                }),
+            [REGULATION_SIDE]: yup
+                .string()
+                .nullable()
+                .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
+                    is: (enabled, regulationMode, regulationType) =>
+                        enabled &&
+                        regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
+                        regulationType === REGULATION_TYPES.LOCAL.id,
+                    then: (schema) => schema.required(),
+                }),
+            [CURRENT_LIMITER_REGULATING_VALUE]: yup
+                .number()
+                .nullable()
+                .when([ENABLED, REGULATION_MODE], {
+                    is: (enabled, regulationMode) =>
+                        enabled && regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id,
+                    then: (schema) =>
+                        schema.positive(intl.formatMessage({ id: 'CurrentLimiterMustBeGreaterThanZero' })).required(),
+                }),
+            [FLOW_SET_POINT_REGULATING_VALUE]: yup
+                .number()
+                .nullable()
+                .when([ENABLED, REGULATION_MODE], {
+                    is: (enabled, regulationMode) =>
+                        enabled && regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
+                    then: (schema) => schema.required(),
+                }),
+            [TARGET_DEADBAND]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'TargetDeadbandMustBeGreaterOrEqualToZero' })),
+            [LOW_TAP_POSITION]: yup
+                .number()
+                .nullable()
+                .when(ENABLED, {
+                    is: true,
+                    then: (schema) => schema.required(),
+                }),
+            [HIGH_TAP_POSITION]: yup.number().nullable(),
+            [TAP_POSITION]: yup
+                .number()
+                .nullable()
+                .when(ENABLED, {
+                    is: true,
+                    then: (schema) =>
+                        schema
+                            .required()
+                            .min(
+                                yup.ref(LOW_TAP_POSITION),
+                                intl.formatMessage({ id: 'TapPositionMustBeBetweenLowAndHighTapPositionValue' })
+                            )
+                            .max(
+                                yup.ref(HIGH_TAP_POSITION),
+                                intl.formatMessage({ id: 'TapPositionMustBeBetweenLowAndHighTapPositionValue' })
+                            ),
+                }),
+            [STEPS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [STEPS_TAP]: yup.number().required(),
+                        [STEPS_RESISTANCE]: yup.number(),
+                        [STEPS_REACTANCE]: yup.number(),
+                        [STEPS_CONDUCTANCE]: yup.number(),
+                        [STEPS_SUSCEPTANCE]: yup.number(),
+                        [STEPS_RATIO]: yup.number(),
+                        [STEPS_ALPHA]: yup.number(),
+                    })
+                )
+                .when(ENABLED, {
+                    is: true,
+                    then: (schema) => schema.min(1, intl.formatMessage({ id: 'GeneratePhaseTapRowsError' })),
                 })
-            )
-            .when(ENABLED, {
-                is: true,
-                then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
-            })
-            .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
-                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
-                return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
-            }),
-        //regulating terminal fields
-        //TODO: is it possible to move it to regulating-terminal-utils.ts properly since it depends on "ENABLED" ?
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            })
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            })
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
-    }),
-});
-
-const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
-    [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
-        [REGULATION_MODE]: yup.string().nullable(),
-        [REGULATION_TYPE]: yup.string().nullable(),
-        [REGULATION_SIDE]: yup.string().nullable(),
-        [CURRENT_LIMITER_REGULATING_VALUE]: yup.number().nullable().positive('CurrentLimiterMustBeGreaterThanZero'),
-        [FLOW_SET_POINT_REGULATING_VALUE]: yup.number().nullable(),
-        [TARGET_DEADBAND]: yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
-        [LOW_TAP_POSITION]: yup.number().nullable(),
-        [HIGH_TAP_POSITION]: yup.number().nullable(),
-        [TAP_POSITION]: yup.number().nullable(),
-        [STEPS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [STEPS_TAP]: yup.number().required(),
-                    [STEPS_RESISTANCE]: yup.number(),
-                    [STEPS_REACTANCE]: yup.number(),
-                    [STEPS_CONDUCTANCE]: yup.number(),
-                    [STEPS_SUSCEPTANCE]: yup.number(),
-                    [STEPS_RATIO]: yup.number(),
-                    [STEPS_ALPHA]: yup.number(),
+                .test('distinctOrderedAlpha', intl.formatMessage({ id: 'PhaseShiftValuesError' }), (array) => {
+                    const alphaArray = array.map((step) => step[STEPS_ALPHA]);
+                    return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
+                }),
+            //regulating terminal fields
+            //TODO: is it possible to move it to regulating-terminal-utils.ts properly since it depends on "ENABLED" ?
+            [VOLTAGE_LEVEL]: yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string(),
+                    [NAME]: yup.string(),
+                    [SUBSTATION_ID]: yup.string(),
+                    [NOMINAL_VOLTAGE]: yup.string(),
+                    [TOPOLOGY_KIND]: yup.string().nullable(),
                 })
-            )
-            .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
-                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
-                return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
-            }),
-        //regulating terminal fields
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            }),
-    }),
-});
+                .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
+                    is: (enabled, regulationMode, regulationType) =>
+                        enabled &&
+                        regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
+                        regulationType === REGULATION_TYPES.DISTANT.id,
+                    then: (schema) => schema.required(),
+                }),
+            [EQUIPMENT]: yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string(),
+                    [NAME]: yup.string().nullable(),
+                    [TYPE]: yup.string(),
+                })
+                .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
+                    is: (enabled, regulationMode, regulationType) =>
+                        enabled &&
+                        regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
+                        regulationType === REGULATION_TYPES.DISTANT.id,
+                    then: (schema) => schema.required(),
+                }),
+        }),
+    };
+}
 
-export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerValidationSchema(id);
-};
-
-export const getPhaseTapChangerModificationValidationSchema = (previousValues, id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerModificationValidationSchema(previousValues, id);
-};
-
-const phaseTapChangerEmptyFormData = (isModification, id) => ({
-    [id]: {
-        [ENABLED]: false,
-        [REGULATION_MODE]: null,
-        [REGULATION_TYPE]: null,
-        [REGULATION_SIDE]: isModification ? null : SIDE.SIDE1.id,
-        [CURRENT_LIMITER_REGULATING_VALUE]: null,
-        [FLOW_SET_POINT_REGULATING_VALUE]: null,
-        [TARGET_DEADBAND]: null,
-        [LOW_TAP_POSITION]: null,
-        [HIGH_TAP_POSITION]: null,
-        [TAP_POSITION]: null,
-        [STEPS]: [],
-        ...getRegulatingTerminalEmptyFormData(),
-    },
-});
+export function getPhaseTapChangerModificationValidationSchema(intl, id = PHASE_TAP_CHANGER) {
+    return {
+        [id]: yup.object().shape({
+            [ENABLED]: yup.bool().required(),
+            [REGULATION_MODE]: yup.string().nullable(),
+            [REGULATION_TYPE]: yup.string().nullable(),
+            [REGULATION_SIDE]: yup.string().nullable(),
+            [CURRENT_LIMITER_REGULATING_VALUE]: yup
+                .number()
+                .nullable()
+                .positive(intl.formatMessage({ id: 'CurrentLimiterMustBeGreaterThanZero' })),
+            [FLOW_SET_POINT_REGULATING_VALUE]: yup.number().nullable(),
+            [TARGET_DEADBAND]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'TargetDeadbandMustBeGreaterOrEqualToZero' })),
+            [LOW_TAP_POSITION]: yup.number().nullable(),
+            [HIGH_TAP_POSITION]: yup.number().nullable(),
+            [TAP_POSITION]: yup.number().nullable(),
+            [STEPS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [STEPS_TAP]: yup.number().required(),
+                        [STEPS_RESISTANCE]: yup.number(),
+                        [STEPS_REACTANCE]: yup.number(),
+                        [STEPS_CONDUCTANCE]: yup.number(),
+                        [STEPS_SUSCEPTANCE]: yup.number(),
+                        [STEPS_RATIO]: yup.number(),
+                        [STEPS_ALPHA]: yup.number(),
+                    })
+                )
+                .test('distinctOrderedAlpha', intl.formatMessage({ id: 'PhaseShiftValuesError' }), (array) => {
+                    const alphaArray = array.map((step) => step[STEPS_ALPHA]);
+                    return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
+                }),
+            //regulating terminal fields
+            [VOLTAGE_LEVEL]: yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string(),
+                    [NAME]: yup.string(),
+                    [SUBSTATION_ID]: yup.string(),
+                    [NOMINAL_VOLTAGE]: yup.string(),
+                    [TOPOLOGY_KIND]: yup.string().nullable(),
+                }),
+            [EQUIPMENT]: yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string(),
+                    [NAME]: yup.string().nullable(),
+                    [TYPE]: yup.string(),
+                }),
+        }),
+    };
+}
 
 export const getPhaseTapChangerEmptyFormData = (isModification = false, id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerEmptyFormData(isModification, id);
+    return {
+        [id]: {
+            [ENABLED]: false,
+            [REGULATION_MODE]: null,
+            [REGULATION_TYPE]: null,
+            [REGULATION_SIDE]: isModification ? null : SIDE.SIDE1.id,
+            [CURRENT_LIMITER_REGULATING_VALUE]: null,
+            [FLOW_SET_POINT_REGULATING_VALUE]: null,
+            [TARGET_DEADBAND]: null,
+            [LOW_TAP_POSITION]: null,
+            [HIGH_TAP_POSITION]: null,
+            [TAP_POSITION]: null,
+            [STEPS]: [],
+            ...getRegulatingTerminalEmptyFormData(),
+        },
+    };
 };
 
 export const getPhaseTapChangerFormData = (

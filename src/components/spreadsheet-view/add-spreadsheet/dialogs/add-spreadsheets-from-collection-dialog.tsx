@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     CustomFormProvider,
@@ -63,7 +63,7 @@ export default function AddSpreadsheetsFromCollectionDialog({
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const formSchema = getSpreadsheetCollectionFormSchema();
+    const formSchema = useMemo(() => getSpreadsheetCollectionFormSchema(intl), [intl]);
 
     const formMethods = useForm({
         defaultValues: initialSpreadsheetCollectionForm,

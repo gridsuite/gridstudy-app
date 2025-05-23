@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { CustomFormProvider, fetchDefaultCountry, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -23,11 +23,12 @@ import { createSubstation } from '../../../../../services/study/network-modifica
 import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -35,14 +36,6 @@ const emptyFormData = {
     [COUNTRY]: null,
     ...emptyProperties,
 };
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [COUNTRY]: yup.string().nullable(),
-    })
-    .concat(creationPropertiesSchema);
 
 const SubstationCreationDialog = ({
     editData,
@@ -55,7 +48,20 @@ const SubstationCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [COUNTRY]: yup.string().nullable(),
+                })
+                .concat(getCreationPropertiesSchema(intl)),
+        [intl]
+    );
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

@@ -26,6 +26,7 @@ import {
 import * as yup from 'yup';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import type { Schema } from 'yup';
+import type { IntlShape } from 'react-intl';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {
@@ -65,8 +66,8 @@ const requiredWhenQatNominalVChoice = (schema: Schema) =>
         otherwise: (schema) => schema.notRequired(),
     });
 
-export const getReactiveFormValidationSchema = () =>
-    yup.object().shape({
+export function getReactiveFormValidationSchema(intl: IntlShape) {
+    return yup.object().shape({
         [MAX_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [MIN_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [MAX_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
@@ -74,7 +75,7 @@ export const getReactiveFormValidationSchema = () =>
         [VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
-            .min(0, 'mustBeGreaterOrEqualToZero')
+            .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
             .when([VOLTAGE_REGULATION_MODE], {
                 is: (voltageRegulationMode: string) => voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),
@@ -111,6 +112,7 @@ export const getReactiveFormValidationSchema = () =>
                 })
         ),
     });
+}
 
 export const getReactiveFormData = ({
     maxSusceptance,

@@ -59,7 +59,7 @@ import {
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import {
-    formSchema,
+    getFormSchema,
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
     getSensiInjectionsformatNewParams,
@@ -114,6 +114,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
         };
     }, []);
 
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm<SensitivityAnalysisParametersFormSchema>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

@@ -25,6 +25,7 @@ import { dialogStyles } from '../styles/styles';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { getEmptySpreadsheetFormSchema, initialEmptySpreadsheetForm, SPREADSHEET_NAME } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
+import { useIntl } from 'react-intl';
 
 interface AddEmptySpreadsheetDialogProps {
     open: UseStateBooleanReturn;
@@ -56,13 +57,14 @@ const TABLES_TYPES = [
 export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Readonly<AddEmptySpreadsheetDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
 
     const tablesNames = useMemo(() => tablesDefinitions.map((def) => def.name), [tablesDefinitions]);
-    const formSchema = useMemo(() => getEmptySpreadsheetFormSchema(tablesNames), [tablesNames]);
+    const formSchema = useMemo(() => getEmptySpreadsheetFormSchema(intl, tablesNames), [intl, tablesNames]);
 
     const formMethods = useForm({
         defaultValues: initialEmptySpreadsheetForm,

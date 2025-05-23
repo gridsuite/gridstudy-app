@@ -6,31 +6,12 @@
  */
 
 import * as yup from 'yup';
-import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
 import { getFormSchema as getCommonSolverFormSchema } from './solver/common-solver-parameters';
 
 export enum TimeDelay {
     START_TIME = 'startTime',
     STOP_TIME = 'stopTime',
 }
-
-export const timeDelayFormSchema = yup.object().shape({
-    [TimeDelay.START_TIME]: yup.number().required(),
-    [TimeDelay.STOP_TIME]: yup
-        .number()
-        .required()
-        .when([TimeDelay.START_TIME], ([startTime], schema) => {
-            if (startTime) {
-                return schema.min(startTime, 'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime');
-            }
-            return schema;
-        }),
-});
-
-export const timeDelayEmptyFormData = {
-    [TimeDelay.START_TIME]: 0,
-    [TimeDelay.STOP_TIME]: 0,
-};
 
 export enum SimplifiedSolver {
     H_MIN = 'hMin',
@@ -106,65 +87,13 @@ export enum Solver {
     SOLVERS = 'solvers',
 }
 
-export const solverFormSchema = yup.object().shape({
-    [Solver.ID]: yup.string().required(),
-    [Solver.SOLVERS]: yup.array().when([Solver.ID], ([solverId], schema) =>
-        schema.of(
-            yup.lazy((item) => {
-                const { id, type } = item;
-
-                // ignore validation if not current selected solver
-                if (solverId !== id) {
-                    return yup.object().default(undefined);
-                }
-
-                // chose the right schema for each type of solver
-                if (type === SolverTypeInfos.IDA) {
-                    return getIdaFormSchema();
-                } else {
-                    return getSimplifiedFormSchema();
-                }
-            })
-        )
-    ),
-});
-
-export const solverEmptyFormData = {
-    [Solver.ID]: '',
-    [Solver.SOLVERS]: [],
-};
-
 export enum Curve {
     EQUIPMENT_ID = 'equipmentId',
     VARIABLE_ID = 'variableId',
     CURVES = 'curves',
 }
 
-export const curveFormSchema = yup.object().shape({
-    [Curve.CURVES]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [Curve.EQUIPMENT_ID]: yup.string().required(),
-                [Curve.VARIABLE_ID]: yup.string().required(),
-            })
-        )
-        .nullable(),
-});
-
-export const curveEmptyFormData = {
-    [Curve.CURVES]: [],
-};
-
 export const MAPPING = 'mapping';
-
-export const mappingFormSchema = yup.object().shape({
-    [MAPPING]: yup.string().required(),
-});
-
-export const mappingEmptyFormData = {
-    [MAPPING]: '',
-};
 
 export const NETWORK = 'network';
 
@@ -199,49 +128,3 @@ export enum NetworkEnum {
     TRANSFORMER_T_NEXT_THT = 'transformerTNextTHT',
     TRANSFORMER_TO_LV = 'transformerTolV',
 }
-
-export const networkFormSchema = yup.object().shape({
-    [NetworkEnum.CAPACITOR_NO_RECLOSING_DELAY]: yup.number().required(),
-    [NetworkEnum.DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: yup.number().required(),
-    [NetworkEnum.LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: yup.number().required(),
-    [NetworkEnum.LOAD_TP]: yup.number().required(),
-    [NetworkEnum.LOAD_TQ]: yup.number().required(),
-    [NetworkEnum.LOAD_ALPHA]: yup.number().required(),
-    [NetworkEnum.LOAD_ALPHA_LONG]: yup.number().required(),
-    [NetworkEnum.LOAD_BETA]: yup.number().required(),
-    [NetworkEnum.LOAD_BETA_LONG]: yup.number().required(),
-    [NetworkEnum.LOAD_IS_CONTROLLABLE]: yup.boolean(),
-    [NetworkEnum.LOAD_IS_RESTORATIVE]: yup.boolean(),
-    [NetworkEnum.LOAD_Z_PMAX]: yup.number().required(),
-    [NetworkEnum.LOAD_Z_QMAX]: yup.number().required(),
-    [NetworkEnum.REACTANCE_NO_RECLOSING_DELAY]: yup.number().required(),
-    [NetworkEnum.TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION]: yup.number().required(),
-    [NetworkEnum.TRANSFORMER_T1_ST_HT]: yup.number().required(),
-    [NetworkEnum.TRANSFORMER_T1_ST_THT]: yup.number().required(),
-    [NetworkEnum.TRANSFORMER_T_NEXT_HT]: yup.number().required(),
-    [NetworkEnum.TRANSFORMER_T_NEXT_THT]: yup.number().required(),
-    [NetworkEnum.TRANSFORMER_TO_LV]: yup.number().required(),
-});
-
-export const networkEmptyFormData = {
-    [NetworkEnum.CAPACITOR_NO_RECLOSING_DELAY]: 0,
-    [NetworkEnum.DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
-    [NetworkEnum.LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
-    [NetworkEnum.LOAD_TP]: 0,
-    [NetworkEnum.LOAD_TQ]: 0,
-    [NetworkEnum.LOAD_ALPHA]: 0,
-    [NetworkEnum.LOAD_ALPHA_LONG]: 0,
-    [NetworkEnum.LOAD_BETA]: 0,
-    [NetworkEnum.LOAD_BETA_LONG]: 0,
-    [NetworkEnum.LOAD_IS_CONTROLLABLE]: false,
-    [NetworkEnum.LOAD_IS_RESTORATIVE]: false,
-    [NetworkEnum.LOAD_Z_PMAX]: 0,
-    [NetworkEnum.LOAD_Z_QMAX]: 0,
-    [NetworkEnum.REACTANCE_NO_RECLOSING_DELAY]: 0,
-    [NetworkEnum.TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
-    [NetworkEnum.TRANSFORMER_T1_ST_HT]: 0,
-    [NetworkEnum.TRANSFORMER_T1_ST_THT]: 0,
-    [NetworkEnum.TRANSFORMER_T_NEXT_HT]: 0,
-    [NetworkEnum.TRANSFORMER_T_NEXT_THT]: 0,
-    [NetworkEnum.TRANSFORMER_TO_LV]: 0,
-};

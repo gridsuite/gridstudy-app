@@ -70,7 +70,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import {
@@ -132,7 +132,7 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
@@ -151,6 +151,7 @@ import {
     getStateEstimationEmptyFormData,
     getStateEstimationValidationSchema,
 } from './state-estimation-form-utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -162,20 +163,6 @@ const emptyFormData = {
     ...getPhaseTapChangerEmptyFormData(true),
     ...emptyProperties,
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getCon1andCon2WithPositionValidationSchema(true),
-        ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(true),
-        ...getStateEstimationValidationSchema(STATE_ESTIMATION),
-        ...getRatioTapChangerModificationValidationSchema(),
-        ...getPhaseTapChangerModificationValidationSchema(),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
 
 /**
  * Dialog to modify a two windings transformer in the network
@@ -198,6 +185,7 @@ const TwoWindingsTransformerModificationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
+    const intl = useIntl();
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
@@ -205,6 +193,24 @@ const TwoWindingsTransformerModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getCon1andCon2WithPositionValidationSchema(true),
+                    ...getCharacteristicsValidationSchema(intl, true),
+                    ...getLimitsValidationSchema(intl, true),
+                    ...getStateEstimationValidationSchema(STATE_ESTIMATION),
+                    ...getRatioTapChangerModificationValidationSchema(intl),
+                    ...getPhaseTapChangerModificationValidationSchema(intl),
+                })
+                .concat(getModificationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

@@ -14,7 +14,7 @@ import {
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -31,14 +31,7 @@ import {
 } from './assignment/assignment-utils';
 import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        [ASSIGNMENTS]: getAssignmentsSchema(),
-    })
-    .required();
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
@@ -55,6 +48,19 @@ const ModificationByAssignmentDialog: FC<any> = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
+                    [ASSIGNMENTS]: getAssignmentsSchema(intl),
+                })
+                .required(),
+        [intl]
+    );
 
     // "DeepNullable" to allow deeply null values as default values for required values
     // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)

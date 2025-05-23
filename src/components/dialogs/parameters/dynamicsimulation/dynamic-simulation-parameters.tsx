@@ -6,7 +6,7 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters from './time-delay-parameters';
@@ -29,10 +29,10 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
-    SubmitButton,
-    ProviderParam,
-    useParametersBackend,
     parametersStyles,
+    ProviderParam,
+    SubmitButton,
+    useParametersBackend,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -41,19 +41,8 @@ import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
 import { PROVIDER } from '../../../utils/field-constants';
 import { SolverInfos } from 'services/study/dynamic-simulation.type';
-import {
-    Curve,
-    curveEmptyFormData,
-    MAPPING,
-    mappingEmptyFormData,
-    NETWORK,
-    networkEmptyFormData,
-    Solver,
-    solverEmptyFormData,
-    TimeDelay,
-    timeDelayEmptyFormData,
-} from './dynamic-simulation-utils';
-import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulation.type';
+import { Curve, MAPPING, NETWORK, NetworkEnum, Solver, TimeDelay } from './dynamic-simulation-utils';
+import { DynamicSimulationForm, getFormSchema, TAB_VALUES } from './dynamic-simulation.type';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { useParametersNotification } from '../use-parameters-notification';
@@ -65,17 +54,49 @@ interface DynamicSimulationParametersProps {
 
 const emptyFormData = {
     [PROVIDER]: '',
-    [TAB_VALUES.TIME_DELAY]: { ...timeDelayEmptyFormData },
-    [TAB_VALUES.SOLVER]: { ...solverEmptyFormData },
-    [TAB_VALUES.MAPPING]: { ...mappingEmptyFormData },
-    [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
-    [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
-};
+    [TAB_VALUES.TIME_DELAY]: {
+        [TimeDelay.START_TIME]: 0,
+        [TimeDelay.STOP_TIME]: 0,
+    },
+    [TAB_VALUES.SOLVER]: {
+        [Solver.ID]: '',
+        [Solver.SOLVERS]: [],
+    },
+    [TAB_VALUES.MAPPING]: {
+        [MAPPING]: '',
+    },
+    [TAB_VALUES.NETWORK]: {
+        [NetworkEnum.CAPACITOR_NO_RECLOSING_DELAY]: 0,
+        [NetworkEnum.DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
+        [NetworkEnum.LINE_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
+        [NetworkEnum.LOAD_TP]: 0,
+        [NetworkEnum.LOAD_TQ]: 0,
+        [NetworkEnum.LOAD_ALPHA]: 0,
+        [NetworkEnum.LOAD_ALPHA_LONG]: 0,
+        [NetworkEnum.LOAD_BETA]: 0,
+        [NetworkEnum.LOAD_BETA_LONG]: 0,
+        [NetworkEnum.LOAD_IS_CONTROLLABLE]: false,
+        [NetworkEnum.LOAD_IS_RESTORATIVE]: false,
+        [NetworkEnum.LOAD_Z_PMAX]: 0,
+        [NetworkEnum.LOAD_Z_QMAX]: 0,
+        [NetworkEnum.REACTANCE_NO_RECLOSING_DELAY]: 0,
+        [NetworkEnum.TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION]: 0,
+        [NetworkEnum.TRANSFORMER_T1_ST_HT]: 0,
+        [NetworkEnum.TRANSFORMER_T1_ST_THT]: 0,
+        [NetworkEnum.TRANSFORMER_T_NEXT_HT]: 0,
+        [NetworkEnum.TRANSFORMER_T_NEXT_THT]: 0,
+        [NetworkEnum.TRANSFORMER_TO_LV]: 0,
+    },
+    [TAB_VALUES.CURVE]: {
+        [Curve.CURVES]: [],
+    },
+} as const satisfies DynamicSimulationForm;
 
 const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
     user,
     setHaveDirtyFields,
 }) => {
+    const intl = useIntl();
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -117,6 +138,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         resetParameters();
     }, [resetParameters, resetProvider]);
 
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm<DynamicSimulationForm>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

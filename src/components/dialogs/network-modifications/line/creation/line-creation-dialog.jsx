@@ -45,7 +45,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
@@ -80,13 +80,14 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { createLine } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -120,6 +121,7 @@ const LineCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
@@ -130,15 +132,19 @@ const LineCreationDialog = ({
         setOpenLineTypesCatalogDialog(false);
     };
 
-    const formSchema = yup
-        .object()
-        .shape({
-            ...getHeaderValidationSchema(),
-            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
-            ...getLimitsValidationSchema(false),
-        })
-        .concat(creationPropertiesSchema)
-        .required();
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    ...getHeaderValidationSchema(),
+                    ...getCharacteristicsValidationSchema(intl, CHARACTERISTICS, displayConnectivity),
+                    ...getLimitsValidationSchema(intl, false),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

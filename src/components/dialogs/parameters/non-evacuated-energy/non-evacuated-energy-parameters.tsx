@@ -16,7 +16,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -55,7 +55,7 @@ import {
 import { setNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import {
-    formSchema,
+    getFormSchema,
     getContingenciesParams,
     getGenerationStagesDefinitionParams,
     getGenerationStagesSelectionParams,
@@ -79,6 +79,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     useNonEvacuatedEnergyParameters,
 }) => {
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [providers, provider, , updateProvider, resetProvider] = parametersBackend;
 
@@ -139,6 +140,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
             [CONTINGENCIES]: [],
         };
     }, [provider]);
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm<NonEvacuatedEnergyParametersForm>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

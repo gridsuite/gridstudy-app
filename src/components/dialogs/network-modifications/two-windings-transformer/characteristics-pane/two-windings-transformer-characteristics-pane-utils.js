@@ -5,33 +5,62 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
+import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import * as yup from 'yup';
 
-const characteristicsValidationSchema = (isModification, additionalFields) => ({
-    [CHARACTERISTICS]: yup.object().shape({
-        [R]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [X]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
-        [G]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [B]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
-        [RATED_S]: yup.number().nullable().positive('RatedNominalPowerMustBeGreaterThanZero'),
-        [RATED_U1]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [RATED_U2]: isModification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        ...additionalFields,
-    }),
-});
-
-export const getCharacteristicsValidationSchema = (isModification = false, additionalFields = {}) => {
-    return characteristicsValidationSchema(isModification, additionalFields);
-};
+export function getCharacteristicsValidationSchema(intl, isModification = false, additionalFields = {}) {
+    return {
+        [CHARACTERISTICS]: yup.object().shape({
+            [R]: isModification
+                ? yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                : yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                      .required(),
+            [X]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+            [G]: isModification
+                ? yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                : yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                      .required(),
+            [B]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+            [RATED_S]: yup
+                .number()
+                .nullable()
+                .positive(intl.formatMessage({ id: 'RatedNominalPowerMustBeGreaterThanZero' })),
+            [RATED_U1]: isModification
+                ? yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                : yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                      .required(),
+            [RATED_U2]: isModification
+                ? yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                : yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                      .required(),
+            ...additionalFields,
+        }),
+    };
+}
 
 const characteristicsEmptyFormData = (additionalFields) => ({
     [CHARACTERISTICS]: {

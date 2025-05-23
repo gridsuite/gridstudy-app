@@ -18,38 +18,45 @@ import {
 import { VARIATION_MODES } from 'components/network/constants';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
-export const getVariationSchema = () =>
-    yup
-        .object()
-        .nullable()
-        .shape({
-            [VARIATION_MODE]: yup.string().nullable().required(),
-            [VARIATION_VALUE]: yup.number().nullable().required(),
-            [FILTERS]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                        [SPECIFIC_METADATA]: yup.object().shape({
-                            [TYPE]: yup.string(),
-                        }),
+export function getVariationsSchema(intl, id) {
+    return {
+        [id]: yup
+            .array()
+            .nullable()
+            .min(1, intl.formatMessage({ id: 'EmptyList.variations' }))
+            .of(
+                yup
+                    .object()
+                    .nullable()
+                    .shape({
+                        [VARIATION_MODE]: yup.string().nullable().required(),
+                        [VARIATION_VALUE]: yup.number().nullable().required(),
+                        [FILTERS]: yup
+                            .array()
+                            .of(
+                                yup.object().shape({
+                                    [ID]: yup.string().required(),
+                                    [NAME]: yup.string().required(),
+                                    [SPECIFIC_METADATA]: yup.object().shape({
+                                        [TYPE]: yup.string(),
+                                    }),
+                                })
+                            )
+                            .required()
+                            .min(1, intl.formatMessage({ id: 'FieldIsRequired' }))
+                            .when([VARIATION_MODE], {
+                                is: VARIATION_MODES.STACKING_UP.id || VARIATION_MODES.VENTILATION.id,
+                                then: (schema) =>
+                                    schema.test(
+                                        'AllFiltersAreExplicitNaming',
+                                        intl.formatMessage({ id: 'AllExplicitNamingFiltersError' }),
+                                        (values) => values.every((f) => f?.specificMetadata?.type === IDENTIFIER_LIST)
+                                    ),
+                            }),
                     })
-                )
-                .required()
-                .min(1, 'FieldIsRequired')
-                .when([VARIATION_MODE], {
-                    is: VARIATION_MODES.STACKING_UP.id || VARIATION_MODES.VENTILATION.id,
-                    then: (schema) =>
-                        schema.test('AllFiltersAreExplicitNaming', 'AllExplicitNamingFiltersError', (values) =>
-                            values.every((f) => f?.specificMetadata?.type === IDENTIFIER_LIST)
-                        ),
-                }),
-        });
-
-export const getVariationsSchema = (id) => ({
-    [id]: yup.array().nullable().min(1, 'EmptyList.variations').of(getVariationSchema()),
-});
+            ),
+    };
+}
 
 export const getVariationEmptyForm = (variationMode) => {
     return {

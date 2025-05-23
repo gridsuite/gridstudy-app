@@ -24,7 +24,7 @@ import { CustomFormProvider, ExtendedEquipmentType, MODIFICATION_TYPES, useSnack
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import { FetchStatus } from 'services/utils.type';
 import {
@@ -51,6 +51,7 @@ import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
 import { DeepNullable } from '../../../../../utils/ts-utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -63,17 +64,6 @@ const emptyFormData = {
 export type LccModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: LccModificationInfos;
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [HVDC_LINE_TAB]: getLccHvdcLineModificationSchema(),
-        [CONVERTER_STATION_1]: getLccConverterStationModificationSchema(),
-        [CONVERTER_STATION_2]: getLccConverterStationModificationSchema(),
-    })
-    .required();
 
 export const LccModificationDialog = ({
     editData,
@@ -92,6 +82,22 @@ export const LccModificationDialog = ({
 
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [HVDC_LINE_TAB]: getLccHvdcLineModificationSchema(intl),
+                    [CONVERTER_STATION_1]: getLccConverterStationModificationSchema(intl),
+                    [CONVERTER_STATION_2]: getLccConverterStationModificationSchema(intl),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm<DeepNullable<LccModificationSchemaForm>>({
         defaultValues: emptyFormData,

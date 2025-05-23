@@ -25,6 +25,8 @@ import {
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
+import { NumberSchema, type Schema } from 'yup';
+import type { IntlShape } from 'react-intl';
 
 export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     [id]: {
@@ -50,30 +52,38 @@ const requiredIfAddStandbyAutomaton = (yup: any) =>
         then: (schema: any) => schema.required(),
     });
 
-const requiredWhenSusceptanceChoice = (schema: any) =>
-    schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+function requiredWhenSusceptanceChoice(intl: IntlShape, schema: NumberSchema<number | null | undefined>) {
+    return schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
         is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
             addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
         then: (schema: any) =>
             schema
-                .min(yup.ref(MIN_S_AUTOMATON), 'StaticVarCompensatorErrorSFixLessThanSMin')
-                .max(yup.ref(MAX_S_AUTOMATON), 'StaticVarCompensatorErrorSFixGreaterThanSMax')
+                .min(yup.ref(MIN_S_AUTOMATON), intl.formatMessage({ id: 'StaticVarCompensatorErrorSFixLessThanSMin' }))
+                .max(
+                    yup.ref(MAX_S_AUTOMATON),
+                    intl.formatMessage({ id: 'StaticVarCompensatorErrorSFixGreaterThanSMax' })
+                )
                 .required(),
     });
+}
 
-const requiredWhenQatNominalVChoice = (schema: any) =>
-    schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+function requiredWhenQatNominalVChoice(intl: IntlShape, schema: NumberSchema<number | null | undefined>) {
+    return schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
         is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
             addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         then: (schema: any) =>
             schema
-                .min(yup.ref(MIN_Q_AUTOMATON), 'StaticVarCompensatorErrorQFixLessThanQMin')
-                .max(yup.ref(MAX_Q_AUTOMATON), 'StaticVarCompensatorErrorQFixGreaterThanQMax')
+                .min(yup.ref(MIN_Q_AUTOMATON), intl.formatMessage({ id: 'StaticVarCompensatorErrorQFixLessThanQMin' }))
+                .max(
+                    yup.ref(MAX_Q_AUTOMATON),
+                    intl.formatMessage({ id: 'StaticVarCompensatorErrorQFixGreaterThanQMax' })
+                )
                 .required(),
     });
+}
 
-export const getStandbyAutomatonFormValidationSchema = () =>
-    yup.object().shape({
+export function getStandbyAutomatonFormValidationSchema(intl: IntlShape) {
+    return yup.object().shape({
         [ADD_STAND_BY_AUTOMATON]: yup.boolean().nullable(),
         [STAND_BY_AUTOMATON]: yup
             .boolean()
@@ -87,9 +97,10 @@ export const getStandbyAutomatonFormValidationSchema = () =>
         [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
         [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
         [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number().min(0, 'mustBeGreaterOrEqualToZero')),
-        [B0]: requiredWhenSusceptanceChoice(yup.number().nullable()),
-        [Q0]: requiredWhenQatNominalVChoice(yup.number().nullable()),
+        [B0]: requiredWhenSusceptanceChoice(intl, yup.number().nullable()),
+        [Q0]: requiredWhenQatNominalVChoice(intl, yup.number().nullable()),
     });
+}
 
 export const getStandbyAutomatonFormData = ({
     addStandbyAutomaton,

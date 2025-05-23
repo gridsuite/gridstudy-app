@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import * as yup from 'yup';
@@ -45,6 +45,7 @@ import { divideLine } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -54,18 +55,6 @@ const emptyFormData = {
     ...getLineToAttachOrSplitEmptyFormData(),
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [LINE1_ID]: yup.string().required(),
-        [LINE1_NAME]: yup.string(),
-        [LINE2_ID]: yup.string().required(),
-        [LINE2_NAME]: yup.string(),
-        ...getLineToAttachOrSplitFormValidationSchema(),
-        ...getConnectivityWithoutPositionValidationSchema(),
-    })
-    .required();
 
 /**
  * Dialog to create line split with voltage level in the network
@@ -93,6 +82,23 @@ const LineSplitWithVoltageLevelDialog = ({
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
 
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [LINE1_ID]: yup.string().required(),
+                    [LINE1_NAME]: yup.string(),
+                    [LINE2_ID]: yup.string().required(),
+                    [LINE2_NAME]: yup.string(),
+                    ...getLineToAttachOrSplitFormValidationSchema(intl),
+                    ...getConnectivityWithoutPositionValidationSchema(),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

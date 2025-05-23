@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -25,24 +25,17 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
     ...emptyProperties,
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string(),
-        [COUNTRY]: yup.string().nullable(),
-    })
-    .concat(modificationPropertiesSchema);
 
 /**
  * Dialog to modify a substation in the network
@@ -66,9 +59,22 @@ const SubstationModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [substationToModify, setSubstationToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [COUNTRY]: yup.string().nullable(),
+                })
+                .concat(getModificationPropertiesSchema(intl)),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

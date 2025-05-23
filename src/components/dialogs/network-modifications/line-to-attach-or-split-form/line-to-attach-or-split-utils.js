@@ -13,28 +13,23 @@ import {
     getPercentageAreaValidationSchema,
 } from '../../percentage-area/percentage-area-utils';
 
-const lineToAttachOrSplitFormValidationSchema = () => ({
-    [LINE_TO_ATTACH_OR_SPLIT_ID]: yup.string().nullable().required(),
-    ...getPercentageAreaValidationSchema(),
-});
-export const getLineToAttachOrSplitFormValidationSchema = () => {
-    return lineToAttachOrSplitFormValidationSchema();
-};
+export function getLineToAttachOrSplitFormValidationSchema(intl) {
+    return {
+        [LINE_TO_ATTACH_OR_SPLIT_ID]: yup.string().nullable().required(),
+        ...getPercentageAreaValidationSchema(intl),
+    };
+}
 
-const lineToAttachOrSplitEmptyFormData = () => ({
-    [LINE_TO_ATTACH_OR_SPLIT_ID]: null,
-    ...getPercentageAreaEmptyFormData(),
-});
+export function getLineToAttachOrSplitEmptyFormData() {
+    return {
+        [LINE_TO_ATTACH_OR_SPLIT_ID]: null,
+        ...getPercentageAreaEmptyFormData(),
+    };
+}
 
-export const getLineToAttachOrSplitEmptyFormData = () => {
-    return lineToAttachOrSplitEmptyFormData();
-};
-
-export const getLineToAttachOrSplitFormData = ({ lineToAttachOrSplitId, percent }) => {
+export function getLineToAttachOrSplitFormData({ lineToAttachOrSplitId, percent }) {
     return {
         [LINE_TO_ATTACH_OR_SPLIT_ID]: lineToAttachOrSplitId,
-        ...getPercentageAreaData({
-            percent: percent,
-        }),
+        ...getPercentageAreaData({ percent: percent }),
     };
-};
+}

@@ -18,13 +18,22 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
 } from '../../../../../utils/field-constants';
+import type { IntlShape } from 'react-intl';
 
-export function getVscHvdcLinePaneSchema(id: string) {
+export function getVscHvdcLinePaneSchema(intl: IntlShape, id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-                [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
+                [NOMINAL_V]: yup
+                    .number()
+                    .nullable()
+                    .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                    .required(),
+                [R]: yup
+                    .number()
+                    .nullable()
+                    .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                    .required(),
                 [MAX_P]: yup.number().nullable().required(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
@@ -53,12 +62,18 @@ export function getVscHvdcLinePaneSchema(id: string) {
     };
 }
 
-export function getVscHvdcLineModificationPaneSchema(id: string) {
+export function getVscHvdcLineModificationPaneSchema(intl: IntlShape, id: string) {
     return {
         [id]: yup.object().shape(
             {
-                [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-                [R]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+                [NOMINAL_V]: yup
+                    .number()
+                    .nullable()
+                    .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+                [R]: yup
+                    .number()
+                    .nullable()
+                    .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
                 [MAX_P]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),

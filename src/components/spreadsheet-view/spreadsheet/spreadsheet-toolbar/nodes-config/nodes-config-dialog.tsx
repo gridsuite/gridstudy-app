@@ -18,7 +18,8 @@ import { UUID } from 'crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { initialNodesForm, NODES_ALIASES, NodesForm, nodesFormSchema } from './nodes-config-dialog.utils';
+import { initialNodesForm, NODES_ALIASES, NodesForm, getNodesFormSchema } from './nodes-config-dialog.utils';
+import { useIntl } from 'react-intl';
 
 export type NodesConfigDialogProps = {
     open: UseStateBooleanReturn;
@@ -45,6 +46,8 @@ export default function NodesConfigDialog({
     updateNodeAliases,
     ...dialogProps
 }: Readonly<NodesConfigDialogProps>) {
+    const intl = useIntl();
+    const nodesFormSchema = useMemo(() => getNodesFormSchema(intl), [intl]);
     const formMethods = useForm<NodesForm>({
         defaultValues: initialNodesForm,
         resolver: yupResolver(nodesFormSchema),

@@ -8,6 +8,7 @@
 import * as yup from 'yup';
 import type { InferType } from 'yup';
 import { areArrayElementsUnique } from '../../../../utils/utils';
+import type { IntlShape } from 'react-intl';
 
 export const NODE_ALIAS = 'alias';
 export const NODE_NAME = 'name';
@@ -17,36 +18,48 @@ export const initialNodesForm: NodesForm = {
     [NODES_ALIASES]: [],
 };
 
-export const nodesFormSchema = yup.object().shape({
-    [NODES_ALIASES]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [NODE_ALIAS]: yup
-                    .string()
-                    .default('')
-                    .required()
-                    .test(
-                        'maxSize',
-                        'spreadsheet/parameter_aliases/max_characters_reached',
-                        (value) => value.length < 11
-                    )
-                    .test('noSpecialCharacters', 'spreadsheet/parameter_aliases/no_special_characters', (value) =>
-                        /^([a-zA-Z0-9])+$/.test(value)
-                    ),
-                [NODE_NAME]: yup.string().default('').required(),
-            })
-        )
-        .required()
-        .test('distinctAliases', 'spreadsheet/parameter_aliases/unique_aliases', (array) => {
-            //filter to remove empty values, so we don't get this error instead of required when 2 fields are empty
-            const aliasesArray = array.map((l) => l[NODE_ALIAS]).filter((value) => value);
-            return areArrayElementsUnique(aliasesArray);
-        })
-        .test('uniqueNodeNames', 'spreadsheet/parameter_aliases/unique_node_names', (array) => {
-            const nodeNamesArray = array.map((l) => l[NODE_NAME]).filter((value) => value);
-            return areArrayElementsUnique(nodeNamesArray);
-        }),
-});
+export function getNodesFormSchema(intl: IntlShape) {
+    return yup.object().shape({
+        [NODES_ALIASES]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [NODE_ALIAS]: yup
+                        .string()
+                        .default('')
+                        .required()
+                        .test(
+                            'maxSize',
+                            intl.formatMessage({ id: 'spreadsheet/parameter_aliases/max_characters_reached' }),
+                            (value) => value.length < 11
+                        )
+                        .test(
+                            'noSpecialCharacters',
+                            intl.formatMessage({ id: 'spreadsheet/parameter_aliases/no_special_characters' }),
+                            (value) => /^([a-zA-Z0-9])+$/.test(value)
+                        ),
+                    [NODE_NAME]: yup.string().default('').required(),
+                })
+            )
+            .required()
+            .test(
+                'distinctAliases',
+                intl.formatMessage({ id: 'spreadsheet/parameter_aliases/unique_aliases' }),
+                (array) => {
+                    //filter to remove empty values, so we don't get this error instead of required when 2 fields are empty
+                    const aliasesArray = array.map((l) => l[NODE_ALIAS]).filter((value) => value);
+                    return areArrayElementsUnique(aliasesArray);
+                }
+            )
+            .test(
+                'uniqueNodeNames',
+                intl.formatMessage({ id: 'spreadsheet/parameter_aliases/unique_node_names' }),
+                (array) => {
+                    const nodeNamesArray = array.map((l) => l[NODE_NAME]).filter((value) => value);
+                    return areArrayElementsUnique(nodeNamesArray);
+                }
+            ),
+    });
+}
 
-export type NodesForm = InferType<typeof nodesFormSchema>;
+export type NodesForm = InferType<ReturnType<typeof getNodesFormSchema>>;

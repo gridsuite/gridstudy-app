@@ -8,6 +8,7 @@
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import * as yup from 'yup';
 import type { InferType } from 'yup';
+import type { IntlShape } from 'react-intl';
 
 export const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';
@@ -25,22 +26,29 @@ export const initialColumnCreationForm: ColumnCreationForm = {
     [COLUMN_DEPENDENCIES]: [],
 };
 
-export const columnCreationFormSchema = yup.object().shape({
-    [COLUMN_ID]: yup
-        .string()
-        .required()
-        .max(60, 'spreadsheet/custom_column/error/id_le_60')
-        .matches(/^[a-zA-Z_]\w*$/, 'spreadsheet/custom_column/error/id_not_conform'),
-    [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_le_60'),
-    [COLUMN_TYPE]: yup.mixed<COLUMN_TYPES>().oneOf(Object.values(COLUMN_TYPES)).required(),
-    [PRECISION]: yup
-        .number()
-        .integer()
-        .when(COLUMN_TYPE, ([type]) => {
-            return type === COLUMN_TYPES.NUMBER ? yup.number().integer().required() : yup.number().nullable().integer();
-        }),
-    [FORMULA]: yup.string().required(),
-    [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()).required(),
-});
+export function getColumnCreationFormSchema(intl: IntlShape) {
+    return yup.object().shape({
+        [COLUMN_ID]: yup
+            .string()
+            .required()
+            .max(60, intl.formatMessage({ id: 'spreadsheet/custom_column/error/id_le_60' }))
+            .matches(/^[a-zA-Z_]\w*$/, intl.formatMessage({ id: 'spreadsheet/custom_column/error/id_not_conform' })),
+        [COLUMN_NAME]: yup
+            .string()
+            .required()
+            .max(60, intl.formatMessage({ id: 'spreadsheet/custom_column/error/name_le_60' })),
+        [COLUMN_TYPE]: yup.mixed<COLUMN_TYPES>().oneOf(Object.values(COLUMN_TYPES)).required(),
+        [PRECISION]: yup
+            .number()
+            .integer()
+            .when(COLUMN_TYPE, ([type]) => {
+                return type === COLUMN_TYPES.NUMBER
+                    ? yup.number().integer().required()
+                    : yup.number().nullable().integer();
+            }),
+        [FORMULA]: yup.string().required(),
+        [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()).required(),
+    });
+}
 
-export type ColumnCreationForm = InferType<typeof columnCreationFormSchema>;
+export type ColumnCreationForm = InferType<ReturnType<typeof getColumnCreationFormSchema>>;

@@ -49,7 +49,7 @@ import {
     COLUMN_NAME,
     COLUMN_TYPE,
     ColumnCreationForm,
-    columnCreationFormSchema,
+    getColumnCreationFormSchema,
     FORMULA,
     initialColumnCreationForm,
     PRECISION,
@@ -86,6 +86,8 @@ export default function ColumnCreationDialog({
     tableDefinition,
     isCreate = true,
 }: Readonly<ColumnCreationDialogProps>) {
+    const intl = useIntl();
+    const columnCreationFormSchema = useMemo(() => getColumnCreationFormSchema(intl), [intl]);
     const formMethods = useForm({
         defaultValues: initialColumnCreationForm,
         resolver: yupResolver(columnCreationFormSchema),
@@ -106,8 +108,6 @@ export default function ColumnCreationDialog({
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
-
-    const intl = useIntl();
 
     const generateColumnId = useCallback(() => {
         if (columnId === '') {

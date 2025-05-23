@@ -19,7 +19,7 @@ import {
 import { REACTIVE_VARIATION_MODES } from 'components/network/constants';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
-export const getVariationSchema = () =>
+export const getVariationSchema = (intl) =>
     yup
         .object()
         .nullable()
@@ -39,11 +39,15 @@ export const getVariationSchema = () =>
                     })
                 )
                 .required()
-                .min(1, 'FieldIsRequired'),
+                .min(1, intl.formatMessage({ id: 'FieldIsRequired' })),
         });
 
-export const getVariationsSchema = (id) => ({
-    [id]: yup.array().nullable().min(1, 'EmptyList.variations').of(getVariationSchema()),
+export const getVariationsSchema = (intl, id) => ({
+    [id]: yup
+        .array()
+        .nullable()
+        .min(1, intl.formatMessage({ id: 'EmptyList.variations' }))
+        .of(getVariationSchema(intl)),
 });
 
 export const getVariationEmptyForm = (variationMode) => {

@@ -85,9 +85,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             }));
     }, [providers]);
 
-    const formSchema = useMemo(() => {
-        return getSAParametersFromSchema(params?.limitReductions);
-    }, [params?.limitReductions]);
+    const formSchema = useMemo(
+        () => getSAParametersFromSchema(intl, params?.limitReductions),
+        [intl, params?.limitReductions]
+    );
 
     const formMethods = useForm({
         defaultValues: {

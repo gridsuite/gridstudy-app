@@ -14,7 +14,7 @@ import {
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -34,6 +34,7 @@ import {
 } from '../../../../utils/field-constants';
 import { modifyByFormula } from '../../../../../services/study/network-modifications';
 import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
+import { useIntl } from 'react-intl';
 
 function getFieldOrConvertedUnitValue(input, fieldType, convert) {
     const value = input.replace(',', '.');
@@ -73,14 +74,6 @@ function shouldConvert(input1, input2, operator) {
     }
 }
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        ...getFormulaSchema(FORMULAS),
-    })
-    .required();
-
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
     [FORMULAS]: [getFormulaInitialValue()],
@@ -89,6 +82,19 @@ const emptyFormData = {
 const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
+                    ...getFormulaSchema(intl, FORMULAS),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

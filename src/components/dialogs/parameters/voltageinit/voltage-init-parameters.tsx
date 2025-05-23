@@ -17,7 +17,7 @@ import {
     parametersStyles,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
-import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { TabPanel } from '../parameters';
@@ -40,7 +40,7 @@ import {
     initialVoltageInitParametersForm,
     TabValue,
     VoltageInitParametersForm,
-    voltageInitParametersFormSchema,
+    getVoltageInitParametersFormSchema,
 } from './voltage-init-parameters-form';
 import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
@@ -58,6 +58,7 @@ export const VoltageInitParameters = ({
 
     const [tabValue, setTabValue] = useState(TabValue.GENERAL);
 
+    const voltageInitParametersFormSchema = useMemo(() => getVoltageInitParametersFormSchema(intl), [intl]);
     const formMethods = useForm<VoltageInitParametersForm>({
         defaultValues: initialVoltageInitParametersForm,
         resolver: yupResolver(voltageInitParametersFormSchema),

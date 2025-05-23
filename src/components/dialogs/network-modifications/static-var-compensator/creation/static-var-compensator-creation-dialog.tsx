@@ -44,7 +44,7 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -61,7 +61,7 @@ import { createStaticVarCompensator } from '../../../../../services/study/networ
 import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     Property,
@@ -83,6 +83,7 @@ import {
 } from './standby-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
+import { useIntl } from 'react-intl';
 
 export type StaticVarCompensatorCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -137,18 +138,6 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
-        [SETPOINTS_LIMITS]: getReactiveFormValidationSchema(),
-        [AUTOMATON]: getStandbyAutomatonFormValidationSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
-
 /**
  * Dialog to create a static var compensator in the network
  * @param studyUuid the study we are currently working on
@@ -168,8 +157,24 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
+                    [SETPOINTS_LIMITS]: getReactiveFormValidationSchema(intl),
+                    [AUTOMATON]: getStandbyAutomatonFormValidationSchema(intl),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm<DeepNullable<StaticVarCompensatorCreationSchemaForm>>({
         defaultValues: emptyFormData,

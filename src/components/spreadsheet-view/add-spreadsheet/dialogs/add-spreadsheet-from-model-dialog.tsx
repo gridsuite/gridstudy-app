@@ -30,6 +30,7 @@ import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
+import { useIntl } from 'react-intl';
 
 interface AddSpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
@@ -44,13 +45,14 @@ export default function AddSpreadsheetFromModelDialog({
 }: Readonly<AddSpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
 
     const tablesNames = useMemo(() => tablesDefinitions.map((def) => def.name), [tablesDefinitions]);
-    const formSchema = useMemo(() => getSpreadsheetFromModelFormSchema(tablesNames), [tablesNames]);
+    const formSchema = useMemo(() => getSpreadsheetFromModelFormSchema(intl, tablesNames), [intl, tablesNames]);
 
     const formMethods = useForm({
         defaultValues: initialSpreadsheetFromModelForm,

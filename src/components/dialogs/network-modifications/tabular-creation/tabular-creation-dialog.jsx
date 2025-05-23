@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -26,14 +26,6 @@ import {
 } from './tabular-creation-utils';
 import { useIntl } from 'react-intl';
 import { formatModification } from '../tabular-modification/tabular-modification-utils';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.string().nullable().required(),
-        [CREATIONS_TABLE]: yup.array().min(1, 'CreationsRequiredTabError').required(),
-    })
-    .required();
 
 const emptyFormData = {
     [TYPE]: null,
@@ -55,6 +47,21 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [TYPE]: yup.string().nullable().required(),
+                    [CREATIONS_TABLE]: yup
+                        .array()
+                        .min(1, intl.formatMessage({ id: 'CreationsRequiredTabError' }))
+                        .required(),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

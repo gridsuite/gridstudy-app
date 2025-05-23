@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
@@ -18,19 +18,12 @@ import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constant
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
     [VARIATIONS]: [],
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [VARIATION_TYPE]: yup.string().required(),
-        ...getVariationsSchema(VARIATIONS),
-    })
-    .required();
 
 const GeneratorScalingDialog = ({
     editData,
@@ -42,6 +35,19 @@ const GeneratorScalingDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [VARIATION_TYPE]: yup.string().required(),
+                    ...getVariationsSchema(VARIATIONS),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

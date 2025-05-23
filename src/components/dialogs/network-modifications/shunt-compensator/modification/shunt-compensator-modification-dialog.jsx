@@ -33,7 +33,7 @@ import {
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -48,7 +48,7 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import {
@@ -57,6 +57,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -64,16 +65,6 @@ const emptyFormData = {
     ...getCharacteristicsEmptyFormData(),
     ...emptyProperties,
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getConnectivityWithPositionValidationSchema(true),
-        ...getCharacteristicsFormValidationSchema(true),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
 
 const ShuntCompensatorModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
@@ -86,7 +77,7 @@ const ShuntCompensatorModificationDialog = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
 
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
@@ -94,6 +85,20 @@ const ShuntCompensatorModificationDialog = ({
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
     const [idExists, setIdExists] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getConnectivityWithPositionValidationSchema(true),
+                    ...getCharacteristicsFormValidationSchema(intl, true),
+                })
+                .concat(getModificationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { type IntlShape } from 'react-intl';
 import {
     EDITED_FIELD,
     FILTERS,
@@ -13,8 +14,8 @@ import {
     PROPERTY_NAME_FIELD,
     VALUE_FIELD,
 } from '../../../../../utils/field-constants';
-import * as yup from 'yup';
 import type { Schema } from 'yup';
+import * as yup from 'yup';
 import { Assignment, DataType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
@@ -34,7 +35,7 @@ export const getAssignmentInitialValue = () => ({
     [VALUE_FIELD]: null,
 });
 
-export function getAssignmentsSchema() {
+export function getAssignmentsSchema(intl: IntlShape) {
     return yup
         .array()
         .of(
@@ -48,21 +49,16 @@ export function getAssignmentsSchema() {
                         })
                     )
                     .required()
-                    .min(1, 'YupRequired'),
+                    .min(1, intl.formatMessage({ id: 'YupRequired' })),
                 [EDITED_FIELD]: yup.string().required(),
-                [PROPERTY_NAME_FIELD]: yup.string().when([EDITED_FIELD], ([editedField], schema) => {
-                    const dataType = getDataType(editedField);
-                    if (dataType === DataType.PROPERTY) {
-                        return schema.required();
-                    }
-                    return schema.nullable();
-                }),
+                [PROPERTY_NAME_FIELD]: yup
+                    .string()
+                    .when([EDITED_FIELD], ([editedField], schema) =>
+                        getDataType(editedField) === DataType.PROPERTY ? schema.required() : schema.nullable()
+                    ),
                 [VALUE_FIELD]: yup
                     .mixed<FieldValue>()
-                    .when([EDITED_FIELD], ([editedField]) => {
-                        const dataType = getDataType(editedField);
-                        return getValueSchema(dataType);
-                    })
+                    .when([EDITED_FIELD], ([editedField]) => getValueSchema(getDataType(editedField)))
                     .required(),
             })
         )

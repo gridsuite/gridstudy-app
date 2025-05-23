@@ -13,18 +13,21 @@ import {
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
+import type { IntlShape } from 'react-intl';
 
 export const getSetPointsEmptyFormData = (isEquipmentModification = false) => ({
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
 });
 
-export const getSetPointsSchema = (isEquipmentModification = false) => ({
-    ...getActivePowerSetPointSchema(isEquipmentModification),
-    ...getReactivePowerSetPointSchema(isEquipmentModification),
-});
+export function getSetPointsSchema(intl: IntlShape, isEquipmentModification = false) {
+    return {
+        ...getActivePowerSetPointSchema(intl, isEquipmentModification),
+        ...getReactivePowerSetPointSchema(isEquipmentModification),
+    };
+}
 
-export const getReactivePowerSetPointSchema = (isEquipmentModification = false) => ({
+const getReactivePowerSetPointSchema = (isEquipmentModification = false) => ({
     [REACTIVE_POWER_SET_POINT]: yup
         .number()
         .nullable()
@@ -34,36 +37,35 @@ export const getReactivePowerSetPointSchema = (isEquipmentModification = false) 
         }),
 });
 
-export const getActivePowerSetPointSchema = (isEquipmentModification = false) => ({
-    [ACTIVE_POWER_SET_POINT]: yup
-        .number()
-        .when([], {
-            is: () => isEquipmentModification,
-            then: (schema) => {
-                return schema.nullable();
-            },
-        })
-        .when([], {
-            is: () => !isEquipmentModification,
-            then: (schema) => {
-                return schema
-                    .required()
-                    .nonNullable('FieldIsRequired')
-                    .test(
-                        'activePowerSetPoint',
-                        'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower',
-                        (value, context) => {
-                            const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
-                            const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
-                            if (value === 0) {
-                                return true;
+function getActivePowerSetPointSchema(intl: IntlShape, isEquipmentModification = false) {
+    return {
+        [ACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .when([], {
+                is: () => isEquipmentModification,
+                then: (schema) => schema.nullable(),
+            })
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) =>
+                    schema
+                        .required()
+                        .nonNullable(intl.formatMessage({ id: 'FieldIsRequired' }))
+                        .test(
+                            'activePowerSetPoint',
+                            intl.formatMessage({ id: 'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower' }),
+                            (value, context) => {
+                                if (value === 0) {
+                                    return true;
+                                }
+                                const minActivePower = context.parent[MINIMUM_ACTIVE_POWER];
+                                const maxActivePower = context.parent[MAXIMUM_ACTIVE_POWER];
+                                if (minActivePower === null || maxActivePower === null) {
+                                    return false;
+                                }
+                                return value >= minActivePower && value <= maxActivePower;
                             }
-                            if (minActivePower === null || maxActivePower === null) {
-                                return false;
-                            }
-                            return value >= minActivePower && value <= maxActivePower;
-                        }
-                    );
-            },
-        }),
-});
+                        ),
+            }),
+    };
+}

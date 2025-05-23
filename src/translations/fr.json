@@ -1163,9 +1163,6 @@
     "DisplayTakenPositions": "Afficher les positions prises",
     "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud pour afficher les positions prises",
     "NoVoltageLevelPositionMessage": "Veuillez choisir un poste pour afficher les positions prises",
-    "YupRequired": "Ce champ doit être renseigné",
-    "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
-    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",

@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -66,7 +66,7 @@ import { createGenerator } from '../../../../../services/study/network-modificat
 import { FetchStatus } from '../../../../../services/utils.type';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
@@ -84,6 +84,7 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { type IntlShape, useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -106,35 +107,47 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [ENERGY_SOURCE]: yup.string().nullable().required(),
-        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [TRANSIENT_REACTANCE]: yup
-            .number()
-            .nullable()
-            .when([TRANSFORMER_REACTANCE], {
-                is: (transformerReactance: number) => transformerReactance != null,
-                then: (schema) => schema.required(),
-            }),
-        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [MARGINAL_COST]: yup.number().nullable(),
-        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(),
-        ...getSetPointsSchema(),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
-        ...getVoltageRegulationSchema(),
-        ...getActivePowerControlSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
+const getFormSchema = (intl: IntlShape) =>
+    yup
+        .object()
+        .shape({
+            [EQUIPMENT_ID]: yup.string().required(),
+            [EQUIPMENT_NAME]: yup.string(),
+            [ENERGY_SOURCE]: yup.string().nullable().required(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+            [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+            [RATED_NOMINAL_POWER]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [TRANSIENT_REACTANCE]: yup
+                .number()
+                .nullable()
+                .when([TRANSFORMER_REACTANCE], {
+                    is: (transformerReactance: number) => transformerReactance != null,
+                    then: (schema) => schema.required(),
+                }),
+            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [MARGINAL_COST]: yup.number().nullable(),
+            [PLANNED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'RealPercentage' }))
+                .max(1, intl.formatMessage({ id: 'RealPercentage' })),
+            [FORCED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'RealPercentage' }))
+                .max(1, intl.formatMessage({ id: 'RealPercentage' })),
+            [CONNECTIVITY]: getConnectivityWithPositionSchema(),
+            ...getSetPointsSchema(intl),
+            [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(intl),
+            ...getVoltageRegulationSchema(intl),
+            ...getActivePowerControlSchema(intl),
+        })
+        .concat(getCreationPropertiesSchema(intl))
+        .required();
 
 export type GeneratorCreationDialogProps = NetworkModificationDialogProps & {
     editData: GeneratorCreationInfos;
@@ -151,7 +164,9 @@ export default function GeneratorCreationDialog({
 }: Readonly<GeneratorCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm<DeepNullable<GeneratorCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<GeneratorCreationDialogSchemaForm>>(formSchema),

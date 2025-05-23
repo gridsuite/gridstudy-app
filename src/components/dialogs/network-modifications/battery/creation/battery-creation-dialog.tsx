@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useFormSearchCopy } from '../../../commons/use-form-search-copy';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,7 +53,7 @@ import { createBattery } from '../../../../../services/study/network-modificatio
 import { FetchStatus } from '../../../../../services/utils.type';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
@@ -68,6 +68,7 @@ import { BatteryCreationInfos } from '../../../../../services/network-modificati
 import BatteryCreationForm from './battery-creation-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -80,21 +81,6 @@ const emptyFormData = {
     ...getActivePowerControlEmptyFormData(),
     ...emptyProperties,
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(),
-        ...getSetPointsSchema(),
-        ...getActivePowerControlSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
 
 export type BatteryCreationDialogProps = NetworkModificationDialogProps & {
     editData: BatteryCreationInfos;
@@ -111,6 +97,26 @@ export default function BatteryCreationDialog({
 }: Readonly<BatteryCreationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+                    [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+                    [CONNECTIVITY]: getConnectivityWithPositionSchema(),
+                    [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(intl),
+                    ...getSetPointsSchema(intl),
+                    ...getActivePowerControlSchema(intl),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm<DeepNullable<BatteryCreationDialogSchemaForm>>({
         defaultValues: emptyFormData,

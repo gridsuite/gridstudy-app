@@ -22,6 +22,7 @@ import {
 import * as yup from 'yup';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
+import type { IntlShape } from 'react-intl';
 
 export const getVoltageRegulationEmptyFormData = (isEquipmentModification = false) => ({
     [VOLTAGE_REGULATION]: isEquipmentModification ? null : false,
@@ -31,51 +32,60 @@ export const getVoltageRegulationEmptyFormData = (isEquipmentModification = fals
     ...getRegulatingTerminalEmptyFormData(),
 });
 
-export const getVoltageRegulationSchema = (isEquipmentModification = false) => ({
-    [VOLTAGE_REGULATION]: yup
-        .bool()
-        .nullable()
-        .when([], {
-            is: () => !isEquipmentModification,
-            then: (schema) => schema.required(),
-        }),
-    [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
-
-    [VOLTAGE_SET_POINT]: yup
-        .number()
-        .nullable()
-        .min(0, 'mustBeGreaterOrEqualToZero')
-        .when([VOLTAGE_REGULATION], {
-            is: (value: string) => !isEquipmentModification && value,
-            then: (schema) => schema.required(),
-        }),
-    [Q_PERCENT]: yup.number().nullable().max(100, 'NormalizedPercentage').min(0, 'NormalizedPercentage'),
-    [VOLTAGE_LEVEL]: yup
-        .object()
-        .nullable()
-        .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string(),
-            [SUBSTATION_ID]: yup.string(),
-            [NOMINAL_VOLTAGE]: yup.string(),
-            [TOPOLOGY_KIND]: yup.string().nullable(),
-        })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-            is: (voltageRegulation: number, voltageRegulationType: string) =>
-                !isEquipmentModification && voltageRegulation && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-            then: (schema) => schema.required(),
-        }),
-    [EQUIPMENT]: yup
-        .object()
-        .nullable()
-        .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string().nullable(),
-            [TYPE]: yup.string(),
-        })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-            is: (voltageRegulation: number, voltageRegulationType: string) =>
-                !isEquipmentModification && voltageRegulation && voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-            then: (schema) => schema.required(),
-        }),
-});
+export function getVoltageRegulationSchema(intl: IntlShape, isEquipmentModification = false) {
+    return {
+        [VOLTAGE_REGULATION]: yup
+            .bool()
+            .nullable()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            }),
+        [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
+        [VOLTAGE_SET_POINT]: yup
+            .number()
+            .nullable()
+            .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+            .when([VOLTAGE_REGULATION], {
+                is: (value: string) => !isEquipmentModification && value,
+                then: (schema) => schema.required(),
+            }),
+        [Q_PERCENT]: yup
+            .number()
+            .nullable()
+            .max(100, intl.formatMessage({ id: 'NormalizedPercentage' }))
+            .min(0, intl.formatMessage({ id: 'NormalizedPercentage' })),
+        [VOLTAGE_LEVEL]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [SUBSTATION_ID]: yup.string(),
+                [NOMINAL_VOLTAGE]: yup.string(),
+                [TOPOLOGY_KIND]: yup.string().nullable(),
+            })
+            .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+                is: (voltageRegulation: number, voltageRegulationType: string) =>
+                    !isEquipmentModification &&
+                    voltageRegulation &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                then: (schema) => schema.required(),
+            }),
+        [EQUIPMENT]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string(),
+                [NAME]: yup.string().nullable(),
+                [TYPE]: yup.string(),
+            })
+            .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+                is: (voltageRegulation: number, voltageRegulationType: string) =>
+                    !isEquipmentModification &&
+                    voltageRegulation &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                then: (schema) => schema.required(),
+            }),
+    };
+}

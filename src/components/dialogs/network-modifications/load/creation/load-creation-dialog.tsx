@@ -16,7 +16,7 @@ import {
     LOAD_TYPE,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -34,7 +34,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
@@ -48,6 +48,7 @@ import { LoadDialogTab } from '../common/load-utils';
 import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
 import useVoltageLevelsListInfos from 'hooks/use-voltage-levels-list-infos';
+import { useIntl } from 'react-intl';
 
 /**
  * Dialog to create a load in the network
@@ -68,19 +69,6 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
-        [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
-
 export type LoadCreationDialogProps = NetworkModificationDialogProps & {
     editData: LoadCreationInfos;
 };
@@ -96,9 +84,27 @@ export function LoadCreationDialog({
 }: Readonly<LoadCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [LOAD_TYPE]: yup.string().nullable(),
+                    [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
+                    [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+                    [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
         defaultValues: emptyFormData,

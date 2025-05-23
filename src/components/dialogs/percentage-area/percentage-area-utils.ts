@@ -8,24 +8,28 @@
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import { Input } from '@gridsuite/commons-ui';
+import type { IntlShape } from 'react-intl';
 
-const percentageAreaValidationSchema = () => ({
-    [SLIDER_PERCENTAGE]: yup.number(),
-    [LEFT_SIDE_PERCENTAGE]: yup.number().min(0.1, 'OutOfBoundsPercentage').max(99.9, 'OutOfBoundsPercentage'),
-    [RIGHT_SIDE_PERCENTAGE]: yup.number().min(0.1, 'OutOfBoundsPercentage').max(99.9, 'OutOfBoundsPercentage'),
-});
-export const getPercentageAreaValidationSchema = () => {
-    return percentageAreaValidationSchema();
-};
-
-const percentageAreaEmptyFormData = () => ({
-    [SLIDER_PERCENTAGE]: 50,
-    [LEFT_SIDE_PERCENTAGE]: 50,
-    [RIGHT_SIDE_PERCENTAGE]: 50,
-});
+export function getPercentageAreaValidationSchema(intl: IntlShape) {
+    return {
+        [SLIDER_PERCENTAGE]: yup.number(),
+        [LEFT_SIDE_PERCENTAGE]: yup
+            .number()
+            .min(0.1, intl.formatMessage({ id: 'OutOfBoundsPercentage' }))
+            .max(99.9, intl.formatMessage({ id: 'OutOfBoundsPercentage' })),
+        [RIGHT_SIDE_PERCENTAGE]: yup
+            .number()
+            .min(0.1, intl.formatMessage({ id: 'OutOfBoundsPercentage' }))
+            .max(99.9, intl.formatMessage({ id: 'OutOfBoundsPercentage' })),
+    };
+}
 
 export const getPercentageAreaEmptyFormData = () => {
-    return percentageAreaEmptyFormData();
+    return {
+        [SLIDER_PERCENTAGE]: 50,
+        [LEFT_SIDE_PERCENTAGE]: 50,
+        [RIGHT_SIDE_PERCENTAGE]: 50,
+    };
 };
 
 export const getPercentageAreaData = ({ percent }: { percent: number }) => {
@@ -40,7 +44,7 @@ export const isValidPercentage = (val: string) => {
     return /^\d*[.,]?\d?$/.test(val);
 };
 
-//used to format substaction of two percentages (avoid having more than one decimal)
+//used to format substraction of two percentages (avoid having more than one decimal)
 export function sanitizePercentageValue(value: number) {
     return Math.round(value * 10) / 10;
 }

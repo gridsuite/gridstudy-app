@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { type IntlShape } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import {
     EDITED_FIELD,
@@ -164,7 +165,7 @@ export const getFormulaInitialValue = () => ({
     [REFERENCE_FIELD_OR_VALUE_2]: null,
 });
 
-export function getFormulaSchema(id: string) {
+export function getFormulaSchema(intl: IntlShape, id: string) {
     return {
         [id]: yup.array().of(
             yup.object().shape({
@@ -180,32 +181,40 @@ export function getFormulaSchema(id: string) {
                         })
                     )
                     .required()
-                    .min(1, 'FieldIsRequired'),
+                    .min(1, intl.formatMessage({ id: 'FieldIsRequired' })),
                 [EDITED_FIELD]: yup.string().required(),
                 [OPERATOR]: yup.string().required(),
                 [REFERENCE_FIELD_OR_VALUE_1]: yup
                     .mixed()
                     .required()
-                    .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                    .test(
+                        'checkRefOrValue',
+                        intl.formatMessage({ id: 'WrongRefOrValueError' }),
+                        checkValueInEquipmentFieldsOrNumeric
+                    )
                     .when([OPERATOR], {
                         is: 'PERCENTAGE',
                         then: (schema) =>
                             schema.test(
                                 'checkValueIsReference',
-                                'ValueMustBeNumericWhenPercentageError',
+                                intl.formatMessage({ id: 'ValueMustBeNumericWhenPercentageError' }),
                                 (value: any) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0
                             ),
                     }),
                 [REFERENCE_FIELD_OR_VALUE_2]: yup
                     .mixed()
                     .required()
-                    .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
+                    .test(
+                        'checkRefOrValue',
+                        intl.formatMessage({ id: 'WrongRefOrValueError' }),
+                        checkValueInEquipmentFieldsOrNumeric
+                    )
                     .when([OPERATOR], {
                         is: 'PERCENTAGE',
                         then: (schema) =>
                             schema.test(
                                 'checkValueIsReference',
-                                'ValueMustBeRefWhenPercentageError',
+                                intl.formatMessage({ id: 'ValueMustBeRefWhenPercentageError' }),
                                 checkValueInEquipmentFields
                             ),
                     }),

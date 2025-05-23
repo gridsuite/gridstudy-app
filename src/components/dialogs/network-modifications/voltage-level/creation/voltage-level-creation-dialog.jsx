@@ -46,10 +46,9 @@ import {
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -60,7 +59,7 @@ import { createVoltageLevel } from '../../../../../services/study/network-modifi
 import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
@@ -99,66 +98,92 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [SUBSTATION_ID]: yup
-            .string()
-            .nullable()
-            .when([ADD_SUBSTATION_CREATION], {
-                is: (addSubstationCreation) => addSubstationCreation === false,
-                then: (schema) => schema.required(),
-            }),
-        [SUBSTATION_CREATION_ID]: yup
-            .string()
-            .nullable()
-            .when([ADD_SUBSTATION_CREATION], {
-                is: (addSubstationCreation) => addSubstationCreation === true,
-                then: (schema) => schema.required(),
-            }),
-        [SUBSTATION_NAME]: yup.string().nullable(),
-        [COUNTRY]: yup.string().nullable(),
-        [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .max(yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
-        [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
-                is: (lowShortCircuitCurrentLimit) => lowShortCircuitCurrentLimit != null,
-                then: (schema) => schema.required(),
-            }),
-        [BUS_BAR_COUNT]: yup.number().min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').nullable().required(),
-        [SECTION_COUNT]: yup.number().min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').nullable().required(),
-        [SWITCHES_BETWEEN_SECTIONS]: yup
-            .string()
-            .nullable()
-            .when([SECTION_COUNT], {
-                is: (sectionCount) => sectionCount > 1,
-                then: (schema) => schema.required(),
-            }),
-        [COUPLING_OMNIBUS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-                    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
-                })
-            )
-            .test('coupling-omnibus-between-sections', (values) =>
-                controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
-            ),
-    })
-    .concat(creationPropertiesSchema);
+const getFormSchema = (intl) =>
+    yup
+        .object()
+        .shape({
+            [EQUIPMENT_ID]: yup.string().required(),
+            [EQUIPMENT_NAME]: yup.string().nullable(),
+            [SUBSTATION_ID]: yup
+                .string()
+                .nullable()
+                .when([ADD_SUBSTATION_CREATION], {
+                    is: (addSubstationCreation) => addSubstationCreation === false,
+                    then: (schema) => schema.required(),
+                }),
+            [SUBSTATION_CREATION_ID]: yup
+                .string()
+                .nullable()
+                .when([ADD_SUBSTATION_CREATION], {
+                    is: (addSubstationCreation) => addSubstationCreation === true,
+                    then: (schema) => schema.required(),
+                }),
+            [SUBSTATION_NAME]: yup.string().nullable(),
+            [COUNTRY]: yup.string().nullable(),
+            [SUBSTATION_CREATION]: getCreationPropertiesSchema(intl),
+            [NOMINAL_V]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                .required(),
+            [LOW_VOLTAGE_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [HIGH_VOLTAGE_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero' }))
+                .max(
+                    yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
+                    intl.formatMessage({ id: 'ShortCircuitCurrentLimitMinMaxError' })
+                ),
+            [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero' }))
+                .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+                    is: (lowShortCircuitCurrentLimit) => lowShortCircuitCurrentLimit != null,
+                    then: (schema) => schema.required(),
+                }),
+            [BUS_BAR_COUNT]: yup
+                .number()
+                .min(1, intl.formatMessage({ id: 'BusBarCountMustBeGreaterThanOrEqualToOne' }))
+                .nullable()
+                .required(),
+            [SECTION_COUNT]: yup
+                .number()
+                .min(1, intl.formatMessage({ id: 'SectionCountMustBeGreaterThanOrEqualToOne' }))
+                .nullable()
+                .required(),
+            [SWITCHES_BETWEEN_SECTIONS]: yup
+                .string()
+                .nullable()
+                .when([SECTION_COUNT], {
+                    is: (sectionCount) => sectionCount > 1,
+                    then: (schema) => schema.required(),
+                }),
+            [COUPLING_OMNIBUS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                        [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
+                    })
+                )
+                .test('coupling-omnibus-between-sections', (values) =>
+                    controlCouplingOmnibusBetweenSections(
+                        values,
+                        intl.formatMessage({ id: 'CouplingOmnibusBetweenSameBusbar' })
+                    )
+                ),
+        })
+        .concat(getCreationPropertiesSchema(intl));
+
 const VoltageLevelCreationDialog = ({
     editData,
     currentNode,
@@ -171,14 +196,15 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
+    const intl = useIntl();
 
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-
     const { reset, setValue, getValues } = formMethods;
-    const intl = useIntl();
+
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             const isSubstationCreation = !fromCopy && voltageLevel.substationCreation?.equipmentId != null;

@@ -15,6 +15,7 @@ import {
 } from 'components/utils/field-constants';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { fetchStudyMetadata } from '@gridsuite/commons-ui';
+import type { IntlShape } from 'react-intl';
 
 export type Property = {
     [NAME]: string;
@@ -146,50 +147,52 @@ export const toModificationProperties = (properties: Properties) => {
     return filteredProperties?.length === 0 ? undefined : filteredProperties;
 };
 
-export const creationPropertiesSchema = yup.object({
-    [ADDITIONAL_PROPERTIES]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [NAME]: yup.string().required(),
-                [VALUE]: yup.string().required(),
-                [PREVIOUS_VALUE]: yup.string().nullable(),
-                [DELETION_MARK]: yup.boolean().required(),
-                [ADDED]: yup.boolean().required(),
-            })
-        )
-        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) => checkUniquePropertyNames(values)),
-});
+export function getCreationPropertiesSchema(intl: IntlShape) {
+    return yup.object({
+        [ADDITIONAL_PROPERTIES]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [NAME]: yup.string().required(),
+                    [VALUE]: yup.string().required(),
+                    [PREVIOUS_VALUE]: yup.string().nullable(),
+                    [DELETION_MARK]: yup.boolean().required(),
+                    [ADDED]: yup.boolean().required(),
+                })
+            )
+            .test('checkUniqueProperties', intl.formatMessage({ id: 'DuplicatedPropsError' }), (values) =>
+                checkUniquePropertyNames(values)
+            ),
+    });
+}
 
-export const modificationPropertiesSchema = yup.object({
-    [ADDITIONAL_PROPERTIES]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [NAME]: yup.string().required(),
-                [VALUE]: yup
-                    .string()
-                    .nullable()
-                    .when([PREVIOUS_VALUE, DELETION_MARK], {
-                        is: (previousValue: string | null, deletionMark: boolean) =>
-                            previousValue === null && !deletionMark,
-                        then: (schema) => schema.required(),
-                    }),
-                [PREVIOUS_VALUE]: yup.string().nullable(),
-                [DELETION_MARK]: yup.boolean().required(),
-                [ADDED]: yup.boolean().required(),
-            })
-        )
-        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) => checkUniquePropertyNames(values)),
-});
+export function getModificationPropertiesSchema(intl: IntlShape) {
+    return yup.object({
+        [ADDITIONAL_PROPERTIES]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [NAME]: yup.string().required(),
+                    [VALUE]: yup
+                        .string()
+                        .nullable()
+                        .when([PREVIOUS_VALUE, DELETION_MARK], {
+                            is: (previousValue: string | null, deletionMark: boolean) =>
+                                previousValue === null && !deletionMark,
+                            then: (schema) => schema.required(),
+                        }),
+                    [PREVIOUS_VALUE]: yup.string().nullable(),
+                    [DELETION_MARK]: yup.boolean().required(),
+                    [ADDED]: yup.boolean().required(),
+                })
+            )
+            .test('checkUniqueProperties', intl.formatMessage({ id: 'DuplicatedPropsError' }), (values) =>
+                checkUniquePropertyNames(values)
+            ),
+    });
+}
 
-const checkUniquePropertyNames = (
-    properties:
-        | {
-              name: string;
-          }[]
-        | undefined
-) => {
+const checkUniquePropertyNames = (properties: { name: string }[] | undefined) => {
     if (properties === undefined) {
         return true;
     }

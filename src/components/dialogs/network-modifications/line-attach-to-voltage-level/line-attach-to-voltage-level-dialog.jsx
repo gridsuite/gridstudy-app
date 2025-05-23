@@ -23,7 +23,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import * as yup from 'yup';
@@ -48,6 +48,7 @@ import { FetchStatus } from '../../../../services/utils';
 import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
 import LineAttachToVoltageLevelIllustration from './line-attach-to-voltage-level-illustration';
 import { getNewVoltageLevelOptions } from '../../../utils/utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -60,21 +61,6 @@ const emptyFormData = {
     ...getLineToAttachOrSplitEmptyFormData(),
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [ATTACHMENT_LINE_ID]: yup.string().required(),
-        [ATTACHMENT_POINT_ID]: yup.string().required(),
-        [ATTACHMENT_POINT_NAME]: yup.string(),
-        [LINE1_ID]: yup.string().required(),
-        [LINE1_NAME]: yup.string(),
-        [LINE2_ID]: yup.string().required(),
-        [LINE2_NAME]: yup.string(),
-        ...getLineToAttachOrSplitFormValidationSchema(),
-        ...getConnectivityWithoutPositionValidationSchema(),
-    })
-    .required();
 
 /**
  * Dialog to attach line to voltage level in the network
@@ -102,8 +88,28 @@ const LineAttachToVoltageLevelDialog = ({
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
 
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [ATTACHMENT_LINE_ID]: yup.string().required(),
+                    [ATTACHMENT_POINT_ID]: yup.string().required(),
+                    [ATTACHMENT_POINT_NAME]: yup.string(),
+                    [LINE1_ID]: yup.string().required(),
+                    [LINE1_NAME]: yup.string(),
+                    [LINE2_ID]: yup.string().required(),
+                    [LINE2_NAME]: yup.string(),
+                    ...getLineToAttachOrSplitFormValidationSchema(intl),
+                    ...getConnectivityWithoutPositionValidationSchema(),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

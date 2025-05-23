@@ -58,7 +58,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { sanitizeString } from '../../../dialog-utils';
@@ -104,12 +104,13 @@ import { addSelectedFieldToRows, computeHighTapPosition, formatCompleteCurrentLi
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-utils';
+import { useIntl } from 'react-intl';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -132,19 +133,6 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getTwoWindingsTransformerValidationSchema(),
-        ...getLimitsValidationSchema(false),
-        ...getRatioTapChangerValidationSchema(),
-        ...getPhaseTapChangerValidationSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
-
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
 
@@ -159,6 +147,24 @@ const TwoWindingsTransformerCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getTwoWindingsTransformerValidationSchema(intl),
+                    ...getLimitsValidationSchema(intl, false),
+                    ...getRatioTapChangerValidationSchema(intl),
+                    ...getPhaseTapChangerValidationSchema(intl),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

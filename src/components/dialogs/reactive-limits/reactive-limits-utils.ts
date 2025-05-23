@@ -18,6 +18,7 @@ import {
 } from './reactive-capability-curve/reactive-capability-utils';
 import * as yup from 'yup';
 import { ReactiveCapabilityCurvePoints } from './reactive-limits.type';
+import type { IntlShape } from 'react-intl';
 
 export const getReactiveLimitsFormData = ({
     id = REACTIVE_LIMITS,
@@ -52,11 +53,12 @@ export const getReactiveLimitsEmptyFormData = (id = REACTIVE_LIMITS) => ({
     },
 });
 
-export const getReactiveLimitsValidationSchema = (
+export function getReactiveLimitsValidationSchema(
+    intl: IntlShape,
     isEquipmentModification = false,
     positiveAndNegativePExist = false // if true, we check that Reactive Capability table have at least one row with negative P and one with positive one
-) =>
-    yup.object().shape(
+) {
+    return yup.object().shape(
         {
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
             [MINIMUM_REACTIVE_POWER]: yup
@@ -73,15 +75,23 @@ export const getReactiveLimitsValidationSchema = (
                     is: (minimumReactivePower: number) => !isEquipmentModification && minimumReactivePower != null,
                     then: (schema) => schema.required(),
                 }),
-            ...getReactiveCapabilityCurveValidationSchema(REACTIVE_CAPABILITY_CURVE_TABLE, positiveAndNegativePExist),
+            ...getReactiveCapabilityCurveValidationSchema(
+                intl,
+                REACTIVE_CAPABILITY_CURVE_TABLE,
+                positiveAndNegativePExist
+            ),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER] as unknown as readonly [string, string][]
     );
+}
 
-export const getReactiveLimitsSchema = (
+export function getReactiveLimitsSchema(
+    intl: IntlShape,
     isEquipmentModification = false,
     positiveAndNegativePExist = false,
     id = REACTIVE_LIMITS
-) => ({
-    [id]: getReactiveLimitsValidationSchema(isEquipmentModification, positiveAndNegativePExist),
-});
+) {
+    return {
+        [id]: getReactiveLimitsValidationSchema(intl, isEquipmentModification, positiveAndNegativePExist),
+    };
+}

@@ -29,7 +29,7 @@ import {
     VALUE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import * as yup from 'yup';
@@ -43,7 +43,7 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -66,6 +66,7 @@ import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
 import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -75,18 +76,6 @@ const emptyFormData = {
     ...getInjectionActiveReactivePowerEmptyFormData(STATE_ESTIMATION),
     ...emptyProperties,
 };
-
-const formSchema: ObjectSchema<DeepNullable<LoadModificationSchemaForm>> = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [LOAD_TYPE]: yup.string().nullable(),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
-        ...getSetPointsSchema(true),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
 
 export type LoadModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: LoadModificationInfos;
@@ -104,12 +93,28 @@ export default function LoadModificationDialog({
 }: LoadModificationDialogProps) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState<string | null>(defaultIdValue ?? null);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
 
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string().nullable(),
+                    [LOAD_TYPE]: yup.string().nullable(),
+                    [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+                    [STATE_ESTIMATION]: getInjectionActiveReactivePowerValidationSchemaProperties(),
+                    ...getSetPointsSchema(intl, true),
+                })
+                .concat(getModificationPropertiesSchema(intl))
+                .required() satisfies ObjectSchema<DeepNullable<LoadModificationSchemaForm>>,
+        [intl]
+    );
     const formMethods = useForm<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LoadModificationSchemaForm>>(formSchema),

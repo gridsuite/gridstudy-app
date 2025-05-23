@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Grid } from '@mui/material';
 import { CustomFormProvider, TextInput } from '@gridsuite/commons-ui';
@@ -40,23 +40,27 @@ export default function RenameTabDialog({
 }: Readonly<RenameTabDialogProps>) {
     const intl = useIntl();
 
-    const schema = yup.object().shape({
-        name: yup
-            .string()
-            .required()
-            .max(60, 'spreadsheet/spreadsheet_name_le_60')
-            .test(
-                'unique-name',
-                intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists' }),
-                (value) => {
-                    if (!value) {
-                        return true;
-                    }
-                    // Check if name is already in use by another tab (not the one being renamed)
-                    return !tablesDefinitions.some((tab) => tab.name === value && tab.uuid !== tabUuid);
-                }
-            ),
-    });
+    const schema = useMemo(
+        () =>
+            yup.object().shape({
+                name: yup
+                    .string()
+                    .required()
+                    .max(60, intl.formatMessage({ id: 'spreadsheet/spreadsheet_name_le_60' }))
+                    .test(
+                        'unique-name',
+                        intl.formatMessage({
+                            id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists',
+                        }),
+                        (value) =>
+                            !value
+                                ? true
+                                : // Check if name is already in use by another tab (not the one being renamed)
+                                  !tablesDefinitions.some((tab) => tab.name === value && tab.uuid !== tabUuid)
+                    ),
+            }),
+        [intl, tabUuid, tablesDefinitions]
+    );
 
     const formMethods = useForm<RenameTabForm>({
         defaultValues: { name: currentName },

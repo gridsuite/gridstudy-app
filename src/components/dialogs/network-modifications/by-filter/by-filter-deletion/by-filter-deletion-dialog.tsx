@@ -10,7 +10,8 @@ import * as yup from 'yup';
 import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { FunctionComponent, useCallback, useEffect } from 'react';
+import { type FunctionComponent, useCallback, useEffect, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -23,23 +24,6 @@ import {
     ByFilterDeletionEditData,
     ByFilterDeletionFormData,
 } from './by-filter-deletion.type';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.mixed<keyof typeof EQUIPMENT_TYPES>().required(),
-        [FILTERS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [ID]: yup.string().required(),
-                    [NAME]: yup.string().required(),
-                })
-            )
-            .required()
-            .min(1, 'FieldIsRequired'),
-    })
-    .required();
 
 const emptyFormData = {
     [TYPE]: null,
@@ -64,8 +48,29 @@ const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = (
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [TYPE]: yup.mixed<keyof typeof EQUIPMENT_TYPES>().required(),
+                    [FILTERS]: yup
+                        .array()
+                        .of(
+                            yup.object().shape({
+                                [ID]: yup.string().required(),
+                                [NAME]: yup.string().required(),
+                            })
+                        )
+                        .required()
+                        .min(1, intl.formatMessage({ id: 'FieldIsRequired' })),
+                })
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm<ByFilterDeletionFormData>({
         defaultValues: emptyFormData,

@@ -17,18 +17,22 @@ import {
 } from 'components/utils/field-constants';
 import { ReactiveCapabilityCurve } from '../reactive-limits.type';
 import { FieldValues, UseFormSetValue } from 'react-hook-form';
+import type { IntlShape } from 'react-intl';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
 
-const getCreationRowSchema = () =>
+const getCreationRowSchema = (intl: IntlShape) =>
     yup.object().shape({
         [MAX_Q]: yup.number().nullable().required(),
         [MIN_Q]: yup
             .number()
             .nullable()
             .required()
-            .max(yup.ref(MAX_Q), 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'),
+            .max(
+                yup.ref(MAX_Q),
+                intl.formatMessage({ id: 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence' })
+            ),
         [P]: yup.number().nullable().required(),
     });
 
@@ -42,8 +46,7 @@ function getNotNullPFromArray(values: ReactiveCapabilityCurve) {
     return values
         ?.map((element) => {
             const pValue = element[P];
-
-            // Note : convertion toNumber is necessary here to prevent corner cases like if
+            // Note : conversion toNumber is necessary here to prevent corner cases like if
             // two values are "-0" and "0", which would be considered different by the Set below.
             return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
         })
@@ -52,8 +55,7 @@ function getNotNullPFromArray(values: ReactiveCapabilityCurve) {
 
 function checkAllPValuesAreUnique(values: ReactiveCapabilityCurve) {
     const validActivePowerValues = getNotNullPFromArray(values);
-    const setOfPs = [...new Set(validActivePowerValues)];
-    return setOfPs.length === validActivePowerValues?.length;
+    return [...new Set(validActivePowerValues)].length === validActivePowerValues?.length;
 }
 
 function checkAllPValuesBetweenMinMax(values: ReactiveCapabilityCurve) {
@@ -65,42 +67,53 @@ function checkAllPValuesBetweenMinMax(values: ReactiveCapabilityCurve) {
     }
 }
 
-export const getReactiveCapabilityCurveValidationSchema = (
+export function getReactiveCapabilityCurveValidationSchema(
+    intl: IntlShape,
     id = REACTIVE_CAPABILITY_CURVE_TABLE,
     positiveAndNegativePExist = false
-) => ({
-    [id]: yup
-        .array()
-        .nullable()
-        .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
-            is: 'CURVE',
-            then: (schema) =>
-                schema
-                    .of(getCreationRowSchema())
-                    .when([], {
-                        is: () => positiveAndNegativePExist,
-                        then: (schema) =>
-                            schema
-                                .test(
-                                    'checkATLeastThereIsOneNegativeP',
-                                    'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
-                                    (values) => values?.some((value) => value.p < 0)
-                                )
-                                .test(
-                                    'checkATLeastThereIsOnePositiveP',
-                                    'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
-                                    (values) => values?.some((value) => value.p >= 0)
-                                ),
-                    })
-                    .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
-                    .test('checkAllValuesAreUnique', 'ReactiveCapabilityCurveCreationErrorPInvalid', (values) =>
-                        checkAllPValuesAreUnique(values)
-                    )
-                    .test('checkAllValuesBetweenMinMax', 'ReactiveCapabilityCurveCreationErrorPOutOfRange', (values) =>
-                        checkAllPValuesBetweenMinMax(values)
-                    ),
-        }),
-});
+) {
+    return {
+        [id]: yup
+            .array()
+            .nullable()
+            .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
+                is: 'CURVE',
+                then: (schema) =>
+                    schema
+                        .of(getCreationRowSchema(intl))
+                        .when([], {
+                            is: () => positiveAndNegativePExist,
+                            then: (schema) =>
+                                schema
+                                    .test(
+                                        'checkATLeastThereIsOneNegativeP',
+                                        intl.formatMessage({
+                                            id: 'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
+                                        }),
+                                        (values) => values?.some((value) => value.p < 0)
+                                    )
+                                    .test(
+                                        'checkATLeastThereIsOnePositiveP',
+                                        intl.formatMessage({
+                                            id: 'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
+                                        }),
+                                        (values) => values?.some((value) => value.p >= 0)
+                                    ),
+                        })
+                        .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
+                        .test(
+                            'checkAllValuesAreUnique',
+                            intl.formatMessage({ id: 'ReactiveCapabilityCurveCreationErrorPInvalid' }),
+                            (values) => checkAllPValuesAreUnique(values)
+                        )
+                        .test(
+                            'checkAllValuesBetweenMinMax',
+                            intl.formatMessage({ id: 'ReactiveCapabilityCurveCreationErrorPOutOfRange' }),
+                            (values) => checkAllPValuesBetweenMinMax(values)
+                        ),
+            }),
+    };
+}
 
 export function setSelectedReactiveLimits(
     id: string,

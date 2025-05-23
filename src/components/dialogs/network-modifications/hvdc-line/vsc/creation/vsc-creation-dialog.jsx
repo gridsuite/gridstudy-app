@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, ExtendedEquipmentType, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -52,25 +52,15 @@ import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
 import { VSC_CREATION_TABS } from '../vsc-utils';
+import { useIntl } from 'react-intl';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getVscHvdcLinePaneSchema(HVDC_LINE_TAB),
-        ...getVscConverterStationSchema(CONVERTER_STATION_1),
-        ...getVscConverterStationSchema(CONVERTER_STATION_2),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
@@ -91,9 +81,25 @@ const VscCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getVscHvdcLinePaneSchema(intl, HVDC_LINE_TAB),
+                    ...getVscConverterStationSchema(intl, CONVERTER_STATION_1),
+                    ...getVscConverterStationSchema(intl, CONVERTER_STATION_2),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

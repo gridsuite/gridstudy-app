@@ -15,23 +15,28 @@ import {
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import type { InferType } from 'yup';
+import type { IntlShape } from 'react-intl';
 
-export const SegmentSchema = yup.object().shape({
-    [SEGMENT_DISTANCE_VALUE]: yup
-        .number()
-        .required('SegmentDistanceMustBeGreaterThanZero')
-        .moreThan(0, 'SegmentDistanceMustBeGreaterThanZero'),
-    [SEGMENT_TYPE_VALUE]: yup
-        .string()
-        .required()
-        .test('empty-check', 'SegmentTypeMissing', (value) => (value ? value.length > 0 : false)),
-    [SEGMENT_TYPE_ID]: yup.string().required(),
-    [SEGMENT_RESISTANCE]: yup.number().required(),
-    [SEGMENT_REACTANCE]: yup.number().required(),
-    [SEGMENT_SUSCEPTANCE]: yup.number().required(),
-});
+export function getSegmentSchema(intl: IntlShape) {
+    return yup.object().shape({
+        [SEGMENT_DISTANCE_VALUE]: yup
+            .number()
+            .required(intl.formatMessage({ id: 'SegmentDistanceMustBeGreaterThanZero' }))
+            .moreThan(0, intl.formatMessage({ id: 'SegmentDistanceMustBeGreaterThanZero' })),
+        [SEGMENT_TYPE_VALUE]: yup
+            .string()
+            .required()
+            .test('empty-check', intl.formatMessage({ id: 'SegmentTypeMissing' }), (value) =>
+                value ? value.length > 0 : false
+            ),
+        [SEGMENT_TYPE_ID]: yup.string().required(),
+        [SEGMENT_RESISTANCE]: yup.number().required(),
+        [SEGMENT_REACTANCE]: yup.number().required(),
+        [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+    });
+}
 
-export type SegmentFormData = InferType<typeof SegmentSchema>;
+export type SegmentFormData = InferType<ReturnType<typeof getSegmentSchema>>;
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,

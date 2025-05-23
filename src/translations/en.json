@@ -1168,10 +1168,6 @@
     "NodeNotBuildPositionMessage": "Build the node to display taken positions",
     "NoVoltageLevelPositionMessage": "Select a voltage level to display taken positions",
 
-    "YupRequired": "This field is required",
-    "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect",
-
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",

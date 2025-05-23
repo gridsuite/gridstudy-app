@@ -26,7 +26,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -50,11 +50,12 @@ import { createShuntCompensator } from '../../../../../services/study/network-mo
 import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -63,17 +64,6 @@ const emptyFormData = {
     ...getCharacteristicsEmptyFormData(),
     ...emptyProperties,
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getConnectivityWithPositionValidationSchema(),
-        ...getCharacteristicsFormValidationSchema(),
-    })
-    .concat(creationPropertiesSchema)
-    .required();
 
 /**
  * Dialog to create a shunt compensator in the network
@@ -95,8 +85,23 @@ const ShuntCompensatorCreationDialog = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-
+    const intl = useIntl();
     const { snackError, snackWarning } = useSnackMessage();
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getConnectivityWithPositionValidationSchema(),
+                    ...getCharacteristicsFormValidationSchema(intl),
+                })
+                .concat(getCreationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,

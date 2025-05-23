@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
     ADDITIONAL_PROPERTIES,
@@ -39,10 +39,11 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -55,29 +56,42 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        [SUBSTATION_ID]: yup.string().nullable(),
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
-                is: (highShortCircuitCurrentLimit) => highShortCircuitCurrentLimit != null,
-                then: (schema) =>
-                    schema.max(yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
-            }),
-        [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
-            .number()
-            .nullable()
-            .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero'),
-    })
-    .concat(modificationPropertiesSchema);
+const getFormSchema = (intl) =>
+    yup
+        .object()
+        .shape({
+            [EQUIPMENT_NAME]: yup.string().nullable(),
+            [SUBSTATION_ID]: yup.string().nullable(),
+            [NOMINAL_V]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [LOW_VOLTAGE_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [HIGH_VOLTAGE_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero' }))
+                .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
+                    is: (highShortCircuitCurrentLimit) => highShortCircuitCurrentLimit != null,
+                    then: (schema) =>
+                        schema.max(
+                            yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
+                            intl.formatMessage({ id: 'ShortCircuitCurrentLimitMinMaxError' })
+                        ),
+                }),
+            [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero' })),
+        })
+        .concat(getModificationPropertiesSchema(intl));
 const VoltageLevelModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
@@ -90,10 +104,12 @@ const VoltageLevelModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

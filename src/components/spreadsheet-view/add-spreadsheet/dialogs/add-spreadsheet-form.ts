@@ -8,6 +8,7 @@
 import { EQUIPMENT_TYPE_FIELD, ID, NAME } from 'components/utils/field-constants';
 import * as yup from 'yup';
 import type { InferType } from 'yup';
+import type { IntlShape } from 'react-intl';
 
 export const SPREADSHEET_NAME = 'spreadsheetName';
 export const SPREADSHEET_MODEL = 'spreadsheetModel';
@@ -34,28 +35,32 @@ export const initialSpreadsheetCollectionForm: SpreadsheetCollectionForm = {
     [SPREADSHEET_COLLECTION_IMPORT_MODE]: SpreadsheetCollectionImportMode.REPLACE,
 };
 
-export const getEmptySpreadsheetFormSchema = (tablesNames: string[]) => {
+export function getEmptySpreadsheetFormSchema(intl: IntlShape, tablesNames: string[]) {
     return yup.object().shape({
         [SPREADSHEET_NAME]: yup
             .string()
             .required()
-            .max(60, 'spreadsheet/spreadsheet_name_le_60')
-            .test('unique', 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists', (value) => {
-                return !tablesNames.includes(value || '');
-            }),
+            .max(60, intl.formatMessage({ id: 'spreadsheet/spreadsheet_name_le_60' }))
+            .test(
+                'unique',
+                intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists' }),
+                (value) => !tablesNames.includes(value || '')
+            ),
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
     });
-};
+}
 
-export const getSpreadsheetFromModelFormSchema = (tablesNames: string[]) => {
+export function getSpreadsheetFromModelFormSchema(intl: IntlShape, tablesNames: string[]) {
     return yup.object().shape({
         [SPREADSHEET_NAME]: yup
             .string()
             .required()
-            .max(60, 'spreadsheet/spreadsheet_name_le_60')
-            .test('unique', 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists', (value) => {
-                return !tablesNames.includes(value || '');
-            }),
+            .max(60, intl.formatMessage({ id: 'spreadsheet/spreadsheet_name_le_60' }))
+            .test(
+                'unique',
+                intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists' }),
+                (value) => !tablesNames.includes(value || '')
+            ),
         [SPREADSHEET_MODEL]: yup
             .array()
             .of(
@@ -64,13 +69,16 @@ export const getSpreadsheetFromModelFormSchema = (tablesNames: string[]) => {
                     [NAME]: yup.string().required(),
                 })
             )
-            .required('spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model')
-            .min(1, 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model')
-            .max(1, 'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model'),
+            .required(intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model' }))
+            .min(1, intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model' }))
+            .max(
+                1,
+                intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model' })
+            ),
     });
-};
+}
 
-export const getSpreadsheetCollectionFormSchema = () => {
+export function getSpreadsheetCollectionFormSchema(intl: IntlShape) {
     return yup.object().shape({
         [SPREADSHEET_COLLECTION_IMPORT_MODE]: yup.mixed<keyof typeof SpreadsheetCollectionImportMode>().required(),
         [SPREADSHEET_COLLECTION]: yup
@@ -81,11 +89,18 @@ export const getSpreadsheetCollectionFormSchema = () => {
                     [NAME]: yup.string().required(),
                 })
             )
-            .required('spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection')
-            .min(1, 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection')
-            .max(1, 'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_collection'),
+            .required(
+                intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection' })
+            )
+            .min(1, intl.formatMessage({ id: 'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection' }))
+            .max(
+                1,
+                intl.formatMessage({
+                    id: 'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_collection',
+                })
+            ),
     });
-};
+}
 
 export type SpreadsheetFromModelForm = InferType<ReturnType<typeof getSpreadsheetFromModelFormSchema>>;
 export type EmptySpreadsheetForm = InferType<ReturnType<typeof getEmptySpreadsheetFormSchema>>;

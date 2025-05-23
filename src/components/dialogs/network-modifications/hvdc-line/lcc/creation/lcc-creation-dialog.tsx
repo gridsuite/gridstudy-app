@@ -34,7 +34,7 @@ import { useFormSearchCopy } from '../../../../commons/use-form-search-copy';
 import { CustomFormProvider, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
 import { sanitizeString } from '../../../../dialog-utils';
@@ -56,6 +56,7 @@ import {
 } from '../common/lcc-utils';
 import { NetworkModificationDialogProps } from '../../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { Connectivity } from '../../../../connectivity/connectivity.type';
+import { useIntl } from 'react-intl';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -94,17 +95,6 @@ const emptyFormData = {
     [CONVERTER_STATION_2]: getLccConverterStationEmptyFormData(),
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [HVDC_LINE_TAB]: getLccHvdcLineSchema(),
-        [CONVERTER_STATION_1]: getLccConverterStationSchema(),
-        [CONVERTER_STATION_2]: getLccConverterStationSchema(),
-    })
-    .required();
-
 export type LccCreationDialogProps = NetworkModificationDialogProps & {
     editData: LccCreationInfos;
 };
@@ -120,6 +110,21 @@ export function LccCreationDialog({
 }: Readonly<LccCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().required(),
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [HVDC_LINE_TAB]: getLccHvdcLineSchema(intl),
+                    [CONVERTER_STATION_1]: getLccConverterStationSchema(intl),
+                    [CONVERTER_STATION_2]: getLccConverterStationSchema(intl),
+                })
+                .required(),
+        [intl]
+    );
     const formMethods = useForm<DeepNullable<LccCreationSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LccCreationSchemaForm>>(formSchema),

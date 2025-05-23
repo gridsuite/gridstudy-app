@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as yup from 'yup';
 import type { InferType } from 'yup';
+import * as yup from 'yup';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -24,10 +24,10 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
-    SubmitButton,
-    ProviderParam,
-    useParametersBackend,
     parametersStyles,
+    ProviderParam,
+    SubmitButton,
+    useParametersBackend,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -41,35 +41,6 @@ import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { useParametersNotification } from '../use-parameters-notification';
 
-const scenarioFormSchema = yup
-    .object()
-    .shape({
-        [SCENARIO_DURATION]: yup.number().required(),
-    })
-    .required();
-
-const scenarioEmptyFormData = {
-    [SCENARIO_DURATION]: 0,
-};
-
-const contingencyFormSchema = yup.object().shape({
-    [CONTINGENCIES_START_TIME]: yup.number().required(),
-    [CONTINGENCIES_LIST_INFOS]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [ID]: yup.string().required(),
-                [NAME]: yup.string().required(),
-            })
-        )
-        .required(),
-});
-
-const contingencyEmptyFormData = {
-    [CONTINGENCIES_START_TIME]: 0,
-    [CONTINGENCIES_LIST_INFOS]: [],
-};
-
 enum TAB_VALUES {
     SCENARIO = 'scenario',
     CONTINGENCY = 'contingency',
@@ -82,14 +53,35 @@ interface DynamicSecurityAnalysisParametersProps {
 
 const formSchema = yup.object().shape({
     [PROVIDER]: yup.string().required(),
-    [TAB_VALUES.SCENARIO]: scenarioFormSchema,
-    [TAB_VALUES.CONTINGENCY]: contingencyFormSchema,
+    [TAB_VALUES.SCENARIO]: yup
+        .object()
+        .shape({
+            [SCENARIO_DURATION]: yup.number().required(),
+        })
+        .required(),
+    [TAB_VALUES.CONTINGENCY]: yup.object().shape({
+        [CONTINGENCIES_START_TIME]: yup.number().required(),
+        [CONTINGENCIES_LIST_INFOS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            )
+            .required(),
+    }),
 });
 
 const emptyFormData = {
     [PROVIDER]: '',
-    [TAB_VALUES.SCENARIO]: { ...scenarioEmptyFormData },
-    [TAB_VALUES.CONTINGENCY]: { ...contingencyEmptyFormData },
+    [TAB_VALUES.SCENARIO]: {
+        [SCENARIO_DURATION]: 0,
+    },
+    [TAB_VALUES.CONTINGENCY]: {
+        [CONTINGENCIES_START_TIME]: 0,
+        [CONTINGENCIES_LIST_INFOS]: [],
+    },
 };
 
 export type DynamicSecurityAnalysisParametersForm = InferType<typeof formSchema>;

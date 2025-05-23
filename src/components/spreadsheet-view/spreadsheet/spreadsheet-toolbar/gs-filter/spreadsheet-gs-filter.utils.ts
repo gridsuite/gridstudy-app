@@ -6,32 +6,9 @@
  */
 
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
-import * as yup from 'yup';
-import type { InferType } from 'yup';
-import { FILTERS, ID, NAME, SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
+import { SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
 
 export type ExpertFilterForm = Omit<ExpertFilter, 'type' | 'equipmentType' | 'topologyKind' | 'rules'>;
-
-export const spreadsheetGsFilterFormSchema = yup.object({
-    [SPREADSHEET_GS_FILTER]: yup
-        .array()
-        .of(
-            yup.object({
-                [FILTERS]: yup
-                    .array()
-                    .of(
-                        yup.object({
-                            [ID]: yup.string().required(),
-                            [NAME]: yup.string().required(),
-                        })
-                    )
-                    .min(1, 'FilterInputMinError'),
-            })
-        )
-        .required(),
-});
-
-export type SpreadsheetGsFilterForm = InferType<typeof spreadsheetGsFilterFormSchema>;
 
 export const initialSpreadsheetGsFilterForm: Record<string, ExpertFilterForm[]> = {
     [SPREADSHEET_GS_FILTER]: [],

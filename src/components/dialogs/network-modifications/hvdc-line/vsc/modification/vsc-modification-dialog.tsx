@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { type FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
@@ -65,23 +65,13 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import { useIntl } from 'react-intl';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().nullable(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
-        ...getVscHvdcLineModificationPaneSchema(HVDC_LINE_TAB),
-        ...getVscConverterStationModificationSchema(CONVERTER_STATION_1),
-        ...getVscConverterStationModificationSchema(CONVERTER_STATION_2),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
@@ -97,7 +87,7 @@ const VSC_MODIFICATION_TABS = {
     CONVERTER_STATION_2: 2,
 };
 
-const VscModificationDialog: React.FC<any> = ({
+const VscModificationDialog: FunctionComponent<any> = ({
     editData,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map or spreadsheet
     currentNode,
@@ -107,11 +97,28 @@ const VscModificationDialog: React.FC<any> = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
+    const intl = useIntl();
     const [tabIndex, setTabIndex] = useState(VSC_MODIFICATION_TABS.HVDC_LINE_TAB);
 
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
     const [vscToModify, setVscToModify] = useState<VscModificationInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_ID]: yup.string().nullable(),
+                    [EQUIPMENT_NAME]: yup.string().nullable(),
+                    ...getVscHvdcLineModificationPaneSchema(intl, HVDC_LINE_TAB),
+                    ...getVscConverterStationModificationSchema(intl, CONVERTER_STATION_1),
+                    ...getVscConverterStationModificationSchema(intl, CONVERTER_STATION_2),
+                })
+                .concat(getModificationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),

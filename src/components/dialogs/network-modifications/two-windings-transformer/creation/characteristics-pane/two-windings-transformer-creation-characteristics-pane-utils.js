@@ -16,15 +16,12 @@ import {
     getCharacteristicsValidationSchema,
 } from '../../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 
-const twoWindingsTransformerValidationSchema = () =>
-    getCharacteristicsValidationSchema(false, {
+export function getTwoWindingsTransformerValidationSchema(intl) {
+    return getCharacteristicsValidationSchema(intl, false, {
         ...getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1),
         ...getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2),
     });
-
-export const getTwoWindingsTransformerValidationSchema = () => {
-    return twoWindingsTransformerValidationSchema();
-};
+}
 
 const twoWindingsTransformerEmptyFormData = () =>
     getCharacteristicsEmptyFormData({

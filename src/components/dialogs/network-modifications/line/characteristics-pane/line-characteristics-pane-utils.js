@@ -6,14 +6,14 @@
  */
 
 import {
+    B1,
+    B2,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    R,
     G1,
     G2,
-    B1,
-    B2,
+    R,
     X,
 } from 'components/utils/field-constants';
 import * as yup from 'yup';
@@ -22,40 +22,49 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 
-const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
-    [id]: yup.object().shape({
-        [R]: modification
-            ? yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero')
-            : yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [X]: modification ? yup.number().nullable() : yup.number().nullable().required(),
-        [B1]: yup.number().nullable(),
-        [G1]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [B2]: yup.number().nullable(),
-        [G2]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1)),
-        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2)),
-    }),
-});
-
-export const getCharacteristicsValidationSchema = (id, displayConnectivity, modification = false) => {
-    return characteristicsValidationSchema(id, displayConnectivity, modification);
-};
-
-const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
-    [id]: {
-        [R]: null,
-        [X]: null,
-        [B1]: null,
-        [G1]: null,
-        [B2]: null,
-        [G2]: null,
-        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_1)),
-        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_2)),
-    },
-});
+export function getCharacteristicsValidationSchema(intl, id, displayConnectivity, modification = false) {
+    return {
+        [id]: yup.object().shape({
+            [R]: modification
+                ? yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                : yup
+                      .number()
+                      .nullable()
+                      .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
+                      .required(),
+            [X]: modification ? yup.number().nullable() : yup.number().nullable().required(),
+            [B1]: yup.number().nullable(),
+            [G1]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [B2]: yup.number().nullable(),
+            [G2]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1)),
+            ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2)),
+        }),
+    };
+}
 
 export const getCharacteristicsEmptyFormData = (id = CHARACTERISTICS, displayConnectivity = true) => {
-    return characteristicsEmptyFormData(id, displayConnectivity);
+    return {
+        [id]: {
+            [R]: null,
+            [X]: null,
+            [B1]: null,
+            [G1]: null,
+            [B2]: null,
+            [G2]: null,
+            ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_1)),
+            ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_2)),
+        },
+    };
 };
 
 export const getCharacteristicsFormData = (

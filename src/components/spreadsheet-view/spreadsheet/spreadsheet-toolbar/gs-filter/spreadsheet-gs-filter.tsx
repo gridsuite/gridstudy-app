@@ -14,16 +14,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CustomFormProvider, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
 import { saveSpreadsheetGsFilters } from '../../../../../redux/actions';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import {
-    toFormFormat,
-    initialSpreadsheetGsFilterForm,
-    SpreadsheetGsFilterForm,
-    spreadsheetGsFilterFormSchema,
-} from './spreadsheet-gs-filter.utils';
-import { SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
+import { initialSpreadsheetGsFilterForm, toFormFormat } from './spreadsheet-gs-filter.utils';
+import { FILTERS, ID, NAME, SPREADSHEET_GS_FILTER } from '../../../../utils/field-constants';
 import { AppState } from '../../../../../redux/reducer';
 import { ExpertFilter, SpreadsheetGlobalFilter } from '../../../../../services/study/filter';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
+import type { InferType } from 'yup';
+import * as yup from 'yup';
+import { useIntl } from 'react-intl';
 
 export type SpreadsheetGsFilterProps = {
     equipmentType: SpreadsheetEquipmentType;
@@ -31,9 +29,34 @@ export type SpreadsheetGsFilterProps = {
 };
 
 export default function SpreadsheetGsFilter({ equipmentType, uuid }: Readonly<SpreadsheetGsFilterProps>) {
+    const intl = useIntl();
     const dispatch = useDispatch();
     const gsFilterSpreadsheetState = useSelector((state: AppState) => state.gsFilterSpreadsheetState[uuid]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
+    const spreadsheetGsFilterFormSchema = useMemo(
+        () =>
+            yup.object({
+                [SPREADSHEET_GS_FILTER]: yup
+                    .array()
+                    .of(
+                        yup.object({
+                            [FILTERS]: yup
+                                .array()
+                                .of(
+                                    yup.object({
+                                        [ID]: yup.string().required(),
+                                        [NAME]: yup.string().required(),
+                                    })
+                                )
+                                .min(1, intl.formatMessage({ id: 'FilterInputMinError' })),
+                        })
+                    )
+                    .required(),
+            }),
+        [intl]
+    );
+    type SpreadsheetGsFilterForm = InferType<typeof spreadsheetGsFilterFormSchema>;
 
     const formMethods = useForm<SpreadsheetGsFilterForm>({
         defaultValues: initialSpreadsheetGsFilterForm,

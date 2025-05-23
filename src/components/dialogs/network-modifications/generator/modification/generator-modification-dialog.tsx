@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -59,10 +59,7 @@ import {
     getReactiveLimitsValidationSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import {
-    REMOVE,
-    setCurrentReactiveCapabilityCurveChoice,
-} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -73,7 +70,7 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import {
@@ -95,6 +92,7 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { type IntlShape, useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -116,36 +114,51 @@ const emptyFormData = {
     ...emptyProperties,
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string(),
-        [ENERGY_SOURCE]: yup.string().nullable(),
-        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-        [MINIMUM_ACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([MAXIMUM_ACTIVE_POWER], {
-                is: (maximumActivePower: number) => maximumActivePower != null,
-                then: (schema) =>
-                    schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
-            }),
-        [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [MARGINAL_COST]: yup.number().nullable(),
-
-        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
-        ...getSetPointsSchema(true),
-        ...getVoltageRegulationSchema(true),
-        ...getActivePowerControlSchema(true),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
+function getFormSchema(intl: IntlShape) {
+    return yup
+        .object()
+        .shape({
+            [EQUIPMENT_NAME]: yup.string(),
+            [ENERGY_SOURCE]: yup.string().nullable(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+            [MINIMUM_ACTIVE_POWER]: yup
+                .number()
+                .nullable()
+                .when([MAXIMUM_ACTIVE_POWER], {
+                    is: (maximumActivePower: number) => maximumActivePower != null,
+                    then: (schema) =>
+                        schema.max(
+                            yup.ref(MAXIMUM_ACTIVE_POWER),
+                            intl.formatMessage({ id: 'MinActivePowerMustBeLessOrEqualToMaxActivePower' })
+                        ),
+                }),
+            [RATED_NOMINAL_POWER]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            [TRANSIENT_REACTANCE]: yup.number().nullable(),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [MARGINAL_COST]: yup.number().nullable(),
+            [PLANNED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'RealPercentage' }))
+                .max(1, intl.formatMessage({ id: 'RealPercentage' })),
+            [FORCED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'RealPercentage' }))
+                .max(1, intl.formatMessage({ id: 'RealPercentage' })),
+            [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+            [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(intl, true),
+            ...getSetPointsSchema(intl, true),
+            ...getVoltageRegulationSchema(intl, true),
+            ...getActivePowerControlSchema(intl, true),
+        })
+        .concat(getModificationPropertiesSchema(intl))
+        .required();
+}
 
 export type GeneratorModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: GeneratorModificationInfos;
@@ -163,10 +176,12 @@ export default function GeneratorModificationDialog({
 }: Readonly<GeneratorModificationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [generatorToModify, setGeneratorToModify] = useState<GeneratorFormInfos | null>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
+    const formSchema = useMemo(() => getFormSchema(intl), [intl]);
     const formMethods = useForm<DeepNullable<GeneratorModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
@@ -283,11 +298,7 @@ export default function GeneratorModificationDialog({
                                     previousReactiveCapabilityCurveTable
                                 );
                             } else {
-                                setCurrentReactiveCapabilityCurveChoice(
-                                    previousReactiveCapabilityCurveTable,
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                    setValue
-                                );
+                                setValue(`${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`, 'MINMAX');
                             }
                             setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
                             setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);

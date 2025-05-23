@@ -44,6 +44,7 @@ import { toModificationOperation } from '../../../../../utils/utils';
 import { ConverterStationElementInfos, ConverterStationElementModificationInfos } from './converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
 import { AttributeModification } from '../../../../../../services/network-modification-types';
+import type { IntlShape } from 'react-intl';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
@@ -93,7 +94,7 @@ export interface ConverterStationModificationInterfaceEditData {
     maxQ: AttributeModification<number> | null;
 }
 
-export function getVscConverterStationSchema(id: string) {
+export function getVscConverterStationSchema(intl: IntlShape, id: string) {
     return {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string().nullable().required(),
@@ -102,8 +103,8 @@ export function getVscConverterStationSchema(id: string) {
                 .number()
                 .nullable()
                 .required()
-                .min(0, 'NormalizedPercentage')
-                .max(100, 'NormalizedPercentage'),
+                .min(0, intl.formatMessage({ id: 'NormalizedPercentage' }))
+                .max(100, intl.formatMessage({ id: 'NormalizedPercentage' })),
             [VOLTAGE_REGULATION_ON]: yup.boolean(),
             [REACTIVE_POWER]: yup
                 .number()
@@ -115,27 +116,34 @@ export function getVscConverterStationSchema(id: string) {
             [VOLTAGE]: yup
                 .number()
                 .nullable()
-                .min(0, 'mustBeGreaterOrEqualToZero')
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' }))
                 .when([VOLTAGE_REGULATION_ON], {
                     is: true,
                     then: (schema) => schema.required(),
                 }),
             ...getConnectivityWithPositionValidationSchema(),
-            ...getReactiveLimitsSchema(false, true),
+            ...getReactiveLimitsSchema(intl, false, true),
         }),
     };
 }
 
-export function getVscConverterStationModificationSchema(id: string) {
+export function getVscConverterStationModificationSchema(intl: IntlShape, id: string) {
     return {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
+            [LOSS_FACTOR]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'NormalizedPercentage' }))
+                .max(100, intl.formatMessage({ id: 'NormalizedPercentage' })),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
             [REACTIVE_POWER]: yup.number().nullable(),
-            [VOLTAGE]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-            ...getReactiveLimitsSchema(true),
+            [VOLTAGE]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'mustBeGreaterOrEqualToZero' })),
+            ...getReactiveLimitsSchema(intl, true),
         }),
     };
 }

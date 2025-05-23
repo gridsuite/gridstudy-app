@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 import { SEGMENTS, TOTAL_REACTANCE, TOTAL_RESISTANCE, TOTAL_SUSCEPTANCE } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -15,26 +16,7 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { emptyLineSegment, SegmentSchema } from './segment-utils';
-
-const LineTypeSegmentSchema = yup
-    .object()
-    .shape({
-        [TOTAL_RESISTANCE]: yup.number().required(),
-        [TOTAL_REACTANCE]: yup.number().required(),
-        [TOTAL_SUSCEPTANCE]: yup.number().required(),
-        [SEGMENTS]: yup.array().of(SegmentSchema).required().min(1, 'AtLeastOneSegmentNeeded'),
-    })
-    .required();
-
-export type LineTypeSegmentFormData = InferType<typeof LineTypeSegmentSchema>;
-
-const emptyFormData: LineTypeSegmentFormData = {
-    [TOTAL_RESISTANCE]: 0.0,
-    [TOTAL_REACTANCE]: 0.0,
-    [TOTAL_SUSCEPTANCE]: 0.0,
-    [SEGMENTS]: [emptyLineSegment],
-};
+import { emptyLineSegment, getSegmentSchema } from './segment-utils';
 
 export interface LineTypeSegmentDialogProps {
     open: boolean;
@@ -43,6 +25,37 @@ export interface LineTypeSegmentDialogProps {
 }
 
 const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ open, onSave, onClose }) => {
+    const intl = useIntl();
+
+    const LineTypeSegmentSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [TOTAL_RESISTANCE]: yup.number().required(),
+                    [TOTAL_REACTANCE]: yup.number().required(),
+                    [TOTAL_SUSCEPTANCE]: yup.number().required(),
+                    [SEGMENTS]: yup
+                        .array()
+                        .of(getSegmentSchema(intl))
+                        .required()
+                        .min(1, intl.formatMessage({ id: 'AtLeastOneSegmentNeeded' })),
+                })
+                .required(),
+        [intl]
+    );
+    type LineTypeSegmentFormData = InferType<typeof LineTypeSegmentSchema>;
+
+    const emptyFormData = useMemo<LineTypeSegmentFormData>(
+        () => ({
+            [TOTAL_RESISTANCE]: 0.0,
+            [TOTAL_REACTANCE]: 0.0,
+            [TOTAL_SUSCEPTANCE]: 0.0,
+            [SEGMENTS]: [emptyLineSegment],
+        }),
+        []
+    );
+
     const formMethods = useForm<LineTypeSegmentFormData>({
         defaultValues: emptyFormData,
         resolver: yupResolver<LineTypeSegmentFormData>(LineTypeSegmentSchema),

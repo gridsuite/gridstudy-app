@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { type IntlShape } from 'react-intl';
 import {
     ACTIVE_POWER_SETPOINT,
     BUS_OR_BUSBAR_SECTION,
@@ -44,10 +45,10 @@ import {
 } from './lcc-type';
 import {
     copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
+    getCreationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
 } from '../../../common/properties/property-utils';
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
@@ -62,21 +63,21 @@ import {
 } from '../../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../../utils/utils';
 
-export const getLccConverterStationSchema = () =>
-    yup.object().shape({
+export function getLccConverterStationSchema(intl: IntlShape) {
+    return yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable().required(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
         [LOSS_FACTOR]: yup
             .number()
             .nullable()
-            .min(0, 'NormalizedPercentage')
-            .max(100, 'NormalizedPercentage')
+            .min(0, intl.formatMessage({ id: 'NormalizedPercentage' }))
+            .max(100, intl.formatMessage({ id: 'NormalizedPercentage' }))
             .required(),
         [POWER_FACTOR]: yup
             .number()
             .nullable()
-            .min(-1, 'powerFactorMinValueError')
-            .max(1, 'powerFactorMaxValueError')
+            .min(-1, intl.formatMessage({ id: 'powerFactorMinValueError' }))
+            .max(1, intl.formatMessage({ id: 'powerFactorMaxValueError' }))
             .required(),
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
             .array()
@@ -87,7 +88,7 @@ export const getLccConverterStationSchema = () =>
                     [MAX_Q_AT_NOMINAL_V]: yup
                         .number()
                         .nullable()
-                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
+                        .min(0, intl.formatMessage({ id: 'qMaxAtNominalVMustBeGreaterThanZero' }))
                         .required(),
                     [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
                 })
@@ -95,13 +96,22 @@ export const getLccConverterStationSchema = () =>
             .nullable(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
     });
+}
 
-export const getLccConverterStationModificationSchema = () =>
-    yup.object().shape({
+export function getLccConverterStationModificationSchema(intl: IntlShape) {
+    return yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup.number().nullable().min(0, 'NormalizedPercentage').max(100, 'NormalizedPercentage'),
-        [POWER_FACTOR]: yup.number().nullable().min(-1, 'powerFactorMinValueError').max(1, 'powerFactorMaxValueError'),
+        [LOSS_FACTOR]: yup
+            .number()
+            .nullable()
+            .min(0, intl.formatMessage({ id: 'NormalizedPercentage' }))
+            .max(100, intl.formatMessage({ id: 'NormalizedPercentage' })),
+        [POWER_FACTOR]: yup
+            .number()
+            .nullable()
+            .min(-1, intl.formatMessage({ id: 'powerFactorMinValueError' }))
+            .max(1, intl.formatMessage({ id: 'powerFactorMaxValueError' })),
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
             .array()
             .of(
@@ -111,13 +121,14 @@ export const getLccConverterStationModificationSchema = () =>
                     [MAX_Q_AT_NOMINAL_V]: yup
                         .number()
                         .nullable()
-                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
+                        .min(0, intl.formatMessage({ id: 'qMaxAtNominalVMustBeGreaterThanZero' }))
                         .required(),
                     [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
                 })
             )
             .nullable(),
     });
+}
 
 export const getEmptyShuntCompensatorOnSideFormData = () => ({
     [SHUNT_COMPENSATOR_ID]: null,
@@ -381,38 +392,61 @@ export function getLccConverterStationModificationData(
     };
 }
 
-export const getLccHvdcLineSchema = () =>
-    yup
+export function getLccHvdcLineSchema(intl: IntlShape) {
+    return yup
         .object()
         .shape({
-            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero').required(),
-            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero').required(),
-            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero').required(),
+            [NOMINAL_V]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'nominalVMustBeGreaterOrEqualToZero' }))
+                .required(),
+            [R]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'dcResistanceMustBeGreaterOrEqualToZero' }))
+                .required(),
+            [MAX_P]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'maxPMustBeGreaterOrEqualToZero' }))
+                .required(),
             [ACTIVE_POWER_SETPOINT]: yup
                 .number()
                 .nullable()
-                .min(0, 'activePowerSetpointMinValueError')
-                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError')
+                .min(0, intl.formatMessage({ id: 'activePowerSetpointMinValueError' }))
+                .max(yup.ref(MAX_P), intl.formatMessage({ id: 'activePowerSetpointMaxValueError' }))
                 .required(),
             [CONVERTERS_MODE]: yup.string().required(),
         })
-        .concat(creationPropertiesSchema);
+        .concat(getCreationPropertiesSchema(intl));
+}
 
-export const getLccHvdcLineModificationSchema = () =>
-    yup
+export function getLccHvdcLineModificationSchema(intl: IntlShape) {
+    return yup
         .object()
         .shape({
-            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero'),
-            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero'),
-            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero'),
+            [NOMINAL_V]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'nominalVMustBeGreaterOrEqualToZero' })),
+            [R]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'dcResistanceMustBeGreaterOrEqualToZero' })),
+            [MAX_P]: yup
+                .number()
+                .nullable()
+                .min(0, intl.formatMessage({ id: 'maxPMustBeGreaterOrEqualToZero' })),
             [ACTIVE_POWER_SETPOINT]: yup
                 .number()
                 .nullable()
-                .min(0, 'activePowerSetpointMinValueError')
-                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError'),
+                .min(0, intl.formatMessage({ id: 'activePowerSetpointMinValueError' }))
+                .max(yup.ref(MAX_P), intl.formatMessage({ id: 'activePowerSetpointMaxValueError' })),
             [CONVERTERS_MODE]: yup.string().nullable(),
         })
-        .concat(modificationPropertiesSchema);
+        .concat(getModificationPropertiesSchema(intl));
+}
 
 export function getLccHvdcLineEmptyFormData() {
     return {

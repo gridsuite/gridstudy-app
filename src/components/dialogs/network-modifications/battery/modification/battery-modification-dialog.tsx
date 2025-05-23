@@ -6,7 +6,7 @@
  */
 
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -52,7 +52,7 @@ import {
     emptyProperties,
     getConcatenatedProperties,
     getPropertiesFromModification,
-    modificationPropertiesSchema,
+    getModificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import {
@@ -74,6 +74,7 @@ import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -85,27 +86,6 @@ const emptyFormData = {
     ...getActivePowerControlEmptyFormData(true),
     ...emptyProperties,
 };
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string(),
-        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-        [MINIMUM_ACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([MAXIMUM_ACTIVE_POWER], {
-                is: (maximumActivePower: number) => maximumActivePower != null,
-                then: (schema) =>
-                    schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
-            }),
-        [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
-        [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
-        ...getSetPointsSchema(true),
-        ...getActivePowerControlSchema(true),
-    })
-    .concat(modificationPropertiesSchema)
-    .required();
 
 export type BatteryModificationDialogProps = EquipmentModificationDialogProps & {
     editData?: BatteryModificationInfos;
@@ -123,9 +103,38 @@ export default function BatteryModificationDialog({
 }: Readonly<BatteryModificationDialogProps>) {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [batteryToModify, setBatteryToModify] = useState<BatteryFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string(),
+                    [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+                    [MINIMUM_ACTIVE_POWER]: yup
+                        .number()
+                        .nullable()
+                        .when([MAXIMUM_ACTIVE_POWER], {
+                            is: (maximumActivePower: number) => maximumActivePower != null,
+                            then: (schema) =>
+                                schema.max(
+                                    yup.ref(MAXIMUM_ACTIVE_POWER),
+                                    intl.formatMessage({ id: 'MinActivePowerMustBeLessOrEqualToMaxActivePower' })
+                                ),
+                        }),
+                    [CONNECTIVITY]: getConnectivityWithPositionSchema(true),
+                    [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(intl, true),
+                    ...getSetPointsSchema(intl, true),
+                    ...getActivePowerControlSchema(intl, true),
+                })
+                .concat(getModificationPropertiesSchema(intl))
+                .required(),
+        [intl]
+    );
 
     const formMethods = useForm<DeepNullable<BatteryModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
