@@ -71,7 +71,8 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
             const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
 
             rows.push({
-                subjectId,
+                subjectId: subjectId,
+                locationId: limitViolation.locationId,
                 limitType: limitViolation.limitType
                     ? intl.formatMessage({
                           id: limitViolation.limitType,
@@ -122,6 +123,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
+                    locationId: limitViolation.locationId,
                     linkedElementId: subjectId,
                 });
             });
@@ -150,8 +152,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Equipment' }),
-            colId: 'subjectId',
-            field: 'subjectId',
+            colId: 'locationId',
+            field: 'locationId',
             context: {
                 sortParams,
                 filterComponent: CustomAggridComparatorFilter,
@@ -369,6 +371,22 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Bus' }),
+            colId: 'locationId',
+            field: 'locationId',
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
@@ -385,6 +403,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 },
             },
         }),
+
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             colId: 'limitName',
@@ -573,6 +592,22 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Bus' }),
+            colId: 'locationId',
+            field: 'locationId',
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
@@ -589,6 +624,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 },
             },
         }),
+
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             colId: 'limitName',
@@ -835,6 +871,7 @@ export const useFetchFiltersEnums = () => {
 
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
+    locationId: 'locationId',
     status: 'result.status',
     limitType: 'limitType',
     limitName: 'limitName',
@@ -847,6 +884,7 @@ export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
 
 export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     subjectId: 'contingencyLimitViolations.subjectLimitViolation.subjectId',
+    locationId: 'contingencyLimitViolations.locationId',
     contingencyId: 'contingencyId',
     status: 'status',
     limitType: 'contingencyLimitViolations.limitType',
@@ -860,6 +898,7 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
 
 export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
     subjectId: 'subjectId',
+    locationId: 'contingencyLimitViolations.locationId',
     contingencyId: 'contingencyLimitViolations.contingency.contingencyId',
     status: 'contingencyLimitViolations.contingency.status',
     limitType: 'contingencyLimitViolations.limitType',
