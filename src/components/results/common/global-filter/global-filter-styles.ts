@@ -40,7 +40,6 @@ export const resultsGlobalFilterStyles = {
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
             maxHeight: '40px',
-            position: 'relative',
         },
         '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
             position: 'absolute',
@@ -52,6 +51,9 @@ export const resultsGlobalFilterStyles = {
         '.MuiInputLabel-root': {
             zIndex: 30,
             width: 'auto',
+        },
+        '.MuiInputBase-root': {
+            position: 'relative',
         },
     }),
     // from the expanded part :
