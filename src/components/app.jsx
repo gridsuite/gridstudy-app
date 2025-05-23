@@ -151,6 +151,26 @@ const App = () => {
         listenerCallbackMessage: updateConfig,
     });
 
+    const networkVisuParamsUpdated = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (
+                studyUuid &&
+                eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED &&
+                eventData.headers.studyUuid === studyUuid
+            ) {
+                getNetworkVisualizationParameters(studyUuid).then((params) =>
+                    updateNetworkVisualizationsParams(params)
+                );
+            }
+        },
+        [studyUuid, updateNetworkVisualizationsParams]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: networkVisuParamsUpdated,
+    });
+
     const resetTableDefinitions = useCallback(
         (collection) => {
             const { tablesFilters, tableGlobalFilters, tableDefinitions } =

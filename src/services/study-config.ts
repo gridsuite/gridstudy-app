@@ -38,17 +38,3 @@ export function getSpreadsheetConfigCollection(collectionUuid: UUID): Promise<Sp
         },
     });
 }
-
-function getNetworkVisualizationsParametersUrl() {
-    return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/network-visualizations-params`;
-}
-
-export function getNetworkVisualizationsParameters(paramsUuid: UUID) {
-    const fetchUrl = `${getNetworkVisualizationsParametersUrl()}/${paramsUuid}`;
-    return backendFetchJson(fetchUrl, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-}

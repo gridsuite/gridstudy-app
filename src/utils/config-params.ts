@@ -14,21 +14,10 @@ export const PARAM_LANGUAGE = 'language';
 
 // App config names
 export const PARAM_USE_NAME = 'useName';
-export const PARAM_CENTER_LABEL = 'centerLabel';
-export const PARAM_DIAGONAL_LABEL = 'diagonalLabel';
-export const PARAM_LINE_FULL_PATH = 'lineFullPath';
-export const PARAM_LINE_PARALLEL_PATH = 'lineParallelPath';
-export const PARAM_LINE_FLOW_MODE = 'lineFlowMode';
 export const PARAM_LIMIT_REDUCTION = 'limitReduction';
-export const PARAM_MAP_MANUAL_REFRESH = 'mapManualRefresh';
-export const PARAM_MAP_BASEMAP = 'mapBaseMap';
-export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
-export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
 export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
 export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
-export const PARAM_INIT_NAD_WITH_GEO_DATA = 'initNadWithGeoData';
 export const PARAMS_LOADED = 'paramsLoaded';
-
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 
 // SA Param names
@@ -42,9 +31,6 @@ export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD = 'highVoltageAbsoluteThre
 // Param values
 export const PARAM_PROVIDER_OPENLOADFLOW = 'OpenLoadFlow';
 
-export const MAP_BASEMAP_MAPBOX = 'mapbox';
-export const MAP_BASEMAP_CARTO = 'carto';
-export const MAP_BASEMAP_CARTO_NOLABEL = 'cartonolabel';
 export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
