@@ -17,6 +17,7 @@ import {
     AttachLineInfo,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    CreateCouplingDeviceInfo,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -2000,6 +2001,40 @@ export function createTabularCreation(
             type: MODIFICATION_TYPES.TABULAR_CREATION.type,
             creationType: creationType,
             creations: creations,
+        }),
+    });
+}
+
+export function createCouplingDevice({
+    voltageLevelId,
+    studyUuid,
+    nodeUuid,
+    modificationUuid = undefined,
+    busbarSectionId1,
+    busbarSectionId2,
+}: CreateCouplingDeviceInfo) {
+    console.log('Creating coupling device', voltageLevelId, busbarSectionId1, busbarSectionId2);
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    const isUpdate = !!modificationUuid;
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating coupling device');
+    } else {
+        console.info('Creating coupling device');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
+            voltageLevelId: voltageLevelId,
+            busOrBbsId1: busbarSectionId1,
+            busOrBbsId2: busbarSectionId2,
         }),
     });
 }
