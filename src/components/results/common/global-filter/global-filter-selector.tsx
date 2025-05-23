@@ -8,17 +8,39 @@
 import GlobalFilterProvider from './global-filter-provider';
 import GlobalFilterAutocomplete, { GlobalFilterAutocompleteProps } from './global-filter-autocomplete';
 import { GlobalFilter } from './global-filter-types';
+import { useMemo } from 'react';
+import { FilterType } from '../utils';
 
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
+    preloadedGlobalFilters?: GlobalFilter[];
+    genericFiltersStrictMode?: boolean;
 };
 export default function GlobalFilterSelector({
     onChange,
     filterableEquipmentTypes,
+    preloadedGlobalFilters,
     filters,
+    //If this parameter is enabled, only generic filters of the same type as those provided in filterableEquipmentTypes will be available
+    genericFiltersStrictMode = false,
 }: Readonly<GlobalFilterSelectorProps>) {
+    // Global filter autocomplete displayed categories are dynamically provided from the on hand filters, GENERIC_FILTER gets manually added
+    const filterCategories = useMemo(() => {
+        let categories: string[] = filters.map((filter) => filter.filterType);
+        if (!categories.includes(FilterType.GENERIC_FILTER)) {
+            categories.push(FilterType.GENERIC_FILTER);
+        }
+        return categories;
+    }, [filters]);
+
     return (
-        <GlobalFilterProvider onChange={onChange}>
+        <GlobalFilterProvider
+            onChange={onChange}
+            filterCategories={filterCategories}
+            preloadedGlobalFilters={preloadedGlobalFilters}
+            genericFiltersStrictMode={genericFiltersStrictMode}
+            equipmentTypes={filterableEquipmentTypes}
+        >
             <GlobalFilterAutocomplete filters={filters} filterableEquipmentTypes={filterableEquipmentTypes} />
         </GlobalFilterProvider>
     );

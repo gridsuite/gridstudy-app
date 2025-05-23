@@ -50,18 +50,22 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
         selectedGlobalFilters,
         setSelectedGlobalFilters,
         onChange,
+        filterCategories,
+        genericFiltersStrictMode,
+        equipmentTypes,
     } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
     const [categories, setCategories] = useState<string[]>([]);
 
-    const standardCategories: string[] = useMemo(
-        () => [
-            RECENT_FILTER,
-            ...Object.values(FilterType).filter((filterType) => filterType !== FilterType.SUBSTATION_PROPERTY),
-        ],
-        []
-    );
+    const standardCategories: string[] = useMemo(() => {
+        const allCategories = Object.values(FilterType) as string[];
+        const filteredCategories = allCategories.filter(
+            (category) =>
+                filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
+        );
+        return [RECENT_FILTER, ...filteredCategories];
+    }, [filterCategories]);
 
     // fetches extra global filter subcategories if there are some in the local config
     useEffect(() => {
@@ -125,6 +129,11 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
             setDirectoryItemSelectorOpen(false);
         },
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
+    );
+
+    const allowedEquipmentTypes = useMemo(
+        () => (genericFiltersStrictMode ? equipmentTypes : undefined),
+        [equipmentTypes, genericFiltersStrictMode]
     );
 
     return (
@@ -227,6 +236,7 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
+                equipmentTypes={allowedEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}
                 multiSelect
             />

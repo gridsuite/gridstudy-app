@@ -19,16 +19,16 @@ import { UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
-    saveSpreadsheetGsFilters,
+    saveSpreadsheetGlobalFilters,
     updateTableDefinition,
 } from 'redux/actions';
 import { FilterConfig, SortWay } from 'types/custom-aggrid-types';
 import { getSpreadsheetModel } from 'services/study-config';
 import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
-import { GsFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
-import { SpreadsheetGlobalFilter } from 'services/study/filter';
+import { GlobalFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
+import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
 
 const createNewTableDefinition = (
     columns: ColumnDefinition[],
@@ -88,7 +88,7 @@ export const extractColumnsFilters = (columns: ColumnDefinitionDto[]): FilterCon
 
 const createSpreadsheetConfig = (
     columns: ColumnDefinitionDto[],
-    globalFilters: SpreadsheetGlobalFilter[],
+    globalFilters: GlobalFilter[],
     sheetType: SpreadsheetEquipmentType,
     tabName: string
 ) => ({
@@ -122,7 +122,7 @@ const handleSuccess = (
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
-            dispatch(saveSpreadsheetGsFilters(uuid, formattedGlobalFilters));
+            dispatch(saveSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
         })
         .catch((error) => {
@@ -139,7 +139,7 @@ const handleSuccess = (
 interface AddNewSpreadsheetParams {
     studyUuid: UUID;
     columns: ColumnDefinitionDto[];
-    globalFilters?: SpreadsheetGlobalFilter[];
+    globalFilters?: GlobalFilter[];
     sheetType: SpreadsheetEquipmentType;
     tabIndex: number;
     tabName: string;
@@ -179,7 +179,7 @@ export const addNewSpreadsheet = ({
 export interface ProcessedCollectionData {
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters: SpreadsheetFilterState;
-    tableGlobalFilters: GsFilterSpreadsheetState;
+    tableGlobalFilters: GlobalFilterSpreadsheetState;
 }
 
 export function processSpreadsheetsCollectionData(collectionData: SpreadsheetCollectionDto): ProcessedCollectionData {
