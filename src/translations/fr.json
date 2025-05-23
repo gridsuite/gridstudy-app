@@ -1541,8 +1541,7 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
     "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
-    "Closed": "Fermé",
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
 
     "AddCouplingDevice": "Ajouter un couplage ou un omnibus",
     "AddCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",

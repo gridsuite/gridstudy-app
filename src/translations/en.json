@@ -1545,8 +1545,7 @@
     "Open": "Open",
     "Closed": "Closed",
     "DiagramGridLayout": "Diagram grid layout",
-    "DiagramGridLayoutAndTree": "Diagram grid layout and tree"
-    "Closed": "Closed",
+    "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
 
     "AddCouplingDevice": "Add a coupling device",
     "AddCouplingDeviceEditor": "Add a coupling device",
