@@ -99,7 +99,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'substation',
             eventType: 'create',
             substationId: '65',
@@ -127,7 +127,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 needsToBlink: true,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'voltage-level',
             eventType: 'create',
             voltageLevelId: '174',
@@ -164,7 +164,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'substation',
             eventType: 'create',
             substationId: '34',
@@ -192,7 +192,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 needsToBlink: true,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'voltage-level',
             eventType: 'create',
             voltageLevelId: '99',
@@ -224,7 +224,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'substation',
             eventType: 'create',
             substationId: '50',
@@ -306,7 +306,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             }, // The new SLD is the only opened SLD
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'substation',
             eventType: 'create',
             substationId: '107',
@@ -350,7 +350,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
             },
         ],
         fullScreenDiagram: { id: '503', svgType: DiagramType.VOLTAGE_LEVEL },
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'voltage-level',
             eventType: 'create',
             voltageLevelId: '503',
@@ -371,7 +371,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['37'],
@@ -398,7 +398,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['18'],
@@ -425,7 +425,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['51'],
@@ -457,7 +457,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['22'],
@@ -489,7 +489,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['44'],
@@ -526,7 +526,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
             id: '28' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['28'],
@@ -573,7 +573,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
             id: '14' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['39'],
@@ -613,7 +613,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
             id: '85' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
-        lastDiagramEvent: {
+        latestDiagramEvent: {
             diagramType: 'network-area-diagram',
             eventType: 'create',
             voltageLevelIds: ['79'],

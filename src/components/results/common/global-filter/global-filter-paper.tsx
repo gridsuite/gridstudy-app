@@ -14,12 +14,12 @@ import {
 } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { PropsWithChildren, RefObject, useCallback, useContext, useMemo } from 'react';
+import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
-import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
+import { fetchSubstationPropertiesGlobalFilters, getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
@@ -53,8 +53,34 @@ function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterP
     } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
+    const [categories, setCategories] = useState<string[]>([]);
 
-    const categories: string[] = useMemo(() => [RECENT_FILTER, ...Object.values(FilterType)], []);
+    const standardCategories: string[] = useMemo(
+        () => [
+            RECENT_FILTER,
+            ...Object.values(FilterType).filter((filterType) => filterType !== FilterType.SUBSTATION_PROPERTY),
+        ],
+        []
+    );
+
+    // fetches extra global filter subcategories if there are some in the local config
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            const sortedCategories = [
+                ...standardCategories,
+                ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
+            ];
+            // generic filters always at the end of the menus
+            const genericFilterCategory: string[] = sortedCategories.splice(
+                sortedCategories.indexOf(FilterType.GENERIC_FILTER),
+                1
+            );
+            if (genericFilterCategory.length > 0) {
+                sortedCategories.push(genericFilterCategory[0]);
+            }
+            setCategories(sortedCategories);
+        });
+    }, [standardCategories]);
 
     const filtersMsg: string = useMemo(
         () =>
