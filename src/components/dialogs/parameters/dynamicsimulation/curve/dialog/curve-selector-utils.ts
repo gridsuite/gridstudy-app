@@ -6,7 +6,14 @@
  */
 
 import { ExpertFilter } from 'services/study/filter';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import {
+    COUNTRY_ONE_SIDED_EQUIPMENTS,
+    COUNTRY_TWO_SIDED_EQUIPMENTS,
+    EQUIPMENT_TYPES,
+    NOMINAL_VOLTAGE_ONE_SIDED_EQUIPMENTS,
+    NOMINAL_VOLTAGE_THREE_SIDED_EQUIPMENTS,
+    NOMINAL_VOLTAGE_TWO_SIDED_EQUIPMENTS,
+} from '../../../../../utils/equipment-types';
 import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
 
 export const CURVE_EQUIPMENT_TYPES = [
@@ -32,9 +39,11 @@ export const getTopologyKindIfNecessary = (equipmentType: string) => {
 };
 
 export const buildExpertRules = (
+    equipmentType: EQUIPMENT_TYPES,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
-    nominalVoltages: number[] | undefined
+    nominalVoltages: number[] | undefined,
+    ids: string[] | undefined
 ) => {
     const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
 
@@ -50,7 +59,7 @@ export const buildExpertRules = (
     }
 
     // create rule IN for countries
-    if (countries?.length) {
+    if (countries?.length && COUNTRY_ONE_SIDED_EQUIPMENTS.includes(equipmentType)) {
         const countriesRule = {
             field: FieldType.COUNTRY,
             operator: OperatorType.IN,
@@ -58,10 +67,30 @@ export const buildExpertRules = (
             dataType: DataType.ENUM,
         };
         rules.push(countriesRule);
+    } else if (countries?.length && COUNTRY_TWO_SIDED_EQUIPMENTS.includes(equipmentType)) {
+        const countriesRule = {
+            combinator: CombinatorType.OR,
+            dataType: DataType.COMBINATOR,
+            rules: [
+                {
+                    field: FieldType.COUNTRY_1,
+                    operator: OperatorType.IN,
+                    values: countries,
+                    dataType: DataType.ENUM,
+                },
+                {
+                    field: FieldType.COUNTRY_2,
+                    operator: OperatorType.IN,
+                    values: countries,
+                    dataType: DataType.ENUM,
+                },
+            ],
+        };
+        rules.push(countriesRule);
     }
 
     // create rule IN for nominalVoltages
-    if (nominalVoltages?.length) {
+    if (nominalVoltages?.length && NOMINAL_VOLTAGE_ONE_SIDED_EQUIPMENTS.includes(equipmentType)) {
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
@@ -69,6 +98,63 @@ export const buildExpertRules = (
             dataType: DataType.NUMBER,
         };
         rules.push(nominalVoltagesRule);
+    } else if (nominalVoltages?.length && NOMINAL_VOLTAGE_TWO_SIDED_EQUIPMENTS.includes(equipmentType)) {
+        const nominalVoltagesRule = {
+            combinator: CombinatorType.OR,
+            dataType: DataType.COMBINATOR,
+            rules: [
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_1,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_2,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+            ],
+        };
+        rules.push(nominalVoltagesRule);
+    } else if (nominalVoltages?.length && NOMINAL_VOLTAGE_THREE_SIDED_EQUIPMENTS.includes(equipmentType)) {
+        const nominalVoltagesRule = {
+            combinator: CombinatorType.OR,
+            dataType: DataType.COMBINATOR,
+            rules: [
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_1,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_2,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+                {
+                    field: FieldType.NOMINAL_VOLTAGE_3,
+                    operator: OperatorType.IN,
+                    values: nominalVoltages,
+                    dataType: DataType.NUMBER,
+                },
+            ],
+        };
+        rules.push(nominalVoltagesRule);
+    }
+
+    // create rule IN for ids
+    if (ids?.length) {
+        const idsRule = {
+            field: FieldType.ID,
+            operator: OperatorType.IN,
+            values: ids,
+            dataType: DataType.STRING,
+        };
+        rules.push(idsRule);
     }
 
     return {
@@ -79,16 +165,17 @@ export const buildExpertRules = (
 };
 
 export const buildExpertFilter = (
-    equipmentType: string,
+    equipmentType: EQUIPMENT_TYPES,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
-    nominalVoltages: number[] | undefined
+    nominalVoltages: number[] | undefined,
+    ids: string[] | undefined
 ): ExpertFilter => {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
         type: 'EXPERT',
         equipmentType: equipmentType,
-        rules: buildExpertRules(voltageLevelIds, countries, nominalVoltages),
+        rules: buildExpertRules(equipmentType, voltageLevelIds, countries, nominalVoltages, ids),
     };
 };
 
