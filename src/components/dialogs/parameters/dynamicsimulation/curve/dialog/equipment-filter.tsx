@@ -133,9 +133,9 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 equipmentType,
                 selectedVoltageLevelIds,
                 selectedCountries,
-                selectedNominalVoltages
+                selectedNominalVoltages,
+                undefined
             );
-
             // the fetcher which evaluates a filter by filter-server
             return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetworkUuid, expertFilter);
         }, [
