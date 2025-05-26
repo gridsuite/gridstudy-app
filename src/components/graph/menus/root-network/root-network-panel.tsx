@@ -63,10 +63,8 @@ const RootNetworkPanel: FunctionComponent = () => {
     }, [enableDeveloperMode]);
 
     const closeSearchPanel = useCallback(() => {
-        if (isSearchActive) {
-            setIsSearchActive(false);
-        }
-    }, [isSearchActive]);
+        setIsSearchActive(false);
+    }, []);
 
     return (
         <Paper elevation={3} sx={panelStyle}>

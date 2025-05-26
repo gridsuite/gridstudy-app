@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SetStateAction, useCallback, useEffect, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Typography, TextField, InputAdornment, IconButton, Tabs, Tab, Theme, Tooltip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -50,7 +50,7 @@ interface ModificationsPanelProps {
 const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActive }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [results, setResults] = useState([] as ModificationsSearchResult[]);
+    const [results, setResults] = useState<ModificationsSearchResult[]>([]);
 
     const intl = useIntl();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -74,21 +74,21 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
         resetSearch,
     });
 
-    const reOrderSearchResults = useCallback((results: ModificationsSearchResult[], currentNodeUuid?: UUID) => {
-        if (!results || results.length === 0) {
+    const reOrderSearchResults = (results: ModificationsSearchResult[], currentNodeUuid?: UUID) => {
+        if (results.length === 0) {
             return [];
         }
 
         const foundCurrentNodeResults = results.find((result) => result.nodeUuid === currentNodeUuid);
 
         if (!foundCurrentNodeResults) {
-            return [...results];
+            return results;
         }
 
         const otherNodesResults = results.filter((result) => result.nodeUuid !== currentNodeUuid);
 
         return [foundCurrentNodeResults, ...otherNodesResults];
-    }, []);
+    };
 
     const searchMatchingElements = useCallback(
         (newSearchTerm: string) => {
@@ -101,31 +101,22 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                 getModifications(studyUuid, currentRootNetworkUuid, newSearchTerm)
                     .then((results: ModificationsSearchResult[]) => {
                         setResults(results);
-                        setIsLoading(false);
                     })
                     .catch((errmsg) => {
-                        setIsLoading(false);
                         snackError({
                             messageTxt: errmsg,
                             headerId: 'equipmentsSearchingError',
                         });
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
                     });
             }
         },
         [currentRootNetworkUuid, snackError, studyUuid]
     );
 
-    useEffect(() => {
-        // We need to reorder the results so the currentNode appears at the top of the list.
-        // If the currentNode isn't in the results, display them as is.
-        if (!results.find((item) => item.nodeUuid === currentNode?.id)) {
-            return;
-        }
-        const shouldReorderResults = results.length > 0 && currentNode?.id && results[0].nodeUuid !== currentNode?.id;
-        if (shouldReorderResults) {
-            setResults(reOrderSearchResults(results, currentNode?.id));
-        }
-    }, [currentNode?.id, reOrderSearchResults, results]);
+    const reorderedResults = useMemo(() => reOrderSearchResults(results, currentNode?.id), [results, currentNode?.id]);
 
     const debouncedHandleChange = useDebounce(searchMatchingElements, 700);
 
@@ -187,7 +178,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             </Box>
             {!isLoading && searchTerm.trim() !== '' && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {results?.length}{' '}
+                    {reorderedResults?.length}{' '}
                     {intl.formatMessage({
                         id: 'rootNetwork.results',
                     })}
@@ -200,7 +191,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                     })}
                 </Typography>
             )}
-            <RootNetworkSearchResults results={results} />
+            <RootNetworkSearchResults results={reorderedResults} />
         </Box>
     );
 };

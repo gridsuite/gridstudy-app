@@ -57,7 +57,7 @@ const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications
     return (
         <>
             {modifications.map((modification, key) => (
-                <Typography key={key} variant="body2">
+                <Typography key={modification.impactedEquipmentId + modification.modificationUuid} variant="body2">
                     <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
                 </Typography>
             ))}
