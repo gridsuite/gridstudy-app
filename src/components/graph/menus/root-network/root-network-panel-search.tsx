@@ -127,6 +127,19 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
         }
     }, [currentNode?.id, reOrderSearchResults, results]);
 
+    useEffect(() => {
+        // We need to reset the search results when changing the root network.
+        if (currentRootNetworkUuid) {
+            resetSearch();
+        }
+    }, [currentRootNetworkUuid, resetSearch]);
+
+    const getResultsCount = useCallback((results: ModificationsSearchResult[]): number => {
+        return results.reduce((totalModifications, currentResult) => {
+            return totalModifications + currentResult.modifications.length;
+        }, 0);
+    }, []);
+
     const debouncedHandleChange = useDebounce(searchMatchingElements, 700);
 
     const handleOnChange = useCallback(
@@ -187,10 +200,10 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             </Box>
             {!isLoading && searchTerm.trim() !== '' && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {results?.length}{' '}
+                    {getResultsCount(results)}{' '}
                     {intl.formatMessage({
-                        id: 'rootNetwork.results',
-                    })}
+                        id: 'rootNetwork.result',
+                    }) + `${getResultsCount(results) > 1 ? 's' : ''}`}
                 </Typography>
             )}
             {isLoading && (
