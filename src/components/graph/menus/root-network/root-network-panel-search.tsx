@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
 import { RootNetworkSearchResults } from './root-network-search-results';
 import { UUID } from 'crypto';
