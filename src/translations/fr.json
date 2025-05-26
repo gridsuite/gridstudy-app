@@ -1538,5 +1538,21 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
     "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+
+    "BalancesAdjustment": "Équilibrage bilan",
+    "BalancesAdjustmentZone": "Nom de la zone",
+    "BalancesAdjustmentCountry": "Pays",
+    "BalancesAdjustmentShiftEquipmentType": "Type d'équipements",
+    "BalancesAdjustmentShiftType": "Type de variation",
+    "BalancesAdjustmentTarget": "Position nette cible",
+    "PROPORTIONAL": "Proportionnel",
+    "BALANCED": "Équilibré",
+    "Areas": "Zones",
+    "Advanced": "Avancés",
+    "Loadflow": "Calcul de répartition",
+    "Algorithm": "Algorithme",
+    "maxNumberIterations": "Nombre maximal d'itérations",
+    "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
+    "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné"
 }
