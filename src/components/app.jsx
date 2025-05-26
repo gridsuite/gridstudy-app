@@ -45,7 +45,7 @@ import {
     attemptLeaveParametersTab,
     initTableDefinitions,
     renameTableDefinition,
-    saveSpreadsheetGsFilters,
+    saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -172,9 +172,10 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(saveSpreadsheetGsFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
                 })
                 .catch((error) => {
+                    console.error(error);
                     snackError({
                         messageTxt: error,
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
