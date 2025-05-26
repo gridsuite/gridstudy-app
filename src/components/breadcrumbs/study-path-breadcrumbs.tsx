@@ -35,7 +35,7 @@ export default function StudyPathBreadcrumbs({
     const currentNode: CurrentTreeNode | null = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid: UUID | null = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks: RootNetworkMetadata[] = useSelector((state: AppState) => state.rootNetworks);
-    const currentRootNetworktag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
+    const currentRootNetworkTag = rootNetworks.find((item) => item.rootNetworkUuid === currentRootNetworkUuid)?.tag;
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" color="text" separator={<KeyboardArrowRightIcon fontSize="small" />}>
@@ -59,11 +59,13 @@ export default function StudyPathBreadcrumbs({
                             {studyName}
                             <KeyboardArrowRightIcon fontSize="small" />
                         </Box>
-                        <Box sx={styles.tooltipItem}>
-                            {currentNode?.data.label}
-                            <KeyboardArrowRightIcon fontSize="small" />
-                        </Box>
-                        <Box sx={styles.tooltipItem}>{currentRootNetworktag}</Box>
+                        <Box sx={styles.tooltipItem}>{currentNode?.data.label}</Box>
+                        {rootNetworks?.length > 1 && (
+                            <Box sx={styles.tooltipItem}>
+                                <KeyboardArrowRightIcon fontSize="small" />
+                                {currentRootNetworkTag}
+                            </Box>
+                        )}
                     </Box>
                 }
             >
