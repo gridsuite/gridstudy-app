@@ -46,8 +46,8 @@ export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> =
     );
     return (
         <Box sx={styles.container}>
-            {results.map((result, key) => (
-                <Box key={key} sx={{ mb: 2 }}>
+            {results.map((result) => (
+                <Box key={result.nodeUuid} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
                         <DeviceHubIcon />
                         <Typography color="textSecondary" sx={{ marginLeft: '5px' }}>

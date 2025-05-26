@@ -1471,6 +1471,7 @@
     "rootNetwork.modificationsInfos": "Seules les modifications dans les noeuds réalisés et leurs noeuds parents apparaitront dans les résultats.",
     "rootNetwork.searchPlaceholder": "Rechercher un ouvrage modifié…",
     "rootNetwork.modificationTab": "Modifications",
+    "rootNetwork.results": "résultats",
     "rootNetwork.result": "résultat",
     "rootNetwork.loading": "Chargement...",
     "unlimited": "Illimité",

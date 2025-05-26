@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
 import { RootNetworkSearchResults } from './root-network-search-results';
 import { UUID } from 'crypto';
@@ -191,8 +191,8 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
                     {getResultsCount(reorderedResults)}{' '}
                     {intl.formatMessage({
-                        id: 'rootNetwork.result',
-                    }) + `${getResultsCount(results) > 1 ? 's' : ''}`}
+                        id: getResultsCount(results) > 1 ? 'rootNetwork.results' : 'rootNetwork.result',
+                    })}
                 </Typography>
             )}
             {isLoading && (

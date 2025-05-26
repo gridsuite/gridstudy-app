@@ -36,7 +36,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
     );
     return (
         <>
-            {modifications.map((modification, key) => (
+            {modifications.map((modification) => (
                 <Typography key={modification.impactedEquipmentId + modification.modificationUuid} variant="body2">
                     <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
                 </Typography>
