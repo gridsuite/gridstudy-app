@@ -5,12 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, InputAdornment } from '@mui/material';
+import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { FloatInput, IntegerInput, Option, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import {
+    FloatInput,
+    IntegerInput,
+    Option,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+    parametersStyles,
+} from '@gridsuite/commons-ui';
 import LineSeparator from '../../commons/line-separator';
 import { ReactElement } from 'react';
-import { styles } from '../parameters-style';
 
 // --- define data types --- //
 export enum TYPES {
@@ -66,16 +73,12 @@ export const makeComponent = (defParam: DefParam, path: string, key: string) => 
     const render = defParam?.render ?? defaultParamRender;
     return (
         <>
-            <Grid item xs={8} sx={styles.parameterName}>
+            <Grid item xs={8} sx={parametersStyles.parameterName}>
                 <FormattedMessage id={defParam.label} />
             </Grid>
-            <Grid item container xs={4} sx={styles.controlItem}>
+            <Grid item container xs={4} sx={parametersStyles.controlItem}>
                 {render(defParam, path, key)}
             </Grid>
         </>
     );
 };
-
-export const inputAdornment = (content: ReactElement) => ({
-    endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-});

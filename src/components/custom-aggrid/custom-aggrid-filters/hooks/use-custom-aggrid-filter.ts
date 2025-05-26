@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FILTER_DATA_TYPES } from '../../custom-aggrid-header.type';
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
 import { GridApi } from 'ag-grid-community';
 import { useFilterSelector } from '../../../../hooks/use-filter-selector';
 import { computeTolerance } from '../utils/filter-tolerance-utils';
 import { FilterConfig, FilterData, FilterParams } from '../../../../types/custom-aggrid-types';
+import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
 
 const removeElementFromArrayWithFieldValue = (filtersArrayToRemoveFieldValueFrom: FilterConfig[], field: string) => {
     return filtersArrayToRemoveFieldValueFrom.filter((f) => f.column !== field);
@@ -71,26 +71,34 @@ export const useCustomAggridFilter = (
         [colId, debounceMs]
     );
 
-    const handleChangeFilterValue = (filterData: FilterData) => {
-        setSelectedFilterData(filterData.value);
-        setTolerance(filterData.tolerance);
-        debouncedUpdateFilter({
-            value: filterData.value,
-            type: filterData.type ?? selectedFilterComparator,
-            dataType,
-            tolerance: filterData.tolerance,
-        });
-    };
+    const handleChangeFilterValue = useCallback(
+        (filterData: FilterData) => {
+            setSelectedFilterData(filterData.value);
+            setTolerance(filterData.tolerance);
+            debouncedUpdateFilter({
+                value: filterData.value,
+                type: filterData.type ?? selectedFilterComparator,
+                dataType,
+                tolerance: filterData.tolerance,
+            });
+        },
+        [dataType, debouncedUpdateFilter, selectedFilterComparator]
+    );
 
-    const handleChangeComparator = (newType: string) => {
-        setSelectedFilterComparator(newType);
-        debouncedUpdateFilter({
-            value: selectedFilterData,
-            type: newType,
-            dataType,
-            tolerance: tolerance,
-        });
-    };
+    const handleChangeComparator = useCallback(
+        (newType: string) => {
+            setSelectedFilterComparator(newType);
+            if (selectedFilterData) {
+                updateFilter(colId, {
+                    value: selectedFilterData,
+                    type: newType,
+                    dataType,
+                    tolerance: tolerance,
+                });
+            }
+        },
+        [colId, dataType, selectedFilterData, tolerance, updateFilter]
+    );
 
     useEffect(() => {
         if (!selectedFilterComparator) {
@@ -99,18 +107,14 @@ export const useCustomAggridFilter = (
     }, [selectedFilterComparator, comparators]);
 
     useEffect(() => {
-        if (!filters?.length) {
-            setSelectedFilterData(undefined);
+        const filterObject = filters?.find((filter) => filter.column === colId);
+        if (filterObject) {
+            setSelectedFilterData(filterObject.value);
+            setSelectedFilterComparator(filterObject.type ?? '');
         } else {
-            const filterObject = filters?.find((filter) => filter.column === colId);
-            if (filterObject) {
-                setSelectedFilterData(filterObject.value);
-                setSelectedFilterComparator(filterObject.type ?? selectedFilterComparator);
-            } else {
-                setSelectedFilterData(undefined);
-            }
+            setSelectedFilterData(undefined);
         }
-    }, [filters, colId, selectedFilterComparator]);
+    }, [filters, colId]);
 
     return {
         selectedFilterData,

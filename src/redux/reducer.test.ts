@@ -20,9 +20,9 @@ import {
     stopDiagramBlink,
     togglePinDiagram,
 } from './actions';
-import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { Reducer } from 'redux';
 import { UUID } from 'crypto';
+import { DiagramType, ViewState } from '../components/diagrams/diagram.type';
 
 const reducer = appReducer as Reducer<Partial<AppState>, Actions>;
 
@@ -99,6 +99,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'substation',
+            eventType: 'create',
+            substationId: '65',
+        },
     };
 
     expect(reducer(initialState, openDiagram('65', DiagramType.SUBSTATION))).toEqual(expectedState);
@@ -122,6 +127,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 needsToBlink: true,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'voltage-level',
+            eventType: 'create',
+            voltageLevelId: '174',
+        },
     };
 
     expect(reducer(initialState2, openDiagram('174', DiagramType.VOLTAGE_LEVEL))).toEqual(expectedState2);
@@ -154,6 +164,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'substation',
+            eventType: 'create',
+            substationId: '34',
+        },
     };
 
     expect(reducer(initialState3, openDiagram('34' as UUID, DiagramType.SUBSTATION))).toEqual(expectedState3);
@@ -177,6 +192,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 needsToBlink: true,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'voltage-level',
+            eventType: 'create',
+            voltageLevelId: '99',
+        },
     };
 
     expect(reducer(initialState4, openDiagram('99' as UUID, DiagramType.VOLTAGE_LEVEL))).toEqual(expectedState4);
@@ -204,6 +224,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'substation',
+            eventType: 'create',
+            substationId: '50',
+        },
     };
 
     expect(reducer(initialState5, openDiagram('50', DiagramType.SUBSTATION))).toEqual(expectedState5);
@@ -281,6 +306,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             }, // The new SLD is the only opened SLD
         ],
+        latestDiagramEvent: {
+            diagramType: 'substation',
+            eventType: 'create',
+            substationId: '107',
+        },
     };
 
     expect(reducer(initialState6, openDiagram('107', DiagramType.SUBSTATION))).toEqual(expectedState6);
@@ -320,6 +350,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
             },
         ],
         fullScreenDiagram: { id: '503', svgType: DiagramType.VOLTAGE_LEVEL },
+        latestDiagramEvent: {
+            diagramType: 'voltage-level',
+            eventType: 'create',
+            voltageLevelId: '503',
+        },
     };
 
     expect(reducer(initialState7, openDiagram('503', DiagramType.VOLTAGE_LEVEL))).toEqual(expectedState7);
@@ -336,6 +371,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['37'],
+        },
     };
 
     expect(reducer(initialState, openDiagram('37', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState);
@@ -358,6 +398,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['18'],
+        },
     };
 
     expect(reducer(initialState2, openDiagram('18', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState2);
@@ -380,6 +425,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['51'],
+        },
     };
 
     expect(reducer(initialState3, openDiagram('51', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState3);
@@ -407,6 +457,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['22'],
+        },
     };
 
     expect(reducer(initialState4, openDiagram('22', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState4);
@@ -434,6 +489,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
         ],
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['44'],
+        },
     };
 
     expect(reducer(initialState5, openDiagram('44' as UUID, DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState5);
@@ -465,6 +525,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         fullScreenDiagram: {
             id: '28' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['28'],
         },
     };
 
@@ -508,6 +573,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
             id: '14' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['39'],
+        },
     };
 
     expect(reducer(initialState7, openDiagram('39', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState7);
@@ -542,6 +612,11 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         fullScreenDiagram: {
             id: '85' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
+        latestDiagramEvent: {
+            diagramType: 'network-area-diagram',
+            eventType: 'create',
+            voltageLevelIds: ['79'],
         },
     };
 

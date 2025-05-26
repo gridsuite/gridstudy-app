@@ -19,6 +19,7 @@ import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from '
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { AppState } from 'redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
+import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
 
 export interface GetSelectedEquipmentsHandle {
     api: {
@@ -53,10 +54,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
+        const [isFetching, setIsFetching] = useState<boolean>();
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-        const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+        const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
         const intl = useIntl();
         const equipmentsRef = useRef<AgGridReact<IdentifiableAttributes>>(null);
@@ -88,11 +90,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // fetching options in different criterias
         useEffect(() => {
-            if (!currentRootNetwork || !studyUuid || !currentNode?.id) {
+            if (!currentRootNetworkUuid || !studyUuid || !currentNode?.id) {
                 return;
             }
             // Load voltage level IDs
-            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id, currentRootNetwork)
+            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((voltageLevels) => {
                     const vlMap = new Map<string, string | undefined>();
                     const nvSet = new Set<number>();
@@ -112,7 +114,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 });
 
             // load countries
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetwork)
+            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
                     snackError({
@@ -120,26 +122,26 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [studyUuid, currentNode?.id, snackError, currentRootNetwork]);
+        }, [studyUuid, currentNode?.id, snackError, currentRootNetworkUuid]);
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
-            if (!studyUuid || !currentRootNetwork || !currentNode?.id) {
+            if (!studyUuid || !currentRootNetworkUuid || !currentNode?.id) {
                 return;
             }
             const expertFilter = buildExpertFilter(
                 equipmentType,
                 selectedVoltageLevelIds,
                 selectedCountries,
-                selectedNominalVoltages
+                selectedNominalVoltages,
+                undefined
             );
-
             // the fetcher which evaluates a filter by filter-server
-            return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetwork, expertFilter);
+            return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetworkUuid, expertFilter);
         }, [
             studyUuid,
             currentNode?.id,
-            currentRootNetwork,
+            currentRootNetworkUuid,
             equipmentType,
             selectedVoltageLevelIds,
             selectedCountries,
@@ -151,7 +153,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             let ignore = false;
             if (gridReady && filteringEquipmentsFetcher) {
                 // when close dialog, the current ref may be null => so check with '?'
-                equipmentsRef.current?.api.showLoadingOverlay();
+                setIsFetching(true);
                 filteringEquipmentsFetcher
                     .then((equipments) => {
                         // using ignore flag to cancel fetches that do not return in order
@@ -166,7 +168,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         });
                     })
                     .finally(() => {
-                        equipmentsRef.current?.api.hideOverlay();
+                        setIsFetching(false);
                     });
             }
             return () => {
@@ -175,7 +177,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         }, [filteringEquipmentsFetcher, gridReady, snackError]);
 
         // grid configuration
-        const [equipmentRowData, setEquipmentRowData] = useState<IdentifiableAttributes[]>([]);
+        const [equipmentRowData, setEquipmentRowData] = useState<IdentifiableAttributes[]>();
         const [selectedRowsLength, setSelectedRowsLength] = useState(0);
         const columnDefs = useMemo(() => {
             return [
@@ -225,16 +227,6 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             }),
             []
         );
-
-        // config overlay when fetching from back
-        const loadingOverlayComponent = (props: { loadingMessage: string }) => {
-            return <>{props.loadingMessage}</>;
-        };
-        const loadingOverlayComponentParams = useMemo(() => {
-            return {
-                loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
-            };
-        }, [intl]);
 
         return (
             <>
@@ -332,8 +324,9 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                                 rowSelection={'multiple'}
                                 onGridReady={onGridReady}
                                 onSelectionChanged={handleEquipmentSelectionChanged}
-                                loadingOverlayComponent={loadingOverlayComponent}
-                                loadingOverlayComponentParams={loadingOverlayComponentParams}
+                                loading={isFetching}
+                                overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
+                                overrideLocales={AGGRID_LOCALES}
                             />
                         </Box>
                     </Grid>

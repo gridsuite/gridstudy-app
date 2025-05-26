@@ -8,13 +8,13 @@ import { UUID } from 'crypto';
 import { useSearchMatchingEquipments } from './use-search-matching-equipments';
 import { useMemo } from 'react';
 import { getLocalStorageSearchEquipmentHistory } from 'redux/session-storage/search-equipment-history';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 
 interface UseTopBarSearchMatchingEquipmentProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    equipmentType?: EquipmentType;
+    equipmentType?: EquipmentType | ExtendedEquipmentType;
 }
 
 export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingEquipmentProps) => {

@@ -19,6 +19,7 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
@@ -300,6 +301,7 @@ export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
+export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
 export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'flowFlowSensitivityValueThreshold';
 export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'angleFlowSensitivityValueThreshold';
@@ -398,7 +400,7 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
-export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
+export const SPREADSHEET_GS_FILTER = 'SpreadsheetGlobalFilter';
 
 /* State estimation parameters fields */
 /* General */
@@ -438,7 +440,6 @@ export const THRESHOLD_ACT_TRANSIT = 'thresholdActTransit';
 export const THRESHOLD_REA_TRANSIT = 'thresholdReaTransit';
 
 /* Loadbounds */
-
 export const DEFAULT_BOUNDS = 'defaultBounds';
 export const DEFAULT_FIXED_BOUNDS = 'defaultFixedBounds';
 export const P_MIN = 'pmin';
@@ -446,9 +447,23 @@ export const P_MAX = 'pmax';
 export const Q_MIN = 'qmin';
 export const Q_MAX = 'qmax';
 
-export const BRANCH_MEASUREMENTS = 'branchMeasurements';
+/* State estimation extensions */
+export const STATE_ESTIMATION = 'stateEstimation';
+// Measurements common to Branch (line/2wt)
 export const MEASUREMENT_P1 = 'measurementP1';
 export const MEASUREMENT_P2 = 'measurementP2';
 export const MEASUREMENT_Q1 = 'measurementQ1';
 export const MEASUREMENT_Q2 = 'measurementQ2';
+// Measurements common for the rest of the equipments
+export const MEASUREMENT_P = 'measurementP';
+export const MEASUREMENT_Q = 'measurementQ';
 export const VALIDITY = 'validity';
+// toBeEstimated specific to 2WT
+export const TO_BE_ESTIMATED = 'toBeEstimated';
+export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
+export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
+
+export const SWITCH_ID = 'switchId';
+export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
+export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
+export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';

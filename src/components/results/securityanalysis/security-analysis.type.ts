@@ -10,6 +10,7 @@ import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
+import { TablePaginationProps } from '@mui/material';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -95,14 +96,6 @@ type Pageable = {
     unpaged?: boolean;
 };
 
-type PaginationProps = {
-    count?: number;
-    rowsPerPage?: number;
-    page?: number;
-    onPageChange?: (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => void;
-    onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
-};
-
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
 export interface SecurityAnalysisNmkResult {
@@ -138,7 +131,7 @@ export interface SecurityAnalysisResultNmkProps {
     columnDefs: ColDef<any>[];
     isLoadingResult: boolean;
     isFromContingency: boolean;
-    paginationProps: PaginationProps;
+    paginationProps: TablePaginationProps;
 }
 
 export interface SecurityAnalysisNTableRow {

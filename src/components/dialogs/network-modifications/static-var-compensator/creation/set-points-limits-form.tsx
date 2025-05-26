@@ -26,7 +26,7 @@ import { useWatch } from 'react-hook-form';
 import { FunctionComponent } from 'react';
 import { UUID } from 'crypto';
 import { REGULATION_TYPES } from '../../../../network/constants';
-import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
+import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import GridSection from '../../../commons/grid-section';
@@ -94,8 +94,8 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
             currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR}
-            previousRegulatingTerminalValue={undefined}
-            previousEquipmentSectionTypeValue={undefined}
+            regulatingTerminalVlId={undefined}
+            equipmentSectionType={undefined}
         />
     );
 

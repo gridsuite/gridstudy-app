@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
@@ -39,7 +39,6 @@ import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
 import { ShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
-import LoadFlowParameters from './dialogs/parameters/loadflow/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
@@ -59,9 +58,12 @@ import { useGetStateEstimationParameters } from './dialogs/parameters/state-esti
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
 import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/use-get-non-evacuated-energy-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
-import { useParametersBackend } from './dialogs/parameters/use-parameters-backend';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
+import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
+import { StudyView, StudyViewType } from './utils/utils';
+import { useParametersBackend, LoadFlowParametersInline } from '@gridsuite/commons-ui';
+import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -76,12 +78,16 @@ enum TAB_VALUES {
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 
-type OwnProps = {
-    studyId: string;
+type ParametersTabsProps = {
+    view: StudyViewType;
 };
 
-const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
+const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
+    const dispatch = useDispatch();
+    const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
@@ -113,6 +119,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
+        studyUuid,
         ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
@@ -124,9 +131,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         getLoadFlowSpecificParametersDescription,
         getLoadFlowDefaultLimitReductions
     );
+    useParametersNotification(ComputingType.LOAD_FLOW, OptionalServicesStatus.Up, loadFlowParametersBackend);
 
     const securityAnalysisParametersBackend = useParametersBackend(
         user,
+        studyUuid,
         ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
@@ -138,9 +147,15 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         undefined,
         getSecurityAnalysisDefaultLimitReductions
     );
+    useParametersNotification(
+        ComputingType.SECURITY_ANALYSIS,
+        securityAnalysisAvailability,
+        securityAnalysisParametersBackend
+    );
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
+        studyUuid,
         ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
@@ -149,9 +164,15 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         null,
         getSensitivityAnalysisParameters
     );
+    useParametersNotification(
+        ComputingType.SENSITIVITY_ANALYSIS,
+        sensitivityAnalysisAvailability,
+        sensitivityAnalysisBackend
+    );
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
+        studyUuid,
         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
         nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
@@ -167,6 +188,16 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
+    useEffect(() => {
+        if (attemptedLeaveParametersTabIndex !== null) {
+            if (haveDirtyFields) {
+                setIsPopupOpen(true);
+            } else {
+                dispatch(confirmLeaveParametersTab());
+            }
+        }
+    }, [attemptedLeaveParametersTabIndex, haveDirtyFields, dispatch]);
+
     const handleChangeTab = (newValue: string) => {
         if (haveDirtyFields) {
             setNextTabValue(newValue);
@@ -179,10 +210,22 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const handlePopupChangeTab = useCallback(() => {
         if (nextTabValue) {
             setTabValue(nextTabValue);
+            setNextTabValue(undefined);
+        } else if (attemptedLeaveParametersTabIndex !== null) {
+            dispatch(confirmLeaveParametersTab());
         }
         setHaveDirtyFields(false);
         setIsPopupOpen(false);
-    }, [nextTabValue]);
+    }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
+
+    const handlePopupClose = useCallback(() => {
+        setIsPopupOpen(false);
+        setNextTabValue(undefined);
+
+        if (attemptedLeaveParametersTabIndex !== null) {
+            dispatch(cancelLeaveParametersTab());
+        }
+    }, [dispatch, attemptedLeaveParametersTabIndex]);
 
     useEffect(() => {
         setTabValue((oldValue) => {
@@ -202,12 +245,21 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     }, [enableDeveloperMode]);
 
     const displayTab = useCallback(() => {
+        /**
+         * We add view dependency to unmount the component when the user changes the study tab
+         * This is necessary to reset the form when the user changes the study tab
+         */
+        if (view !== StudyView.PARAMETERS) {
+            return null;
+        }
         switch (tabValue) {
             case TAB_VALUES.lfParamsTabValue:
                 return (
-                    <LoadFlowParameters
+                    <LoadFlowParametersInline
+                        studyUuid={studyUuid}
                         parametersBackend={loadFlowParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.securityAnalysisParamsTabValue:
@@ -255,8 +307,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
         }
     }, [
+        view,
         tabValue,
+        studyUuid,
         loadFlowParametersBackend,
+        enableDeveloperMode,
         securityAnalysisParametersBackend,
         sensitivityAnalysisBackend,
         nonEvacuatedEnergyBackend,
@@ -333,11 +388,13 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
-                            <Tab
-                                disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
-                                label={<FormattedMessage id="StateEstimation" />}
-                                value={TAB_VALUES.stateEstimationTabValue}
-                            />
+                            {enableDeveloperMode ? (
+                                <Tab
+                                    disabled={stateEstimationAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="StateEstimation" />}
+                                    value={TAB_VALUES.stateEstimationTabValue}
+                                />
+                            ) : null}
                             {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
                             <Tab sx={tabStyles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
                             <Tab
@@ -356,7 +413,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             <SelectOptionsDialog
                 title={''}
                 open={isPopupOpen}
-                onClose={() => setIsPopupOpen(false)}
+                onClose={handlePopupClose}
                 onClick={handlePopupChangeTab}
                 child={
                     <DialogContentText>

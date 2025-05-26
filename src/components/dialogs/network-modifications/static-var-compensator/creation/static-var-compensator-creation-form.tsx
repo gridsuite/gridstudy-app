@@ -16,10 +16,11 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import { UUID } from 'crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;
-    currentNode: { id: UUID };
+    currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     tabIndex: number;
 }
@@ -38,7 +39,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
             studyUuid={studyUuid}
             currentNode={currentNode}
             currentRootNetworkUuid={currentRootNetworkUuid}
-            previousValues={null}
+            previousValues={undefined}
         />
     );
 

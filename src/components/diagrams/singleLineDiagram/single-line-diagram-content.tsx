@@ -9,7 +9,6 @@ import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
-    DiagramType,
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
@@ -18,7 +17,6 @@ import {
     MIN_HEIGHT,
     MIN_WIDTH,
     styles,
-    useDiagram,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu';
@@ -28,7 +26,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -46,7 +44,6 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
-import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
@@ -54,6 +51,8 @@ import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { DiagramType } from '../diagram.type';
+import { useDiagram } from '../use-diagram';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -127,7 +126,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const diagramViewerRef = useRef<SingleLineDiagramViewer>();
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -485,17 +484,20 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 return <></>;
         }
         return (
-            <CurrentModificationDialog
-                open={true}
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                currentRootNetworkUuid={currentRootNetworkUuid}
-                defaultIdValue={equipmentToModify?.equipmentId}
-                isUpdate={true}
-                onClose={() => closeModificationDialog()}
-                editData={undefined}
-                editDataFetchStatus={undefined}
-            />
+            currentNode &&
+            currentRootNetworkUuid && (
+                <CurrentModificationDialog
+                    open={true}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    defaultIdValue={equipmentToModify?.equipmentId}
+                    isUpdate={true}
+                    onClose={() => closeModificationDialog()}
+                    editData={undefined}
+                    editDataFetchStatus={undefined}
+                />
+            )
         );
     };
 

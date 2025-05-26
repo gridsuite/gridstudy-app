@@ -10,14 +10,7 @@ import { IntlShape } from 'react-intl';
 import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import {
-    ColumnContext,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-    FilterEnumsType,
-} from '../../custom-aggrid/custom-aggrid-header.type';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 import { useEffect, useState } from 'react';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
@@ -35,31 +28,21 @@ import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
-import { convertDuration, formatNAValue } from 'components/spreadsheet/utils/equipment-table-utils';
-
-export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
-    const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
-
-    const minutes = Math.floor(durationInSeconds / 60);
-    const seconds = durationInSeconds % 60;
-
-    if (seconds === 0) {
-        return minutes + "'";
-    }
-
-    if (minutes === 0) {
-        return seconds + '"';
-    }
-
-    return minutes + "' " + seconds + '"';
-};
+import {
+    ColumnContext,
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+    FilterEnumsType,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
         : side === BranchSide.TWO
-        ? intl.formatMessage({ id: 'Side2' })
-        : undefined;
+          ? intl.formatMessage({ id: 'Side2' })
+          : undefined;
 };
 
 export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
@@ -100,19 +83,6 @@ const translatedFilterParams = {
 const numericFilterParams = {
     dataType: FILTER_DATA_TYPES.NUMBER,
     comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-};
-
-export const getIdType = (index: number): string => {
-    switch (index) {
-        case 0:
-            return 'overload';
-        case 1:
-            return 'subjectId';
-        case 2:
-            return 'connectedComponentNum';
-        default:
-            return '';
-    }
 };
 
 export const mappingFields = (index: number): Record<string, string> => {
@@ -179,11 +149,11 @@ export const useFetchFiltersEnums = (): {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetwork) {
+        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
             return;
         }
 
@@ -193,7 +163,7 @@ export const useFetchFiltersEnums = (): {
             fetchAvailableFilterEnumValues(
                 studyUuid,
                 currentNode.id,
-                currentRootNetwork,
+                currentRootNetworkUuid,
                 computingType.LOAD_FLOW,
                 filterType
             )
@@ -214,7 +184,7 @@ export const useFetchFiltersEnums = (): {
             .finally(() => {
                 setLoading(false);
             });
-    }, [loadFlowStatus, studyUuid, currentNode?.id, currentRootNetwork]);
+    }, [loadFlowStatus, studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     return { loading, result, error };
 };

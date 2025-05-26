@@ -9,9 +9,12 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Grid } from '@mui/material';
 import {
+    CreateParameterDialog,
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
+    parametersStyles,
     SubmitButton,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -22,7 +25,6 @@ import {
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
 import { fetchShortCircuitParameters } from '../../../services/short-circuit-analysis';
-import { mergeSx } from '../../utils/functions';
 import yup from '../../utils/yup-config';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -37,13 +39,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
-import CreateParameterDialog from './common/parameters-creation-dialog';
-
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
 import { AppState } from 'redux/reducer';
 import LineSeparator from '../commons/line-separator';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
-import { styles } from './parameters-style';
 import { UseGetShortCircuitParametersProps } from './use-get-short-circuit-parameters';
 
 const formSchema = yup
@@ -256,11 +255,11 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
                     <LineSeparator />
                 </Grid>
 
-                <Grid sx={styles.scrollableGrid}>
+                <Grid sx={parametersStyles.scrollableGrid}>
                     <ShortCircuitFields resetAll={resetAll} />
                 </Grid>
             </Grid>
-            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
+            <Grid container sx={mergeSx(parametersStyles.controlParametersItem, parametersStyles.marginTopButton)}>
                 <Button onClick={() => setOpenSelectParameterDialog(true)}>
                     <FormattedMessage id="settings.button.chooseSettings" />
                 </Button>
@@ -276,6 +275,7 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
                 </SubmitButton>
                 {openCreateParameterDialog && (
                     <CreateParameterDialog
+                        studyUuid={studyUuid}
                         open={openCreateParameterDialog}
                         onClose={() => setOpenCreateParameterDialog(false)}
                         parameterValues={() => getCurrentValues()}

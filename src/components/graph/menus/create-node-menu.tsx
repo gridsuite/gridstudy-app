@@ -13,13 +13,13 @@ import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
-import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
+import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
-import { type AppState, type CurrentTreeNode, type NodeSelectionForCopy } from 'redux/reducer';
+import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { NodeType } from '../tree-node.type';
+import { CurrentTreeNode, NodeType } from '../tree-node.type';
 
 type SubMenuItem = {
     onRoot: boolean;

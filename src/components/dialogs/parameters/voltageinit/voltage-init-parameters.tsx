@@ -12,6 +12,9 @@ import {
     useSnackMessage,
     CustomFormProvider,
     TreeViewFinderNodeProps,
+    mergeSx,
+    CreateParameterDialog,
+    parametersStyles,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useState } from 'react';
@@ -24,14 +27,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { updateVoltageInitParameters } from '../../../../services/study/voltage-init';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
-import CreateParameterDialog from '../common/parameters-creation-dialog';
 import {
     fromStudyVoltageInitParamsDataToFormValues,
     fromVoltageInitParametersFormToParamValues,
     fromVoltageInitParamsDataToFormValues,
 } from './voltage-init-utils';
 import { getVoltageInitParameters } from 'services/voltage-init';
-import { mergeSx } from 'components/utils/functions';
 import { GeneralParameters } from './general-parameters';
 import {
     DEFAULT_GENERAL_APPLY_MODIFICATIONS,
@@ -44,7 +45,6 @@ import {
 import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
-import { styles } from '../parameters-style';
 
 export const VoltageInitParameters = ({
     setHaveDirtyFields,
@@ -187,7 +187,7 @@ export const VoltageInitParameters = ({
                         item
                         container
                         key="voltageInitParameters"
-                        sx={mergeSx(styles.scrollableGrid, {
+                        sx={mergeSx(parametersStyles.scrollableGrid, {
                             paddingTop: 0,
                             width: '100%',
                             display: 'unset',
@@ -232,7 +232,7 @@ export const VoltageInitParameters = ({
 
                     <Grid item container>
                         <DialogActions
-                            sx={mergeSx(styles.controlParametersItem, {
+                            sx={mergeSx(parametersStyles.controlParametersItem, {
                                 paddingTop: 4,
                                 paddingBottom: 2,
                                 paddingLeft: 0,
@@ -255,6 +255,7 @@ export const VoltageInitParameters = ({
 
             {openCreateParameterDialog && (
                 <CreateParameterDialog
+                    studyUuid={studyUuid}
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={getValues}

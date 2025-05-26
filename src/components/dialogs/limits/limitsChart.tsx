@@ -87,10 +87,10 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         if (currentLimits?.permanentLimit) {
             thresholds.push({
                 name: intl.formatMessage({ id: 'IST' }),
-                value: currentLimits.permanentLimit,
+                value: currentLimits.permanentLimit ? +currentLimits.permanentLimit : currentLimits.permanentLimit,
                 acceptableDuration: null,
             });
-            maxValuePermanentLimit = currentLimits.permanentLimit;
+            maxValuePermanentLimit = currentLimits.permanentLimit ?? 0;
         }
 
         if (currentLimits?.temporaryLimits) {
@@ -105,7 +105,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     }
                     thresholds.push({
                         name: field.name,
-                        value: field.value,
+                        value: field.value ? +field.value : field.value,
                         acceptableDuration: field.acceptableDuration,
                     });
                 });
@@ -146,7 +146,7 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                     !item.acceptableDuration ||
                     (item.acceptableDuration && item.value && maxValuePermanentLimit >= item.value)
                         ? colorPermanentLimit
-                        : colors?.[colorIndex] ?? colors[colors.length - 1];
+                        : (colors?.[colorIndex] ?? colors[colors.length - 1]);
 
                 const incoherent = isIncoherent(
                     maxValuePermanentLimit,

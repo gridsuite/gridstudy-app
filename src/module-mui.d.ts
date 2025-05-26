@@ -19,7 +19,19 @@ declare module '@mui/material/styles' {
     export interface PaletteOptions extends MuiPaletteOptions, Partial<PaletteExtension> {}
 
     interface ThemeExtension {
-        aggrid: string;
+        aggrid: {
+            theme: string;
+            overlay: {
+                background: string;
+            };
+        };
+        networkModificationPanel: {
+            backgroundColor: string;
+            border: string;
+        };
+        reactflow: {
+            backgroundColor: string;
+        };
         aggridValueChangeHighlightBackgroundColor: string;
         selectedRow: {
             background: string;
@@ -44,6 +56,9 @@ declare module '@mui/material/styles' {
         };
         severityChip: {
             disabledColor: string;
+        };
+        formFiller: {
+            background: string;
         };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}

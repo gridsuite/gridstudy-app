@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, mergeSx, parametersStyles, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { GENERAL } from '../voltageinit/voltage-init-parameters-form';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
-import { mergeSx } from '../../../utils/functions';
-import { styles } from '../parameters-style';
 import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { FormattedMessage } from 'react-intl';
@@ -138,7 +136,7 @@ export const StateEstimationParameters = ({
                     item
                     container
                     key="stateEstimationParameters"
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parametersStyles.scrollableGrid, {
                         paddingTop: 0,
                         width: '100%',
                         display: 'unset',
@@ -191,7 +189,7 @@ export const StateEstimationParameters = ({
 
                 <Grid item container>
                     <DialogActions
-                        sx={mergeSx(styles.controlParametersItem, {
+                        sx={mergeSx(parametersStyles.controlParametersItem, {
                             paddingTop: 4,
                             paddingBottom: 2,
                             paddingLeft: 0,

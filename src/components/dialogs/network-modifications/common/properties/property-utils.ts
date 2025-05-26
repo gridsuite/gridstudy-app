@@ -18,7 +18,7 @@ import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export type Property = {
     [NAME]: string;
-    [VALUE]: string | null;
+    [VALUE]?: string | null;
     [PREVIOUS_VALUE]?: string | null;
     [DELETION_MARK]: boolean;
     [ADDED]: boolean;
@@ -88,9 +88,11 @@ export const copyEquipmentPropertiesForCreation = (equipmentInfos: Equipment): P
     };
 };
 
-export function getConcatenatedProperties(equipment: Equipment, getValues: (name: string) => any): any {
+export function getConcatenatedProperties(equipment: Equipment, getValues: (name: string) => any, id?: string): any {
     // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
-    const modificationProperties = getValues(ADDITIONAL_PROPERTIES);
+
+    const path = id ? `${id}.${ADDITIONAL_PROPERTIES}` : `${ADDITIONAL_PROPERTIES}`;
+    const modificationProperties = getValues(path);
     return mergeModificationAndEquipmentProperties(modificationProperties, equipment);
 }
 

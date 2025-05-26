@@ -11,17 +11,17 @@ import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
-import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { StatusCellRender } from '../common/result-cell-renderers';
+import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
-import RunningStatus from '../../utils/running-status';
 import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
+import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 const styles = {
     loader: {
@@ -50,29 +50,31 @@ const DynamicSecurityAnalysisResultSynthesis = memo(
     ({ nodeUuid, studyUuid, currentRootNetworkUuid }: DynamicSecurityAnalysisResultSynthesisProps) => {
         const intl = useIntl();
 
-        const [result, isLoading] = useNodeData(
+        const { result, isLoading } = useNodeData({
             studyUuid,
             nodeUuid,
-            currentRootNetworkUuid,
-            fetchDynamicSecurityAnalysisStatus,
-            dynamicSecurityAnalysisResultInvalidations,
-            null,
-            (status: RunningStatus) =>
-                status && [
-                    {
-                        status,
-                    },
-                ]
-        );
+            rootNetworkUuid: currentRootNetworkUuid,
+            fetcher: fetchDynamicSecurityAnalysisStatus,
+            invalidations: dynamicSecurityAnalysisResultInvalidations,
+            resultConverter: (status: string | null) => {
+                return status === null
+                    ? undefined
+                    : [
+                          {
+                              [COL_STATUS]: status,
+                          },
+                      ];
+            },
+        });
 
         const columnDefs = useMemo(
             () => [
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
-                        id: 'status',
+                        id: COL_STATUS,
                     }),
-                    colId: 'status',
-                    field: 'status',
+                    colId: COL_STATUS,
+                    field: COL_STATUS,
                     width: MEDIUM_COLUMN_WIDTH,
                     cellRenderer: StatusCellRender,
                 }),
@@ -105,6 +107,7 @@ const DynamicSecurityAnalysisResultSynthesis = memo(
                     defaultColDef={defaultColDef}
                     overlayNoRowsTemplate={overlayMessage}
                     enableCellTextSelection
+                    overrideLocales={AGGRID_LOCALES}
                 />
             </>
         );

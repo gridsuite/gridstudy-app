@@ -17,18 +17,20 @@ import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResult
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState, CurrentTreeNode } from '../redux/reducer';
+import { AppState } from '../redux/reducer';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { usePrevious } from './utils/utils';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
+import { usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { IService } from './result-view-tab.type';
+import { CurrentTreeNode } from './graph/tree-node.type';
 
 const styles = {
     table: {
@@ -51,13 +53,6 @@ interface IResultViewTabProps {
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
     view: string;
-}
-
-export interface IService {
-    id: string;
-    computingType: ComputingType[];
-    displayed: boolean;
-    renderResult: React.ReactNode;
 }
 
 /**

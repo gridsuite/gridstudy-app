@@ -8,8 +8,8 @@ import React, { FunctionComponent, SyntheticEvent, useCallback, useEffect, useSt
 import { Autocomplete, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
-import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
 
 export interface CustomAggridAutocompleteFilterParams extends CustomAggridFilterParams {
     getOptionLabel?: (value: string) => string; // Used for translation of enum values in the filter
@@ -29,15 +29,23 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
 
     const getUniqueValues = useCallback(() => {
         const uniqueValues = new Set<string>();
+        let allNumbers = true;
         api.forEachNode((node) => {
             const value = api.getCellValue({
                 rowNode: node,
                 colKey: colId,
             });
-            if (value) {
+            if (value !== undefined && value !== null && value !== '') {
                 uniqueValues.add(value);
+                if (allNumbers && isNaN(Number(value))) {
+                    allNumbers = false;
+                }
             }
         });
+        // sort the values if they are all numbers
+        if (allNumbers) {
+            return Array.from(uniqueValues).sort((a, b) => Number(a) - Number(b));
+        }
         return Array.from(uniqueValues);
     }, [api, colId]);
 
@@ -56,7 +64,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
             multiple
             value={Array.isArray(selectedFilterData) ? selectedFilterData : []}
             options={computedFilterOptions}
-            getOptionLabel={getOptionLabel}
+            getOptionLabel={(option) => String(getOptionLabel ? getOptionLabel(option) : option)}
             onChange={handleFilterAutoCompleteChange}
             size="small"
             disableCloseOnSelect

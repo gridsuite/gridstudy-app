@@ -6,7 +6,7 @@
  */
 
 import { backendFetchJson } from '@gridsuite/commons-ui';
-import { SpreadsheetConfig } from 'components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetCollectionDto, SpreadsheetConfigDto } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { UUID } from 'crypto';
 
 const PREFIX_STUDY_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study-config';
@@ -15,11 +15,7 @@ function getSpreadsheetConfigUrl() {
     return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-configs`;
 }
 
-function getSpreadsheetConfigsCollectionsUrl() {
-    return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-config-collections`;
-}
-
-export function getSpreadsheetModel(spreadsheetModelUuid: UUID) {
+export function getSpreadsheetModel(spreadsheetModelUuid: UUID): Promise<SpreadsheetConfigDto> {
     const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}`;
     return backendFetchJson(fetchUrl, {
         method: 'GET',
@@ -29,53 +25,14 @@ export function getSpreadsheetModel(spreadsheetModelUuid: UUID) {
     });
 }
 
-export function createSpreadsheetColumn(spreadsheetModelUuid: UUID, column: any) {
-    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns`;
-    return backendFetchJson(fetchUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(column),
-    });
+function getSpreadsheetConfigsCollectionsUrl() {
+    return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/spreadsheet-config-collections`;
 }
 
-export function deleteSpreadsheetColumn(spreadsheetModelUuid: UUID, columnUuid: UUID) {
-    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns/${columnUuid}`;
+export function getSpreadsheetConfigCollection(collectionUuid: UUID): Promise<SpreadsheetCollectionDto> {
+    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}`;
     return backendFetchJson(fetchUrl, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-}
-
-export function updateSpreadsheetColumn(spreadsheetModelUuid: UUID, columnUuid: UUID, column: any) {
-    const fetchUrl = `${getSpreadsheetConfigUrl()}/${spreadsheetModelUuid}/columns/${columnUuid}`;
-    return backendFetchJson(fetchUrl, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(column),
-    });
-}
-
-export function addSpreadsheetConfigToCollection(collectionUuid: UUID, spreadsheetModel: SpreadsheetConfig) {
-    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/spreadsheet-configs`;
-    return backendFetchJson(fetchUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(spreadsheetModel),
-    });
-}
-
-export function removeSpreadsheetConfigFromCollection(collectionUuid: UUID, spreadsheetModelUuid: UUID) {
-    const fetchUrl = `${getSpreadsheetConfigsCollectionsUrl()}/${collectionUuid}/spreadsheet-configs/${spreadsheetModelUuid}`;
-    return backendFetchJson(fetchUrl, {
-        method: 'DELETE',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -86,7 +43,7 @@ function getNetworkVisualizationsParametersUrl() {
     return `${PREFIX_STUDY_CONFIG_QUERIES}/v1/network-visualizations-params`;
 }
 
-export function fetchNetworkVisualizationsParameters(paramsUuid: UUID) {
+export function getNetworkVisualizationsParameters(paramsUuid: UUID) {
     const fetchUrl = `${getNetworkVisualizationsParametersUrl()}/${paramsUuid}`;
     return backendFetchJson(fetchUrl, {
         method: 'GET',

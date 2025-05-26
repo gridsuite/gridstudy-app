@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    mergeSx,
+    MuiSelectInput,
+    parametersStyles,
+    SubmitButton,
+    UseParametersBackendReturnProps,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -44,43 +52,22 @@ import {
     STAGES_DEFINITION_INDEX,
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
 import { setNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import {
-    UseGetNonEvacuatedEnergyParametersReturnProps,
-    getContingenciesFormSchema,
+    formSchema,
     getContingenciesParams,
-    getGenerationStagesDefinitionFormSchema,
     getGenerationStagesDefinitionParams,
-    getGenerationStagesSelectionFormSchema,
     getGenerationStagesSelectionParams,
-    getGeneratorsCappingsFormSchema,
     getGeneratorsCappingsParams,
-    getMonitoredBranchesFormSchema,
     getMonitoredBranchesParams,
+    NonEvacuatedEnergyParametersForm,
+    UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
-import { mergeSx } from 'components/utils/functions';
 import ComputingType from '../../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
-import { UseParametersBackendReturnProps } from '../parameters.type';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
-import { styles } from '../parameters-style';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        ...getGenerationStagesDefinitionFormSchema(),
-        ...getGenerationStagesSelectionFormSchema(),
-        ...getGeneratorsCappingsFormSchema(),
-        ...getMonitoredBranchesFormSchema(),
-        ...getContingenciesFormSchema(),
-    })
-    .required();
-
-export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
@@ -93,7 +80,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
 }) => {
     const { snackError } = useSnackMessage();
 
-    const [providers, provider, updateProvider, resetProvider] = parametersBackend;
+    const [providers, provider, , updateProvider, resetProvider] = parametersBackend;
 
     const emptyFormData = useMemo(() => {
         return {
@@ -313,20 +300,20 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                     indexPmax1 === 0
                         ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax1 === 1
-                        ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
                 const valPmax2 =
                     indexPmax2 === 0
                         ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax2 === 1
-                        ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
                 const valPmax3 =
                     indexPmax3 === 0
                         ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_1]
                         : indexPmax3 === 1
-                        ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
-                        : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
+                          ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
+                          : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
                 let stageSelection = {
                     [ACTIVATED]: true,
                     [NAME]:
@@ -389,22 +376,22 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     return (
         <>
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid container spacing={1} paddingTop={1}>
-                    <Grid item xs={8} sx={styles.parameterName}>
-                        <FormattedMessage id="Provider" />
+                <Grid container key="nonEvacuatedEnergyParameters" sx={{ height: '100%' }} direction="column">
+                    <Grid container spacing={1} paddingTop={1}>
+                        <Grid item xs={8} sx={parametersStyles.parameterName}>
+                            <FormattedMessage id="Provider" />
+                        </Grid>
+                        <Grid item xs={4} sx={parametersStyles.controlItem}>
+                            <MuiSelectInput
+                                fullWidth
+                                name={PROVIDER}
+                                size="small"
+                                options={Object.values(providers).map((provider) => {
+                                    return { id: provider, label: provider };
+                                })}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={4} sx={styles.controlItem}>
-                        <MuiSelectInput
-                            fullWidth
-                            name={PROVIDER}
-                            size="small"
-                            options={Object.values(providers).map((provider) => {
-                                return { id: provider, label: provider };
-                            })}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid container sx={styles.scrollableGrid} key="nonEvacuatedEnergyParameters">
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
@@ -412,22 +399,21 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                         onFormChanged={onFormChanged}
                         onChangeParams={onChangeParams}
                     />
-                </Grid>
-
-                <Grid item container>
-                    <DialogActions
-                        sx={mergeSx(styles.controlParametersItem, {
-                            paddingLeft: 0,
-                            paddingBottom: 2,
-                        })}
-                    >
-                        <Button onClick={clear}>
-                            <FormattedMessage id="resetToDefault" />
-                        </Button>
-                        <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined">
-                            <FormattedMessage id="validate" />
-                        </SubmitButton>
-                    </DialogActions>
+                    <Grid item container>
+                        <DialogActions
+                            sx={mergeSx(parametersStyles.controlParametersItem, {
+                                paddingLeft: 0,
+                                paddingBottom: 2,
+                            })}
+                        >
+                            <Button onClick={clear}>
+                                <FormattedMessage id="resetToDefault" />
+                            </Button>
+                            <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </DialogActions>
+                    </Grid>
                 </Grid>
             </CustomFormProvider>
         </>

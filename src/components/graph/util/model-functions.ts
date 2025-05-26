@@ -6,9 +6,16 @@
  */
 
 import { UUID } from 'crypto';
-import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
-import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
+import { BUILD_STATUS } from '../../network/constants';
+import type NetworkModificationTreeModel from '../network-modification-tree-model';
+import {
+    CurrentTreeNode,
+    NetworkModificationNodeData,
+    NodeType,
+    ReactFlowModificationNodeData,
+    ReactFlowRootNodeData,
+    RootNodeData,
+} from '../tree-node.type';
 
 export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
     if (isModificationNode(node)) {
@@ -78,10 +85,6 @@ export function getFirstNodeOfType(
     );
 }
 
-export function isNetworkModificationNode(n: NetworkModificationNodeData | RootNodeData): boolean {
-    return 'nodeBuildStatus' in n;
-}
-
 // Recursive search of a node of type and buildStatus specified
 export function recursiveSearchFirstNodeOfType(
     element: NetworkModificationNodeData | RootNodeData,
@@ -116,6 +119,10 @@ export function isNodeReadOnly(node: CurrentTreeNode | null) {
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
+export function isStatusBuilt(status: BUILD_STATUS | undefined) {
+    return status?.startsWith('BUILT');
+}
+
 export function isNodeBuilt(node: CurrentTreeNode | null) {
     if (!node) {
         return false;
@@ -123,7 +130,7 @@ export function isNodeBuilt(node: CurrentTreeNode | null) {
     if (node.type === NodeType.ROOT) {
         return true;
     }
-    return node.data?.globalBuildStatus?.startsWith('BUILT');
+    return isStatusBuilt(node.data?.globalBuildStatus);
 }
 
 export function isSameNode(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {

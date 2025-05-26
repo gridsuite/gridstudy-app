@@ -6,12 +6,16 @@
  */
 
 import {
+    CreateParameterDialog,
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    mergeSx,
     MuiSelectInput,
+    parametersStyles,
     SubmitButton,
     TreeViewFinderNodeProps,
+    UseParametersBackendReturnProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
@@ -47,7 +51,6 @@ import {
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
 } from '../../../utils/field-constants';
-import yup from '../../../utils/yup-config';
 import {
     fetchSensitivityAnalysisParameters,
     getSensitivityAnalysisFactorsCount,
@@ -56,49 +59,25 @@ import {
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import {
+    formSchema,
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
-    getSensiHVDCsFormSchema,
     getSensiInjectionsformatNewParams,
-    getSensiInjectionsFormSchema,
     getSensiInjectionsSetformatNewParams,
-    getSensiInjectionsSetFormSchema,
     getSensiNodesformatNewParams,
-    getSensiNodesFormSchema,
     getSensiPstformatNewParams,
-    getSensiPSTsFormSchema,
     IRowNewParams,
+    SensitivityAnalysisParametersFormSchema,
 } from './utils';
-import { mergeSx } from 'components/utils/functions';
-import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
 import ComputingType from 'components/computing-status/computing-type';
-import { UseParametersBackendReturnProps } from '../parameters.type';
-import { styles } from '../parameters-style';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
     setHaveDirtyFields: any;
 }
-
-const formSchema = yup
-    .object()
-    .shape({
-        [PROVIDER]: yup.string().required(),
-        [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: yup.number().required(),
-        ...getSensiInjectionsSetFormSchema(),
-        ...getSensiInjectionsFormSchema(),
-        ...getSensiHVDCsFormSchema(),
-        ...getSensiPSTsFormSchema(),
-        ...getSensiNodesFormSchema(),
-    })
-    .required();
-
-export type SensitivityAnalysisParametersFormSchema = yup.InferType<typeof formSchema>;
 
 const numberMax = 500000;
 
@@ -112,7 +91,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] = useState(0);
-    const [providers, , , , params, updateParameters] = parametersBackend;
+    const [providers, , , , , params, , updateParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
 
@@ -143,7 +122,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] = useState(params);
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
@@ -520,10 +499,10 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid container sx={{ height: '100%' }} justifyContent="space-between">
                     <Grid item container>
-                        <Grid item xs={8} xl={4} sx={styles.parameterName}>
+                        <Grid item xs={8} xl={4} sx={parametersStyles.parameterName}>
                             <FormattedMessage id="Provider" />
                         </Grid>
-                        <Grid item xs={4} xl={2} sx={styles.controlItem}>
+                        <Grid item xs={4} xl={2} sx={parametersStyles.controlItem}>
                             <MuiSelectInput name={PROVIDER} size="small" options={Object.values(formattedProviders)} />
                         </Grid>
                     </Grid>
@@ -531,7 +510,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                         xs
                         item
                         container
-                        sx={mergeSx(styles.scrollableGrid, {
+                        sx={mergeSx(parametersStyles.scrollableGrid, {
                             paddingTop: 0,
                             display: 'unset',
                         })}
@@ -556,7 +535,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
 
                     <Grid item container>
                         <DialogActions
-                            sx={mergeSx(styles.controlParametersItem, {
+                            sx={mergeSx(parametersStyles.controlParametersItem, {
                                 paddingLeft: 0,
                                 paddingBottom: 2,
                             })}
@@ -583,6 +562,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             </CustomFormProvider>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
+                    studyUuid={studyUuid}
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => formatNewParams(getValues())}

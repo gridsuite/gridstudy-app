@@ -15,8 +15,7 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { mergeSx } from '../utils/functions';
-import { convertInputValue, FieldType, useDebounce } from '@gridsuite/commons-ui';
+import { convertInputValue, FieldType, mergeSx, useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCells: {
@@ -29,7 +28,7 @@ const styles = {
 
 const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, equipmentType, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);

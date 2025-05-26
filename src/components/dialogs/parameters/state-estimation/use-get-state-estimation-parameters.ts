@@ -12,14 +12,14 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import ComputingType from '../../../computing-status/computing-type';
-import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { UUID } from 'crypto';
 import { StateEstimationParameters } from './state-estimation-parameters-utils';
 import { getStateEstimationStudyParameters } from '../../../../services/study/state-estimation';
+import { isComputationParametersUpdated } from '../use-parameters-notification';
 
 export type UseGetStateEstimationParametersProps = [
     StateEstimationParameters | null,
-    Dispatch<SetStateAction<StateEstimationParameters | null>>
+    Dispatch<SetStateAction<StateEstimationParameters | null>>,
 ];
 
 export const useGetStateEstimationParameters = (): UseGetStateEstimationParametersProps => {

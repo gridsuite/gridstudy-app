@@ -12,9 +12,9 @@ import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
-import { DynamicSimulationForm } from './dynamic-simulation-parameters';
 import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
 import { Solver } from './dynamic-simulation-utils';
+import { DynamicSimulationForm } from './dynamic-simulation.type';
 
 interface SolverParametersProps {
     solver?: { solverId: string; solvers: Record<string, any>[] };

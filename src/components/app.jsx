@@ -12,14 +12,16 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
+    AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    useSnackMessage,
+    NotificationsUrlKeys,
     useNotificationsListener,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -35,33 +37,46 @@ import {
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
-import { fetchValidateUser } from '../services/user-admin';
 import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
+    addFilterForNewSpreadsheet,
+    attemptLeaveParametersTab,
     initTableDefinitions,
+    renameTableDefinition,
+    saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
     selectLanguage,
     selectTheme,
     selectUseName,
+    setAppTabIndex,
     setOptionalServices,
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
+    updateTableColumns,
 } from '../redux/actions';
-import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
-import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config.ts';
-import { StudyView } from './utils/utils';
+import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
+import { STUDY_VIEWS, StudyView } from './utils/utils';
+import { NotificationType } from '../redux/reducer';
+import {
+    getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
+    getSpreadsheetModel,
+} from '../services/study-config';
+import {
+    extractColumnsFilters,
+    mapColumnsDto,
+    processSpreadsheetsCollectionData,
+} from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
-
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
 const App = () => {
     const { snackError } = useSnackMessage();
 
+    const appTabIndex = useSelector((state) => state.appTabIndex);
     const user = useSelector((state) => state.user);
     const studyUuid = useSelector((state) => state.studyUuid);
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
@@ -75,8 +90,6 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
-
-    const [tabIndex, setTabIndex] = useState(0);
 
     const updateNetworkVisualizationsParams = useCallback(
         (params) => {
@@ -134,8 +147,80 @@ const App = () => {
         [snackError, updateParams]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
+    useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: updateConfig,
+    });
+
+    const resetTableDefinitions = useCallback(
+        (collection) => {
+            const { tablesFilters, tableGlobalFilters, tableDefinitions } =
+                processSpreadsheetsCollectionData(collection);
+            dispatch(initTableDefinitions(collection.id, tableDefinitions, tablesFilters, tableGlobalFilters));
+        },
+        [dispatch]
+    );
+
+    const updateSpreadsheetTabOnNotification = useCallback(
+        (configUuid) => {
+            console.debug('Update spreadsheet tab on notification', configUuid);
+            getSpreadsheetModel(configUuid)
+                .then((model) => {
+                    const tabUuid = model.id;
+                    const formattedColumns = mapColumnsDto(model.columns);
+                    const columnsFilters = extractColumnsFilters(model.columns);
+                    const formattedGlobalFilters = model.globalFilters ?? [];
+                    dispatch(renameTableDefinition(tabUuid, model.name));
+                    dispatch(updateTableColumns(tabUuid, formattedColumns));
+                    dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
+                    dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
+                })
+                .catch((error) => {
+                    console.error(error);
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
+                    });
+                });
+        },
+        [dispatch, snackError]
+    );
+
+    const updateSpreadsheetCollectionOnNotification = useCallback(
+        (collectionUuid) => {
+            console.debug('Reset spreadsheet collection on notification', collectionUuid);
+            getSpreadsheetConfigCollectionFromId(collectionUuid)
+                .then((collection) => {
+                    resetTableDefinitions(collection);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error,
+                        headerId: 'spreadsheet/create_new_spreadsheet/error_loading_collection',
+                    });
+                });
+        },
+        [resetTableDefinitions, snackError]
+    );
+
+    const onSpreadsheetNotification = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (eventData.headers.studyUuid !== studyUuid) {
+                return;
+            }
+            if (eventData.headers.updateType === NotificationType.SPREADSHEET_TAB_UPDATED) {
+                const configUuid = eventData.payload;
+                updateSpreadsheetTabOnNotification(configUuid);
+            } else if (eventData.headers.updateType === NotificationType.SPREADSHEET_COLLECTION_UPDATED) {
+                const collectionUuid = eventData.payload;
+                updateSpreadsheetCollectionOnNotification(collectionUuid);
+            }
+        },
+        [studyUuid, updateSpreadsheetCollectionOnNotification, updateSpreadsheetTabOnNotification]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: onSpreadsheetNotification,
     });
 
     // Can't use lazy initializer because useRouteMatch is a hook
@@ -171,7 +256,6 @@ const App = () => {
                         dispatch,
                         initialMatchSilentRenewCallbackUrl != null,
                         fetchIdpSettings,
-                        fetchValidateUser,
                         initialMatchSigninCallbackUrl != null
                     ),
                     error: null,
@@ -210,26 +294,8 @@ const App = () => {
                 });
             });
 
-            const mapColumns = (columns) => {
-                return columns.map((column) => {
-                    return {
-                        ...column,
-                        dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
-                    };
-                });
-            };
-
-            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((config) => {
-                const tableDefinitions = config.spreadsheetConfigs.map((spreadsheetConfig, index) => {
-                    return {
-                        uuid: spreadsheetConfig.id,
-                        index: index,
-                        name: spreadsheetConfig.name,
-                        columns: mapColumns(spreadsheetConfig.columns),
-                        type: spreadsheetConfig.sheetType,
-                    };
-                });
-                dispatch(initTableDefinitions(config.id, tableDefinitions));
+            const fetchSpreadsheetConfigPromise = getSpreadsheetConfigCollection(studyUuid).then((collection) => {
+                resetTableDefinitions(collection);
             });
 
             const fetchOptionalServices = getOptionalServices()
@@ -286,11 +352,21 @@ const App = () => {
                     })
                 );
         }
-    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams]);
+    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams, resetTableDefinitions]);
 
-    const onChangeTab = useCallback((newTabIndex) => {
-        setTabIndex(newTabIndex);
-    }, []);
+    const onChangeTab = useCallback(
+        (newTabIndex) => {
+            const parametersTabIndex = STUDY_VIEWS.indexOf(StudyView.PARAMETERS);
+
+            //check if we are leaving the parameters tab
+            if (appTabIndex === parametersTabIndex && newTabIndex !== parametersTabIndex) {
+                dispatch(attemptLeaveParametersTab(newTabIndex));
+            } else {
+                dispatch(setAppTabIndex(newTabIndex));
+            }
+        },
+        [dispatch, appTabIndex]
+    );
 
     return (
         <div
@@ -300,7 +376,8 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
+            <AppTopBar user={user} onChangeTab={onChangeTab} userManager={userManager} />
+            <AnnouncementNotification user={user} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
@@ -322,7 +399,7 @@ const App = () => {
                         <Routes>
                             <Route
                                 path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+                                element={<StudyContainer view={STUDY_VIEWS[appTabIndex]} onChangeTab={onChangeTab} />}
                             />
                             <Route
                                 path="/sign-in-callback"

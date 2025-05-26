@@ -42,17 +42,13 @@ export const PowerWithValidityForm: FunctionComponent<MeasurementProps> = ({ id,
             name={`${id}.${VALIDITY}`}
             label="ValidMeasurement"
             previousValue={previousValidityField}
-            id={undefined}
-            formProps={undefined}
         />
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <GridItem size={6}>{valueField}</GridItem>
-                <GridItem size={6}>{validityField}</GridItem>
-            </Grid>
-        </>
+        <Grid container spacing={2}>
+            <GridItem size={6}>{valueField}</GridItem>
+            <GridItem size={6}>{validityField}</GridItem>
+        </Grid>
     );
 };

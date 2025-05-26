@@ -7,22 +7,7 @@
 
 import { IntlShape } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import {
-    STATEESTIMATION_QUALITY_CRITERION,
-    STATEESTIMATION_QUALITY_PER_REGION,
-} from '../../../utils/store-sort-filter-fields';
-
-export const mappingTabs = (index: number): string => {
-    switch (index) {
-        case 1:
-            return STATEESTIMATION_QUALITY_CRITERION;
-        case 2:
-            return STATEESTIMATION_QUALITY_PER_REGION;
-        default:
-            return '';
-    }
-};
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
 
 export const stateEstimationQualityCriterionColumnsDefinition = (intl: IntlShape): ColDef[] => {
     return [

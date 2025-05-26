@@ -5,9 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const SUBSTATION_RADIUS = 500;
-export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
-export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 export const FORM_LOADING_DELAY = 200;
 export const RESULTS_LOADING_DELAY = 500;
 
@@ -80,11 +77,11 @@ export const CONNECTION_DIRECTIONS = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
-export function getEnergySourceLabel(energySourceId: string) {
+export function getEnergySourceLabel(energySourceId?: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
-export function getConnectionDirectionLabel(connectionDirectionId: string) {
+export function getConnectionDirectionLabel(connectionDirectionId: string | null | undefined) {
     if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
         return 'Undefined';
     }
@@ -164,13 +161,22 @@ export const SWITCH_TYPE = {
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 } as const;
 
-export const VSC_CONVERTER_MODE = {
-    SIDE_1_RECTIFIER_SIDE_2_INVERTER: {
+export enum VscConverterMode {
+    SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
+    SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
+}
+export interface VscConverterModeValue {
+    id: string;
+    label: string;
+}
+
+export const VSC_CONVERTER_MODE: Record<VscConverterMode, VscConverterModeValue> = {
+    [VscConverterMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER]: {
         id: 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
         label: 'side1RectifierSide2Inverter',
     },
-    SIDE_1_INVERTER_SIDE_2_RECTIFIER: {
+    [VscConverterMode.SIDE_1_INVERTER_SIDE_2_RECTIFIER]: {
         id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
         label: 'side1InverterSide2Rectifier',
     },
-} as const;
+};
