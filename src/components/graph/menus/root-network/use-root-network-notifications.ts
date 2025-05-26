@@ -19,14 +19,10 @@ import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 
 type UseRootNetworkNotificationsProps = {
-    setIsRootNetworksProcessing?: React.Dispatch<SetStateAction<boolean>>;
-    resetSearch?: () => void;
+    setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
 };
 
-export const useRootNetworkNotifications = ({
-    setIsRootNetworksProcessing,
-    resetSearch,
-}: UseRootNetworkNotificationsProps) => {
+export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: UseRootNetworkNotificationsProps) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -41,7 +37,7 @@ export const useRootNetworkNotifications = ({
 
                     // This is used to hide the loader for creation, update and deletion of the root networks.
                     // All the root networks must be fully established before the loader can be safely removed.
-                    if (res.every((network) => !network.isCreating) && setIsRootNetworksProcessing) {
+                    if (res.every((network) => !network.isCreating)) {
                         setIsRootNetworksProcessing(false);
                     }
                 })
@@ -58,10 +54,9 @@ export const useRootNetworkNotifications = ({
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
                 doFetchRootNetworks();
-                resetSearch?.();
             }
         },
-        [doFetchRootNetworks, resetSearch]
+        [doFetchRootNetworks]
     );
 
     const rootNetworksUpdateFailedNotification = useCallback(
@@ -100,42 +95,9 @@ export const useRootNetworkNotifications = ({
                 if (newSelectedRootNetwork) {
                     dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
                 }
-                resetSearch?.();
             }
         },
-        [currentRootNetworkUuid, dispatch, rootNetworks, resetSearch]
-    );
-
-    const handleBuildNodeNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-
-            if (
-                updateTypeHeader === NotificationType.BUILD_COMPLETED ||
-                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED
-            ) {
-                resetSearch?.();
-            }
-        },
-        [resetSearch]
-    );
-
-    const handleNodeNetworkModificationNotification = useCallback(
-        (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-
-            if (
-                updateTypeHeader === NotificationType.DELETE_FINISHED ||
-                updateTypeHeader === NotificationType.UPDATE_FINISHED
-            ) {
-                resetSearch?.();
-            }
-        },
-        [resetSearch]
+        [currentRootNetworkUuid, dispatch, rootNetworks]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
@@ -146,11 +108,5 @@ export const useRootNetworkNotifications = ({
     });
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworkDeletionStartedNotification,
-    });
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: handleBuildNodeNotification,
-    });
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: handleNodeNetworkModificationNotification,
     });
 };

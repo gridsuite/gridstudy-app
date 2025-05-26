@@ -13,12 +13,12 @@ import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import { useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
-import { useRootNetworkNotifications } from './use-root-network-notifications';
 import { RootNetworkSearchResults } from './root-network-search-results';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { getModifications } from '../../../../services/root-network';
+import { useRootNetworkSearchNotifications } from './use-root-network-search-notifications';
 
 const styles = {
     root: (theme: Theme) => ({
@@ -68,9 +68,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
         setIsSearchActive(false);
     }, [resetSearch, setIsSearchActive]);
 
-    //reset the search result for : build/unbuild, root network update, create and update modifications.
-    //The current behavior is subject to change in future user stories.
-    useRootNetworkNotifications({
+    useRootNetworkSearchNotifications({
         resetSearch,
     });
 
@@ -194,7 +192,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
                     {getResultsCount(reorderedResults)}{' '}
                     {intl.formatMessage({
                         id: 'rootNetwork.result',
-                    })+ `${getResultsCount(results) > 1 ? 's' : ''}`}
+                    }) + `${getResultsCount(results) > 1 ? 's' : ''}`}
                 </Typography>
             )}
             {isLoading && (

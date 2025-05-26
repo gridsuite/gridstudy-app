@@ -329,7 +329,6 @@ export enum NotificationType {
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
     UPDATE_FINISHED = 'UPDATE_FINISHED',
     DELETE_FINISHED = 'DELETE_FINISHED',
-    NODE_RENAMED = 'nodeRenamed',
 }
 
 export enum RootNetworkIndexationStatus {
@@ -412,6 +411,20 @@ export interface RootNetworksDeletionStartedEventData {
 export interface RootNetworksUpdatedEventData {
     headers: RootNetworksUpdatedEventDataHeaders;
     payload: undefined;
+}
+export interface NodeUpdatedEventData {
+    headers: NodeUpdatedEventDataHeader;
+    payload: undefined;
+}
+
+interface NodeUpdatedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    timestamp: number;
+    nodes?: UUID[];
+    node?: UUID;
+    substationsIds: string;
+    rootNetworkUuid: UUID;
 }
 
 // Notification types

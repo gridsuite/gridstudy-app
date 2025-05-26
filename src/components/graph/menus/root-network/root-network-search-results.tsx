@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Divider, Typography } from '@mui/material';
-import { DeviceHubIcon, useModificationLabelComputer } from '@gridsuite/commons-ui';
-import { Modification, ModificationsSearchResult } from './root-network.types';
+import { DeviceHubIcon } from '@gridsuite/commons-ui';
+import { ModificationsSearchResult } from './root-network.types';
 import { useCallback } from 'react';
-import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
+import { ModificationResults } from './root-network-modification-results';
 
 const styles = {
     container: {
@@ -30,40 +30,6 @@ const styles = {
 interface RootNetworkSearchResultsProps {
     results: ModificationsSearchResult[];
 }
-interface ModificationResultsProps {
-    modifications: Modification[];
-}
-
-const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications }) => {
-    const intl = useIntl();
-    const { computeLabel } = useModificationLabelComputer();
-
-    const getModificationLabel = useCallback(
-        (modification?: Modification): React.ReactNode => {
-            if (!modification) {
-                return '';
-            }
-
-            return intl.formatMessage(
-                { id: 'network_modifications.' + modification.messageType },
-                {
-                    // @ts-ignore
-                    ...computeLabel(modification),
-                }
-            );
-        },
-        [computeLabel, intl]
-    );
-    return (
-        <>
-            {modifications.map((modification, key) => (
-                <Typography key={modification.impactedEquipmentId + modification.modificationUuid} variant="body2">
-                    <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
-                </Typography>
-            ))}
-        </>
-    );
-};
 
 export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> = ({ results }) => {
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
