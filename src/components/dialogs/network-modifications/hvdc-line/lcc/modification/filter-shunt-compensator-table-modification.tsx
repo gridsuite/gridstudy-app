@@ -119,8 +119,7 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
                     name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
                     label=""
                     nullDisabled={false}
-                    disabled={deletionMark}
-                    sx={{ marginLeft: '50%', marginRight: '50%' }}
+                    formProps={{ disabled: deletionMark, sx: { marginLeft: '50%', marginRight: '50%' } }}
                 />
             )}
         </TableCell>
