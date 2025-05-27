@@ -52,6 +52,9 @@ export const resultsGlobalFilterStyles = {
             zIndex: 30,
             width: 'auto',
         },
+        '.MuiInputBase-root': {
+            position: 'relative',
+        },
     }),
     // from the expanded part :
     dropdown: () => ({
