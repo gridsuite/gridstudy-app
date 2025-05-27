@@ -324,6 +324,10 @@ export enum NotificationType {
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
+    BUILD_COMPLETED = 'buildCompleted',
+    NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    UPDATE_FINISHED = 'UPDATE_FINISHED',
+    DELETE_FINISHED = 'DELETE_FINISHED',
 }
 
 export enum RootNetworkIndexationStatus {
@@ -406,6 +410,20 @@ export interface RootNetworksDeletionStartedEventData {
 export interface RootNetworksUpdatedEventData {
     headers: RootNetworksUpdatedEventDataHeaders;
     payload: undefined;
+}
+export interface NodeUpdatedEventData {
+    headers: NodeUpdatedEventDataHeader;
+    payload: undefined;
+}
+
+interface NodeUpdatedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    timestamp: number;
+    nodes?: UUID[];
+    node?: UUID;
+    substationsIds: string;
+    rootNetworkUuid: UUID;
 }
 
 // Notification types
