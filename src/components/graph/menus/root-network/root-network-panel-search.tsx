@@ -190,11 +190,10 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             </Box>
             {!isLoading && searchTerm.trim() !== '' && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {getResultsCount(reorderedResults)}{' '}
                     <FormattedMessage
                         id={'rootNetwork.results'}
                         values={{
-                            several: getResultsCount(results) > 1 ? 's' : '',
+                            count: getResultsCount(results),
                         }}
                     />
                 </Typography>

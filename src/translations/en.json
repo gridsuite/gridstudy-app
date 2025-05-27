@@ -1472,7 +1472,7 @@
     "rootNetwork.modificationsInfos": "Only modifications in built nodes and their parent nodes will appear in the results.",
     "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
     "rootNetwork.modificationTab": "Modifications",
-    "rootNetwork.results": "result{several}",
+    "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
