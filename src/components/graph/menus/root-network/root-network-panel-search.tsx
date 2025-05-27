@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
 import { RootNetworkSearchResults } from './root-network-search-results';
 import { UUID } from 'crypto';
@@ -91,10 +91,10 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
     const searchMatchingElements = useCallback(
         (newSearchTerm: string) => {
             if (newSearchTerm === '' || newSearchTerm?.length === 0) {
+                setIsLoading(false);
                 setResults([]);
                 return;
             }
-            setIsLoading(true);
             if (studyUuid && currentRootNetworkUuid) {
                 getModifications(studyUuid, currentRootNetworkUuid, newSearchTerm)
                     .then((results: ModificationsSearchResult[]) => {
@@ -134,6 +134,7 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
     const handleOnChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.target.value;
+            setIsLoading(true);
             debouncedHandleChange(value);
             setSearchTerm(value);
         },
@@ -190,9 +191,12 @@ const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActi
             {!isLoading && searchTerm.trim() !== '' && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
                     {getResultsCount(reorderedResults)}{' '}
-                    {intl.formatMessage({
-                        id: getResultsCount(results) > 1 ? 'rootNetwork.results' : 'rootNetwork.result',
-                    })}
+                    <FormattedMessage
+                        id={'rootNetwork.results'}
+                        values={{
+                            several: getResultsCount(results) > 1 ? 's' : '',
+                        }}
+                    />
                 </Typography>
             )}
             {isLoading && (
