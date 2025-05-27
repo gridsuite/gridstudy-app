@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { Grid } from '@mui/material';
-import { FloatInput, IntegerInput } from '@gridsuite/commons-ui';
+import { FloatInput, IntegerInput, SelectInput } from '@gridsuite/commons-ui';
 
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
@@ -14,11 +14,26 @@ import CountriesAutocomplete from './countries-autocomplete';
 import {
     BALANCES_ADJUSTMENT,
     BALANCES_ADJUSTMENT_ADVANCED,
+    BALANCES_ADJUSTMENT_BALANCE_TYPE,
     BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE,
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
 } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
+import { styles } from './styles';
+
+const BALANCE_TYPE_OPTIONS = [
+    { id: 'PROPORTIONAL_TO_GENERATION_P', label: 'descLfBalanceTypeGenP' },
+    {
+        id: 'PROPORTIONAL_TO_GENERATION_P_MAX',
+        label: 'descLfBalanceTypeGenPMax',
+    },
+    { id: 'PROPORTIONAL_TO_LOAD', label: 'descLfBalanceTypeLoad' },
+    {
+        id: 'PROPORTIONAL_TO_CONFORM_LOAD',
+        label: 'descLfBalanceTypeConformLoad',
+    },
+];
 
 export default function BalancesAdjustmentAdvancedContent() {
     const intl = useIntl();
@@ -41,11 +56,23 @@ export default function BalancesAdjustmentAdvancedContent() {
                 </GridItem>
             </Grid>
             <GridSection title="Loadflow" />
-            <CountriesAutocomplete
-                name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
-                limitTags={3}
-                label={intl.formatMessage({id: "descLfCountriesToBalance"})}
-            />
+            <Grid container spacing={2} direction="column">
+                <GridItem>
+                    <CountriesAutocomplete
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
+                        limitTags={3}
+                        label={intl.formatMessage({ id: 'descLfCountriesToBalance' })}
+                    />
+                </GridItem>
+                <GridItem>
+                    <SelectInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_BALANCE_TYPE}`}
+                        label={'descLfBalanceType'}
+                        options={BALANCE_TYPE_OPTIONS}
+                        sx={styles.autocomplete} />
+                </GridItem>
+            </Grid>
+
         </Grid>
     );
 }

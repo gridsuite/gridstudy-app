@@ -11,7 +11,7 @@ import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BALANCES_ADJUSTMENT,
-    BALANCES_ADJUSTMENT_ADVANCED,
+    BALANCES_ADJUSTMENT_ADVANCED, BALANCES_ADJUSTMENT_BALANCE_TYPE,
     BALANCES_ADJUSTMENT_COUNTRIES,
     BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE,
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
@@ -29,7 +29,7 @@ import yup from 'components/utils/yup-config';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     BalancesAdjustmentInfos,
-    BalancesAdjustmentZoneInfos,
+    BalancesAdjustmentZoneInfos, BalanceType,
     ShiftEquipmentType,
     ShiftType,
 } from '../../../../services/network-modification-types';
@@ -55,6 +55,7 @@ type BalancesAdjustmentForm = {
             [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: number;
             [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: number;
             [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: string[];
+            [BALANCES_ADJUSTMENT_BALANCE_TYPE]: BalanceType;
         };
     };
 };
@@ -75,6 +76,7 @@ const emptyFormData = {
             [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: 5,
             [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: 1,
             [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: [],
+            [BALANCES_ADJUSTMENT_BALANCE_TYPE]: BalanceType.PROPORTIONAL_TO_LOAD,
         },
     },
 } satisfies BalancesAdjustmentForm;
@@ -134,6 +136,10 @@ export function BalancesAdjustmentDialog({
                             .of(yup.string().oneOf(countryCodes).required())
                             .min(1, 'balancesAdjustment.emptyCountries')
                             .required(),
+                        [BALANCES_ADJUSTMENT_BALANCE_TYPE]: yup
+                            .string()
+                            .oneOf(Object.values(BalanceType))
+                            .required(),
                     }),
                 }),
             }),
@@ -165,6 +171,7 @@ export function BalancesAdjustmentDialog({
                         [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: editData.maxNumberIterations,
                         [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: editData.thresholdNetPosition,
                         [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: editData.countriesToBalance,
+                        [BALANCES_ADJUSTMENT_BALANCE_TYPE]: editData.balanceType,
                     },
                 },
             });
@@ -183,6 +190,7 @@ export function BalancesAdjustmentDialog({
                     form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ADVANCED][BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION],
                 countriesToBalance:
                     form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ADVANCED][BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE],
+                balanceType: form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ADVANCED][BALANCES_ADJUSTMENT_BALANCE_TYPE],
                 areas: form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ZONES].map((balanceAdjustment) => {
                     return {
                         name: balanceAdjustment[BALANCES_ADJUSTMENT_ZONE],

@@ -480,3 +480,4 @@ export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
 export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
 export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
 export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
+export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
