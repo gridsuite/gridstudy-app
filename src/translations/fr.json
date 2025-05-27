@@ -832,6 +832,7 @@
     "FillAllFields": "Veuillez remplir tous les champs",
     "ModifySubstation": "Modifier un site",
     "ModifyVsc": "Modifier une HVDC (VSC)",
+    "ModifyLcc": "Modifier une HVDC (LCC)",
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
@@ -906,6 +907,7 @@
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
     "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
+    "powerFactorIntervalValueError": "La valeur du coefficient Q/P doit être comprise entre 0 et 1",
     "nominalVMustBeGreaterOrEqualToZero": "La valeur de la tension nominale DC doit être supérieure à 0",
     "dcResistanceMustBeGreaterOrEqualToZero": "La valeur de la résistance DC doit être supérieure à 0",
     "maxPMustBeGreaterOrEqualToZero": "La valeur de la puissance active max doit être supérieure à 0",
@@ -1517,6 +1519,8 @@
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
+    "previousConnection" : "Connexion préc.",
+
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
     "TapsSection": "Prises",
@@ -1533,5 +1537,7 @@
     "previousStatus": "État précédent",
     "currentStatus": "État modifié",
     "Open": "Ouvert",
-    "Closed": "Fermé"
+    "Closed": "Fermé",
+    "DiagramGridLayout": "Grille des diagrammes",
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
 }
