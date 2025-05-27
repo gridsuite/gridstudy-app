@@ -9,20 +9,21 @@ import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/cus
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid, Theme } from '@mui/material';
-import SaveSpreadsheetButton from './save/save-spreadsheet-button';
-import { NodeAlias } from '../../types/node-alias.type';
-import SpreadsheetGsFilter from './gs-filter/spreadsheet-gs-filter';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';
 import NodesConfigButton from './nodes-config/nodes-config-button';
+import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
+import SaveSpreadsheetButton from './save/save-spreadsheet-button';
+import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 
 const styles = {
     toolbar: (theme: Theme) => ({
         marginTop: theme.spacing(2),
         alignItems: 'center',
     }),
-    selectColumns: (theme: Theme) => ({
+    filterContainer: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
+        display: 'flex',
     }),
     save: (theme: Theme) => ({
         marginRight: theme.spacing(1),
@@ -48,8 +49,8 @@ export const SpreadsheetToolbar = ({
 }: SpreadsheetToolbarProps) => {
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
-            <Grid item sx={styles.selectColumns}>
-                <SpreadsheetGsFilter equipmentType={tableDefinition?.type} uuid={tableDefinition?.uuid} />
+            <Grid item sx={styles.filterContainer}>
+                <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
                 <ColumnsConfig
