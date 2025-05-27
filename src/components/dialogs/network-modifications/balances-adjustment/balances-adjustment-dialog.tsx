@@ -20,7 +20,7 @@ import {
     BALANCES_ADJUSTMENT_TARGET,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
     BALANCES_ADJUSTMENT_ZONE,
-    BALANCES_ADJUSTMENT_ZONES,
+    BALANCES_ADJUSTMENT_ZONES, SELECTED,
 } from '../../../utils/field-constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../services/utils';
@@ -44,6 +44,7 @@ import BalancesAdjustmentAdvancedContent from './balances-adjustment-advanced-co
 type BalancesAdjustmentForm = {
     [BALANCES_ADJUSTMENT]: {
         [BALANCES_ADJUSTMENT_ZONES]: {
+            [SELECTED]: boolean;
             [BALANCES_ADJUSTMENT_ZONE]: string;
             [BALANCES_ADJUSTMENT_COUNTRIES]: string[];
             [BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE]: ShiftEquipmentType;
@@ -62,6 +63,7 @@ const emptyFormData = {
     [BALANCES_ADJUSTMENT]: {
         [BALANCES_ADJUSTMENT_ZONES]: [
             {
+                [SELECTED]: false,
                 [BALANCES_ADJUSTMENT_ZONE]: '',
                 [BALANCES_ADJUSTMENT_COUNTRIES]: [],
                 [BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE]: ShiftEquipmentType.GENERATOR,
@@ -105,6 +107,7 @@ export function BalancesAdjustmentDialog({
                         .array()
                         .of(
                             yup.object().shape({
+                                [SELECTED]: yup.boolean().required(),
                                 [BALANCES_ADJUSTMENT_ZONE]: yup.string().required(),
                                 [BALANCES_ADJUSTMENT_COUNTRIES]: yup
                                     .array()
@@ -150,6 +153,7 @@ export function BalancesAdjustmentDialog({
                 [BALANCES_ADJUSTMENT]: {
                     [BALANCES_ADJUSTMENT_ZONES]: editData.areas.map((area) => {
                         return {
+                            [SELECTED]: false,
                             [BALANCES_ADJUSTMENT_ZONE]: area.name,
                             [BALANCES_ADJUSTMENT_COUNTRIES]: area.countries,
                             [BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE]: area.shiftEquipmentType,

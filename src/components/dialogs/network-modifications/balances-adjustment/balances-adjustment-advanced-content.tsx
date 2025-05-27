@@ -18,8 +18,11 @@ import {
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
 } from '../../../utils/field-constants';
+import { useIntl } from 'react-intl';
 
 export default function BalancesAdjustmentAdvancedContent() {
+    const intl = useIntl();
+
     return (
         <Grid container direction="column" width={'50%'} minWidth={'300px'}>
             <GridSection title="Algorithm" />
@@ -41,6 +44,7 @@ export default function BalancesAdjustmentAdvancedContent() {
             <CountriesAutocomplete
                 name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
                 limitTags={3}
+                label={intl.formatMessage({id: "descLfCountriesToBalance"})}
             />
         </Grid>
     );

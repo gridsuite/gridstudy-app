@@ -12,6 +12,7 @@ import {
     BALANCES_ADJUSTMENT_TARGET,
     BALANCES_ADJUSTMENT_ZONE,
     BALANCES_ADJUSTMENT_ZONES,
+    SELECTED,
 } from '../../../utils/field-constants';
 import DndTable from '../../../utils/dnd-table/dnd-table';
 import React, { useCallback, useMemo } from 'react';
@@ -60,7 +61,7 @@ export default function BalancesAdjustmentTable() {
                         return { id: value, label: value };
                     }),
                     disableClearable: true,
-                    sx: styles.autocomplete
+                    sx: styles.autocomplete,
                 }),
                 initialValue: ShiftEquipmentType.GENERATOR,
                 width: '150px',
@@ -76,7 +77,7 @@ export default function BalancesAdjustmentTable() {
                         return { id: value, label: value };
                     }),
                     disableClearable: true,
-                    sx: styles.autocomplete
+                    sx: styles.autocomplete,
                 }),
                 initialValue: ShiftType.PROPORTIONAL,
                 width: '150px',
@@ -103,6 +104,7 @@ export default function BalancesAdjustmentTable() {
 
     const createRow = useCallback(() => {
         const newRowData: Record<string, unknown> = {};
+        newRowData[SELECTED] = false;
         columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return [newRowData];
     }, [columnsDefinition]);
@@ -116,6 +118,8 @@ export default function BalancesAdjustmentTable() {
             tableHeight={270}
             withLeftButtons={false}
             withAddRowsDialog={false}
+            disableDragAndDrop={true}
+            showMoveArrow={false}
         />
     );
 }
