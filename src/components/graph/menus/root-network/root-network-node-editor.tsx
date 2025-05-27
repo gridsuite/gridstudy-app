@@ -67,6 +67,10 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: theme.spacing(2),
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
     }),
     rootNetworkMonoRootHover: (theme: Theme) => ({
         cursor: 'pointer',
