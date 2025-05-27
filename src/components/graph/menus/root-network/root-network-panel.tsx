@@ -38,7 +38,7 @@ const RootNetworkPanel: FunctionComponent = () => {
     const theme = useTheme();
     // Set the panel's width and height based on designer's proposed values
     const panelStyle = useMemo(() => {
-        const width = theme.spacing(isRootNetworkPanelMinimized ? 22 : 38);
+        const width = theme.spacing(isRootNetworkPanelMinimized ? 25 : 38);
 
         const minHeight = theme.spacing(
             isRootNetworkPanelMinimized ? (isMonoRootStudy ? 6 : 12) : isMonoRootStudy ? 14 : 38
