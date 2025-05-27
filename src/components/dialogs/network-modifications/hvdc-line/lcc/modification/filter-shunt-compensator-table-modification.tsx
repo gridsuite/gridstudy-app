@@ -100,15 +100,17 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
 
     return SHUNT_COLUMNS_DEFINITION.map((column) => (
         <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-            {column.dataKey === SHUNT_COMPENSATOR_ID && <TextInput name={`${id}.${SHUNT_COMPENSATOR_ID}`} disabled />}
+            {column.dataKey === SHUNT_COMPENSATOR_ID && (
+                <TextInput name={`${id}.${SHUNT_COMPENSATOR_ID}`} formProps={{ disabled: true }} />
+            )}
             {column.dataKey === SHUNT_COMPENSATOR_NAME && (
-                <TextInput name={`${id}.${SHUNT_COMPENSATOR_NAME}`} disabled={deletionMark} />
+                <TextInput name={`${id}.${SHUNT_COMPENSATOR_NAME}`} formProps={{ disabled: deletionMark }} />
             )}
             {column.dataKey === MAX_Q_AT_NOMINAL_V && (
                 <FloatInput
                     name={`${id}.${MAX_Q_AT_NOMINAL_V}`}
                     adornment={ReactivePowerAdornment}
-                    disabled={deletionMark}
+                    formProps={{ disabled: deletionMark }}
                 />
             )}
             {column.dataKey === PREVIOUS_SHUNT_COMPENSATOR_SELECTED && <PreviousConnection />}
@@ -117,8 +119,7 @@ function ShuntRowForm({ id, deletionMark, previousValues }: Readonly<RowFormProp
                     name={`${id}.${SHUNT_COMPENSATOR_SELECTED}`}
                     label=""
                     nullDisabled={false}
-                    disabled={deletionMark}
-                    sx={{ marginLeft: '50%', marginRight: '50%' }}
+                    formProps={{ disabled: deletionMark, sx: { marginLeft: '50%', marginRight: '50%' } }}
                 />
             )}
         </TableCell>
