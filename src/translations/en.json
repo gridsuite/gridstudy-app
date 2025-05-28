@@ -420,6 +420,7 @@
 
     "LimitType": "Limit type",
     "ViolationType": "Violation type",
+    "Bus": "Bus",
     "LimitSide": "Side",
     "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
@@ -1426,6 +1427,7 @@
     "searchPlaceholder": "Search",
     "searchPlaceholderLog": "Search in Logs",
     "searchPlaceholderLogsTreeStructure": "Search in tree structure",
+    "reportLogsPerPage": "Logs per page",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant": "{symbol} Click on the map to start drawing a polygon.",
@@ -1469,6 +1471,11 @@
     "createRootNetworksError": "An error occurred while creating the root network",
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
+    "rootNetwork.modificationsInfos": "Only modifications in built nodes and their parent nodes will appear in the results.",
+    "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
+    "rootNetwork.modificationTab": "Modifications",
+    "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
+    "rootNetwork.loading": "Loading...",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
@@ -1542,5 +1549,6 @@
     "Open": "Open",
     "Closed": "Closed",
     "DiagramGridLayout": "Diagram grid layout",
-    "DiagramGridLayoutAndTree": "Diagram grid layout and tree"
+    "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
+    "loadFlowModification": "LoadFlow Modification applied"
 }
