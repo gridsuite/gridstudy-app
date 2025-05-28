@@ -35,7 +35,7 @@ const styles = {
         marginRight: theme.spacing(2),
     }),
     icon: (theme: Theme) => ({
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1),
         fontSize: theme.spacing(2.75),
     }),
 };
