@@ -13,7 +13,7 @@ import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from 
 import { NodeAlias } from '../types/node-alias.type';
 import { UUID } from 'crypto';
 import { deletedOrRenamedNodes } from 'redux/actions';
-import { NotificationType } from 'types/notification-types';
+import { isSpreadsheetNodeAliasesUpdatedNotification } from 'types/notification-types';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
@@ -75,10 +75,7 @@ export const useNodeAliases = () => {
     const listenerAliasesUpdated = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
-            if (
-                eventData.headers.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED &&
-                eventData.headers.studyUuid === studyUuid
-            ) {
+            if (isSpreadsheetNodeAliasesUpdatedNotification(eventData) && eventData.headers.studyUuid === studyUuid) {
                 // aliases change notification
                 fetchNodeAliases();
             }

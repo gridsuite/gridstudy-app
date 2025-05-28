@@ -1049,6 +1049,10 @@ export function isMetadataUpdatedNotification(notif: unknown): notif is Metadata
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.METADATA_UPDATED;
 }
 
+export function isSpreadsheetNodeAliasesUpdatedNotification(notif: unknown): notif is CommonStudyEventData {
+    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED;
+}
+
 // Notification types
 export type StudyUpdateEventData =
     | StudyEventData
