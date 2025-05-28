@@ -28,7 +28,6 @@ import { AgGridReact } from 'ag-grid-react';
 import {
     ComputingAndNetworkModificationType,
     Log,
-    ReportLog,
     ReportType,
     SelectedReportLog,
     SeverityLevel,
@@ -88,7 +87,7 @@ type LogTableProps = {
     selectedReport: SelectedReportLog;
     reportType: ComputingAndNetworkModificationType;
     severities: SeverityLevel[] | undefined;
-    onRowClick: (data: ReportLog) => void;
+    onRowClick: (data: Log | undefined) => void;
     onFiltersChanged: () => void;
     resetFilters?: boolean;
 };
