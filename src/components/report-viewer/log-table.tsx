@@ -15,10 +15,19 @@ import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
-import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
+import {
+    CellClassParams,
+    CellClickedEvent,
+    GridApi,
+    ICellRendererParams,
+    IRowNode,
+    RowClassParams,
+    RowStyle,
+} from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import {
     ComputingAndNetworkModificationType,
+    Log,
     ReportLog,
     ReportType,
     SelectedReportLog,
@@ -98,13 +107,13 @@ const LogTable = ({
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs, , fetchPagedReportLogs, fetchLogMatches] = useReportFetcher(
+    const [, , fetchLogs, , fetchPagedLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
-    const [rowData, setRowData] = useState<ReportLog[] | null>(null);
+    const [rowData, setRowData] = useState<Log[] | null>(null);
     const [searchMatches, setSearchMatches] = useState<{ rowIndex: number; page: number }[]>([]);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
@@ -132,45 +141,23 @@ const LogTable = ({
     }, []);
 
     const getReportLogs = useCallback(() => {
-        fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
-            const minDepth = Math.min(...reportLogs.map((log) => log.depth ?? 0));
-            const transformedLogs = reportLogs.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        depth: (log.depth ?? 0) - minDepth,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    }) satisfies ReportLog
-            );
+        fetchLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((logs) => {
             setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
+            setRowData(logs);
         });
-    }, [fetchReportLogs, messageFilter, selectedReport.id, selectedReport.type, severityFilter]);
+    }, [fetchLogs, messageFilter, selectedReport.id, selectedReport.type, severityFilter]);
 
     const getPagedReportLogs = useCallback(() => {
-        fetchPagedReportLogs(selectedReport.id, severityFilter, messageFilter, page, rowsPerPage)?.then((pagedLogs) => {
+        fetchPagedLogs(selectedReport.id, severityFilter, messageFilter, page, rowsPerPage)?.then((pagedLogs) => {
             const { content, totalElements, totalPages } = pagedLogs;
             if (totalPages < page) {
                 setPage(0);
             }
             setCount(totalElements);
-            const minDepth = Math.min(...content.map((log) => log.depth ?? 0));
-            const transformedLogs = content.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        depth: (log.depth ?? 0) - minDepth,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    }) satisfies ReportLog
-            );
             setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
+            setRowData(content);
         });
-    }, [fetchPagedReportLogs, messageFilter, page, rowsPerPage, selectedReport.id, severityFilter]);
+    }, [fetchPagedLogs, messageFilter, page, rowsPerPage, selectedReport.id, severityFilter]);
 
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityFilter.length === 0) {
@@ -224,8 +211,8 @@ const LogTable = ({
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
                 colId: 'severity',
                 field: 'severity',
-                cellStyle: (params) => ({
-                    backgroundColor: params.data.backgroundColor,
+                cellStyle: (params: CellClassParams<Log>) => ({
+                    backgroundColor: params.data?.backgroundColor ?? theme.palette.background.default,
                     textAlign: 'center',
                 }),
             }),
@@ -260,6 +247,7 @@ const LogTable = ({
         [
             intl,
             reportType,
+            theme.palette.background.default,
             theme.searchedText.highlightColor,
             theme.searchedText.currentHighlightColor,
             searchTerm,
@@ -454,7 +442,7 @@ const LogTable = ({
                 />
             </Box>
             <Box sx={styles.chipContainer}>
-                {severities?.map((severity, index) => (
+                {severities?.map((severity) => (
                     <Chip
                         key={severity}
                         label={severity}
