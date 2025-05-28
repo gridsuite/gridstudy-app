@@ -18,6 +18,7 @@ import {
     FilterOptionsState,
     InputAdornment,
     ListItemButton,
+    PaperProps,
     TextField,
 } from '@mui/material';
 import { FilterAlt, WarningAmberRounded } from '@mui/icons-material';
@@ -112,8 +113,15 @@ function GlobalFilterAutocomplete({
     filterableEquipmentTypes,
     filters = emptyArray,
 }: Readonly<GlobalFilterAutocompleteProps>) {
-    const { openedDropdown, setOpenedDropdown, filterGroupSelected, selectedGlobalFilters, onChange } =
-        useContext(GlobalFilterContext);
+    const {
+        openedDropdown,
+        setOpenedDropdown,
+        filterGroupSelected,
+        selectedGlobalFilters,
+        onChange,
+        filterCategories,
+        genericFiltersStrictMode,
+    } = useContext(GlobalFilterContext);
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const recentGlobalFilters: GlobalFilter[] = useSelector((state: AppState) => state.recentGlobalFilters);
@@ -121,33 +129,35 @@ function GlobalFilterAutocomplete({
 
     // checks the generic filter to see if they are applicable to the current tab
     const warningEquipmentTypeMessage: string = useMemo(() => {
-        const inappropriateFilters: string[] = selectedGlobalFilters
-            .filter(
-                (filter) =>
-                    filter.equipmentType &&
-                    (!filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType) ||
-                        (filter.equipmentType === 'VOLTAGE_LEVEL' && filter.filterTypeFromMetadata === 'EXPERT')) // expert filter on voltage level non applicable
-            )
-            .map((filter) => filter.label);
+        if (!genericFiltersStrictMode) {
+            const inappropriateFilters: string[] = selectedGlobalFilters
+                .filter(
+                    (filter) =>
+                        filter.equipmentType &&
+                        (!filterableEquipmentTypes.find((eqptType) => eqptType.toString() === filter.equipmentType) ||
+                            (filter.equipmentType === 'VOLTAGE_LEVEL' && filter.filterTypeFromMetadata === 'EXPERT')) // expert filter on voltage level non applicable
+                )
+                .map((filter) => filter.label);
 
-        if (inappropriateFilters.length > 0) {
-            if (inappropriateFilters.length > 1) {
+            if (inappropriateFilters.length > 0) {
+                if (inappropriateFilters.length > 1) {
+                    return intl.formatMessage(
+                        {
+                            id: 'results.globalFilter.nonApplicableExtra',
+                        },
+                        { filterName: inappropriateFilters[0], extraFiltersNum: inappropriateFilters.length - 1 }
+                    );
+                }
                 return intl.formatMessage(
                     {
-                        id: 'results.globalFilter.nonApplicableExtra',
+                        id: 'results.globalFilter.nonApplicable',
                     },
-                    { filterName: inappropriateFilters[0], extraFiltersNum: inappropriateFilters.length - 1 }
+                    { filterName: inappropriateFilters[0] }
                 );
             }
-            return intl.formatMessage(
-                {
-                    id: 'results.globalFilter.nonApplicable',
-                },
-                { filterName: inappropriateFilters[0] }
-            );
         }
         return '';
-    }, [intl, filterableEquipmentTypes, selectedGlobalFilters]);
+    }, [genericFiltersStrictMode, selectedGlobalFilters, filterableEquipmentTypes, intl]);
 
     const filterOptions = useCallback(
         (options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) => {
@@ -163,18 +173,28 @@ function GlobalFilterAutocomplete({
                         // recent filters are a group in itself
                         option?.recent
                             ? filterGroupSelected === RECENT_FILTER
-                            : option.filterType === filterGroupSelected
+                            : // if the filter has a subtype it should be filtered through it instead of filterType
+                              option.filterSubtype
+                              ? option.filterSubtype === filterGroupSelected
+                              : option.filterType === filterGroupSelected
+                    )
+                    .filter((option: GlobalFilter) =>
+                        genericFiltersStrictMode && option.filterType === FilterType.GENERIC_FILTER
+                            ? filterableEquipmentTypes.includes(option.equipmentType as EQUIPMENT_TYPES)
+                            : true
                     )
             );
         },
-        [filterGroupSelected, translate]
+        [filterGroupSelected, filterableEquipmentTypes, genericFiltersStrictMode, translate]
     );
 
     const options = useMemo(
         () => [
-            ...recentGlobalFilters.map((filter) => {
-                return { ...filter, recent: true };
-            }),
+            ...recentGlobalFilters
+                .filter((filter) => filterCategories.includes(filter.filterType))
+                .map((filter) => {
+                    return { ...filter, recent: true };
+                }),
             // recent generic filters are displayed 2 times : once in the recent filters (see above) and also in the generic filters :
             ...recentGlobalFilters
                 .filter((filter) => filter.filterType === FilterType.GENERIC_FILTER)
@@ -195,7 +215,7 @@ function GlobalFilterAutocomplete({
                     return 0;
                 }),
         ],
-        [filters, recentGlobalFilters, translate]
+        [filterCategories, filters, recentGlobalFilters, translate]
     );
 
     const inputFieldChip = useCallback(
@@ -224,6 +244,28 @@ function GlobalFilterAutocomplete({
         [translate]
     );
 
+    const isOptionEqualToValue = useCallback((option: GlobalFilter, value: GlobalFilter) => {
+        if (option.filterType === FilterType.GENERIC_FILTER) {
+            return (
+                option.label === value.label &&
+                option.filterType === value.filterType &&
+                option.filterSubtype === value.filterSubtype &&
+                option.uuid === value.uuid
+            );
+        } else {
+            return (
+                option.label === value.label &&
+                option.filterType === value.filterType &&
+                option.filterSubtype === value.filterSubtype
+            );
+        }
+    }, []);
+
+    const PaperComponentMemo = useCallback(
+        (props: PaperProps) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />,
+        [autocompleteRef]
+    );
+
     return (
         <>
             <div ref={autocompleteRef}>
@@ -245,7 +287,14 @@ function GlobalFilterAutocomplete({
                     disableCloseOnSelect
                     options={options}
                     onChange={(_e, value) => onChange(value)}
-                    groupBy={(option: GlobalFilter): string => (option.recent ? RECENT_FILTER : option.filterType)}
+                    groupBy={(option: GlobalFilter): string =>
+                        option.recent
+                            ? RECENT_FILTER
+                            : // if the filter has a subtype it should be grouped by it instead of filterType
+                              option.filterSubtype
+                              ? option.filterSubtype
+                              : option.filterType
+                    }
                     renderInput={RenderInput}
                     renderTags={(filters: GlobalFilter[], getTagsProps: AutocompleteRenderGetTagProps) => {
                         return (
@@ -284,16 +333,12 @@ function GlobalFilterAutocomplete({
                         );
                     }}
                     // Allows to find the corresponding chips without taking into account the recent status
-                    isOptionEqualToValue={(option: GlobalFilter, value: GlobalFilter) =>
-                        option.label === value.label &&
-                        option.filterType === value.filterType &&
-                        option.uuid === value.uuid
-                    }
+                    isOptionEqualToValue={isOptionEqualToValue}
                     filterOptions={(options: GlobalFilter[], state: FilterOptionsState<GlobalFilter>) =>
                         filterOptions(options, state)
                     }
                     // dropdown paper
-                    PaperComponent={(props) => <GlobalFilterPaper {...props} autocompleteRef={autocompleteRef} />}
+                    PaperComponent={PaperComponentMemo}
                     ListboxProps={{
                         sx: {
                             '& .MuiAutocomplete-option': {

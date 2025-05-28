@@ -168,7 +168,6 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
             <Box sx={styles.quickSearch}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
-                    selectedReportId={reportTree.id}
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}

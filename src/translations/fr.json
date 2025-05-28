@@ -423,6 +423,7 @@
 
     "LimitType": "Type de limite",
     "ViolationType": "Type de contrainte",
+    "Bus": "Noeud électrique",
     "LimitSide": "Côté",
     "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",
@@ -910,6 +911,7 @@
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
     "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
+    "powerFactorIntervalValueError": "La valeur du coefficient Q/P doit être comprise entre 0 et 1",
     "nominalVMustBeGreaterOrEqualToZero": "La valeur de la tension nominale DC doit être supérieure à 0",
     "dcResistanceMustBeGreaterOrEqualToZero": "La valeur de la résistance DC doit être supérieure à 0",
     "maxPMustBeGreaterOrEqualToZero": "La valeur de la puissance active max doit être supérieure à 0",
@@ -1426,6 +1428,7 @@
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
     "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
+    "reportLogsPerPage": "Logs par page : ",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant": "{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
@@ -1471,6 +1474,11 @@
     "visibleRootNetwork": "Réseau Visible : ",
     "importCaseFailure": "Impossible d'importer la situation",
     "modificationActivationByRootNetworkError": "Une erreur est survenue lors de l'activation / désactivation de la modification par réseau racine",
+    "rootNetwork.modificationsInfos": "Seules les modifications dans les noeuds réalisés et leurs noeuds parents apparaitront dans les résultats.",
+    "rootNetwork.searchPlaceholder": "Rechercher un ouvrage modifié…",
+    "rootNetwork.modificationTab": "Modifications",
+    "rootNetwork.results": "{count, plural, =0 {Aucun résultat} =1 {# résultat} other {# résultats}}",
+    "rootNetwork.loading": "Chargement...",
     "unlimited": "Illimité",
     "forbidden": "Interdit",
 
@@ -1539,5 +1547,8 @@
     "previousStatus": "État précédent",
     "currentStatus": "État modifié",
     "Open": "Ouvert",
-    "Closed": "Fermé"
+    "Closed": "Fermé",
+    "DiagramGridLayout": "Grille des diagrammes",
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+    "loadFlowModification": "Modification par calcul de répartition appliquée"
 }

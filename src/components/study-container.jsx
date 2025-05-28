@@ -19,26 +19,17 @@ import {
     resetEquipmentsPostLoadflow,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
-    setRootNetworks,
-    setRootNetworkIndexationStatus,
-    studyUpdated,
     setMonoRootStudy,
+    setRootNetworkIndexationStatus,
+    setRootNetworks,
+    studyUpdated,
 } from '../redux/actions';
 import { fetchRootNetworks } from 'services/root-network';
 
 import WaitingLoader from './utils/waiting-loader';
-import {
-    fetchDirectoryElementPath,
-    NotificationsUrlKeys,
-    useIntlRef,
-    useNotificationsListener,
-    usePrevious,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useIntlRef, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
-import { computeFullPath, computePageTitle } from '../utils/compute-title';
-import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchCaseName } from '../services/study/index';
@@ -126,14 +117,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(decodeURIComponent(useParams().studyUuid));
 
-    const [studyName, setStudyName] = useState();
-    const prevStudyName = usePrevious(studyName);
-    const [studyPath, setStudyPath] = useState();
-    const prevStudyPath = usePrevious(studyPath);
-
-    // using a ref because this is not used for rendering, it is used in the websocket onMessage()
-    const studyParentDirectoriesUuidsRef = useRef([]);
-
     const userName = useSelector((state) => state.user.profile.sub);
     const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
 
@@ -147,8 +130,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const rootNetworkIndexationStatus = useSelector((state) => state.rootNetworkIndexationStatus);
     const rootNetworkIndexationStatusRef = useRef();
     rootNetworkIndexationStatusRef.current = rootNetworkIndexationStatus;
-
-    const [initialTitle] = useState(document.title);
 
     const dispatch = useDispatch();
 
@@ -347,33 +328,6 @@ export function StudyContainer({ view, onChangeTab }) {
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: onDebugNotification });
     // --- End STUDY_DEBUG notification --- //
 
-    const fetchStudyPath = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid)
-            .then((response) => {
-                const parentDirectoriesNames = response
-                    .slice(0, response.length - 1)
-                    .map((parent) => parent.elementName);
-                const parentDirectoriesUuid = response
-                    .slice(0, response.length - 1)
-                    .map((parent) => parent.elementUuid);
-                studyParentDirectoriesUuidsRef.current = parentDirectoriesUuid;
-
-                const studyName = response[response.length - 1]?.elementName;
-                const path = computeFullPath(parentDirectoriesNames);
-                setStudyName(studyName);
-                setStudyPath(path);
-
-                document.title = computePageTitle(initialTitle, studyName, parentDirectoriesNames);
-            })
-            .catch((error) => {
-                document.title = initialTitle;
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LoadStudyAndParentsInfoError',
-                });
-            });
-    }, [initialTitle, snackError, studyUuid]);
-
     const closeWindow = useCallback(() => {
         window.close();
     }, []);
@@ -381,30 +335,6 @@ export function StudyContainer({ view, onChangeTab }) {
     //Study deletion notification
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY_DELETE_STUDY, {
         listenerCallbackMessage: closeWindow,
-    });
-
-    const onStudyUpdated = useCallback(
-        (event) => {
-            const eventData = JSON.parse(event.data);
-            dispatch(studyUpdated(eventData));
-            if (eventData.headers) {
-                if (eventData.headers['notificationType'] === directoriesNotificationType.UPDATE_DIRECTORY) {
-                    // TODO: this receives notifications for all the public directories and all the user's private directories
-                    // At least we don't fetch everytime a notification is received, but we should instead limit the
-                    // number of notifications (they are sent to all the clients every time). Here we are only
-                    // interested in changes in parent directories of the study (study is moved, or any parent is moved
-                    // or renamed)
-                    if (studyParentDirectoriesUuidsRef.current.includes(eventData.headers['directoryUuid'])) {
-                        fetchStudyPath();
-                    }
-                }
-            }
-        },
-        [dispatch, fetchStudyPath]
-    );
-
-    useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {
-        listenerCallbackMessage: onStudyUpdated,
     });
 
     const loadTree = useCallback(
@@ -654,47 +584,6 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         dispatch(resetEquipments());
     }, [currentNode, currentRootNetworkUuid, dispatch]);
-
-    useEffect(() => {
-        if (prevStudyPath && prevStudyPath !== studyPath) {
-            snackInfo({
-                headerId: 'moveStudyNotification',
-                headerValues: {
-                    oldStudyPath: prevStudyPath,
-                    studyPath: studyPath,
-                },
-            });
-        }
-
-        if (prevStudyName && prevStudyName !== studyName) {
-            snackInfo({
-                headerId: 'renameStudyNotification',
-                headerValues: {
-                    oldStudyName: prevStudyName,
-                    studyName: studyName,
-                },
-            });
-        }
-    }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
-
-    useEffect(() => {
-        if (!studyUuid) {
-            document.title = initialTitle;
-            return;
-        }
-        fetchStudyPath();
-    }, [studyUuid, initialTitle, fetchStudyPath]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'metadata_updated'
-            ) {
-                fetchStudyPath();
-            }
-        }
-    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
 
     useEffect(() => {
         if (studyUuid) {

@@ -424,6 +424,7 @@
 
     "LimitType": "Limit type",
     "ViolationType": "Violation type",
+    "Bus": "Bus",
     "LimitSide": "Side",
     "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
@@ -914,6 +915,7 @@
     "qMaxAtNominalVMustBeGreaterThanZero": "The Qmax available at nominal voltage value must be greater than 0",
     "powerFactorMaxValueError": "The power factor value must be less than 1",
     "powerFactorMinValueError": "The power factor value must be greater than -1",
+    "powerFactorIntervalValueError": "The power factor value must be between 0 and 1",
     "nominalVMustBeGreaterOrEqualToZero": "The DC nominal voltage value must be greater than 0",
     "dcResistanceMustBeGreaterOrEqualToZero": "The DC resistance value must be greater than 0",
     "maxPMustBeGreaterOrEqualToZero": "The maximum active power value must be greater than 0",
@@ -1429,6 +1431,7 @@
     "searchPlaceholder": "Search",
     "searchPlaceholderLog": "Search in Logs",
     "searchPlaceholderLogsTreeStructure": "Search in tree structure",
+    "reportLogsPerPage": "Logs per page",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant": "{symbol} Click on the map to start drawing a polygon.",
@@ -1472,6 +1475,11 @@
     "createRootNetworksError": "An error occurred while creating the root network",
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
+    "rootNetwork.modificationsInfos": "Only modifications in built nodes and their parent nodes will appear in the results.",
+    "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
+    "rootNetwork.modificationTab": "Modifications",
+    "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
+    "rootNetwork.loading": "Loading...",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
@@ -1543,5 +1551,8 @@
     "previousStatus": "Previous status",
     "currentStatus": "Modified status",
     "Open": "Open",
-    "Closed": "Closed"
+    "Closed": "Closed",
+    "DiagramGridLayout": "Diagram grid layout",
+    "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
+    "loadFlowModification": "LoadFlow Modification applied"
 }
