@@ -126,7 +126,7 @@ const RatioTapChangerPane = ({
             label={'RegulationMode'}
             options={Object.values(RATIO_REGULATION_MODES)}
             size="small"
-            disabled={!isRatioTapLoadTapChangingCapabilitiesOn}
+            disabled={!ratioTapChangerEnabledWatcher}
             previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.ratioTapChanger)}
         />
     );
@@ -137,7 +137,7 @@ const RatioTapChangerPane = ({
             label="TargetVoltage"
             adornment={VoltageAdornment}
             formProps={{
-                disabled: !isRatioTapLoadTapChangingCapabilitiesOn,
+                disabled: !ratioTapChangerEnabledWatcher,
             }}
             previousValue={previousValues?.ratioTapChanger?.targetV}
         />
@@ -149,7 +149,7 @@ const RatioTapChangerPane = ({
             label="Deadband"
             adornment={VoltageAdornment}
             formProps={{
-                disabled: !isRatioTapLoadTapChangingCapabilitiesOn,
+                disabled: !ratioTapChangerEnabledWatcher,
             }}
             previousValue={previousValues?.ratioTapChanger?.targetDeadband}
         />

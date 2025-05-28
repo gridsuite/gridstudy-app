@@ -41,7 +41,6 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { isDistantRegulationForRatio, isLocalRegulation } from '../tap-changer-pane-utils';
 
 const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -54,8 +53,9 @@ const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE, REGULATION_TYPE], {
-            is: isDistantRegulationForRatio,
+        .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_TYPE], {
+            is: (enabled, hasLoadTapChangingCapabilities, regulationType) =>
+                enabled && hasLoadTapChangingCapabilities && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
     [EQUIPMENT]: yup
@@ -66,8 +66,9 @@ const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
             [NAME]: yup.string().nullable(),
             [TYPE]: yup.string(),
         })
-        .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE, REGULATION_TYPE], {
-            is: isDistantRegulationForRatio,
+        .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_TYPE], {
+            is: (enabled, hasLoadTapChangingCapabilities, regulationType) =>
+                enabled && hasLoadTapChangingCapabilities && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
 });
@@ -86,18 +87,16 @@ const ratioTapChangerValidationSchema = (id) => ({
         [REGULATION_TYPE]: yup
             .string()
             .nullable()
-            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE], {
-                is: (enabled, hasLoadTapChangingCapabilities, regulationMode) =>
-                    enabled &&
-                    hasLoadTapChangingCapabilities &&
-                    regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES], {
+                is: (enabled, hasLoadTapChangingCapabilities) => enabled && hasLoadTapChangingCapabilities,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
-            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE, REGULATION_TYPE], {
-                is: isLocalRegulation,
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_TYPE], {
+                is: (enabled, hasLoadTapChangingCapabilities, regulationType) =>
+                    enabled && hasLoadTapChangingCapabilities && regulationType === REGULATION_TYPES.LOCAL.id,
                 then: (schema) => schema.required(),
             }),
         [TARGET_V]: yup

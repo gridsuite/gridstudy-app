@@ -42,7 +42,6 @@ import {
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { isDistantRegulationForPhase } from '../tap-changer-pane-utils';
 
 const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -55,8 +54,8 @@ const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-            is: isDistantRegulationForPhase,
+        .when([ENABLED, REGULATION_TYPE], {
+            is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
     [EQUIPMENT]: yup
@@ -67,8 +66,8 @@ const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
             [NAME]: yup.string().nullable(),
             [TYPE]: yup.string(),
         })
-        .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-            is: isDistantRegulationForPhase,
+        .when([ENABLED, REGULATION_TYPE], {
+            is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
 });
@@ -93,11 +92,8 @@ const phaseTapChangerValidationSchema = (id) => ({
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.LOCAL.id,
+            .when([ENABLED, REGULATION_TYPE], {
+                is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.LOCAL.id,
                 then: (schema) => schema.required(),
             }),
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
