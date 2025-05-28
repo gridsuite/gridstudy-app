@@ -6,7 +6,7 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import { Checkbox, CheckboxProps, FormControlLabel, SxProps } from '@mui/material';
+import { Checkbox, CheckboxProps, FormControlLabel } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { useCallback } from 'react';
@@ -19,8 +19,6 @@ interface CheckboxNullableInputProps {
     formProps?: CheckboxProps;
     previousValue?: string;
     nullDisabled?: boolean;
-    disabled?: boolean;
-    sx?: SxProps;
 }
 
 const CheckboxNullableInput = ({
@@ -30,8 +28,6 @@ const CheckboxNullableInput = ({
     formProps,
     previousValue,
     nullDisabled,
-    disabled,
-    sx,
 }: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
@@ -67,8 +63,6 @@ const CheckboxNullableInput = ({
                             'aria-label': 'primary checkbox',
                         }}
                         {...formProps}
-                        disabled={disabled}
-                        sx={sx}
                     />
                 }
                 label={
