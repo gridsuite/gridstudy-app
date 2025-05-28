@@ -307,6 +307,28 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         [createPendingDiagram, diagramAlreadyExists, fetchDiagramSvg, filterDiagramParams]
     );
 
+    const updateDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (filterDiagramParams([diagramParams]).length === 0) {
+                // this hook instance don't manage this type of diagram
+                return;
+            }
+            const existingDiagram = diagrams[diagramParams.diagramUuid];
+            if (!existingDiagram) {
+                // Diagram with UUID ${diagramParams.diagramUuid} not found
+                return;
+            }
+            const newDiagrams = { ...diagrams };
+            newDiagrams[diagramParams.diagramUuid] = {
+                ...newDiagrams[diagramParams.diagramUuid],
+                ...diagramParams,
+            };
+            setDiagrams(newDiagrams);
+            fetchDiagramSvg(newDiagrams[diagramParams.diagramUuid]);
+        },
+        [diagrams, fetchDiagramSvg, filterDiagramParams]
+    );
+
     const removeDiagram = useCallback((id: UUID) => {
         setDiagrams((oldDiagrams) => {
             if (oldDiagrams[id]) {
@@ -349,5 +371,5 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
-    return { diagrams, removeDiagram, createDiagram };
+    return { diagrams, removeDiagram, createDiagram, updateDiagram };
 };

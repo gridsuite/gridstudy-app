@@ -18,11 +18,13 @@ import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramAdditionalMetadata } from './diagram-common';
+import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
+import DiagramFooter from './diagram-footer';
+import { useIntl } from 'react-intl';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -81,6 +83,7 @@ interface DiagramGridLayoutProps {
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
+    const intl = useIntl();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
@@ -101,7 +104,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, removeDiagram, createDiagram } = useDiagramModel({
+    const { diagrams, removeDiagram, createDiagram, updateDiagram } = useDiagramModel({
         diagramTypes: enableDeveloperMode ? diagramTypes : [],
         onAddDiagram,
     });
@@ -174,6 +177,21 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, [diagrams]);
 
+    const onChangeDepth = useCallback(
+        (diagramId: UUID, newDepth: number) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    voltageLevelIds: diagram.voltageLevelIds,
+                    depth: newDepth,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -241,11 +259,26 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 visible={visible}
                             />
                         )}
+                        {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
+                            <DiagramFooter
+                                showCounterControls
+                                counterText={intl.formatMessage({
+                                    id: 'depth',
+                                })}
+                                counterValue={diagram.depth}
+                                onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
+                                onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
+                                incrementCounterDisabled={
+                                    diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
+                                }
+                                decrementCounterDisabled={diagram.depth === 0} // loadingState ||
+                            />
+                        )}
                     </Box>
                 </Box>
             );
         });
-    }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
+    }, [diagrams, intl, onChangeDepth, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
         if (savedLayouts) {
