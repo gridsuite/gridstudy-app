@@ -419,6 +419,7 @@
 
     "LimitType": "Type de limite",
     "ViolationType": "Type de contrainte",
+    "Bus": "Noeud électrique",
     "LimitSide": "Côté",
     "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",
@@ -1544,5 +1545,6 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
     "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+    "loadFlowModification": "Modification par calcul de répartition appliquée"
 }
