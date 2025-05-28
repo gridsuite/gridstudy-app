@@ -34,6 +34,10 @@ const styles = {
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(2),
     }),
+    icon: (theme: Theme) => ({
+        marginRight: theme.spacing(2),
+        fontSize: theme.spacing(2.75),
+    }),
 };
 
 const NodeEditor = () => {
@@ -63,11 +67,7 @@ const NodeEditor = () => {
 
     const renderLoadFlowModificationTable = () => {
         return (
-            <Alert
-                sx={styles.loadFlowModif}
-                icon={<CheckCircleOutlined style={{ marginRight: 8, fontSize: 22 }} />}
-                severity="success"
-            >
+            <Alert sx={styles.loadFlowModif} icon={<CheckCircleOutlined sx={styles.icon} />} severity="success">
                 <FormattedMessage id="loadFlowModification" />
             </Alert>
         );
