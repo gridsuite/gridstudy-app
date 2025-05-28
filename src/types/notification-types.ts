@@ -192,11 +192,6 @@ interface NetworkVisualizationParametersUpdatedEventDataHeaders extends CommonSt
     updateType: NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED;
 }
 
-interface RootNetworkModifiedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.ROOT_NETWORK_MODIFIED;
-    rootNetworkUuid: UUID;
-}
-
 interface RootNetworkUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.ROOT_NETWORKS_UPDATED;
     rootNetworkUuids: UUID[];
@@ -554,11 +549,6 @@ export interface ComputationParametersUpdatedEventData {
 
 export interface NetworkVisualizationParametersUpdatedEventData {
     headers: NetworkVisualizationParametersUpdatedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface RootNetworkModifiedEventData {
-    headers: RootNetworkModifiedEventDataHeaders;
     payload: undefined;
 }
 
@@ -1052,7 +1042,7 @@ export function isSpreadsheetNodeAliasesUpdatedNotification(notif: unknown): not
 export type StudyUpdateEventData =
     | StudyEventData
     | ComputationParametersUpdatedEventData
-    | RootNetworkModifiedEventData
+    | RootNetworkUpdatedEventData
     | RootNetworkUpdateFailedEventData
     | RootNetworkDeletionStartedEventData
     | IndexationStatusEventData
