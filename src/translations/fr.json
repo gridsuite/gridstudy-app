@@ -1424,6 +1424,7 @@
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
     "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
+    "reportLogsPerPage": "Logs par page : ",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant": "{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
@@ -1544,5 +1545,6 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
     "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+    "loadFlowModification": "Modification par calcul de répartition appliquée"
 }
