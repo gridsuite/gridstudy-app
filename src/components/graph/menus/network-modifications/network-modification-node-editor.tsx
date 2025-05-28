@@ -272,7 +272,7 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: 'CREATE_MULTIPLE',
+            id: 'TABULAR_CREATION',
             label: 'menu.createMultiple',
             action: () => withDefaultParams(TabularCreationDialog),
         },

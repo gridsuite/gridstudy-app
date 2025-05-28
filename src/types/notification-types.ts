@@ -23,7 +23,7 @@ export enum NotificationType {
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
     // Root networks
     ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
-    ROOT_NETWORK_UPDATED = 'rootNetworksUpdated',
+    ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
     ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
     // Nodes and tree
@@ -196,6 +196,11 @@ interface NetworkVisualizationParametersUpdatedEventDataHeaders extends CommonSt
 interface RootNetworkModifiedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.ROOT_NETWORK_MODIFIED;
     rootNetworkUuid: UUID;
+}
+
+interface RootNetworkUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.ROOT_NETWORKS_UPDATED;
+    rootNetworkUuids: UUID[];
 }
 
 interface RootNetworkUpdateFailedEventDataHeaders extends CommonStudyEventDataHeaders {
@@ -558,6 +563,11 @@ export interface RootNetworkModifiedEventData {
     payload: undefined;
 }
 
+export interface RootNetworkUpdatedEventData {
+    headers: RootNetworkUpdatedEventDataHeaders;
+    payload: undefined;
+}
+
 export interface RootNetworkUpdateFailedEventData {
     headers: RootNetworkUpdateFailedEventDataHeaders;
     payload: undefined;
@@ -869,6 +879,10 @@ export function isRootNetworkDeletionStartedNotification(notif: unknown): notif 
     );
 }
 
+export function isRootNetworksUpdatedNotification(notif: unknown): notif is RootNetworkUpdatedEventData {
+    return (notif as RootNetworkUpdatedEventData).headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATED;
+}
+
 export function isRootNetworkModifiedNotification(notif: unknown): notif is RootNetworkModifiedEventData {
     return (notif as RootNetworkModifiedEventData).headers?.updateType === NotificationType.ROOT_NETWORK_MODIFIED;
 }
@@ -881,6 +895,12 @@ export function isRootNetworkUpdateFailedNotification(notif: unknown): notif is 
 
 export function isNodeBuildCompletedNotification(notif: unknown): notif is NodeBuildCompletedEventData {
     return (notif as NodeBuildCompletedEventData).headers?.updateType === NotificationType.NODE_BUILD_COMPLETED;
+}
+
+export function isNodeBuildStatusUpdatedNotification(notif: unknown): notif is NodesBuildStatusUpdatedEventData {
+    return (
+        (notif as NodesBuildStatusUpdatedEventData).headers?.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED
+    );
 }
 
 export function isOneBusShortCircuitResultNotification(
