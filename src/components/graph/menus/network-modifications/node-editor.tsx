@@ -12,8 +12,12 @@ import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 import { setModificationsDrawerOpen } from '../../../../redux/actions';
 import { updateTreeNode } from '../../../../services/study/tree-subtree';
-import { Box } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
+import { CheckCircleOutlined } from '@mui/icons-material';
+import { FormattedMessage } from 'react-intl';
+import ComputingType from 'components/computing-status/computing-type';
+import RunningStatus from 'components/utils/running-status';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -23,6 +27,13 @@ const styles = {
         elevation: 3,
         background: theme.networkModificationPanel.backgroundColor,
     }),
+    loadFlowModif: (theme: Theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    }),
 };
 
 const NodeEditor = () => {
@@ -31,6 +42,7 @@ const NodeEditor = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
@@ -49,6 +61,17 @@ const NodeEditor = () => {
         });
     };
 
+    const renderLoadFlowModificationTable = () => {
+        return (
+            <Alert
+                sx={styles.loadFlowModif}
+                icon={<CheckCircleOutlined style={{ marginRight: 8, fontSize: 22 }} />}
+                severity="success"
+            >
+                <FormattedMessage id="loadFlowModification" />
+            </Alert>
+        );
+    };
     return (
         <Box sx={styles.paper}>
             <EditableTitle
@@ -58,6 +81,7 @@ const NodeEditor = () => {
                 showRootNetworkSelection={!isMonoRootStudy}
             />
             <NetworkModificationNodeEditor />
+            {loadFlowStatus === RunningStatus.SUCCEED && renderLoadFlowModificationTable()}
         </Box>
     );
 };

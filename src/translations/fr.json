@@ -1543,5 +1543,6 @@
     "Open": "Ouvert",
     "Closed": "Fermé",
     "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel"
+    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+    "loadFlowModification": "Modification par calcul de répartition appliquée"
 }
