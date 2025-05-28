@@ -142,13 +142,12 @@ const LogTable = ({
                         message: log.message,
                         parentId: log.parentId,
                         backgroundColor: log.severity.colorName,
-                    }) as unknown as ReportLog
+                    }) satisfies ReportLog
             );
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
-            resetSearch();
         });
-    }, [fetchReportLogs, messageFilter, resetSearch, selectedReport.id, selectedReport.type, severityFilter]);
+    }, [fetchReportLogs, messageFilter, selectedReport.id, selectedReport.type, severityFilter]);
 
     const getPagedReportLogs = useCallback(() => {
         fetchPagedReportLogs(selectedReport.id, severityFilter, messageFilter, page, rowsPerPage)?.then((pagedLogs) => {
@@ -166,7 +165,7 @@ const LogTable = ({
                         message: log.message,
                         parentId: log.parentId,
                         backgroundColor: log.severity.colorName,
-                    }) as unknown as ReportLog
+                    }) satisfies ReportLog
             );
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
@@ -176,7 +175,6 @@ const LogTable = ({
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityFilter.length === 0) {
             setRowData([]);
-            resetSearch();
             return;
         }
         if (selectedReport.type === ReportType.GLOBAL) {
@@ -184,7 +182,7 @@ const LogTable = ({
         } else {
             getPagedReportLogs();
         }
-    }, [severityFilter.length, selectedReport.type, resetSearch, getReportLogs, getPagedReportLogs]);
+    }, [severityFilter.length, selectedReport.type, getReportLogs, getPagedReportLogs]);
 
     useEffect(() => {
         if (severities && severities.length > 0) {
@@ -217,8 +215,7 @@ const LogTable = ({
 
     useEffect(() => {
         onFiltersChanged();
-        resetSearch();
-    }, [filters, onFiltersChanged, resetSearch]);
+    }, [filters, onFiltersChanged]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -426,14 +423,17 @@ const LogTable = ({
         [searchMatches]
     );
 
-    const handleChangeRowsPerPage = useCallback(
-        (event: any) => {
-            resetSearch();
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
-        },
-        [resetSearch]
-    );
+    const handleChangeRowsPerPage = useCallback((event: any) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    }, []);
+
+    // This effect enables to recompute the research when selected node, filters or page size change for example
+    useEffect(() => {
+        handleSearch(searchTerm);
+        // We don't want to trigger the effect on searchTerm change because it is already done in QuickSearch component
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [handleSearch]);
 
     return (
         <Box
@@ -446,7 +446,6 @@ const LogTable = ({
             <Box sx={styles.quickSearch}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
-                    selectedReportId={selectedReport.id}
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
