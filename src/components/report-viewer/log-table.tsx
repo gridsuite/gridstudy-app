@@ -233,7 +233,7 @@ const LogTable = ({
                     forceDisplayFilterIcon: true,
                 },
                 flex: 1,
-                cellRenderer: (param: ICellRendererParams) =>
+                cellRenderer: (param: ICellRendererParams<Log>) =>
                     MessageLogCellRenderer({
                         param: param,
                         highlightColor: theme.searchedText.highlightColor,
@@ -257,7 +257,7 @@ const LogTable = ({
     );
 
     const handleRowClick = useCallback(
-        (row: CellClickedEvent) => {
+        (row: CellClickedEvent<Log>) => {
             setSelectedRowIndex(row.rowIndex);
             onRowClick(row.data);
         },
@@ -265,7 +265,7 @@ const LogTable = ({
     );
 
     const rowStyleFormat = useCallback(
-        (row: RowClassParams): RowStyle => {
+        (row: RowClassParams<Log>): RowStyle => {
             if (row.rowIndex && row.rowIndex < 0) {
                 return {};
             }
@@ -319,8 +319,8 @@ const LogTable = ({
             const searchTermLower = searchTerm.toLowerCase();
 
             if (selectedReport.type === ReportType.GLOBAL) {
-                api.forEachNode((node: IRowNode) => {
-                    const { message } = node.data;
+                api.forEachNode((node: IRowNode<Log>) => {
+                    const message = node.data?.message ?? '';
                     if (node.rowIndex !== null && message?.toLowerCase().includes(searchTermLower)) {
                         matches.push(node.rowIndex);
                     }
