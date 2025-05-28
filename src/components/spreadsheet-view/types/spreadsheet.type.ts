@@ -9,7 +9,7 @@ import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
-import { SpreadsheetGlobalFilter } from 'services/study/filter';
+import { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
@@ -63,7 +63,7 @@ export type SpreadsheetConfig = {
     name: string;
     sheetType: SpreadsheetEquipmentType;
     columns: ColumnDefinitionDto[];
-    globalFilters?: SpreadsheetGlobalFilter[];
+    globalFilters?: GlobalFilter[];
 };
 
 export type SpreadsheetConfigDto = SpreadsheetConfig & {

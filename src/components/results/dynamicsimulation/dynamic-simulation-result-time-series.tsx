@@ -192,7 +192,7 @@ const DynamicSimulationResultTimeSeries = memo(function ({
                     {/* tab contents */}
                     <Box
                         sx={{
-                            height: 'calc(100vh - 220px)', // TODO fix layout to use flexGrow : 1
+                            height: 'calc(100vh - 270px)', // TODO fix layout to use flexGrow : 1
                         }}
                     >
                         {tabs.map((tab, index) => (
