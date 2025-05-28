@@ -60,3 +60,20 @@ export type SelectedReportLog = {
     id: string;
     type: ReportType;
 };
+
+export type PagedReportLogs = {
+    content: ReportLog[];
+    totalElements: number;
+    totalPages: number;
+};
+
+export type PagedLogs = {
+    content: Log[];
+    totalElements: number;
+    totalPages: number;
+};
+
+export type MatchPosition = {
+    page: number;
+    rowIndex: number;
+};
