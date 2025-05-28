@@ -7,7 +7,14 @@
 
 import { useMemo } from 'react';
 import App from './app';
-import { createTheme, CssBaseline, responsiveFontSizes, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import {
+    createTheme,
+    CssBaseline,
+    responsiveFontSizes,
+    ThemeProvider,
+    StyledEngineProvider,
+    GlobalStyles,
+} from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
     LIGHT_THEME,
@@ -50,6 +57,8 @@ import {
     importParamsFr,
     exportParamsEn,
     exportParamsFr,
+    parametersEn,
+    parametersFr,
     NotificationsProvider,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
@@ -88,6 +97,8 @@ import {
 } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
+import { lightThemeCssVars } from '../styles/light-theme-css-vars';
+import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -310,6 +321,7 @@ const messages = {
         ...errors_locale_en,
         ...events_locale_en,
         ...spreadsheet_locale_en,
+        ...parametersEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -342,6 +354,7 @@ const messages = {
         ...errors_locale_fr,
         ...events_locale_fr,
         ...spreadsheet_locale_fr,
+        ...parametersFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
@@ -353,6 +366,8 @@ const AppWrapperWithRedux = () => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
+    const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+
     const urlMapper = useNotificationsUrlGenerator();
 
     return (
@@ -362,6 +377,7 @@ const AppWrapperWithRedux = () => {
                     <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
+                            <GlobalStyles styles={{ ':root': rootCssVars }} />
                             <CardErrorBoundary>
                                 <NotificationsProvider urls={urlMapper}>
                                     <App />

@@ -109,6 +109,7 @@ import {
     ModificationsUpdatingInProgressEventData,
     NotificationType,
 } from 'types/notification-types';
+import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 
 const nonEditableModificationTypes = new Set([
@@ -328,6 +329,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
                     label: 'VSC',
                     action: () => withDefaultParams(VscModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
+                    label: 'LCC',
+                    action: () => withDefaultParams(LccModificationDialog),
                 },
             ],
         },

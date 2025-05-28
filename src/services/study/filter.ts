@@ -20,12 +20,6 @@ export interface ExpertFilter {
     topologyKind?: string; // TODO must be TopologyKind enum
 }
 
-export interface SpreadsheetGlobalFilter {
-    uuid?: UUID;
-    filterId: UUID;
-    name: string;
-}
-
 export interface FilterEquipments {
     filterId: UUID;
     identifiableAttributes: IdentifiableAttributes[];
@@ -38,7 +32,7 @@ export interface IdentifiableAttributes {
     distributionKey: number;
 }
 
-export function evaluateJsonFilter(
+export async function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
@@ -59,7 +53,7 @@ export function evaluateJsonFilter(
     });
 }
 
-export function evaluateFilters(
+export async function evaluateFilters(
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
     filters: UUID[]

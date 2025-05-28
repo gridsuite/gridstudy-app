@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import GridSection from '../../commons/grid-section';
-import { ParameterFloat } from '../widget';
-import { styles } from '../parameters-style';
 import { qualityParametersFields, TabValue } from './state-estimation-parameters-utils';
 import {
     QUALITY_PER_REGION,
@@ -26,9 +24,14 @@ import { useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
-import { IColumnsDef } from '../common/limitreductions/columns-definitions';
-import { FieldLabel, SwitchInput } from '@gridsuite/commons-ui';
-import CustomVoltageLevelTable from '../common/voltage-level-table/custom-voltage-level-table';
+import {
+    CustomVoltageLevelTable,
+    FieldLabel,
+    IColumnsDef,
+    ParameterFloat,
+    parametersStyles,
+    SwitchInput,
+} from '@gridsuite/commons-ui';
 
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
@@ -58,7 +61,7 @@ export const StateEstimationQualityParameters = () => {
             <Grid container item xs={8}>
                 <GridSection title="StateEstimationParametersQualitySection" heading={4} />
                 <Grid container item alignItems="center" spacing={2} direction={'row'}>
-                    <Grid item xs={10} sx={styles.parameterName}>
+                    <Grid item xs={10} sx={parametersStyles.parameterName}>
                         <FieldLabel label={'qualityPerRegion'} />
                     </Grid>
                     <Grid item xs={2}>
@@ -67,63 +70,63 @@ export const StateEstimationQualityParameters = () => {
                 </Grid>
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_OBSERVABILITY_RATE}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdObservabilityRate'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_ACT_REDUNDANCY}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdActRedundancy'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_REA_REDUNDANCY}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdReaRedundancy'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_NB_LOST_INJECTIONS}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdNbLostInjections'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_NB_INVALID_MEASURE}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdNbInvalidMeasure'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_NB_CRITICAL_MEASURE}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdNbCriticalMeasure'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_NB_OUT_BOUNDS_GAP}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdNbOutBoundsGap'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_NB_ITER}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdNbIter'}
                     labelSize={8}
                     inputSize={4}
                 />
                 <ParameterFloat
                     name={`${TabValue.QUALITY}.${THRESHOLD_NB_LOST_TRANSITS}`}
-                    style={styles.parameterName}
+                    style={parametersStyles.parameterName}
                     label={'thresholdNbLostTransits'}
                     labelSize={8}
                     inputSize={4}

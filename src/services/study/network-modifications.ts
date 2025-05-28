@@ -23,6 +23,7 @@ import {
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
+    LccModificationInfos,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
@@ -1753,6 +1754,38 @@ export function createLcc({
             converterStation2: converterStation2,
             properties: properties,
         }),
+    });
+}
+
+export function modifyLcc({
+    lccModificationInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    lccModificationInfos: LccModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        modifyLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
+        console.info('Updating lcc hvdc line modification');
+    } else {
+        console.info('Creating lcc hvdc line modification');
+    }
+
+    return backendFetchText(modifyLccUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(lccModificationInfos),
     });
 }
 

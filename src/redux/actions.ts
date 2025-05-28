@@ -22,7 +22,7 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     EquipmentUpdateType,
-    GsFilterSpreadsheetState,
+    GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
@@ -53,7 +53,6 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
@@ -130,8 +129,8 @@ export type AppActions =
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
-    | SaveSpreadSheetGsFilterAction
-    | ResetAllSpreadsheetGsFiltersAction
+    | SaveSpreadSheetGlobalFilterAction
+    | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -142,7 +141,8 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
-    | DeletedOrRenamedNodesAction;
+    | DeletedOrRenamedNodesAction
+    | RemoveEquipmentDataAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -212,6 +212,18 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     return {
         type: REMOVE_NODE_DATA,
         nodesIdToRemove,
+    };
+}
+
+export const REMOVE_EQUIPMENT_DATA = 'REMOVE_EQUIPMENT_DATA';
+export type RemoveEquipmentDataAction = Readonly<Action<typeof REMOVE_EQUIPMENT_DATA>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function removeEquipmentData(equipmentType: SpreadsheetEquipmentType): RemoveEquipmentDataAction {
+    return {
+        type: REMOVE_EQUIPMENT_DATA,
+        equipmentType: equipmentType,
     };
 }
 
@@ -1334,20 +1346,20 @@ export type InitTableDefinitionsAction = {
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
-    gsFilterSpreadsheetState?: GsFilterSpreadsheetState;
+    globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    gsFilterSpreadsheetState: GsFilterSpreadsheetState = {}
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
-    gsFilterSpreadsheetState,
+    globalFilterSpreadsheetState,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
@@ -1409,15 +1421,15 @@ export function setStateEstimationResultFilter(
 }
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
-export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: SpreadsheetGlobalFilter[];
+    filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
+export function saveSpreadsheetGlobalFilters(
     tabUuid: UUID,
-    filters: SpreadsheetGlobalFilter[]
-): SaveSpreadSheetGsFilterAction {
+    filters: GlobalFilter[]
+): SaveSpreadSheetGlobalFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
@@ -1440,9 +1452,9 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
 }
 
 export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
-export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
 
-export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
+export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
     };
@@ -1457,5 +1469,14 @@ export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrR
     return {
         type: DELETED_OR_RENAMED_NODES,
         deletedOrRenamedNodes,
+    };
+}
+
+export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
+export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
+
+export function resetDiagramEvent(): ResetDiagramEventAction {
+    return {
+        type: RESET_DIAGRAM_EVENT,
     };
 }

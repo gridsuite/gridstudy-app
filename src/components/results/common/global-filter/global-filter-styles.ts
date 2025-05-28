@@ -22,6 +22,9 @@ export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
         case FilterType.GENERIC_FILTER:
             chipStyle = resultsGlobalFilterStyles.chipGenericFilter;
             break;
+        case FilterType.SUBSTATION_PROPERTY:
+            chipStyle = resultsGlobalFilterStyles.chipSubstationProperty;
+            break;
     }
     return mergeSx(resultsGlobalFilterStyles.chip, chipStyle);
 };
@@ -36,6 +39,7 @@ export const resultsGlobalFilterStyles = {
         width: AUTOCOMPLETE_WIDTH + 'px',
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
+            maxHeight: '40px',
         },
         '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
             position: 'absolute',
@@ -47,6 +51,9 @@ export const resultsGlobalFilterStyles = {
         '.MuiInputLabel-root': {
             zIndex: 30,
             width: 'auto',
+        },
+        '.MuiInputBase-root': {
+            position: 'relative',
         },
     }),
     // from the expanded part :
@@ -137,6 +144,14 @@ export const resultsGlobalFilterStyles = {
         },
         '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${cyan['700']}!important`,
+        },
+    }),
+    chipSubstationProperty: (theme: Theme) => ({
+        '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
+            backgroundColor: `${theme.palette.success.main}!important`,
+        },
+        '&.MuiChip-root:hover, &.MuiChip-root:focus': {
+            backgroundColor: `${theme.palette.success.dark}!important`,
         },
     }),
 };

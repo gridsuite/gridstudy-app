@@ -20,10 +20,12 @@ import {
     networkVisualizationParametersSchema,
 } from './network-visualizations-form';
 import {
+    CreateParameterDialog,
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
     mergeSx,
+    parametersStyles,
     SubmitButton,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -36,11 +38,9 @@ import {
 } from '../../../../services/study/study-config';
 import { UUID } from 'crypto';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
-import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { getNetworkVisualizationsParameters } from '../../../../services/study-config';
 import { User } from 'oidc-client';
 import { getAvailableComponentLibraries } from 'services/study';
-import { styles } from '../parameters-style';
 import { isNetworkVisualizationParametersUpdatedNotification } from 'types/notification-types';
 
 const useGetAvailableComponentLibraries = (user: User | null) => {
@@ -155,7 +155,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
                     xs
                     item
                     container
-                    sx={mergeSx(styles.scrollableGrid, {
+                    sx={mergeSx(parametersStyles.scrollableGrid, {
                         display: 'unset',
                     })}
                 >
@@ -199,6 +199,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
+                    studyUuid={studyUuid}
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={() => getValues()}
