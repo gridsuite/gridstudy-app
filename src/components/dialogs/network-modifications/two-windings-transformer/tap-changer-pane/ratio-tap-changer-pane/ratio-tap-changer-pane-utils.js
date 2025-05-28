@@ -87,8 +87,11 @@ const ratioTapChangerValidationSchema = (id) => ({
         [REGULATION_TYPE]: yup
             .string()
             .nullable()
-            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES], {
-                is: (enabled, hasLoadTapChangingCapabilities) => enabled && hasLoadTapChangingCapabilities,
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE], {
+                is: (enabled, hasLoadTapChangingCapabilities, regulationMode) =>
+                    enabled &&
+                    hasLoadTapChangingCapabilities &&
+                    regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_SIDE]: yup
