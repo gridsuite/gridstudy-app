@@ -59,7 +59,7 @@ import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
-import { isLoadflowResultNotification, isRootNetworkModifiedNotification } from 'types/notification-types';
+import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
@@ -874,9 +874,9 @@ export const NetworkMapTab = ({
                 return;
             }
             const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworkModifiedNotification(eventData)) {
-                const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
-                if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
+            if (isRootNetworksUpdatedNotification(eventData)) {
+                const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
+                if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
                     setInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);
                     dispatch(resetMapEquipment());

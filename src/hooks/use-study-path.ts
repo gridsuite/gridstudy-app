@@ -16,7 +16,6 @@ import {
 import { computeFullPath } from '../utils/compute-title';
 import { studyUpdated } from '../redux/actions';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
 import { useDispatch, useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';

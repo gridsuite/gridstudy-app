@@ -14,7 +14,7 @@ import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import {
     isRootNetworkDeletionStartedNotification,
-    isRootNetworkModifiedNotification,
+    isRootNetworksUpdatedNotification,
     isRootNetworkUpdateFailedNotification,
 } from 'types/notification-types';
 
@@ -47,10 +47,10 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
         }
     }, [studyUuid, dispatch, setIsRootNetworksProcessing, snackError]);
 
-    const rootNetworkModifiedNotification = useCallback(
+    const rootNetworksUpdatedNotification = useCallback(
         (event: MessageEvent<string>) => {
             const eventData: unknown = JSON.parse(event.data);
-            if (isRootNetworkModifiedNotification(eventData)) {
+            if (isRootNetworksUpdatedNotification(eventData)) {
                 doFetchRootNetworks();
             }
         },
@@ -95,7 +95,7 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: rootNetworkModifiedNotification,
+        listenerCallbackMessage: rootNetworksUpdatedNotification,
     });
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworksUpdateFailedNotification,

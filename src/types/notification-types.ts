@@ -22,7 +22,6 @@ export enum NotificationType {
     COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
     NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
     // Root networks
-    ROOT_NETWORK_MODIFIED = 'rootNetworkModified',
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
     ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
@@ -881,10 +880,6 @@ export function isRootNetworkDeletionStartedNotification(notif: unknown): notif 
 
 export function isRootNetworksUpdatedNotification(notif: unknown): notif is RootNetworkUpdatedEventData {
     return (notif as RootNetworkUpdatedEventData).headers?.updateType === NotificationType.ROOT_NETWORKS_UPDATED;
-}
-
-export function isRootNetworkModifiedNotification(notif: unknown): notif is RootNetworkModifiedEventData {
-    return (notif as RootNetworkModifiedEventData).headers?.updateType === NotificationType.ROOT_NETWORK_MODIFIED;
 }
 
 export function isRootNetworkUpdateFailedNotification(notif: unknown): notif is RootNetworkUpdateFailedEventData {
