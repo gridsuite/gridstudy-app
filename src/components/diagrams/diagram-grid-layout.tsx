@@ -10,8 +10,7 @@ import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, darken, IconButton, Theme, useTheme } from '@mui/material';
-import { EquipmentInfos, EquipmentType, OverflowableText } from '@gridsuite/commons-ui';
-import CloseIcon from '@mui/icons-material/Close';
+import { EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import { UUID } from 'crypto';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
@@ -23,6 +22,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
+import DiagramHeader2, { BLINK_LENGTH_MS } from './diagram-header2';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -46,14 +46,6 @@ const styles = {
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
                 : theme.networkModificationPanel.backgroundColor,
-    }),
-    header: (theme: Theme) => ({
-        padding: theme.spacing(0.5),
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: theme.palette.background.default,
-        borderBottom: 'solid 1px',
-        borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
     }),
 };
 
@@ -84,6 +76,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
@@ -101,9 +94,25 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
+
+    const onDiagramAlreadyExists = useCallback((diagramUuid: UUID) => {
+        setBlinkingDiagrams((old_blinking_diagrams) => {
+            if (old_blinking_diagrams.includes(diagramUuid)) {
+                return old_blinking_diagrams;
+            }
+            return [...old_blinking_diagrams, diagramUuid];
+        });
+        setTimeout(() => {
+            setBlinkingDiagrams((old_blinking_diagrams) =>
+                old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid)
+            );
+        }, BLINK_LENGTH_MS);
+    }, []);
+
     const { diagrams, removeDiagram, createDiagram } = useDiagramModel({
         diagramTypes: enableDeveloperMode ? diagramTypes : [],
         onAddDiagram,
+        onDiagramAlreadyExists,
     });
 
     const onRemoveItem = useCallback(
@@ -146,13 +155,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         }
         return (
             <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Box sx={styles.header}>
-                    <OverflowableText
-                        className="react-grid-dragHandle"
-                        sx={{ flexGrow: '1' }}
-                        text={'Add a new diagram'}
-                    />
-                </Box>
+                <DiagramHeader2 diagramTitle={'Add a new diagram'} />
                 <Box
                     sx={{
                         display: 'flex',
@@ -190,22 +193,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             }
             return (
                 <Box key={diagram.diagramUuid} sx={styles.window}>
-                    <Box sx={styles.header}>
-                        <OverflowableText
-                            className="react-grid-dragHandle"
-                            sx={{ flexGrow: '1' }}
-                            text={diagram.name}
-                        />
-                        <IconButton
-                            size={'small'}
-                            onClick={(e) => {
-                                onRemoveItem(diagram.diagramUuid);
-                                e.stopPropagation();
-                            }}
-                        >
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    </Box>
+                    <DiagramHeader2
+                        diagramUuid={diagram.diagramUuid}
+                        diagramTitle={diagram.name}
+                        blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
+                        onClose={() => onRemoveItem(diagram.diagramUuid)}
+                    />
                     <Box sx={styles.diagramContainer}>
                         {(diagram.type === DiagramType.VOLTAGE_LEVEL || diagram.type === DiagramType.SUBSTATION) && (
                             <SingleLineDiagramContent
@@ -245,7 +238,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 </Box>
             );
         });
-    }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
+    }, [blinkingDiagrams, diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
         if (savedLayouts) {
