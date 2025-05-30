@@ -11,8 +11,10 @@ import { getDebugState, saveDebugState } from '../redux/session-storage/debug-st
 import ComputingType, { formatComputingTypeLabel } from '../components/computing-status/computing-type';
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
+import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
+import { fetchResultUuid } from '../services/study/study';
 
 export const UPDATE_TYPE_STUDY_DEBUG = 'STUDY_DEBUG';
 
@@ -53,10 +55,10 @@ export function unsetDebug(identifier: string) {
     }
 }
 
-export default function useDownloadDebug() {
+function useDebugFileDownload() {
     const { snackError, snackWarning } = useSnackMessage();
 
-    const downloadDebug = useCallback(
+    const downloadDebugFile = useCallback(
         (resultUuid: UUID, computingType: ComputingType) => {
             debugFetchers[computingType]?.(resultUuid) // download debug file from a specific computation server
                 .then(async (response) => {
@@ -92,5 +94,58 @@ export default function useDownloadDebug() {
         [snackWarning, snackError]
     );
 
-    return downloadDebug;
+    return downloadDebugFile;
+}
+
+export default function useDebug() {
+    const { snackWarning } = useSnackMessage();
+    const downloadDebug = useDebugFileDownload();
+
+    const onDebugNotification = useCallback(
+        (event: MessageEvent<string>) => {
+            const eventData = JSON.parse(event.data);
+            console.log('XXX evenData', { eventData });
+            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            if (updateTypeHeader === UPDATE_TYPE_STUDY_DEBUG) {
+                const {
+                    studyUuid,
+                    node: nodeUuid,
+                    rootNetworkUuid,
+                    computationType: computingType,
+                    error,
+                } = eventData.headers;
+                const debugIdentifierNotif = buildDebugIdentifier({
+                    studyUuid,
+                    nodeUuid,
+                    rootNetworkUuid,
+                    computingType,
+                });
+                const debug = getDebug(debugIdentifierNotif);
+                if (debug) {
+                    // download by notif once, so unset debug identifier
+                    unsetDebug(debugIdentifierNotif);
+                    if (error) {
+                        snackWarning({
+                            messageTxt: error,
+                        });
+                    } else {
+                        // perform download debug file once
+                        fetchResultUuid(
+                            {
+                                studyUuid,
+                                nodeUuid,
+                                rootNetworkUuid,
+                            },
+                            computingType
+                        ).then((resultUuid) => {
+                            resultUuid && downloadDebug(resultUuid, computingType);
+                        });
+                    }
+                }
+            }
+        },
+        [downloadDebug, snackWarning]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: onDebugNotification });
 }

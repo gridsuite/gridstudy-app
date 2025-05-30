@@ -38,7 +38,7 @@ import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useIntl } from 'react-intl';
-import { buildDebugIdentifier, setDebug } from '../hooks/use-download-debug';
+import useDebug, { buildDebugIdentifier, setDebug } from '../hooks/use-debug';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -98,6 +98,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+
+    useDebug();
 
     const startComputationAsync = useCallback(
         (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId, debug) => {

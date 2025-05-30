@@ -35,18 +35,12 @@ import { useAllComputingStatus } from './computing-status/use-all-computing-stat
 import { fetchCaseName } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
-import { fetchResultUuid, fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
+import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { RootNetworkIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
 import { UPDATE_TYPE_HEADER } from './use-node-data';
-import useDownloadDebug, {
-    buildDebugIdentifier,
-    getDebug,
-    unsetDebug,
-    UPDATE_TYPE_STUDY_DEBUG,
-} from '../hooks/use-download-debug';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -261,7 +255,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const handleStudyUpdate = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            console.log(`XXX notified`, { eventData });
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             if (updateTypeHeader === 'STUDY_ALERT') {
                 sendAlert(eventData);
@@ -275,58 +268,6 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
-
-    // --- Begin STUDY_DEBUG notification --- //
-    const downloadDebug = useDownloadDebug();
-
-    const onDebugNotification = useCallback(
-        (event) => {
-            const eventData = JSON.parse(event.data);
-            console.log(`XXX notified`, { eventData });
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-            if (updateTypeHeader === UPDATE_TYPE_STUDY_DEBUG) {
-                const {
-                    studyUuid,
-                    node: nodeUuid,
-                    rootNetworkUuid,
-                    computationType: computingType,
-                    error,
-                } = eventData.headers;
-                const debugIdentifierNotif = buildDebugIdentifier({
-                    studyUuid,
-                    nodeUuid,
-                    rootNetworkUuid,
-                    computingType,
-                });
-                const debug = getDebug(debugIdentifierNotif);
-                if (debug) {
-                    // download by notif once, so unset debug identifier
-                    unsetDebug(debugIdentifierNotif);
-                    if (error) {
-                        snackWarning({
-                            messageTxt: error,
-                        });
-                    } else {
-                        // perform download debug file once
-                        fetchResultUuid(
-                            {
-                                studyUuid,
-                                nodeUuid,
-                                rootNetworkUuid,
-                            },
-                            computingType
-                        ).then((resultUuid) => {
-                            downloadDebug(resultUuid, computingType);
-                        });
-                    }
-                }
-            }
-        },
-        [downloadDebug, snackWarning]
-    );
-
-    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: onDebugNotification });
-    // --- End STUDY_DEBUG notification --- //
 
     const closeWindow = useCallback(() => {
         window.close();
