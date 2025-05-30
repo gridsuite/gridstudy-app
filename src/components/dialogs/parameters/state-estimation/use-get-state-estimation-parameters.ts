@@ -11,7 +11,7 @@ import { AppState } from '../../../../redux/reducer';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
-import ComputingType from '../../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { StateEstimationParameters } from './state-estimation-parameters-utils';
 import { getStateEstimationStudyParameters } from '../../../../services/study/state-estimation';

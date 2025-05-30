@@ -44,7 +44,7 @@ import {
     PARAM_SA_PROVIDER,
 } from 'utils/config-params';
 import LineSeparator from '../../commons/line-separator';
-import ComputingType from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 

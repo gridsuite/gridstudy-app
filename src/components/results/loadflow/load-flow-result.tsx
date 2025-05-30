@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
 
 import { LoadflowResultProps } from './load-flow-result.type';
@@ -24,12 +24,13 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
+import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
     const theme = useTheme();
     const intl = useIntl();
 
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
 
     const gridRef = useRef<AgGridReact>(null);
 

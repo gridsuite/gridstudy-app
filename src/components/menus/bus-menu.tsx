@@ -13,7 +13,7 @@ import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functio
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';

@@ -24,7 +24,7 @@ import {
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import ComputingType from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
@@ -38,6 +38,7 @@ import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
+import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -157,7 +158,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
     const nadNodeMovementsRef = useRef<NadNodeMovement[]>([]);
     nadNodeMovementsRef.current = nadNodeMovements;

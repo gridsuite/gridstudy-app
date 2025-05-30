@@ -9,7 +9,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getNonEvacuatedEnergyParameters } from '../../../../services/study/non-evacuated-energy';
-import ComputingType from '../../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { AppState } from 'redux/reducer';

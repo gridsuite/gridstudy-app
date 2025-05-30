@@ -254,7 +254,7 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
@@ -452,8 +452,8 @@ export type StudyUpdated = {
 );
 
 export interface ComputingStatus {
-    [ComputingType.LOAD_FLOW]: RunningStatus;
-    [ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER]: RunningStatus;
+    [ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: RunningStatus;
+    [ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
@@ -678,7 +678,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 export type LogsFilterState = Record<string, FilterConfig[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SENSITIVITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: [],
@@ -779,8 +779,8 @@ const initialState: AppState = {
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
     computingStatus: {
-        [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
-        [ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER]: RunningStatus.IDLE,
+        [ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: RunningStatus.IDLE,
+        [ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,

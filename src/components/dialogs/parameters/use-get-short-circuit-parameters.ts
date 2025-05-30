@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { getShortCircuitParameters } from '../../../services/study/short-circuit-analysis';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
-import ComputingType from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';

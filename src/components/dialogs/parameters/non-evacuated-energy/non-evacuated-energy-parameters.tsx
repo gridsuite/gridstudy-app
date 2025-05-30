@@ -64,7 +64,7 @@ import {
     NonEvacuatedEnergyParametersForm,
     UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
-import ComputingType from '../../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';

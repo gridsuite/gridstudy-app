@@ -72,7 +72,7 @@ import {
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
-import ComputingType from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;

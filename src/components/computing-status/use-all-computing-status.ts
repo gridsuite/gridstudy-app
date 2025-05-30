@@ -19,7 +19,7 @@ import {
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
-import { ComputingType } from './computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
@@ -28,7 +28,10 @@ import {
     fetchShortCircuitAnalysisStatus,
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
-import { fetchLoadFlowStatus } from '../../services/study/loadflow';
+import {
+    fetchLoadFlowWithoutRatioTapChangersStatus,
+    fetchLoadFlowWithRatioTapChangersStatus,
+} from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
@@ -37,6 +40,10 @@ import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic
 
 // status invalidations
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
+const loadFlowStatusWithRatioTapChangersInvalidations = [
+    'loadflowWithRatioTapChangers_status',
+    'loadflowWithRatioTapChangers_failed',
+];
 const securityAnalysisStatusInvalidations = ['securityAnalysis_status', 'securityAnalysis_failed'];
 const sensitivityAnalysisStatusInvalidations = ['sensitivityAnalysis_status', 'sensitivityAnalysis_failed'];
 const nonEvacuatedEnergyStatusInvalidations = ['nonEvacuatedEnergy_status', 'nonEvacuatedEnergy_failed'];
@@ -52,6 +59,10 @@ const stateEstimationStatusInvalidations = ['stateEstimation_status', 'stateEsti
 
 // status completions
 const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
+const loadFlowWithRatioTapChangersStatusCompletions = [
+    'loadflowWithRatioTapChangersResult',
+    'loadflowWithRatioTapChangers_failed',
+];
 const securityAnalysisStatusCompletions = ['securityAnalysisResult', 'securityAnalysis_failed'];
 const sensitivityAnalysisStatusCompletions = ['sensitivityAnalysisResult', 'sensitivityAnalysis_failed'];
 const nonEvacuatedEnergyStatusCompletions = ['nonEvacuatedEnergyResult', 'nonEvacuatedEnergy_failed'];
@@ -89,11 +100,22 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid,
-        fetchLoadFlowStatus,
+        fetchLoadFlowWithoutRatioTapChangersStatus,
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
-        ComputingType.LOAD_FLOW
+        ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchLoadFlowWithRatioTapChangersStatus,
+        loadFlowStatusWithRatioTapChangersInvalidations,
+        loadFlowWithRatioTapChangersStatusCompletions,
+        getLoadFlowRunningStatus,
+        ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS
     );
 
     useComputingStatus(

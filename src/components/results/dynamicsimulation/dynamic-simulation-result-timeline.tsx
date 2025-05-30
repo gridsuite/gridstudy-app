@@ -13,7 +13,7 @@ import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import ComputingType from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';

@@ -12,7 +12,7 @@ import { setComputationStarting, setComputingStatus, setLogsFilter } from '../re
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
-import ComputingType from './computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
@@ -48,7 +48,12 @@ const checkDynamicSimulationParameters = (studyUuid) => {
     });
 };
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowWithoutRatioTapChangersStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]
+    );
+    const loadFlowWithRatioTapChangersStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]
+    );
 
     const securityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]);
 
@@ -166,27 +171,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         }
 
         return {
-            [ComputingType.LOAD_FLOW]: {
+            [ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: {
                 messageId: 'LoadFlow',
                 startComputation() {
                     startComputationAsync(
-                        ComputingType.LOAD_FLOW,
-                        null,
-                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
-                        () => {},
-                        null,
-                        'startLoadFlowError'
-                    );
-                },
-                actionOnRunnable() {
-                    actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id));
-                },
-            },
-            [ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER]: {
-                messageId: 'LoadFlowWithoutTapChanger',
-                startComputation() {
-                    startComputationAsync(
-                        ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER,
+                        ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS,
                         null,
                         () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
                         () => {},
@@ -195,7 +184,27 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id));
+                    actionOnRunnables(ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS, () =>
+                        stopLoadFlow(studyUuid, currentNode?.id, false)
+                    );
+                },
+            },
+            [ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]: {
+                messageId: 'LoadFlowWithRatioTapChangers',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS,
+                        null,
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
+                        () => {},
+                        null,
+                        'startLoadFlowError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS, () =>
+                        stopLoadFlow(studyUuid, currentNode?.id, true)
+                    );
                 },
             },
             [ComputingType.SECURITY_ANALYSIS]: {
@@ -355,9 +364,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const getRunningStatus = useCallback(
         (computingType) => {
             switch (computingType) {
-                case ComputingType.LOAD_FLOW:
-                case ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER:
-                    return loadFlowStatus;
+                case ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS:
+                    return loadFlowWithoutRatioTapChangersStatus;
+                case ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS:
+                    return loadFlowWithRatioTapChangersStatus;
                 case ComputingType.SECURITY_ANALYSIS:
                     return securityAnalysisStatus;
                 case ComputingType.SENSITIVITY_ANALYSIS:
@@ -379,7 +389,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             }
         },
         [
-            loadFlowStatus,
+            loadFlowWithoutRatioTapChangersStatus,
+            loadFlowWithRatioTapChangersStatus,
             securityAnalysisStatus,
             sensitivityAnalysisStatus,
             nonEvacuatedEnergyStatus,
@@ -394,8 +405,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            ComputingType.LOAD_FLOW,
-            ComputingType.LOAD_FLOW_WITHOUT_TAP_CHANGER,
+            ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS,
+            ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS,
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]

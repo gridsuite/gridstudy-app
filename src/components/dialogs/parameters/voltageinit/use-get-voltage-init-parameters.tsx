@@ -13,7 +13,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
-import ComputingType from '../../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { isComputationParametersUpdated } from '../use-parameters-notification';
 

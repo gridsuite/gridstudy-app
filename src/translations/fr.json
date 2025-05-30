@@ -177,7 +177,7 @@
     "RegulatingTerminal": "Nœud réglé",
 
     "LoadFlow": "Calcul de répartition",
-    "LoadFlowWithoutTapChanger": "Calcul de répartition (sans régleur)",
+    "LoadFlowWithRatioTapChangers": "Calcul de répartition avec régleurs",
     "Network": "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
     "VoltageInit": "Initialisation du plan de tension",
