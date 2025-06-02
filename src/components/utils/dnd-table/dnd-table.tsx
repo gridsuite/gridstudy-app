@@ -358,11 +358,14 @@ const DndTable = (props: DndTableProps) => {
     function renderTableHead() {
         return (
             <TableHead>
-                <TableRow>
+                <TableRow sx={{ verticalAlign: 'text-top' }}>
                     {!disableDragAndDrop && (
-                        <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
+                        <TableCell sx={{
+                            width: '3%',
+                            verticalAlign: 'middle',
+                        }}>{/* empty cell for the drag and drop column */}</TableCell>
                     )}
-                    <TableCell sx={{ width: '5%', textAlign: 'center' }}>
+                    <TableCell sx={{ width: '5%', textAlign: 'center', verticalAlign: 'middle' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
                             handleClickCheck={selectAllRows}

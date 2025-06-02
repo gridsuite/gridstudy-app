@@ -41,9 +41,6 @@ export const TableTextInput = ({ name, showErrorMsg, inputProps, ...props }: Tab
             fullWidth
             inputRef={ref}
             inputProps={{
-                style: {
-                    fontSize: 'small',
-                },
                 ...inputProps,
             }}
             InputProps={{

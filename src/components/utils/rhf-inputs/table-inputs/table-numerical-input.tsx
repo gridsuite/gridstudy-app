@@ -95,7 +95,6 @@ export const TableNumericalInput = ({
             inputRef={ref}
             inputProps={{
                 style: {
-                    fontSize: 'small',
                     color:
                         previousValue !== undefined && previousValue === parseFloat(value) && !valueModified
                             ? 'grey'
