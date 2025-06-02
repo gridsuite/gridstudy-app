@@ -245,13 +245,14 @@ export const useSpreadsheetEquipments = (
             }
         },
         [
+            type,
+            currentNode?.id,
             studyUuid,
             currentRootNetworkUuid,
-            currentNode?.id,
             dispatch,
-            type,
-            highlightUpdatedEquipment,
+            allEquipments,
             equipmentToUpdateId,
+            highlightUpdatedEquipment,
         ]
     );
 
