@@ -35,6 +35,7 @@ export function isSldType(type: DiagramType): type is SLD {
 
 // Create diagram parameters
 type DiagramBaseParams = {
+    diagramUuid: UUID;
     type: DiagramType;
 };
 

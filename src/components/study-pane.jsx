@@ -23,6 +23,7 @@ import HorizontalToolbar from './horizontal-toolbar';
 const styles = {
     tabsContainer: {
         flexGrow: 1,
+        height: '100%',
     },
     '@global': {
         '@keyframes spin': {
