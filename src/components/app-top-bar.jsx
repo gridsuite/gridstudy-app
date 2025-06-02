@@ -6,12 +6,12 @@
  */
 
 import { useEffect, useState } from 'react';
-import { fetchAppsMetadata, LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
+import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Tab, Tabs } from '@mui/material';
 import { Settings } from '@mui/icons-material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -21,24 +21,11 @@ import { getServersInfos } from '../services/study';
 import { fetchVersion } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
-import { ROOT_NODE_LABEL } from '../constants/node.constant';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { StudyView } from './utils/utils';
+import { STUDY_VIEWS, StudyView } from './utils/utils';
 
 const styles = {
-    currentNodeBox: {
-        width: '15%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderColor: '#123456',
-    },
-    currentNodeLabel: (theme) => ({
-        color: theme.palette.primary.main,
-        margin: theme.spacing(1.5),
-        fontWeight: 'bold',
-    }),
-    boxContent: { display: 'flex', width: '100%' },
+    boxContent: (theme) => ({ display: 'flex', width: '100%', marginLeft: theme.spacing(4) }),
     tabs: {},
     searchButton: {
         marginTop: 'auto',
@@ -55,12 +42,8 @@ const styles = {
     },
 };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
-
 const AppTopBar = ({ user, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
-    const intl = useIntl();
-
     const theme = useSelector((state) => state[PARAM_THEME]);
     const appTabIndex = useSelector((state) => state.appTabIndex);
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -105,20 +88,6 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
         >
-            {/* Add current Node name between Logo and Tabs */}
-            {user && currentNode && (
-                <Box sx={styles.currentNodeBox}>
-                    {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
-                    <OverflowableText
-                        sx={styles.currentNodeLabel}
-                        text={
-                            currentNode?.data?.label === ROOT_NODE_LABEL
-                                ? intl.formatMessage({ id: 'root' })
-                                : currentNode?.data?.label
-                        }
-                    />
-                </Box>
-            )}
             {user && studyUuid && currentRootNetworkUuid && (
                 <Box sx={styles.boxContent}>
                     <Tabs

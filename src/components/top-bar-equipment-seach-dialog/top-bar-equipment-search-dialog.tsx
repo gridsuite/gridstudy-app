@@ -34,10 +34,11 @@ interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: EquipmentInfos) => void;
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    disableEventSearch?: boolean;
 }
 
 export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
-    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram } = props;
+    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram, disableEventSearch } = props;
     const intl = useIntl();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -58,8 +59,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
     const disabledSearchReason = useDisabledSearchReason();
 
     const enableSearchDialog = useCallback(() => {
-        setIsDialogSearchOpen(true);
-    }, [setIsDialogSearchOpen]);
+        if (!disableEventSearch) {
+            setIsDialogSearchOpen(true);
+        }
+    }, [disableEventSearch, setIsDialogSearchOpen]);
 
     const { snackWarning } = useSnackMessage();
 

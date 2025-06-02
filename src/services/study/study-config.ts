@@ -8,9 +8,9 @@
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
-import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { SpreadsheetGlobalFilter } from './filter';
 import { NetworkVisualizationParameters } from '@gridsuite/commons-ui';
+import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
+import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -119,7 +119,7 @@ export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: U
 export function setGlobalFiltersToSpreadsheetConfig(
     studyUuid: UUID,
     spreadsheetModelUuid: UUID,
-    filters: SpreadsheetGlobalFilter[]
+    filters: GlobalFilter[]
 ) {
     const fetchUrl = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/global-filters`;
     return backendFetchJson(fetchUrl, {

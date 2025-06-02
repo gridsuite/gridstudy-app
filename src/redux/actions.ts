@@ -23,7 +23,7 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     EquipmentUpdateType,
-    GsFilterSpreadsheetState,
+    GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
@@ -55,7 +55,6 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -131,8 +130,8 @@ export type AppActions =
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
-    | SaveSpreadSheetGsFilterAction
-    | ResetAllSpreadsheetGsFiltersAction
+    | SaveSpreadSheetGlobalFilterAction
+    | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -1348,20 +1347,20 @@ export type InitTableDefinitionsAction = {
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
     tablesFilters?: SpreadsheetFilterState;
-    gsFilterSpreadsheetState?: GsFilterSpreadsheetState;
+    globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
     tableDefinitions: SpreadsheetTabDefinition[],
     tablesFilters: SpreadsheetFilterState = {},
-    gsFilterSpreadsheetState: GsFilterSpreadsheetState = {}
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
     tablesFilters,
-    gsFilterSpreadsheetState,
+    globalFilterSpreadsheetState,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
@@ -1423,15 +1422,15 @@ export function setStateEstimationResultFilter(
 }
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
-export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: SpreadsheetGlobalFilter[];
+    filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
+export function saveSpreadsheetGlobalFilters(
     tabUuid: UUID,
-    filters: SpreadsheetGlobalFilter[]
-): SaveSpreadSheetGsFilterAction {
+    filters: GlobalFilter[]
+): SaveSpreadSheetGlobalFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
@@ -1454,9 +1453,9 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
 }
 
 export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
-export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
 
-export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
+export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
     };

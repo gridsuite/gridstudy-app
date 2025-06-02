@@ -20,6 +20,9 @@ export const GlobalFilterContext = createContext<{
     setSelectedGlobalFilters: (selectedGlobalFilters: GlobalFilter[]) => void;
     // callback to communicate to parent component
     onChange: (globalFilters: GlobalFilter[]) => void;
+    filterCategories: string[];
+    genericFiltersStrictMode: boolean;
+    equipmentTypes: string[] | undefined;
 }>({
     openedDropdown: false,
     setOpenedDropdown: () => {},
@@ -30,4 +33,7 @@ export const GlobalFilterContext = createContext<{
     selectedGlobalFilters: [],
     setSelectedGlobalFilters: () => {},
     onChange: () => {},
+    filterCategories: [],
+    genericFiltersStrictMode: false,
+    equipmentTypes: undefined,
 });

@@ -376,22 +376,22 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     return (
         <>
             <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid container spacing={1} paddingTop={1}>
-                    <Grid item xs={8} sx={parametersStyles.parameterName}>
-                        <FormattedMessage id="Provider" />
+                <Grid container key="nonEvacuatedEnergyParameters" sx={{ height: '100%' }} direction="column">
+                    <Grid container spacing={1} paddingTop={1}>
+                        <Grid item xs={8} sx={parametersStyles.parameterName}>
+                            <FormattedMessage id="Provider" />
+                        </Grid>
+                        <Grid item xs={4} sx={parametersStyles.controlItem}>
+                            <MuiSelectInput
+                                fullWidth
+                                name={PROVIDER}
+                                size="small"
+                                options={Object.values(providers).map((provider) => {
+                                    return { id: provider, label: provider };
+                                })}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={4} sx={parametersStyles.controlItem}>
-                        <MuiSelectInput
-                            fullWidth
-                            name={PROVIDER}
-                            size="small"
-                            options={Object.values(providers).map((provider) => {
-                                return { id: provider, label: provider };
-                            })}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid container sx={parametersStyles.scrollableGrid} key="nonEvacuatedEnergyParameters">
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
@@ -399,22 +399,21 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                         onFormChanged={onFormChanged}
                         onChangeParams={onChangeParams}
                     />
-                </Grid>
-
-                <Grid item container>
-                    <DialogActions
-                        sx={mergeSx(parametersStyles.controlParametersItem, {
-                            paddingLeft: 0,
-                            paddingBottom: 2,
-                        })}
-                    >
-                        <Button onClick={clear}>
-                            <FormattedMessage id="resetToDefault" />
-                        </Button>
-                        <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined">
-                            <FormattedMessage id="validate" />
-                        </SubmitButton>
-                    </DialogActions>
+                    <Grid item container>
+                        <DialogActions
+                            sx={mergeSx(parametersStyles.controlParametersItem, {
+                                paddingLeft: 0,
+                                paddingBottom: 2,
+                            })}
+                        >
+                            <Button onClick={clear}>
+                                <FormattedMessage id="resetToDefault" />
+                            </Button>
+                            <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </DialogActions>
+                    </Grid>
                 </Grid>
             </CustomFormProvider>
         </>

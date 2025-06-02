@@ -7,7 +7,14 @@
 
 import { useMemo } from 'react';
 import App from './app';
-import { createTheme, CssBaseline, responsiveFontSizes, ThemeProvider, StyledEngineProvider } from '@mui/material';
+import {
+    createTheme,
+    CssBaseline,
+    responsiveFontSizes,
+    ThemeProvider,
+    StyledEngineProvider,
+    GlobalStyles,
+} from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
     LIGHT_THEME,
@@ -87,6 +94,8 @@ import { store } from '../redux/store';
 import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
+import { lightThemeCssVars } from '../styles/light-theme-css-vars';
+import { darkThemeCssVars } from '../styles/dark-theme-css-vars';
 
 // Register all community features (migration to V33)
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -354,6 +363,8 @@ const AppWrapperWithRedux = () => {
     const theme = useSelector((state) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
+    const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
+
     const urlMapper = useNotificationsUrlGenerator();
 
     return (
@@ -363,6 +374,7 @@ const AppWrapperWithRedux = () => {
                     <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
+                            <GlobalStyles styles={{ ':root': rootCssVars }} />
                             <CardErrorBoundary>
                                 <NotificationsProvider urls={urlMapper}>
                                     <App />
