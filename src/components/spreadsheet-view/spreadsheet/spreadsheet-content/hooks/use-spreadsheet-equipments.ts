@@ -9,7 +9,14 @@ import { type Identifiable, NotificationsUrlKeys, useNotificationsListener } fro
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteEquipments, EquipmentToDelete, removeNodeData, resetEquipments, resetEquipmentsByTypes, updateEquipments } from 'redux/actions';
+import {
+    deleteEquipments,
+    EquipmentToDelete,
+    removeNodeData,
+    resetEquipments,
+    resetEquipmentsByTypes,
+    updateEquipments,
+} from 'redux/actions';
 import { type AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
