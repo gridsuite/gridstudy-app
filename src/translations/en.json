@@ -176,7 +176,7 @@
     "PhaseTap3": "Phase tap 3",
     "RegulatingTerminal": "Regulated node",
 
-    "LoadFlow": "LoadFlow",
+    "LoadFlow": "Loadflow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
     "VoltageInit": "Voltage profile initialization",
@@ -1550,5 +1550,5 @@
     "Closed": "Closed",
     "DiagramGridLayout": "Diagram grid layout",
     "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
-    "loadFlowModification": "LoadFlow Modification applied"
+    "loadFlowModification": "Loadflow modification applied"
 }
