@@ -9,7 +9,7 @@ import { type Identifiable, NotificationsUrlKeys, useNotificationsListener } fro
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteEquipments, EquipmentToDelete, removeNodeData, updateEquipments } from 'redux/actions';
+import { deleteEquipments, EquipmentToDelete, removeNodeData, resetEquipments, resetEquipmentsByTypes, updateEquipments } from 'redux/actions';
 import { type AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
@@ -70,6 +70,7 @@ export const useSpreadsheetEquipments = (
     active: boolean = false
 ) => {
     const dispatch = useDispatch();
+    const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isNetworkModificationTreeModelUpToDate = useSelector(
@@ -150,12 +151,30 @@ export const useSpreadsheetEquipments = (
     }, [builtAliasedNodesIds, currentNode, dispatch, equipments]);
 
     const updateEquipmentsLocal = useCallback(
-        (impactedSubstationsIds: string[], deletedEquipments: { equipmentType: string; equipmentId: string }[]) => {
+        (
+            impactedSubstationsIds: string[],
+            deletedEquipments: { equipmentType: string; equipmentId: string }[],
+            impactedElementTypes: string[]
+        ) => {
             if (!type) {
                 return;
             }
             // updating data related to impacted elements
             const nodeId = currentNode?.id as UUID;
+
+            // Handle updates and resets based on impacted element types
+            if (impactedElementTypes.length > 0) {
+                if (impactedElementTypes.includes(EQUIPMENT_TYPES.SUBSTATION)) {
+                    dispatch(resetEquipments());
+                    return;
+                }
+                const impactedSpreadsheetEquipmentsTypes = impactedElementTypes.filter((type) =>
+                    Object.keys(allEquipments).includes(type)
+                );
+                if (impactedSpreadsheetEquipmentsTypes.length > 0) {
+                    dispatch(resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes as SpreadsheetEquipmentType[]));
+                }
+            }
 
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
                 // The formatting of the fetched equipments is done in the reducer
@@ -245,7 +264,8 @@ export const useSpreadsheetEquipments = (
                     const payload = JSON.parse(eventData.payload);
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
-                    updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments);
+                    const impactedElementTypes = payload.impactedElementTypes ?? [];
+                    updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
                 }
             }
         },
