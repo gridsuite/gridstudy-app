@@ -8,32 +8,33 @@
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FetchStatus } from '../../../../services/utils.js';
-import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector.js';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types.js';
-import { ModificationDialog } from '../../commons/modificationDialog.js';
+import { FetchStatus } from '../../../../../services/utils.js';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector.js';
+import { ModificationDialog } from '../../../commons/modificationDialog.js';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form.js';
-import { FORM_LOADING_DELAY } from '../../../network/constants.js';
-import { createCouplingDevice } from '../../../../services/study/network-modifications.js';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
-import yup from '../../../utils/yup-config.js';
-import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../services/study/network.js';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from '../../../../network/constants.js';
+import { createCouplingDevice } from '../../../../../services/study/network-modifications.js';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
+import yup from '../../../../utils/yup-config.js';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network.js';
 import { CreateCouplingDeviceForm } from './create-coupling-device-form.js';
-import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { CreateCouplingDeviceInfo } from '../../../../services/network-modification-types';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
+import { DeepNullable } from '../../../../utils/ts-utils';
+import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
     [BUS_BAR_SECTION_ID2]: null,
 };
 const formSchema = yup.object().shape({
-    [BUS_BAR_SECTION_ID1]: yup.object().required().nullable(),
-    [BUS_BAR_SECTION_ID2]: yup.object().required().nullable(),
+    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
 });
 export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
-    editData?: CreateCouplingDeviceInfo;
+    editData?: CreateCouplingDeviceInfos;
 };
 export const CreateCouplingDeviceDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
@@ -47,13 +48,13 @@ export const CreateCouplingDeviceDialog = ({
 }: Readonly<CreateCouplingDeviceDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
+    const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
+    const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState<Option[]>([]);
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -83,14 +84,19 @@ export const CreateCouplingDeviceDialog = ({
     });
 
     const onSubmit = useCallback(
-        (couplingDevice) => {
-            createCouplingDevice({
+        (couplingDevice: CreateCouplingDeviceDialogSchemaForm) => {
+            const createCouplingDeviceInfos = {
+                type: MODIFICATION_TYPES.COUPLING_DEVICE_CREATION.type,
                 voltageLevelId: selectedId,
+                busOrBbsId1: couplingDevice[BUS_BAR_SECTION_ID1],
+                busOrBbsId2: couplingDevice[BUS_BAR_SECTION_ID2],
+            } satisfies CreateCouplingDeviceInfos;
+            createCouplingDevice({
+                createCouplingDeviceInfos: createCouplingDeviceInfos,
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid,
-                busbarSectionId1: couplingDevice[BUS_BAR_SECTION_ID1]?.id,
-                busbarSectionId2: couplingDevice[BUS_BAR_SECTION_ID2]?.id,
+                isUpdate: !!editData,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -102,7 +108,7 @@ export const CreateCouplingDeviceDialog = ({
     );
 
     const onEquipmentIdChange = useCallback(
-        (equipmentId) => {
+        (equipmentId: string) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchBusesOrBusbarSectionsForVoltageLevel(
@@ -159,7 +165,7 @@ export const CreateCouplingDeviceDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         fillerHeight={4}
                     />
                 )}
@@ -168,9 +174,7 @@ export const CreateCouplingDeviceDialog = ({
                         sectionOptions={busOrBusbarSectionOptions}
                         studyUuid={studyUuid}
                         voltageLevelId={selectedId}
-                        currentNodeUuid={currentNodeUuid}
                         currentNode={currentNode}
-                        isNodeBuilt={isNodeBuilt(currentNode)}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 )}

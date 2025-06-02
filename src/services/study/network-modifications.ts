@@ -17,7 +17,7 @@ import {
     AttachLineInfo,
     BatteryCreationInfos,
     BatteryModificationInfos,
-    CreateCouplingDeviceInfo,
+    CreateCouplingDeviceInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -2006,18 +2006,21 @@ export function createTabularCreation(
 }
 
 export function createCouplingDevice({
-    voltageLevelId,
+    createCouplingDeviceInfos,
     studyUuid,
     nodeUuid,
-    modificationUuid = undefined,
-    busbarSectionId1,
-    busbarSectionId2,
-}: CreateCouplingDeviceInfo) {
-    console.log('Creating coupling device', voltageLevelId, busbarSectionId1, busbarSectionId2);
+    modificationUuid,
+    isUpdate,
+}: {
+    createCouplingDeviceInfos: CreateCouplingDeviceInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
+    if (modificationUuid) {
         modifyUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating coupling device');
     } else {
@@ -2030,11 +2033,6 @@ export function createCouplingDevice({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
-            voltageLevelId: voltageLevelId,
-            busOrBbsId1: busbarSectionId1,
-            busOrBbsId2: busbarSectionId2,
-        }),
+        body: JSON.stringify(createCouplingDeviceInfos),
     });
 }

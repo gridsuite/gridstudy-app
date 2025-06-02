@@ -419,6 +419,7 @@
 
     "LimitType": "Type de limite",
     "ViolationType": "Type de contrainte",
+    "Bus": "Noeud électrique",
     "LimitSide": "Côté",
     "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",
@@ -1426,6 +1427,7 @@
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
     "searchPlaceholderLogsTreeStructure": "Rechercher dans l'arborescence",
+    "reportLogsPerPage": "Logs par page : ",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant": "{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
@@ -1471,6 +1473,11 @@
     "visibleRootNetwork": "Réseau Visible : ",
     "importCaseFailure": "Impossible d'importer la situation",
     "modificationActivationByRootNetworkError": "Une erreur est survenue lors de l'activation / désactivation de la modification par réseau racine",
+    "rootNetwork.modificationsInfos": "Seules les modifications dans les noeuds réalisés et leurs noeuds parents apparaitront dans les résultats.",
+    "rootNetwork.searchPlaceholder": "Rechercher un ouvrage modifié…",
+    "rootNetwork.modificationTab": "Modifications",
+    "rootNetwork.results": "{count, plural, =0 {Aucun résultat} =1 {# résultat} other {# résultats}}",
+    "rootNetwork.loading": "Chargement...",
     "unlimited": "Illimité",
     "forbidden": "Interdit",
 
@@ -1549,5 +1556,6 @@
     "builtNodeTooltipForDiagram" : "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram" : "Diagramme du dernier nœud réalisé de la branche courante",
     "CouplingDeviceText" : "Sections de jeu de barre",
-    "CouplingDeviceBusBarSectionToolTipText" : "Si les deux sections de barre sélectionnées ont des numéros de tronçon/section différents la modification crée un omnibus, autrement elle crée un couplage"
+    "CouplingDeviceBusBarSectionToolTipText" : "Si les deux sections de barre sélectionnées ont des numéros de tronçon/section différents la modification crée un omnibus, autrement elle crée un couplage",
+    "loadFlowModification": "Modification par calcul de répartition appliquée"
 }

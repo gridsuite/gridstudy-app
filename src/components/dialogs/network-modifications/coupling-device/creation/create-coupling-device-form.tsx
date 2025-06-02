@@ -5,37 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
-import GridItem from '../../commons/grid-item.js';
-import { getObjectId } from '../../../utils/utils.js';
+import GridItem from '../../../commons/grid-item.js';
+import { getObjectId } from '../../../../utils/utils.js';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane.js';
+import PositionDiagramPane from '../../../../diagrams/singleLineDiagram/position-diagram-pane.js';
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { filledTextField } from '../../dialog-utils';
-import GridSection from '../../commons/grid-section';
-import {
-    EquipmentModificationDialogProps
-} from "../../../graph/menus/network-modifications/network-modification-menu.type";
+import { filledTextField } from '../../../dialog-utils';
+import GridSection from '../../../commons/grid-section';
+import { UUID } from 'crypto';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
-export type CreateCouplingDeviceFormProps = EquipmentModificationDialogProps & {
-    sectionOptions: Array[];
-    studyUuid: string;
+export interface CreateCouplingDeviceFormProps {
+    sectionOptions: Option[];
     voltageLevelId: string;
-    currentNodeUuid: string;
-    currentRootNetworkUuid: string;
-    isNodeBuilt: boolean;
-};
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+}
+
 export const CreateCouplingDeviceForm = ({
     sectionOptions,
     studyUuid,
     voltageLevelId,
-    currentNodeUuid,
+    currentNode,
     currentRootNetworkUuid,
-    isNodeBuilt,
 }: Readonly<CreateCouplingDeviceFormProps>) => {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
@@ -96,7 +95,7 @@ export const CreateCouplingDeviceForm = ({
         <>
             <Grid container spacing={2}>
                 <GridItem size={4}>{voltageLevelIdField}</GridItem>
-                {isNodeBuilt && (
+                {isNodeBuilt(currentNode) && (
                     <GridItem size={3}>
                         <Grid sx={{ paddingTop: 1 }}>
                             <Button onClick={handleClickOpenDiagramPane} variant="outlined">
@@ -121,8 +120,8 @@ export const CreateCouplingDeviceForm = ({
                     studyUuid={studyUuid}
                     open={isDiagramPaneOpen}
                     onClose={handleCloseDiagramPane}
-                    voltageLevelId={{ id: voltageLevelId }}
-                    currentNodeUuid={currentNodeUuid}
+                    voltageLevelId={voltageLevelId}
+                    currentNodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Box>
