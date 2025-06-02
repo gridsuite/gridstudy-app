@@ -14,6 +14,8 @@ const csv_locale_en = {
     'TabularModificationSkeletonComment.LOAD': '#,AUXILIARY | FICTITIOUS,,,true | false',
     'TabularModificationSkeletonComment.SUBSTATION':
         '#,2-letter code from ISO 3166-1 standard (FR ES PT IT CH DE BE LU NL GB ...)',
+    'TabularCreationSkeletonComment.SHUNT_COMPENSATOR':
+        '#,,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,REACTOR | CAPACITOR,,,',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
         '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,,REACTOR | CAPACITOR,,,true | false',
 };
