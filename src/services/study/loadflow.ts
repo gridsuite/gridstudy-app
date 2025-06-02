@@ -52,7 +52,12 @@ export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     });
 }
 
-export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function startLoadFlow(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    withRatioTapChangers: boolean
+) {
     console.info(
         'Running loadflow on ' +
             studyUuid +
@@ -62,29 +67,59 @@ export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRoo
             currentNodeUuid
     );
     const startLoadFlowUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/loadflow/run';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/run?withRatioTapChangers=' +
+        withRatioTapChangers;
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
-export function stopLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function stopLoadFlow(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    withRatioTapChangers: boolean
+) {
     console.info(
         `Stopping loadFlow on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const stopLoadFlowUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/loadflow/stop';
+        '/loadflow/stop?withRatioTapChangers=' +
+        withRatioTapChangers;
     console.debug(stopLoadFlowUrl);
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
-export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchLoadFlowWithRatioTapChangersStatus(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+) {
+    return fetchLoadFlowStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid, true);
+}
+
+export function fetchLoadFlowWithoutRatioTapChangersStatus(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+) {
+    return fetchLoadFlowStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid, false);
+}
+
+export function fetchLoadFlowStatus(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    withRatioTapChangers: boolean
+) {
     console.info(
         `Fetching loadFlow status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/loadflow/status';
+        '/loadflow/status?withRatioTapChangers=' +
+        withRatioTapChangers;
     console.debug(url);
     return backendFetchText(url);
 }

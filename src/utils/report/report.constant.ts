@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ComputingType from '../../components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 
 export const GLOBAL_REPORT_NODE_LABEL = 'Logs';
 export const NETWORK_MODIFICATION = 'NETWORK_MODIFICATION';

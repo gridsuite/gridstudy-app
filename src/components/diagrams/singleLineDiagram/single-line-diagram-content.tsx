@@ -38,7 +38,7 @@ import LineModificationDialog from 'components/dialogs/network-modifications/lin
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
@@ -53,6 +53,7 @@ import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
+import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -141,7 +142,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,

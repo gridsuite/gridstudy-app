@@ -48,7 +48,7 @@ import {
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
 import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
-import ComputingType from './computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
@@ -64,6 +64,7 @@ import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actio
 import { StudyView, StudyViewType } from './utils/utils';
 import { useParametersBackend, LoadFlowParametersInline } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
+import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -105,7 +106,31 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
-    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
+    const computationStatusSelectors: Record<TAB_VALUES, (state: AppState) => RunningStatus | undefined> = {
+        [TAB_VALUES.lfParamsTabValue]: selectLoadflowComputingStatus,
+        [TAB_VALUES.securityAnalysisParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.SECURITY_ANALYSIS],
+        [TAB_VALUES.dynamicSecurityAnalysisParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS],
+        [TAB_VALUES.dynamicSimulationParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.DYNAMIC_SIMULATION],
+        [TAB_VALUES.networkVisualizationsParams]: () => undefined,
+        [TAB_VALUES.nonEvacuatedEnergyParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
+        [TAB_VALUES.sensitivityAnalysisParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS],
+        [TAB_VALUES.shortCircuitParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.SHORT_CIRCUIT],
+        [TAB_VALUES.voltageInitParamsTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION],
+        [TAB_VALUES.stateEstimationTabValue]: (state: AppState) =>
+            state.computingStatus[ComputingType.STATE_ESTIMATION],
+    };
+
+    const computationStatus = useSelector((state: AppState) =>
+        computationStatusSelectors[tabValue as TAB_VALUES](state)
+    );
+
     const shortCircuitOneBusStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );

@@ -31,7 +31,7 @@ import type {
     StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
-import { ComputingType } from '../components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';

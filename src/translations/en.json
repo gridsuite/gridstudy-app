@@ -177,6 +177,7 @@
     "RegulatingTerminal": "Regulated node",
 
     "LoadFlow": "LoadFlow",
+    "LoadFlowWithRatioTapChangers": "LoadFlow with ratio tap changers",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
     "VoltageInit": "Voltage profile initialization",

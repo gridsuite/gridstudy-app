@@ -6,10 +6,11 @@
  */
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import ComputingType from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 /**
  * Custom hook that calculates the number of computation notifications.
@@ -17,7 +18,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
  * @returns the number of computation results accessible.
  */
 export const useComputationResultsCount = () => {
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
 
     const securityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
