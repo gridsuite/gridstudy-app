@@ -21,7 +21,10 @@ import {
     THRESHOLD_STATUS,
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
+    OnLeftClickCallbackType,
 } from '@powsybl/network-viewer';
+import AddIcon from '@mui/icons-material/ControlPoint';
+
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
@@ -33,11 +36,13 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomMenuItem, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -170,6 +175,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [clickedEquipmentId, setClickedEquipmentId] = useState<string | null>(null);
+    const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
+
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
     const { loadNadFromConfigView } = useDiagram();
@@ -224,6 +233,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         },
         [dispatch, nadIdentifier]
     );
+
+    const OnLeftClickCallback: OnLeftClickCallbackType = useCallback((equipmentId, mousePosition) => {
+        console.log('Clicked:', equipmentId, mousePosition);
+
+        if (mousePosition) {
+            setClickedEquipmentId(equipmentId);
+            setShouldDisplayMenu(true);
+            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+        }
+    }, []);
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -304,6 +323,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 dynamicCssRules,
                 isEditNadMode ? null : OnToggleHoverCallback,
                 null,
+                OnLeftClickCallback,
                 false
             );
 
@@ -370,11 +390,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         nadIdentifier,
         onMoveTextNodeCallback,
         isEditNadMode,
+        OnLeftClickCallback,
     ]);
 
     /**
      * RENDER
      */
+    const intl = useIntl();
 
     return (
         <>
@@ -388,6 +410,40 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     equipmentId={hoveredEquipmentId}
                     loadFlowStatus={loadFlowStatus}
                 />
+            )}
+            {shouldDisplayMenu && (
+                <Menu
+                    open={!!menuAnchorPosition}
+                    onClose={() => setMenuAnchorPosition(null)}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        menuAnchorPosition !== null
+                            ? { top: menuAnchorPosition.mouseY, left: menuAnchorPosition.mouseX }
+                            : undefined
+                    }
+                    style={{
+                        width: 'auto',
+                        maxHeight: 'auto',
+                    }}
+                >
+                    <CustomMenuItem
+                        style={{
+                            paddingTop: '1px',
+                            paddingBottom: '1px',
+                        }}
+                        onClick={() => {
+                            console.log('Add clicked for', clickedEquipmentId);
+                            setMenuAnchorPosition(null);
+                            setShouldDisplayMenu(false);
+                        }}
+                    >
+                        <ListItemIcon>
+                            <AddIcon />
+                        </ListItemIcon>
+
+                        <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'add' })}</Typography>} />
+                    </CustomMenuItem>
+                </Menu>
             )}
             <Box
                 ref={svgRef}

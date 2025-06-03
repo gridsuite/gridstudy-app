@@ -1545,5 +1545,6 @@
     "Closed": "Fermé",
     "DiagramGridLayout": "Grille des diagrammes",
     "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
-    "loadFlowModification": "Modification par calcul de répartition appliquée"
+    "loadFlowModification": "Modification par calcul de répartition appliquée",
+    "add": "Ajouter"
 }

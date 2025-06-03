@@ -1549,5 +1549,6 @@
     "Closed": "Closed",
     "DiagramGridLayout": "Diagram grid layout",
     "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
-    "loadFlowModification": "LoadFlow Modification applied"
+    "loadFlowModification": "LoadFlow Modification applied", 
+    "add": "Add"
 }
