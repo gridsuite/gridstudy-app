@@ -789,3 +789,43 @@ export interface TopologyVoltageLevelModificationInfos {
     equipmentId: string;
     equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }
+
+export type NetworkModificationRequestInfos = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+};
+
+export enum ShiftEquipmentType {
+    LOAD = 'LOAD',
+    GENERATOR = 'GENERATOR',
+}
+
+export enum ShiftType {
+    PROPORTIONAL = 'PROPORTIONAL',
+    BALANCED = 'BALANCED',
+}
+
+export enum BalanceType {
+    PROPORTIONAL_TO_GENERATION_P = 'PROPORTIONAL_TO_GENERATION_P',
+    PROPORTIONAL_TO_GENERATION_P_MAX = 'PROPORTIONAL_TO_GENERATION_P_MAX',
+    PROPORTIONAL_TO_LOAD = 'PROPORTIONAL_TO_LOAD',
+    PROPORTIONAL_TO_CONFORM_LOAD = 'PROPORTIONAL_TO_CONFORM_LOAD',
+}
+
+export type BalancesAdjustmentZoneInfos = {
+    name: string;
+    countries: string[];
+    netPosition: number;
+    shiftEquipmentType: ShiftEquipmentType;
+    shiftType: ShiftType;
+};
+
+export type BalancesAdjustmentInfos = {
+    uuid: UUID | null;
+    maxNumberIterations: number;
+    thresholdNetPosition: number;
+    countriesToBalance: string[];
+    balanceType: BalanceType;
+    areas: BalancesAdjustmentZoneInfos[];
+};
