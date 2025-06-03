@@ -14,7 +14,6 @@ import { HttpStatusCode } from '../utils/http-status-code';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
 import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
-import { fetchResultUuid } from '../services/study/study';
 
 export const UPDATE_TYPE_STUDY_DEBUG = 'STUDY_DEBUG';
 
@@ -65,9 +64,10 @@ function useDebugFileDownload() {
                     // Get the filename
                     const contentDisposition = response.headers.get('Content-Disposition');
                     let filename = `${formatComputingTypeLabel(computingType)}.zip`;
-                    if (contentDisposition && contentDisposition.includes('filename=')) {
-                        const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                        if (match && match[1]) {
+                    if (contentDisposition?.includes('filename=')) {
+                        const regex = /filename="?([^"]+)"?/;
+                        const match = regex.exec(contentDisposition);
+                        if (match?.[1]) {
                             filename = match[1];
                         }
                     }
@@ -112,6 +112,7 @@ export default function useDebug() {
                     node: nodeUuid,
                     rootNetworkUuid,
                     computationType: computingType,
+                    resultUuid,
                     error,
                 } = eventData.headers;
                 const debugIdentifierNotif = buildDebugIdentifier({
@@ -130,16 +131,7 @@ export default function useDebug() {
                         });
                     } else {
                         // perform download debug file once
-                        fetchResultUuid(
-                            {
-                                studyUuid,
-                                nodeUuid,
-                                rootNetworkUuid,
-                            },
-                            computingType
-                        ).then((resultUuid) => {
-                            resultUuid && downloadDebug(resultUuid, computingType);
-                        });
+                        resultUuid && downloadDebug(resultUuid, computingType);
                     }
                 }
             }
