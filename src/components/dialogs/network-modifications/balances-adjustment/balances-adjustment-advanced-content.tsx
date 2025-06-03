@@ -18,9 +18,11 @@ import {
     BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE,
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
+    BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
 } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import { styles } from './styles';
+import { useWatch } from 'react-hook-form';
 
 const BALANCE_TYPE_OPTIONS = [
     { id: 'PROPORTIONAL_TO_GENERATION_P', label: 'descLfBalanceTypeGenP' },
@@ -38,6 +40,10 @@ const BALANCE_TYPE_OPTIONS = [
 export default function BalancesAdjustmentAdvancedContent() {
     const intl = useIntl();
 
+    const withLoadFlow = useWatch({
+        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`,
+    });
+
     return (
         <Grid container direction="column" width={'50%'} minWidth={'300px'}>
             <GridSection title="Algorithm" />
@@ -46,6 +52,9 @@ export default function BalancesAdjustmentAdvancedContent() {
                     <IntegerInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
                         label={'maxNumberIterations'}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
                     />
                 </GridItem>
                 <GridItem>
@@ -62,6 +71,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
                         limitTags={3}
                         label={intl.formatMessage({ id: 'descLfCountriesToBalance' })}
+                        disabled={!withLoadFlow}
                     />
                 </GridItem>
                 <GridItem>
@@ -70,6 +80,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                         label={'descLfBalanceType'}
                         options={BALANCE_TYPE_OPTIONS}
                         sx={styles.autocomplete}
+                        disabled={!withLoadFlow}
                     />
                 </GridItem>
             </Grid>

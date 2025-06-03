@@ -1525,7 +1525,7 @@
     "nodeAliasesRetrievingError": "Erreur lors de la récupération des alias de nœuds",
     "nodeAliasesUpdateError": "Erreur lors de la mise à jour des alias de nœuds",
     "mustBeGreaterOrEqualToZero": "Cette valeur doit être supérieure ou égale à 0",
-    "previousConnection" : "Connexion préc.",
+    "previousConnection": "Connexion préc.",
 
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
@@ -1559,6 +1559,7 @@
     "Loadflow": "Calcul de répartition",
     "Algorithm": "Algorithme",
     "maxNumberIterations": "Nombre maximal d'itérations",
+    "withOrWithoutLoadFlow": "Avec / Sans calcul de répartition",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée"

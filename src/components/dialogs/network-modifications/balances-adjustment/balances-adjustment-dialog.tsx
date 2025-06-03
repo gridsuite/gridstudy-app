@@ -6,7 +6,7 @@
  */
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, SwitchInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -20,6 +20,7 @@ import {
     BALANCES_ADJUSTMENT_SHIFT_TYPE,
     BALANCES_ADJUSTMENT_TARGET,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
+    BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
     BALANCES_ADJUSTMENT_ZONE,
     BALANCES_ADJUSTMENT_ZONES,
     SELECTED,
@@ -41,11 +42,12 @@ import BalancesAdjustmentTable from './balances-adjustment-table';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import BalancesAdjustmentDialogTabs from './balances-adjustment-dialog-tabs';
 import { BalancesAdjustmentTab } from './balances-adjustment.constants';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import BalancesAdjustmentAdvancedContent from './balances-adjustment-advanced-content';
 
 type BalancesAdjustmentForm = {
     [BALANCES_ADJUSTMENT]: {
+        [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: boolean;
         [BALANCES_ADJUSTMENT_ZONES]: {
             [SELECTED]: boolean;
             [BALANCES_ADJUSTMENT_ZONE]: string;
@@ -65,6 +67,7 @@ type BalancesAdjustmentForm = {
 
 const emptyFormData = {
     [BALANCES_ADJUSTMENT]: {
+        [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: false,
         [BALANCES_ADJUSTMENT_ZONES]: [
             {
                 [SELECTED]: false,
@@ -108,6 +111,7 @@ export function BalancesAdjustmentDialog({
         () =>
             yup.object().shape({
                 [BALANCES_ADJUSTMENT]: yup.object().shape({
+                    [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: yup.boolean().required(),
                     [BALANCES_ADJUSTMENT_ZONES]: yup
                         .array()
                         .of(
@@ -137,7 +141,11 @@ export function BalancesAdjustmentDialog({
                         [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: yup
                             .array()
                             .of(yup.string().oneOf(countryCodes).required())
-                            .min(1, 'balancesAdjustment.emptyCountries')
+                            .when(BALANCES_ADJUSTMENT_WITH_LOAD_FLOW, {
+                                is: (withLoadFlow: boolean) => withLoadFlow,
+                                then: (schema) => schema.min(1, 'balancesAdjustment.emptyCountries'),
+                                otherwise: (schema) => schema.optional(),
+                            })
                             .required(),
                         [BALANCES_ADJUSTMENT_BALANCE_TYPE]: yup.string().oneOf(Object.values(BalanceType)).required(),
                     }),
@@ -157,6 +165,7 @@ export function BalancesAdjustmentDialog({
         if (editData) {
             reset({
                 [BALANCES_ADJUSTMENT]: {
+                    [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: editData.withLoadFlow,
                     [BALANCES_ADJUSTMENT_ZONES]: editData.areas.map((area) => {
                         return {
                             [SELECTED]: false,
@@ -191,6 +200,7 @@ export function BalancesAdjustmentDialog({
                 countriesToBalance:
                     form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ADVANCED][BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE],
                 balanceType: form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ADVANCED][BALANCES_ADJUSTMENT_BALANCE_TYPE],
+                withLoadFlow: form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_WITH_LOAD_FLOW],
                 areas: form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ZONES].map((balanceAdjustment) => {
                     return {
                         name: balanceAdjustment[BALANCES_ADJUSTMENT_ZONE],
@@ -261,6 +271,12 @@ export function BalancesAdjustmentDialog({
                 {...dialogProps}
             >
                 <Box hidden={tabIndex !== BalancesAdjustmentTab.AREAS_TAB} p={1}>
+                    <Grid container spacing={2} mb={2} direction="column">
+                        <SwitchInput
+                            name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
+                            label={'withOrWithoutLoadFlow'}
+                        />
+                    </Grid>
                     <BalancesAdjustmentTable />
                 </Box>
                 <Box hidden={tabIndex !== BalancesAdjustmentTab.ADVANCED_TAB} p={1}>

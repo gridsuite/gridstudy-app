@@ -15,9 +15,10 @@ import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui
 type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags'> & {
     name: AutocompleteInputProps['name'];
     label?: TextFieldProps['label'];
+    disabled?: boolean;
 };
 
-export default function CountriesAutocomplete({ name, label, ...props }: CountriesAutocompleteProps) {
+export default function CountriesAutocomplete({ name, label, disabled = false, ...props }: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
 
     const {
@@ -32,6 +33,7 @@ export default function CountriesAutocomplete({ name, label, ...props }: Countri
     return (
         <Autocomplete
             multiple
+            disabled={disabled}
             value={value}
             onChange={handleChange}
             options={countryCodes}
