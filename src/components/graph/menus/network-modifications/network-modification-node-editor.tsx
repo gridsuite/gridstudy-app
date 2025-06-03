@@ -100,6 +100,7 @@ import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
+import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -412,6 +413,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
                     label: 'GenerationDispatch',
                     action: () => withDefaultParams(GenerationDispatchDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+                    label: 'BalancesAdjustment',
+                    action: () => withDefaultParams(BalancesAdjustmentDialog),
                 },
             ],
         },

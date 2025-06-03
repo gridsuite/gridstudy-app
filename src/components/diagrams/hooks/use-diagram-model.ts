@@ -25,7 +25,6 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
-import { v4 } from 'uuid';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
 import { useIntl } from 'react-intl';
 
@@ -79,7 +78,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         (diagramParams: DiagramParams) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
-                diagramUuid: v4() as UUID,
                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramParams.type }),
                 svg: null,
             };
