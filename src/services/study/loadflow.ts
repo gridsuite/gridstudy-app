@@ -52,7 +52,12 @@ export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     });
 }
 
-export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, debug: boolean) {
+export function startLoadFlow(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    debug: boolean
+): Promise<void> {
     console.info(
         'Running loadflow on ' +
             studyUuid +

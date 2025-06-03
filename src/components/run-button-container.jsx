@@ -12,7 +12,7 @@ import { setComputationStarting, setComputingStatus, setLogsFilter } from '../re
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
-import ComputingType, { formatComputingTypeLabel } from './computing-status/computing-type';
+import ComputingType from './computing-status/computing-type';
 
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
@@ -37,8 +37,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { useIntl } from 'react-intl';
-import useDebug, { buildDebugIdentifier, setDebug } from '../hooks/use-debug';
+import useDebug from '../hooks/use-debug';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -50,8 +49,6 @@ const checkDynamicSimulationParameters = (studyUuid) => {
     });
 };
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
-    const intl = useIntl();
-
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const securityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]);
@@ -81,7 +78,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     const [computationStopped, setComputationStopped] = useState(false);
 
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError } = useSnackMessage();
 
     const dispatch = useDispatch();
 
@@ -99,17 +96,22 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
-    useDebug();
+    // --- for running in debug mode --- //
+    const subscribeDebug = useDebug({
+        studyUuid: studyUuid,
+        nodeUuid: currentNode?.id,
+        rootNetworkUuid: currentRootNetworkUuid,
+    });
 
     const startComputationAsync = useCallback(
-        (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId, debug) => {
+        (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
             if (fnBefore) {
                 fnBefore();
             }
             setComputationStopped(false);
             dispatch(setComputationStarting(true));
             dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
-            fnStart(debug)
+            fnStart()
                 .then(fnThen)
                 .catch((error) => {
                     dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
@@ -136,12 +138,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
             null,
-            (debug) =>
+            () =>
                 startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames, debug),
             () => {},
             null,
-            null,
-            debug
+            null
         );
     };
 
@@ -149,7 +150,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         startComputationAsync(
             ComputingType.DYNAMIC_SIMULATION,
             null,
-            (debug) =>
+            () =>
                 startDynamicSimulation(
                     studyUuid,
                     currentNode?.id,
@@ -157,10 +158,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     dynamicSimulationConfiguration,
                     debug
                 ),
-            () => {},
+            () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
             null,
-            'DynamicSimulationRunError',
-            debug
+            'DynamicSimulationRunError'
         );
     };
 
@@ -179,11 +179,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         null,
-                        (debug) => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => {},
                         null,
-                        'startLoadFlowError',
-                        debug
+                        'startLoadFlowError'
                     );
                 },
                 actionOnRunnable() {
@@ -208,11 +207,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.SENSITIVITY_ANALYSIS,
                         null,
-                        (debug) => startSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => {},
                         null,
-                        'startSensitivityAnalysisError',
-                        debug
+                        'startSensitivityAnalysisError'
                     );
                 },
                 actionOnRunnable() {
@@ -227,13 +225,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
                         null,
-                        (debug) => {
+                        () => {
                             return startNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetworkUuid, debug);
                         },
                         () => {},
                         null,
-                        'startNonEvacuatedEnergyAnalysisError',
-                        debug
+                        'startNonEvacuatedEnergyAnalysisError'
                     );
                 },
                 actionOnRunnable() {
@@ -248,11 +245,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.SHORT_CIRCUIT,
                         null,
-                        (debug) => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => {},
                         null,
-                        'startShortCircuitError',
-                        debug
+                        'startShortCircuitError'
                     );
                 },
                 actionOnRunnable() {
@@ -275,35 +271,16 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                                 return startComputationAsync(
                                     ComputingType.DYNAMIC_SIMULATION,
                                     null,
-                                    (debug) =>
+                                    () =>
                                         startDynamicSimulation({
                                             studyUuid,
                                             currentNodeUuid: currentNode?.id,
                                             currentRootNetworkUuid,
                                             debug,
                                         }),
-                                    (resultUuid) => {
-                                        // set debug true in the session storage
-                                        debug &&
-                                            setDebug(
-                                                buildDebugIdentifier({
-                                                    studyUuid: studyUuid,
-                                                    nodeUuid: currentNode?.id,
-                                                    rootNetworkUuid: currentRootNetworkUuid,
-                                                    computingType: ComputingType.DYNAMIC_SIMULATION,
-                                                })
-                                            );
-                                        debug &&
-                                            snackInfo({
-                                                headerTxt: intl.formatMessage({
-                                                    id: formatComputingTypeLabel(ComputingType.DYNAMIC_SIMULATION),
-                                                }),
-                                                messageTxt: intl.formatMessage({ id: 'debugText' }),
-                                            });
-                                    },
+                                    () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
                                     null,
-                                    'DynamicSimulationRunError',
-                                    debug
+                                    'DynamicSimulationRunError'
                                 );
                             }
                         })
@@ -326,12 +303,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
                         null,
-                        (debug) =>
-                            startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => {},
                         null,
-                        'startDynamicSecurityAnalysisError',
-                        debug
+                        'startDynamicSecurityAnalysisError'
                     );
                 },
                 actionOnRunnable() {
@@ -347,11 +322,10 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.VOLTAGE_INITIALIZATION,
                         null,
-                        (debug) => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => {},
                         null,
-                        'startVoltageInitError',
-                        debug
+                        'startVoltageInitError'
                     );
                 },
                 actionOnRunnable() {
@@ -366,13 +340,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.STATE_ESTIMATION,
                         null,
-                        (debug) => {
+                        () => {
                             return startStateEstimation(studyUuid, currentNode?.id, currentRootNetworkUuid, debug);
                         },
                         () => {},
                         null,
-                        'startStateEstimationError',
-                        debug
+                        'startStateEstimationError'
                     );
                 },
                 actionOnRunnable() {
@@ -385,12 +358,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     }, [
         dispatch,
         snackError,
-        snackInfo,
         startComputationAsync,
-        intl,
         studyUuid,
         currentNode?.id,
         currentRootNetworkUuid,
+        subscribeDebug,
     ]);
 
     // running status is refreshed more often, so we memoize it apart

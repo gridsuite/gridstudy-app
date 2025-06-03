@@ -33,7 +33,7 @@ export function startDynamicSecurityAnalysis(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     debug: boolean
-) {
+): Promise<void> {
     console.info(`Running dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const startDynamicSecurityAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(

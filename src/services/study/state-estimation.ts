@@ -15,7 +15,7 @@ export function startStateEstimation(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     debug: boolean
-) {
+): Promise<void> {
     console.info(
         `Running state estimation on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );

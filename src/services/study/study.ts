@@ -6,9 +6,8 @@
  */
 
 import { UUID } from 'crypto';
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from '.';
+import { PREFIX_STUDY_QUERIES, getStudyUrl } from '.';
 import { backendFetch, backendFetchJson } from '../utils';
-import ComputingType from '../../components/computing-status/computing-type';
 
 interface BasicStudyInfos {
     uniqueId: string;
@@ -91,31 +90,3 @@ export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: U
         headers: { 'Content-Type': 'application/json' },
     });
 };
-
-export function fetchResultUuid(
-    {
-        studyUuid,
-        nodeUuid,
-        rootNetworkUuid,
-    }: {
-        studyUuid: UUID;
-        nodeUuid: UUID;
-        rootNetworkUuid: UUID;
-    },
-    computingType: ComputingType
-): Promise<UUID | null> {
-    console.info(
-        `Fetching result uuid on '${studyUuid}' on root network '${rootNetworkUuid}' and node '${nodeUuid}' ...`
-    );
-
-    const urlParams = new URLSearchParams();
-    urlParams.append('computingType', `${computingType}`);
-
-    const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) + `/result-uuid?${urlParams}`;
-
-    console.debug(url);
-    return backendFetchJson(url, {
-        method: 'get',
-    });
-}

@@ -14,6 +14,7 @@ import { HttpStatusCode } from '../utils/http-status-code';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
 import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
+import { useIntl } from 'react-intl';
 
 export const UPDATE_TYPE_STUDY_DEBUG = 'STUDY_DEBUG';
 
@@ -54,7 +55,7 @@ export function unsetDebug(identifier: string) {
     }
 }
 
-function useDebugFileDownload() {
+function useDownloadDebugFile() {
     const { snackError, snackWarning } = useSnackMessage();
 
     const downloadDebugFile = useCallback(
@@ -97,9 +98,18 @@ function useDebugFileDownload() {
     return downloadDebugFile;
 }
 
-export default function useDebug() {
-    const { snackWarning } = useSnackMessage();
-    const downloadDebug = useDebugFileDownload();
+export default function useDebug({
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+}) {
+    const intl = useIntl();
+    const { snackWarning, snackInfo } = useSnackMessage();
+    const downloadDebugFile = useDownloadDebugFile();
 
     const onDebugNotification = useCallback(
         (event: MessageEvent<string>) => {
@@ -131,13 +141,36 @@ export default function useDebug() {
                         });
                     } else {
                         // perform download debug file once
-                        resultUuid && downloadDebug(resultUuid, computingType);
+                        resultUuid && downloadDebugFile(resultUuid, computingType);
                     }
                 }
             }
         },
-        [downloadDebug, snackWarning]
+        [downloadDebugFile, snackWarning]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: onDebugNotification });
+
+    const subscribeDebug = useCallback(
+        (computingType: ComputingType) => {
+            // set debug true in the session storage
+            setDebug(
+                buildDebugIdentifier({
+                    studyUuid: studyUuid,
+                    nodeUuid: nodeUuid,
+                    rootNetworkUuid: rootNetworkUuid,
+                    computingType: computingType,
+                })
+            );
+            snackInfo({
+                headerTxt: intl.formatMessage({
+                    id: formatComputingTypeLabel(computingType),
+                }),
+                messageTxt: intl.formatMessage({ id: 'debugText' }),
+            });
+        },
+        [studyUuid, nodeUuid, rootNetworkUuid]
+    );
+
+    return subscribeDebug;
 }

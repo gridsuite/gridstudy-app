@@ -460,13 +460,6 @@ type RootNetworkDeletionStartedNotification = {
 // Redux state
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
-    // TODO typing Debug update type, see UPDATE_TYPE_STUDY_DEBUG
-    eventData: {
-        headers: {
-            resultUuid?: UUID;
-            computationType?: ComputingType;
-        };
-    };
 } & (
     | StudyUpdatedUndefined
     | StudyUpdatedStudy

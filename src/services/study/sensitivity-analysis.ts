@@ -24,7 +24,7 @@ export function startSensitivityAnalysis(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     debug: boolean
-) {
+): Promise<void> {
     console.info(
         `Running sensi on ${studyUuid} for root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );

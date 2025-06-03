@@ -14,7 +14,7 @@ export function startNonEvacuatedEnergy(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     debug: boolean
-) {
+): Promise<void> {
     console.info(
         `Running non evacuated energy analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
