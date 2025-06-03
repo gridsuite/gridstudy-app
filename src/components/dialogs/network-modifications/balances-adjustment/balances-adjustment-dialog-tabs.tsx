@@ -20,7 +20,6 @@ export default function BalancesAdjustmentDialogTabs({
     tabIndexesWithError,
     setTabIndex,
 }: BalancesAdjustmentDialogTabsProps) {
-    console.log(`tab with errors ${JSON.stringify(tabIndexesWithError)}`);
     return (
         <Grid container>
             <Tabs
