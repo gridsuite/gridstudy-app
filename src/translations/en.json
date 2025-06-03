@@ -176,7 +176,7 @@
     "PhaseTap3": "Phase tap 3",
     "RegulatingTerminal": "Regulated node",
 
-    "LoadFlow": "LoadFlow",
+    "LoadFlow": "Loadflow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
     "VoltageInit": "Voltage profile initialization",
@@ -1565,5 +1565,5 @@
     "maxNumberIterations": "Maximum number of iterations",
     "thresholdNetPosition": "Net position mismatch threshold",
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
-    "loadFlowModification": "LoadFlow Modification applied"
+    "loadFlowModification": "Loadflow modification applied"
 }
