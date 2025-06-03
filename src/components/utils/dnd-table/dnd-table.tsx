@@ -150,6 +150,7 @@ function EditableTableCell({
             {column.type === DndColumnType.CHIP_ITEMS && (
                 <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
             )}
+            {column.type === DndColumnType.CUSTOM && column.component(rowIndex)}
         </TableCell>
     );
 }

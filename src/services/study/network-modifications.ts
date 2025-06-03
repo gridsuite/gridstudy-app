@@ -15,6 +15,7 @@ import { UUID } from 'crypto';
 import {
     Assignment,
     AttachLineInfo,
+    BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
     CreateCouplingDeviceInfos,
@@ -30,6 +31,7 @@ import {
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
+    NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
@@ -2034,5 +2036,34 @@ export function createCouplingDevice({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(createCouplingDeviceInfos),
+    });
+}
+
+export function balancesAdjustment({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    ...balancesAdjustmentInfos
+}: Omit<BalancesAdjustmentInfos, 'uuid'> & NetworkModificationRequestInfos) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+        ...balancesAdjustmentInfos,
+    });
+
+    let balancesAdjustmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        console.info('Updating balances adjustment ', body);
+        balancesAdjustmentUrl = balancesAdjustmentUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating balances adjustment ', body);
+    }
+
+    return backendFetchText(balancesAdjustmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     });
 }
