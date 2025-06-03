@@ -6,14 +6,14 @@
  */
 
 import { UUID } from 'crypto';
-import { MAP_BASEMAP_CARTO, MAP_BASEMAP_CARTO_NOLABEL, MAP_BASEMAP_MAPBOX } from '../../../../utils/config-params';
+import { MAP_BASEMAP_CARTO, MAP_BASEMAP_CARTO_NOLABEL, MAP_BASEMAP_ETALAB, MAP_BASEMAP_MAPBOX } from '../../../../utils/config-params';
 
 type MapParameters = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: string;
     mapManualRefresh: boolean;
-    mapBaseMap: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL;
+    mapBaseMap: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL | typeof MAP_BASEMAP_ETALAB;
 };
 
 type SingleLineDiagramParameters = {

@@ -45,6 +45,7 @@ export const PARAM_PROVIDER_OPENLOADFLOW = 'OpenLoadFlow';
 export const MAP_BASEMAP_MAPBOX = 'mapbox';
 export const MAP_BASEMAP_CARTO = 'carto';
 export const MAP_BASEMAP_CARTO_NOLABEL = 'cartonolabel';
+export const MAP_BASEMAP_ETALAB = 'etalab';
 export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
