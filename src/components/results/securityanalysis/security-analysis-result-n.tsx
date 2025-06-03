@@ -30,6 +30,7 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                   const { limitViolation, subjectId } = preContingencyResult;
                   return {
                       subjectId: subjectId,
+                      locationId: limitViolation?.locationId,
                       limitType: intl.formatMessage({
                           id: limitViolation?.limitType,
                       }),

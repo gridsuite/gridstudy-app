@@ -23,6 +23,7 @@ import HorizontalToolbar from './horizontal-toolbar';
 const styles = {
     tabsContainer: {
         flexGrow: 1,
+        height: '100%',
     },
     '@global': {
         '@keyframes spin': {
@@ -50,7 +51,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
     const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
-
     function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
