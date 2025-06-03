@@ -169,7 +169,7 @@ export default function useDebug({
                 messageTxt: intl.formatMessage({ id: 'debugText' }),
             });
         },
-        [studyUuid, nodeUuid, rootNetworkUuid]
+        [studyUuid, nodeUuid, rootNetworkUuid, snackInfo, intl]
     );
 
     return subscribeDebug;
