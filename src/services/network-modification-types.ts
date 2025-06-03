@@ -790,12 +790,16 @@ export interface TopologyVoltageLevelModificationInfos {
     equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }
 
+export type CouplingDeviceInfos = {
+    busbarSectionId1: string | null;
+    busbarSectionId2: string | null;
+};
+
 export interface CreateCouplingDeviceInfos {
     type: ModificationType;
     uuid?: string;
     voltageLevelId: string;
-    busOrBbsId1: string | null;
-    busOrBbsId2: string | null;
+    couplingDeviceInfos: CouplingDeviceInfos;
 }
 
 export type NetworkModificationRequestInfos = {

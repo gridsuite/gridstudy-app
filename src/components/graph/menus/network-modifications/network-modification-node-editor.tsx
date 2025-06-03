@@ -327,7 +327,7 @@ const NetworkModificationNodeEditor = () => {
                     action: () => withDefaultParams(LccModificationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.COUPLING_DEVICE_CREATION.type,
+                    id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                     label: 'CreateCouplingDevice',
                     action: () => withDefaultParams(CreateCouplingDeviceDialog),
                 },

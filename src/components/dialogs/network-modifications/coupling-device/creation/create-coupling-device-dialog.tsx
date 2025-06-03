@@ -30,8 +30,8 @@ const emptyFormData = {
     [BUS_BAR_SECTION_ID2]: null,
 };
 const formSchema = yup.object().shape({
-    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
+    [BUS_BAR_SECTION_ID1]: yup.object().nullable().required(),
+    [BUS_BAR_SECTION_ID2]: yup.object().nullable().required(),
 });
 export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateCouplingDeviceInfos;
@@ -65,8 +65,8 @@ export const CreateCouplingDeviceDialog = ({
                 setSelectedId(editData.voltageLevelId);
             }
             reset({
-                [BUS_BAR_SECTION_ID1]: editData?.busOrBbsId1 ?? '',
-                [BUS_BAR_SECTION_ID2]: editData?.busOrBbsId2 ?? '',
+                [BUS_BAR_SECTION_ID1]: editData?.couplingDeviceInfos?.busbarSectionId1 ?? '',
+                [BUS_BAR_SECTION_ID2]: editData?.couplingDeviceInfos?.busbarSectionId2 ?? '',
             });
         }
     }, [editData, reset]);
@@ -86,10 +86,12 @@ export const CreateCouplingDeviceDialog = ({
     const onSubmit = useCallback(
         (couplingDevice: CreateCouplingDeviceDialogSchemaForm) => {
             const createCouplingDeviceInfos = {
-                type: MODIFICATION_TYPES.COUPLING_DEVICE_CREATION.type,
+                type: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                 voltageLevelId: selectedId,
-                busOrBbsId1: couplingDevice[BUS_BAR_SECTION_ID1],
-                busOrBbsId2: couplingDevice[BUS_BAR_SECTION_ID2],
+                couplingDeviceInfos: {
+                    busbarSectionId1: couplingDevice[BUS_BAR_SECTION_ID1].id,
+                    busbarSectionId2: couplingDevice[BUS_BAR_SECTION_ID2].id,
+                },
             } satisfies CreateCouplingDeviceInfos;
             createCouplingDevice({
                 createCouplingDeviceInfos: createCouplingDeviceInfos,
