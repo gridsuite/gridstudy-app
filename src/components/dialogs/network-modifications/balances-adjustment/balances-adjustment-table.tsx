@@ -55,14 +55,15 @@ export default function BalancesAdjustmentTable() {
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE,
                 editable: true,
                 type: DndColumnType.CUSTOM as const,
-                component: (rowIndex: number) => SelectInput({
-                    name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE}`,
-                    options: Object.keys(ShiftEquipmentType).map((value) => {
-                        return { id: value, label: value };
+                component: (rowIndex: number) =>
+                    SelectInput({
+                        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE}`,
+                        options: Object.keys(ShiftEquipmentType).map((value) => {
+                            return { id: value, label: value };
+                        }),
+                        disableClearable: true,
+                        sx: styles.autocomplete,
                     }),
-                    disableClearable: true,
-                    sx: styles.autocomplete,
-                }),
                 initialValue: ShiftEquipmentType.GENERATOR,
                 width: '150px',
             },
@@ -71,14 +72,15 @@ export default function BalancesAdjustmentTable() {
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_TYPE,
                 editable: true,
                 type: DndColumnType.CUSTOM as const,
-                component: (rowIndex: number) => SelectInput({
-                    name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_TYPE}`,
-                    options: Object.keys(ShiftType).map((value) => {
-                        return { id: value, label: value };
+                component: (rowIndex: number) =>
+                    SelectInput({
+                        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_TYPE}`,
+                        options: Object.keys(ShiftType).map((value) => {
+                            return { id: value, label: value };
+                        }),
+                        disableClearable: true,
+                        sx: styles.autocomplete,
                     }),
-                    disableClearable: true,
-                    sx: styles.autocomplete,
-                }),
                 initialValue: ShiftType.PROPORTIONAL,
                 width: '150px',
             },

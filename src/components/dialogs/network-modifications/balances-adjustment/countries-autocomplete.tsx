@@ -9,7 +9,7 @@ import { AutocompleteInputProps, genHelperError } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { styles } from './styles';
 import { useController } from 'react-hook-form';
-import { SyntheticEvent, useMemo } from 'react';
+import { SyntheticEvent } from 'react';
 import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
 
 type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags'> & {
@@ -27,7 +27,7 @@ export default function CountriesAutocomplete({ name, label, ...props }: Countri
 
     const handleChange = (_: SyntheticEvent, value: string[]) => {
         onChange(value);
-    }
+    };
 
     return (
         <Autocomplete

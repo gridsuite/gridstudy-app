@@ -69,10 +69,10 @@ export default function BalancesAdjustmentAdvancedContent() {
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_BALANCE_TYPE}`}
                         label={'descLfBalanceType'}
                         options={BALANCE_TYPE_OPTIONS}
-                        sx={styles.autocomplete} />
+                        sx={styles.autocomplete}
+                    />
                 </GridItem>
             </Grid>
-
         </Grid>
     );
 }

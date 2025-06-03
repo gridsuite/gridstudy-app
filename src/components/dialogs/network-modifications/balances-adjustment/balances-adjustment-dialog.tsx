@@ -11,7 +11,8 @@ import { FieldErrors, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BALANCES_ADJUSTMENT,
-    BALANCES_ADJUSTMENT_ADVANCED, BALANCES_ADJUSTMENT_BALANCE_TYPE,
+    BALANCES_ADJUSTMENT_ADVANCED,
+    BALANCES_ADJUSTMENT_BALANCE_TYPE,
     BALANCES_ADJUSTMENT_COUNTRIES,
     BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE,
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
@@ -20,7 +21,8 @@ import {
     BALANCES_ADJUSTMENT_TARGET,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
     BALANCES_ADJUSTMENT_ZONE,
-    BALANCES_ADJUSTMENT_ZONES, SELECTED,
+    BALANCES_ADJUSTMENT_ZONES,
+    SELECTED,
 } from '../../../utils/field-constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from '../../../../services/utils';
@@ -29,7 +31,8 @@ import yup from 'components/utils/yup-config';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import {
     BalancesAdjustmentInfos,
-    BalancesAdjustmentZoneInfos, BalanceType,
+    BalancesAdjustmentZoneInfos,
+    BalanceType,
     ShiftEquipmentType,
     ShiftType,
 } from '../../../../services/network-modification-types';
@@ -136,10 +139,7 @@ export function BalancesAdjustmentDialog({
                             .of(yup.string().oneOf(countryCodes).required())
                             .min(1, 'balancesAdjustment.emptyCountries')
                             .required(),
-                        [BALANCES_ADJUSTMENT_BALANCE_TYPE]: yup
-                            .string()
-                            .oneOf(Object.values(BalanceType))
-                            .required(),
+                        [BALANCES_ADJUSTMENT_BALANCE_TYPE]: yup.string().oneOf(Object.values(BalanceType)).required(),
                     }),
                 }),
             }),
