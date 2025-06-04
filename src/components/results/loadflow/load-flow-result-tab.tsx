@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -32,7 +32,6 @@ import {
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
 import { mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -49,7 +48,6 @@ import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filt
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { fetchSubstationPropertiesGlobalFilters } from '../common/global-filter/global-filter-utils';
 import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
 
 const styles = {

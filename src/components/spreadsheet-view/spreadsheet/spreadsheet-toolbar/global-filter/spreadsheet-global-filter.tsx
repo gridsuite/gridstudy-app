@@ -6,20 +6,17 @@
  */
 
 import type { UUID } from 'crypto';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { debounce } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../../services/study/network-map';
 import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
-import { fetchSubstationPropertiesGlobalFilters } from '../../../../results/common/global-filter/global-filter-utils';
 import { useGlobalFilterData } from '../../../../results/common/global-filter/use-global-filter-data';
 
 export type SpreadsheetGlobalFilterProps = {
