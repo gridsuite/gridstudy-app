@@ -41,7 +41,6 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
             if (!studyUuid) {
                 return;
             }
-            console.log(filters);
             setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, filters).catch((error) =>
                 console.error('Failed to update global filters:', error)
             );
