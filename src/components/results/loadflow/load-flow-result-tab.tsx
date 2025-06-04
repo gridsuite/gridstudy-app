@@ -73,7 +73,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     nodeUuid,
     currentRootNetworkUuid,
 }) => {
-    const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(0);
