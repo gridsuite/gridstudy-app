@@ -791,8 +791,8 @@ export interface TopologyVoltageLevelModificationInfos {
 }
 
 export type CouplingDeviceInfos = {
-    busbarSectionId1: string | null;
-    busbarSectionId2: string | null;
+    busbarSectionId1: string;
+    busbarSectionId2: string;
 };
 
 export interface CreateCouplingDeviceInfos {

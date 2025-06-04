@@ -7,6 +7,6 @@
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from '../../../utils/field-constants';
 
 export type CreateCouplingDeviceDialogSchemaForm = {
-    [BUS_BAR_SECTION_ID1]: { id: string | null; label: string | null };
-    [BUS_BAR_SECTION_ID2]: { id: string | null; label: string | null };
+    [BUS_BAR_SECTION_ID1]: string;
+    [BUS_BAR_SECTION_ID2]: string;
 };

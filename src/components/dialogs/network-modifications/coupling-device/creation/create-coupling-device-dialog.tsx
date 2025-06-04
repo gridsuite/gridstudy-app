@@ -30,8 +30,8 @@ const emptyFormData = {
     [BUS_BAR_SECTION_ID2]: null,
 };
 const formSchema = yup.object().shape({
-    [BUS_BAR_SECTION_ID1]: yup.object().nullable().required(),
-    [BUS_BAR_SECTION_ID2]: yup.object().nullable().required(),
+    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
 });
 export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateCouplingDeviceInfos;
@@ -89,8 +89,8 @@ export const CreateCouplingDeviceDialog = ({
                 type: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                 voltageLevelId: selectedId,
                 couplingDeviceInfos: {
-                    busbarSectionId1: couplingDevice[BUS_BAR_SECTION_ID1].id,
-                    busbarSectionId2: couplingDevice[BUS_BAR_SECTION_ID2].id,
+                    busbarSectionId1: couplingDevice[BUS_BAR_SECTION_ID1],
+                    busbarSectionId2: couplingDevice[BUS_BAR_SECTION_ID2],
                 },
             } satisfies CreateCouplingDeviceInfos;
             createCouplingDevice({
@@ -119,12 +119,8 @@ export const CreateCouplingDeviceDialog = ({
                     currentRootNetworkUuid,
                     equipmentId
                 ).then((busesOrbusbarSections) => {
-                    console.log('busesOrbusbarSections', busesOrbusbarSections);
                     setBusOrBusbarSectionOptions(
-                        busesOrbusbarSections?.map((busesOrbusbarSection) => ({
-                            id: busesOrbusbarSection.id,
-                            label: busesOrbusbarSection?.name ?? '',
-                        })) || []
+                        busesOrbusbarSections?.map((busesOrbusbarSection) => busesOrbusbarSection.id) || []
                     );
                     setDataFetchStatus(FetchStatus.SUCCEED);
                 });
