@@ -9,7 +9,7 @@ import { UUID } from 'crypto';
 import { Diagram, DiagramParams } from '../diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
 
 const keyToKeepInSessionStorage = [
@@ -29,16 +29,14 @@ type useDiagramSessionStorageProps = {
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-
-    // at mount
-    useEffect(() => {
+    useState<DiagramParams[]>(() => {
         if (!studyUuid) {
-            return;
+            return [];
         }
         const diagrams: DiagramParams[] = loadDiagramsFromSessionStorage(studyUuid);
         diagrams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        return diagrams;
+    });
 
     // at update
     useEffect(() => {

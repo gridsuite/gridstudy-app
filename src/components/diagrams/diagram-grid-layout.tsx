@@ -102,7 +102,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     };
     const { diagrams, removeDiagram, createDiagram } = useDiagramModel({
-        diagramTypes: enableDeveloperMode ? diagramTypes : [],
+        diagramTypes: diagramTypes,
         onAddDiagram,
     });
 
