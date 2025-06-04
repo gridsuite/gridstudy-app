@@ -869,8 +869,8 @@
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
     "AddCouplingDeviceError": "Error while creating a coupling device",
-    "BusBarSectionID1": "BusBar Section ID 1",
-    "BusBarSectionID2": "BusBar Section ID 2",
+    "BusBarSectionID1": "Bus bar section / bus 1",
+    "BusBarSectionID2": "Bus bar section / bus 2",
     "BusBarSectionsCopyingNotSupported": "Copying bus bar sections is not supported for this voltage level : values were set to their default",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",

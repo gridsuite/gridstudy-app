@@ -18,7 +18,7 @@ import { createCouplingDevice } from '../../../../../services/study/network-modi
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
-import { CreateCouplingDeviceForm } from './create-coupling-device-form';
+import CreateCouplingDeviceForm from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
