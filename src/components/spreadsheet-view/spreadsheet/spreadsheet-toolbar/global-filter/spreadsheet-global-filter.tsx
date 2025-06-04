@@ -20,6 +20,7 @@ import GlobalFilterSelector from '../../../../results/common/global-filter/globa
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
 import { fetchSubstationPropertiesGlobalFilters } from '../../../../results/common/global-filter/global-filter-utils';
+import { useGlobalFilterData } from '../../../../results/common/global-filter/use-global-filter-data';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
@@ -29,18 +30,10 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     const dispatch = useDispatch();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
     );
-
-    const { snackError } = useSnackMessage();
-
-    const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
-    // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
-    const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(
@@ -55,58 +48,6 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
         }, 600),
         []
     );
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((countryCodes) => {
-                    setCountriesFilter(
-                        countryCodes.map((countryCode: string) => ({
-                            label: countryCode,
-                            filterType: FilterType.COUNTRY,
-                        }))
-                    );
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchCountryError',
-                    });
-                });
-
-            fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((nominalVoltages) => {
-                    setVoltageLevelsFilter(
-                        nominalVoltages.map((nominalV: number) => ({
-                            label: nominalV.toString(),
-                            filterType: FilterType.VOLTAGE_LEVEL,
-                        }))
-                    );
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchNominalVoltagesError',
-                    });
-                });
-
-            fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-                const propertiesGlobalFilters: GlobalFilter[] = [];
-                if (substationPropertiesGlobalFilters) {
-                    for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
-                        propertyValues.forEach((propertyValue) => {
-                            propertiesGlobalFilters.push({
-                                label: propertyValue,
-                                filterType: FilterType.SUBSTATION_PROPERTY,
-                                filterSubtype: propertyName,
-                            });
-                        });
-                    }
-                }
-                setPropertiesFilter(propertiesGlobalFilters);
-            });
-        }
-    }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
 
     const handleFilterChange = useCallback(
         async (globalFilters: GlobalFilter[]) => {
