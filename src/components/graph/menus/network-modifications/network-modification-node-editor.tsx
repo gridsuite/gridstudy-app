@@ -67,7 +67,7 @@ import {
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 
-import { RestoreFromTrash, FileUpload } from '@mui/icons-material';
+import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
@@ -100,6 +100,7 @@ import NetworkModificationsTable from './network-modifications-table';
 import { CellClickedEvent, RowDragEndEvent, RowDragEnterEvent } from 'ag-grid-community';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
+import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/creation/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 
 const nonEditableModificationTypes = new Set([
@@ -324,6 +325,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
                     label: 'LCC',
                     action: () => withDefaultParams(LccModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
+                    label: 'CreateCouplingDevice',
+                    action: () => withDefaultParams(CreateCouplingDeviceDialog),
                 },
             ],
         },
