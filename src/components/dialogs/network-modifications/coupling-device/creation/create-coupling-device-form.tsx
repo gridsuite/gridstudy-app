@@ -7,11 +7,11 @@
 
 import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
-import GridItem from '../../../commons/grid-item.js';
-import { getObjectId } from '../../../../utils/utils.js';
+import GridItem from '../../../commons/grid-item';
+import { getObjectId } from '../../../../utils/utils';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from '../../../../diagrams/singleLineDiagram/position-diagram-pane.js';
+import PositionDiagramPane from '../../../../diagrams/singleLineDiagram/position-diagram-pane';
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -29,13 +29,13 @@ export interface CreateCouplingDeviceFormProps {
     currentRootNetworkUuid: UUID;
 }
 
-export const CreateCouplingDeviceForm = ({
+export default function CreateCouplingDeviceForm({
     sectionOptions,
     studyUuid,
     voltageLevelId,
     currentNode,
     currentRootNetworkUuid,
-}: Readonly<CreateCouplingDeviceFormProps>) => {
+}: Readonly<CreateCouplingDeviceFormProps>) {
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
 
@@ -127,4 +127,4 @@ export const CreateCouplingDeviceForm = ({
             </Box>
         </>
     );
-};
+}

@@ -8,17 +8,17 @@
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FetchStatus } from '../../../../../services/utils.js';
-import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector.js';
-import { ModificationDialog } from '../../../commons/modificationDialog.js';
+import { FetchStatus } from '../../../../../services/utils';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { ModificationDialog } from '../../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form.js';
-import { FORM_LOADING_DELAY } from '../../../../network/constants.js';
-import { createCouplingDevice } from '../../../../../services/study/network-modifications.js';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from '../../../../network/constants';
+import { createCouplingDevice } from '../../../../../services/study/network-modifications';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config.js';
-import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network.js';
-import { CreateCouplingDeviceForm } from './create-coupling-device-form.js';
+import yup from '../../../../utils/yup-config';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
+import { CreateCouplingDeviceForm } from './create-coupling-device-form';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
@@ -36,7 +36,7 @@ const formSchema = yup.object().shape({
 export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateCouplingDeviceInfos;
 };
-export const CreateCouplingDeviceDialog = ({
+export default function CreateCouplingDeviceDialog({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
@@ -45,7 +45,7 @@ export const CreateCouplingDeviceDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: Readonly<CreateCouplingDeviceDialogProps>) => {
+}: Readonly<CreateCouplingDeviceDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
@@ -179,4 +179,4 @@ export const CreateCouplingDeviceDialog = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
+}
