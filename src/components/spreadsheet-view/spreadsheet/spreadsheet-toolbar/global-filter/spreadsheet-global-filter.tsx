@@ -19,6 +19,7 @@ import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
+import { fetchSubstationPropertiesGlobalFilters } from '../../../../results/common/global-filter/global-filter-utils';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
@@ -38,6 +39,8 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
+    // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
+    const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(
@@ -45,6 +48,7 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
             if (!studyUuid) {
                 return;
             }
+            console.log(filters);
             setGlobalFiltersToSpreadsheetConfig(studyUuid, uuid, filters).catch((error) =>
                 console.error('Failed to update global filters:', error)
             );
@@ -85,6 +89,22 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
                         headerId: 'FetchNominalVoltagesError',
                     });
                 });
+
+            fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+                const propertiesGlobalFilters: GlobalFilter[] = [];
+                if (substationPropertiesGlobalFilters) {
+                    for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
+                        propertyValues.forEach((propertyValue) => {
+                            propertiesGlobalFilters.push({
+                                label: propertyValue,
+                                filterType: FilterType.SUBSTATION_PROPERTY,
+                                filterSubtype: propertyName,
+                            });
+                        });
+                    }
+                }
+                setPropertiesFilter(propertiesGlobalFilters);
+            });
         }
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
 
@@ -97,11 +117,11 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     const filters = useMemo(() => {
         if (tableDefinition.type === EQUIPMENT_TYPES.SUBSTATION) {
-            return countriesFilter;
+            return [...countriesFilter, ...propertiesFilter];
         } else {
-            return [...voltageLevelsFilter, ...countriesFilter];
+            return [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter];
         }
-    }, [countriesFilter, tableDefinition.type, voltageLevelsFilter]);
+    }, [countriesFilter, propertiesFilter, tableDefinition.type, voltageLevelsFilter]);
 
     useEffect(() => {
         if (globalFilterSpreadsheetState) {

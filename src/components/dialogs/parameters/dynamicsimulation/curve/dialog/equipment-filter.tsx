@@ -134,6 +134,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 selectedVoltageLevelIds,
                 selectedCountries,
                 selectedNominalVoltages,
+                undefined,
                 undefined
             );
             // the fetcher which evaluates a filter by filter-server

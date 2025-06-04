@@ -43,6 +43,7 @@ export const buildExpertRules = (
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
+    substationProperties: Record<string, string[]> | undefined,
     ids: string[] | undefined
 ) => {
     const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
@@ -146,6 +147,52 @@ export const buildExpertRules = (
         rules.push(nominalVoltagesRule);
     }
 
+    if (substationProperties && COUNTRY_ONE_SIDED_EQUIPMENTS.includes(equipmentType)) {
+        let propertyField = FieldType.SUBSTATION_PROPERTIES;
+        if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+            propertyField = FieldType.FREE_PROPERTIES;
+        }
+
+        Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
+            if (propertyValues?.length) {
+                const substationPropertiesRule = {
+                    field: propertyField,
+                    operator: OperatorType.IN,
+                    propertyName: propertyName,
+                    propertyValues: propertyValues,
+                    dataType: DataType.PROPERTIES,
+                };
+                rules.push(substationPropertiesRule);
+            }
+        });
+    } else if (substationProperties && COUNTRY_TWO_SIDED_EQUIPMENTS.includes(equipmentType)) {
+        Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
+            if (propertyValues?.length) {
+                const substationPropertiesRule = {
+                    combinator: CombinatorType.OR,
+                    dataType: DataType.COMBINATOR,
+                    rules: [
+                        {
+                            field: FieldType.SUBSTATION_PROPERTIES_1,
+                            operator: OperatorType.IN,
+                            propertyName: propertyName,
+                            propertyValues: propertyValues,
+                            dataType: DataType.PROPERTIES,
+                        },
+                        {
+                            field: FieldType.SUBSTATION_PROPERTIES_2,
+                            operator: OperatorType.IN,
+                            propertyName: propertyName,
+                            propertyValues: propertyValues,
+                            dataType: DataType.PROPERTIES,
+                        },
+                    ],
+                };
+                rules.push(substationPropertiesRule);
+            }
+        });
+    }
+
     // create rule IN for ids
     if (ids?.length) {
         const idsRule = {
@@ -169,13 +216,14 @@ export const buildExpertFilter = (
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
+    substationProperties: Record<string, string[]> | undefined,
     ids: string[] | undefined
 ): ExpertFilter => {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
         type: 'EXPERT',
         equipmentType: equipmentType,
-        rules: buildExpertRules(equipmentType, voltageLevelIds, countries, nominalVoltages, ids),
+        rules: buildExpertRules(equipmentType, voltageLevelIds, countries, nominalVoltages, substationProperties, ids),
     };
 };
 
