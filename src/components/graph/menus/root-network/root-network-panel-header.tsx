@@ -6,13 +6,14 @@
  */
 
 import React, { SetStateAction, useCallback, useState } from 'react';
-import { Box, IconButton, Theme, Tooltip } from '@mui/material';
+import { Box, IconButton, Theme, Tooltip, Typography } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import {
     LeftPanelCloseIcon,
     LeftPanelOpenIcon,
     OverflowableText,
     Parameter,
+    fetchDirectoryElementPath,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
@@ -22,7 +23,12 @@ import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
 import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setMonoRootStudy } from 'redux/actions';
+import { CustomDialog } from 'components/utils/custom-dialog';
+import SearchIcon from '@mui/icons-material/Search';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -48,6 +54,8 @@ interface RootNetworkPanelHeaderProps {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
     isRootNetworkPanelMinimized: boolean;
     setIsRootNetworkPanelMinimized: React.Dispatch<SetStateAction<boolean>>;
+    setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
+    closeSearchPanel: () => void;
 }
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
@@ -55,24 +63,91 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     setIsRootNetworksProcessing,
     isRootNetworkPanelMinimized,
     setIsRootNetworkPanelMinimized,
+    setIsSearchActive,
+    closeSearchPanel,
 }) => {
     const { snackError } = useSnackMessage();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const dispatch = useDispatch();
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     const intl = useIntl();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
+    const [rootNetworkConfirmCreationDialogOpen, setRootNetworkConfirmCreationDialogOpen] = useState(false);
+    const [formData, setFormData] = useState<FormData | null>(null);
+    const [studyName, setStudyName] = useState<string | null>(null);
+
+    const openRootNetworkConfirmCreationDialog = useCallback(() => {
+        if (studyUuid) {
+            fetchDirectoryElementPath(studyUuid)
+                .then((response) => {
+                    const studyName = response[response.length - 1]?.elementName;
+                    setStudyName(studyName);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'LoadStudyAndParentsInfoError',
+                    });
+                });
+        }
+        setRootNetworkConfirmCreationDialogOpen(true);
+    }, [snackError, studyUuid]);
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
-    }, []);
+        closeSearchPanel();
+    }, [closeSearchPanel]);
+
+    const confirmRootNetworkCreation = () => {
+        if (formData) {
+            doCreateRootNetwork(formData);
+        }
+        setRootNetworkConfirmCreationDialogOpen(false);
+    };
+
+    const renderRootNetworkConfirmCreationDialog = () => {
+        return (
+            <>
+                {rootNetworkConfirmCreationDialogOpen && (
+                    <CustomDialog
+                        content={renderRootNetworkConfirmationContent()}
+                        onValidate={confirmRootNetworkCreation}
+                        validateButtonLabel="button.continue"
+                        onClose={() => setRootNetworkConfirmCreationDialogOpen(false)}
+                    />
+                )}
+            </>
+        );
+    };
+
+    const renderRootNetworkConfirmationContent = () => {
+        return (
+            <Typography sx={{ whiteSpace: 'pre-line' }}>
+                <FormattedMessage
+                    id="confirmRootNetworkCreation"
+                    values={{
+                        studyName,
+                    }}
+                />
+            </Typography>
+        );
+    };
+    const handleRootNetworkCreation = (data: FormData) => {
+        setFormData(data);
+        openRootNetworkConfirmCreationDialog();
+        setRootNetworkCreationDialogOpen(false);
+    };
     const renderRootNetworkCreationDialog = () => {
         return (
             <RootNetworkDialog
                 open={rootNetworkCreationDialogOpen}
                 onClose={() => setRootNetworkCreationDialogOpen(false)}
-                onSave={doCreateRootNetwork}
+                onSave={isMonoRootStudy ? handleRootNetworkCreation : doCreateRootNetwork}
                 titleId={'addNetwork'}
             />
         );
@@ -89,14 +164,10 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-                return createRootNetwork(
-                    caseId as UUID,
-                    params.formatName,
-                    name,
-                    tag,
-                    studyUuid,
-                    customizedCurrentParameters
-                );
+                createRootNetwork(caseId as UUID, params.formatName, name, tag, studyUuid, customizedCurrentParameters);
+                if (isMonoRootStudy && rootNetworks.length === 1) {
+                    dispatch(setMonoRootStudy(false));
+                }
             })
 
             .catch((error) => {
@@ -108,8 +179,14 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
             });
     };
     const minimizeRootNetworkPanel = useCallback(() => {
+        setIsSearchActive(false);
         setIsRootNetworkPanelMinimized((prev) => !prev);
-    }, [setIsRootNetworkPanelMinimized]);
+    }, [setIsRootNetworkPanelMinimized, setIsSearchActive]);
+
+    const openSearch = useCallback(() => {
+        setIsSearchActive(true);
+        setIsRootNetworkPanelMinimized(false);
+    }, [setIsRootNetworkPanelMinimized, setIsSearchActive]);
 
     return (
         <>
@@ -118,21 +195,29 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                     <OverflowableText sx={styles.rootNameTitle} text={intl.formatMessage({ id: 'root' })} />
 
                     <Tooltip title={<FormattedMessage id={'addNetwork'} />}>
-                        <IconButton
-                            onClick={openRootNetworkCreationDialog}
-                            size={'small'}
-                            sx={styles.uploadButton}
-                            disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
-                        >
-                            <FileUpload />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                onClick={openRootNetworkCreationDialog}
+                                size={'small'}
+                                sx={styles.uploadButton}
+                                disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
+                            >
+                                <FileUpload />
+                            </IconButton>
+                        </span>
                     </Tooltip>
+                    {enableDeveloperMode && (
+                        <IconButton size={'small'} onClick={openSearch}>
+                            <SearchIcon />
+                        </IconButton>
+                    )}
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
                     {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}
                 </IconButton>
             </Box>
             {rootNetworkCreationDialogOpen && renderRootNetworkCreationDialog()}
+            {rootNetworkConfirmCreationDialogOpen && renderRootNetworkConfirmCreationDialog()}
         </>
     );
 };

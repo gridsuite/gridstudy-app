@@ -129,7 +129,7 @@ import {
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-    ResetAllSpreadsheetGsFiltersAction,
+    ResetAllSpreadsheetGlobalFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
@@ -137,7 +137,7 @@ import {
     ResetMapEquipmentsAction,
     ResetNetworkAreaDiagramDepthAction,
     SAVE_SPREADSHEET_GS_FILTER,
-    SaveSpreadSheetGsFilterAction,
+    SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
@@ -212,8 +212,14 @@ import {
     SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
+    REMOVE_EQUIPMENT_DATA,
+    RemoveEquipmentDataAction,
     UPDATE_TABLE_COLUMNS,
     UpdateTableColumnsAction,
+    SET_MONO_ROOT_STUDY,
+    SetMonoRootStudyAction,
+    RESET_DIAGRAM_EVENT,
+    ResetDiagramEventAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -252,7 +258,6 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
-import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -300,13 +305,13 @@ import {
     SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { CalculationType } from 'components/spreadsheet/utils/calculation.type';
+import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
+import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -319,6 +324,10 @@ export enum NotificationType {
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
+    BUILD_COMPLETED = 'buildCompleted',
+    NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    UPDATE_FINISHED = 'UPDATE_FINISHED',
+    DELETE_FINISHED = 'DELETE_FINISHED',
 }
 
 export enum RootNetworkIndexationStatus {
@@ -402,6 +411,20 @@ export interface RootNetworksUpdatedEventData {
     headers: RootNetworksUpdatedEventDataHeaders;
     payload: undefined;
 }
+export interface NodeUpdatedEventData {
+    headers: NodeUpdatedEventDataHeader;
+    payload: undefined;
+}
+
+interface NodeUpdatedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    timestamp: number;
+    nodes?: UUID[];
+    node?: UUID;
+    substationsIds: string;
+    rootNetworkUuid: UUID;
+}
 
 // Notification types
 type StudyUpdatedStudy = {
@@ -480,6 +503,52 @@ export type DiagramState = {
     needsToBlink?: boolean;
     name?: string;
 };
+
+export enum DiagramEventType {
+    CREATE = 'create',
+    REMOVE = 'remove',
+}
+
+type DiagramEventBase = {
+    diagramType: DiagramType;
+    eventType: DiagramEventType;
+};
+
+type RemoveDiagramEvent = DiagramEventBase & {
+    eventType: DiagramEventType.REMOVE;
+    diagramUuid: UUID;
+};
+
+type CreateDiagramEvent = DiagramEventBase & {
+    eventType: DiagramEventType.CREATE;
+};
+
+type CreateVoltageLevelSLDDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.VOLTAGE_LEVEL;
+    voltageLevelId: string;
+};
+
+type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.SUBSTATION;
+    substationId: string;
+};
+
+type CreateNADDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
+    voltageLevelIds: string[];
+};
+
+type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NAD_FROM_CONFIG;
+    nadFromConfigUuid: UUID;
+};
+
+export type DiagramEvent =
+    | RemoveDiagramEvent
+    | CreateVoltageLevelSLDDiagramEvent
+    | CreateSubstationSLDDiagramEvent
+    | CreateNADDiagramEvent
+    | CreateNADFromConfigDiagramEvent;
 
 export type NadNodeMovement = {
     nadIdentifier: string;
@@ -566,6 +635,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
+    latestDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     fullScreenDiagram: null | {
@@ -577,12 +647,13 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
+    isMonoRootStudy: boolean;
     reloadMapNeeded: boolean;
     isEditMode: boolean;
     freezeMapUpdates: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
-    gsFilterSpreadsheetState: GsFilterSpreadsheetState;
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
@@ -662,8 +733,8 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
 };
 
-export type GsFilterSpreadsheetState = Record<UUID, SpreadsheetGlobalFilter[]>;
-const initialGsFilterSpreadsheet: GsFilterSpreadsheetState = {};
+export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
+const initialGlobalFilterSpreadsheet: GlobalFilterSpreadsheetState = {};
 
 interface TablesState {
     uuid: UUID | null;
@@ -710,8 +781,10 @@ const initialState: AppState = {
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
+    isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
+    latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
     reloadMapNeeded: true,
@@ -721,7 +794,7 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
-    gsFilterSpreadsheetState: initialGsFilterSpreadsheet,
+    globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -944,17 +1017,15 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
-        const { spreadsheetConfigDto } = action;
+        const { spreadsheetConfigUuid, columns } = action;
         const existingTableDefinition = state.tables.definitions.find(
-            (tabDef) => tabDef.uuid === spreadsheetConfigDto.id
+            (tabDef) => tabDef.uuid === spreadsheetConfigUuid
         );
         if (existingTableDefinition) {
-            existingTableDefinition.name = spreadsheetConfigDto.name;
-            existingTableDefinition.columns = spreadsheetConfigDto.columns.map((column) => {
+            existingTableDefinition.columns = columns.map((column) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    dependencies: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
                     visible: existingColDef ? existingColDef.visible : true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
@@ -978,7 +1049,13 @@ export const reducer = createReducer(initialState, (builder) => {
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
-            .reduce((acc, tabUuid) => ({ ...acc, [tabUuid]: [] }), {});
+            .reduce(
+                (acc, tabUuid) => ({
+                    ...acc,
+                    [tabUuid]: action?.tablesFilters?.[tabUuid] ?? [],
+                }),
+                {}
+            );
         state[TABLE_SORT_STORE][SPREADSHEET_SORT_STORE] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce((acc, tabUuid) => {
@@ -990,6 +1067,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 ];
                 return acc;
             }, {} as TableSortConfig);
+        state.globalFilterSpreadsheetState = action?.globalFilterSpreadsheetState ?? {};
     });
 
     builder.addCase(REORDER_TABLE_DEFINITIONS, (state, action: ReorderTableDefinitionsAction) => {
@@ -1329,6 +1407,10 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
+    builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
+        state.isMonoRootStudy = action.isMonoRootStudy;
+    });
+
     /*
      * The following functions' goal are to update state.diagramStates with nodes of the following type :
      * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
@@ -1451,6 +1533,26 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
         state.diagramStates = diagramStates;
+
+        if (action.svgType === DiagramType.SUBSTATION) {
+            state.latestDiagramEvent = {
+                diagramType: action.svgType,
+                eventType: DiagramEventType.CREATE,
+                substationId: action.id as UUID,
+            };
+        } else if (action.svgType === DiagramType.VOLTAGE_LEVEL) {
+            state.latestDiagramEvent = {
+                diagramType: action.svgType,
+                eventType: DiagramEventType.CREATE,
+                voltageLevelId: action.id as UUID,
+            };
+        } else if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+            state.latestDiagramEvent = {
+                diagramType: action.svgType,
+                eventType: DiagramEventType.CREATE,
+                voltageLevelIds: [action.id as UUID],
+            };
+        }
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
@@ -1466,6 +1568,11 @@ export const reducer = createReducer(initialState, (builder) => {
                 state: ViewState.OPENED,
             }))
         );
+        state.latestDiagramEvent = {
+            diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
+            eventType: DiagramEventType.CREATE,
+            voltageLevelIds: uniqueIds as UUID[],
+        };
     });
 
     builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
@@ -1578,6 +1685,11 @@ export const reducer = createReducer(initialState, (builder) => {
             state: ViewState.OPENED,
         });
         state.diagramStates = diagramStates;
+        state.latestDiagramEvent = {
+            diagramType: DiagramType.NAD_FROM_CONFIG,
+            eventType: DiagramEventType.CREATE,
+            nadFromConfigUuid: action.nadConfigUuid as UUID,
+        };
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
@@ -1694,6 +1806,13 @@ export const reducer = createReducer(initialState, (builder) => {
         );
     });
 
+    builder.addCase(REMOVE_EQUIPMENT_DATA, (state, action: RemoveEquipmentDataAction) => {
+        state.spreadsheetNetwork[action.equipmentType] = {
+            nodesId: [],
+            equipmentsByNodeId: {},
+        };
+    });
+
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
         // for now, this action receives an object containing all equipments from a substation
         // it will be modified when the notifications received after a network modification will be more precise
@@ -1711,7 +1830,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = formatFetchedEquipments(
+            const formattedEquipments = mapSpreadsheetEquipments(
                 // @ts-expect-error TODO manage undefined value case
                 equipmentType,
                 equipments
@@ -1826,7 +1945,10 @@ export const reducer = createReducer(initialState, (builder) => {
             if (
                 !newRecentGlobalFilters.some(
                     (obj) =>
-                        obj.label === filter.label && obj.filterType === filter.filterType && obj.uuid === filter.uuid
+                        obj.label === filter.label &&
+                        obj.filterType === filter.filterType &&
+                        obj.filterSubtype === filter.filterSubtype &&
+                        obj.uuid === filter.uuid
                 )
             ) {
                 newRecentGlobalFilters.push(filter);
@@ -1938,8 +2060,8 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     });
 
-    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGsFilterAction) => {
-        state.gsFilterSpreadsheetState[action.tabUuid] = action.filters;
+    builder.addCase(SAVE_SPREADSHEET_GS_FILTER, (state, action: SaveSpreadSheetGlobalFilterAction) => {
+        state.globalFilterSpreadsheetState[action.tabUuid] = action.filters;
     });
 
     builder.addCase(SET_CALCULATION_SELECTIONS, (state, action: SetCalculationSelectionsAction) => {
@@ -1949,12 +2071,16 @@ export const reducer = createReducer(initialState, (builder) => {
         };
     });
 
-    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGsFiltersAction) => {
-        state.gsFilterSpreadsheetState = {};
+    builder.addCase(RESET_ALL_SPREADSHEET_GS_FILTERS, (state, _action: ResetAllSpreadsheetGlobalFiltersAction) => {
+        state.globalFilterSpreadsheetState = {};
     });
 
     builder.addCase(DELETED_OR_RENAMED_NODES, (state, action: DeletedOrRenamedNodesAction) => {
         state.deletedOrRenamedNodes = action.deletedOrRenamedNodes;
+    });
+
+    builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
+        state.latestDiagramEvent = undefined;
     });
 });
 

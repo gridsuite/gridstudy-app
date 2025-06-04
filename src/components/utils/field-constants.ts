@@ -301,6 +301,7 @@ export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
+export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
 export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'flowFlowSensitivityValueThreshold';
 export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'angleFlowSensitivityValueThreshold';
@@ -399,7 +400,7 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
-export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
+export const SPREADSHEET_GS_FILTER = 'SpreadsheetGlobalFilter';
 
 /* State estimation parameters fields */
 /* General */
@@ -461,3 +462,22 @@ export const VALIDITY = 'validity';
 export const TO_BE_ESTIMATED = 'toBeEstimated';
 export const RATIO_TAP_CHANGER_STATUS = 'ratioTapChangerStatus';
 export const PHASE_TAP_CHANGER_STATUS = 'phaseTapChangerStatus';
+
+export const SWITCH_ID = 'switchId';
+export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
+export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
+export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';
+
+// BALANCES ADJUSTMENT
+export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
+export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
+export const BALANCES_ADJUSTMENT_ZONE = 'balancesAdjustmentZone';
+export const BALANCES_ADJUSTMENT_COUNTRIES = 'balancesAdjustmentCountries';
+export const BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE = 'balancesAdjustmentShiftEquipmentType';
+export const BALANCES_ADJUSTMENT_SHIFT_TYPE = 'balancesAdjustmentShfttType';
+export const BALANCES_ADJUSTMENT_TARGET = 'balancesAdjustmentTarget';
+export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
+export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
+export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
+export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
+export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';

@@ -17,8 +17,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../../utils/config-params';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { styles } from '../parameters-style';
+import { FloatInput, parametersStyles } from '@gridsuite/commons-ui';
 
 interface FieldToShow {
     label: string;
@@ -37,15 +36,15 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
 }) => {
     const intl = useIntl();
     return (
-        <Grid sx={isSingleField ? styles.singleItem : styles.multipleItems}>
-            <Grid item xs={4} sx={styles.parameterName}>
+        <Grid sx={isSingleField ? parametersStyles.singleItem : parametersStyles.multipleItems}>
+            <Grid item xs={4} sx={parametersStyles.parameterName}>
                 <Typography>{intl.formatMessage({ id: label })}</Typography>
             </Grid>
             <Grid
                 item
                 container
                 xs={isSingleField ? 8 : 4}
-                sx={isSingleField ? styles.singleTextField : styles.firstTextField}
+                sx={isSingleField ? parametersStyles.singleTextField : parametersStyles.firstTextField}
             >
                 <FloatInput
                     name={firstField.name}
@@ -56,7 +55,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
                 />
             </Grid>
             {!isSingleField && secondField && (
-                <Grid item container xs={4} sx={styles.secondTextField}>
+                <Grid item container xs={4} sx={parametersStyles.secondTextField}>
                     <FloatInput
                         name={secondField.name}
                         adornment={{
@@ -116,14 +115,14 @@ const ViolationsHidingParameters: FunctionComponent = () => {
     return (
         <>
             <Grid container spacing={1} paddingBottom={1}>
-                <Grid item xs={8} sx={styles.text}>
+                <Grid item xs={8} sx={parametersStyles.text}>
                     <Typography>
                         {intl.formatMessage({
                             id: 'securityAnalysis.violationsHiding',
                         })}
                     </Typography>
                     <Tooltip
-                        sx={styles.tooltip}
+                        sx={parametersStyles.tooltip}
                         title={<FormattedMessage id={'securityAnalysis.toolTip.violationsHiding'} />}
                         placement="left-start"
                     >

@@ -8,12 +8,12 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
-    Equipment,
     EquipmentInfos,
     EquipmentItem,
-    TagRendererProps,
-    EquipmentType,
     equipmentStyles,
+    EquipmentType,
+    ExtendedEquipmentType,
+    TagRendererProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FunctionComponent, useCallback, useState } from 'react';
@@ -31,19 +31,20 @@ import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
-    showVoltageLevelDiagram: (element: Equipment) => void;
+    showVoltageLevelDiagram: (element: EquipmentInfos) => void;
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    disableEventSearch?: boolean;
 }
 
 export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
-    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram } = props;
+    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram, disableEventSearch } = props;
     const intl = useIntl();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | null>(null);
+    const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | ExtendedEquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useTopBarSearchMatchingEquipment({
         // @ts-expect-error TODO: manage null case
@@ -58,8 +59,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
     const disabledSearchReason = useDisabledSearchReason();
 
     const enableSearchDialog = useCallback(() => {
-        setIsDialogSearchOpen(true);
-    }, [setIsDialogSearchOpen]);
+        if (!disableEventSearch) {
+            setIsDialogSearchOpen(true);
+        }
+    }, [disableEventSearch, setIsDialogSearchOpen]);
 
     const { snackWarning } = useSnackMessage();
 

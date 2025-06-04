@@ -10,6 +10,7 @@ const spreadsheetFr = {
     'spreadsheet/column/dialog/title': 'Liste des colonnes',
     'spreadsheet/collection/save/title': 'Liste des tableurs',
     'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
+    'spreadsheet/column/dialog/include_filters': 'Inclure les filtres',
     'spreadsheet/custom_column/add_columns': 'Ajouter une colonne',
     'spreadsheet/custom_column/edit_columns': 'Éditer une colonne',
     'spreadsheet/custom_column/column_name': 'Nom de la colonne',
@@ -18,7 +19,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_precision': 'Précision',
     'spreadsheet/custom_column/column_content': 'Entrer la formule',
     'spreadsheet/custom_column/column_dependencies': 'Entrer les dépendances de la formule',
-    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes`,
+    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau), des IDs de colonnes (pour faire référence au contenu d'une autre colonne) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes.`,
     'spreadsheet/custom_column/error/id_not_conform':
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
@@ -73,6 +74,11 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Choisir un modèle',
     'spreadsheet/create_new_spreadsheet/apply_collection_option': 'Choisir une collection',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_model': 'Modèle de tableur',
+    'spreadsheet/save/include_filters_title': 'Inclure les filtres',
+    'spreadsheet/save/include_filters_message':
+        'Ce tableur comporte des filtres de colonnes et/ou des filtres globaux. Souhaitez-vous inclure ces filtres dans le modèle enregistré ?',
+    'spreadsheet/save/include_filters_yes': 'Oui',
+    'spreadsheet/save/include_filters_no': 'Non',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_collection': 'Collection de tableurs',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Nom du tableur',
     'spreadsheet/create_new_spreadsheet/equipment_type': "Type d'équipement",

@@ -10,6 +10,7 @@ const spreadsheetEn = {
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/collection/save/title': 'Spreadsheets list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',
+    'spreadsheet/column/dialog/include_filters': 'Include filters',
     'spreadsheet/custom_column/add_columns': 'Add a column',
     'spreadsheet/custom_column/edit_columns': 'Edit a column',
     'spreadsheet/custom_column/column_name': 'Column name',
@@ -18,7 +19,7 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_type': 'Column type',
     'spreadsheet/custom_column/column_precision': 'Column precision',
     'spreadsheet/custom_column/column_content': 'Enter the formula',
-    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
+    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data), column IDs (in order to reference the content of another column) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet.`,
     'spreadsheet/custom_column/error/id_not_conform':
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',
@@ -70,6 +71,11 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Select a model',
     'spreadsheet/create_new_spreadsheet/apply_collection_option': 'Select a collection',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_model': 'Spreadsheet model',
+    'spreadsheet/save/include_filters_title': 'Include filters',
+    'spreadsheet/save/include_filters_message':
+        'This spreadsheet has column filters and/or global filters. Would you like to include these filters in the saved model ?',
+    'spreadsheet/save/include_filters_yes': 'Yes',
+    'spreadsheet/save/include_filters_no': 'No',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_collection': 'Spreadsheet collection',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Spreadsheet name',
     'spreadsheet/create_new_spreadsheet/equipment_type': 'Equipment type',

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
 import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
@@ -12,7 +12,6 @@ import { useDebounce } from '@gridsuite/commons-ui';
 
 interface QuickSearchProps {
     currentResultIndex: number;
-    selectedReportId: string;
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
@@ -29,7 +28,6 @@ const styles = {
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
     currentResultIndex,
-    selectedReportId,
     onSearch,
     onNavigate,
     resultCount,
@@ -85,11 +83,6 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             inputRef.current.focus();
         }
     }, [resetSearch]);
-
-    useEffect(() => {
-        setSearchTerm('');
-        setResultsCountDisplay(false);
-    }, [selectedReportId]);
 
     return (
         <TextField

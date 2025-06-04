@@ -10,7 +10,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
-import { GlobalFilter } from '../../../spreadsheet/global-filter';
+import { GlobalFilter } from './global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
@@ -137,7 +137,7 @@ const CurveParameters = ({ path }: { path: string }) => {
 
     return (
         <>
-            <Grid container direction={'column'} sx={{ height: 640 }}>
+            <Grid container direction={'column'} sx={{ height: 600 }}>
                 {/* header toolbar of the aggrid */}
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <Grid container item xs={'auto'}>

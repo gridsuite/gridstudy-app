@@ -12,26 +12,23 @@ import {
     FLOW_SET_POINT_REGULATING_VALUE,
     PHASE_TAP_CHANGER,
     REGULATION_MODE,
-    REGULATION_SIDE,
     REGULATION_TYPE,
     TARGET_DEADBAND,
 } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { ActivePowerAdornment, AmpereAdornment } from '../../../../dialog-utils';
-import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { SelectInput } from '@gridsuite/commons-ui';
-import { RegulatingTerminalForm } from '../../../../regulating-terminal/regulating-terminal-form';
+import { PHASE_REGULATION_MODES } from 'components/network/constants';
+import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     getComputedPhaseTapChangerRegulationMode,
     getComputedPreviousPhaseRegulationType,
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
-import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import GridItem from '../../../../commons/grid-item';
+import GridSection from '../../../../commons/grid-section';
+import RegulatedTerminalSection from '../regulated-terminal-section';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -66,29 +63,6 @@ const PhaseTapChangerPane = ({
         }
     };
 
-    const getRegulationTypeLabel = (twt, tap) => {
-        if (tap?.regulatingTerminalConnectableId != null) {
-            return tap?.regulatingTerminalConnectableId === twt?.id
-                ? intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label })
-                : intl.formatMessage({ id: REGULATION_TYPES.DISTANT.label });
-        } else {
-            return null;
-        }
-    };
-
-    const getTapSideLabel = (twt, tap) => {
-        if (!tap || !twt) {
-            return null;
-        }
-        if (tap?.regulatingTerminalConnectableId === twt?.id) {
-            return tap?.regulatingTerminalVlId === twt?.voltageLevelId1
-                ? intl.formatMessage({ id: SIDE.SIDE1.label })
-                : intl.formatMessage({ id: SIDE.SIDE2.label });
-        } else {
-            return null;
-        }
-    };
-
     const getRegulatingPreviousValue = (field, tap) => {
         if (
             (tap?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
@@ -107,7 +81,7 @@ const PhaseTapChangerPane = ({
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
-        return regulationModeWatch || getComputedPhaseTapChangerRegulationMode(previousValues?.[PHASE_TAP_CHANGER])?.id;
+        return regulationModeWatch || getComputedPhaseTapChangerRegulationMode(previousValues?.phaseTapChanger)?.id;
     }, [regulationModeWatch, previousValues]);
 
     const regulationModeField = (
@@ -116,32 +90,8 @@ const PhaseTapChangerPane = ({
             label={'RegulationMode'}
             options={Object.values(PHASE_REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
-            size={'small'}
-            previousValue={getPhaseTapChangerRegulationModeLabel(previousValues?.[PHASE_TAP_CHANGER])}
-        />
-    );
-
-    const regulationTypeField = (
-        <SelectInput
-            name={`${id}.${REGULATION_TYPE}`}
-            label={'RegulationTypeText'}
-            options={Object.values(REGULATION_TYPES)}
-            disabled={!phaseTapChangerEnabledWatch}
-            size={'small'}
-            disableClearable={!isModification}
-            previousValue={getRegulationTypeLabel(previousValues, previousValues?.[PHASE_TAP_CHANGER])}
-        />
-    );
-
-    const sideField = (
-        <SelectInput
-            name={`${id}.${REGULATION_SIDE}`}
-            label={'RegulatedSide'}
-            options={Object.values(SIDE)}
-            disabled={!phaseTapChangerEnabledWatch}
-            size={'small'}
-            disableClearable={!isModification}
-            previousValue={getTapSideLabel(previousValues, previousValues?.[PHASE_TAP_CHANGER])}
+            size="small"
+            previousValue={getPhaseTapChangerRegulationModeLabel(previousValues?.phaseTapChanger)}
         />
     );
 
@@ -155,7 +105,7 @@ const PhaseTapChangerPane = ({
             adornment={AmpereAdornment}
             previousValue={getRegulatingPreviousValue(
                 CURRENT_LIMITER_REGULATING_VALUE,
-                previousValues?.[PHASE_TAP_CHANGER]
+                previousValues?.phaseTapChanger
             )}
         />
     );
@@ -168,10 +118,7 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !phaseTapChangerEnabledWatch,
             }}
-            previousValue={getRegulatingPreviousValue(
-                FLOW_SET_POINT_REGULATING_VALUE,
-                previousValues?.[PHASE_TAP_CHANGER]
-            )}
+            previousValue={getRegulatingPreviousValue(FLOW_SET_POINT_REGULATING_VALUE, previousValues?.phaseTapChanger)}
         />
     );
 
@@ -187,86 +134,49 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !phaseTapChangerEnabledWatch,
             }}
-            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadband}
-        />
-    );
-
-    const regulatingTerminalField = (
-        <RegulatingTerminalForm
-            id={id}
-            disabled={!phaseTapChangerEnabledWatch}
-            equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNode?.id}
-            currentRootNetworkUuid={currentRootNetworkUuid}
-            voltageLevelOptions={voltageLevelOptions}
-            previousRegulatingTerminalValue={previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId}
-            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousValues?.[PHASE_TAP_CHANGER]
-            )}
+            previousValue={previousValues?.phaseTapChanger?.targetDeadband}
         />
     );
 
     return (
         <>
-            <Grid container spacing={2}>
-                <Grid item container spacing={2}>
-                    <Grid item xs={4}>
-                        {regulationModeField}
-                    </Grid>
-                    <Grid item xs={4}>
-                        {regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
-                            currentLimiterRegulatingValueField}
-                        {regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
-                            flowSetPointRegulatingValueField}
-                    </Grid>
-                    <Grid item xs={4}>
-                        {(regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
-                            regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id) &&
-                            targetDeadbandField}
-                    </Grid>
-                </Grid>
-                {phaseTapChangerEnabledWatch && regulationMode && (
-                    <Grid item container spacing={2}>
-                        <Grid
-                            item
-                            xs={4}
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FormattedMessage id="RegulatedTerminal" disabled={true} />
-                        </Grid>
-
-                        <Grid item xs={4}>
-                            {regulationTypeField}
-                        </Grid>
-                        {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
-                    </Grid>
+            <GridSection title="RegulationSection" heading={4} />
+            <Grid item container spacing={1}>
+                <GridItem size={4}>{regulationModeField}</GridItem>
+                {regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id && (
+                    <>
+                        <GridItem size={4}>{currentLimiterRegulatingValueField}</GridItem>
+                        <GridItem size={4}>{targetDeadbandField}</GridItem>
+                    </>
                 )}
-                {phaseTapChangerEnabledWatch && regulationType === REGULATION_TYPES.DISTANT.id && (
-                    <Grid
-                        item
-                        container
-                        columns={3}
-                        sx={{
-                            justifyContent: 'flex-end',
-                            marginLeft: '10px',
-                        }}
-                    >
-                        <GridItem size={2}>{regulatingTerminalField}</GridItem>
-                    </Grid>
+                {regulationMode === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id && (
+                    <>
+                        <GridItem size={4}>{flowSetPointRegulatingValueField}</GridItem>
+                        <GridItem size={4}>{targetDeadbandField}</GridItem>
+                    </>
                 )}
-                <PhaseTapChangerPaneSteps
-                    disabled={!phaseTapChangerEnabledWatch}
-                    previousValues={previousValues?.[PHASE_TAP_CHANGER]}
-                    editData={editData}
-                    currentNode={currentNode}
-                    isModification={isModification}
-                />
             </Grid>
+
+            {phaseTapChangerEnabledWatch && regulationMode && (
+                <RegulatedTerminalSection
+                    id={id}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    voltageLevelOptions={voltageLevelOptions}
+                    previousValues={previousValues}
+                    tapChangerEnabled={phaseTapChangerEnabledWatch}
+                    regulationType={regulationType}
+                />
+            )}
+            <GridSection title="TapsSection" heading={4} />
+            <PhaseTapChangerPaneSteps
+                disabled={!phaseTapChangerEnabledWatch}
+                previousValues={previousValues?.phaseTapChanger}
+                editData={editData}
+                currentNode={currentNode}
+                isModification={isModification}
+            />
         </>
     );
 };

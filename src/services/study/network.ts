@@ -11,12 +11,13 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
+import { SwitchInfos } from './network-map.type';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    voltageLevelId?: UUID;
+    voltageLevelId: string;
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
@@ -29,7 +30,7 @@ interface SubstationSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    substationId: UUID;
+    substationId: string;
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
@@ -104,7 +105,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    voltageLevelId: UUID
+    voltageLevelId: string
 ): Promise<Identifiable[]> {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
@@ -122,6 +123,30 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(
 
     console.debug(fetchBusbarSectionsUrl);
     return backendFetchJson(fetchBusbarSectionsUrl);
+}
+
+export function fetchSwitchesOfVoltageLevel(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<SwitchInfos[]> {
+    console.info(
+        `Fetching switches of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchSwitchesUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/switches' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchSwitchesUrl);
+    return backendFetchJson(fetchSwitchesUrl);
 }
 
 /* substations */
@@ -161,6 +186,7 @@ export function getSubstationSingleLineDiagram({
 }
 
 /* elements */
+
 // TODO: remove default generics once fetchers typed
 export async function fetchNetworkElementsInfos<T extends Identifiable[] = Identifiable[]>(
     studyUuid: UUID,
@@ -292,7 +318,6 @@ export function fetchHvdcLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-
     substationsIds: string[] | undefined,
     inUpstreamBuiltParentNode: boolean
 ) {

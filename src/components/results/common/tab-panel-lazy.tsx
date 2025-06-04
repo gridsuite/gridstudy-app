@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { BoxProps } from '@mui/material/Box/Box';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     fullHeight: {
@@ -19,9 +20,10 @@ export type TabPanelLazyProps = BoxProps & {
     selected?: boolean;
 };
 
-function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLazyProps>) {
+function TabPanelLazy({ children, selected, sx, ...otherProps }: Readonly<TabPanelLazyProps>) {
     const [initialized, setInitialized] = useState(false);
 
+    // force mount child once
     useEffect(() => {
         if (!initialized && selected) {
             setInitialized(true);
@@ -45,9 +47,10 @@ function TabPanelLazy({ children, selected, ...otherProps }: Readonly<TabPanelLa
                           left: 0,
                           visibility: 'hidden',
                           zIndex: -1,
+                          opacity: 0,
                       }
             }
-            sx={styles.fullHeight}
+            sx={mergeSx(styles.fullHeight, sx)}
             {...otherProps}
         >
             {initialized && children}

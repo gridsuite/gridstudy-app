@@ -12,7 +12,6 @@ import {
     FieldValue,
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
@@ -369,6 +368,19 @@ export interface VSCCreationConverterStation {
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
 }
 
+export interface LccShuntCompensatorInfos {
+    id: string;
+    name?: string | null;
+    maxQAtNominalV: number;
+    connectedToHvdc?: boolean | null;
+    terminalConnected?: boolean | null;
+    type?: string;
+}
+
+export interface LccShuntCompensatorModificationInfos extends LccShuntCompensatorInfos {
+    deletionMark: boolean;
+}
+
 export interface LCCCreationConverterStation {
     type: string;
     equipmentId: string;
@@ -381,7 +393,7 @@ export interface LCCCreationConverterStation {
     connectionDirection: string;
     connectionPosition?: number;
     terminalConnected?: boolean;
-    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
+    shuntCompensatorsOnSide: LccShuntCompensatorInfos[];
 }
 
 export interface VSCModificationConverterStation {
@@ -705,6 +717,30 @@ export interface LCCCreationInfo {
     modificationUuid?: string;
 }
 
+export interface LccConverterStationModificationInfos {
+    type: string;
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    lossFactor: AttributeModification<number> | null;
+    powerFactor: AttributeModification<number> | null;
+    shuntCompensatorsOnSide: LccShuntCompensatorModificationInfos[];
+}
+
+export interface LccModificationInfos {
+    uuid: string | null;
+    type: string;
+    equipmentId: string;
+    equipmentName: AttributeModification<string> | null;
+    nominalV: AttributeModification<number> | null;
+    r: AttributeModification<number> | null;
+    maxP: AttributeModification<number> | null;
+    convertersMode: AttributeModification<string> | null;
+    activePowerSetpoint: AttributeModification<number> | null;
+    converterStation1: LccConverterStationModificationInfos;
+    converterStation2: LccConverterStationModificationInfos;
+    properties?: Property[];
+}
+
 export interface VSCModificationInfo {
     studyUuid: string;
     nodeUuid: UUID;
@@ -727,6 +763,14 @@ export interface VSCModificationInfo {
     modificationUuid: UUID;
 }
 
+export type EquipmentAttributeModificationInfos = {
+    type: string;
+    equipmentId: string;
+    equipmentAttributeName: string;
+    equipmentAttributeValue: boolean;
+    equipmentType: string;
+};
+
 export interface GenerationDispatchInfo {
     studyUuid: UUID;
     nodeUuid: UUID;
@@ -738,3 +782,62 @@ export interface GenerationDispatchInfo {
     generatorsFrequencyReserve: any;
     substationsGeneratorsOrdering: any;
 }
+
+export interface TopologyVoltageLevelModificationInfos {
+    type: ModificationType;
+    uuid: string | null;
+    equipmentId: string;
+    equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
+}
+
+export type CouplingDeviceInfos = {
+    busbarSectionId1: string;
+    busbarSectionId2: string;
+};
+
+export interface CreateCouplingDeviceInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    couplingDeviceInfos: CouplingDeviceInfos;
+}
+
+export type NetworkModificationRequestInfos = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+};
+
+export enum ShiftEquipmentType {
+    LOAD = 'LOAD',
+    GENERATOR = 'GENERATOR',
+}
+
+export enum ShiftType {
+    PROPORTIONAL = 'PROPORTIONAL',
+    BALANCED = 'BALANCED',
+}
+
+export enum BalanceType {
+    PROPORTIONAL_TO_GENERATION_P = 'PROPORTIONAL_TO_GENERATION_P',
+    PROPORTIONAL_TO_GENERATION_P_MAX = 'PROPORTIONAL_TO_GENERATION_P_MAX',
+    PROPORTIONAL_TO_LOAD = 'PROPORTIONAL_TO_LOAD',
+    PROPORTIONAL_TO_CONFORM_LOAD = 'PROPORTIONAL_TO_CONFORM_LOAD',
+}
+
+export type BalancesAdjustmentZoneInfos = {
+    name: string;
+    countries: string[];
+    netPosition: number;
+    shiftEquipmentType: ShiftEquipmentType;
+    shiftType: ShiftType;
+};
+
+export type BalancesAdjustmentInfos = {
+    uuid: UUID | null;
+    maxNumberIterations: number;
+    thresholdNetPosition: number;
+    countriesToBalance: string[];
+    balanceType: BalanceType;
+    areas: BalancesAdjustmentZoneInfos[];
+};

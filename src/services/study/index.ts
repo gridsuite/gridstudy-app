@@ -42,13 +42,6 @@ export const getStudyUrlWithRootNetworkUuid = (
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export const fetchStudyExists = (studyUuid: UUID) => {
-    console.info(`Fetching study '${studyUuid}' existence ...`);
-    const fetchStudiesUrl = getStudyUrl(studyUuid);
-    console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl, { method: 'head' });
-};
-
 export function getNetworkAreaDiagramUrl(
     studyUuid: UUID,
     currentNodeUuid: UUID,
@@ -126,7 +119,9 @@ export function fetchNodeReportLogs(
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
-    isGlobalLogs: boolean
+    isGlobalLogs: boolean,
+    page?: number,
+    size?: number
 ) {
     let url;
     if (isGlobalLogs) {
@@ -143,6 +138,38 @@ export function fetchNodeReportLogs(
     }
     if (messageFilter && messageFilter !== '') {
         url += '&message=' + encodeURIComponent(messageFilter);
+    }
+    if (page !== undefined && size !== undefined) {
+        url += '&paged=true&page=' + page + '&size=' + size;
+    }
+
+    return backendFetchJson(url);
+}
+
+export function fetchLogMatches(
+    studyUuid: UUID | null,
+    nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    reportId: string | null,
+    severityFilterList: string[],
+    messageFilter: string,
+    searchTerm: string,
+    pageSize: number
+) {
+    let url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+        '/report/' +
+        reportId +
+        '/logs/search?';
+
+    if (severityFilterList?.length) {
+        url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
+    }
+    if (messageFilter && messageFilter !== '') {
+        url += '&message=' + encodeURIComponent(messageFilter);
+    }
+    if (searchTerm !== undefined && pageSize !== undefined) {
+        url += '&searchTerm=' + searchTerm + '&pageSize=' + pageSize;
     }
 
     return backendFetchJson(url);

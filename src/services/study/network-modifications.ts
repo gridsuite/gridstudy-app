@@ -15,24 +15,29 @@ import { UUID } from 'crypto';
 import {
     Assignment,
     AttachLineInfo,
+    BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    CreateCouplingDeviceInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
     GeneratorCreationInfos,
     GeneratorModificationInfos,
     LCCCreationInfo,
+    LccModificationInfos,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
+    NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
     SubstationCreationInfo,
     SubstationModificationInfo,
+    TopologyVoltageLevelModificationInfos,
     TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
@@ -43,6 +48,7 @@ import {
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { NetworkModificationInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
@@ -1332,6 +1338,36 @@ export function modifyVoltageLevel({
     });
 }
 
+export function modifyVoltageLevelTopology({
+    topologyVoltageLevelModificationInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    topologyVoltageLevelModificationInfos: TopologyVoltageLevelModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology modification');
+    } else {
+        console.info('Creating voltage level topology modification');
+    }
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(topologyVoltageLevelModificationInfos),
+    });
+}
+
 export function divideLine({
     studyUuid,
     nodeUuid,
@@ -1676,6 +1712,7 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         }),
     });
 }
+
 export function createLcc({
     studyUuid,
     nodeUuid,
@@ -1722,6 +1759,39 @@ export function createLcc({
         }),
     });
 }
+
+export function modifyLcc({
+    lccModificationInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    lccModificationInfos: LccModificationInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        modifyLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
+        console.info('Updating lcc hvdc line modification');
+    } else {
+        console.info('Creating lcc hvdc line modification');
+    }
+
+    return backendFetchText(modifyLccUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(lccModificationInfos),
+    });
+}
+
 export function createVsc({
     studyUuid,
     nodeUuid,
@@ -1934,5 +2004,66 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
         }),
+    });
+}
+
+export function createCouplingDevice({
+    createCouplingDeviceInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    createCouplingDeviceInfos: CreateCouplingDeviceInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating coupling device');
+    } else {
+        console.info('Creating coupling device');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createCouplingDeviceInfos),
+    });
+}
+
+export function balancesAdjustment({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    ...balancesAdjustmentInfos
+}: Omit<BalancesAdjustmentInfos, 'uuid'> & NetworkModificationRequestInfos) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+        ...balancesAdjustmentInfos,
+    });
+
+    let balancesAdjustmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        console.info('Updating balances adjustment ', body);
+        balancesAdjustmentUrl = balancesAdjustmentUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating balances adjustment ', body);
+    }
+
+    return backendFetchText(balancesAdjustmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     });
 }

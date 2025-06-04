@@ -10,7 +10,7 @@ import { SecurityAnalysisResultProps } from './security-analysis.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
@@ -29,7 +29,6 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
         (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
-
     const overlayNoRowsTemplate = getNoRowsMessage(
         resultStatusMessages,
         rows,

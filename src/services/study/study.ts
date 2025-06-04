@@ -6,14 +6,29 @@
  */
 
 import { UUID } from 'crypto';
-import { PREFIX_STUDY_QUERIES } from '.';
-import { backendFetch } from '../utils';
+import { PREFIX_STUDY_QUERIES, getStudyUrl } from '.';
+import { backendFetch, backendFetchJson } from '../utils';
 
 interface BasicStudyInfos {
     uniqueId: string;
     id: UUID;
     userId: string;
+    monoRoot: boolean;
 }
+
+export const fetchStudyExists = (studyUuid: UUID) => {
+    console.info(`Fetching study '${studyUuid}' existence ...`);
+    const fetchStudiesUrl = getStudyUrl(studyUuid);
+    console.debug(fetchStudiesUrl);
+    return backendFetch(fetchStudiesUrl, { method: 'head' });
+};
+
+export const fetchStudy = (studyUuid: UUID): Promise<BasicStudyInfos> => {
+    console.info(`Fetching study '${studyUuid}' ...`);
+    const fetchStudyUrl = getStudyUrl(studyUuid);
+    console.debug(fetchStudyUrl);
+    return backendFetchJson(fetchStudyUrl);
+};
 
 export const recreateStudyNetworkFromExistingCase = (
     caseUuid: UUID,

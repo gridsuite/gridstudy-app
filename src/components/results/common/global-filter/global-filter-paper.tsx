@@ -14,12 +14,12 @@ import {
 } from './global-filter-styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { FilterType } from '../utils';
 import { GlobalFilter } from './global-filter-types';
-import { getOptionLabel, RECENT_FILTER } from './global-filter-utils';
+import { fetchSubstationPropertiesGlobalFilters, getOptionLabel, RECENT_FILTER } from './global-filter-utils';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
@@ -36,7 +36,11 @@ const XS_COLUMN1: number = 3.5;
 const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 4.5;
 
-function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
+type GlobalFilterPaperProps = PropsWithChildren<{
+    autocompleteRef?: RefObject<HTMLElement>;
+}>;
+
+function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {
     const {
         setOpenedDropdown,
         directoryItemSelectorOpen,
@@ -46,11 +50,41 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
         selectedGlobalFilters,
         setSelectedGlobalFilters,
         onChange,
+        filterCategories,
+        genericFiltersStrictMode,
+        equipmentTypes,
     } = useContext(GlobalFilterContext);
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
+    const [categories, setCategories] = useState<string[]>([]);
 
-    const categories: string[] = useMemo(() => [RECENT_FILTER, ...Object.values(FilterType)], []);
+    const standardCategories: string[] = useMemo(() => {
+        const allCategories = Object.values(FilterType) as string[];
+        const filteredCategories = allCategories.filter(
+            (category) =>
+                filterCategories.includes(category as FilterType) && category !== FilterType.SUBSTATION_PROPERTY
+        );
+        return [RECENT_FILTER, ...filteredCategories];
+    }, [filterCategories]);
+
+    // fetches extra global filter subcategories if there are some in the local config
+    useEffect(() => {
+        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
+            const sortedCategories = [
+                ...standardCategories,
+                ...(substationPropertiesGlobalFilters ? Array.from(substationPropertiesGlobalFilters.keys()) : []),
+            ];
+            // generic filters always at the end of the menus
+            const genericFilterCategory: string[] = sortedCategories.splice(
+                sortedCategories.indexOf(FilterType.GENERIC_FILTER),
+                1
+            );
+            if (genericFilterCategory.length > 0) {
+                sortedCategories.push(genericFilterCategory[0]);
+            }
+            setCategories(sortedCategories);
+        });
+    }, [standardCategories]);
 
     const filtersMsg: string = useMemo(
         () =>
@@ -85,6 +119,7 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
                         equipmentType: element.specificMetadata?.equipmentType,
                         label: element.elementName,
                         filterType: FilterType.GENERIC_FILTER,
+                        filterTypeFromMetadata: element.specificMetadata?.type,
                         recent: true,
                     });
                 }
@@ -96,11 +131,22 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
         [onChange, selectedGlobalFilters, setDirectoryItemSelectorOpen, setOpenedDropdown]
     );
 
+    const allowedEquipmentTypes = useMemo(
+        () => (genericFiltersStrictMode ? equipmentTypes : undefined),
+        [equipmentTypes, genericFiltersStrictMode]
+    );
+
     return (
         <>
             <ClickAwayListener
                 mouseEvent="onMouseDown"
-                onClickAway={() => {
+                onClickAway={(event) => {
+                    const target = event.target as HTMLElement;
+                    // The autocomplete is considered "outside" of the dropdown
+                    // so if the click is triggered on the autocomplete we don't close the dropdown
+                    if (autocompleteRef?.current?.contains(target)) {
+                        return;
+                    }
                     if (!directoryItemSelectorOpen) {
                         setOpenedDropdown(false);
                     }
@@ -190,6 +236,7 @@ function GlobalFilterPaper({ children }: Readonly<PropsWithChildren>) {
                 open={directoryItemSelectorOpen}
                 onClose={addSelectedFilters}
                 types={[ElementType.FILTER]}
+                equipmentTypes={allowedEquipmentTypes}
                 title={intl.formatMessage({ id: 'Filters' })}
                 multiSelect
             />

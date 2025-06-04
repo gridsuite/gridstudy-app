@@ -23,8 +23,10 @@ import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/n
 import type {
     AppState,
     EquipmentUpdateType,
+    GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
+    SpreadsheetFilterState,
     RootNetworkIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -51,11 +53,9 @@ import {
     ColumnDefinition,
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
-    SpreadsheetConfigDto,
-} from '../components/spreadsheet/config/spreadsheet.type';
+} from '../components/spreadsheet-view/types/spreadsheet.type';
 import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import { SpreadsheetGlobalFilter } from '../services/study/filter';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -131,8 +131,8 @@ export type AppActions =
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
-    | SaveSpreadSheetGsFilterAction
-    | ResetAllSpreadsheetGsFiltersAction
+    | SaveSpreadSheetGlobalFilterAction
+    | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
     | SetCalculationSelectionsAction
     | ReorderTableDefinitionsAction
@@ -143,7 +143,8 @@ export type AppActions =
     | CancelLeaveParametersTabAction
     | LoadNadFromConfigAction
     | SetEditNadModeAction
-    | DeletedOrRenamedNodesAction;
+    | DeletedOrRenamedNodesAction
+    | RemoveEquipmentDataAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -216,14 +217,26 @@ export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction 
     };
 }
 
+export const REMOVE_EQUIPMENT_DATA = 'REMOVE_EQUIPMENT_DATA';
+export type RemoveEquipmentDataAction = Readonly<Action<typeof REMOVE_EQUIPMENT_DATA>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function removeEquipmentData(equipmentType: SpreadsheetEquipmentType): RemoveEquipmentDataAction {
+    return {
+        type: REMOVE_EQUIPMENT_DATA,
+        equipmentType: equipmentType,
+    };
+}
+
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Record<EquipmentUpdateType, Identifiable[]>;
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>;
     nodeId: UUID;
 };
 
 export function updateEquipments(
-    equipments: Record<EquipmentUpdateType, Identifiable[]>,
+    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>,
     nodeId: UUID
 ): UpdateEquipmentsAction {
     return {
@@ -699,6 +712,18 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): 
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
         isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const SET_MONO_ROOT_STUDY = 'SET_MONO_ROOT_STUDY';
+export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>> & {
+    isMonoRootStudy: boolean;
+};
+
+export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyAction {
+    return {
+        type: SET_MONO_ROOT_STUDY,
+        isMonoRootStudy: isMonoRootStudy,
     };
 }
 
@@ -1289,12 +1314,17 @@ export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 
 export type UpdateTableColumnsAction = {
     type: typeof UPDATE_TABLE_COLUMNS;
-    spreadsheetConfigDto: SpreadsheetConfigDto;
+    spreadsheetConfigUuid: UUID;
+    columns: ColumnDefinition[];
 };
 
-export const updateTableColumns = (spreadsheetConfigDto: SpreadsheetConfigDto): UpdateTableColumnsAction => ({
+export const updateTableColumns = (
+    spreadsheetConfigUuid: UUID,
+    columns: ColumnDefinition[]
+): UpdateTableColumnsAction => ({
     type: UPDATE_TABLE_COLUMNS,
-    spreadsheetConfigDto,
+    spreadsheetConfigUuid,
+    columns,
 });
 
 export const RENAME_TABLE_DEFINITION = 'RENAME_TABLE_DEFINITION';
@@ -1317,15 +1347,21 @@ export type InitTableDefinitionsAction = {
     type: typeof INIT_TABLE_DEFINITIONS;
     collectionUuid: UUID;
     tableDefinitions: SpreadsheetTabDefinition[];
+    tablesFilters?: SpreadsheetFilterState;
+    globalFilterSpreadsheetState?: GlobalFilterSpreadsheetState;
 };
 
 export const initTableDefinitions = (
     collectionUuid: UUID,
-    tableDefinitions: SpreadsheetTabDefinition[]
+    tableDefinitions: SpreadsheetTabDefinition[],
+    tablesFilters: SpreadsheetFilterState = {},
+    globalFilterSpreadsheetState: GlobalFilterSpreadsheetState = {}
 ): InitTableDefinitionsAction => ({
     type: INIT_TABLE_DEFINITIONS,
     collectionUuid,
     tableDefinitions,
+    tablesFilters,
+    globalFilterSpreadsheetState,
 });
 
 export const REORDER_TABLE_DEFINITIONS = 'REORDER_TABLE_DEFINITIONS';
@@ -1387,15 +1423,15 @@ export function setStateEstimationResultFilter(
 }
 
 export const SAVE_SPREADSHEET_GS_FILTER = 'SAVE_SPREADSHEET_GS_FILTER';
-export type SaveSpreadSheetGsFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
+export type SaveSpreadSheetGlobalFilterAction = Readonly<Action<typeof SAVE_SPREADSHEET_GS_FILTER>> & {
     tabUuid: UUID;
-    filters: SpreadsheetGlobalFilter[];
+    filters: GlobalFilter[];
 };
 
-export function saveSpreadsheetGsFilters(
+export function saveSpreadsheetGlobalFilters(
     tabUuid: UUID,
-    filters: SpreadsheetGlobalFilter[]
-): SaveSpreadSheetGsFilterAction {
+    filters: GlobalFilter[]
+): SaveSpreadSheetGlobalFilterAction {
     return {
         type: SAVE_SPREADSHEET_GS_FILTER,
         tabUuid: tabUuid,
@@ -1418,9 +1454,9 @@ export function setCalculationSelections(tabUuid: UUID, selections: string[]): S
 }
 
 export const RESET_ALL_SPREADSHEET_GS_FILTERS = 'RESET_ALL_SPREADSHEET_GS_FILTERS';
-export type ResetAllSpreadsheetGsFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
+export type ResetAllSpreadsheetGlobalFiltersAction = Readonly<Action<typeof RESET_ALL_SPREADSHEET_GS_FILTERS>>;
 
-export function resetAllSpreadsheetGsFilters(): ResetAllSpreadsheetGsFiltersAction {
+export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFiltersAction {
     return {
         type: RESET_ALL_SPREADSHEET_GS_FILTERS,
     };
@@ -1435,5 +1471,14 @@ export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrR
     return {
         type: DELETED_OR_RENAMED_NODES,
         deletedOrRenamedNodes,
+    };
+}
+
+export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
+export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
+
+export function resetDiagramEvent(): ResetDiagramEventAction {
+    return {
+        type: RESET_DIAGRAM_EVENT,
     };
 }

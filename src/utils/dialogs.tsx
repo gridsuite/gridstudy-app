@@ -12,7 +12,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { SxProps, Theme } from '@mui/material';
 
 interface SelectOptionsDialogProps {
@@ -40,8 +40,18 @@ const SelectOptionsDialog = ({
         onClose();
     };
 
+    const handleDialogClose = useCallback(
+        (event_: React.MouseEvent, reason: string) => {
+            // don't close the dialog for outside click
+            if (reason !== 'backdropClick') {
+                onClose();
+            }
+        },
+        [onClose]
+    );
+
     return (
-        <Dialog open={open} onClose={handleClose} sx={style}>
+        <Dialog open={open} onClose={handleDialogClose} sx={style}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent style={{ padding: '8px 32px 8px 15px' }}>{child}</DialogContent>
             <DialogActions>

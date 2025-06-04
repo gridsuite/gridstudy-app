@@ -10,17 +10,25 @@ import { Checkbox, CheckboxProps, FormControlLabel } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { useCallback } from 'react';
-import { useCustomFormContext, HelperPreviousValue } from '@gridsuite/commons-ui';
+import { HelperPreviousValue, useCustomFormContext } from '@gridsuite/commons-ui';
 
 interface CheckboxNullableInputProps {
     name: string;
-    label: string;
+    label: string | ((value: boolean | null) => string);
     id?: string;
     formProps?: CheckboxProps;
     previousValue?: string;
+    nullDisabled?: boolean;
 }
 
-const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Readonly<CheckboxNullableInputProps>) => {
+const CheckboxNullableInput = ({
+    name,
+    label,
+    id,
+    formProps,
+    previousValue,
+    nullDisabled,
+}: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -38,14 +46,17 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
         }
     }, [onChange, value]);
 
+    // Get the current label based on value
+    const currentLabel = typeof label === 'function' ? label(value) : label;
+
     return (
         <FormControl fullWidth size="small">
             <FormControlLabel
-                id={id ? id : label}
+                id={id ?? currentLabel}
                 control={
                     <Checkbox
                         checked={value === true}
-                        indeterminate={value === null}
+                        indeterminate={nullDisabled ? undefined : value === null}
                         onChange={handleChangeValue}
                         value="checked"
                         inputProps={{
@@ -54,9 +65,13 @@ const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }: Re
                         {...formProps}
                     />
                 }
-                label={intl.formatMessage({
-                    id: label,
-                })}
+                label={
+                    !label
+                        ? ''
+                        : intl.formatMessage({
+                              id: currentLabel,
+                          })
+                }
             />
             {previousValue && (
                 <HelperPreviousValue
