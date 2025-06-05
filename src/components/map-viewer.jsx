@@ -27,6 +27,8 @@ import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
 import DiagramGridLayout from './diagrams/diagram-grid-layout';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 const styles = {
     map: {
@@ -142,6 +144,7 @@ const MapViewer = ({
 
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const enableDeveloperMode = useParameterState(PARAM_DEVELOPER_MODE);
     const previousStudyDisplayMode = useRef(undefined);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
@@ -281,14 +284,16 @@ const MapViewer = ({
                         flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE ? '50%' : '100%',
                     }}
                 >
-                    <DiagramGridLayout
-                        studyUuid={studyUuid}
-                        visible={
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                        }
-                        showInSpreadsheet={showInSpreadsheet}
-                    ></DiagramGridLayout>
+                    {enableDeveloperMode && (
+                        <DiagramGridLayout
+                            studyUuid={studyUuid}
+                            visible={
+                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                            }
+                            showInSpreadsheet={showInSpreadsheet}
+                        />
+                    )}
                 </Box>
                 {/* Map */}
                 <Box
