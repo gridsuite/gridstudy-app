@@ -46,8 +46,6 @@
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
     "nameValidityCheckErrorMsg": "Erreur lors de la vérification de la validité du nom",
 
-    "diagonalLabel": "Afficher les noms d'ouvrages en diagonale",
-    "centerLabel": "Centrer les noms d'ouvrages",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
     "NetworkAreaDiagram": "Image nodale de zone",
@@ -89,13 +87,8 @@
     "NetworkVisualizations": "Images réseau",
     "getNetworkVisualizationsParametersError": "Une erreur est survenue lors de la récupération des paramètres des images réseau",
     "updateNetworkVisualizationsParametersError": "Une erreur est survenue lors de la mise a jour des paramètres des images réseau",
-    "lineFullPath": "Afficher le chemin complet des lignes",
-    "lineParallelPath": "Écarter les lignes superposées",
-    "LineFlowMode": "Mode de représentation des flux sur les lignes",
     "None": "Aucun",
     "NoneUpcomingOverload": "Aucune",
-    "StaticArrows": "Flèches statiques",
-    "AnimatedArrows": "Flèches animées",
     "Feeders": "Départs",
     "NominalVoltage": "Tension nominale",
     "I_(A)": "I (A)",
@@ -110,11 +103,6 @@
     "VoltageViolationValue": "Valeur calculée (kV)",
     "load": "transit",
     "Load": "Transit",
-    "MapManualRefresh": "Mise à jour manuelle de l'image réseau géographique",
-    "MapBaseMap": "Fond de plan",
-    "Mapbox": "Mapbox",
-    "Carto": "Carto",
-    "CartoNoLabel": "Carto sans labels",
     "ManuallyRefreshGeoData": "Mettre à jour la carte",
 
     "PageNotFound": "Page introuvable",
@@ -487,9 +475,6 @@
     "isOk": "Ok",
     "metrics": "Métriques",
 
-    "SubstationLayout": "Disposition des images de sites",
-    "HorizontalSubstationLayout": "Horizontal",
-    "VerticalSubstationLayout": "Vertical",
     "SmartSubstationLayout": "Smart",
     "SmartWithHorizontalCompactionSubstationLayout": "Smart avec compaction horizontale",
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
@@ -556,8 +541,6 @@
     "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",
 
-    "ComponentLibrary": "Sélection de la bibliothèque de composants",
-    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
     "Optional": " (optionnel)",
