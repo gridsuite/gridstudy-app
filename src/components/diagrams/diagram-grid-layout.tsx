@@ -19,8 +19,6 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -81,7 +79,6 @@ interface DiagramGridLayoutProps {
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
@@ -102,7 +99,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     };
     const { diagrams, removeDiagram, createDiagram } = useDiagramModel({
-        diagramTypes: enableDeveloperMode ? diagramTypes : [],
+        diagramTypes: diagramTypes,
         onAddDiagram,
     });
 
