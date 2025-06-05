@@ -480,3 +480,17 @@ export const SWITCH_ID = 'switchId';
 export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
 export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
 export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';
+
+// BALANCES ADJUSTMENT
+export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
+export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
+export const BALANCES_ADJUSTMENT_ZONE = 'balancesAdjustmentZone';
+export const BALANCES_ADJUSTMENT_COUNTRIES = 'balancesAdjustmentCountries';
+export const BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE = 'balancesAdjustmentShiftEquipmentType';
+export const BALANCES_ADJUSTMENT_SHIFT_TYPE = 'balancesAdjustmentShfttType';
+export const BALANCES_ADJUSTMENT_TARGET = 'balancesAdjustmentTarget';
+export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
+export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
+export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
+export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
+export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
