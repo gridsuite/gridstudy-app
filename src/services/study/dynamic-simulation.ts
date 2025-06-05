@@ -19,20 +19,35 @@ export function getDynamicMappings(studyUuid: UUID) {
     return backendFetchJson(url);
 }
 
-export function startDynamicSimulation(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    dynamicSimulationConfiguration?: DynamicSimulationParametersInfos
-) {
+export function startDynamicSimulation({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    dynamicSimulationConfiguration,
+    debug,
+}: {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    dynamicSimulationConfiguration?: DynamicSimulationParametersInfos;
+    debug: boolean;
+}): Promise<void> {
     console.info(
         `Running dynamic simulation on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
+
+    const urlParams = new URLSearchParams();
+
+    if (debug) {
+        urlParams.append('debug', `${debug}`);
+    }
+
     const startDynamicSimulationUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/dynamic-simulation/run`;
+    )}/dynamic-simulation/run?${urlParams}`;
+
     // add body
     const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
 

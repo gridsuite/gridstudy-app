@@ -15,27 +15,25 @@ import {
 } from './dynamic-security-analysis.type';
 import { fetchContingencyAndFiltersLists } from '../directory';
 
-const PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-security-analysis';
-
-function getDynamicSecurityAnalysisUrl() {
-    return `${PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
-}
-
-export function fetchDynamicSecurityAnalysisProviders() {
-    console.info('fetch dynamic simulation providers');
-    const url = getDynamicSecurityAnalysisUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function startDynamicSecurityAnalysis(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    debug: boolean
+): Promise<void> {
     console.info(`Running dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+
+    const urlParams = new URLSearchParams();
+
+    if (debug) {
+        urlParams.append('debug', `${debug}`);
+    }
 
     const startDynamicSecurityAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/dynamic-security-analysis/run`;
+    )}/dynamic-security-analysis/run?${urlParams}`;
 
     console.debug({ startDynamicSecurityAnalysisUrl });
 
