@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -71,6 +71,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     readonly visible: boolean;
+    readonly key: string;
 }
 
 type EquipmentToModify = {
@@ -117,8 +118,8 @@ function applyInvalidStyles(svgContainer: HTMLElement) {
     });
 }
 
-function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
-    const { diagramSizeSetter, studyUuid, visible } = props;
+const SingleLineDiagramContent = forwardRef((props: SingleLineDiagramContentProps) => {
+    const { diagramSizeSetter, studyUuid, visible, key } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
@@ -637,7 +638,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
      */
 
     return (
-        <>
+        <div key={key}>
             <Box height={2}>
                 {(props.loadingState || modificationInProgress || isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
@@ -667,8 +668,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     title={dynamicSimulationEventDialogTitle}
                 />
             )}
-        </>
+        </div>
     );
-}
+});
 
 export default SingleLineDiagramContent;
