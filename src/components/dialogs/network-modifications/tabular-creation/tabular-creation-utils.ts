@@ -107,10 +107,39 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: PLANNED_OUTAGE_RATE, required: false },
         { id: FORCED_OUTAGE_RATE, required: false },
     ],
+    BATTERY: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: EQUIPMENT_NAME, required: false },
+        { id: VOLTAGE_LEVEL_ID, required: true },
+        { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
+        { id: CONNECTED, required: true },
+        { id: CONNECTION_NAME, required: false },
+        { id: CONNECTION_DIRECTION, required: false },
+        { id: CONNECTION_POSITION, required: false },
+        { id: MIN_P, required: true },
+        { id: MAX_P, required: true },
+        { id: MINIMUM_REACTIVE_POWER, required: false },
+        { id: MAXIMUM_REACTIVE_POWER, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE, required: true },
+        { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
+        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+        { id: ACTIVE_POWER_SET_POINT, required: false },
+        { id: REACTIVE_POWER_SET_POINT, required: false },
+        { id: FREQUENCY_REGULATION, required: true },
+        { id: DROOP, required: false },
+    ],
 };
 
 export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_CREATION.type,
+    BATTERY: MODIFICATION_TYPES.BATTERY_CREATION.type,
 };
 
 export const convertCreationFieldFromBackToFront = (key: string, value: { value: string | number | boolean }) => {
