@@ -43,6 +43,9 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
     VOLTAGE_SET_POINT,
+    LOAD_TYPE,
+    P0,
+    Q0,
 } from 'components/utils/field-constants';
 
 export interface TabularCreationField {
@@ -87,10 +90,24 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: PLANNED_OUTAGE_RATE, required: false },
         { id: FORCED_OUTAGE_RATE, required: false },
     ],
+    LOAD: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: EQUIPMENT_NAME, required: false },
+        { id: LOAD_TYPE, required: true },
+        { id: VOLTAGE_LEVEL_ID, required: true },
+        { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
+        { id: CONNECTED, required: true },
+        { id: CONNECTION_NAME, required: false },
+        { id: CONNECTION_DIRECTION, required: false },
+        { id: CONNECTION_POSITION, required: false },
+        { id: P0, required: true },
+        { id: Q0, required: true },
+    ],
 };
 
 export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_CREATION.type,
+    LOAD: MODIFICATION_TYPES.LOAD_CREATION.type,
 };
 
 export const convertCreationFieldFromBackToFront = (key: string, value: { value: string | number | boolean }) => {
