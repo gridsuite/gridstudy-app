@@ -29,7 +29,6 @@ type useDiagramSessionStorageProps = {
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-
     // at mount
     useEffect(() => {
         if (!studyUuid) {
