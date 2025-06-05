@@ -19,21 +19,6 @@ export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<Netw
     return backendFetchJson(url);
 }
 
-// TODO DBR remove
-export function setNetworkVisualizationParameters(studyUuid: UUID, newParams: NetworkVisualizationParameters) {
-    console.info('set network visualization parameters');
-    const url = getStudyUrl(studyUuid) + '/network-visualizations/parameters';
-    console.debug(url);
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newParams),
-    });
-}
-
 export function getSpreadsheetConfigCollection(studyUuid: UUID): Promise<SpreadsheetCollectionDto> {
     console.info('get spreadsheet config collection');
     const url = getStudyUrl(studyUuid) + '/spreadsheet-config-collection';
