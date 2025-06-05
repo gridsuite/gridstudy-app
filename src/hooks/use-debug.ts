@@ -15,11 +15,13 @@ import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from 
 import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
 import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
 import { useIntl } from 'react-intl';
+import { downloadDebugDynamicSecurityAnalysis } from '../services/dynamic-security-analysis';
 
 export const UPDATE_TYPE_STUDY_DEBUG = 'STUDY_DEBUG';
 
 const debugFetchers = {
     [ComputingType.DYNAMIC_SIMULATION]: downloadDebugDynamicSimulation,
+    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: downloadDebugDynamicSecurityAnalysis,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
 export function buildDebugIdentifier({

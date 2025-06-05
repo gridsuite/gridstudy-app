@@ -304,7 +304,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
                         null,
                         () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
-                        () => {},
+                        () => debug && subscribeDebug(ComputingType.DYNAMIC_SECURITY_ANALYSIS),
                         null,
                         'startDynamicSecurityAnalysisError'
                     );

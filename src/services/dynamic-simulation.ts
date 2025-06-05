@@ -29,7 +29,7 @@ export function fetchDynamicSimulationProviders() {
 }
 
 export function downloadDebugDynamicSimulation(resultUuid: UUID): Promise<Response> {
-    console.info(`Download debug file of '${resultUuid}' ...`);
+    console.info(`Download dynamic simulation debug file of '${resultUuid}' ...`);
 
     const url = getDynamicSimulationUrl() + `results/${resultUuid}/download/debug-file`;
 
