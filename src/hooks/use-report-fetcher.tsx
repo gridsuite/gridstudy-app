@@ -177,7 +177,7 @@ export const useReportFetcher = (
         [currentNode, currentRootNetworkUuid, studyUuid]
     );
 
-    const fetchPagedReportLogs = useCallback(
+    const fetchPagedLogs = useCallback(
         (reportId: string, severityList: string[], messageFilter: string, page: number, size: number) => {
             if (!studyUuid || !currentRootNetworkUuid) {
                 return;
@@ -202,7 +202,7 @@ export const useReportFetcher = (
         [currentNode, currentRootNetworkUuid, studyUuid, nodesNames]
     );
 
-    const fetchReportLogs = useCallback(
+    const fetchLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
             if (!studyUuid || !currentRootNetworkUuid) {
                 return;
@@ -259,12 +259,5 @@ export const useReportFetcher = (
         [currentNode, studyUuid, currentRootNetworkUuid]
     );
 
-    return [
-        isLoading,
-        fetchRawParentReport,
-        fetchReportLogs,
-        fetchReportSeverities,
-        fetchPagedReportLogs,
-        fetchLogsMatches,
-    ];
+    return [isLoading, fetchRawParentReport, fetchLogs, fetchReportSeverities, fetchPagedLogs, fetchLogsMatches];
 };

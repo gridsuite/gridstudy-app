@@ -43,7 +43,8 @@ export interface Report extends BaseReport<Report> {}
 
 export type Log = {
     message: string;
-    severity: ReportSeverity;
+    severity: string;
+    backgroundColor: string;
     depth: number;
     parentId: string;
 };

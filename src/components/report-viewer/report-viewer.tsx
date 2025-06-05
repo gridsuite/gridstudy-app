@@ -11,8 +11,8 @@ import { VirtualizedTreeview } from './virtualized-treeview';
 import { ReportItem } from './treeview-item';
 import {
     ComputingAndNetworkModificationType,
+    Log,
     Report,
-    ReportLog,
     ReportTree,
     ReportType,
     SelectedReportLog,
@@ -84,10 +84,10 @@ export default function ReportViewer({
     );
 
     const onLogRowClick = useCallback(
-        (data: ReportLog) => {
+        (data: Log | undefined) => {
             setExpandedTreeReports((previouslyExpandedTreeReports) => {
                 let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
-                let parentId: string | null = data.parentId;
+                let parentId: string | null = data?.parentId ?? null;
                 while (parentId && reportTreeMap[parentId]?.parentId) {
                     parentId = reportTreeMap[parentId].parentId;
                     if (parentId) {
@@ -96,7 +96,7 @@ export default function ReportViewer({
                 }
                 return Array.from(treeReportsToExpand);
             });
-            setHighlightedReportId(data.parentId);
+            setHighlightedReportId(data?.parentId);
         },
         [reportTreeMap]
     );
