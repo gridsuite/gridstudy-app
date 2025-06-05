@@ -7,7 +7,8 @@
 
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
-    DATA_KEY_TO_FILTER_KEY,
+    DATA_KEY_TO_FILTER_KEY_N,
+    DATA_KEY_TO_FILTER_KEY_NK,
     DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
@@ -158,16 +159,17 @@ function PagedSensitivityAnalysisResult({
             offset: typeof rowsPerPage === 'number' ? page * rowsPerPage : rowsPerPage.value,
             pageSize: typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value,
             pageNumber: page,
-            ...Object.fromEntries(
-                filters?.map((elem) => [
-                    DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY],
-                    elem.value,
-                ])
-            ),
             ...sortSelector,
         };
+        const mappedFilters = filters?.map((elem) => {
+            const newColumn =
+                nOrNkIndex === 0
+                    ? DATA_KEY_TO_FILTER_KEY_N[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY_N]
+                    : DATA_KEY_TO_FILTER_KEY_NK[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY_NK];
+            return { ...elem, column: newColumn };
+        });
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector, mappedFilters)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
