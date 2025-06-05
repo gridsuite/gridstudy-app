@@ -33,7 +33,7 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
@@ -151,11 +151,11 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNadFromConfig?: (nadConfigUuid: UUID, nadName: string) => void;
+    readonly onLoadNadFromElement?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromConfig } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -174,10 +174,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { loadNadFromConfigView } = useDiagram();
+    const { loadNadFromElementView } = useDiagram(); // TODO Remove this when diagram-pane is removed
 
     const nadIdentifier = useMemo(() => {
-        if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
+        if (props.svgType === DiagramType.NAD_FROM_ELEMENT) {
             return props.diagramId;
         }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -277,12 +277,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
     };
 
-    const handleLoadFromConfig = useCallback(
-        (nadConfigUuid: UUID, nadName: string) => {
-            loadNadFromConfigView(nadConfigUuid, nadName);
-            onLoadNadFromConfig?.(nadConfigUuid, nadName);
+    const handleLoadFromElement = useCallback(
+        (elementUuid: string, elementType: ElementType, elementName: string) => {
+            if (onLoadNadFromElement) {
+                onLoadNadFromElement(elementUuid, elementType, elementName);
+            } else {
+                loadNadFromElementView(elementUuid, elementType, elementName);
+            }
         },
-        [loadNadFromConfigView, onLoadNadFromConfig]
+        [loadNadFromElementView, onLoadNadFromElement]
     );
 
     /**
@@ -402,7 +405,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
-                onLoad={handleLoadFromConfig}
+                onLoad={handleLoadFromElement}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
             />

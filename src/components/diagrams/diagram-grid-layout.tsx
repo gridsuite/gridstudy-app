@@ -31,7 +31,7 @@ const diagramTypes = [
     DiagramType.VOLTAGE_LEVEL,
     DiagramType.SUBSTATION,
     DiagramType.NETWORK_AREA_DIAGRAM,
-    DiagramType.NAD_FROM_CONFIG,
+    DiagramType.NAD_FROM_ELEMENT,
 ];
 
 const styles = {
@@ -147,13 +147,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const handleLoadNadFromConfig = useCallback(
-        (nadFromConfigUuid: UUID, nadName: string) => {
+    const handleLoadNadFromElement = useCallback(
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             const diagram: DiagramParams = {
                 diagramUuid: v4() as UUID,
-                type: DiagramType.NAD_FROM_CONFIG,
-                nadFromConfigUuid,
-                nadName: nadName,
+                type: DiagramType.NAD_FROM_ELEMENT,
+                elementUuid: elementUuid,
+                elementType: elementType,
+                elementName: elementName,
             };
             createDiagram(diagram);
         },
@@ -267,7 +268,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 />
                             )}
                             {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                                diagram.type === DiagramType.NAD_FROM_CONFIG) && (
+                                diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
                                 <NetworkAreaDiagramContent
                                     diagramId={diagram.diagramUuid}
                                     svg={diagram.svg?.svg ?? undefined}
@@ -287,7 +288,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                                    onLoadNadFromConfig={handleLoadNadFromConfig}
+                                    onLoadNadFromElement={handleLoadNadFromElement}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -315,7 +316,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         diagrams,
         diagramsInEditMode,
         globalError,
-        handleLoadNadFromConfig,
+        handleLoadNadFromElement,
         handleToggleEditMode,
         intl,
         loadingDiagrams,
