@@ -28,7 +28,7 @@ const diagramTypes = [
     DiagramType.VOLTAGE_LEVEL,
     DiagramType.SUBSTATION,
     DiagramType.NETWORK_AREA_DIAGRAM,
-    DiagramType.NAD_FROM_CONFIG,
+    DiagramType.NAD_FROM_ELEMENT,
 ];
 
 const styles = {
@@ -218,7 +218,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                             />
                         )}
                         {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                            diagram.type === DiagramType.NAD_FROM_CONFIG) && (
+                            diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
                             <NetworkAreaDiagramContent
                                 diagramId={diagram.diagramUuid}
                                 svg={diagram.svg?.svg ?? undefined}

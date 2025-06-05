@@ -8,7 +8,7 @@
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
+import { ElementType, EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
 import { ComputingType } from '../../components/computing-status/computing-type';
 import type { Svg } from 'components/diagrams/diagram-common';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
@@ -62,11 +62,13 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function getNetworkAreaDiagramUrlFromConfig(
+export function getNetworkAreaDiagramUrlFromElement(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    nadConfigUuid: UUID
+    elementUuid: UUID,
+    elementType: ElementType,
+    initNadWithGeoData: boolean
 ) {
     console.info(
         `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
@@ -75,7 +77,12 @@ export function getNetworkAreaDiagramUrlFromConfig(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
-            nadConfigUuid: nadConfigUuid,
+            elementParams: JSON.stringify({
+                elementUuid: elementUuid,
+                elementType: elementType,
+                depth: 0,
+                withGeoData: initNadWithGeoData,
+            }),
         })
     );
 }

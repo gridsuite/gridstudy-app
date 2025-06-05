@@ -33,7 +33,7 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
@@ -172,10 +172,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
-    const { loadNadFromConfigView } = useDiagram();
+    const { loadNadFromElementView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
-        if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
+        if (props.svgType === DiagramType.NAD_FROM_ELEMENT) {
             return props.diagramId;
         }
         return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
@@ -275,11 +275,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
     };
 
-    const handleLoadFromConfig = useCallback(
-        (nadConfigUuid: string, nadName: string) => {
-            loadNadFromConfigView(nadConfigUuid, nadName);
+    const handleLoadFromElement = useCallback(
+        (elementUuid: string, elementType: ElementType, elementName: string) => {
+            loadNadFromElementView(elementUuid, elementType, elementName);
         },
-        [loadNadFromConfigView]
+        [loadNadFromElementView]
     );
 
     /**
@@ -397,7 +397,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromConfig} />
+            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromElement} />
         </>
     );
 }
