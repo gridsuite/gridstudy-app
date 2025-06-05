@@ -7,7 +7,8 @@
 
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
-    DATA_KEY_TO_FILTER_KEY,
+    DATA_KEY_TO_FILTER_KEY_N,
+    DATA_KEY_TO_FILTER_KEY_NK,
     DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
@@ -161,7 +162,10 @@ function PagedSensitivityAnalysisResult({
             ...sortSelector,
         };
         const mappedFilters = filters?.map((elem) => {
-            const newColumn = DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY];
+            const newColumn =
+                nOrNkIndex === 0
+                    ? DATA_KEY_TO_FILTER_KEY_N[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY_N]
+                    : DATA_KEY_TO_FILTER_KEY_NK[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY_NK];
             return { ...elem, column: newColumn };
         });
         setIsLoading(true);
