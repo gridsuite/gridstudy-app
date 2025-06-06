@@ -19,8 +19,6 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
 import DiagramFooter from './diagram-footer';
@@ -84,7 +82,6 @@ interface DiagramGridLayoutProps {
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const intl = useIntl();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
@@ -105,8 +102,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, removeDiagram, createDiagram, updateDiagram } = useDiagramModel({
-        diagramTypes: enableDeveloperMode ? diagramTypes : [],
+    const { diagrams, loadingDiagrams, removeDiagram, createDiagram, updateDiagram } = useDiagramModel({
+        diagramTypes: diagramTypes,
         onAddDiagram,
     });
 
@@ -240,7 +237,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 svg={diagram.svg?.svg ?? undefined}
                                 svgType={diagram.type}
                                 svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
-                                loadingState={false} // TODO
+                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
                             />
@@ -261,7 +258,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                         .map((vl) => vl.id)
                                         .filter((vlId) => vlId !== undefined) as string[]
                                 }
-                                loadingState={false} // TODO
+                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
                                 isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
@@ -292,6 +289,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         diagramsInEditMode,
         handleToggleEditMode,
         intl,
+        loadingDiagrams,
         onChangeDepth,
         onRemoveItem,
         setDiagramSize,

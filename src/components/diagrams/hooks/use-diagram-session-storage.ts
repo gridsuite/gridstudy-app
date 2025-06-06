@@ -12,7 +12,15 @@ import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
 
-const keyToKeepInSessionStorage = ['diagramUuid', 'type', 'voltageLevelId', 'substationId', 'voltageLevelIds', 'depth']; // static
+const keyToKeepInSessionStorage = [
+    'diagramUuid',
+    'type',
+    'voltageLevelId',
+    'substationId',
+    'voltageLevelIds',
+    'depth',
+    'nadFromConfigUuid',
+]; // static
 
 type useDiagramSessionStorageProps = {
     diagrams: Record<UUID, Diagram>;
@@ -21,7 +29,6 @@ type useDiagramSessionStorageProps = {
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-
     // at mount
     useEffect(() => {
         if (!studyUuid) {

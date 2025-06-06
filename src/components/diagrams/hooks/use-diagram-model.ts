@@ -60,6 +60,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
+    const [loadingDiagrams, setLoadingDiagrams] = useState<UUID[]>([]);
 
     const filterDiagramParams = useCallback(
         (diagramParams: DiagramParams[]): DiagramParams[] => {
@@ -234,25 +235,38 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             }
 
             if (url) {
-                // fetch the svg
-                fetchSvg(url, fetchOptions).then((data) => {
-                    if (data !== null) {
-                        setDiagrams((diagrams) => {
-                            if (!diagrams[diagram.diagramUuid]) {
-                                console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                                return diagrams;
-                            }
-                            const newDiagrams = { ...diagrams };
-
-                            newDiagrams[diagram.diagramUuid] = {
-                                ...diagrams[diagram.diagramUuid],
-                                svg: data,
-                                name: makeDiagramName(diagram),
-                            };
-                            return newDiagrams;
-                        });
+                setLoadingDiagrams((loadingDiagrams) => {
+                    if (loadingDiagrams.includes(diagram.diagramUuid)) {
+                        console.warn(`Diagram ${diagram.diagramUuid} is already being loaded`);
+                        return loadingDiagrams;
                     }
+                    return [...loadingDiagrams, diagram.diagramUuid];
                 });
+                // fetch the svg
+                fetchSvg(url, fetchOptions)
+                    .then((data) => {
+                        if (data !== null) {
+                            setDiagrams((diagrams) => {
+                                if (!diagrams[diagram.diagramUuid]) {
+                                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                                    return diagrams;
+                                }
+                                const newDiagrams = { ...diagrams };
+
+                                newDiagrams[diagram.diagramUuid] = {
+                                    ...diagrams[diagram.diagramUuid],
+                                    svg: data,
+                                    name: makeDiagramName(diagram),
+                                };
+                                return newDiagrams;
+                            });
+                        }
+                    })
+                    .finally(() => {
+                        setLoadingDiagrams((loadingDiagrams) => {
+                            return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
+                        });
+                    });
             }
         },
         [getUrl]
@@ -371,5 +385,5 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
-    return { diagrams, removeDiagram, createDiagram, updateDiagram };
+    return { diagrams, loadingDiagrams, removeDiagram, createDiagram, updateDiagram };
 };
