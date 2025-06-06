@@ -971,6 +971,7 @@ export function DiagramPane({
             case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_HEIGHT_VOLTAGE_LEVEL;
             case DiagramType.NETWORK_AREA_DIAGRAM:
+            case DiagramType.NAD_FROM_CONFIG:
                 return DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
@@ -985,6 +986,7 @@ export function DiagramPane({
             case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_WIDTH_VOLTAGE_LEVEL;
             case DiagramType.NETWORK_AREA_DIAGRAM:
+            case DiagramType.NAD_FROM_CONFIG:
                 return DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
