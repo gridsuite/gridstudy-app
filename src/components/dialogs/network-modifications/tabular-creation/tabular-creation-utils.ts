@@ -64,6 +64,19 @@ export interface TabularCreationFields {
     [key: string]: TabularCreationField[];
 }
 
+const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularCreationField[] = [
+    { id: REACTIVE_CAPABILITY_CURVE, required: true },
+    { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+];
+
 export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
     GENERATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -80,16 +93,7 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: RATED_S, required: false },
         { id: MINIMUM_REACTIVE_POWER, required: false },
         { id: MAXIMUM_REACTIVE_POWER, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE, required: true },
-        { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: ACTIVE_POWER_SET_POINT, required: false },
         { id: REACTIVE_POWER_SET_POINT, required: false },
         { id: VOLTAGE_REGULATION_ON, required: true },
@@ -120,16 +124,7 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: MAX_P, required: true },
         { id: MINIMUM_REACTIVE_POWER, required: false },
         { id: MAXIMUM_REACTIVE_POWER, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE, required: true },
-        { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: ACTIVE_POWER_SET_POINT, required: false },
         { id: REACTIVE_POWER_SET_POINT, required: false },
         { id: FREQUENCY_REGULATION, required: true },
