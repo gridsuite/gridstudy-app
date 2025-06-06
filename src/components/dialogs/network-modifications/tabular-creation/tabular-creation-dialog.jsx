@@ -13,7 +13,21 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { CREATIONS_TABLE, REACTIVE_CAPABILITY_CURVE, TYPE } from 'components/utils/field-constants';
+import {
+    CREATIONS_TABLE,
+    REACTIVE_CAPABILITY_CURVE,
+    REACTIVE_CAPABILITY_CURVE_P_0,
+    REACTIVE_CAPABILITY_CURVE_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_POINTS,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
+    TYPE,
+} from 'components/utils/field-constants';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -99,7 +113,27 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 });
                 // For now, we do not manage reactive limits by diagram
                 if (creationType === 'GENERATOR_CREATION') {
-                    creation[REACTIVE_CAPABILITY_CURVE] = false;
+                    console.log(creation[REACTIVE_CAPABILITY_CURVE]);
+                    if (creation[REACTIVE_CAPABILITY_CURVE]) {
+                        //Convert list data to matrix
+                        const rccPoints = [];
+                        rccPoints.push({
+                            p: creation[REACTIVE_CAPABILITY_CURVE_P_MIN],
+                            maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
+                            minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
+                        });
+                        rccPoints.push({
+                            p: creation[REACTIVE_CAPABILITY_CURVE_P_0],
+                            maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
+                            minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
+                        });
+                        rccPoints.push({
+                            p: creation[REACTIVE_CAPABILITY_CURVE_P_MAX],
+                            maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
+                            minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
+                        });
+                        creation[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
+                    }
                 }
                 return creation;
             });
