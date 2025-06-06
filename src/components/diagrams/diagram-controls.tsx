@@ -56,7 +56,7 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
-    onLoad?: (nadConfigId: string, nadName: string) => void;
+    onLoad?: (elementId: string, elementType: ElementType, elementName: string) => void;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => {
@@ -89,15 +89,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
         }
     };
 
-    const handleLoad = (nadConfigId: string, nadName: string) => {
+    const handleLoad = (elementId: string, elementType: ElementType, elementName: string) => {
         if (onLoad) {
-            onLoad(nadConfigId, nadName);
+            onLoad(elementId, elementType, elementName);
         }
     };
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0) {
-            handleLoad(selectedElements[0].id, selectedElements[0].name);
+            handleLoad(selectedElements[0].id, selectedElements[0].type, selectedElements[0].name);
         }
         handleCloseLoadSelector();
     };
@@ -151,7 +151,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
-                            types={[ElementType.DIAGRAM_CONFIG]}
+                            types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                             title={intl.formatMessage({
                                 id: 'GenerateFromGridexplore',
                             })}

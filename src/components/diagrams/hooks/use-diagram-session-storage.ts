@@ -19,7 +19,9 @@ const keyToKeepInSessionStorage = [
     'substationId',
     'voltageLevelIds',
     'depth',
-    'nadFromConfigUuid',
+    'elementUuid',
+    'elementType',
+    'elementName',
 ]; // static
 
 type useDiagramSessionStorageProps = {
