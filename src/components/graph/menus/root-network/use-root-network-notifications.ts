@@ -7,16 +7,16 @@
 
 import { SetStateAction, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    AppState,
-    NotificationType,
-    RootNetworksDeletionStartedEventData,
-    RootNetworksUpdatedEventData,
-} from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchRootNetworks } from 'services/root-network';
 import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
+import {
+    isRootNetworkDeletionStartedNotification,
+    isRootNetworksUpdatedNotification,
+    isRootNetworkUpdateFailedNotification,
+} from 'types/notification-types';
 
 type UseRootNetworkNotificationsProps = {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
@@ -47,12 +47,10 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
         }
     }, [studyUuid, dispatch, setIsRootNetworksProcessing, snackError]);
 
-    const rootNetworkModifiedNotification = useCallback(
+    const rootNetworksUpdatedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworksUpdatedNotification(eventData)) {
                 doFetchRootNetworks();
             }
         },
@@ -61,10 +59,8 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
 
     const rootNetworksUpdateFailedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATE_FAILED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkUpdateFailedNotification(eventData)) {
                 doFetchRootNetworks();
                 snackError({
                     messageId: 'importCaseFailure',
@@ -76,10 +72,8 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
     );
     const rootNetworkDeletionStartedNotification = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksDeletionStartedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_DELETION_STARTED) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworkDeletionStartedNotification(eventData)) {
                 if (!rootNetworks) {
                     return;
                 }
@@ -101,7 +95,7 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: rootNetworkModifiedNotification,
+        listenerCallbackMessage: rootNetworksUpdatedNotification,
     });
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: rootNetworksUpdateFailedNotification,

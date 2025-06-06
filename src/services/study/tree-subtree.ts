@@ -8,9 +8,9 @@
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
-import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
 import { BUILD_STATUS } from '../../components/network/constants';
+import { NodeInsertModes } from 'types/notification-types';
 
 interface Node {
     name: string;

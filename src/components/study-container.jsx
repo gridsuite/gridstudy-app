@@ -38,9 +38,14 @@ import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../serv
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
 
 import { HttpStatusCode } from 'utils/http-status-code';
-import { RootNetworkIndexationStatus } from 'redux/reducer';
 import { NodeType } from './graph/tree-node.type';
-import { UPDATE_TYPE_HEADER } from './use-node-data';
+import {
+    isIndexationStatusNotification,
+    isLoadflowResultNotification,
+    isStudyNetworkRecreationNotification,
+    NotificationType,
+    RootNetworkIndexationStatus,
+} from 'types/notification-types';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -98,10 +103,6 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
-const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE = 'study_network_recreation_done';
-const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
-const HEADER_INDEXATION_STATUS = 'indexation_status';
-
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 
@@ -141,7 +142,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const updateTypeHeader = eventData.headers.updateType;
             const errorMessage = eventData.headers[ERROR_HEADER];
             const rootNetworkUuidFromNotif = eventData.headers.rootNetworkUuid;
 
@@ -153,69 +154,69 @@ export function StudyContainer({ view, onChangeTab }) {
                 return;
             }
 
-            if (updateTypeHeader === 'loadflow_failed') {
+            if (updateTypeHeader === NotificationType.LOADFLOW_FAILED) {
                 snackError({
                     headerId: 'LoadFlowError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'buildFailed') {
+            if (updateTypeHeader === NotificationType.NODE_BUILD_FAILED) {
                 snackError({
                     headerId: 'NodeBuildingError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'securityAnalysis_failed') {
+            if (updateTypeHeader === NotificationType.SECURITY_ANALYSIS_FAILED) {
                 snackError({
                     headerId: 'securityAnalysisError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'sensitivityAnalysis_failed') {
+            if (updateTypeHeader === NotificationType.SENSITIVITY_ANALYSIS_FAILED) {
                 snackError({
                     headerId: 'sensitivityAnalysisError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'nonEvacuatedEnergy_failed') {
+            if (updateTypeHeader === NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED) {
                 snackError({
                     headerId: 'nonEvacuatedEnergyAnalysisError',
                     messageTxt: errorMessage,
                 });
             }
             if (
-                updateTypeHeader === 'shortCircuitAnalysis_failed' ||
-                updateTypeHeader === 'oneBusShortCircuitAnalysis_failed'
+                updateTypeHeader === NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED ||
+                updateTypeHeader === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED
             ) {
                 snackError({
                     headerId: 'ShortCircuitAnalysisError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'dynamicSimulation_failed') {
+            if (updateTypeHeader === NotificationType.DYNAMIC_SIMULATION_FAILED) {
                 snackError({
                     headerId: 'DynamicSimulationRunError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'dynamicSecurityAnalysis_failed') {
+            if (updateTypeHeader === NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED) {
                 snackError({
                     headerId: 'DynamicSecurityAnalysisRunError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'voltageInit_failed') {
+            if (updateTypeHeader === NotificationType.VOLTAGE_INIT_FAILED) {
                 snackError({
                     headerId: 'voltageInitError',
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'voltageInit_cancel_failed') {
+            if (updateTypeHeader === NotificationType.VOLTAGE_INIT_CANCEL_FAILED) {
                 snackError({
                     headerId: 'voltageInitCancelError',
                 });
             }
-            if (updateTypeHeader === 'stateEstimation_failed') {
+            if (updateTypeHeader === NotificationType.STATE_ESTIMATION_FAILED) {
                 snackError({
                     headerId: 'stateEstimationError',
                     messageTxt: errorMessage,
@@ -255,8 +256,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const handleStudyUpdate = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-            if (updateTypeHeader === 'STUDY_ALERT') {
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.STUDY_ALERT) {
                 sendAlert(eventData);
                 return; // here, we do not want to update the redux state
             }
@@ -451,49 +452,40 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid, isFirstStudyNetworkFound]);
 
-    // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE) {
+        if (isIndexationStatusNotification(studyUpdatedForce.eventData)) {
+            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
+            if (currentRootNetworkUuidRef.current && rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+            dispatch(setRootNetworkIndexationStatus(studyUpdatedForce.eventData.headers.indexation_status));
+            if (studyUpdatedForce.eventData.headers.indexation_status === RootNetworkIndexationStatus.INDEXED) {
+                snackInfo({
+                    headerId: 'rootNetworkIndexationDone',
+                });
+            }
+            // notification that the study is not indexed anymore then ask to refresh
+            if (studyUpdatedForce.eventData.headers.indexation_status === RootNetworkIndexationStatus.NOT_INDEXED) {
+                snackWarning({
+                    headerId: 'rootNetworkIndexationNotIndexed',
+                });
+            }
+        }
+        if (isStudyNetworkRecreationNotification(studyUpdatedForce.eventData)) {
             const successCallback = () =>
                 snackInfo({
                     headerId: 'studyNetworkRecovered',
                 });
 
             checkNetworkExistenceAndRecreateIfNotFound(successCallback);
-        } else if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_INDEXATION_STATUS) {
-            const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
-            if (currentRootNetworkUuidRef.current && rootNetworkUuidFromNotif !== currentRootNetworkUuidRef.current) {
-                return;
-            }
-
-            dispatch(setRootNetworkIndexationStatus(studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS]));
-            if (
-                studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === RootNetworkIndexationStatus.INDEXED
-            ) {
-                snackInfo({
-                    headerId: 'rootNetworkIndexationDone',
-                });
-            }
-            // notification that the root network is not indexed anymore then ask to refresh
-            if (
-                studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] ===
-                RootNetworkIndexationStatus.NOT_INDEXED
-            ) {
-                snackWarning({
-                    headerId: 'rootNetworkIndexationNotIndexed',
-                });
-            }
         }
     }, [studyUpdatedForce, checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (isLoadflowResultNotification(studyUpdatedForce.eventData)) {
             const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
-                rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current
-            ) {
+            if (rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
         }
