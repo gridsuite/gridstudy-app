@@ -38,10 +38,7 @@ export const useDiagramsGridLayoutSessionStorage = ({
 
     // at update
     useEffect(() => {
-        if (!studyUuid) {
-            return;
-        }
-        if (!layouts) {
+        if (!studyUuid || !layouts) {
             return;
         }
         syncDiagramsGridLayoutWithSessionStorage(

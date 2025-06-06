@@ -35,13 +35,42 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
+import { areArrayElementsUnique, areNumbersOrdered } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
+
+const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
+    [VOLTAGE_LEVEL]: yup
+        .object()
+        .nullable()
+        .shape({
+            [ID]: yup.string(),
+            [NAME]: yup.string(),
+            [SUBSTATION_ID]: yup.string(),
+            [NOMINAL_VOLTAGE]: yup.string(),
+            [TOPOLOGY_KIND]: yup.string().nullable(),
+        })
+        .when([ENABLED, REGULATION_TYPE], {
+            is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
+            then: (schema) => schema.required(),
+        }),
+    [EQUIPMENT]: yup
+        .object()
+        .nullable()
+        .shape({
+            [ID]: yup.string(),
+            [NAME]: yup.string().nullable(),
+            [TYPE]: yup.string(),
+        })
+        .when([ENABLED, REGULATION_TYPE], {
+            is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.DISTANT.id,
+            then: (schema) => schema.required(),
+        }),
+});
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
@@ -63,11 +92,8 @@ const phaseTapChangerValidationSchema = (id) => ({
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.LOCAL.id,
+            .when([ENABLED, REGULATION_TYPE], {
+                is: (enabled, regulationType) => enabled && regulationType === REGULATION_TYPES.LOCAL.id,
                 then: (schema) => schema.required(),
             }),
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
@@ -127,44 +153,11 @@ const phaseTapChangerValidationSchema = (id) => ({
                 const alphaArray = array.map((step) => step[STEPS_ALPHA]);
                 return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
             }),
-        //regulating terminal fields
-        //TODO: is it possible to move it to regulating-terminal-utils.ts properly since it depends on "ENABLED" ?
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            })
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            })
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
+        ...getRegulatingTerminalPhaseTapChangerValidationSchema(),
     }),
 });
 
-const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
+const phaseTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup.string().nullable(),
@@ -193,25 +186,7 @@ const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
                 const alphaArray = array.map((step) => step[STEPS_ALPHA]);
                 return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
             }),
-        //regulating terminal fields
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            }),
+        ...getRegulatingTerminalPhaseTapChangerValidationSchema(),
     }),
 });
 
@@ -219,8 +194,8 @@ export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerValidationSchema(id);
 };
 
-export const getPhaseTapChangerModificationValidationSchema = (previousValues, id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerModificationValidationSchema(previousValues, id);
+export const getPhaseTapChangerModificationValidationSchema = (id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerModificationValidationSchema(id);
 };
 
 const phaseTapChangerEmptyFormData = (isModification, id) => ({

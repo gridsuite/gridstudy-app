@@ -22,11 +22,11 @@ export function syncDiagramsGridLayoutWithSessionStorage(layouts: unknown, study
 }
 
 export function loadDiagramsGridLayoutFromSessionStorage(studyUuid: UUID) {
-    const raw = sessionStorage.getItem(getDiagramsGridLayoutKey(studyUuid));
-    if (!raw) {
+    const rawJson = sessionStorage.getItem(getDiagramsGridLayoutKey(studyUuid));
+    if (!rawJson) {
         return undefined;
     }
-    const savedLayouts = JSON.parse(raw);
+    const savedLayouts = JSON.parse(rawJson);
     if (Object.keys(savedLayouts).length === 0) {
         return undefined;
     }
