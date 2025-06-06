@@ -60,7 +60,7 @@ import {
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
-import { NotificationType } from 'types/notification-types';
+import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
@@ -156,7 +156,7 @@ const App = () => {
             const eventData = JSON.parse(event.data);
             if (
                 studyUuid &&
-                eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED &&
+                isNetworkVisualizationParametersUpdatedNotification(eventData) &&
                 eventData.headers.studyUuid === studyUuid
             ) {
                 getNetworkVisualizationParameters(studyUuid).then((params) =>

@@ -188,10 +188,6 @@ interface NetworkVisualizationParametersUpdatedEventDataHeaders extends CommonSt
     updateType: NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED;
 }
 
-interface NetworkVisualizationParametersUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED;
-}
-
 interface RootNetworkUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.ROOT_NETWORKS_UPDATED;
     rootNetworkUuids: UUID[];
