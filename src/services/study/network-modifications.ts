@@ -18,6 +18,7 @@ import {
     BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    CreateCouplingDeviceInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -2003,6 +2004,38 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
         }),
+    });
+}
+
+export function createCouplingDevice({
+    createCouplingDeviceInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    createCouplingDeviceInfos: CreateCouplingDeviceInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating coupling device');
+    } else {
+        console.info('Creating coupling device');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createCouplingDeviceInfos),
     });
 }
 
