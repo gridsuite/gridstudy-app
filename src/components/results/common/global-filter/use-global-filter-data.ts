@@ -13,7 +13,7 @@ import { fetchSubstationPropertiesGlobalFilters } from './global-filter-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 
-export const useGlobalFilterData = (reloadDeps?: unknown[]) => {
+export const useGlobalFilterData = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -75,7 +75,7 @@ export const useGlobalFilterData = (reloadDeps?: unknown[]) => {
                 setPropertiesFilter(propertiesGlobalFilters);
             });
         }
-    }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id, reloadDeps]);
+    }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
 
     return { countriesFilter, voltageLevelsFilter, propertiesFilter };
 };

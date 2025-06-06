@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { DataType, FieldType } from '@gridsuite/commons-ui';
 
 // TODO this file is duplicated from the gridexplore-app => to be merged when merging two projects
 export enum OperatorType {
@@ -26,41 +27,6 @@ export enum OperatorType {
 export enum CombinatorType {
     AND = 'AND',
     OR = 'OR',
-}
-
-export enum FieldType {
-    ID = 'ID',
-    NAME = 'NAME',
-    NOMINAL_VOLTAGE = 'NOMINAL_VOLTAGE',
-    NOMINAL_VOLTAGE_1 = 'NOMINAL_VOLTAGE_1',
-    NOMINAL_VOLTAGE_2 = 'NOMINAL_VOLTAGE_2',
-    NOMINAL_VOLTAGE_3 = 'NOMINAL_VOLTAGE_3',
-    MIN_P = 'MIN_P',
-    MAX_P = 'MAX_P',
-    TARGET_V = 'TARGET_V',
-    TARGET_P = 'TARGET_P',
-    TARGET_Q = 'TARGET_Q',
-    ENERGY_SOURCE = 'ENERGY_SOURCE',
-    COUNTRY = 'COUNTRY',
-    COUNTRY_1 = 'COUNTRY_1',
-    COUNTRY_2 = 'COUNTRY_2',
-    FREE_PROPERTIES = 'FREE_PROPERTIES',
-    SUBSTATION_PROPERTIES = 'SUBSTATION_PROPERTIES',
-    SUBSTATION_PROPERTIES_1 = 'SUBSTATION_PROPERTIES_1',
-    SUBSTATION_PROPERTIES_2 = 'SUBSTATION_PROPERTIES_2',
-    VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
-    PLANNED_ACTIVE_POWER_SET_POINT = 'PLANNED_ACTIVE_POWER_SET_POINT',
-    VOLTAGE_LEVEL_ID = 'VOLTAGE_LEVEL_ID',
-}
-
-export enum DataType {
-    STRING = 'STRING',
-    ENUM = 'ENUM',
-    NUMBER = 'NUMBER',
-    BOOLEAN = 'BOOLEAN',
-    COMBINATOR = 'COMBINATOR',
-    FILTER_UUID = 'FILTER_UUID',
-    PROPERTIES = 'PROPERTIES',
 }
 
 export interface RuleTypeExport {

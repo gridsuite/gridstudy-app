@@ -84,7 +84,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData([loadFlowStatus]);
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
     const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();

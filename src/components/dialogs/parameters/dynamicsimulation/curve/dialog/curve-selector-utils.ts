@@ -7,14 +7,15 @@
 
 import { ExpertFilter } from 'services/study/filter';
 import {
-    COUNTRY_ONE_SIDED_EQUIPMENTS,
-    COUNTRY_TWO_SIDED_EQUIPMENTS,
+    EQUIPMENTS_WITH_ONE_SUBSTATION,
+    EQUIPMENTS_WITH_TWO_SUBSTATIONS,
     EQUIPMENT_TYPES,
-    NOMINAL_VOLTAGE_ONE_SIDED_EQUIPMENTS,
-    NOMINAL_VOLTAGE_THREE_SIDED_EQUIPMENTS,
-    NOMINAL_VOLTAGE_TWO_SIDED_EQUIPMENTS,
+    EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE,
+    EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES,
+    EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES,
 } from '../../../../../utils/equipment-types';
-import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
+import { CombinatorType, OperatorType } from '../../../../filter/expert/expert-filter.type';
+import { DataType, FieldType } from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -36,6 +37,58 @@ export const getTopologyKindIfNecessary = (equipmentType: string) => {
               topologyKind: 'BUS_BREAKER',
           }
         : {};
+};
+
+const buildSubstationPropertiesRules = (
+    equipmentType: EQUIPMENT_TYPES,
+    substationProperties: Record<string, string[]>,
+    rules: any[]
+) => {
+    if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
+        let propertyField = FieldType.SUBSTATION_PROPERTIES;
+        if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+            propertyField = FieldType.FREE_PROPERTIES;
+        }
+
+        Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
+            if (propertyValues?.length) {
+                const substationPropertiesRule = {
+                    field: propertyField,
+                    operator: OperatorType.IN,
+                    propertyName: propertyName,
+                    propertyValues: propertyValues,
+                    dataType: DataType.PROPERTY,
+                };
+                rules.push(substationPropertiesRule);
+            }
+        });
+    } else if (EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType)) {
+        Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
+            if (propertyValues?.length) {
+                const substationPropertiesRule = {
+                    combinator: CombinatorType.OR,
+                    dataType: DataType.COMBINATOR,
+                    rules: [
+                        {
+                            field: FieldType.SUBSTATION_PROPERTIES_1,
+                            operator: OperatorType.IN,
+                            propertyName: propertyName,
+                            propertyValues: propertyValues,
+                            dataType: DataType.PROPERTY,
+                        },
+                        {
+                            field: FieldType.SUBSTATION_PROPERTIES_2,
+                            operator: OperatorType.IN,
+                            propertyName: propertyName,
+                            propertyValues: propertyValues,
+                            dataType: DataType.PROPERTY,
+                        },
+                    ],
+                };
+                rules.push(substationPropertiesRule);
+            }
+        });
+    }
 };
 
 export const buildExpertRules = (
@@ -60,7 +113,7 @@ export const buildExpertRules = (
     }
 
     // create rule IN for countries
-    if (countries?.length && COUNTRY_ONE_SIDED_EQUIPMENTS.includes(equipmentType)) {
+    if (countries?.length && EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
         const countriesRule = {
             field: FieldType.COUNTRY,
             operator: OperatorType.IN,
@@ -68,7 +121,7 @@ export const buildExpertRules = (
             dataType: DataType.ENUM,
         };
         rules.push(countriesRule);
-    } else if (countries?.length && COUNTRY_TWO_SIDED_EQUIPMENTS.includes(equipmentType)) {
+    } else if (countries?.length && EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType)) {
         const countriesRule = {
             combinator: CombinatorType.OR,
             dataType: DataType.COMBINATOR,
@@ -91,7 +144,7 @@ export const buildExpertRules = (
     }
 
     // create rule IN for nominalVoltages
-    if (nominalVoltages?.length && NOMINAL_VOLTAGE_ONE_SIDED_EQUIPMENTS.includes(equipmentType)) {
+    if (nominalVoltages?.length && EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType)) {
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
@@ -99,7 +152,7 @@ export const buildExpertRules = (
             dataType: DataType.NUMBER,
         };
         rules.push(nominalVoltagesRule);
-    } else if (nominalVoltages?.length && NOMINAL_VOLTAGE_TWO_SIDED_EQUIPMENTS.includes(equipmentType)) {
+    } else if (nominalVoltages?.length && EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES.includes(equipmentType)) {
         const nominalVoltagesRule = {
             combinator: CombinatorType.OR,
             dataType: DataType.COMBINATOR,
@@ -119,7 +172,7 @@ export const buildExpertRules = (
             ],
         };
         rules.push(nominalVoltagesRule);
-    } else if (nominalVoltages?.length && NOMINAL_VOLTAGE_THREE_SIDED_EQUIPMENTS.includes(equipmentType)) {
+    } else if (nominalVoltages?.length && EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES.includes(equipmentType)) {
         const nominalVoltagesRule = {
             combinator: CombinatorType.OR,
             dataType: DataType.COMBINATOR,
@@ -147,50 +200,8 @@ export const buildExpertRules = (
         rules.push(nominalVoltagesRule);
     }
 
-    if (substationProperties && COUNTRY_ONE_SIDED_EQUIPMENTS.includes(equipmentType)) {
-        let propertyField = FieldType.SUBSTATION_PROPERTIES;
-        if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
-            propertyField = FieldType.FREE_PROPERTIES;
-        }
-
-        Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
-            if (propertyValues?.length) {
-                const substationPropertiesRule = {
-                    field: propertyField,
-                    operator: OperatorType.IN,
-                    propertyName: propertyName,
-                    propertyValues: propertyValues,
-                    dataType: DataType.PROPERTIES,
-                };
-                rules.push(substationPropertiesRule);
-            }
-        });
-    } else if (substationProperties && COUNTRY_TWO_SIDED_EQUIPMENTS.includes(equipmentType)) {
-        Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
-            if (propertyValues?.length) {
-                const substationPropertiesRule = {
-                    combinator: CombinatorType.OR,
-                    dataType: DataType.COMBINATOR,
-                    rules: [
-                        {
-                            field: FieldType.SUBSTATION_PROPERTIES_1,
-                            operator: OperatorType.IN,
-                            propertyName: propertyName,
-                            propertyValues: propertyValues,
-                            dataType: DataType.PROPERTIES,
-                        },
-                        {
-                            field: FieldType.SUBSTATION_PROPERTIES_2,
-                            operator: OperatorType.IN,
-                            propertyName: propertyName,
-                            propertyValues: propertyValues,
-                            dataType: DataType.PROPERTIES,
-                        },
-                    ],
-                };
-                rules.push(substationPropertiesRule);
-            }
-        });
+    if (substationProperties) {
+        buildSubstationPropertiesRules(equipmentType, substationProperties, rules);
     }
 
     // create rule IN for ids
@@ -216,8 +227,8 @@ export const buildExpertFilter = (
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
-    substationProperties: Record<string, string[]> | undefined,
-    ids: string[] | undefined
+    substationProperties?: Record<string, string[]>,
+    ids?: string[]
 ): ExpertFilter => {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
