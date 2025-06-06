@@ -137,6 +137,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         },
         [createDiagram]
     );
+
+    const handleLoadNadFromConfig = useCallback(
+        (nadFromConfigUuid: UUID, nadName: string) => {
+            const diagram: DiagramParams = {
+                diagramUuid: v4() as UUID,
+                type: DiagramType.NAD_FROM_CONFIG,
+                nadFromConfigUuid,
+                name: nadName,
+            };
+            createDiagram(diagram);
+        },
+        [createDiagram]
+    );
+
     const renderDiagramAdder = useCallback(() => {
         if (Object.values(diagrams).length > 0) {
             return;
@@ -236,13 +250,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 loadingState={false} // TODO
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
+                                onLoadNadFromConfig={handleLoadNadFromConfig}
                             />
                         )}
                     </Box>
                 </Box>
             );
         });
-    }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
+    }, [diagrams, handleLoadNadFromConfig, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
         if (savedLayouts) {

@@ -23,6 +23,7 @@ import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { setEditNadMode } from 'redux/actions';
+import { UUID } from 'crypto';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -56,7 +57,7 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
-    onLoad?: (nadConfigId: string, nadName: string) => void;
+    onLoad?: (nadConfigUuid: UUID, nadName: string) => void;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => {
@@ -89,9 +90,9 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
         }
     };
 
-    const handleLoad = (nadConfigId: string, nadName: string) => {
+    const handleLoad = (nadConfigUuid: UUID, nadName: string) => {
         if (onLoad) {
-            onLoad(nadConfigId, nadName);
+            onLoad(nadConfigUuid, nadName);
         }
     };
 

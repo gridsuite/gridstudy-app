@@ -149,10 +149,11 @@ type NetworkAreaDiagramContentProps = {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     visible: boolean;
+    readonly onLoadNadFromConfig?: (nadConfigUuid: UUID, nadName: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible } = props;
+    const { diagramSizeSetter, visible, onLoadNadFromConfig } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -276,10 +277,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     };
 
     const handleLoadFromConfig = useCallback(
-        (nadConfigUuid: string, nadName: string) => {
+        (nadConfigUuid: UUID, nadName: string) => {
             loadNadFromConfigView(nadConfigUuid, nadName);
+            onLoadNadFromConfig?.(nadConfigUuid, nadName);
         },
-        [loadNadFromConfigView]
+        [loadNadFromConfigView, onLoadNadFromConfig]
     );
 
     /**

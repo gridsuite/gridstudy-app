@@ -55,6 +55,7 @@ type NetworkAreaDiagramParams = DiagramBaseParams & {
 type NetworkAreaDiagramFromConfigParams = DiagramBaseParams & {
     type: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    name: string;
 };
 
 export type DiagramParams =
