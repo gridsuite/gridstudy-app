@@ -32,7 +32,7 @@ export const useDiagramTitle = () => {
             } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return `${diagram.voltageLevelIds.join(', ')}`;
             } else if (diagram.type === DiagramType.NAD_FROM_CONFIG) {
-                return `${diagram.name}`;
+                return `${diagram.nadName}`;
             }
             return `diagram type unknown`;
         },

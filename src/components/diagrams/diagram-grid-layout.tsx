@@ -144,7 +144,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 diagramUuid: v4() as UUID,
                 type: DiagramType.NAD_FROM_CONFIG,
                 nadFromConfigUuid,
-                name: nadName,
+                nadName: nadName,
             };
             createDiagram(diagram);
         },

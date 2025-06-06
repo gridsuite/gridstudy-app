@@ -55,7 +55,7 @@ type NetworkAreaDiagramParams = DiagramBaseParams & {
 type NetworkAreaDiagramFromConfigParams = DiagramBaseParams & {
     type: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
-    name: string;
+    nadName: string;
 };
 
 export type DiagramParams =
@@ -88,6 +88,7 @@ export type NetworkAreaDiagram = DiagramBase & {
 export type NetworkAreaDiagramFromConfig = DiagramBase & {
     type: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    nadName: string;
 };
 
 export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram | NetworkAreaDiagramFromConfig;
