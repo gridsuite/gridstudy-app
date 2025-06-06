@@ -149,10 +149,12 @@ type NetworkAreaDiagramContentProps = {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     visible: boolean;
+    isEditNadMode: boolean;
+    onToggleEditNadMode?: (isEditMode: boolean) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -171,7 +173,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
     const { loadNadFromConfigView } = useDiagram();
 
     const nadIdentifier = useMemo(() => {
@@ -397,7 +398,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromConfig} />
+            <DiagramControls
+                onSave={handleSaveNadConfig}
+                onLoad={handleLoadFromConfig}
+                isEditNadMode={isEditNadMode}
+                onToggleEditNadMode={onToggleEditNadMode}
+            />
         </>
     );
 }
