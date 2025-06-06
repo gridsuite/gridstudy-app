@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../components/utils/constants';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 
 interface ShortCircuitAnalysisResult {
@@ -29,24 +28,6 @@ interface Selector {
 }
 interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;
-}
-interface VoltageRanges {
-    maximumNominalVoltage: number;
-    minimumNominalVoltage: number;
-    voltage: number;
-    voltageRangeCoefficient: number;
-}
-interface ShortCircuitParameters {
-    predefinedParameters: NonNullable<PREDEFINED_PARAMETERS | undefined>;
-    parameters: {
-        withFeederResult: boolean;
-        withLoads: boolean;
-        withVSCConverterStations: boolean;
-        withShuntCompensators: boolean;
-        withNeutralPosition: boolean;
-        initialVoltageProfileMode: NonNullable<INITIAL_VOLTAGE | undefined>;
-        voltageRanges?: VoltageRanges;
-    };
 }
 
 export function startShortCircuitAnalysis(
@@ -184,37 +165,6 @@ export function fetchShortCircuitAnalysisPagedResults({
         urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
-}
-
-export function getShortCircuitParameters(studyUuid: UUID) {
-    console.info('get short-circuit parameters');
-    const getShortCircuitParams = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
-    console.debug(getShortCircuitParams);
-    return backendFetchJson(getShortCircuitParams);
-}
-
-export function setShortCircuitParameters(studyUuid: UUID | null, newParams: ShortCircuitParameters) {
-    console.info('set short-circuit parameters');
-    const url = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: newParams ? JSON.stringify(newParams) : null,
-    });
-}
-
-export function invalidateShortCircuitStatus(studyUuid: UUID | null) {
-    console.info('invalidate short circuit status');
-    const invalidateShortCircuitStatusUrl = getStudyUrl(studyUuid) + '/short-circuit/invalidate-status';
-    console.debug(invalidateShortCircuitStatusUrl);
-    return backendFetch(invalidateShortCircuitStatusUrl, {
-        method: 'PUT',
-    });
 }
 
 export function downloadShortCircuitResultZippedCsv(

@@ -15,15 +15,18 @@ import { AppState, NotificationType, StudyUpdated, StudyUpdatedEventData } from 
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
-export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
-    const studyUpdatedEventData = studyUpdated?.eventData as StudyUpdatedEventData;
-
+export const haveComputationParametersChanged = (type: ComputingType, studyUpdatedEventData: StudyUpdatedEventData) => {
     return (
         studyUpdatedEventData.headers &&
         studyUpdatedEventData.headers.updateType === NotificationType.COMPUTATION_PARAMETERS_UPDATED &&
-        isValidComputingType(studyUpdatedEventData.headers.computationType) &&
-        studyUpdatedEventData.headers.computationType === type
+        studyUpdatedEventData.headers.computationType === type &&
+        isValidComputingType(studyUpdatedEventData.headers.computationType)
     );
+};
+
+export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
+    const studyUpdatedEventData = studyUpdated?.eventData as StudyUpdatedEventData;
+    return haveComputationParametersChanged(type, studyUpdatedEventData);
 };
 
 export const useParametersNotification = <T extends ComputingType>(
