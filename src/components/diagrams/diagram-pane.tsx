@@ -122,13 +122,14 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
         ]
     );
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
-        (depth: number) =>
+        (depth: number, selectedVoltageLevel: string | null) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
                       currentRootNetworkUuid,
                       depth,
+                      selectedVoltageLevel,
                       networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
                   )
                 : null,
@@ -270,10 +271,15 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 });
             }
 
-            function createNetworkAreaDiagramView(ids: UUID[] | undefined, state: ViewState | undefined, depth = 0) {
+            function createNetworkAreaDiagramView(
+                ids: UUID[] | undefined,
+                state: ViewState | undefined,
+                depth = 0,
+                selectedVoltageLevel: string | null
+            ) {
                 console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(depth);
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(depth, selectedVoltageLevel);
                     const fetchOptions = {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -306,9 +312,10 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                             nodeId: currentNode.id,
                             state: state,
                             name: nadTitle,
-                            fetchSvg: () => createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
+                            fetchSvg: () => createNetworkAreaDiagramView(ids, state, depth, selectedVoltageLevel), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
+                            selectedVoltageLevel: selectedVoltageLevel,
                             substationIds: substationsIds,
                             nadMetadata: svg.metadata,
                             scalingFactor: svg.additionalMetadata?.scalingFactor,
@@ -332,7 +339,8 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 return createNetworkAreaDiagramView(
                     partialDiagramView.ids,
                     partialDiagramView.state,
-                    partialDiagramView.depth
+                    partialDiagramView.depth,
+                    partialDiagramView.selectedVoltageLevel ? partialDiagramView.selectedVoltageLevel : null
                 );
             }
         },
@@ -396,6 +404,7 @@ type DiagramView = {
     svg?: string;
     country?: string;
     depth?: number;
+    selectedVoltageLevel?: string | null;
     error?: string;
     nodeId?: UUID;
     rootNetworkUuid?: UUID; // is it used ?
@@ -419,7 +428,9 @@ export function DiagramPane({
     const createView = useDisplayView(studyUuid, currentNode, currentRootNetworkUuid);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
+    const selectedVoltageLevel = useSelector((state: AppState) => state.selectedVoltageLevelNad);
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
+    const previousNetworkSelectedVoltageLevel = useRef(selectedVoltageLevel);
 
     const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
@@ -574,7 +585,12 @@ export function DiagramPane({
      * Completes the diagram of type NETWORK_AREA_DIAGRAM
      */
     const addOrReplaceNAD = useCallback(
-        (networkAreaIds: UUID[], networkAreaViewState: ViewState, networkAreaDiagramDepth: number) => {
+        (
+            networkAreaIds: UUID[],
+            networkAreaViewState: ViewState,
+            networkAreaDiagramDepth: number,
+            selectedVoltageLevel: string | null
+        ) => {
             // First we add the empty diagram in the views
             setViews((views) => {
                 const newDiagram: DiagramView = {
@@ -608,6 +624,7 @@ export function DiagramPane({
                 state: networkAreaViewState,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 depth: networkAreaDiagramDepth,
+                selectedVoltageLevel: selectedVoltageLevel,
             })
                 ?.then((networkAreaDiagramView) => {
                     setViews((views) => {
@@ -671,10 +688,24 @@ export function DiagramPane({
                         // Do not compare with depth in view here because it is set asynchronously
                         previousNetworkAreaDiagramDepth.current === networkAreaDiagramDepth
                 );
-                if (!isSameNadAlreadyPresentInViews || initNadWithGeoDataParamHasChanged) {
+
+                const voltageLevelChanged = previousNetworkSelectedVoltageLevel.current !== selectedVoltageLevel;
+                const selectedVoltageLevelNotNull = selectedVoltageLevel !== null;
+                if (
+                    !isSameNadAlreadyPresentInViews ||
+                    initNadWithGeoDataParamHasChanged ||
+                    (voltageLevelChanged && selectedVoltageLevelNotNull)
+                ) {
                     // set the previous depth to the current one to avoid other close in time calls to updateNAD
                     previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
-                    addOrReplaceNAD(networkAreaIds, networkAreaViewState, networkAreaDiagramDepth);
+                    previousNetworkSelectedVoltageLevel.current = selectedVoltageLevel;
+
+                    addOrReplaceNAD(
+                        networkAreaIds,
+                        networkAreaViewState,
+                        networkAreaDiagramDepth,
+                        selectedVoltageLevel
+                    );
                 }
             } else if (
                 viewsRef.current.find((diagramView) => diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
@@ -684,8 +715,9 @@ export function DiagramPane({
             }
         },
         [
-            networkAreaDiagramDepth,
             networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+            selectedVoltageLevel,
+            networkAreaDiagramDepth,
             addOrReplaceNAD,
             removeNAD,
         ]
@@ -799,6 +831,7 @@ export function DiagramPane({
         updateDiagramStates,
         removeAndAddDiagrams,
         updateNAD,
+        selectedVoltageLevel,
         debounceUpdateNAD,
         networkAreaDiagramDepth,
         shouldDebounceUpdateNAD,

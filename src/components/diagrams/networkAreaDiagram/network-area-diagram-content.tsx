@@ -29,7 +29,11 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
+import {
+    setNetworkAreaDiagramSelectedVoltageLevel,
+    storeNetworkAreaDiagramNodeMovement,
+    storeNetworkAreaDiagramTextNodeMovement,
+} from '../../../redux/actions';
 import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
@@ -432,7 +436,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                             paddingBottom: '1px',
                         }}
                         onClick={() => {
-                            console.log('Add clicked for', clickedEquipmentId);
+                            dispatch(setNetworkAreaDiagramSelectedVoltageLevel(clickedEquipmentId));
                             setMenuAnchorPosition(null);
                             setShouldDisplayMenu(false);
                         }}
