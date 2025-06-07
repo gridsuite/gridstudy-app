@@ -47,18 +47,25 @@ export function getNetworkAreaDiagramUrl(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     depth: number,
+    selectedVoltageLevel: string | null | undefined,
     withGeoData: boolean
 ) {
     console.info(
         `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
+
+    const params = new URLSearchParams();
+    params.set('depth', depth.toString());
+    params.set('withGeoData', withGeoData.toString());
+
+    if (selectedVoltageLevel != null) {
+        params.set('selectedVoltageLevel', selectedVoltageLevel);
+    }
+
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
-        new URLSearchParams({
-            depth: depth.toString(),
-            withGeoData: withGeoData.toString(),
-        })
+        params.toString()
     );
 }
 

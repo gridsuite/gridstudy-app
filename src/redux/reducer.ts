@@ -221,6 +221,8 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
+    NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
+    NetworkAreaDiagramSelectedVoltageLevelAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -601,6 +603,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
+    selectedVoltageLevelNad: string | null;
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
@@ -769,6 +772,7 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
+    selectedVoltageLevelNad: null,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
@@ -1733,6 +1737,13 @@ export const reducer = createReducer(initialState, (builder) => {
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
             state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
+        }
+    );
+
+    builder.addCase(
+        NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
+        (state, action: NetworkAreaDiagramSelectedVoltageLevelAction) => {
+            state.selectedVoltageLevelNad = action.selectedVoltageLevelNad;
         }
     );
 

@@ -159,12 +159,12 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
                 return null;
             }
-
             return getNetworkAreaDiagramUrl(
                 studyUuid,
                 currentNode?.id,
                 currentRootNetworkUuid,
                 diagram.depth,
+                diagram?.SelectedVoltageLevel,
                 networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
             );
         },
