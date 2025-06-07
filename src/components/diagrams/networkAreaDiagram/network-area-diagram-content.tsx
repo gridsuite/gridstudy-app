@@ -18,10 +18,10 @@ import {
 import {
     CSS_RULE,
     NetworkAreaDiagramViewer,
-    THRESHOLD_STATUS,
+    THRESHOLD_STATUS, //TO CHANGE 
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
-    OnLeftClickCallbackType,
+    OnSelectNodeCallbackType,
 } from '@powsybl/network-viewer';
 import AddIcon from '@mui/icons-material/ControlPoint';
 
@@ -48,7 +48,7 @@ import { useDiagram } from '../use-diagram';
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-const dynamicCssRules: CSS_RULE[] = [
+const dynamicCssRules: any[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
         belowThresholdCssDeclaration: { display: 'block' },
@@ -238,9 +238,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [dispatch, nadIdentifier]
     );
 
-    const OnLeftClickCallback: OnLeftClickCallbackType = useCallback((equipmentId, mousePosition) => {
-        console.log('Clicked:', equipmentId, mousePosition);
-
+    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
             setClickedEquipmentId(equipmentId);
             setShouldDisplayMenu(true);
@@ -321,13 +319,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
-                null,
+                OnLeftClickCallback,
                 isEditNadMode,
                 true,
                 dynamicCssRules,
                 isEditNadMode ? null : OnToggleHoverCallback,
                 null,
-                OnLeftClickCallback,
                 false
             );
 
