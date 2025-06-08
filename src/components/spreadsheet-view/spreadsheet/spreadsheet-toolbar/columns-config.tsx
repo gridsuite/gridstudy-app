@@ -19,9 +19,9 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateTableDefinition } from 'redux/actions';
 import { UUID } from 'crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { ColumnStateDto, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
-import { reorderSpreadsheetColumns } from 'services/study/study-config';
+import { reorderSpreadsheetColumns, updateColumnStates } from 'services/study/study-config';
 import { AppState } from 'redux/reducer';
 import { ColumnState } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
@@ -99,18 +99,23 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         handleCloseColumnsSettingDialog();
     }, [tableDefinition?.columns, resetColumnState, handleCloseColumnsSettingDialog]);
 
-    const handleSaveSelectedColumnNames = useCallback(() => {
-        // check if column order has changed by comparing uuids
-        const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
+    const getUpdatedColumnsState = useCallback((): ColumnStateDto[] => {
+        return localColumns.map((col, index) => ({
+            columnId: col.uuid,
+            visible: Boolean(col.visible),
+            order: index,
+        }));
+    }, [localColumns]);
 
-        // create a Promise chain that conditionally includes the reorder request
+    const handleSaveSelectedColumnNames = useCallback(() => {
+        // check if columns state has changed
+        const hasColsStatesChanged = tableDefinition.columns.some(
+            (col, index) => col.uuid !== localColumns[index].uuid || col.visible !== localColumns[index].visible
+        );
+
         const updatePromise =
-            hasOrderChanged && studyUuid
-                ? reorderSpreadsheetColumns(
-                      studyUuid,
-                      tableDefinition.uuid,
-                      localColumns.map((col) => col.uuid)
-                  )
+            hasColsStatesChanged && studyUuid
+                ? updateColumnStates(studyUuid, tableDefinition.uuid, getUpdatedColumnsState())
                 : Promise.resolve();
 
         updatePromise
@@ -139,6 +144,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         dispatch,
         resetColumnState,
         snackError,
+        getUpdatedColumnsState,
     ]);
 
     const handleToggle = (value: UUID) => () => {

@@ -52,6 +52,13 @@ export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
     filterTolerance?: number;
     filterType?: string;
     filterValue?: string;
+    visible?: boolean;
+};
+
+export type ColumnStateDto = {
+    columnId: UUID;
+    visible: boolean;
+    order: number;
 };
 
 export type SpreadsheetEquipmentsByNodes = {
