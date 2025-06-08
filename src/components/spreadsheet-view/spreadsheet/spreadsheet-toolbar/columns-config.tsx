@@ -21,7 +21,7 @@ import { UUID } from 'crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ColumnStateDto, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
-import { reorderSpreadsheetColumns, updateColumnStates } from 'services/study/study-config';
+import { updateColumnStates } from 'services/study/study-config';
 import { AppState } from 'redux/reducer';
 import { ColumnState } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
