@@ -51,7 +51,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                 <GridItem>
                     <SwitchInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
-                        label={'withOrWithoutLoadFlow'}
+                        label={'Loadflow'}
                     />
                 </GridItem>
             </Grid>
