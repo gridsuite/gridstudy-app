@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { Grid } from '@mui/material';
-import { FloatInput, IntegerInput, SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
@@ -41,12 +41,20 @@ export default function BalancesAdjustmentAdvancedContent() {
     const intl = useIntl();
 
     const withLoadFlow = useWatch({
-        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`,
+        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`,
     });
 
     return (
         <Grid container direction="column" width={'50%'} minWidth={'300px'}>
             <GridSection title="Algorithm" />
+            <Grid container spacing={2} mb={2} direction="column">
+                <GridItem>
+                    <SwitchInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
+                        label={'withOrWithoutLoadFlow'}
+                    />
+                </GridItem>
+            </Grid>
             <Grid container spacing={2} direction="column">
                 <GridItem>
                     <IntegerInput
