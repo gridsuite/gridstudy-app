@@ -98,7 +98,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, removeDiagram, createDiagram } = useDiagramModel({
+    const { diagrams, loadingDiagrams, removeDiagram, createDiagram } = useDiagramModel({
         diagramTypes: diagramTypes,
         onAddDiagram,
     });
@@ -212,7 +212,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 svg={diagram.svg?.svg ?? undefined}
                                 svgType={diagram.type}
                                 svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
-                                loadingState={false} // TODO
+                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
                             />
@@ -233,7 +233,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                         .map((vl) => vl.id)
                                         .filter((vlId) => vlId !== undefined) as string[]
                                 }
-                                loadingState={false} // TODO
+                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
                             />
@@ -242,7 +242,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 </Box>
             );
         });
-    }, [diagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
+    }, [diagrams, loadingDiagrams, onRemoveItem, setDiagramSize, showInSpreadsheet, studyUuid, visible]);
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
         if (savedLayouts) {
