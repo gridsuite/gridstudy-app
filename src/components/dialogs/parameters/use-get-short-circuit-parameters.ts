@@ -21,7 +21,7 @@ import { AppState, StudyUpdatedEventData } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
 
-export const useGetShortCircuitParameters = (): ShortCircuitParametersInfos => {
+export const useGetShortCircuitParameters = (): ShortCircuitParametersInfos | null => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState<ShortCircuitParametersInfos | null>(null);
