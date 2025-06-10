@@ -45,34 +45,17 @@ export default function BalancesAdjustmentAdvancedContent() {
     });
 
     return (
-        <Grid container direction="column" width={'50%'} minWidth={'300px'}>
-            <GridSection title="Algorithm" />
-            <Grid container spacing={2} mb={2} direction="column">
-                <GridItem>
+        <Grid container direction="column" xs={8} minWidth={'300px'}>
+            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <Grid>
+                    <GridSection title="Loadflow" />
+                </Grid>
+                <Grid>
                     <SwitchInput
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
-                        label={'Loadflow'}
                     />
-                </GridItem>
+                </Grid>
             </Grid>
-            <Grid container spacing={2} direction="column">
-                <GridItem>
-                    <IntegerInput
-                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
-                        label={'maxNumberIterations'}
-                        formProps={{
-                            disabled: !withLoadFlow,
-                        }}
-                    />
-                </GridItem>
-                <GridItem>
-                    <FloatInput
-                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION}`}
-                        label={'thresholdNetPosition'}
-                    />
-                </GridItem>
-            </Grid>
-            <GridSection title="Loadflow" />
             <Grid container spacing={2} direction="column">
                 <GridItem>
                     <CountriesAutocomplete
@@ -89,6 +72,28 @@ export default function BalancesAdjustmentAdvancedContent() {
                         options={BALANCE_TYPE_OPTIONS}
                         sx={styles.autocomplete}
                         disabled={!withLoadFlow}
+                        disableClearable={true}
+                    />
+                </GridItem>
+            </Grid>
+            <GridSection title="Algorithm" />
+            <Grid container spacing={2} direction="column">
+                <GridItem>
+                    <IntegerInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
+                        label={'maxNumberIterations'}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
+                    />
+                </GridItem>
+                <GridItem>
+                    <FloatInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION}`}
+                        label={'thresholdNetPosition'}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
                     />
                 </GridItem>
             </Grid>
