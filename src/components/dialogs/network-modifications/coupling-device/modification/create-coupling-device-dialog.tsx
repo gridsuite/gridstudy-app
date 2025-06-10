@@ -30,8 +30,16 @@ const emptyFormData = {
     [BUS_BAR_SECTION_ID2]: null,
 };
 const formSchema = yup.object().shape({
-    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
+    [BUS_BAR_SECTION_ID1]: yup
+        .string()
+        .nullable()
+        .required()
+        .notOneOf([yup.ref(BUS_BAR_SECTION_ID2), null], 'CreateCouplingDeviceIdenticalBusBar'),
+    [BUS_BAR_SECTION_ID2]: yup
+        .string()
+        .nullable()
+        .required()
+        .notOneOf([yup.ref(BUS_BAR_SECTION_ID1), null], 'CreateCouplingDeviceIdenticalBusBar'),
 });
 export type CreateCouplingDeviceDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateCouplingDeviceInfos;
@@ -151,7 +159,7 @@ export default function CreateCouplingDeviceDialog({
                 onSave={onSubmit}
                 maxWidth={'md'}
                 open={open}
-                titleId={'CreateCouplingDevice'}
+                titleId={'CREATE_COUPLING_DEVICE'}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
