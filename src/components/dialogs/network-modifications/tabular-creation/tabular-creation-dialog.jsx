@@ -113,7 +113,6 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 });
                 // For now, we do not manage reactive limits by diagram
                 if (creationType === 'GENERATOR_CREATION') {
-                    console.log(creation[REACTIVE_CAPABILITY_CURVE]);
                     if (creation[REACTIVE_CAPABILITY_CURVE]) {
                         //Convert list data to matrix
                         const rccPoints = [];
