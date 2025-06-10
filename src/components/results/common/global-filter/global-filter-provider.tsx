@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { UUID } from 'crypto';
@@ -39,6 +39,10 @@ export default function GlobalFilterProvider({
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters);
+
+    useEffect(() => {
+        setSelectedGlobalFilters(preloadedGlobalFilters);
+    }, [preloadedGlobalFilters]);
 
     const checkSelectedFiltersPromise = useCallback(
         async (selectedFilters: GlobalFilter[]) => {
