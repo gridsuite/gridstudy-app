@@ -42,14 +42,13 @@ export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
 export const DATA_KEY_TO_FILTER_KEY_N = {
     funcId: 'functionId',
     varId: 'variableId',
-    contingencyId: 'contingencyId',
     value: 'rawSensitivityResult.value',
     functionReference: 'rawSensitivityResult.functionReference',
 };
 export const DATA_KEY_TO_FILTER_KEY_NK = {
     funcId: 'functionId',
     varId: 'variableId',
-    contingencyId: 'contingencyId',
+    contingencyId: 'contingencyResult.contingencyId',
     value: 'preContingencySensitivityResult.rawSensitivityResult.value',
     functionReference: 'preContingencySensitivityResult.rawSensitivityResult.functionReference',
     valueAfter: 'rawSensitivityResult.value',
