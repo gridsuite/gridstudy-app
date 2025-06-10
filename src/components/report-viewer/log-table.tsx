@@ -116,10 +116,10 @@ const LogTable = ({
     const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
     const [count, setCount] = useState<number>(0);
 
-    // Reset filtersInitialized when reportType changes
+    // Reset filtersInitialized when reportType or severities change
     useEffect(() => {
         setFiltersInitialized(false);
-    }, [reportType]);
+    }, [reportType, severities]);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);

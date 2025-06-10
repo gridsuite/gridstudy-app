@@ -93,6 +93,19 @@ export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
+
+/* Tabylar creations reactive capability curve table values for csv */
+export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
+export const REACTIVE_CAPABILITY_CURVE_P_MIN = 'reactiveCapabilityCurvePmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN = 'reactiveCapabilityCurveQminPmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN = 'reactiveCapabilityCurveQmaxPmin';
+export const REACTIVE_CAPABILITY_CURVE_P_0 = 'reactiveCapabilityCurveP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0 = 'reactiveCapabilityCurveQminP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0 = 'reactiveCapabilityCurveQmaxP0';
+export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
+
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const MIN_Q = 'minQ';
@@ -467,3 +480,17 @@ export const SWITCH_ID = 'switchId';
 export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
 export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
 export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';
+
+// BALANCES ADJUSTMENT
+export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
+export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
+export const BALANCES_ADJUSTMENT_ZONE = 'balancesAdjustmentZone';
+export const BALANCES_ADJUSTMENT_COUNTRIES = 'balancesAdjustmentCountries';
+export const BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE = 'balancesAdjustmentShiftEquipmentType';
+export const BALANCES_ADJUSTMENT_SHIFT_TYPE = 'balancesAdjustmentShfttType';
+export const BALANCES_ADJUSTMENT_TARGET = 'balancesAdjustmentTarget';
+export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
+export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
+export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
+export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
+export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
