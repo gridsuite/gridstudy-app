@@ -93,6 +93,19 @@ export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
+
+/* Tabylar creations reactive capability curve table values for csv */
+export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
+export const REACTIVE_CAPABILITY_CURVE_P_MIN = 'reactiveCapabilityCurvePmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN = 'reactiveCapabilityCurveQminPmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN = 'reactiveCapabilityCurveQmaxPmin';
+export const REACTIVE_CAPABILITY_CURVE_P_0 = 'reactiveCapabilityCurveP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0 = 'reactiveCapabilityCurveQminP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0 = 'reactiveCapabilityCurveQmaxP0';
+export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
+
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const MIN_Q = 'minQ';
