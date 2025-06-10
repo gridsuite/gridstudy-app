@@ -157,8 +157,10 @@ const RatioTapChangerPane = ({
 
     return (
         <>
-            <GridItem size={4}>{ratioTapLoadTapChangingCapabilitiesField}</GridItem>
-
+            <Grid container spacing={2}>
+                <GridItem size={2}>{ratioTapLoadTapChangingCapabilitiesField}</GridItem>
+                <GridItem size={'auto'}></GridItem>
+            </Grid>
             <GridSection title="RegulationSection" heading={4} />
             <Grid item container spacing={1}>
                 <GridItem size={4}>{regulationModeField}</GridItem>

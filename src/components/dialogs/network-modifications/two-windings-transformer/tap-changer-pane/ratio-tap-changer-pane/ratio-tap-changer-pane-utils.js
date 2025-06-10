@@ -73,7 +73,7 @@ const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
         }),
 });
 
-const ratioTapChangerValidationSchema = (id) => ({
+const ratioTapChangerValidationSchema = (isModification, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
@@ -129,15 +129,21 @@ const ratioTapChangerValidationSchema = (id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: true,
+                is: (enabled) => enabled && !isModification,
                 then: (schema) => schema.required(),
             }),
-        [HIGH_TAP_POSITION]: yup.number().nullable(),
+        [HIGH_TAP_POSITION]: yup
+            .number()
+            .nullable()
+            .when(ENABLED, {
+                is: (enabled) => enabled && !isModification,
+                then: (schema) => schema.required(),
+            }),
         [TAP_POSITION]: yup
             .number()
             .nullable()
             .when(ENABLED, {
-                is: true,
+                is: (enabled) => enabled && !isModification,
                 then: (schema) =>
                     schema
                         .required()
@@ -200,12 +206,8 @@ const ratioTapChangerModificationValidationSchema = (id) => ({
     }),
 });
 
-export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerValidationSchema(id);
-};
-
-export const getRatioTapChangerModificationValidationSchema = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerModificationValidationSchema(id);
+export const getRatioTapChangerValidationSchema = (isModification = false, id = RATIO_TAP_CHANGER) => {
+    return ratioTapChangerValidationSchema(isModification, id);
 };
 
 const ratioTapChangerEmptyFormData = (isModification, id) => ({
