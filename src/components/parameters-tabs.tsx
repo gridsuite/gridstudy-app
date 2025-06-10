@@ -52,7 +52,6 @@ import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
-import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
@@ -62,7 +61,11 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
-import { useParametersBackend, LoadFlowParametersInline } from '@gridsuite/commons-ui';
+import {
+    useParametersBackend,
+    LoadFlowParametersInline,
+    NetworkVisualizationParametersInline,
+} from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
@@ -126,6 +129,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         [TAB_VALUES.stateEstimationTabValue]: (state: AppState) =>
             state.computingStatus[ComputingType.STATE_ESTIMATION],
     };
+    const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const computationStatus = useSelector((state: AppState) =>
         computationStatusSelectors[tabValue as TAB_VALUES](state)
@@ -329,7 +333,14 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                     />
                 );
             case TAB_VALUES.networkVisualizationsParams:
-                return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
+                return (
+                    <NetworkVisualizationParametersInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                        user={user}
+                        parameters={networkVisualizationsParameters}
+                    />
+                );
         }
     }, [
         view,
@@ -339,6 +350,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         enableDeveloperMode,
         securityAnalysisParametersBackend,
         sensitivityAnalysisBackend,
+        networkVisualizationsParameters,
         nonEvacuatedEnergyBackend,
         useNonEvacuatedEnergyParameters,
         useShortCircuitParameters,

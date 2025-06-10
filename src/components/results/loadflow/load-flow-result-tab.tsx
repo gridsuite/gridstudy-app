@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -31,8 +31,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
+import { mergeSx } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -49,8 +48,8 @@ import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filt
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { fetchSubstationPropertiesGlobalFilters } from '../common/global-filter/global-filter-utils';
 import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
+import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
 
 const styles = {
     flexWrapper: {
@@ -75,7 +74,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     nodeUuid,
     currentRootNetworkUuid,
 }) => {
-    const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -87,64 +85,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
-    const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
-    // propertiesFilter may be empty or contain several subtypes, depending on the user configuration
-    const [propertiesFilter, setPropertiesFilter] = useState<GlobalFilter[]>([]);
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
     const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
-
-    // load countries
-    useEffect(() => {
-        fetchAllCountries(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((countryCodes) => {
-                setCountriesFilter(
-                    countryCodes.map((countryCode: string) => ({
-                        label: countryCode,
-                        filterType: FilterType.COUNTRY,
-                    }))
-                );
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'FetchCountryError',
-                });
-            });
-
-        fetchAllNominalVoltages(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((nominalVoltages) => {
-                setVoltageLevelsFilter(
-                    nominalVoltages.map((nominalV: number) => ({
-                        label: nominalV.toString(),
-                        filterType: FilterType.VOLTAGE_LEVEL,
-                    }))
-                );
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'FetchNominalVoltagesError',
-                });
-            });
-
-        fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-            const propertiesGlobalFilters: GlobalFilter[] = [];
-            if (substationPropertiesGlobalFilters) {
-                for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
-                    propertyValues.forEach((propertyValue) => {
-                        propertiesGlobalFilters.push({
-                            label: propertyValue,
-                            filterType: FilterType.SUBSTATION_PROPERTY,
-                            filterSubtype: propertyName,
-                        });
-                    });
-                }
-            }
-            setPropertiesFilter(propertiesGlobalFilters);
-        });
-    }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError]);
 
     const getGlobalFilterParameter = useCallback(
         (globalFilter: GlobalFilters | undefined) => {
