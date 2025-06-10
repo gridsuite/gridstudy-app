@@ -162,10 +162,8 @@ function PagedSensitivityAnalysisResult({
             ...sortSelector,
         };
         const mappedFilters = filters?.map((elem) => {
-            const newColumn =
-                nOrNkIndex === 0
-                    ? DATA_KEY_TO_FILTER_KEY_N[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY_N]
-                    : DATA_KEY_TO_FILTER_KEY_NK[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY_NK];
+            const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
+            const newColumn = keyMap[elem.column as keyof typeof keyMap];
             return { ...elem, column: newColumn };
         });
         setIsLoading(true);
