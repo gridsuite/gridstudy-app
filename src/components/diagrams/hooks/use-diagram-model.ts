@@ -25,7 +25,6 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
-import { v4 } from 'uuid';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
 import { useIntl } from 'react-intl';
 
@@ -61,6 +60,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
+    const [loadingDiagrams, setLoadingDiagrams] = useState<UUID[]>([]);
 
     const filterDiagramParams = useCallback(
         (diagramParams: DiagramParams[]): DiagramParams[] => {
@@ -78,7 +78,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         (diagramParams: DiagramParams) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
-                diagramUuid: v4() as UUID,
                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramParams.type }),
                 svg: null,
             };
@@ -236,25 +235,38 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             }
 
             if (url) {
-                // fetch the svg
-                fetchSvg(url, fetchOptions).then((data) => {
-                    if (data !== null) {
-                        setDiagrams((diagrams) => {
-                            if (!diagrams[diagram.diagramUuid]) {
-                                console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                                return diagrams;
-                            }
-                            const newDiagrams = { ...diagrams };
-
-                            newDiagrams[diagram.diagramUuid] = {
-                                ...diagrams[diagram.diagramUuid],
-                                svg: data,
-                                name: makeDiagramName(diagram),
-                            };
-                            return newDiagrams;
-                        });
+                setLoadingDiagrams((loadingDiagrams) => {
+                    if (loadingDiagrams.includes(diagram.diagramUuid)) {
+                        console.warn(`Diagram ${diagram.diagramUuid} is already being loaded`);
+                        return loadingDiagrams;
                     }
+                    return [...loadingDiagrams, diagram.diagramUuid];
                 });
+                // fetch the svg
+                fetchSvg(url, fetchOptions)
+                    .then((data) => {
+                        if (data !== null) {
+                            setDiagrams((diagrams) => {
+                                if (!diagrams[diagram.diagramUuid]) {
+                                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                                    return diagrams;
+                                }
+                                const newDiagrams = { ...diagrams };
+
+                                newDiagrams[diagram.diagramUuid] = {
+                                    ...diagrams[diagram.diagramUuid],
+                                    svg: data,
+                                    name: makeDiagramName(diagram),
+                                };
+                                return newDiagrams;
+                            });
+                        }
+                    })
+                    .finally(() => {
+                        setLoadingDiagrams((loadingDiagrams) => {
+                            return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
+                        });
+                    });
             }
         },
         [getUrl]
@@ -351,5 +363,5 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
-    return { diagrams, removeDiagram, createDiagram };
+    return { diagrams, loadingDiagrams, removeDiagram, createDiagram };
 };

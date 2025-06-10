@@ -7,6 +7,7 @@
 
 import { ElementType } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../equipment-types';
+import { ReactNode } from 'react';
 
 export enum DndColumnType {
     TEXT = 'TEXT',
@@ -14,6 +15,7 @@ export enum DndColumnType {
     AUTOCOMPLETE = 'AUTOCOMPLETE',
     CHIP_ITEMS = 'CHIP_ITEMS',
     DIRECTORY_ITEMS = 'DIRECTORY_ITEMS',
+    CUSTOM = 'CUSTOM',
 }
 
 export interface ColumnBase {
@@ -54,4 +56,15 @@ export interface ColumnChipsItem extends ColumnBase {
     type: DndColumnType.CHIP_ITEMS;
 }
 
-export type DndColumn = ColumnNumeric | ColumnAutocomplete | ColumnText | ColumnDirectoryItem | ColumnChipsItem;
+export interface ColumnCustom extends ColumnBase {
+    type: DndColumnType.CUSTOM;
+    component: (rowIndex: number) => ReactNode;
+}
+
+export type DndColumn =
+    | ColumnNumeric
+    | ColumnAutocomplete
+    | ColumnText
+    | ColumnDirectoryItem
+    | ColumnChipsItem
+    | ColumnCustom;

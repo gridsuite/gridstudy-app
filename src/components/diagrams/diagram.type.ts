@@ -14,14 +14,6 @@ export enum ViewState {
     OPENED = 'opened',
 }
 
-export enum SubstationLayout {
-    HORIZONTAL = 'horizontal',
-    VERTICAL = 'vertical',
-    SMART = 'smart',
-    SMARTHORIZONTALCOMPACTION = 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION = 'smartVerticalCompaction',
-}
-
 export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',
@@ -43,6 +35,7 @@ export function isSldType(type: DiagramType): type is SLD {
 
 // Create diagram parameters
 type DiagramBaseParams = {
+    diagramUuid: UUID;
     type: DiagramType;
 };
 

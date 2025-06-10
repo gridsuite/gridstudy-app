@@ -15,8 +15,10 @@ import { UUID } from 'crypto';
 import {
     Assignment,
     AttachLineInfo,
+    BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    CreateCouplingDeviceInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -29,6 +31,7 @@ import {
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
+    NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
@@ -2001,5 +2004,66 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
         }),
+    });
+}
+
+export function createCouplingDevice({
+    createCouplingDeviceInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    createCouplingDeviceInfos: CreateCouplingDeviceInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating coupling device');
+    } else {
+        console.info('Creating coupling device');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createCouplingDeviceInfos),
+    });
+}
+
+export function balancesAdjustment({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    ...balancesAdjustmentInfos
+}: Omit<BalancesAdjustmentInfos, 'uuid'> & NetworkModificationRequestInfos) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+        ...balancesAdjustmentInfos,
+    });
+
+    let balancesAdjustmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        console.info('Updating balances adjustment ', body);
+        balancesAdjustmentUrl = balancesAdjustmentUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating balances adjustment ', body);
+    }
+
+    return backendFetchText(balancesAdjustmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     });
 }
