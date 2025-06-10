@@ -55,16 +55,20 @@ export async function evaluateJsonFilter(
 
 export async function evaluateFilters(
     studyUuid: UUID,
+    currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     filters: UUID[]
 ): Promise<FilterEquipments[]> {
-    console.info(`Get matched elements of study '${studyUuid}' with a root network '${currentRootNetworkUuid}' ...`);
+    console.info(
+        `Get matched elements of study '${studyUuid}' with a root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     const filtersListsQueryParams = getRequestParamFromList(filters, 'filtersUuid');
     const urlSearchParams = new URLSearchParams(filtersListsQueryParams);
 
     const evaluateFilterUrl =
-        getStudyUrlWithRootNetworkUuid(studyUuid, currentRootNetworkUuid) + `/filters/elements?${urlSearchParams}`;
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        `/filters/elements?${urlSearchParams}`;
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'get',
