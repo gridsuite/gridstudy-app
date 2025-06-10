@@ -24,10 +24,10 @@ import { AppState } from 'redux/reducer';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from 'services/study/network';
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
-import { SLD_DISPLAY_MODE } from 'components/network/constants';
+import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
 import { useIntl } from 'react-intl';
-import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
+import { NodeType } from 'components/graph/tree-node.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const makeDiagramName = (diagram: Diagram): string => {
@@ -54,7 +54,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const prevCurrentNode = useRef<CurrentTreeNode | null>(null);
+    const prevCurrentNodeId = useRef<UUID | undefined>();
+    const prevCurrentNodeStatus = useRef<BUILD_STATUS | undefined>();
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const prevCurrentRootNetworkUuid = useRef<UUID | null>();
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
@@ -386,23 +387,27 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     useDiagramNotificationsListener({ updateAllDiagrams });
 
     useEffect(() => {
-        if (currentNode?.id === prevCurrentNode.current?.id) {
+        if (!currentNode?.id) {
+            return;
+        }
+        if (currentNode.id === prevCurrentNodeId.current) {
             // if same node and status didn't change then do not update diagrams
             if (
-                currentNode?.data?.globalBuildStatus === prevCurrentNode.current?.data?.globalBuildStatus &&
-                (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data?.globalBuildStatus))
+                currentNode.data?.globalBuildStatus === prevCurrentNodeStatus.current &&
+                (currentNode.type === NodeType.ROOT || isStatusBuilt(currentNode?.data?.globalBuildStatus))
             ) {
                 return;
             }
         }
-        prevCurrentNode.current = currentNode; // ok something relevant has changed
+        prevCurrentNodeId.current = currentNode.id; // ok something relevant has changed
+        prevCurrentNodeStatus.current = currentNode.data?.globalBuildStatus;
         if (currentNode?.type !== NodeType.ROOT && !isStatusBuilt(currentNode?.data?.globalBuildStatus)) {
             // if current node is not root and not built, set global error and do not update diagrams
             setGlobalError('InvalidNode');
             return;
         }
         updateAllDiagrams();
-    }, [currentNode, updateAllDiagrams]);
+    }, [currentNode?.id, currentNode?.type, currentNode?.data?.globalBuildStatus, updateAllDiagrams]);
 
     useEffect(() => {
         if (currentRootNetworkUuid === prevCurrentRootNetworkUuid.current) {
