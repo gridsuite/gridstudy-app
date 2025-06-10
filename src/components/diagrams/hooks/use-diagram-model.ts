@@ -263,6 +263,13 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             }
 
             if (url) {
+                setLoadingDiagrams((loadingDiagrams) => {
+                    if (loadingDiagrams.includes(diagram.diagramUuid)) {
+                        console.warn(`Diagram ${diagram.diagramUuid} is already being loaded`);
+                        return loadingDiagrams;
+                    }
+                    return [...loadingDiagrams, diagram.diagramUuid];
+                });
                 // fetch the svg
                 fetchSvg(url, fetchOptions)
                     .then((data) => {
