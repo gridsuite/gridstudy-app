@@ -174,38 +174,6 @@ const ratioTapChangerValidationSchema = (isModification, id) => ({
     }),
 });
 
-const ratioTapChangerModificationValidationSchema = (id) => ({
-    [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
-        [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().nullable(),
-        [REGULATION_MODE]: yup.string().nullable(),
-        [REGULATION_TYPE]: yup.string().nullable(),
-        [REGULATION_SIDE]: yup.string().nullable(),
-        [TARGET_V]: yup.number().nullable().positive('TargetVoltageMustBeGreaterThanZero'),
-        [TARGET_DEADBAND]: yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
-        [LOW_TAP_POSITION]: yup.number().nullable(),
-        [HIGH_TAP_POSITION]: yup.number().nullable(),
-        [TAP_POSITION]: yup.number().nullable(),
-        [STEPS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [STEPS_TAP]: yup.number().required(),
-                    [STEPS_RESISTANCE]: yup.number(),
-                    [STEPS_REACTANCE]: yup.number(),
-                    [STEPS_CONDUCTANCE]: yup.number(),
-                    [STEPS_SUSCEPTANCE]: yup.number(),
-                    [STEPS_RATIO]: yup.number(),
-                })
-            )
-            .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
-                const ratioArray = array.map((step) => step[STEPS_RATIO]);
-                return areNumbersOrdered(ratioArray) && areArrayElementsUnique(ratioArray);
-            }),
-        ...getRegulatingTerminalRatioTapChangerValidationSchema(),
-    }),
-});
-
 export const getRatioTapChangerValidationSchema = (isModification = false, id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerValidationSchema(isModification, id);
 };
