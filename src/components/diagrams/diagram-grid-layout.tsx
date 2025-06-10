@@ -84,6 +84,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
@@ -189,6 +190,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [diagrams, updateDiagram]
     );
 
+    const handleToggleEditMode = useCallback((diagramUuid: UUID) => {
+        setDiagramsInEditMode((prev) =>
+            prev.includes(diagramUuid) ? prev.filter((id) => id !== diagramUuid) : [...prev, diagramUuid]
+        );
+    }, []);
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -254,11 +261,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                 diagramSizeSetter={setDiagramSize}
                                 visible={visible}
+                                isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
+                                onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
                             />
                         )}
                         {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
                             <DiagramFooter
-                                showCounterControls
+                                showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
                                 counterText={intl.formatMessage({
                                     id: 'depth',
                                 })}
@@ -277,6 +286,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     }, [
         diagrams,
+        diagramsInEditMode,
+        handleToggleEditMode,
         intl,
         loadingDiagrams,
         onChangeDepth,
