@@ -11,9 +11,6 @@ import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 
-import { ComputingType } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
-
 import { LimitViolationResultProps } from './load-flow-result.type';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';

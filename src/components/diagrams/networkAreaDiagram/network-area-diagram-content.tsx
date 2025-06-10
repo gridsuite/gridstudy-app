@@ -24,7 +24,6 @@ import {
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';

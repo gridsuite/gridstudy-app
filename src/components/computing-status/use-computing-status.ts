@@ -68,6 +68,7 @@ function isWorthUpdate(
     if (!updateType) {
         return false;
     }
+    console.log('TEST', invalidations, updateType);
     if (invalidations.indexOf(updateType) <= -1) {
         return false;
     }

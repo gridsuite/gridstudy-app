@@ -16,7 +16,7 @@ import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import ComputingType from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
 
 const styles = {

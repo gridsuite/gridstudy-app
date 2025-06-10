@@ -53,7 +53,6 @@ import { fetchLinePositions, fetchSubstationPositions } from '../../services/stu
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';

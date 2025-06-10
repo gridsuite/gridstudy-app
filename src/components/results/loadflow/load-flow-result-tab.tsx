@@ -144,7 +144,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             }
             setPropertiesFilter(propertiesGlobalFilters);
         });
-    }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError, loadFlowStatus]);
+    }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError]);
 
     const getGlobalFilterParameter = useCallback(
         (globalFilter: GlobalFilters | undefined) => {
