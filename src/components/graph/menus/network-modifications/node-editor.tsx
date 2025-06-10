@@ -16,8 +16,8 @@ import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from 'components/utils/running-status';
+import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -46,7 +46,7 @@ const NodeEditor = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));

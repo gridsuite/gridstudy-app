@@ -9,7 +9,7 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ComputingType } from './computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
@@ -68,7 +68,6 @@ function isWorthUpdate(
     if (!updateType) {
         return false;
     }
-    console.log('TEST', invalidations, updateType);
     if (invalidations.indexOf(updateType) <= -1) {
         return false;
     }
