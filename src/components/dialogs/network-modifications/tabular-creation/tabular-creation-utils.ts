@@ -22,7 +22,10 @@ import {
     MARGINAL_COST,
     MAX_P,
     MAX_Q,
+    MAX_Q_AT_NOMINAL_V,
+    MAX_SUSCEPTANCE,
     MAXIMUM_REACTIVE_POWER,
+    MAXIMUM_SECTION_COUNT,
     MIN_P,
     MIN_Q,
     MINIMUM_REACTIVE_POWER,
@@ -45,6 +48,8 @@ import {
     REGULATING_TERMINAL_ID,
     REGULATING_TERMINAL_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
+    SECTION_COUNT,
+    SHUNT_COMPENSATOR_TYPE,
     STEP_UP_TRANSFORMER_REACTANCE,
     TARGET_P,
     TARGET_Q,
@@ -53,6 +58,9 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
     VOLTAGE_SET_POINT,
+    LOAD_TYPE,
+    P0,
+    Q0,
 } from 'components/utils/field-constants';
 
 export interface TabularCreationField {
@@ -111,6 +119,19 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: PLANNED_OUTAGE_RATE, required: false },
         { id: FORCED_OUTAGE_RATE, required: false },
     ],
+    LOAD: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: EQUIPMENT_NAME, required: false },
+        { id: LOAD_TYPE, required: true },
+        { id: VOLTAGE_LEVEL_ID, required: true },
+        { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
+        { id: CONNECTED, required: true },
+        { id: CONNECTION_NAME, required: false },
+        { id: CONNECTION_DIRECTION, required: false },
+        { id: CONNECTION_POSITION, required: false },
+        { id: P0, required: true },
+        { id: Q0, required: true },
+    ],
     BATTERY: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
@@ -130,11 +151,28 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: FREQUENCY_REGULATION, required: true },
         { id: DROOP, required: false },
     ],
+    SHUNT_COMPENSATOR: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: EQUIPMENT_NAME, required: false },
+        { id: VOLTAGE_LEVEL_ID, required: true },
+        { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
+        { id: CONNECTED, required: true },
+        { id: CONNECTION_NAME, required: false },
+        { id: CONNECTION_DIRECTION, required: false },
+        { id: CONNECTION_POSITION, required: false },
+        { id: MAXIMUM_SECTION_COUNT, required: true },
+        { id: SECTION_COUNT, required: true },
+        { id: SHUNT_COMPENSATOR_TYPE, required: false },
+        { id: MAX_Q_AT_NOMINAL_V, required: false },
+        { id: MAX_SUSCEPTANCE, required: false },
+    ],
 };
 
 export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_CREATION.type,
     BATTERY: MODIFICATION_TYPES.BATTERY_CREATION.type,
+    LOAD: MODIFICATION_TYPES.LOAD_CREATION.type,
+    SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
 export const convertCreationFieldFromBackToFront = (key: string, value: { value: string | number | boolean }) => {

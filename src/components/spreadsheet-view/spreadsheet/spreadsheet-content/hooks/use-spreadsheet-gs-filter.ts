@@ -32,6 +32,17 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
                 const nominalVoltages = globalFilters
                     ?.filter((filter) => filter.filterType === 'voltageLevel')
                     .map((filter) => Number(filter.label));
+                const substationProperties = globalFilters
+                    ?.filter((filter) => filter.filterType === 'substationProperty')
+                    .reduce<Record<string, string[]>>((acc, item) => {
+                        if (item.filterSubtype) {
+                            if (!acc[item.filterSubtype]) {
+                                acc[item.filterSubtype] = [];
+                            }
+                            acc[item.filterSubtype].push(item.label);
+                        }
+                        return acc;
+                    }, {});
                 const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
 
                 let genericFiltersIdentifiablesIds: string[] = [];
@@ -52,6 +63,7 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
                     undefined,
                     countries,
                     nominalVoltages,
+                    substationProperties,
                     genericFiltersIdentifiablesIds
                 );
 
