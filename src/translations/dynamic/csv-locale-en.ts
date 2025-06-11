@@ -9,6 +9,8 @@ const csv_locale_en = {
     // Used in the tabular creation and modification
     'TabularCreationSkeletonComment.GENERATOR':
         '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,true | false,,,,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,required if frequencyRegulation is true,,,,,,,',
+    'TabularCreationSkeletonComment.BATTERY':
+        '#,,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,true | false,,,,,,,,,,,,true | false,required if frequencyRegulation is true',
     'TabularCreationSkeletonComment.LOAD':
         '#,,AUXILIARY | FICTITIOUS | UNDEFINED,,,true | false,,TOP | BOTTOM | UNDEFINED,,,',
     'TabularModificationSkeletonComment.GENERATOR':
