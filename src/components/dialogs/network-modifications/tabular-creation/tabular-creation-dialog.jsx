@@ -89,7 +89,9 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 const creation = {};
                 Object.keys(formatModification(creat)).forEach((key) => {
                     const entry = convertCreationFieldFromBackToFront(key, creat[key]);
-                    creation[entry.key] = entry.value;
+                    (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
+                        creation[item.key] = item.value;
+                    });
                 });
                 return creation;
             });

@@ -61,7 +61,9 @@ import {
     LOAD_TYPE,
     P0,
     Q0,
+    REACTIVE_CAPABILITY_CURVE_POINTS,
 } from 'components/utils/field-constants';
+import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 
 export interface TabularCreationField {
     id: string;
@@ -175,7 +177,57 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
-export const convertCreationFieldFromBackToFront = (key: string, value: { value: string | number | boolean }) => {
+const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
+    const curvePoint1 = value[0];
+    const curvePoint2 = value[1];
+    const curvePoint3 = value[2];
+
+    if (!curvePoint1) {
+        return [];
+    }
+
+    const result = [
+        {
+            key: REACTIVE_CAPABILITY_CURVE_P_MIN,
+            value: curvePoint1.p,
+        },
+        {
+            key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
+            value: curvePoint1.maxQ,
+        },
+        {
+            key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
+            value: curvePoint1.minQ,
+        },
+    ];
+
+    if (curvePoint2) {
+        result.push(
+            { key: REACTIVE_CAPABILITY_CURVE_P_0, value: curvePoint2.p },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, value: curvePoint2.maxQ },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, value: curvePoint2.minQ }
+        );
+    }
+
+    if (curvePoint3) {
+        result.push(
+            { key: REACTIVE_CAPABILITY_CURVE_P_MAX, value: curvePoint3.p },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, value: curvePoint3.maxQ },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, value: curvePoint3.minQ }
+        );
+    }
+
+    return result;
+};
+
+export const convertCreationFieldFromBackToFront = (
+    key: string,
+    value:
+        | {
+              value: string | number | boolean;
+          }
+        | unknown
+) => {
     switch (key) {
         case PARTICIPATE:
             return { key: FREQUENCY_REGULATION, value: value };
@@ -189,6 +241,8 @@ export const convertCreationFieldFromBackToFront = (key: string, value: { value:
             return { key: MINIMUM_REACTIVE_POWER, value: value };
         case MAX_Q:
             return { key: MAXIMUM_REACTIVE_POWER, value: value };
+        case REACTIVE_CAPABILITY_CURVE_POINTS:
+            return convertReactiveCapabilityCurvePointsFromBackToFront(value as ReactiveCapabilityCurvePoints[]);
         default:
             return { key: key, value: value };
     }
