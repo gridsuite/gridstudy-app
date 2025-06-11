@@ -89,7 +89,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
         [MINIMUM_ACTIVE_POWER]: yup
             .number()
