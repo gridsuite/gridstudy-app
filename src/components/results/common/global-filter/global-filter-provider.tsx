@@ -40,10 +40,6 @@ export default function GlobalFilterProvider({
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
     const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters);
 
-    useEffect(() => {
-        setSelectedGlobalFilters(preloadedGlobalFilters);
-    }, [preloadedGlobalFilters]);
-
     const checkSelectedFiltersPromise = useCallback(
         async (selectedFilters: GlobalFilter[]) => {
             const mutableFilters: GlobalFilter[] = selectedFilters.map((filter) => ({ ...filter }));
