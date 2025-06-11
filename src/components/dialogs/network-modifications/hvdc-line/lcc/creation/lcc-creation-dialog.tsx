@@ -98,7 +98,7 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [HVDC_LINE_TAB]: getLccHvdcLineSchema(),
         [CONVERTER_STATION_1]: getLccConverterStationSchema(),
         [CONVERTER_STATION_2]: getLccConverterStationSchema(),
