@@ -69,7 +69,11 @@ const TabularCreationForm = () => {
 
                     return true;
                 });
-                return requiredFieldNameInError !== '' || dependantFieldNameInError !== null;
+                return (
+                    requiredFieldNameInError !== '' ||
+                    dependantFieldNameInError !== '' ||
+                    requiredDependantFieldNameInError !== ''
+                );
             });
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
