@@ -42,8 +42,8 @@ export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
 export const DATA_KEY_TO_FILTER_KEY_N = {
     funcId: 'functionId',
     varId: 'variableId',
-    value: 'rawSensitivityResult.value',
-    functionReference: 'rawSensitivityResult.functionReference',
+    value: 'rawSensitivityResult.value', // value column in table rawSensitivityResult in db
+    functionReference: 'rawSensitivityResult.functionReference', // functionReference column in table rawSensitivityResult in db
 };
 export const DATA_KEY_TO_FILTER_KEY_NK = {
     funcId: 'functionId',
