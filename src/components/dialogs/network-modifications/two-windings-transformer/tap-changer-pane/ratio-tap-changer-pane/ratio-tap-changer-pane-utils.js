@@ -76,7 +76,13 @@ const getRegulatingTerminalRatioTapChangerValidationSchema = () => ({
 const ratioTapChangerValidationSchema = (isModification, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
-        [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
+        [LOAD_TAP_CHANGING_CAPABILITIES]: yup
+            .bool()
+            .nullable()
+            .when({
+                is: !isModification,
+                then: (schema) => schema.required(),
+            }),
         [REGULATION_MODE]: yup
             .string()
             .nullable()
