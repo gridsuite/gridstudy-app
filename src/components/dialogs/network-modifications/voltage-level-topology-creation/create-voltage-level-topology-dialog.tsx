@@ -1,0 +1,144 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { ALIGNED_BUSES_OR_BUSBAR_COUNT, SECTION_COUNT } from 'components/utils/field-constants';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import yup from '../../../utils/yup-config';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
+import { CreateVoltageLevelTopologyDialogSchemaForm } from './create-voltage-level-topology-dialog.type';
+import CreateVoltageLevelTopologyForm from './create-voltage-level-topology-form';
+import { DeepNullable } from '../../../utils/ts-utils';
+import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
+import { ModificationDialog } from '../../commons/modificationDialog';
+import { FORM_LOADING_DELAY } from '../../../network/constants';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { createVoltageLevelTopology } from '../../../../services/study/network-modifications';
+import { CreateVoltageLevelTopologyInfos } from '../../../../services/network-modification-types';
+import { FetchStatus } from '../../../../services/utils';
+
+const emptyFormData = {
+    [SECTION_COUNT]: null,
+    [ALIGNED_BUSES_OR_BUSBAR_COUNT]: null,
+};
+const formSchema = yup.object().shape({
+    [SECTION_COUNT]: yup.number().nullable(),
+    [ALIGNED_BUSES_OR_BUSBAR_COUNT]: yup.number().nullable(),
+});
+export type CreateVoltageLevelTopologyDialogProps = EquipmentModificationDialogProps & {
+    editData?: CreateVoltageLevelTopologyInfos;
+};
+export default function CreateVoltageLevelTopologyDialog({
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
+    currentNode,
+    currentRootNetworkUuid,
+    studyUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}: Readonly<CreateVoltageLevelTopologyDialogProps>) {
+    const currentNodeUuid = currentNode?.id;
+    const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
+
+    const formMethods = useForm<DeepNullable<CreateVoltageLevelTopologyDialogSchemaForm>>({
+        defaultValues: emptyFormData,
+        resolver: yupResolver<DeepNullable<CreateVoltageLevelTopologyDialogSchemaForm>>(formSchema),
+    });
+
+    const { reset } = formMethods;
+
+    useEffect(() => {
+        if (editData) {
+            if (editData?.voltageLevelId) {
+                setSelectedId(editData.voltageLevelId);
+            }
+            reset({
+                [SECTION_COUNT]: editData?.sectionCount ?? '',
+                [ALIGNED_BUSES_OR_BUSBAR_COUNT]: editData?.alignedBusesOrBusbarCount ?? '',
+            });
+        }
+    }, [editData, reset]);
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
+
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
+    const onSubmit = useCallback(
+        (voltageLevelTopology: CreateVoltageLevelTopologyDialogSchemaForm) => {
+            const createVoltageLevelTopologyInfos = {
+                type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
+                voltageLevelId: selectedId,
+                sectionCount: voltageLevelTopology[SECTION_COUNT],
+                alignedBusesOrBusbarCount: voltageLevelTopology[ALIGNED_BUSES_OR_BUSBAR_COUNT],
+            } satisfies CreateVoltageLevelTopologyInfos;
+            createVoltageLevelTopology({
+                createVoltageLevelTopologyInfos: createVoltageLevelTopologyInfos,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                isUpdate: !!editData,
+            }).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'CreateVoltageLevelTopologyError',
+                });
+            });
+        },
+        [editData, studyUuid, currentNodeUuid, snackError, selectedId]
+    );
+
+    return (
+        <CustomFormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+            isNodeBuilt={isNodeBuilt(currentNode)}
+            isUpdate={isUpdate}
+        >
+            <ModificationDialog
+                fullWidth
+                onClear={clear}
+                onSave={onSubmit}
+                maxWidth={'md'}
+                open={open}
+                titleId={'CreateVoltageLevelTopology'}
+                keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                {...dialogProps}
+            >
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                        fillerHeight={4}
+                    />
+                )}
+                {selectedId != null && (
+                    <CreateVoltageLevelTopologyForm
+                        studyUuid={studyUuid}
+                        voltageLevelId={selectedId}
+                        currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
+                )}
+            </ModificationDialog>
+        </CustomFormProvider>
+    );
+}
