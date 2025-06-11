@@ -19,7 +19,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateTableDefinition } from 'redux/actions';
 import { UUID } from 'crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ColumnStateDto, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
 import { updateColumnStates } from 'services/study/study-config';
 import { AppState } from 'redux/reducer';
