@@ -99,24 +99,22 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         handleCloseColumnsSettingDialog();
     }, [tableDefinition?.columns, resetColumnState, handleCloseColumnsSettingDialog]);
 
-    const getUpdatedColumnsState = useCallback((): ColumnStateDto[] => {
-        return localColumns.map((col, index) => ({
-            columnId: col.uuid,
-            visible: Boolean(col.visible),
-            order: index,
-        }));
-    }, [localColumns]);
-
     const handleSaveSelectedColumnNames = useCallback(() => {
         // check if columns state has changed
         const hasColsStatesChanged = tableDefinition.columns.some(
             (col, index) => col.uuid !== localColumns[index].uuid || col.visible !== localColumns[index].visible
         );
 
-        const updatePromise =
-            hasColsStatesChanged && studyUuid
-                ? updateColumnStates(studyUuid, tableDefinition.uuid, getUpdatedColumnsState())
-                : Promise.resolve();
+        let updatePromise = Promise.resolve();
+
+        if (hasColsStatesChanged && studyUuid) {
+            const updatedColumnsState = localColumns.map((col, index) => ({
+                columnId: col.uuid,
+                visible: Boolean(col.visible),
+                order: index,
+            }));
+            updatePromise = updateColumnStates(studyUuid, tableDefinition.uuid, updatedColumnsState);
+        }
 
         updatePromise
             .then(() => {
@@ -144,7 +142,6 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         dispatch,
         resetColumnState,
         snackError,
-        getUpdatedColumnsState,
     ]);
 
     const handleToggle = (value: UUID) => () => {

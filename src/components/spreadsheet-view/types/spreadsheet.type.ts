@@ -42,7 +42,7 @@ export type ColumnDefinition = {
     precision?: number;
     formula: string;
     dependencies?: string[];
-    visible?: boolean;
+    visible: boolean;
     locked?: boolean;
 };
 

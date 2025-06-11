@@ -70,7 +70,7 @@ export const mapColumnsDto = (columns: ColumnDefinitionDto[]) => {
         type: column.type,
         precision: column?.precision,
         formula: column.formula,
-        visible: column?.visible ?? true,
+        visible: column.visible,
         [COLUMN_DEPENDENCIES]: column.dependencies?.length ? JSON.parse(column.dependencies) : undefined,
     }));
 };
