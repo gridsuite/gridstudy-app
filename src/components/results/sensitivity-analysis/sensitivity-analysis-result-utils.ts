@@ -48,11 +48,11 @@ export const DATA_KEY_TO_FILTER_KEY_N = {
 export const DATA_KEY_TO_FILTER_KEY_NK = {
     funcId: 'functionId',
     varId: 'variableId',
-    contingencyId: 'contingencyResult.contingencyId',
-    value: 'preContingencySensitivityResult.rawSensitivityResult.value',
-    functionReference: 'preContingencySensitivityResult.rawSensitivityResult.functionReference',
-    valueAfter: 'rawSensitivityResult.value',
-    functionReferenceAfter: 'rawSensitivityResult.functionReference',
+    contingencyId: 'contingencyResult.contingencyId', // contingencyId column in table contingencyResult
+    value: 'preContingencySensitivityResult.rawSensitivityResult.value', // value column in table rawSensitivityResult which has relation to table preContingencySensitivityResult in db
+    functionReference: 'preContingencySensitivityResult.rawSensitivityResult.functionReference', // functionReference column in table rawSensitivityResult which has relation to table preContingencySensitivityResult in db
+    valueAfter: 'rawSensitivityResult.value', // value column in table rawSensitivityResult in db
+    functionReferenceAfter: 'rawSensitivityResult.functionReference', // functionReference column in table rawSensitivityResult in db
 };
 export const DATA_KEY_TO_SORT_KEY = {
     funcId: 'FUNCTION',
