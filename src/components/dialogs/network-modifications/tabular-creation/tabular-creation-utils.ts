@@ -202,10 +202,21 @@ const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapa
     ];
 
     if (curvePoint2) {
+        const isLastPoint = !curvePoint3;
+
         result.push(
-            { key: REACTIVE_CAPABILITY_CURVE_P_0, value: curvePoint2.p },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, value: curvePoint2.maxQ },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, value: curvePoint2.minQ }
+            {
+                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_P_MAX : REACTIVE_CAPABILITY_CURVE_P_0,
+                value: curvePoint2.p,
+            },
+            {
+                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
+                value: curvePoint2.maxQ,
+            },
+            {
+                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
+                value: curvePoint2.minQ,
+            }
         );
     }
 
@@ -218,6 +229,35 @@ const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapa
     }
 
     return result;
+};
+
+export const convertReactiveCapabilityCurvePointsFromFrontToBack = (creation: Record<string, unknown>) => {
+    if (creation[REACTIVE_CAPABILITY_CURVE]) {
+        //Convert list data to matrix
+        const rccPoints = [];
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_MIN]) {
+            rccPoints.push({
+                p: creation[REACTIVE_CAPABILITY_CURVE_P_MIN],
+                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
+                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
+            });
+        }
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_0]) {
+            rccPoints.push({
+                p: creation[REACTIVE_CAPABILITY_CURVE_P_0],
+                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
+                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
+            });
+        }
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_MAX]) {
+            rccPoints.push({
+                p: creation[REACTIVE_CAPABILITY_CURVE_P_MAX],
+                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
+                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
+            });
+        }
+        creation[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
+    }
 };
 
 export const convertCreationFieldFromBackToFront = (

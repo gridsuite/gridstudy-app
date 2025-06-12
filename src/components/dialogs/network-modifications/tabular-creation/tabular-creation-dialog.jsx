@@ -34,7 +34,7 @@ import { FetchStatus } from 'services/utils';
 import TabularCreationForm from './tabular-creation-form';
 import {
     convertCreationFieldFromBackToFront,
-    convertCreationFieldFromFrontToBack,
+    convertCreationFieldFromFrontToBack, convertReactiveCapabilityCurvePointsFromFrontToBack,
     getEquipmentTypeFromCreationType,
     TABULAR_CREATION_TYPES,
 } from './tabular-creation-utils';
@@ -115,26 +115,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 });
                 // For now, we do not manage reactive limits by diagram
                 if (creationType === 'GENERATOR_CREATION' || creationType === 'BATTERY_CREATION') {
-                    if (creation[REACTIVE_CAPABILITY_CURVE]) {
-                        //Convert list data to matrix
-                        const rccPoints = [];
-                        rccPoints.push({
-                            p: creation[REACTIVE_CAPABILITY_CURVE_P_MIN],
-                            maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
-                            minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
-                        });
-                        rccPoints.push({
-                            p: creation[REACTIVE_CAPABILITY_CURVE_P_0],
-                            maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
-                            minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
-                        });
-                        rccPoints.push({
-                            p: creation[REACTIVE_CAPABILITY_CURVE_P_MAX],
-                            maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
-                            minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
-                        });
-                        creation[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
-                    }
+                    convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
                 }
                 return creation;
             });
