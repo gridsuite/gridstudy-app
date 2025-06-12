@@ -235,21 +235,21 @@ export const convertReactiveCapabilityCurvePointsFromFrontToBack = (creation: Re
     if (creation[REACTIVE_CAPABILITY_CURVE]) {
         //Convert list data to matrix
         const rccPoints = [];
-        if (creation[REACTIVE_CAPABILITY_CURVE_P_MIN]) {
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_MIN] !== null) {
             rccPoints.push({
                 p: creation[REACTIVE_CAPABILITY_CURVE_P_MIN],
                 maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
                 minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
             });
         }
-        if (creation[REACTIVE_CAPABILITY_CURVE_P_0]) {
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_0] !== null) {
             rccPoints.push({
                 p: creation[REACTIVE_CAPABILITY_CURVE_P_0],
                 maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
                 minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
             });
         }
-        if (creation[REACTIVE_CAPABILITY_CURVE_P_MAX]) {
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_MAX] !== null) {
             rccPoints.push({
                 p: creation[REACTIVE_CAPABILITY_CURVE_P_MAX],
                 maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
