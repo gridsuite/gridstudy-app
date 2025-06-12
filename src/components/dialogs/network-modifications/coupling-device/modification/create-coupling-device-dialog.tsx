@@ -30,11 +30,7 @@ const emptyFormData = {
     [BUS_BAR_SECTION_ID2]: null,
 };
 const formSchema = yup.object().shape({
-    [BUS_BAR_SECTION_ID1]: yup
-        .string()
-        .nullable()
-        .required()
-        .notOneOf([yup.ref(BUS_BAR_SECTION_ID2), null], 'CreateCouplingDeviceIdenticalBusBar'),
+    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
     [BUS_BAR_SECTION_ID2]: yup
         .string()
         .nullable()
@@ -65,7 +61,18 @@ export default function CreateCouplingDeviceDialog({
         resolver: yupResolver<DeepNullable<CreateCouplingDeviceDialogSchemaForm>>(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, watch, trigger, getValues } = formMethods;
+
+    // Watch BUS_BAR_SECTION_ID1 changed
+    useEffect(() => {
+        const subscription = watch((value, { name }) => {
+            // force trigger validation on BUS_BAR_SECTION_ID2 if it has a value
+            if (name === BUS_BAR_SECTION_ID1 && getValues(BUS_BAR_SECTION_ID2)) {
+                trigger(BUS_BAR_SECTION_ID2);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, trigger, getValues]);
 
     useEffect(() => {
         if (editData) {
@@ -126,12 +133,16 @@ export default function CreateCouplingDeviceDialog({
                     currentNodeUuid,
                     currentRootNetworkUuid,
                     equipmentId
-                ).then((busesOrbusbarSections) => {
-                    setBusOrBusbarSectionOptions(
-                        busesOrbusbarSections?.map((busesOrbusbarSection) => busesOrbusbarSection.id) || []
-                    );
-                    setDataFetchStatus(FetchStatus.SUCCEED);
-                });
+                )
+                    .then((busesOrbusbarSections) => {
+                        setBusOrBusbarSectionOptions(
+                            busesOrbusbarSections?.map((busesOrbusbarSection) => busesOrbusbarSection.id) || []
+                        );
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                    })
+                    .catch((error: Error) => {
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    });
             } else {
                 setBusOrBusbarSectionOptions([]);
             }
