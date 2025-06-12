@@ -799,8 +799,6 @@
     "SwitchesBetweenSections": "OCs entre sections",
     "Coupling_Omnibus": "Couplage / omnibus",
     "AddCoupling_Omnibus": "Ajouter couplage / omnibus",
-    "SectionID1": "ID section 1",
-    "SectionID2": "ID section 2",
     "SwitchBetweenSectionsLabel": "section_{index1} / section_{index2}",
     "BusBarHorizPos": "Position horizontale",
     "BusBarVertPos": "Position verticale",
@@ -1345,7 +1343,8 @@
     "qPercent": "Cœfficient de participation",
     "frequencyRegulation": "Compensation",
     "droop": "Participation",
-    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : ",
+    "FieldRequired": "Au moins une valeur est manquante pour le champ requis : \"{requiredFieldNameInError}\"",
+    "DependantFieldMissing": "Le champ \"{requiredField}\" est requis si le champ suivant est défini : \"{dependantField}\"",
     "TieLines": "Interconnexions",
     "StateEstimation": "Estimation d'état",
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
@@ -1476,9 +1475,10 @@
     "DiagramGridLayout": "Grille des diagrammes",
     "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
 
-    "CreateCouplingDevice": "Ajouter un couplage ou un omnibus",
+    "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
     "CreateCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
     "CreateCouplingDeviceDiagramButton": "Voir le poste",
+    "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre 1 et 2 doivent être différentes",
     "builtNodeTooltipForDiagram" : "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram" : "Diagramme du dernier nœud réalisé de la branche courante",
     "CouplingDeviceText" : "Sections de jeu de barre",
@@ -1498,5 +1498,6 @@
     "maxNumberIterations": "Nombre maximal d'itérations",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
-    "loadFlowModification": "Modification par calcul de répartition appliquée"
+    "loadFlowModification": "Modification par calcul de répartition appliquée",
+    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}"
 }

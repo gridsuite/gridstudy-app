@@ -67,7 +67,7 @@ import {
     VoltageInitParametersInLine,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
-import {useGetVoltageInitParameters} from "./dialogs/parameters/use-get-voltage-init-parameters";
+import { useGetVoltageInitParameters } from "./dialogs/parameters/use-get-voltage-init-parameters";
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',

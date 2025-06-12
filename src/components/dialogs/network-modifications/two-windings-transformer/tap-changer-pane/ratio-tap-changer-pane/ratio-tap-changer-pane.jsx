@@ -75,10 +75,8 @@ const RatioTapChangerPane = ({
         name: `${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`,
     });
 
-    const isRatioTapLoadTapChangingCapabilitiesOn =
-        ratioTapLoadTapChangingCapabilitiesWatcher ||
-        (ratioTapLoadTapChangingCapabilitiesWatcher === null &&
-            previousValues?.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES] === true);
+    const isRatioTapLoadTapChangingCapabilitiesOff =
+        !ratioTapLoadTapChangingCapabilitiesWatcher || ratioTapLoadTapChangingCapabilitiesWatcher === null;
 
     const regulationModeWatch = useWatch({
         name: `${id}.${REGULATION_MODE}`,
@@ -126,7 +124,7 @@ const RatioTapChangerPane = ({
             label={'RegulationMode'}
             options={Object.values(RATIO_REGULATION_MODES)}
             size="small"
-            disabled={!isRatioTapLoadTapChangingCapabilitiesOn}
+            disabled={isRatioTapLoadTapChangingCapabilitiesOff}
             previousValue={getRatioTapChangerRegulationModeLabel(previousValues?.ratioTapChanger)}
         />
     );
@@ -137,7 +135,7 @@ const RatioTapChangerPane = ({
             label="TargetVoltage"
             adornment={VoltageAdornment}
             formProps={{
-                disabled: !isRatioTapLoadTapChangingCapabilitiesOn,
+                disabled: isRatioTapLoadTapChangingCapabilitiesOff,
             }}
             previousValue={previousValues?.ratioTapChanger?.targetV}
         />
@@ -149,7 +147,7 @@ const RatioTapChangerPane = ({
             label="Deadband"
             adornment={VoltageAdornment}
             formProps={{
-                disabled: !isRatioTapLoadTapChangingCapabilitiesOn,
+                disabled: isRatioTapLoadTapChangingCapabilitiesOff,
             }}
             previousValue={previousValues?.ratioTapChanger?.targetDeadband}
         />
@@ -157,8 +155,10 @@ const RatioTapChangerPane = ({
 
     return (
         <>
-            <GridItem size={4}>{ratioTapLoadTapChangingCapabilitiesField}</GridItem>
-
+            <Grid container spacing={2}>
+                <GridItem size={2}>{ratioTapLoadTapChangingCapabilitiesField}</GridItem>
+                <GridItem size={'auto'}></GridItem>
+            </Grid>
             <GridSection title="RegulationSection" heading={4} />
             <Grid item container spacing={1}>
                 <GridItem size={4}>{regulationModeField}</GridItem>
@@ -172,7 +172,7 @@ const RatioTapChangerPane = ({
                 currentRootNetworkUuid={currentRootNetworkUuid}
                 voltageLevelOptions={voltageLevelOptions}
                 previousValues={previousValues}
-                tapChangerEnabled={isRatioTapLoadTapChangingCapabilitiesOn}
+                tapChangerDisabled={isRatioTapLoadTapChangingCapabilitiesOff}
                 regulationType={regulationType}
             />
 

@@ -50,6 +50,7 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     diagramUuid: v4() as UUID,
                     type: DiagramType.NAD_FROM_CONFIG,
                     nadFromConfigUuid: diagramEvent.nadFromConfigUuid,
+                    nadName: diagramEvent.nadName,
                 });
             }
         },

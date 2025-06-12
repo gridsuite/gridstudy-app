@@ -806,8 +806,6 @@
     "SwitchesBetweenSections": "Switches between sections",
     "Coupling_Omnibus": "Coupler",
     "AddCoupling_Omnibus": "Add Coupler",
-    "SectionID1": "Section ID 1",
-    "SectionID2": "Section ID 2",
     "SwitchBetweenSectionsLabel": "section_{index1} / section_{index2}",
     "BusBarHorizPos": "Horizontal position",
     "BusBarVertPos": "Vertical position",
@@ -1349,7 +1347,8 @@
     "qPercent": "Reactive percentage",
     "frequencyRegulation": "Active power regulation",
     "droop": "Droop",
-    "FieldRequired": "At least one value is missing for required field : ",
+    "FieldRequired": "At least one value is missing for required field : \"{requiredFieldNameInError}\"",
+    "DependantFieldMissing": "\"{requiredField}\" is required if the following field is set : \"{dependantField}\"",
     "TieLines": "Tie lines",
     "StateEstimation": "State estimation",
     "startStateEstmationError": "An error occurred while launching the state estimation",
@@ -1481,9 +1480,10 @@
     "DiagramGridLayout": "Diagram grid layout",
     "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
 
-    "CreateCouplingDevice": "Add a coupling device",
+    "CREATE_COUPLING_DEVICE": "Add a coupling device",
     "CreateCouplingDeviceEditor": "Add a coupling device",
     "CreateCouplingDeviceDiagramButton": "Show voltage level",
+    "CreateCouplingDeviceIdenticalBusBar": "Busbar section 1 and 2 must be different",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
     "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch",
     "CouplingDeviceText" : "Bus bar sections",
@@ -1503,5 +1503,6 @@
     "maxNumberIterations": "Maximum number of iterations",
     "thresholdNetPosition": "Net position mismatch threshold",
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
-    "loadFlowModification": "Loadflow modification applied"
+    "loadFlowModification": "Loadflow modification applied",
+    "diagramLoadingFail": "An error occurred while loading {diagramName}"
 }
