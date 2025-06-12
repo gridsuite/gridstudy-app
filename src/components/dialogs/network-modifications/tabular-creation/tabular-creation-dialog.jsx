@@ -34,7 +34,8 @@ import { FetchStatus } from 'services/utils';
 import TabularCreationForm from './tabular-creation-form';
 import {
     convertCreationFieldFromBackToFront,
-    convertCreationFieldFromFrontToBack, convertReactiveCapabilityCurvePointsFromFrontToBack,
+    convertCreationFieldFromFrontToBack,
+    convertReactiveCapabilityCurvePointsFromFrontToBack,
     getEquipmentTypeFromCreationType,
     TABULAR_CREATION_TYPES,
 } from './tabular-creation-utils';
