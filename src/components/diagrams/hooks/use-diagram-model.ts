@@ -316,8 +316,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                             errorMessage =
                                 diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
                         } else {
+                            errorMessage = 'svgLoadingFail';
                             snackError({
-                                headerId: 'svgLoadingFail',
+                                headerId: errorMessage,
                             });
                         }
                         setDiagramErrors((diagramErrors) => {
