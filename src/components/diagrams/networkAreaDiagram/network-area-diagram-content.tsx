@@ -24,7 +24,6 @@ import {
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
@@ -33,7 +32,7 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';

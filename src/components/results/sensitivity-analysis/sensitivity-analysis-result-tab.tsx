@@ -11,7 +11,7 @@ import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { FUNCTION_TYPES, isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';

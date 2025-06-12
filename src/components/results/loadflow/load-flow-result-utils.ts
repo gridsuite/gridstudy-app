@@ -20,7 +20,7 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType, { ComputingType } from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
@@ -164,7 +164,7 @@ export const useFetchFiltersEnums = (): {
                 studyUuid,
                 currentNode.id,
                 currentRootNetworkUuid,
-                computingType.LOAD_FLOW,
+                ComputingType.LOAD_FLOW,
                 filterType
             )
         );

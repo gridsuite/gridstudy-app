@@ -8,7 +8,7 @@
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
-import { ComputingType } from './computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';

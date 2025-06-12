@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import ComputingType from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';

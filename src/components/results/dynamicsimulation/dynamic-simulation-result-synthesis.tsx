@@ -11,7 +11,7 @@ import { memo, useMemo } from 'react';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
 import { MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
-import ComputingType from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';

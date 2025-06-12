@@ -27,7 +27,7 @@ import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import ComputingType from './computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 
 const styles = {
     container: {

@@ -19,7 +19,7 @@ import {
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
-import { ComputingType } from './computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
@@ -28,7 +28,7 @@ import {
     fetchShortCircuitAnalysisStatus,
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
-import { fetchLoadFlowStatus } from '../../services/study/loadflow';
+import { fetchLoadFlowStatus, fetchLoadFlowStatusInfos } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
@@ -93,7 +93,9 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
-        ComputingType.LOAD_FLOW
+        ComputingType.LOAD_FLOW,
+        undefined,
+        fetchLoadFlowStatusInfos
     );
 
     useComputingStatus(

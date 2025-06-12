@@ -38,7 +38,7 @@ import LineModificationDialog from 'components/dialogs/network-modifications/lin
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';

@@ -221,6 +221,9 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
+    SET_COMPUTING_STATUS_INFOS,
+    SetComputingStatusInfosAction,
+    ComputingTypeWithAdditionalInfos,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -242,7 +245,7 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
@@ -469,6 +472,15 @@ export interface ComputingStatus {
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
+export interface CommonStatusInfos {}
+export interface LoadFlowStatusInfos extends CommonStatusInfos {
+    withRatioTapChangers: boolean;
+}
+
+export interface ComputingStatusInfos {
+    [ComputingType.LOAD_FLOW]: LoadFlowStatusInfos | null;
+}
+
 export type TableSortConfig = Record<string, SortConfig[]>;
 export type TableSort = {
     [SPREADSHEET_SORT_STORE]: TableSortConfig;
@@ -592,6 +604,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     currentRootNetworkUuid: UUID | null;
     rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
+    computingStatusInfos: ComputingStatusInfos;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
@@ -784,6 +797,9 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+    },
+    computingStatusInfos: {
+        [ComputingType.LOAD_FLOW]: null,
     },
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
@@ -1883,6 +1899,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     });
+
+    builder.addCase(
+        SET_COMPUTING_STATUS_INFOS,
+        (state, action: SetComputingStatusInfosAction<ComputingTypeWithAdditionalInfos>) => {
+            state.computingStatusInfos[action.computingType] = action.computingStatusInfos;
+        }
+    );
 
     builder.addCase(SET_COMPUTATION_STARTING, (state, action: SetComputationStartingAction) => {
         state.computationStarting = action.computationStarting;

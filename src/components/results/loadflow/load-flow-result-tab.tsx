@@ -15,7 +15,7 @@ import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
-import ComputingType from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
