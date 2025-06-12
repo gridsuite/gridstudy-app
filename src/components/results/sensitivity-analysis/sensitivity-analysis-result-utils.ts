@@ -39,10 +39,20 @@ export const SUFFIX_TYPES = {
 
 export const PAGE_OPTIONS = [10, 25, 100, { label: 'All', value: -1 }];
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
-export const DATA_KEY_TO_FILTER_KEY = {
-    funcId: 'functionIds',
-    varId: 'variableIds',
-    contingencyId: 'contingencyIds',
+export const DATA_KEY_TO_FILTER_KEY_N = {
+    funcId: 'functionId',
+    varId: 'variableId',
+    value: 'rawSensitivityResult.value', // value column in table rawSensitivityResult in db
+    functionReference: 'rawSensitivityResult.functionReference', // functionReference column in table rawSensitivityResult in db
+};
+export const DATA_KEY_TO_FILTER_KEY_NK = {
+    funcId: 'functionId',
+    varId: 'variableId',
+    contingencyId: 'contingencyResult.contingencyId', // contingencyId column in table contingencyResult
+    value: 'preContingencySensitivityResult.rawSensitivityResult.value', // value column in table rawSensitivityResult which has relation to table preContingencySensitivityResult in db
+    functionReference: 'preContingencySensitivityResult.rawSensitivityResult.functionReference', // functionReference column in table rawSensitivityResult which has relation to table preContingencySensitivityResult in db
+    valueAfter: 'rawSensitivityResult.value', // value column in table rawSensitivityResult in db
+    functionReferenceAfter: 'rawSensitivityResult.functionReference', // functionReference column in table rawSensitivityResult in db
 };
 export const DATA_KEY_TO_SORT_KEY = {
     funcId: 'FUNCTION',
