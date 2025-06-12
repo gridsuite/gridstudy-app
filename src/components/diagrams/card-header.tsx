@@ -10,7 +10,6 @@ import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Theme } from '@mui/material';
-import { UUID } from 'crypto';
 
 export const BLINK_LENGTH_MS = 1800;
 
@@ -38,17 +37,16 @@ const styles = {
     }),
 };
 
-interface DiagramHeader2Props {
-    diagramTitle?: string;
+interface CardHeaderProps {
+    title?: string;
     onClose?: () => void;
-    diagramUuid?: UUID;
     blinking?: boolean;
 }
 
-const DiagramHeader2: React.FC<DiagramHeader2Props> = ({ diagramTitle, onClose, diagramUuid, blinking }) => {
+const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => {
     return (
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
-            <OverflowableText className="react-grid-dragHandle" sx={{ flexGrow: '1' }} text={diagramTitle} />
+            <OverflowableText className="react-grid-dragHandle" sx={{ flexGrow: '1' }} text={title} />
             <Box>
                 <Box
                     sx={{
@@ -65,4 +63,4 @@ const DiagramHeader2: React.FC<DiagramHeader2Props> = ({ diagramTitle, onClose, 
     );
 };
 
-export default DiagramHeader2;
+export default CardHeader;

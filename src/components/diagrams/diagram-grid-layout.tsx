@@ -20,7 +20,7 @@ import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
-import DiagramHeader2, { BLINK_LENGTH_MS } from './diagram-header2';
+import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
@@ -175,7 +175,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         }
         return (
             <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column' }}>
-                <DiagramHeader2 diagramTitle={'Add a new diagram'} />
+                <CardHeader title={'Add a new diagram'} />
                 <Box
                     sx={{
                         display: 'flex',
@@ -234,9 +234,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             }
             return (
                 <Box key={diagram.diagramUuid} sx={styles.window}>
-                    <DiagramHeader2
-                        diagramUuid={diagram.diagramUuid}
-                        diagramTitle={diagram.name}
+                    <CardHeader
+                        title={diagram.name}
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
                         onClose={() => onRemoveItem(diagram.diagramUuid)}
                     />
