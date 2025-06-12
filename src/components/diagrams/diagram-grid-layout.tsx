@@ -23,6 +23,7 @@ import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-l
 import { v4 } from 'uuid';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
+import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -102,10 +103,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, loadingDiagrams, removeDiagram, createDiagram, updateDiagram } = useDiagramModel({
-        diagramTypes: diagramTypes,
-        onAddDiagram,
-    });
+    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
+        useDiagramModel({
+            diagramTypes: diagramTypes,
+            onAddDiagram,
+        });
 
     const onRemoveItem = useCallback(
         (diagramUuid: UUID) => {
@@ -228,65 +230,73 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                             <CloseIcon fontSize="small" />
                         </IconButton>
                     </Box>
-                    <Box sx={styles.diagramContainer}>
-                        {(diagram.type === DiagramType.VOLTAGE_LEVEL || diagram.type === DiagramType.SUBSTATION) && (
-                            <SingleLineDiagramContent
-                                showInSpreadsheet={showInSpreadsheet}
-                                studyUuid={studyUuid}
-                                diagramId={diagram.diagramUuid}
-                                svg={diagram.svg?.svg ?? undefined}
-                                svgType={diagram.type}
-                                svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
-                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
-                                diagramSizeSetter={setDiagramSize}
-                                visible={visible}
-                            />
-                        )}
-                        {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                            diagram.type === DiagramType.NAD_FROM_CONFIG) && (
-                            <NetworkAreaDiagramContent
-                                diagramId={diagram.diagramUuid}
-                                svg={diagram.svg?.svg ?? undefined}
-                                svgType={diagram.type}
-                                svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
-                                svgScalingFactor={
-                                    (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.scalingFactor ??
-                                    undefined
-                                }
-                                svgVoltageLevels={
-                                    (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels
-                                        .map((vl) => vl.id)
-                                        .filter((vlId) => vlId !== undefined) as string[]
-                                }
-                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
-                                diagramSizeSetter={setDiagramSize}
-                                visible={visible}
-                                isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
-                                onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                            />
-                        )}
-                        {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
-                            <DiagramFooter
-                                showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
-                                counterText={intl.formatMessage({
-                                    id: 'depth',
-                                })}
-                                counterValue={diagram.depth}
-                                onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
-                                onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
-                                incrementCounterDisabled={
-                                    diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
-                                }
-                                decrementCounterDisabled={diagram.depth === 0} // loadingState ||
-                            />
-                        )}
-                    </Box>
+
+                    {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
+                        <AlertCustomMessageNode message={globalError || diagramErrors[diagram.diagramUuid]} noMargin />
+                    ) : (
+                        <Box sx={styles.diagramContainer}>
+                            {(diagram.type === DiagramType.VOLTAGE_LEVEL ||
+                                diagram.type === DiagramType.SUBSTATION) && (
+                                <SingleLineDiagramContent
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    studyUuid={studyUuid}
+                                    diagramId={diagram.diagramUuid}
+                                    svg={diagram.svg?.svg ?? undefined}
+                                    svgType={diagram.type}
+                                    svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
+                                    loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
+                                    diagramSizeSetter={setDiagramSize}
+                                    visible={visible}
+                                />
+                            )}
+                            {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
+                                diagram.type === DiagramType.NAD_FROM_CONFIG) && (
+                                <NetworkAreaDiagramContent
+                                    diagramId={diagram.diagramUuid}
+                                    svg={diagram.svg?.svg ?? undefined}
+                                    svgType={diagram.type}
+                                    svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
+                                    svgScalingFactor={
+                                        (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.scalingFactor ??
+                                        undefined
+                                    }
+                                    svgVoltageLevels={
+                                        (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels
+                                            .map((vl) => vl.id)
+                                            .filter((vlId) => vlId !== undefined) as string[]
+                                    }
+                                    loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
+                                    diagramSizeSetter={setDiagramSize}
+                                    visible={visible}
+                                    isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
+                                    onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
+                                />
+                            )}
+                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
+                                <DiagramFooter
+                                    showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
+                                    counterText={intl.formatMessage({
+                                        id: 'depth',
+                                    })}
+                                    counterValue={diagram.depth}
+                                    onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
+                                    onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
+                                    incrementCounterDisabled={
+                                        diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
+                                    }
+                                    decrementCounterDisabled={diagram.depth === 0} // loadingState ||
+                                />
+                            )}
+                        </Box>
+                    )}
                 </Box>
             );
         });
     }, [
+        diagramErrors,
         diagrams,
         diagramsInEditMode,
+        globalError,
         handleToggleEditMode,
         intl,
         loadingDiagrams,
