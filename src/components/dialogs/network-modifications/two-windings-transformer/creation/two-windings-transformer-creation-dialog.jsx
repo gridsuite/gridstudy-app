@@ -136,7 +136,7 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getTwoWindingsTransformerValidationSchema(),
         ...getLimitsValidationSchema(false),
         ...getRatioTapChangerValidationSchema(),

@@ -1566,5 +1566,6 @@
     "maxNumberIterations": "Nombre maximal d'itérations",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
-    "loadFlowModification": "Modification par calcul de répartition appliquée"
+    "loadFlowModification": "Modification par calcul de répartition appliquée",
+    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}"
 }
