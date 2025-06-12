@@ -146,6 +146,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         },
         [createDiagram]
     );
+
+    const handleLoadNadFromConfig = useCallback(
+        (nadFromConfigUuid: UUID, nadName: string) => {
+            const diagram: DiagramParams = {
+                diagramUuid: v4() as UUID,
+                type: DiagramType.NAD_FROM_CONFIG,
+                nadFromConfigUuid,
+                nadName: nadName,
+            };
+            createDiagram(diagram);
+        },
+        [createDiagram]
+    );
+
     const renderDiagramAdder = useCallback(() => {
         if (Object.values(diagrams).length > 0) {
             return;
@@ -273,6 +287,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
+                                    onLoadNadFromConfig={handleLoadNadFromConfig}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -300,6 +315,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         diagrams,
         diagramsInEditMode,
         globalError,
+        handleLoadNadFromConfig,
         handleToggleEditMode,
         intl,
         loadingDiagrams,
