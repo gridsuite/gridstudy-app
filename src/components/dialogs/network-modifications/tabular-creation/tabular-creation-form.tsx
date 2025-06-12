@@ -15,7 +15,8 @@ import {
     CREATIONS_TABLE,
     TYPE,
     VOLTAGE_REGULATION_ON,
-    FREQUENCY_REGULATION, REACTIVE_CAPABILITY_CURVE,
+    FREQUENCY_REGULATION,
+    REACTIVE_CAPABILITY_CURVE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
@@ -186,7 +187,12 @@ const TabularCreationForm = () => {
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            if (field.id === VOLTAGE_REGULATION_ON || field.id === CONNECTED || field.id === FREQUENCY_REGULATION || field.id === REACTIVE_CAPABILITY_CURVE) {
+            if (
+                field.id === VOLTAGE_REGULATION_ON ||
+                field.id === CONNECTED ||
+                field.id === FREQUENCY_REGULATION ||
+                field.id === REACTIVE_CAPABILITY_CURVE
+            ) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
