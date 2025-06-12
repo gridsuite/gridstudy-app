@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { DataType, FieldType } from '@gridsuite/commons-ui';
 
 // TODO this file is duplicated from the gridexplore-app => to be merged when merging two projects
 export enum OperatorType {
@@ -20,35 +21,12 @@ export enum OperatorType {
     EXISTS = 'EXISTS',
     IN = 'IN',
     NOT_IN = 'NOT_IN',
+    IS_PART_OF = 'IS_PART_OF',
 }
 
 export enum CombinatorType {
     AND = 'AND',
     OR = 'OR',
-}
-
-export enum FieldType {
-    ID = 'ID',
-    NAME = 'NAME',
-    NOMINAL_VOLTAGE = 'NOMINAL_VOLTAGE',
-    MIN_P = 'MIN_P',
-    MAX_P = 'MAX_P',
-    TARGET_V = 'TARGET_V',
-    TARGET_P = 'TARGET_P',
-    TARGET_Q = 'TARGET_Q',
-    ENERGY_SOURCE = 'ENERGY_SOURCE',
-    COUNTRY = 'COUNTRY',
-    VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
-    PLANNED_ACTIVE_POWER_SET_POINT = 'PLANNED_ACTIVE_POWER_SET_POINT',
-    VOLTAGE_LEVEL_ID = 'VOLTAGE_LEVEL_ID',
-}
-
-export enum DataType {
-    STRING = 'STRING',
-    ENUM = 'ENUM',
-    NUMBER = 'NUMBER',
-    BOOLEAN = 'BOOLEAN',
-    COMBINATOR = 'COMBINATOR',
 }
 
 export interface RuleTypeExport {

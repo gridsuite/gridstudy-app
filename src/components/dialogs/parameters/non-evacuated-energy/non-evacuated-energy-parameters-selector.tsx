@@ -14,16 +14,17 @@ import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as nonEvacuatedEnergyParam from './columns-definitions';
 import {
+    NonEvacuatedEnergyContingencies,
     NonEvacuatedEnergyGenerationStages,
-    NonEvacuatedEnergyStagesSelection,
     NonEvacuatedEnergyGeneratorsCappings,
     NonEvacuatedEnergyMonitoredBranches,
-    NonEvacuatedEnergyContingencies,
+    NonEvacuatedEnergyStagesSelection,
     TAB_VALUES,
 } from './columns-definitions';
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
 import { IColumnsDef } from '../sensi/columns-definitions';
+import { parametersStyles } from '@gridsuite/commons-ui';
 
 interface NonEvacuatedEnergyParametersSelectorProps {
     onFormChanged: (hasFormChanged: boolean) => void;
@@ -98,7 +99,8 @@ const NonEvacuatedEnergyParametersSelector: FunctionComponent<NonEvacuatedEnergy
                         />
                     ))}
                 </Tabs>
-
+            </Grid>
+            <Grid container xs sx={parametersStyles.scrollableGrid}>
                 {tabInfo.map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
                         {tabValue === TAB_VALUES.GenerationStages && (

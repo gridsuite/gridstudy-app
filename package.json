@@ -1,6 +1,6 @@
 {
     "name": "gridstudy-app",
-    "version": "2.18.0-SNAPSHOT",
+    "version": "2.19.0-SNAPSHOT",
     "license": "MPL-2.0",
     "private": true,
     "type": "module",
@@ -11,7 +11,7 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "0.101.0",
+        "@gridsuite/commons-ui": "0.107.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
@@ -36,7 +36,7 @@
         "react": "^18.3.1",
         "react-csv-downloader": "^3.3.0",
         "react-dom": "^18.3.1",
-        "react-grid-layout": "^1.5.0",
+        "react-grid-layout": "^1.5.1",
         "react-hook-form": "^7.54.2",
         "react-intl": "^7.1.6",
         "react-papaparse": "^4.4.0",

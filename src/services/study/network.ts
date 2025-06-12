@@ -17,7 +17,7 @@ interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    voltageLevelId?: UUID;
+    voltageLevelId: string;
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
@@ -30,7 +30,7 @@ interface SubstationSingleLineDiagram {
     studyUuid: UUID;
     currentNodeUuid: UUID;
     currentRootNetworkUuid: UUID;
-    substationId: UUID;
+    substationId: string;
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
@@ -105,7 +105,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    voltageLevelId: UUID
+    voltageLevelId: string
 ): Promise<Identifiable[]> {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`

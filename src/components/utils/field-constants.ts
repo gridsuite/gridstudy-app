@@ -93,6 +93,19 @@ export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
+
+/* Tabylar creations reactive capability curve table values for csv */
+export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
+export const REACTIVE_CAPABILITY_CURVE_P_MIN = 'reactiveCapabilityCurvePmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN = 'reactiveCapabilityCurveQminPmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN = 'reactiveCapabilityCurveQmaxPmin';
+export const REACTIVE_CAPABILITY_CURVE_P_0 = 'reactiveCapabilityCurveP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0 = 'reactiveCapabilityCurveQminP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0 = 'reactiveCapabilityCurveQmaxP0';
+export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
+
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const MIN_Q = 'minQ';
@@ -340,14 +353,6 @@ export const HVDC_LINE_TAB = 'hvdcLineTab';
 export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
 
-export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
-export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParameters';
-export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
-export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS = 'withVSCConverterStations';
-export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
-export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
-export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE = 'initialVoltageProfileMode';
-
 // By formula
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
 export const FORMULAS = 'formulas';
@@ -400,7 +405,7 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
-export const SPREADSHEET_GS_FILTER = 'SpreadsheetGsFilter';
+export const SPREADSHEET_GS_FILTER = 'SpreadsheetGlobalFilter';
 
 /* State estimation parameters fields */
 /* General */
@@ -467,3 +472,17 @@ export const SWITCH_ID = 'switchId';
 export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
 export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
 export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';
+
+// BALANCES ADJUSTMENT
+export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
+export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
+export const BALANCES_ADJUSTMENT_ZONE = 'balancesAdjustmentZone';
+export const BALANCES_ADJUSTMENT_COUNTRIES = 'balancesAdjustmentCountries';
+export const BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE = 'balancesAdjustmentShiftEquipmentType';
+export const BALANCES_ADJUSTMENT_SHIFT_TYPE = 'balancesAdjustmentShfttType';
+export const BALANCES_ADJUSTMENT_TARGET = 'balancesAdjustmentTarget';
+export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
+export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
+export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
+export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
+export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';

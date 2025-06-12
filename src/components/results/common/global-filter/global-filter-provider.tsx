@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { UUID } from 'crypto';
@@ -20,7 +20,17 @@ import { HttpStatusCode } from '../../../../utils/http-status-code';
 export default function GlobalFilterProvider({
     children,
     onChange: handleChange,
-}: PropsWithChildren & { onChange: (globalFilters: GlobalFilter[]) => void }) {
+    preloadedGlobalFilters,
+    filterCategories,
+    genericFiltersStrictMode = false,
+    equipmentTypes = undefined,
+}: PropsWithChildren & {
+    onChange: (globalFilters: GlobalFilter[]) => void;
+    filterCategories: string[];
+    preloadedGlobalFilters?: GlobalFilter[];
+    genericFiltersStrictMode: boolean;
+    equipmentTypes: string[] | undefined;
+}) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
 
@@ -28,12 +38,22 @@ export default function GlobalFilterProvider({
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
-    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>([]);
+    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters ?? []);
+
+    useEffect(() => {
+        //If preloadedGlobalFilters is set it keeps the global filter state in sync
+        if (preloadedGlobalFilters !== undefined) {
+            setSelectedGlobalFilters(preloadedGlobalFilters);
+        }
+    }, [preloadedGlobalFilters]);
 
     const checkSelectedFiltersPromise = useCallback(
         async (selectedFilters: GlobalFilter[]) => {
+            const mutableFilters: GlobalFilter[] = selectedFilters.map((filter) => ({ ...filter }));
+
             const notFoundGenericFilterUuids: UUID[] = [];
-            const genericFiltersUuids: UUID[] = selectedFilters
+            const genericFiltersUuids: UUID[] = mutableFilters
+                .filter((globalFilter) => globalFilter.filterType === FilterType.GENERIC_FILTER)
                 .map((globalFilter) => globalFilter.uuid)
                 .filter((globalFilterUUID) => globalFilterUUID !== undefined);
 
@@ -43,7 +63,7 @@ export default function GlobalFilterProvider({
                     const response: ElementAttributes[] = await fetchDirectoryElementPath(genericFilterUuid);
                     const parentDirectoriesNames = response.map((parent) => parent.elementName);
                     const path = computeFullPath(parentDirectoriesNames);
-                    const fetchedFilter: GlobalFilter | undefined = selectedFilters.find(
+                    const fetchedFilter: GlobalFilter | undefined = mutableFilters.find(
                         (globalFilter) => globalFilter.uuid === genericFilterUuid
                     );
                     if (fetchedFilter && !fetchedFilter.path) {
@@ -56,7 +76,7 @@ export default function GlobalFilterProvider({
                         dispatch(removeFromRecentGlobalFilters(genericFilterUuid));
                         notFoundGenericFilterUuids.push(genericFilterUuid);
                         snackError({
-                            messageTxt: selectedFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
+                            messageTxt: mutableFilters.find((filter) => filter.uuid === genericFilterUuid)?.path,
                             headerId: 'ComputationFilterResultsError',
                         });
                     } else {
@@ -70,7 +90,7 @@ export default function GlobalFilterProvider({
             }
 
             // Updates the "recent" filters unless they have not been found
-            const validSelectedFilters: GlobalFilter[] = selectedFilters.filter(
+            const validSelectedFilters: GlobalFilter[] = mutableFilters.filter(
                 (filter) => !filter.uuid || !notFoundGenericFilterUuids.includes(filter.uuid)
             );
             dispatch(addToRecentGlobalFilters(validSelectedFilters));
@@ -103,8 +123,20 @@ export default function GlobalFilterProvider({
             selectedGlobalFilters,
             setSelectedGlobalFilters,
             onChange,
+            filterCategories,
+            genericFiltersStrictMode,
+            equipmentTypes,
         }),
-        [openedDropdown, directoryItemSelectorOpen, filterGroupSelected, selectedGlobalFilters, onChange]
+        [
+            openedDropdown,
+            directoryItemSelectorOpen,
+            filterGroupSelected,
+            selectedGlobalFilters,
+            onChange,
+            filterCategories,
+            genericFiltersStrictMode,
+            equipmentTypes,
+        ]
     );
 
     return <GlobalFilterContext.Provider value={value}>{children}</GlobalFilterContext.Provider>;

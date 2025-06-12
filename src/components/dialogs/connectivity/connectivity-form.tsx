@@ -373,7 +373,7 @@ export function ConnectivityForm({
                 studyUuid={studyUuid}
                 open={isDiagramPaneOpen}
                 onClose={handleCloseDiagramPane}
-                voltageLevelId={{ id: watchVoltageLevelId }}
+                voltageLevelId={watchVoltageLevelId}
                 currentNodeUuid={currentNodeUuid}
                 currentRootNetworkUuid={currentRootNetworkUuid}
             />

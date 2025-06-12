@@ -10,11 +10,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { ReactFlowProvider } from '@xyflow/react';
-import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import NetworkMapTab from './network/network-map-tab';
 import { DiagramPane } from './diagrams/diagram-pane';
-import { darken } from '@mui/material/styles';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -28,6 +26,9 @@ import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlin
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
+import DiagramGridLayout from './diagrams/diagram-grid-layout';
+import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 const styles = {
     map: {
@@ -36,11 +37,6 @@ const styles = {
         flexDirection: 'row',
         height: '100%',
     },
-    horizontalToolbar: (theme) => ({
-        backgroundColor: darken(theme.palette.background.paper, 0.2),
-        display: 'flex',
-        flexDirection: 'row',
-    }),
     table: {
         display: 'flex',
         flexDirection: 'column',
@@ -148,6 +144,7 @@ const MapViewer = ({
 
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const enableDeveloperMode = useParameterState(PARAM_DEVELOPER_MODE);
     const previousStudyDisplayMode = useRef(undefined);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
@@ -245,9 +242,6 @@ const MapViewer = ({
 
     return (
         <Box sx={styles.table}>
-            <Box sx={styles.horizontalToolbar}>
-                <HorizontalToolbar />
-            </Box>
             <Box sx={styles.mapAndTreeContainer}>
                 {/* Waiting for map geodata is unnecessary. The map has is proper loader implementation */}
                 {/* This WaitingLoader is placed here to block functionnalities, hiding under components with some opacity*/}
@@ -256,11 +250,17 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === StudyDisplayMode.TREE || studyDisplayMode === StudyDisplayMode.HYBRID
+                            studyDisplayMode === StudyDisplayMode.TREE ||
+                            studyDisplayMode === StudyDisplayMode.HYBRID ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
+                        flexBasis:
+                            studyDisplayMode === StudyDisplayMode.HYBRID ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                                ? '50%'
+                                : '100%',
                     }}
                 >
                     <ReactFlowProvider>
@@ -271,10 +271,37 @@ const MapViewer = ({
                         />
                     </ReactFlowProvider>
                 </Box>
+                {/* Diagram Grid Layout */}
+                <Box
+                    sx={{
+                        display:
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                                ? 'flex'
+                                : 'none',
+                        height: '100%',
+                        flexDirection: 'column',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE ? '50%' : '100%',
+                    }}
+                >
+                    {enableDeveloperMode && (
+                        <DiagramGridLayout
+                            studyUuid={studyUuid}
+                            visible={
+                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                            }
+                            showInSpreadsheet={showInSpreadsheet}
+                        />
+                    )}
+                </Box>
                 {/* Map */}
                 <Box
                     sx={{
-                        display: studyDisplayMode !== StudyDisplayMode.TREE ? 'flex' : 'none',
+                        display:
+                            studyDisplayMode === StudyDisplayMode.MAP || studyDisplayMode === StudyDisplayMode.HYBRID
+                                ? 'flex'
+                                : 'none',
                         flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
                         height: '100%',
                     }}

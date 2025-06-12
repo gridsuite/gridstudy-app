@@ -22,7 +22,6 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { DeepPartialSkipArrayKey, FieldValues } from 'react-hook-form';
 
 export default function RegulatedTerminalSection({
     id,
@@ -31,7 +30,7 @@ export default function RegulatedTerminalSection({
     currentRootNetworkUuid,
     voltageLevelOptions,
     previousValues,
-    tapChangerEnabledWatcher,
+    tapChangerDisabled,
     regulationType,
 }: {
     id: string;
@@ -40,7 +39,7 @@ export default function RegulatedTerminalSection({
     currentRootNetworkUuid: UUID;
     voltageLevelOptions: Identifiable[];
     previousValues: any;
-    tapChangerEnabledWatcher: DeepPartialSkipArrayKey<FieldValues>;
+    tapChangerDisabled: boolean;
     regulationType: unknown;
 }) {
     const intl = useIntl();
@@ -56,7 +55,7 @@ export default function RegulatedTerminalSection({
             name={`${id}.${REGULATION_TYPE}`}
             label={'RegulationTypeText'}
             options={Object.values(REGULATION_TYPES)}
-            disabled={!tapChangerEnabledWatcher}
+            disabled={tapChangerDisabled}
             size="small"
             previousValue={getRegulationTypeLabel(previousValues, tapChangerPreviousValues, intl) ?? undefined}
         />
@@ -67,7 +66,7 @@ export default function RegulatedTerminalSection({
             name={`${id}.${REGULATION_SIDE}`}
             label={'RegulatedSide'}
             options={Object.values(SIDE)}
-            disabled={!tapChangerEnabledWatcher}
+            disabled={tapChangerDisabled}
             size="small"
             previousValue={getTapSideLabel(previousValues, tapChangerPreviousValues, intl) ?? undefined}
         />
@@ -76,7 +75,7 @@ export default function RegulatedTerminalSection({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={id}
-            disabled={!tapChangerEnabledWatcher}
+            disabled={tapChangerDisabled}
             equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
             studyUuid={studyUuid}
             currentNodeUuid={currentNode?.id}

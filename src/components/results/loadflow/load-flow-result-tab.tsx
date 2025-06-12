@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -31,8 +31,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
+import { mergeSx } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -49,6 +48,7 @@ import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filt
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
 
 const styles = {
     flexWrapper: {
@@ -73,7 +73,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     nodeUuid,
     currentRootNetworkUuid,
 }) => {
-    const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -85,47 +84,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
-    const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
-
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
     const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
-
-    // load countries
-    useEffect(() => {
-        fetchAllCountries(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((countryCodes) => {
-                setCountriesFilter(
-                    countryCodes.map((countryCode: string) => ({
-                        label: countryCode,
-                        filterType: FilterType.COUNTRY,
-                    }))
-                );
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'FetchCountryError',
-                });
-            });
-
-        fetchAllNominalVoltages(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((nominalVoltages) => {
-                setVoltageLevelsFilter(
-                    nominalVoltages.map((nominalV: number) => ({
-                        label: nominalV.toString(),
-                        filterType: FilterType.VOLTAGE_LEVEL,
-                    }))
-                );
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'FetchNominalVoltagesError',
-                });
-            });
-    }, [nodeUuid, studyUuid, currentRootNetworkUuid, snackError, loadFlowStatus]);
 
     const getGlobalFilterParameter = useCallback(
         (globalFilter: GlobalFilters | undefined) => {
@@ -134,7 +96,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 if (
                     (globalFilter.countryCode && globalFilter.countryCode.length > 0) ||
                     (globalFilter.nominalV && globalFilter.nominalV.length > 0) ||
-                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0)
+                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0) ||
+                    globalFilter.substationProperty
                 ) {
                     shouldSentParameter = true;
                 }
@@ -266,9 +229,27 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
                     .map((filter: GlobalFilter) => filter.label)
             );
+            // extract the substation properties and sort them by property name (ie filterSubtype)
+            const substationProperties: Map<string, string[]> = new Map();
+            value
+                .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
+                .forEach((filter: GlobalFilter) => {
+                    if (filter.filterSubtype) {
+                        const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
+                        if (subtypeSubstationProperties) {
+                            subtypeSubstationProperties.push(filter.label);
+                        } else {
+                            substationProperties.set(filter.filterSubtype, [filter.label]);
+                        }
+                    }
+                });
+
             newGlobalFilter.nominalV = [...nominalVs];
             newGlobalFilter.countryCode = [...countryCodes];
             newGlobalFilter.genericFilter = [...genericFilters];
+            if (substationProperties.size > 0) {
+                newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
+            }
         }
         setGlobalFilter(newGlobalFilter);
     }, []);
@@ -297,11 +278,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         () => (
             <GlobalFilterSelector
                 onChange={handleGlobalFilterChange}
-                filters={[...voltageLevelsFilter, ...countriesFilter]}
+                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
                 filterableEquipmentTypes={filterableEquipmentTypes}
             />
         ),
-        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter]
+        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
     );
 
     return (

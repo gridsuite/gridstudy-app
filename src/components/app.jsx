@@ -45,7 +45,7 @@ import {
     attemptLeaveParametersTab,
     initTableDefinitions,
     renameTableDefinition,
-    saveSpreadsheetGsFilters,
+    saveSpreadsheetGlobalFilters,
     selectComputedLanguage,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
@@ -59,7 +59,7 @@ import {
     updateTableColumns,
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
-import { StudyView } from './utils/utils';
+import { STUDY_VIEWS, StudyView } from './utils/utils';
 import { NotificationType } from '../redux/reducer';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
@@ -72,8 +72,6 @@ import {
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 
 const noUserManager = { instance: null, error: null };
-
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
 
 const App = () => {
     const { snackError } = useSnackMessage();
@@ -153,6 +151,26 @@ const App = () => {
         listenerCallbackMessage: updateConfig,
     });
 
+    const networkVisuParamsUpdated = useCallback(
+        (event) => {
+            const eventData = JSON.parse(event.data);
+            if (
+                studyUuid &&
+                eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED &&
+                eventData.headers.studyUuid === studyUuid
+            ) {
+                getNetworkVisualizationParameters(studyUuid).then((params) =>
+                    updateNetworkVisualizationsParams(params)
+                );
+            }
+        },
+        [studyUuid, updateNetworkVisualizationsParams]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: networkVisuParamsUpdated,
+    });
+
     const resetTableDefinitions = useCallback(
         (collection) => {
             const { tablesFilters, tableGlobalFilters, tableDefinitions } =
@@ -174,9 +192,10 @@ const App = () => {
                     dispatch(renameTableDefinition(tabUuid, model.name));
                     dispatch(updateTableColumns(tabUuid, formattedColumns));
                     dispatch(addFilterForNewSpreadsheet(tabUuid, columnsFilters));
-                    dispatch(saveSpreadsheetGsFilters(tabUuid, formattedGlobalFilters));
+                    dispatch(saveSpreadsheetGlobalFilters(tabUuid, formattedGlobalFilters));
                 })
                 .catch((error) => {
+                    console.error(error);
                     snackError({
                         messageTxt: error,
                         headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',

@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters from './time-delay-parameters';
 import SolverParameters from './solver-parameters';
 import MappingParameters from './mapping-parameters';
-import { LabelledButton, TabPanel } from '../parameters';
+import { TabPanel } from '../parameters';
 import NetworkParameters from './network-parameters';
 import CurveParameters from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
@@ -29,10 +29,10 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
-    SubmitButton,
-    ProviderParam,
-    useParametersBackend,
     parametersStyles,
+    ProviderParam,
+    SubmitButton,
+    useParametersBackend,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -220,88 +220,95 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid sx={{ height: '100%' }}>
-                <ProviderParam options={formattedProviders} />
+            <Grid container key="dsParameters" sx={{ height: '100%' }} direction="column">
+                <Grid container>
+                    <ProviderParam options={formattedProviders} />
+                </Grid>
+                <Grid>
+                    <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
+                        <Tab
+                            label={<FormattedMessage id="DynamicSimulationTimeDelay" />}
+                            value={TAB_VALUES.TIME_DELAY}
+                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.TIME_DELAY)}
+                        />
+                        <Tab
+                            label={<FormattedMessage id="DynamicSimulationSolver" />}
+                            value={TAB_VALUES.SOLVER}
+                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.SOLVER)}
+                        />
+                        <Tab
+                            label={<FormattedMessage id="DynamicSimulationMapping" />}
+                            value={TAB_VALUES.MAPPING}
+                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.MAPPING)}
+                        />
+                        <Tab
+                            label={<FormattedMessage id="DynamicSimulationNetwork" />}
+                            value={TAB_VALUES.NETWORK}
+                            sx={getTabStyle(tabIndexesWithError, TAB_VALUES.NETWORK)}
+                        />
+                        <Tab label={<FormattedMessage id="DynamicSimulationCurve" />} value={TAB_VALUES.CURVE} />
+                    </Tabs>
+                </Grid>
                 <Grid
-                    key="dsParameters"
+                    container
+                    xs
                     sx={mergeSx(parametersStyles.scrollableGrid, {
-                        height: '100%',
                         paddingTop: 0,
+                        width: '100%',
                     })}
                 >
-                    <Grid item width="100%">
-                        <Tabs value={tabIndex} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
-                            <Tab
-                                label={<FormattedMessage id="DynamicSimulationTimeDelay" />}
-                                value={TAB_VALUES.TIME_DELAY}
-                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.TIME_DELAY)}
-                            />
-                            <Tab
-                                label={<FormattedMessage id="DynamicSimulationSolver" />}
-                                value={TAB_VALUES.SOLVER}
-                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.SOLVER)}
-                            />
-                            <Tab
-                                label={<FormattedMessage id="DynamicSimulationMapping" />}
-                                value={TAB_VALUES.MAPPING}
-                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.MAPPING)}
-                            />
-                            <Tab
-                                label={<FormattedMessage id="DynamicSimulationNetwork" />}
-                                value={TAB_VALUES.NETWORK}
-                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.NETWORK)}
-                            />
-                            <Tab label={<FormattedMessage id="DynamicSimulationCurve" />} value={TAB_VALUES.CURVE} />
-                        </Tabs>
-
-                        <TabPanel value={tabIndex} index={TAB_VALUES.TIME_DELAY}>
-                            <TimeDelayParameters path={TAB_VALUES.TIME_DELAY} />
-                        </TabPanel>
-                        <TabPanel value={tabIndex} index={TAB_VALUES.SOLVER}>
-                            <SolverParameters
-                                solver={
-                                    parameters
-                                        ? {
-                                              solverId: parameters.solverId,
-                                              solvers: parameters.solvers as Record<string, any>[],
-                                          }
-                                        : undefined
-                                }
-                                path={TAB_VALUES.SOLVER}
-                                clearErrors={clearErrors}
-                            />
-                        </TabPanel>
-                        <TabPanel value={tabIndex} index={TAB_VALUES.MAPPING}>
-                            <MappingParameters
-                                mapping={
-                                    parameters
-                                        ? {
-                                              mappings: parameters.mappings,
-                                          }
-                                        : undefined
-                                }
-                                path={TAB_VALUES.MAPPING}
-                            />
-                        </TabPanel>
-                        <TabPanel value={tabIndex} index={TAB_VALUES.NETWORK}>
-                            <NetworkParameters path={TAB_VALUES.NETWORK} />
-                        </TabPanel>
-                        <TabPanel value={tabIndex} index={TAB_VALUES.CURVE}>
-                            <CurveParameters path={TAB_VALUES.CURVE} />
-                        </TabPanel>
-                    </Grid>
+                    <TabPanel value={tabIndex} index={TAB_VALUES.TIME_DELAY}>
+                        <TimeDelayParameters path={TAB_VALUES.TIME_DELAY} />
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={TAB_VALUES.SOLVER}>
+                        <SolverParameters
+                            solver={
+                                parameters
+                                    ? {
+                                          solverId: parameters.solverId,
+                                          solvers: parameters.solvers as Record<string, any>[],
+                                      }
+                                    : undefined
+                            }
+                            path={TAB_VALUES.SOLVER}
+                            clearErrors={clearErrors}
+                        />
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={TAB_VALUES.MAPPING}>
+                        <MappingParameters
+                            mapping={
+                                parameters
+                                    ? {
+                                          mappings: parameters.mappings,
+                                      }
+                                    : undefined
+                            }
+                            path={TAB_VALUES.MAPPING}
+                        />
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={TAB_VALUES.NETWORK}>
+                        <NetworkParameters path={TAB_VALUES.NETWORK} />
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={TAB_VALUES.CURVE}>
+                        <CurveParameters path={TAB_VALUES.CURVE} />
+                    </TabPanel>
                 </Grid>
-            </Grid>
-            <Grid
-                container
-                sx={mergeSx(parametersStyles.controlParametersItem, parametersStyles.marginTopButton, {
-                    paddingTop: 4,
-                })}
-            >
-                <LabelledButton callback={handleResetParametersAndProvider} label="resetToDefault" />
-                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
-                    <FormattedMessage id={'validate'} />
-                </SubmitButton>
+
+                <Grid item container>
+                    <DialogActions
+                        sx={mergeSx(parametersStyles.controlParametersItem, {
+                            paddingBottom: 2,
+                            paddingLeft: 0,
+                        })}
+                    >
+                        <Button onClick={handleResetParametersAndProvider}>
+                            <FormattedMessage id="resetToDefault" />
+                        </Button>
+                        <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
+                            <FormattedMessage id={'validate'} />
+                        </SubmitButton>
+                    </DialogActions>
+                </Grid>
             </Grid>
         </CustomFormProvider>
     );
