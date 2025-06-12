@@ -13,30 +13,30 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 export const useDiagramTitle = () => {
     const { translate } = useLocalizedCountries();
 
-    const getDiagramTitle = useCallback(
+    return useCallback(
         (diagram: Diagram, svgData: Svg): string => {
-            if (diagram.type === DiagramType.VOLTAGE_LEVEL) {
-                let diagramName = `${diagram.voltageLevelId}`;
+            const getCountrySuffix = (): string => {
                 const country = (svgData as SldSvg).additionalMetadata?.country;
-                if (country) {
-                    diagramName += ` - ${translate(country)}`;
-                }
-                return diagramName;
-            } else if (diagram.type === DiagramType.SUBSTATION) {
-                let diagramName = `${diagram.substationId}`;
-                const country = (svgData as SldSvg).additionalMetadata?.country;
-                if (country) {
-                    diagramName += ` - ${translate(country)}`;
-                }
-                return diagramName;
-            } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return `${diagram.voltageLevelIds.join(', ')}`;
-            } else if (diagram.type === DiagramType.NAD_FROM_CONFIG) {
-                return `${diagram.nadName}`;
+                return country ? ` - ${translate(country)}` : '';
+            };
+
+            switch (diagram.type) {
+                case DiagramType.VOLTAGE_LEVEL:
+                    return `${diagram.voltageLevelId}${getCountrySuffix()}`;
+
+                case DiagramType.SUBSTATION:
+                    return `${diagram.substationId}${getCountrySuffix()}`;
+
+                case DiagramType.NETWORK_AREA_DIAGRAM:
+                    return diagram.voltageLevelIds.join(', ');
+
+                case DiagramType.NAD_FROM_CONFIG:
+                    return diagram.nadName;
+
+                default:
+                    return 'diagram type unknown';
             }
-            return `diagram type unknown`;
         },
         [translate]
     );
-    return getDiagramTitle;
 };
