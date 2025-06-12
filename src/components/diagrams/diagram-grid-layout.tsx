@@ -18,9 +18,11 @@ import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramAdditionalMetadata } from './diagram-common';
+import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
+import DiagramFooter from './diagram-footer';
+import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -56,7 +58,10 @@ const styles = {
     }),
 };
 
-const DEFAULT_WIDTH = 1;
+const LG_COLUMN_COUNT = 12;
+const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
+const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
+const DEFAULT_WIDTH = 3;
 const DEFAULT_HEIGHT = 2;
 
 const initialLayouts = {
@@ -66,8 +71,8 @@ const initialLayouts = {
             i: 'Adder',
             x: 0,
             y: 0,
-            w: 1,
-            h: 1,
+            w: DEFAULT_WIDTH,
+            h: DEFAULT_HEIGHT,
         },
     ],
 };
@@ -80,8 +85,10 @@ interface DiagramGridLayoutProps {
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
+    const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
@@ -99,10 +106,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram } = useDiagramModel({
-        diagramTypes: diagramTypes,
-        onAddDiagram,
-    });
+    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
+        useDiagramModel({
+            diagramTypes: diagramTypes,
+            onAddDiagram,
+        });
 
     const onRemoveItem = useCallback(
         (diagramUuid: UUID) => {
@@ -138,6 +146,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         },
         [createDiagram]
     );
+
+    const handleLoadNadFromConfig = useCallback(
+        (nadFromConfigUuid: UUID, nadName: string) => {
+            const diagram: DiagramParams = {
+                diagramUuid: v4() as UUID,
+                type: DiagramType.NAD_FROM_CONFIG,
+                nadFromConfigUuid,
+                nadName: nadName,
+            };
+            createDiagram(diagram);
+        },
+        [createDiagram]
+    );
+
     const renderDiagramAdder = useCallback(() => {
         if (Object.values(diagrams).length > 0) {
             return;
@@ -172,6 +194,27 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, [diagrams]);
 
+    const onChangeDepth = useCallback(
+        (diagramId: UUID, newDepth: number) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    voltageLevelIds: diagram.voltageLevelIds,
+                    depth: newDepth,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const handleToggleEditMode = useCallback((diagramUuid: UUID) => {
+        setDiagramsInEditMode((prev) =>
+            prev.includes(diagramUuid) ? prev.filter((id) => id !== diagramUuid) : [...prev, diagramUuid]
+        );
+    }, []);
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -204,6 +247,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                             <CloseIcon fontSize="small" />
                         </IconButton>
                     </Box>
+
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
                         <AlertCustomMessageNode message={globalError || diagramErrors[diagram.diagramUuid]} noMargin />
                     ) : (
@@ -241,6 +285,24 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                     diagramSizeSetter={setDiagramSize}
                                     visible={visible}
+                                    isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
+                                    onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
+                                    onLoadNadFromConfig={handleLoadNadFromConfig}
+                                />
+                            )}
+                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
+                                <DiagramFooter
+                                    showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
+                                    counterText={intl.formatMessage({
+                                        id: 'depth',
+                                    })}
+                                    counterValue={diagram.depth}
+                                    onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
+                                    onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
+                                    incrementCounterDisabled={
+                                        diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
+                                    }
+                                    decrementCounterDisabled={diagram.depth === 0} // loadingState ||
                                 />
                             )}
                         </Box>
@@ -251,8 +313,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     }, [
         diagramErrors,
         diagrams,
+        diagramsInEditMode,
         globalError,
+        handleLoadNadFromConfig,
+        handleToggleEditMode,
+        intl,
         loadingDiagrams,
+        onChangeDepth,
         onRemoveItem,
         setDiagramSize,
         showInSpreadsheet,
@@ -275,7 +342,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             <ResponsiveGridLayout
                 className="layout"
                 breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
+                cols={{
+                    lg: LG_COLUMN_COUNT,
+                    md: MD_SM_COLUMN_COUNT,
+                    sm: MD_SM_COLUMN_COUNT,
+                    xs: XS_XSS_COLUMN_COUNT,
+                    xxs: XS_XSS_COLUMN_COUNT,
+                }}
                 compactType={'horizontal'}
                 onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
                 layouts={layouts}
