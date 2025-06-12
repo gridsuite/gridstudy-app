@@ -91,37 +91,26 @@ export function stopLoadFlow(
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
-export function fetchLoadFlowWithRatioTapChangersStatus(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID
-) {
-    return fetchLoadFlowStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid, true);
-}
-
-export function fetchLoadFlowWithoutRatioTapChangersStatus(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID
-) {
-    return fetchLoadFlowStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid, false);
-}
-
-export function fetchLoadFlowStatus(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    withRatioTapChangers: boolean
-) {
+export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Fetching loadFlow status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/loadflow/status?withRatioTapChangers=' +
-        withRatioTapChangers;
+        '/loadflow/status';
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function fetchLoadFlowStatusInfos(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching loadFlow status infos on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/status-infos';
+    console.debug(url);
+    return backendFetchJson(url);
 }
 
 export function fetchLoadFlowResult(

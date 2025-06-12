@@ -7,7 +7,7 @@
 
 import { Theme } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 import { setModificationsDrawerOpen } from '../../../../redux/actions';
@@ -17,7 +17,6 @@ import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -46,7 +45,7 @@ const NodeEditor = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));

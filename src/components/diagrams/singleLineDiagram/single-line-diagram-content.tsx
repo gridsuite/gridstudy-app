@@ -53,7 +53,6 @@ import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -142,7 +141,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,

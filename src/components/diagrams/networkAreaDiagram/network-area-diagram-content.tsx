@@ -32,12 +32,11 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -157,7 +156,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
     const nadNodeMovementsRef = useRef<NadNodeMovement[]>([]);
     nadNodeMovementsRef.current = nadNodeMovements;

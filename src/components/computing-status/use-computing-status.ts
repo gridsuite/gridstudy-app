@@ -12,31 +12,41 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
-import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
+import { setComputingStatus, setComputingStatusInfos, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
+import { isComputingTypeWithAdditionalInfos, toComputingStatusInfos } from './computing-status-utils';
 
 interface UseComputingStatusProps {
     (
         studyUuid: UUID,
         nodeUuid: UUID,
         currentRootNetworkUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
+        computingStatusFetcher: (
+            studyUuid: UUID,
+            nodeUuid: UUID,
+            currentRootNetworkUuid: UUID
+        ) => Promise<string | null>,
         invalidations: string[],
         completions: string[],
         resultConversion: (x: string | null) => RunningStatus,
         computingType: ComputingType,
-        optionalServiceAvailabilityStatus?: OptionalServicesStatus
+        optionalServiceAvailabilityStatus?: OptionalServicesStatus,
+        computingStatusInfosFetcher?: (
+            studyUuid: UUID,
+            nodeUuid: UUID,
+            currentRootNetworkUuid: UUID
+        ) => Promise<string | null>
     ): void;
 }
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
+    computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>;
 }
 
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
-    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
+    computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
     rootNetworkUuidRef: RefObject<UUID>,
@@ -59,7 +69,7 @@ function isWorthUpdate(
     if (rootNetworkUuidFromNotification && rootNetworkUuidFromNotification !== currentRootNetworkUuid) {
         return false;
     }
-    if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
+    if (computingStatusFetcher && lastUpdateRef.current?.computingStatusFetcher !== computingStatusFetcher) {
         return true;
     }
     if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
@@ -81,11 +91,23 @@ function isWorthUpdate(
     return false;
 }
 
+const shouldRequestBeCanceled = (
+    canceledRequest: boolean,
+    previousNodeUuid: UUID,
+    currentNodeUuid: UUID,
+    previousRootNetworkUuid: UUID,
+    currentRootNetworkUuid: UUID
+) => {
+    return (
+        canceledRequest || previousNodeUuid !== currentNodeUuid || previousRootNetworkUuid !== currentRootNetworkUuid
+    );
+};
+
 /**
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
- * @param fetcher method fetching current <computingType> state
+ * @param computingStatusFetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
@@ -95,12 +117,13 @@ export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    fetcher,
+    computingStatusFetcher,
     invalidations,
     completions,
     resultConversion,
     computingType,
-    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
+    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up,
+    computingStatusInfosFetcher
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
@@ -118,7 +141,43 @@ export const useComputingStatus: UseComputingStatusProps = (
         [completions]
     );
 
-    const update = useCallback(() => {
+    const handleComputingStatusInfos = useCallback(
+        async (computationStatus: RunningStatus, canceledRequest: boolean) => {
+            if (
+                computingStatusInfosFetcher &&
+                computationStatus !== RunningStatus.IDLE &&
+                isComputingTypeWithAdditionalInfos(computingType)
+            ) {
+                nodeUuidRef.current = nodeUuid;
+                rootNetworkUuidRef.current = currentRootNetworkUuid;
+                const computingStatusInfosResult = await computingStatusInfosFetcher(
+                    studyUuid,
+                    nodeUuid,
+                    currentRootNetworkUuid
+                );
+                if (
+                    shouldRequestBeCanceled(
+                        canceledRequest,
+                        nodeUuidRef.current,
+                        nodeUuid,
+                        rootNetworkUuidRef.current,
+                        currentRootNetworkUuid
+                    )
+                ) {
+                    return;
+                }
+                dispatch(
+                    setComputingStatusInfos(
+                        computingType,
+                        toComputingStatusInfos(computingStatusInfosResult, computingType)
+                    )
+                );
+            }
+        },
+        [computingStatusInfosFetcher, computingType, currentRootNetworkUuid, dispatch, nodeUuid, studyUuid]
+    );
+
+    const update = useCallback(async () => {
         // this is used to prevent race conditions from happening
         // if another request is sent, the previous one won't do anything
         let canceledRequest = false;
@@ -128,36 +187,49 @@ export const useComputingStatus: UseComputingStatusProps = (
 
         nodeUuidRef.current = nodeUuid;
         rootNetworkUuidRef.current = currentRootNetworkUuid;
-        fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
-            .then((res: string | null) => {
-                if (
-                    !canceledRequest &&
-                    nodeUuidRef.current === nodeUuid &&
-                    rootNetworkUuidRef.current === currentRootNetworkUuid
-                ) {
-                    const status = resultConversion(res);
-                    dispatch(setComputingStatus(computingType, status));
-                    if (isComputationCompleted(status)) {
-                        dispatch(setLastCompletedComputation(computingType));
-                    }
-                }
-            })
-            .catch(() => {
-                if (!canceledRequest) {
-                    dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
-                }
-            });
+        try {
+            // fetch computing status
+            const computingStatusResult: string | null = await computingStatusFetcher(
+                studyUuid,
+                nodeUuid,
+                currentRootNetworkUuid
+            );
+            if (
+                shouldRequestBeCanceled(
+                    canceledRequest,
+                    nodeUuidRef.current,
+                    nodeUuid,
+                    rootNetworkUuidRef.current,
+                    currentRootNetworkUuid
+                )
+            ) {
+                return;
+            }
+            // if request has not been canceled for any reason, fetch if necessary computingStatusInfos
+            const status = resultConversion(computingStatusResult);
+            dispatch(setComputingStatus(computingType, status));
+            await handleComputingStatusInfos(status, canceledRequest);
+
+            if (isComputationCompleted(status)) {
+                dispatch(setLastCompletedComputation(computingType));
+            }
+        } catch (e) {
+            if (!canceledRequest) {
+                dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
+            }
+        }
 
         return () => {
             canceledRequest = true;
         };
     }, [
+        dispatch,
         nodeUuid,
         currentRootNetworkUuid,
-        fetcher,
+        computingStatusFetcher,
         studyUuid,
         resultConversion,
-        dispatch,
+        handleComputingStatusInfos,
         computingType,
         isComputationCompleted,
     ]);
@@ -174,7 +246,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         }
         const isUpdateForUs = isWorthUpdate(
             studyUpdatedForce,
-            fetcher,
+            computingStatusFetcher,
             lastUpdateRef,
             nodeUuidRef,
             rootNetworkUuidRef,
@@ -182,13 +254,16 @@ export const useComputingStatus: UseComputingStatusProps = (
             currentRootNetworkUuid,
             invalidations
         );
-        lastUpdateRef.current = { studyUpdatedForce, fetcher };
+        lastUpdateRef.current = { studyUpdatedForce, computingStatusFetcher };
         if (isUpdateForUs) {
+            if (computingType === ComputingType.LOAD_FLOW) {
+                console.log('TESTING', studyUpdatedForce);
+            }
             update();
         }
     }, [
         update,
-        fetcher,
+        computingStatusFetcher,
         nodeUuid,
         invalidations,
         currentRootNetworkUuid,

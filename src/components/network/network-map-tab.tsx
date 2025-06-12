@@ -38,6 +38,7 @@ import {
     useSnackMessage,
     EquipmentInfos,
     NotificationsUrlKeys,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
@@ -64,7 +65,6 @@ import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
 import { useDiagram } from 'components/diagrams/use-diagram';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -154,7 +154,7 @@ export const NetworkMapTab = ({
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const centerOnSubstation = useSelector((state: AppState) => state.centerOnSubstation);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);

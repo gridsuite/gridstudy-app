@@ -48,8 +48,8 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     function isButtonDisable() {
         if (
-            selectedRunnable === ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS ||
-            selectedRunnable === ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS
+            selectedRunnable === 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS' ||
+            selectedRunnable === 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS'
         ) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
@@ -59,8 +59,8 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                (getStatus(ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS) !== RunningStatus.SUCCEED &&
-                    getStatus(ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS) !== RunningStatus.SUCCEED)
+                (getStatus('LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED &&
+                    getStatus('LOAD_FLOW_WITH_RATIO_TAP_CHANGERS') !== RunningStatus.SUCCEED)
             );
         }
 

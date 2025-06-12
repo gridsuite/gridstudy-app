@@ -22,13 +22,14 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
 import { AgGridReact } from 'ag-grid-react';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
+import { ComputingType } from '@gridsuite/commons-ui';
+import { AppState } from 'redux/reducer';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
     const theme = useTheme();
     const intl = useIntl();
 
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const gridRef = useRef<AgGridReact>(null);
 

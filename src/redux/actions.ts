@@ -30,6 +30,7 @@ import type {
     RootNetworkIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
+    ComputingStatusInfos,
 } from './reducer';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../components/utils/running-status';
@@ -112,6 +113,7 @@ export type AppActions =
     | DecrementNetworkAreaDiagramDepthAction
     | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
+    | SetComputingStatusInfosAction<ComputingTypeWithAdditionalInfos>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
@@ -1015,6 +1017,27 @@ export function setComputingStatus(
         type: SET_COMPUTING_STATUS,
         computingType: computingType,
         runningStatus: runningStatus,
+    };
+}
+
+export type ComputingTypeWithAdditionalInfos = ComputingType.LOAD_FLOW;
+
+export const SET_COMPUTING_STATUS_INFOS = 'SET_COMPUTING_STATUS_INFOS';
+export type SetComputingStatusInfosAction<K extends keyof ComputingStatusInfos> = Readonly<
+    Action<typeof SET_COMPUTING_STATUS_INFOS>
+> & {
+    computingType: K;
+    computingStatusInfos: ComputingStatusInfos[K];
+};
+
+export function setComputingStatusInfos<K extends keyof ComputingStatusInfos>(
+    computingType: K,
+    computingStatusInfos: ComputingStatusInfos[K]
+): SetComputingStatusInfosAction<K> {
+    return {
+        type: SET_COMPUTING_STATUS_INFOS,
+        computingType: computingType,
+        computingStatusInfos: computingStatusInfos,
     };
 }
 

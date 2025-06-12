@@ -21,7 +21,8 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { AgGridReact } from 'ag-grid-react';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
+import { ComputingType } from '@gridsuite/commons-ui';
+import { AppState } from 'redux/reducer';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({
     result,
@@ -33,7 +34,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
 
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] = useState(false);
 

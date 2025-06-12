@@ -48,7 +48,6 @@ import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filt
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
 
 const styles = {
@@ -77,7 +76,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(0);
-    const loadFlowStatus = useSelector(selectLoadflowComputingStatus);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]

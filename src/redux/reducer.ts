@@ -221,6 +221,9 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
+    SET_COMPUTING_STATUS_INFOS,
+    SetComputingStatusInfosAction,
+    ComputingTypeWithAdditionalInfos,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -457,8 +460,7 @@ export type StudyUpdated = {
 );
 
 export interface ComputingStatus {
-    [ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: RunningStatus;
-    [ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]: RunningStatus;
+    [ComputingType.LOAD_FLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
     [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
@@ -468,6 +470,15 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+}
+
+export interface CommonStatusInfos {}
+export interface LoadFlowStatusInfos extends CommonStatusInfos {
+    withRatioTapChangers: boolean;
+}
+
+export interface ComputingStatusInfos {
+    [ComputingType.LOAD_FLOW]: LoadFlowStatusInfos | null;
 }
 
 export type TableSortConfig = Record<string, SortConfig[]>;
@@ -592,6 +603,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     currentRootNetworkUuid: UUID | null;
     rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
+    computingStatusInfos: ComputingStatusInfos;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
@@ -774,8 +786,7 @@ const initialState: AppState = {
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
     computingStatus: {
-        [ComputingType.LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS]: RunningStatus.IDLE,
-        [ComputingType.LOAD_FLOW_WITH_RATIO_TAP_CHANGERS]: RunningStatus.IDLE,
+        [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
@@ -785,6 +796,9 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+    },
+    computingStatusInfos: {
+        [ComputingType.LOAD_FLOW]: null,
     },
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
@@ -1883,6 +1897,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     });
+
+    builder.addCase(
+        SET_COMPUTING_STATUS_INFOS,
+        (state, action: SetComputingStatusInfosAction<ComputingTypeWithAdditionalInfos>) => {
+            state.computingStatusInfos[action.computingType] = action.computingStatusInfos;
+        }
+    );
 
     builder.addCase(SET_COMPUTATION_STARTING, (state, action: SetComputationStartingAction) => {
         state.computationStarting = action.computationStarting;

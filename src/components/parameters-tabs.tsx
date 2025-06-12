@@ -67,7 +67,6 @@ import {
     NetworkVisualizationParametersInline,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
-import { selectLoadflowComputingStatus } from 'redux/selectors/select-loadflow-computing-status';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -109,31 +108,9 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
-    const computationStatusSelectors: Record<TAB_VALUES, (state: AppState) => RunningStatus | undefined> = {
-        [TAB_VALUES.lfParamsTabValue]: selectLoadflowComputingStatus,
-        [TAB_VALUES.securityAnalysisParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS],
-        [TAB_VALUES.dynamicSecurityAnalysisParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.DYNAMIC_SECURITY_ANALYSIS],
-        [TAB_VALUES.dynamicSimulationParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.DYNAMIC_SIMULATION],
-        [TAB_VALUES.networkVisualizationsParams]: () => undefined,
-        [TAB_VALUES.nonEvacuatedEnergyParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
-        [TAB_VALUES.sensitivityAnalysisParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS],
-        [TAB_VALUES.shortCircuitParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT],
-        [TAB_VALUES.voltageInitParamsTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION],
-        [TAB_VALUES.stateEstimationTabValue]: (state: AppState) =>
-            state.computingStatus[ComputingType.STATE_ESTIMATION],
-    };
     const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
-    const computationStatus = useSelector((state: AppState) =>
-        computationStatusSelectors[tabValue as TAB_VALUES](state)
-    );
+    const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
 
     const shortCircuitOneBusStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
