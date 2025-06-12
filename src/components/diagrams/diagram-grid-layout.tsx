@@ -21,6 +21,7 @@ import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
+import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -98,7 +99,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
-    const { diagrams, loadingDiagrams, removeDiagram, createDiagram } = useDiagramModel({
+    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram } = useDiagramModel({
         diagramTypes: diagramTypes,
         onAddDiagram,
     });
@@ -217,48 +218,55 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                             <CloseIcon fontSize="small" />
                         </IconButton>
                     </Box>
-                    <Box sx={styles.diagramContainer}>
-                        {(diagram.type === DiagramType.VOLTAGE_LEVEL || diagram.type === DiagramType.SUBSTATION) && (
-                            <SingleLineDiagramContent
-                                showInSpreadsheet={showInSpreadsheet}
-                                studyUuid={studyUuid}
-                                diagramId={diagram.diagramUuid}
-                                svg={diagram.svg?.svg ?? undefined}
-                                svgType={diagram.type}
-                                svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
-                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
-                                diagramSizeSetter={setDiagramSize}
-                                visible={visible}
-                            />
-                        )}
-                        {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                            diagram.type === DiagramType.NAD_FROM_CONFIG) && (
-                            <NetworkAreaDiagramContent
-                                diagramId={diagram.diagramUuid}
-                                svg={diagram.svg?.svg ?? undefined}
-                                svgType={diagram.type}
-                                svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
-                                svgScalingFactor={
-                                    (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.scalingFactor ??
-                                    undefined
-                                }
-                                svgVoltageLevels={
-                                    (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels
-                                        .map((vl) => vl.id)
-                                        .filter((vlId) => vlId !== undefined) as string[]
-                                }
-                                loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
-                                diagramSizeSetter={setDiagramSize}
-                                visible={visible}
-                                onLoadNadFromConfig={handleLoadNadFromConfig}
-                            />
-                        )}
-                    </Box>
+                    {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
+                        <AlertCustomMessageNode message={globalError || diagramErrors[diagram.diagramUuid]} noMargin />
+                    ) : (
+                        <Box sx={styles.diagramContainer}>
+                            {(diagram.type === DiagramType.VOLTAGE_LEVEL ||
+                                diagram.type === DiagramType.SUBSTATION) && (
+                                <SingleLineDiagramContent
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    studyUuid={studyUuid}
+                                    diagramId={diagram.diagramUuid}
+                                    svg={diagram.svg?.svg ?? undefined}
+                                    svgType={diagram.type}
+                                    svgMetadata={(diagram.svg?.metadata as SLDMetadata) ?? undefined}
+                                    loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
+                                    diagramSizeSetter={setDiagramSize}
+                                    visible={visible}
+                                />
+                            )}
+                            {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
+                                diagram.type === DiagramType.NAD_FROM_CONFIG) && (
+                                <NetworkAreaDiagramContent
+                                    diagramId={diagram.diagramUuid}
+                                    svg={diagram.svg?.svg ?? undefined}
+                                    svgType={diagram.type}
+                                    svgMetadata={(diagram.svg?.metadata as DiagramMetadata) ?? undefined}
+                                    svgScalingFactor={
+                                        (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.scalingFactor ??
+                                        undefined
+                                    }
+                                    svgVoltageLevels={
+                                        (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels
+                                            .map((vl) => vl.id)
+                                            .filter((vlId) => vlId !== undefined) as string[]
+                                    }
+                                    loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
+                                    diagramSizeSetter={setDiagramSize}
+                                    visible={visible}
+                                    onLoadNadFromConfig={handleLoadNadFromConfig}
+                                />
+                            )}
+                        </Box>
+                    )}
                 </Box>
             );
         });
     }, [
+        diagramErrors,
         diagrams,
+        globalError,
         handleLoadNadFromConfig,
         loadingDiagrams,
         onRemoveItem,

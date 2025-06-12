@@ -14,8 +14,11 @@ export const useDiagramTitle = () => {
     const { translate } = useLocalizedCountries();
 
     return useCallback(
-        (diagram: Diagram, svgData: Svg): string => {
+        (diagram: Diagram, svgData?: Svg): string => {
             const getCountrySuffix = (): string => {
+                if (!svgData) {
+                    return '';
+                }
                 const country = (svgData as SldSvg).additionalMetadata?.country;
                 return country ? ` - ${translate(country)}` : '';
             };
