@@ -256,9 +256,6 @@ export const useComputingStatus: UseComputingStatusProps = (
         );
         lastUpdateRef.current = { studyUpdatedForce, computingStatusFetcher };
         if (isUpdateForUs) {
-            if (computingType === ComputingType.LOAD_FLOW) {
-                console.log('TESTING', studyUpdatedForce);
-            }
             update();
         }
     }, [
