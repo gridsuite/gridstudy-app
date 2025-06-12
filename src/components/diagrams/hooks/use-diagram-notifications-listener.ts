@@ -6,8 +6,9 @@
  */
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { isLoadflowResultNotification, isStudyNotification } from 'types/notification-types';
 
 type UseDiagramNotificationsListenerProps = {
     updateAllDiagrams: () => void;
@@ -18,12 +19,12 @@ export const useDiagramNotificationsListener = ({ updateAllDiagrams }: UseDiagra
 
     const updateDiagramsCallback = useCallback(
         (event: MessageEvent) => {
-            const eventData = JSON.parse(event.data) as StudyUpdatedEventData;
-            // check consistency of the event
-            if (eventData.headers.rootNetworkUuid !== currentRootNetworkUuid) {
-                return;
-            }
-            if (eventData.headers.updateType === 'loadflowResult' || eventData.headers.updateType === 'study') {
+            const eventData = JSON.parse(event.data);
+            if (isLoadflowResultNotification(eventData) || isStudyNotification(eventData)) {
+                // check consistency of the event
+                if (eventData.headers.rootNetworkUuid !== currentRootNetworkUuid) {
+                    return;
+                }
                 updateAllDiagrams();
             }
         },

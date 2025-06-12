@@ -36,14 +36,6 @@ export const REGULATION_TYPES = {
     LOCAL: { id: 'LOCAL', label: 'Local' },
 } as const;
 
-export const UPDATE_TYPE = [
-    'creatingInProgress',
-    'updatingInProgress',
-    'stashingInProgress',
-    'restoringInProgress',
-    'deletingInProgress',
-] as const;
-
 export const PHASE_REGULATION_MODES = {
     FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },

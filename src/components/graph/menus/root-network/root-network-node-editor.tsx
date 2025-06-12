@@ -33,7 +33,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
-
 import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
