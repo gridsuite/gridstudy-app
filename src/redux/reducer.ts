@@ -381,6 +381,7 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
 type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    nadName: string;
 };
 
 export type DiagramEvent =
@@ -1509,6 +1510,7 @@ export const reducer = createReducer(initialState, (builder) => {
             diagramType: DiagramType.NAD_FROM_CONFIG,
             eventType: DiagramEventType.CREATE,
             nadFromConfigUuid: action.nadConfigUuid as UUID,
+            nadName: action.nadName,
         };
     });
 

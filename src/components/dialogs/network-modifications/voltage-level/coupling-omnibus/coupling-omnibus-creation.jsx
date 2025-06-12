@@ -16,7 +16,7 @@ export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
             allowNewValue
             forcePopupIcon
             name={`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID1}`}
-            label="SectionID1"
+            label="BusBarSectionID1"
             options={sectionOptions ?? []}
             size={'small'}
         />
@@ -26,7 +26,7 @@ export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
             allowNewValue
             forcePopupIcon
             name={`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`}
-            label="SectionID2"
+            label="BusBarSectionID2"
             options={sectionOptions ?? []}
             size={'small'}
         />
