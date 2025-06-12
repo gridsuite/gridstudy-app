@@ -111,7 +111,7 @@ import {
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
-import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/creation/create-coupling-device-dialog';
+import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 
 const nonEditableModificationTypes = new Set([
@@ -293,6 +293,11 @@ const NetworkModificationNodeEditor = () => {
                     action: () => withDefaultParams(VoltageLevelModificationDialog),
                 },
                 {
+                    id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
+                    label: 'CREATE_COUPLING_DEVICE',
+                    action: () => withDefaultParams(CreateCouplingDeviceDialog),
+                },
+                {
                     id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
                     label: 'VOLTAGE_LEVEL_TOPOLOGY',
                     action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
@@ -336,11 +341,6 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
                     label: 'LCC',
                     action: () => withDefaultParams(LccModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
-                    label: 'CreateCouplingDevice',
-                    action: () => withDefaultParams(CreateCouplingDeviceDialog),
                 },
             ],
         },
@@ -441,7 +441,7 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'VOLTAGE_INIT_MODIFICATION',
             label: 'VoltageInitModification',
-            hide: true, // this modification is not visible in the creation menu
+            hide: true, // this modification is not visible in the menu
             action: () => withDefaultParams(VoltageInitModificationDialog),
         },
     ];
