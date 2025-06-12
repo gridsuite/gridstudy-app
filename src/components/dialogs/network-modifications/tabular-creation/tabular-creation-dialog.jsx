@@ -13,21 +13,7 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    CREATIONS_TABLE,
-    REACTIVE_CAPABILITY_CURVE,
-    REACTIVE_CAPABILITY_CURVE_P_0,
-    REACTIVE_CAPABILITY_CURVE_P_MAX,
-    REACTIVE_CAPABILITY_CURVE_P_MIN,
-    REACTIVE_CAPABILITY_CURVE_POINTS,
-    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
-    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
-    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
-    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
-    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
-    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
-    TYPE,
-} from 'components/utils/field-constants';
+import { CREATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';

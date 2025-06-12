@@ -11,17 +11,17 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
-    EQUIPMENT_ID,
     CREATIONS_TABLE,
-    TYPE,
-    VOLTAGE_REGULATION_ON,
+    EQUIPMENT_ID,
     FREQUENCY_REGULATION,
     REACTIVE_CAPABILITY_CURVE,
+    TYPE,
+    VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
+import { styles, TABULAR_CREATION_FIELDS, TabularCreationField } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
