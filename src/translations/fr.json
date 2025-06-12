@@ -1543,7 +1543,7 @@
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
     "CreateCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
     "CreateCouplingDeviceDiagramButton": "Voir le poste",
-    "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre doivent être différentes",
+    "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre 1 et 2 doivent être différentes",
     "builtNodeTooltipForDiagram" : "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram" : "Diagramme du dernier nœud réalisé de la branche courante",
     "CouplingDeviceText" : "Sections de jeu de barre",
@@ -1563,5 +1563,6 @@
     "maxNumberIterations": "Nombre maximal d'itérations",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
-    "loadFlowModification": "Modification par calcul de répartition appliquée"
+    "loadFlowModification": "Modification par calcul de répartition appliquée",
+    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}"
 }

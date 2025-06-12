@@ -1547,7 +1547,7 @@
     "CREATE_COUPLING_DEVICE": "Add a coupling device",
     "CreateCouplingDeviceEditor": "Add a coupling device",
     "CreateCouplingDeviceDiagramButton": "Show voltage level",
-    "CreateCouplingDeviceIdenticalBusBar": "selected busbars must be different",
+    "CreateCouplingDeviceIdenticalBusBar": "Busbar section 1 and 2 must be different",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
     "notBuiltNodeTooltipForDiagram" : "Diagram from last build node in current branch",
     "CouplingDeviceText" : "Bus bar sections",
@@ -1567,5 +1567,6 @@
     "maxNumberIterations": "Maximum number of iterations",
     "thresholdNetPosition": "Net position mismatch threshold",
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
-    "loadFlowModification": "Loadflow modification applied"
+    "loadFlowModification": "Loadflow modification applied",
+    "diagramLoadingFail": "An error occurred while loading {diagramName}"
 }
