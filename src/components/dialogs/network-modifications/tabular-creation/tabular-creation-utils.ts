@@ -67,7 +67,8 @@ import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-li
 
 export interface TabularCreationField {
     id: string;
-    required: boolean;
+    required?: boolean;
+    requiredIf?: { id: string };
 }
 
 export interface TabularCreationFields {
@@ -164,8 +165,8 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: CONNECTION_POSITION, required: false },
         { id: MAXIMUM_SECTION_COUNT, required: true },
         { id: SECTION_COUNT, required: true },
-        { id: SHUNT_COMPENSATOR_TYPE, required: false },
-        { id: MAX_Q_AT_NOMINAL_V, required: false },
+        { id: SHUNT_COMPENSATOR_TYPE, requiredIf: { id: MAX_Q_AT_NOMINAL_V } },
+        { id: MAX_Q_AT_NOMINAL_V, requiredIf: { id: SHUNT_COMPENSATOR_TYPE } },
         { id: MAX_SUSCEPTANCE, required: false },
     ],
 };
