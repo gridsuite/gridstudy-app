@@ -71,24 +71,26 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
     const diagramAlreadyExists = useCallback(
         (diagramParams: DiagramParams) => {
-            if (diagramParams.type === DiagramType.VOLTAGE_LEVEL) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
-                    .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
-            } else if (diagramParams.type === DiagramType.SUBSTATION) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
-                    .some((d) => d.substationId === diagramParams.substationId);
-            } else if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-                    .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
-            } else if (diagramParams.type === DiagramType.NAD_FROM_CONFIG) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.NAD_FROM_CONFIG)
-                    .some((d) => d.nadFromConfigUuid === diagramParams.nadFromConfigUuid);
+            switch (diagramParams.type) {
+                case DiagramType.VOLTAGE_LEVEL:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
+                        .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
+                case DiagramType.SUBSTATION:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
+                        .some((d) => d.substationId === diagramParams.substationId);
+                case DiagramType.NETWORK_AREA_DIAGRAM:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
+                        .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
+                case DiagramType.NAD_FROM_CONFIG:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.NAD_FROM_CONFIG)
+                        .some((d) => d.nadFromConfigUuid === diagramParams.nadFromConfigUuid);
+                default:
+                    return false;
             }
-            return false;
         },
         [diagrams]
     );
@@ -330,31 +332,34 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
     const findSimilarDiagram = useCallback(
         (diagramParams: DiagramParams): Diagram | undefined => {
-            if (diagramParams.type === DiagramType.VOLTAGE_LEVEL) {
-                return Object.values(diagrams).find(
-                    (diagram) =>
-                        diagram.type === DiagramType.VOLTAGE_LEVEL &&
-                        diagram.voltageLevelId === diagramParams.voltageLevelId
-                );
-            } else if (diagramParams.type === DiagramType.SUBSTATION) {
-                return Object.values(diagrams).find(
-                    (diagram) =>
-                        diagram.type === DiagramType.SUBSTATION && diagram.substationId === diagramParams.substationId
-                );
-            } else if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return Object.values(diagrams).find(
-                    (diagram) =>
-                        diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagram.voltageLevelIds.every((vlId) => diagramParams.voltageLevelIds.includes(vlId))
-                );
-            } else if (diagramParams.type === DiagramType.NAD_FROM_CONFIG) {
-                return Object.values(diagrams).find(
-                    (diagram) =>
-                        diagram.type === DiagramType.NAD_FROM_CONFIG &&
-                        diagram.nadFromConfigUuid === diagramParams.nadFromConfigUuid
-                );
+            switch (diagramParams.type) {
+                case DiagramType.VOLTAGE_LEVEL:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.VOLTAGE_LEVEL &&
+                            diagram.voltageLevelId === diagramParams.voltageLevelId
+                    );
+                case DiagramType.SUBSTATION:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.SUBSTATION &&
+                            diagram.substationId === diagramParams.substationId
+                    );
+                case DiagramType.NETWORK_AREA_DIAGRAM:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagram.voltageLevelIds.every((vlId) => diagramParams.voltageLevelIds.includes(vlId))
+                    );
+                case DiagramType.NAD_FROM_CONFIG:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.NAD_FROM_CONFIG &&
+                            diagram.nadFromConfigUuid === diagramParams.nadFromConfigUuid
+                    );
+                default:
+                    return undefined;
             }
-            return undefined;
         },
         [diagrams]
     );
