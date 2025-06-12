@@ -58,7 +58,10 @@ const styles = {
     }),
 };
 
-const DEFAULT_WIDTH = 1;
+const LG_COLUMN_COUNT = 12;
+const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
+const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
+const DEFAULT_WIDTH = 3;
 const DEFAULT_HEIGHT = 2;
 
 const initialLayouts = {
@@ -68,8 +71,8 @@ const initialLayouts = {
             i: 'Adder',
             x: 0,
             y: 0,
-            w: 1,
-            h: 1,
+            w: DEFAULT_WIDTH,
+            h: DEFAULT_HEIGHT,
         },
     ],
 };
@@ -323,7 +326,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             <ResponsiveGridLayout
                 className="layout"
                 breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={{ lg: 4, md: 2, sm: 2, xs: 1, xxs: 1 }}
+                cols={{
+                    lg: LG_COLUMN_COUNT,
+                    md: MD_SM_COLUMN_COUNT,
+                    sm: MD_SM_COLUMN_COUNT,
+                    xs: XS_XSS_COLUMN_COUNT,
+                    xxs: XS_XSS_COLUMN_COUNT,
+                }}
                 compactType={'horizontal'}
                 onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
                 layouts={layouts}
