@@ -430,7 +430,7 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'VOLTAGE_INIT_MODIFICATION',
             label: 'VoltageInitModification',
-            hide: true, // this modification is not visible in the creation menu
+            hide: true, // this modification is not visible in the menu
             action: () => withDefaultParams(VoltageInitModificationDialog),
         },
     ];
