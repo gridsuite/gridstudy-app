@@ -11,8 +11,6 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import { Theme, Typography, IconButton } from '@mui/material';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 
 const styles = {
     counterText: (theme: Theme) => ({
@@ -86,11 +84,10 @@ const DiagramFooter: React.FC<DiagramFooterProps> = ({
     const handleStartFullScreen = useCallback(() => onStartFullScreen && onStartFullScreen(), [onStartFullScreen]);
     const handleIncrementCounter = useCallback(() => onIncrementCounter && onIncrementCounter(), [onIncrementCounter]);
     const handleDecrementCounter = useCallback(() => onDecrementCounter && onDecrementCounter(), [onDecrementCounter]);
-    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
 
     return (
         <div style={{ display: 'flex' }}>
-            {showCounterControls && isEditNadMode && (
+            {showCounterControls && (
                 <>
                     {showCounterValue && <Typography sx={styles.counterText}>{counterText + counterValue}</Typography>}
                     <IconButton
