@@ -58,7 +58,12 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
     VOLTAGE_SET_POINT,
+    LOAD_TYPE,
+    P0,
+    Q0,
+    REACTIVE_CAPABILITY_CURVE_POINTS,
 } from 'components/utils/field-constants';
+import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 
 export interface TabularCreationField {
     id: string;
@@ -68,6 +73,19 @@ export interface TabularCreationField {
 export interface TabularCreationFields {
     [key: string]: TabularCreationField[];
 }
+
+const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularCreationField[] = [
+    { id: REACTIVE_CAPABILITY_CURVE, required: true },
+    { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+];
 
 export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
     GENERATOR: [
@@ -85,16 +103,7 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: RATED_S, required: false },
         { id: MINIMUM_REACTIVE_POWER, required: false },
         { id: MAXIMUM_REACTIVE_POWER, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE, required: true },
-        { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
-        { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: ACTIVE_POWER_SET_POINT, required: false },
         { id: REACTIVE_POWER_SET_POINT, required: false },
         { id: VOLTAGE_REGULATION_ON, required: true },
@@ -111,6 +120,38 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: MARGINAL_COST, required: false },
         { id: PLANNED_OUTAGE_RATE, required: false },
         { id: FORCED_OUTAGE_RATE, required: false },
+    ],
+    LOAD: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: EQUIPMENT_NAME, required: false },
+        { id: LOAD_TYPE, required: true },
+        { id: VOLTAGE_LEVEL_ID, required: true },
+        { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
+        { id: CONNECTED, required: true },
+        { id: CONNECTION_NAME, required: false },
+        { id: CONNECTION_DIRECTION, required: false },
+        { id: CONNECTION_POSITION, required: false },
+        { id: P0, required: true },
+        { id: Q0, required: true },
+    ],
+    BATTERY: [
+        { id: EQUIPMENT_ID, required: true },
+        { id: EQUIPMENT_NAME, required: false },
+        { id: VOLTAGE_LEVEL_ID, required: true },
+        { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
+        { id: CONNECTED, required: true },
+        { id: CONNECTION_NAME, required: false },
+        { id: CONNECTION_DIRECTION, required: false },
+        { id: CONNECTION_POSITION, required: false },
+        { id: MIN_P, required: true },
+        { id: MAX_P, required: true },
+        { id: MINIMUM_REACTIVE_POWER, required: false },
+        { id: MAXIMUM_REACTIVE_POWER, required: false },
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
+        { id: ACTIVE_POWER_SET_POINT, required: false },
+        { id: REACTIVE_POWER_SET_POINT, required: false },
+        { id: FREQUENCY_REGULATION, required: true },
+        { id: DROOP, required: false },
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -131,10 +172,62 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
 
 export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_CREATION.type,
+    BATTERY: MODIFICATION_TYPES.BATTERY_CREATION.type,
+    LOAD: MODIFICATION_TYPES.LOAD_CREATION.type,
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
-export const convertCreationFieldFromBackToFront = (key: string, value: { value: string | number | boolean }) => {
+const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
+    const curvePoint1 = value[0];
+    const curvePoint2 = value[1];
+    const curvePoint3 = value[2];
+
+    if (!curvePoint1) {
+        return [];
+    }
+
+    const result = [
+        {
+            key: REACTIVE_CAPABILITY_CURVE_P_MIN,
+            value: curvePoint1.p,
+        },
+        {
+            key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
+            value: curvePoint1.maxQ,
+        },
+        {
+            key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
+            value: curvePoint1.minQ,
+        },
+    ];
+
+    if (curvePoint2) {
+        result.push(
+            { key: REACTIVE_CAPABILITY_CURVE_P_0, value: curvePoint2.p },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, value: curvePoint2.maxQ },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, value: curvePoint2.minQ }
+        );
+    }
+
+    if (curvePoint3) {
+        result.push(
+            { key: REACTIVE_CAPABILITY_CURVE_P_MAX, value: curvePoint3.p },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, value: curvePoint3.maxQ },
+            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, value: curvePoint3.minQ }
+        );
+    }
+
+    return result;
+};
+
+export const convertCreationFieldFromBackToFront = (
+    key: string,
+    value:
+        | {
+              value: string | number | boolean;
+          }
+        | unknown
+) => {
     switch (key) {
         case PARTICIPATE:
             return { key: FREQUENCY_REGULATION, value: value };
@@ -148,6 +241,8 @@ export const convertCreationFieldFromBackToFront = (key: string, value: { value:
             return { key: MINIMUM_REACTIVE_POWER, value: value };
         case MAX_Q:
             return { key: MAXIMUM_REACTIVE_POWER, value: value };
+        case REACTIVE_CAPABILITY_CURVE_POINTS:
+            return convertReactiveCapabilityCurvePointsFromBackToFront(value as ReactiveCapabilityCurvePoints[]);
         default:
             return { key: key, value: value };
     }
