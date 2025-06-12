@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
 import { UUID } from 'crypto';
@@ -20,7 +20,7 @@ import { HttpStatusCode } from '../../../../utils/http-status-code';
 export default function GlobalFilterProvider({
     children,
     onChange: handleChange,
-    preloadedGlobalFilters = [],
+    preloadedGlobalFilters,
     filterCategories,
     genericFiltersStrictMode = false,
     equipmentTypes = undefined,
@@ -38,7 +38,14 @@ export default function GlobalFilterProvider({
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
-    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters);
+    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters ?? []);
+
+    useEffect(() => {
+        //If preloadedGlobalFilters is set it keeps the global filter state in sync
+        if (preloadedGlobalFilters !== undefined) {
+            setSelectedGlobalFilters(preloadedGlobalFilters);
+        }
+    }, [preloadedGlobalFilters]);
 
     const checkSelectedFiltersPromise = useCallback(
         async (selectedFilters: GlobalFilter[]) => {
