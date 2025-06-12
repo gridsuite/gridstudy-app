@@ -100,19 +100,22 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     };
 
-    const onDiagramAlreadyExists = useCallback((diagramUuid: UUID) => {
-        setBlinkingDiagrams((old_blinking_diagrams) => {
-            if (old_blinking_diagrams.includes(diagramUuid)) {
-                return old_blinking_diagrams;
-            }
-            return [...old_blinking_diagrams, diagramUuid];
-        });
-        setTimeout(() => {
-            setBlinkingDiagrams((old_blinking_diagrams) =>
-                old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid)
-            );
-        }, BLINK_LENGTH_MS);
+    const deleteblinkingDiagram = useCallback((diagramUuid: UUID) => {
+        setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
     }, []);
+
+    const onDiagramAlreadyExists = useCallback(
+        (diagramUuid: UUID) => {
+            setBlinkingDiagrams((old_blinking_diagrams) => {
+                if (old_blinking_diagrams.includes(diagramUuid)) {
+                    return old_blinking_diagrams;
+                }
+                return [...old_blinking_diagrams, diagramUuid];
+            });
+            setTimeout(() => deleteblinkingDiagram(diagramUuid), BLINK_LENGTH_MS);
+        },
+        [deleteblinkingDiagram]
+    );
 
     const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
         useDiagramModel({
