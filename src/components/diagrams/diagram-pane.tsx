@@ -343,7 +343,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                     partialDiagramView.id!,
                     partialDiagramView.elementType,
                     partialDiagramView.state,
-                    partialDiagramView.nadName
+                    partialDiagramView.elementName
                 );
             } else if (partialDiagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(
@@ -406,7 +406,7 @@ type DiagramView = {
     svgType: DiagramType;
     state: ViewState;
     name: string;
-    nadName?: string;
+    elementName?: string;
     align: 'left' | 'right' | 'center';
     loadingState: boolean;
     metadata?: SLDMetadata;
@@ -477,7 +477,7 @@ export function DiagramPane({
                 loadingState: boolean;
                 align: 'left' | 'right' | 'center';
                 name: string;
-                nadName?: string;
+                elementName?: string;
             }[] = [];
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -497,7 +497,7 @@ export function DiagramPane({
                             diagramProperties = {
                                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.name }),
                                 align: 'right',
-                                nadName: diagramState.name,
+                                elementName: diagramState.name,
                             } as const;
                         }
 
