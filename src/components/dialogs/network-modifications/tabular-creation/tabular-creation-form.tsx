@@ -39,34 +39,75 @@ const TabularCreationForm = () => {
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(CREATIONS_TABLE);
-            // check required fields are defined
-            let fieldNameInError: string = '';
+            let requiredFieldNameInError: string = '';
+
+            let requiredDependantFieldNameInError: string = '';
+            let dependantFieldNameInError: string = '';
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
                     const found = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
                         return field.id === key;
                     });
+                    // check required fields are defined
                     if (found !== undefined && found.required && (result[key] === undefined || result[key] === null)) {
-                        fieldNameInError = key;
+                        requiredFieldNameInError = key;
                         return false;
                     }
+
+                    //check requiredIf rule
+                    if (found?.requiredIf) {
+                        const dependentValue = result[found.requiredIf.id];
+                        if (
+                            dependentValue !== undefined &&
+                            dependentValue !== null &&
+                            (result[key] === undefined || result[key] === null)
+                        ) {
+                            dependantFieldNameInError = key;
+                            requiredDependantFieldNameInError = found.requiredIf.id;
+                            return false;
+                        }
+                    }
+
                     return true;
                 });
-                return fieldNameInError !== '';
+                return (
+                    requiredFieldNameInError !== '' ||
+                    dependantFieldNameInError !== '' ||
+                    requiredDependantFieldNameInError !== ''
+                );
             });
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
-            if (fieldNameInError !== '') {
+            if (requiredFieldNameInError !== '') {
                 setError(CREATIONS_TABLE, {
                     type: 'custom',
-                    message:
-                        intl.formatMessage({
+                    message: intl.formatMessage(
+                        {
                             id: 'FieldRequired',
-                        }) +
-                        intl.formatMessage({
-                            id: fieldNameInError,
-                        }),
+                        },
+                        {
+                            requiredFieldNameInError: intl.formatMessage({
+                                id: requiredFieldNameInError,
+                            }),
+                        }
+                    ),
+                });
+            }
+            if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                setError(CREATIONS_TABLE, {
+                    type: 'custom',
+                    message: intl.formatMessage(
+                        {
+                            id: 'DependantFieldMissing',
+                        },
+                        {
+                            requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
+                            dependantField: intl.formatMessage({
+                                id: requiredDependantFieldNameInError,
+                            }),
+                        }
+                    ),
                 });
             }
         },
