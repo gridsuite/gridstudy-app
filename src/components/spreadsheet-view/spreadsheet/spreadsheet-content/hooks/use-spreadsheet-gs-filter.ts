@@ -52,7 +52,12 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
                     const filtersUuids = genericFilters
                         .flatMap((filter) => filter.uuid)
                         .filter((uuid): uuid is UUID => uuid !== undefined);
-                    const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids);
+                    const response = await evaluateFilters(
+                        studyUuid,
+                        currentNode.id,
+                        currentRootNetworkUuid,
+                        filtersUuids
+                    );
                     genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>
                         filterEquipments.identifiableAttributes.flatMap((identifiable) => identifiable.id)
                     );

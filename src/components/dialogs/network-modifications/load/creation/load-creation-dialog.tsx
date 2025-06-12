@@ -72,7 +72,7 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [LOAD_TYPE]: yup.string().nullable(),
         [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),

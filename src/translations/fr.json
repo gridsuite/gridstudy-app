@@ -837,8 +837,6 @@
     "SwitchesBetweenSections": "OCs entre sections",
     "Coupling_Omnibus": "Couplage / omnibus",
     "AddCoupling_Omnibus": "Ajouter couplage / omnibus",
-    "SectionID1": "ID section 1",
-    "SectionID2": "ID section 2",
     "SwitchBetweenSectionsLabel": "section_{index1} / section_{index2}",
     "BusBarHorizPos": "Position horizontale",
     "BusBarVertPos": "Position verticale",
@@ -1564,5 +1562,6 @@
     "maxNumberIterations": "Nombre maximal d'itérations",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
-    "loadFlowModification": "Modification par calcul de répartition appliquée"
+    "loadFlowModification": "Modification par calcul de répartition appliquée",
+    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}"
 }
