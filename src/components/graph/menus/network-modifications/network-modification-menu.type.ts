@@ -25,11 +25,6 @@ export interface NetworkModificationMetadata {
     messageValues: string;
 }
 
-export interface NetworkModificationInfos {
-    modificationInfos: NetworkModificationMetadata;
-    activationStatusByRootNetwork: Record<UUID, boolean>;
-}
-
 export enum NetworkModificationCopyType {
     COPY = 'COPY',
     MOVE = 'MOVE',
