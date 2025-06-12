@@ -324,7 +324,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     const updateDiagram = useCallback(
         (diagramParams: DiagramParams) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
-                // this hook instance don't manage this type of diagram
+                // this hook instance doesn't manage this type of diagram
                 return;
             }
             const existingDiagram = diagrams[diagramParams.diagramUuid];
