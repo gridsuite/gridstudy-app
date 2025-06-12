@@ -27,21 +27,9 @@ import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
 import { useIntl } from 'react-intl';
-import { NodeType } from 'components/graph/tree-node.type';
+import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-
-const makeDiagramName = (diagram: Diagram): string => {
-    if (diagram.type === DiagramType.VOLTAGE_LEVEL) {
-        return `${diagram.voltageLevelId}`;
-    } else if (diagram.type === DiagramType.SUBSTATION) {
-        return `${diagram.substationId}`;
-    } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-        return `${diagram.voltageLevelIds.join(', ')}`;
-    } else if (diagram.type === DiagramType.NAD_FROM_CONFIG) {
-        return `${diagram.nadFromConfigUuid}`;
-    }
-    return `diagram type unknown`;
-};
+import { NodeType } from 'components/graph/tree-node.type';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -61,6 +49,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const getDiagramTitle = useDiagramTitle();
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
     const [loadingDiagrams, setLoadingDiagrams] = useState<UUID[]>([]);
@@ -285,7 +274,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                                 newDiagrams[diagram.diagramUuid] = {
                                     ...diagrams[diagram.diagramUuid],
                                     svg: data,
-                                    name: makeDiagramName(diagram),
+                                    name: getDiagramTitle(diagram, data),
                                 };
                                 return newDiagrams;
                             });
@@ -306,7 +295,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                                     {
                                         id: 'diagramLoadingFail',
                                     },
-                                    { diagramName: makeDiagramName(diagram) }
+                                    { diagramName: getDiagramTitle(diagram) }
                                 ),
                             };
                             return newDiagrams;
@@ -335,7 +324,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                     });
             }
         },
-        [getUrl, intl, snackError]
+        [getDiagramTitle, getUrl, intl, snackError]
     );
 
     const createDiagram = useCallback(

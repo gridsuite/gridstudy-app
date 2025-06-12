@@ -151,10 +151,11 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
+    readonly onLoadNadFromConfig?: (nadConfigUuid: UUID, nadName: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromConfig } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -277,10 +278,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     };
 
     const handleLoadFromConfig = useCallback(
-        (nadConfigUuid: string, nadName: string) => {
+        (nadConfigUuid: UUID, nadName: string) => {
             loadNadFromConfigView(nadConfigUuid, nadName);
+            onLoadNadFromConfig?.(nadConfigUuid, nadName);
         },
-        [loadNadFromConfigView]
+        [loadNadFromConfigView, onLoadNadFromConfig]
     );
 
     /**
