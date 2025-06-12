@@ -843,8 +843,6 @@
     "SwitchesBetweenSections": "Switches between sections",
     "Coupling_Omnibus": "Coupler",
     "AddCoupling_Omnibus": "Add Coupler",
-    "SectionID1": "Section ID 1",
-    "SectionID2": "Section ID 2",
     "SwitchBetweenSectionsLabel": "section_{index1} / section_{index2}",
     "BusBarHorizPos": "Horizontal position",
     "BusBarVertPos": "Vertical position",
