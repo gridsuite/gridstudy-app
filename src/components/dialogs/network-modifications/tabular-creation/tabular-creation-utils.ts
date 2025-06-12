@@ -19,6 +19,7 @@ import {
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
+    LOAD_TYPE,
     MARGINAL_COST,
     MAX_P,
     MAX_Q,
@@ -29,15 +30,18 @@ import {
     MIN_P,
     MIN_Q,
     MINIMUM_REACTIVE_POWER,
+    P0,
     PARTICIPATE,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
+    Q0,
     Q_PERCENT,
     RATED_S,
     REACTIVE_CAPABILITY_CURVE,
     REACTIVE_CAPABILITY_CURVE_P_0,
     REACTIVE_CAPABILITY_CURVE_P_MAX,
     REACTIVE_CAPABILITY_CURVE_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_POINTS,
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
@@ -58,10 +62,6 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
     VOLTAGE_SET_POINT,
-    LOAD_TYPE,
-    P0,
-    Q0,
-    REACTIVE_CAPABILITY_CURVE_POINTS,
 } from 'components/utils/field-constants';
 import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 
@@ -203,10 +203,21 @@ const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapa
     ];
 
     if (curvePoint2) {
+        const isLastPoint = !curvePoint3;
+
         result.push(
-            { key: REACTIVE_CAPABILITY_CURVE_P_0, value: curvePoint2.p },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, value: curvePoint2.maxQ },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, value: curvePoint2.minQ }
+            {
+                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_P_MAX : REACTIVE_CAPABILITY_CURVE_P_0,
+                value: curvePoint2.p,
+            },
+            {
+                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
+                value: curvePoint2.maxQ,
+            },
+            {
+                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
+                value: curvePoint2.minQ,
+            }
         );
     }
 
@@ -219,6 +230,35 @@ const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapa
     }
 
     return result;
+};
+
+export const convertReactiveCapabilityCurvePointsFromFrontToBack = (creation: Record<string, unknown>) => {
+    if (creation[REACTIVE_CAPABILITY_CURVE]) {
+        //Convert list data to matrix
+        const rccPoints = [];
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_MIN] !== null) {
+            rccPoints.push({
+                p: creation[REACTIVE_CAPABILITY_CURVE_P_MIN],
+                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
+                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
+            });
+        }
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_0] !== null) {
+            rccPoints.push({
+                p: creation[REACTIVE_CAPABILITY_CURVE_P_0],
+                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
+                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
+            });
+        }
+        if (creation[REACTIVE_CAPABILITY_CURVE_P_MAX] !== null) {
+            rccPoints.push({
+                p: creation[REACTIVE_CAPABILITY_CURVE_P_MAX],
+                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
+                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
+            });
+        }
+        creation[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
+    }
 };
 
 export const convertCreationFieldFromBackToFront = (
