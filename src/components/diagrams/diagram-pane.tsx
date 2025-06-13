@@ -341,7 +341,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             } else if (partialDiagramView.svgType === DiagramType.NAD_FROM_ELEMENT) {
                 return createNetworkAreaDiagramFromElementView(
                     partialDiagramView.id!,
-                    partialDiagramView.elementType,
+                    partialDiagramView.elementType!,
                     partialDiagramView.state,
                     partialDiagramView.elementName
                 );
@@ -472,6 +472,7 @@ export function DiagramPane({
             // We check if we need to add new diagrams
             const diagramsToAdd: {
                 id: UUID;
+                elementType: ElementType;
                 svgType: DiagramType;
                 state: ViewState;
                 loadingState: boolean;

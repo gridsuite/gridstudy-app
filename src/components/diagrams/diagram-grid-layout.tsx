@@ -10,7 +10,7 @@ import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, darken, IconButton, Theme, useTheme } from '@mui/material';
-import { EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import { UUID } from 'crypto';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';

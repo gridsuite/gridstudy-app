@@ -179,7 +179,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     };
 
     const handleLoadFromElement = useCallback(
-        (elementUuid: string, elementType: ElementType, elementName: string) => {
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             if (onLoadNadFromElement) {
                 onLoadNadFromElement(elementUuid, elementType, elementName);
             } else {

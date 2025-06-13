@@ -56,7 +56,7 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
-    onLoad?: (elementUuid: string, elementType: ElementType, elementName: string) => void;
+    onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
 }
@@ -97,7 +97,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0) {
-            handleLoad(selectedElements[0].id, selectedElements[0].type, selectedElements[0].name);
+            handleLoad(selectedElements[0].id, selectedElements[0].type!, selectedElements[0].name);
         }
         handleCloseLoadSelector();
     };
