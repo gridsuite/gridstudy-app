@@ -472,7 +472,7 @@ export function DiagramPane({
             // We check if we need to add new diagrams
             const diagramsToAdd: {
                 id: UUID;
-                elementType: ElementType;
+                elementType?: ElementType;
                 svgType: DiagramType;
                 state: ViewState;
                 loadingState: boolean;
