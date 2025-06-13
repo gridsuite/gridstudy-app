@@ -14,7 +14,6 @@ import ScenarioParameters, { SCENARIO_DURATION } from './scenario-parameters';
 import {
     fetchDefaultDynamicSecurityAnalysisProvider,
     fetchDynamicSecurityAnalysisParameters,
-    fetchDynamicSecurityAnalysisProviders,
     updateDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisProvider,
 } from '../../../../services/study/dynamic-security-analysis';
@@ -24,10 +23,10 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
-    SubmitButton,
-    ProviderParam,
-    useParametersBackend,
     parametersStyles,
+    ProviderParam,
+    SubmitButton,
+    useParametersBackend,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -41,6 +40,7 @@ import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { useParametersNotification } from '../use-parameters-notification';
+import { fetchDynamicSecurityAnalysisProviders } from '../../../../services/dynamic-security-analysis';
 
 const scenarioFormSchema = yup
     .object()

@@ -34,8 +34,9 @@ export function startShortCircuitAnalysis(
     studyUuid: string,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: UUID | null,
-    busId: string
-) {
+    busId: string,
+    debug?: boolean
+): Promise<void> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
