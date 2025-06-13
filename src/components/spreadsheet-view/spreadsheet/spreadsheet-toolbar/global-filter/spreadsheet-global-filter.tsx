@@ -72,7 +72,11 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     return (
         <GlobalFilterSelector
-            filterableEquipmentTypes={[tableDefinition.type as unknown as EQUIPMENT_TYPES]}
+            filterableEquipmentTypes={[
+                tableDefinition.type as unknown as EQUIPMENT_TYPES,
+                EQUIPMENT_TYPES.SUBSTATION,
+                EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+            ]}
             filters={filters}
             onChange={handleFilterChange}
             preloadedGlobalFilters={globalFilterSpreadsheetState}
