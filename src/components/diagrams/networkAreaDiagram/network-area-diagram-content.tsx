@@ -14,6 +14,7 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
+    NAD_ZOOM_LEVELS,
 } from '../diagram-common';
 import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -207,7 +208,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 isEditNadMode,
                 true,
-                [0, 2000, 3500, 6000, 9000, 12000, 15000],
+                NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
