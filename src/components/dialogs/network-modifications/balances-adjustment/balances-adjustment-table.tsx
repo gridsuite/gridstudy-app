@@ -31,7 +31,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentZone',
                 dataKey: BALANCES_ADJUSTMENT_ZONE,
                 editable: true,
-                type: DndColumnType.TEXT,
+                type: DndColumnType.TEXT as const,
                 initialValue: '',
                 width: '100px',
             },
@@ -39,7 +39,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentCountry',
                 dataKey: BALANCES_ADJUSTMENT_COUNTRIES,
                 editable: true,
-                type: DndColumnType.CUSTOM,
+                type: DndColumnType.CUSTOM as const,
                 component: (rowIndex: number) =>
                     CountriesAutocomplete({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_COUNTRIES}`,
@@ -52,7 +52,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentShiftEquipmentType',
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE,
                 editable: true,
-                type: DndColumnType.CUSTOM,
+                type: DndColumnType.CUSTOM as const,
                 component: (rowIndex: number) =>
                     SelectInput({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE}`,
@@ -69,7 +69,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentShiftType',
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_TYPE,
                 editable: true,
-                type: DndColumnType.CUSTOM,
+                type: DndColumnType.CUSTOM as const,
                 component: (rowIndex: number) =>
                     SelectInput({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_TYPE}`,
@@ -86,7 +86,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentTarget',
                 dataKey: BALANCES_ADJUSTMENT_TARGET,
                 editable: true,
-                type: DndColumnType.NUMERIC,
+                type: DndColumnType.NUMERIC as const,
                 initialValue: 0,
                 width: '100px',
             },
