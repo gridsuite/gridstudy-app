@@ -16,11 +16,12 @@ import {
     BALANCES_ADJUSTMENT_ADVANCED,
     BALANCES_ADJUSTMENT_BALANCE_TYPE,
     BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE,
+    BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING,
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
     BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
 } from '../../../utils/field-constants';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from './styles';
 import { useWatch } from 'react-hook-form';
 
@@ -95,6 +96,19 @@ export default function BalancesAdjustmentAdvancedContent() {
                             disabled: !withLoadFlow,
                         }}
                     />
+                </GridItem>
+                <GridItem>
+                    <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Grid>
+                            <FormattedMessage id="subtractLoadFlowBalancing" />
+                        </Grid>
+                        <Grid>
+                            <SwitchInput
+                                name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING}`}
+                                formProps={{ disabled: !withLoadFlow }}
+                            />
+                        </Grid>
+                    </Grid>
                 </GridItem>
             </Grid>
         </Grid>

@@ -27,7 +27,7 @@ export default function GridSection({
 }: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
-        <Grid container spacing={2}>
+        <Grid container>
             <Grid item xs={size}>
                 <Box sx={customStyle} component={`h${heading}`}>
                     <FormattedMessage id={title} />
