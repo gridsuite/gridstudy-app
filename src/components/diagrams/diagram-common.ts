@@ -26,6 +26,10 @@ export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
 // To prevent increasing the network area diagram depth when the number of voltage levels in the diagram exceeds this value
 export const NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS = 50;
 
+// Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
+// corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
+export const NAD_ZOOM_LEVELS = [0, 2000, 3500, 6000, 9000, 12000, 15000];
+
 export const DEFAULT_WIDTH_VOLTAGE_LEVEL = 400;
 export const DEFAULT_HEIGHT_VOLTAGE_LEVEL = 400;
 export const DEFAULT_WIDTH_SUBSTATION = 700;
