@@ -6,12 +6,7 @@
  */
 
 import React, { useCallback, useMemo, ReactNode, SetStateAction } from 'react';
-import {
-    CustomAGGrid,
-    ExcludedNetworkModifications,
-    NetworkModificationMetadata,
-    useModificationLabelComputer,
-} from '@gridsuite/commons-ui';
+import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
     ColDef,
@@ -35,6 +30,7 @@ import {
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { ExcludedNetworkModifications } from './network-modification-menu.type';
 
 const styles = {
     container: (theme: Theme) => ({

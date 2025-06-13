@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    EquipmentInfos,
-    EquipmentType,
-    ExcludedNetworkModifications,
-    MODIFICATION_TYPES,
-    NetworkModificationMetadata,
-} from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -53,6 +47,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
+import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';

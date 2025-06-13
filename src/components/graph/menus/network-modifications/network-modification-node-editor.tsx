@@ -8,7 +8,6 @@
 import {
     ElementSaveDialog,
     ElementType,
-    ExcludedNetworkModifications,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
@@ -84,6 +83,7 @@ import {
 } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import {
+    ExcludedNetworkModifications,
     MenuDefinition,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,

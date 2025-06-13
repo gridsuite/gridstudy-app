@@ -15,6 +15,11 @@ export interface RootNetworkMetadata {
     isCreating: boolean;
 }
 
+export interface ExcludedNetworkModifications {
+    rootNetworkUuid: UUID;
+    modificationUuidsToExclude: UUID[];
+}
+
 export interface NetworkModificationMetadata {
     uuid: UUID;
     type: string;
