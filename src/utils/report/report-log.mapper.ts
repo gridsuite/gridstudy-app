@@ -10,17 +10,21 @@ import { Log, ReportLog } from './report.type';
 
 export const mapReportLogs = (reportLogs: ReportLog[]) => {
     const formattedLogs: Log[] = [];
+    const minDepth = Math.min(...reportLogs.map((log) => log.depth ?? 0));
     reportLogs.forEach((reportLog) => {
-        formatLog(reportLog, formattedLogs);
+        formatLog(minDepth, reportLog, formattedLogs);
     });
     return formattedLogs;
 };
 
-const formatLog = (reportLog: ReportLog, formattedLogs: Log[]) => {
+const formatLog = (minDepth: number, reportLog: ReportLog, formattedLogs: Log[]) => {
+    const severity =
+        Object.values(REPORT_SEVERITY).find((s) => reportLog.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN;
     formattedLogs.push({
         message: reportLog.message,
-        severity: Object.values(REPORT_SEVERITY).find((s) => reportLog.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN,
-        depth: reportLog.depth,
+        severity: severity.name,
+        backgroundColor: severity.colorName,
+        depth: (reportLog.depth ?? 0) - minDepth,
         parentId: reportLog.parentId,
     });
 };
