@@ -12,13 +12,13 @@ import { useController } from 'react-hook-form';
 import { SyntheticEvent } from 'react';
 import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
 
-type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags'> & {
+type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags' | 'disabled'> & {
     name: AutocompleteInputProps['name'];
     label?: TextFieldProps['label'];
     disabled?: boolean;
 };
 
-export default function CountriesAutocomplete({ name, label, disabled = false, ...props }: CountriesAutocompleteProps) {
+export default function CountriesAutocomplete({ name, label, ...props }: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
 
     const {
@@ -33,7 +33,6 @@ export default function CountriesAutocomplete({ name, label, disabled = false, .
     return (
         <Autocomplete
             multiple
-            disabled={disabled}
             value={value}
             onChange={handleChange}
             options={countryCodes}
