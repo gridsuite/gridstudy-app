@@ -9,7 +9,11 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '@gridsuite/commons-ui';
-import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
+import {
+    ColumnStateDto,
+    SpreadsheetCollectionDto,
+    SpreadsheetConfig,
+} from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
@@ -66,6 +70,17 @@ export function reorderSpreadsheetColumns(studyUuid: UUID, spreadsheetModelUuid:
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(columnsOrder),
+    });
+}
+
+export function updateColumnStates(studyUuid: UUID, spreadsheetModelUuid: UUID, columnStates: ColumnStateDto[]) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/states`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(columnStates),
     });
 }
 

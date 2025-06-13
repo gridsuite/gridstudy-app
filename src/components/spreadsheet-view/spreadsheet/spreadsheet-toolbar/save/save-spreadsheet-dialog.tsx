@@ -77,6 +77,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
                     filterTolerance: columnFilter?.tolerance,
                     filterType: columnFilter?.type,
                     filterValue: JSON.stringify(columnFilter?.value) ?? undefined,
+                    visible: true,
                 };
                 return acc;
             },

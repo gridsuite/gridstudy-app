@@ -161,6 +161,7 @@ export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetC
                         formula: column.formula || '',
                         dependencies: column.dependencies?.length ? JSON.stringify(column.dependencies) : undefined,
                         ...columnFilter,
+                        visible: true,
                     };
                     return dto;
                 })
