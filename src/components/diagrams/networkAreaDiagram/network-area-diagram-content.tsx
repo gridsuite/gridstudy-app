@@ -15,13 +15,7 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
 } from '../diagram-common';
-import {
-    CSS_RULE,
-    NetworkAreaDiagramViewer,
-    THRESHOLD_STATUS,
-    DiagramMetadata,
-    OnToggleNadHoverCallbackType,
-} from '@powsybl/network-viewer';
+import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
@@ -38,100 +32,6 @@ import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
-
-const dynamicCssRules: CSS_RULE[] = [
-    {
-        cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 2500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-label-box', // tooltips linked to nodes
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-text-edges', // visual link between nodes and their tooltip
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '[class^="nad-vl0to30"], [class*=" nad-vl0to30"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 12000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl30to50"], [class*=" nad-vl30to50"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 12000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl50to70"], [class*=" nad-vl50to70"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 27000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl70to120"], [class*=" nad-vl70to120"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 27000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl120to180"], [class*=" nad-vl120to180"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 36000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl180to300"], [class*=" nad-vl180to300"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 80000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '.nad-disconnected .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-dasharray': '10, 10' },
-        aboveThresholdCssDeclaration: { 'stroke-dasharray': '0.5%, 0.5%' },
-        threshold: 2500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-vl-nodes circle.nad-unknown-busnode',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-];
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -304,7 +204,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 isEditNadMode,
                 true,
-                dynamicCssRules,
+                [0, 2000, 3500, 6000, 9000, 12000, 15000],
                 isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
