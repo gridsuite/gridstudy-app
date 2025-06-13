@@ -43,7 +43,7 @@ export interface Contingency {
 
 export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
-    locationId?: string;
+    locationId?: string | null;
     acceptableDuration?: number | null;
     status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];

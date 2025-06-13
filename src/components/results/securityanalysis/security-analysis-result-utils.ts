@@ -42,6 +42,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
+import { LimitTypes } from '../loadflow/load-flow-result.type';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -72,7 +73,7 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
 
             rows.push({
                 subjectId: subjectId,
-                locationId: limitViolation.locationId,
+                locationId: limitViolation.limitType === LimitTypes.CURRENT ? null : limitViolation.locationId,
                 limitType: limitViolation.limitType
                     ? intl.formatMessage({
                           id: limitViolation.limitType,
@@ -123,7 +124,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    locationId: limitViolation.locationId,
+                    locationId: limitViolation.limitType === LimitTypes.CURRENT ? null : limitViolation.locationId,
                     linkedElementId: subjectId,
                 });
             });
