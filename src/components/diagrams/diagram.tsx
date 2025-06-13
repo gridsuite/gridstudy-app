@@ -82,6 +82,8 @@ const Diagram: React.FC<DiagramProps> = ({
 
     const decrementCounterDisabled = loadingState || networkAreaDiagramDepth === 0;
 
+    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
+
     /**
      * DIAGRAM CONTROL HANDLERS
      */
@@ -170,7 +172,7 @@ const Diagram: React.FC<DiagramProps> = ({
                     )}
                 </Box>
                 <DiagramFooter
-                    showCounterControls={svgType === DiagramType.NETWORK_AREA_DIAGRAM}
+                    showCounterControls={isEditNadMode && svgType === DiagramType.NETWORK_AREA_DIAGRAM}
                     counterText={intl.formatMessage({
                         id: 'depth',
                     })}
