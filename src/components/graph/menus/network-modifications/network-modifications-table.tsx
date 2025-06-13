@@ -6,7 +6,12 @@
  */
 
 import React, { useCallback, useMemo, ReactNode, SetStateAction } from 'react';
-import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    ExcludedNetworkModifications,
+    NetworkModificationMetadata,
+    useModificationLabelComputer,
+} from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
     ColDef,
@@ -30,7 +35,6 @@ import {
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
-import { UUID } from 'crypto';
 
 const styles = {
     container: (theme: Theme) => ({
@@ -59,8 +63,8 @@ interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorN
     onRowDragStart?: (event: RowDragEnterEvent) => void;
     onRowDragEnd?: (event: RowDragEndEvent) => void;
     onRowSelected?: (event: RowSelectedEvent) => void;
-    modificationsToExcludeByRootNetwork: Record<UUID, UUID[]>;
-    setModificationsToExcludeByRootNetwork: React.Dispatch<SetStateAction<Record<UUID, UUID[]>>>;
+    modificationsToExclude: ExcludedNetworkModifications[];
+    setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
 }
 
 const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
@@ -72,8 +76,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowDragStart,
     onRowDragEnd,
     onRowSelected,
-    modificationsToExcludeByRootNetwork,
-    setModificationsToExcludeByRootNetwork,
+    modificationsToExclude,
+    setModificationsToExclude,
     ...nameHeaderProps
 }) => {
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -141,8 +145,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                       cellRenderer: RootNetworkChipCellRenderer,
                       cellRendererParams: {
                           rootNetwork: rootNetwork,
-                          modificationsToExcludeByRootNetwork: modificationsToExcludeByRootNetwork,
-                          setModificationsToExcludeByRootNetwork: setModificationsToExcludeByRootNetwork,
+                          modificationsToExclude: modificationsToExclude,
+                          setModificationsToExclude: setModificationsToExclude,
                       },
                       cellStyle: { textAlign: 'center' },
                       headerStyle: { padding: 0 },
@@ -176,8 +180,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         rootNetworks,
         getModificationLabel,
         currentRootNetworkUuid,
-        modificationsToExcludeByRootNetwork,
-        setModificationsToExcludeByRootNetwork,
+        modificationsToExclude,
+        setModificationsToExclude,
     ]);
 
     const getRowId = (params: GetRowIdParams<NetworkModificationMetadata>) => params.data.uuid;

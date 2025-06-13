@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import {
+    EquipmentInfos,
+    EquipmentType,
+    ExcludedNetworkModifications,
+    MODIFICATION_TYPES,
+    NetworkModificationMetadata,
+} from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -1692,14 +1698,14 @@ export function fetchNetworkModifications(
     return backendFetchJson(modificationsGetUrl);
 }
 
-export function fetchExcludedNetworkModificationsByRootNetwork(
+export function fetchExcludedNetworkModifications(
     studyUuid: UUID | null,
     nodeUuid: string
-): Promise<Record<UUID, UUID[]>> {
+): Promise<ExcludedNetworkModifications[]> {
     console.info('Fetching excluded network modifications by root networks for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
-    const modificationsGetUrl =
-        getNetworkModificationUrl(studyUuid, nodeUuid) + '-status?' + urlSearchParams.toString();
+    const modificationsGetUrl = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/excluded-network-modifications?';
+    urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

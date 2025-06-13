@@ -8,6 +8,7 @@
 import {
     ElementSaveDialog,
     ElementType,
+    ExcludedNetworkModifications,
     IElementCreationDialog,
     IElementUpdateDialog,
     MODIFICATION_TYPES,
@@ -78,7 +79,7 @@ import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
     fetchNetworkModifications,
-    fetchExcludedNetworkModificationsByRootNetwork,
+    fetchExcludedNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
@@ -126,9 +127,7 @@ const NetworkModificationNodeEditor = () => {
     const createdRootNetworksPreviousLength = usePrevious(createdRootNetworks.length);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const [modificationsToExcludeByRootNetwork, setModificationsToExcludeByRootNetwork] = useState<
-        Record<UUID, UUID[]>
-    >({});
+    const [modificationsToExclude, setModificationsToExclude] = useState<ExcludedNetworkModifications[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
@@ -549,11 +548,11 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         setIsFetchingModifications(true);
-        fetchExcludedNetworkModificationsByRootNetwork(studyUuid, currentNode.id)
-            .then((res: Record<UUID, UUID[]>) => {
-                setModificationsToExcludeByRootNetwork(res);
+        fetchExcludedNetworkModifications(studyUuid, currentNode.id)
+            .then((res: ExcludedNetworkModifications[]) => {
+                setModificationsToExclude(res);
             })
-            .catch((error) => {
+            .catch((error: Error) => {
                 snackError({
                     messageTxt: error.message,
                 });
@@ -585,7 +584,7 @@ const NetworkModificationNodeEditor = () => {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
-            setModificationsToExcludeByRootNetwork({});
+            setModificationsToExclude([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
             dofetchNetworkModificationsStatusByRootNetwork();
@@ -602,7 +601,7 @@ const NetworkModificationNodeEditor = () => {
         dofetchNetworkModifications,
         dofetchNetworkModificationsStatusByRootNetwork,
         modifications,
-        modificationsToExcludeByRootNetwork,
+        modificationsToExclude,
     ]);
 
     useEffect(() => {
@@ -896,8 +895,8 @@ const NetworkModificationNodeEditor = () => {
                 notificationMessageId={notificationMessageId}
                 isFetchingModifications={isFetchingModifications}
                 pendingState={pendingState}
-                modificationsToExcludeByRootNetwork={modificationsToExcludeByRootNetwork}
-                setModificationsToExcludeByRootNetwork={setModificationsToExcludeByRootNetwork}
+                modificationsToExclude={modificationsToExclude}
+                setModificationsToExclude={setModificationsToExclude}
             />
         );
     };

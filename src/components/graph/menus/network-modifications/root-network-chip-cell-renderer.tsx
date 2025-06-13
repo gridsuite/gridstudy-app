@@ -6,27 +6,30 @@
  */
 
 import { useState, useCallback, useMemo, SetStateAction } from 'react';
-import { ActivableChip, NetworkModificationMetadata, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ActivableChip,
+    ExcludedNetworkModifications,
+    NetworkModificationMetadata,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { updateModificationStatusByRootNetwork } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { RootNetworkMetadata } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { UUID } from 'crypto';
 
 interface RootNetworkChipCellRendererProps {
     data?: NetworkModificationMetadata;
-    modificationsToExcludeByRootNetwork: Record<UUID, UUID[]>;
-    setModificationsToExcludeByRootNetwork: React.Dispatch<SetStateAction<Record<UUID, UUID[]>>>;
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
+    modificationsToExclude: ExcludedNetworkModifications[];
+    setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
     rootNetwork: RootNetworkMetadata;
 }
 
 const RootNetworkChipCellRenderer = ({
     data,
     rootNetwork,
-    modificationsToExcludeByRootNetwork,
-    setModificationsToExcludeByRootNetwork,
+    modificationsToExclude,
+    setModificationsToExclude,
 }: RootNetworkChipCellRendererProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -36,7 +39,6 @@ const RootNetworkChipCellRenderer = ({
 
     const { snackError } = useSnackMessage();
     const modificationUuid = data?.uuid;
-
     const isModificationActivated = useMemo(() => {
         if (!modificationUuid) {
             return false;
@@ -45,15 +47,20 @@ const RootNetworkChipCellRenderer = ({
             return true;
         }
 
-        const excludedList = modificationsToExcludeByRootNetwork[rootNetwork.rootNetworkUuid] || [];
+        const excludedList =
+            modificationsToExclude.find((item) => item.rootNetworkUuid === rootNetwork.rootNetworkUuid)
+                ?.modificationUuidsToExclude || [];
+
         return !excludedList.includes(modificationUuid);
-    }, [modificationUuid, modificationsToExcludeByRootNetwork, rootNetwork]);
+    }, [modificationUuid, modificationsToExclude, rootNetwork]);
 
     const updateStatus = useCallback(
         (newStatus: boolean) => {
             if (!studyUuid || !modificationUuid || !currentNode) {
                 return;
             }
+            console.log('herrrreeeeee updating ????');
+
             updateModificationStatusByRootNetwork(
                 studyUuid,
                 currentNode?.id,
@@ -70,7 +77,6 @@ const RootNetworkChipCellRenderer = ({
         },
         [studyUuid, modificationUuid, currentNode, rootNetwork, snackError]
     );
-
     const handleModificationActivationByRootNetwork = useCallback(() => {
         if (!modificationUuid) {
             return;
@@ -78,21 +84,37 @@ const RootNetworkChipCellRenderer = ({
 
         setIsLoading(true);
 
-        setModificationsToExcludeByRootNetwork((prev) => {
-            const currentExcludedModifications = prev[rootNetwork.rootNetworkUuid] || [];
-            const isExcluded = currentExcludedModifications.includes(modificationUuid);
-            const updatedModificationsToExclude = isExcluded
-                ? currentExcludedModifications.filter((id) => id !== modificationUuid)
-                : [...currentExcludedModifications, modificationUuid];
+        setModificationsToExclude((prev) => {
+            const updatedExcludedModifications = prev.map((modif) => {
+                if (modif.rootNetworkUuid !== rootNetwork.rootNetworkUuid) {
+                    return modif;
+                }
 
-            updateStatus(isExcluded);
+                const isExcluded = modif.modificationUuidsToExclude.includes(modificationUuid);
+                const modificationUuidsToExclude = isExcluded
+                    ? modif.modificationUuidsToExclude.filter((id) => id !== modificationUuid)
+                    : [...modif.modificationUuidsToExclude, modificationUuid];
 
-            return {
-                ...prev,
-                [rootNetwork.rootNetworkUuid]: updatedModificationsToExclude,
-            };
+                updateStatus(!isExcluded);
+
+                return { ...modif, modificationUuidsToExclude };
+            });
+
+            const exists = prev.some((item) => item.rootNetworkUuid === rootNetwork.rootNetworkUuid);
+            if (!exists) {
+                updateStatus(false);
+                return [
+                    ...prev,
+                    {
+                        rootNetworkUuid: rootNetwork.rootNetworkUuid,
+                        modificationUuidsToExclude: [modificationUuid],
+                    },
+                ];
+            }
+
+            return updatedExcludedModifications;
         });
-    }, [modificationUuid, rootNetwork.rootNetworkUuid, setModificationsToExcludeByRootNetwork, updateStatus]);
+    }, [modificationUuid, rootNetwork.rootNetworkUuid, setModificationsToExclude, updateStatus]);
 
     return (
         <ActivableChip
