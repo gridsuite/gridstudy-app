@@ -16,23 +16,36 @@ import {
     styles,
     NAD_ZOOM_LEVELS,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
+import {
+    NetworkAreaDiagramViewer,
+    DiagramMetadata,
+    OnToggleNadHoverCallbackType,
+    OnSelectNodeCallbackType,
+} from '@powsybl/network-viewer';
+import AddIcon from '@mui/icons-material/ControlPoint';
+
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
+import {
+    setNetworkAreaDiagramSelectedVoltageLevel,
+    storeNetworkAreaDiagramNodeMovement,
+    storeNetworkAreaDiagramTextNodeMovement,
+} from '../../../redux/actions';
 import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomMenuItem, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -74,6 +87,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [clickedEquipmentId, setClickedEquipmentId] = useState<string>();
+    const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
+
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { loadNadFromConfigView } = useDiagram();
 
@@ -127,6 +144,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         },
         [dispatch, nadIdentifier]
     );
+
+    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
+        if (mousePosition) {
+            setClickedEquipmentId(equipmentId);
+            setShouldDisplayMenu(true);
+            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+        }
+    }, []);
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -205,7 +230,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
-                null,
+                OnLeftClickCallback,
                 isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
@@ -277,12 +302,17 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         nadIdentifier,
         onMoveTextNodeCallback,
         isEditNadMode,
+        OnLeftClickCallback,
     ]);
 
     /**
      * RENDER
      */
-
+    const intl = useIntl();
+    const closeMenu = () => {
+        setMenuAnchorPosition(null);
+        setShouldDisplayMenu(false);
+    };
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
@@ -295,6 +325,42 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     equipmentId={hoveredEquipmentId}
                     loadFlowStatus={loadFlowStatus}
                 />
+            )}
+            {shouldDisplayMenu && (
+                <Menu
+                    open={!!menuAnchorPosition}
+                    onClose={closeMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        menuAnchorPosition !== null
+                            ? { top: menuAnchorPosition.mouseY, left: menuAnchorPosition.mouseX }
+                            : undefined
+                    }
+                    style={{
+                        width: 'auto',
+                        maxHeight: 'auto',
+                    }}
+                >
+                    <CustomMenuItem
+                        style={{
+                            paddingTop: '1px',
+                            paddingBottom: '1px',
+                        }}
+                        onClick={() => {
+                            if (clickedEquipmentId) {
+                                dispatch(setNetworkAreaDiagramSelectedVoltageLevel([clickedEquipmentId]));
+                            }
+                            setMenuAnchorPosition(null);
+                            setShouldDisplayMenu(false);
+                        }}
+                    >
+                        <ListItemIcon>
+                            <AddIcon />
+                        </ListItemIcon>
+
+                        <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'add' })}</Typography>} />
+                    </CustomMenuItem>
+                </Menu>
             )}
             <Box
                 ref={svgRef}

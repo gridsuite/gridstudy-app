@@ -180,7 +180,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
                 return null;
             }
-
             return getNetworkAreaDiagramUrl(
                 studyUuid,
                 currentNode?.id,
@@ -248,10 +247,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             const url = getUrl(diagram);
             let fetchOptions: RequestInit = { method: 'GET' };
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                const payload = {
+                    voltageLevelsIds: diagram.voltageLevelIds,
+                    expandedVoltageLevelIds: diagram.selectedVoltageLevel ?? null,
+                };
                 fetchOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(diagram.voltageLevelIds),
+                    body: JSON.stringify(payload),
                 };
             }
 
