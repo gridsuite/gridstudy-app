@@ -24,6 +24,7 @@ import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
+import { useNadUpdate } from './hooks/use-nad-update';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -200,20 +201,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, [diagrams]);
 
-    const onChangeDepth = useCallback(
-        (diagramId: UUID, newDepth: number) => {
-            const diagram = diagrams[diagramId];
-            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                updateDiagram({
-                    diagramUuid: diagramId,
-                    type: DiagramType.NETWORK_AREA_DIAGRAM,
-                    voltageLevelIds: diagram.voltageLevelIds,
-                    depth: newDepth,
-                });
-            }
-        },
-        [diagrams, updateDiagram]
-    );
+    const { onChangeDepth, localNadDepth } = useNadUpdate({ diagrams, updateDiagram });
 
     const handleToggleEditMode = useCallback((diagramUuid: UUID) => {
         setDiagramsInEditMode((prev) =>
@@ -290,13 +278,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     counterText={intl.formatMessage({
                                         id: 'depth',
                                     })}
-                                    counterValue={diagram.depth}
-                                    onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
-                                    onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
-                                    incrementCounterDisabled={
-                                        diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
+                                    counterValue={localNadDepth[diagram.diagramUuid] ?? 0}
+                                    onIncrementCounter={() =>
+                                        onChangeDepth(diagram, localNadDepth[diagram.diagramUuid] + 1)
                                     }
-                                    decrementCounterDisabled={diagram.depth === 0} // loadingState ||
+                                    onDecrementCounter={() =>
+                                        onChangeDepth(diagram, localNadDepth[diagram.diagramUuid] - 1)
+                                    }
+                                    incrementCounterDisabled={
+                                        loadingDiagrams.includes(diagram.diagramUuid) ||
+                                        diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                                    }
+                                    decrementCounterDisabled={
+                                        loadingDiagrams.includes(diagram.diagramUuid) || diagram.depth === 0
+                                    }
                                 />
                             )}
                         </Box>
@@ -314,6 +309,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         handleToggleEditMode,
         intl,
         loadingDiagrams,
+        localNadDepth,
         onChangeDepth,
         onRemoveItem,
         setDiagramSize,
