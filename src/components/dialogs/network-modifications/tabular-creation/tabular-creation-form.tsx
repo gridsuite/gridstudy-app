@@ -11,16 +11,17 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
-    EQUIPMENT_ID,
     CREATIONS_TABLE,
+    EQUIPMENT_ID,
+    FREQUENCY_REGULATION,
+    REACTIVE_CAPABILITY_CURVE,
     TYPE,
     VOLTAGE_REGULATION_ON,
-    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
+import { styles, TABULAR_CREATION_FIELDS, TabularCreationField } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
@@ -227,7 +228,12 @@ const TabularCreationForm = () => {
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            if (field.id === VOLTAGE_REGULATION_ON || field.id === CONNECTED || field.id === FREQUENCY_REGULATION) {
+            if (
+                field.id === VOLTAGE_REGULATION_ON ||
+                field.id === CONNECTED ||
+                field.id === FREQUENCY_REGULATION ||
+                field.id === REACTIVE_CAPABILITY_CURVE
+            ) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
