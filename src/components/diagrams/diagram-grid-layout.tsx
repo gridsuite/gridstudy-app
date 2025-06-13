@@ -106,11 +106,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const onDiagramAlreadyExists = useCallback(
         (diagramUuid: UUID) => {
-            setBlinkingDiagrams((old_blinking_diagrams) => {
-                if (old_blinking_diagrams.includes(diagramUuid)) {
-                    return old_blinking_diagrams;
+            setBlinkingDiagrams((oldBlinkingDiagrams) => {
+                if (oldBlinkingDiagrams.includes(diagramUuid)) {
+                    return oldBlinkingDiagrams;
                 }
-                return [...old_blinking_diagrams, diagramUuid];
+                return [...oldBlinkingDiagrams, diagramUuid];
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
         },
