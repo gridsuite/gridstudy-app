@@ -122,14 +122,13 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
         ]
     );
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
-        (depth: number, selectedVoltageLevel: string | null) =>
+        (depth: number) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
                       currentRootNetworkUuid,
                       depth,
-                      selectedVoltageLevel,
                       networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
                   )
                 : null,
@@ -275,16 +274,21 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 ids: UUID[] | undefined,
                 state: ViewState | undefined,
                 depth = 0,
-                selectedVoltageLevel: string | null
+                selectedVoltageLevel: string[] | null
             ) {
                 console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(depth, selectedVoltageLevel);
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(depth);
+                    const payload = {
+                        voltageLevelsIds: ids,
+                        expandedVoltageLevelIds: selectedVoltageLevel ?? [],
+                    };
                     const fetchOptions = {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(ids),
+                        body: JSON.stringify(payload), // here nod String[] it's d
                     };
+
                     return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM, fetchOptions).then((svg) => {
                         let nadTitle = '';
                         let substationsIds: UUID[] = [];
@@ -404,7 +408,7 @@ type DiagramView = {
     svg?: string;
     country?: string;
     depth?: number;
-    selectedVoltageLevel?: string | null;
+    selectedVoltageLevel?: string[] | null;
     error?: string;
     nodeId?: UUID;
     rootNetworkUuid?: UUID; // is it used ?
@@ -591,7 +595,7 @@ export function DiagramPane({
             networkAreaIds: UUID[],
             networkAreaViewState: ViewState,
             networkAreaDiagramDepth: number,
-            selectedVoltageLevel: string | null
+            selectedVoltageLevel: string[] | null
         ) => {
             // First we add the empty diagram in the views
             setViews((views) => {

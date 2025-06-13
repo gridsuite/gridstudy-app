@@ -88,7 +88,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
-    const [clickedEquipmentId, setClickedEquipmentId] = useState<string | null>(null);
+    const [clickedEquipmentId, setClickedEquipmentId] = useState<string>();
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -347,7 +347,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                             paddingBottom: '1px',
                         }}
                         onClick={() => {
-                            dispatch(setNetworkAreaDiagramSelectedVoltageLevel(clickedEquipmentId));
+                            if (clickedEquipmentId) {
+                                dispatch(setNetworkAreaDiagramSelectedVoltageLevel([clickedEquipmentId]));
+                            }
                             setMenuAnchorPosition(null);
                             setShouldDisplayMenu(false);
                         }}

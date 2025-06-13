@@ -1006,15 +1006,15 @@ export const NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL = 'NETWORK_AREA_DIAGRAM
 export type NetworkAreaDiagramSelectedVoltageLevelAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL>
 > & {
-    selectedVoltageLevelNad: string | null;
+    selectedVoltageLevelNad: string[] | null;
 };
 
 export function setNetworkAreaDiagramSelectedVoltageLevel(
-    selectedVoltageLevelNad: string | null
+    selectedVoltageLevelNad: string[] | null
 ): NetworkAreaDiagramSelectedVoltageLevelAction {
     return {
         type: NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
-        selectedVoltageLevelNad: selectedVoltageLevelNad,
+        selectedVoltageLevelNad,
     };
 }
 

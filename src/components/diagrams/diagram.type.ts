@@ -84,7 +84,7 @@ export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
     depth: number;
-    SelectedVoltageLevel?: string | null;
+    selectedVoltageLevel?: string[] | null;
 };
 export type NetworkAreaDiagramFromConfig = DiagramBase & {
     type: DiagramType.NAD_FROM_CONFIG;

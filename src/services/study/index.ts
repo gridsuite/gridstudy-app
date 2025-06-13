@@ -47,7 +47,6 @@ export function getNetworkAreaDiagramUrl(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     depth: number,
-    selectedVoltageLevel: string | null | undefined,
     withGeoData: boolean
 ) {
     console.info(
@@ -57,10 +56,6 @@ export function getNetworkAreaDiagramUrl(
     const params = new URLSearchParams();
     params.set('depth', depth.toString());
     params.set('withGeoData', withGeoData.toString());
-
-    if (selectedVoltageLevel != null) {
-        params.set('selectedVoltageLevel', selectedVoltageLevel);
-    }
 
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +

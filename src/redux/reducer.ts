@@ -604,7 +604,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
-    selectedVoltageLevelNad: string | null;
+    selectedVoltageLevelNad: string[] | null;
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
@@ -1745,7 +1745,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
         (state, action: NetworkAreaDiagramSelectedVoltageLevelAction) => {
-            state.selectedVoltageLevelNad = action.selectedVoltageLevelNad;
+            const existing = state.selectedVoltageLevelNad ?? [];
+            const toAdd = action.selectedVoltageLevelNad ?? [];
+
+            state.selectedVoltageLevelNad = Array.from(new Set([...existing, ...toAdd]));
         }
     );
 
