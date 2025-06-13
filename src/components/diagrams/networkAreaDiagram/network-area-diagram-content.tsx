@@ -279,8 +279,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const handleLoadFromConfig = useCallback(
         (nadConfigUuid: UUID, nadName: string) => {
-            loadNadFromConfigView(nadConfigUuid, nadName);
-            onLoadNadFromConfig?.(nadConfigUuid, nadName);
+            if (onLoadNadFromConfig) {
+                onLoadNadFromConfig(nadConfigUuid, nadName);
+            } else {
+                loadNadFromConfigView(nadConfigUuid, nadName);
+            }
         },
         [loadNadFromConfigView, onLoadNadFromConfig]
     );
