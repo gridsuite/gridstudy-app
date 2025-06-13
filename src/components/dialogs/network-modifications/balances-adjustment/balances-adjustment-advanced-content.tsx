@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { Grid } from '@mui/material';
-import { FloatInput, IntegerInput, SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, IntegerInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
@@ -18,9 +18,11 @@ import {
     BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE,
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
+    BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
 } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import { styles } from './styles';
+import { useWatch } from 'react-hook-form';
 
 const BALANCE_TYPE_OPTIONS = [
     { id: 'PROPORTIONAL_TO_GENERATION_P', label: 'descLfBalanceTypeGenP' },
@@ -38,30 +40,29 @@ const BALANCE_TYPE_OPTIONS = [
 export default function BalancesAdjustmentAdvancedContent() {
     const intl = useIntl();
 
+    const withLoadFlow = useWatch({
+        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`,
+    });
+
     return (
-        <Grid container direction="column" width={'50%'} minWidth={'300px'}>
-            <GridSection title="Algorithm" />
-            <Grid container spacing={2} direction="column">
-                <GridItem>
-                    <IntegerInput
-                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
-                        label={'maxNumberIterations'}
+        <Grid container direction="column" xs={8} minWidth={'300px'}>
+            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <Grid>
+                    <GridSection title="Loadflow" />
+                </Grid>
+                <Grid>
+                    <SwitchInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_LOAD_FLOW}`}
                     />
-                </GridItem>
-                <GridItem>
-                    <FloatInput
-                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION}`}
-                        label={'thresholdNetPosition'}
-                    />
-                </GridItem>
+                </Grid>
             </Grid>
-            <GridSection title="Loadflow" />
             <Grid container spacing={2} direction="column">
                 <GridItem>
                     <CountriesAutocomplete
                         name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE}`}
                         limitTags={3}
                         label={intl.formatMessage({ id: 'descLfCountriesToBalance' })}
+                        disabled={!withLoadFlow}
                     />
                 </GridItem>
                 <GridItem>
@@ -70,6 +71,29 @@ export default function BalancesAdjustmentAdvancedContent() {
                         label={'descLfBalanceType'}
                         options={BALANCE_TYPE_OPTIONS}
                         sx={styles.autocomplete}
+                        disabled={!withLoadFlow}
+                        disableClearable={true}
+                    />
+                </GridItem>
+            </Grid>
+            <GridSection title="Algorithm" />
+            <Grid container spacing={2} direction="column">
+                <GridItem>
+                    <IntegerInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS}`}
+                        label={'maxNumberIterations'}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
+                    />
+                </GridItem>
+                <GridItem>
+                    <FloatInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION}`}
+                        label={'thresholdNetPosition'}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
                     />
                 </GridItem>
             </Grid>
