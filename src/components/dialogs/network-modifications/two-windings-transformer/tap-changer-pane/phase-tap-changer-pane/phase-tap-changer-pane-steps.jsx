@@ -20,7 +20,7 @@ import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';
 import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { DndColumnType } from '@gridsuite/commons-ui';
 
 const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
     const intl = useIntl();

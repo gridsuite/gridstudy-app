@@ -9,11 +9,9 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid 
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-
 import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
-import { MAX_ROWS_NUMBER } from 'components/utils/dnd-table/dnd-table';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {

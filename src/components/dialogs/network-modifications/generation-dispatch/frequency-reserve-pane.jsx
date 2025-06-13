@@ -9,12 +9,10 @@ import { FREQUENCY_RESERVE, GENERATORS_FILTERS, GENERATORS_FREQUENCY_RESERVES } 
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import DndTable from 'components/utils/dnd-table/dnd-table';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { ElementType } from '@gridsuite/commons-ui';
 import { Tooltip, IconButton } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { DndTable, DndColumnType, ElementType } from '@gridsuite/commons-ui';
 
 const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     const intl = useIntl();
@@ -87,7 +85,6 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 createRows={createFrequencyReserveRows}
                 columnsDefinition={completedColumnsDefinition}
                 tableHeight={270}
-                withLeftButtons={false}
                 withAddRowsDialog={false}
             />
         </>

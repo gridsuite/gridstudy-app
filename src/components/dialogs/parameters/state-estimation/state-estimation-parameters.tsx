@@ -6,7 +6,6 @@
  */
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, mergeSx, parametersStyles, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
-import { GENERAL } from '../voltageinit/voltage-init-parameters-form';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
@@ -64,7 +63,7 @@ export const StateEstimationParameters = ({
     const onValidationError = useCallback(
         (errors?: any) => {
             let tabsInError = [];
-            if (errors?.[GENERAL] !== undefined) {
+            if (errors?.[TabValue.GENERAL] !== undefined) {
                 tabsInError.push(TabValue.GENERAL);
             }
             if (errors?.[TabValue.WEIGHTS] !== undefined) {

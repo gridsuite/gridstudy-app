@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { VoltageInitParam } from '../../components/dialogs/parameters/voltageinit/voltage-init-utils';
+import { VoltageInitStudyParameters } from '@gridsuite/commons-ui';
 
 export function startVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
@@ -56,27 +56,7 @@ export function fetchVoltageInitResult(studyUuid: UUID, currentNodeUuid: UUID, c
     return backendFetchJson(url);
 }
 
-export function updateVoltageInitParameters(
-    studyUuid: UUID | null,
-    newParams: VoltageInitParam | Record<string, boolean | null>
-) {
-    console.info('set voltage init parameters');
-    const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
-    console.debug(url);
-
-    console.info('newParams in rest API', newParams);
-
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newParams),
-    });
-}
-
-export function getVoltageInitStudyParameters(studyUuid: UUID) {
+export function getVoltageInitStudyParameters(studyUuid: UUID): Promise<VoltageInitStudyParameters> {
     console.info('get voltage init study parameters');
     const getVoltageInitParams = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);
