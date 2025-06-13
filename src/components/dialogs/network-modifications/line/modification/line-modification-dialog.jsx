@@ -146,7 +146,7 @@ const LineModificationDialog = ({
     const formSchema = yup
         .object()
         .shape({
-            [EQUIPMENT_NAME]: yup.string(),
+            [EQUIPMENT_NAME]: yup.string().nullable(),
             ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
             ...getLimitsValidationSchema(true),

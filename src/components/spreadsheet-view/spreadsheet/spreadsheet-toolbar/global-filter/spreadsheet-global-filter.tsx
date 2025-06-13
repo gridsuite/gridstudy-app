@@ -6,19 +6,18 @@
  */
 
 import type { UUID } from 'crypto';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { debounce } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../../services/study/network-map';
 import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
+import { useGlobalFilterData } from '../../../../results/common/global-filter/use-global-filter-data';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
@@ -28,16 +27,10 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     const dispatch = useDispatch();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
     );
-
-    const { snackError } = useSnackMessage();
-
-    const [countriesFilter, setCountriesFilter] = useState<GlobalFilter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<GlobalFilter[]>([]);
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(
@@ -52,42 +45,6 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
         []
     );
 
-    useEffect(() => {
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((countryCodes) => {
-                    setCountriesFilter(
-                        countryCodes.map((countryCode: string) => ({
-                            label: countryCode,
-                            filterType: FilterType.COUNTRY,
-                        }))
-                    );
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchCountryError',
-                    });
-                });
-
-            fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
-                .then((nominalVoltages) => {
-                    setVoltageLevelsFilter(
-                        nominalVoltages.map((nominalV: number) => ({
-                            label: nominalV.toString(),
-                            filterType: FilterType.VOLTAGE_LEVEL,
-                        }))
-                    );
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchNominalVoltagesError',
-                    });
-                });
-        }
-    }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
-
     const handleFilterChange = useCallback(
         async (globalFilters: GlobalFilter[]) => {
             debouncedSetFilters(tableDefinition.uuid, globalFilters);
@@ -97,11 +54,11 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     const filters = useMemo(() => {
         if (tableDefinition.type === EQUIPMENT_TYPES.SUBSTATION) {
-            return countriesFilter;
+            return [...countriesFilter, ...propertiesFilter];
         } else {
-            return [...voltageLevelsFilter, ...countriesFilter];
+            return [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter];
         }
-    }, [countriesFilter, tableDefinition.type, voltageLevelsFilter]);
+    }, [countriesFilter, propertiesFilter, tableDefinition.type, voltageLevelsFilter]);
 
     useEffect(() => {
         if (globalFilterSpreadsheetState) {
@@ -115,7 +72,11 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     return (
         <GlobalFilterSelector
-            filterableEquipmentTypes={[tableDefinition.type as unknown as EQUIPMENT_TYPES]}
+            filterableEquipmentTypes={[
+                tableDefinition.type as unknown as EQUIPMENT_TYPES,
+                EQUIPMENT_TYPES.SUBSTATION,
+                EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+            ]}
             filters={filters}
             onChange={handleFilterChange}
             preloadedGlobalFilters={globalFilterSpreadsheetState}

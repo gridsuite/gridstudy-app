@@ -13,7 +13,7 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { CREATIONS_TABLE, REACTIVE_CAPABILITY_CURVE, TYPE } from 'components/utils/field-constants';
+import { CREATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -21,6 +21,7 @@ import TabularCreationForm from './tabular-creation-form';
 import {
     convertCreationFieldFromBackToFront,
     convertCreationFieldFromFrontToBack,
+    convertReactiveCapabilityCurvePointsFromFrontToBack,
     getEquipmentTypeFromCreationType,
     TABULAR_CREATION_TYPES,
 } from './tabular-creation-utils';
@@ -75,7 +76,9 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 const creation = {};
                 Object.keys(formatModification(creat)).forEach((key) => {
                     const entry = convertCreationFieldFromBackToFront(key, creat[key]);
-                    creation[entry.key] = entry.value;
+                    (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
+                        creation[item.key] = item.value;
+                    });
                 });
                 return creation;
             });
@@ -98,8 +101,8 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                     creation[entry.key] = entry.value;
                 });
                 // For now, we do not manage reactive limits by diagram
-                if (creationType === 'GENERATOR_CREATION') {
-                    creation[REACTIVE_CAPABILITY_CURVE] = false;
+                if (creationType === 'GENERATOR_CREATION' || creationType === 'BATTERY_CREATION') {
+                    convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
                 }
                 return creation;
             });

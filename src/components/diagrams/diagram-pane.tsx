@@ -45,7 +45,7 @@ import {
     useSnackMessage,
     Identifiable,
 } from '@gridsuite/commons-ui';
-import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
+import { setEditNadMode, setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromConfig } from '../../services/study';
@@ -441,6 +441,8 @@ export function DiagramPane({
     currentRootNetworkUuidRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
+
+    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
 
     /**
      * Check if we need to add new diagrams in the 'views' and add them if necessary.
@@ -961,6 +963,7 @@ export function DiagramPane({
             case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_HEIGHT_VOLTAGE_LEVEL;
             case DiagramType.NETWORK_AREA_DIAGRAM:
+            case DiagramType.NAD_FROM_CONFIG:
                 return DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
@@ -975,6 +978,7 @@ export function DiagramPane({
             case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_WIDTH_VOLTAGE_LEVEL;
             case DiagramType.NETWORK_AREA_DIAGRAM:
+            case DiagramType.NAD_FROM_CONFIG:
                 return DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
@@ -1128,6 +1132,11 @@ export function DiagramPane({
         },
         [currentNode]
     );
+
+    const handleToggleEditNadMode = useCallback(() => {
+        dispatch(setEditNadMode(!isEditNadMode));
+    }, [dispatch, isEditNadMode]);
+
     return (
         // see : https://github.com/bvaughn/react-virtualized-auto-sizer/blob/master/src/AutoSizer.ts#L111
         // AutoSizer "Avoid rendering children before the initial measurements have been collected."
@@ -1197,6 +1206,8 @@ export function DiagramPane({
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
                                         visible={visible}
+                                        isEditNadMode={isEditNadMode}
+                                        onToggleEditNadMode={handleToggleEditNadMode}
                                     />
                                 )}
                             </Diagram>

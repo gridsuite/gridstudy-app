@@ -27,19 +27,9 @@ import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
 import { useIntl } from 'react-intl';
-
-const makeDiagramName = (diagram: Diagram): string => {
-    if (diagram.type === DiagramType.VOLTAGE_LEVEL) {
-        return `${diagram.voltageLevelId}`;
-    } else if (diagram.type === DiagramType.SUBSTATION) {
-        return `${diagram.substationId}`;
-    } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-        return `${diagram.voltageLevelIds.join(', ')}`;
-    } else if (diagram.type === DiagramType.NAD_FROM_CONFIG) {
-        return `${diagram.nadFromConfigUuid}`;
-    }
-    return `diagram type unknown`;
-};
+import { useDiagramTitle } from './use-diagram-title';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { NodeType } from 'components/graph/tree-node.type';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -48,6 +38,7 @@ type UseDiagramModelProps = {
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelProps) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -58,8 +49,12 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const getDiagramTitle = useDiagramTitle();
 
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
+    const [loadingDiagrams, setLoadingDiagrams] = useState<UUID[]>([]);
+    const [diagramErrors, setDiagramErrors] = useState<Record<UUID, string>>({});
+    const [globalError, setGlobalError] = useState<string | null>(null);
 
     const filterDiagramParams = useCallback(
         (diagramParams: DiagramParams[]): DiagramParams[] => {
@@ -71,6 +66,30 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             });
         },
         [diagramTypes]
+    );
+
+    const diagramAlreadyExists = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (diagramParams.type === DiagramType.VOLTAGE_LEVEL) {
+                return Object.values(diagrams)
+                    .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
+                    .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
+            } else if (diagramParams.type === DiagramType.SUBSTATION) {
+                return Object.values(diagrams)
+                    .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
+                    .some((d) => d.substationId === diagramParams.substationId);
+            } else if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                return Object.values(diagrams)
+                    .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
+                    .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
+            } else if (diagramParams.type === DiagramType.NAD_FROM_CONFIG) {
+                return Object.values(diagrams)
+                    .filter((diagram) => diagram.type === DiagramType.NAD_FROM_CONFIG)
+                    .some((d) => d.nadFromConfigUuid === diagramParams.nadFromConfigUuid);
+            }
+            return false;
+        },
+        [diagrams]
     );
 
     const createPendingDiagram = useCallback(
@@ -234,9 +253,35 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
             }
 
             if (url) {
+                setLoadingDiagrams((loadingDiagrams) => {
+                    if (loadingDiagrams.includes(diagram.diagramUuid)) {
+                        console.warn(`Diagram ${diagram.diagramUuid} is already being loaded`);
+                        return loadingDiagrams;
+                    }
+                    return [...loadingDiagrams, diagram.diagramUuid];
+                });
                 // fetch the svg
-                fetchSvg(url, fetchOptions).then((data) => {
-                    if (data !== null) {
+                fetchSvg(url, fetchOptions)
+                    .then((data) => {
+                        if (data !== null) {
+                            setDiagrams((diagrams) => {
+                                if (!diagrams[diagram.diagramUuid]) {
+                                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                                    return diagrams;
+                                }
+                                const newDiagrams = { ...diagrams };
+
+                                newDiagrams[diagram.diagramUuid] = {
+                                    ...diagrams[diagram.diagramUuid],
+                                    svg: data,
+                                    name: getDiagramTitle(diagram, data),
+                                };
+                                return newDiagrams;
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error while fetching SVG', error.message);
                         setDiagrams((diagrams) => {
                             if (!diagrams[diagram.diagramUuid]) {
                                 console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
@@ -246,49 +291,40 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
 
                             newDiagrams[diagram.diagramUuid] = {
                                 ...diagrams[diagram.diagramUuid],
-                                svg: data,
-                                name: makeDiagramName(diagram),
+                                name: intl.formatMessage(
+                                    {
+                                        id: 'diagramLoadingFail',
+                                    },
+                                    { diagramName: getDiagramTitle(diagram) }
+                                ),
                             };
                             return newDiagrams;
                         });
-                    }
-                });
+                        let errorMessage: string;
+                        if (error.status === 404) {
+                            errorMessage =
+                                diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
+                        } else {
+                            errorMessage = 'svgLoadingFail';
+                            snackError({
+                                headerId: errorMessage,
+                            });
+                        }
+                        setDiagramErrors((diagramErrors) => {
+                            return {
+                                ...diagramErrors,
+                                [diagram.diagramUuid]: errorMessage,
+                            };
+                        });
+                    })
+                    .finally(() => {
+                        setLoadingDiagrams((loadingDiagrams) => {
+                            return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
+                        });
+                    });
             }
         },
-        [getUrl]
-    );
-
-    const updateAllDiagrams = useCallback(() => {
-        if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
-            return null;
-        }
-        Object.values(diagrams).forEach((diagram) => {
-            fetchDiagramSvg(diagram);
-        });
-    }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
-
-    const diagramAlreadyExists = useCallback(
-        (diagramParams: DiagramParams) => {
-            if (diagramParams.type === DiagramType.VOLTAGE_LEVEL) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
-                    .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
-            } else if (diagramParams.type === DiagramType.SUBSTATION) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
-                    .some((d) => d.substationId === diagramParams.substationId);
-            } else if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-                    .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
-            } else if (diagramParams.type === DiagramType.NAD_FROM_CONFIG) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.NAD_FROM_CONFIG)
-                    .some((d) => d.nadFromConfigUuid === diagramParams.nadFromConfigUuid);
-            }
-            return false;
-        },
-        [diagrams]
+        [getDiagramTitle, getUrl, intl, snackError]
     );
 
     const createDiagram = useCallback(
@@ -307,6 +343,28 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         [createPendingDiagram, diagramAlreadyExists, fetchDiagramSvg, filterDiagramParams]
     );
 
+    const updateDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (filterDiagramParams([diagramParams]).length === 0) {
+                // this hook instance doesn't manage this type of diagram
+                return;
+            }
+            const existingDiagram = diagrams[diagramParams.diagramUuid];
+            if (!existingDiagram) {
+                // Diagram with UUID ${diagramParams.diagramUuid} not found
+                return;
+            }
+            const newDiagrams = { ...diagrams };
+            newDiagrams[diagramParams.diagramUuid] = {
+                ...newDiagrams[diagramParams.diagramUuid],
+                ...diagramParams,
+            };
+            setDiagrams(newDiagrams);
+            fetchDiagramSvg(newDiagrams[diagramParams.diagramUuid]);
+        },
+        [diagrams, fetchDiagramSvg, filterDiagramParams]
+    );
+
     const removeDiagram = useCallback((id: UUID) => {
         setDiagrams((oldDiagrams) => {
             if (oldDiagrams[id]) {
@@ -318,27 +376,50 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         });
     }, []);
 
-    useDiagramEventListener({ createDiagram, removeDiagram });
-    useDiagramNotificationsListener({ updateAllDiagrams });
     useDiagramSessionStorage({ diagrams, onLoadFromSessionStorage: createDiagram });
 
-    useEffect(() => {
-        if (currentNode?.id === prevCurrentNodeId.current) {
-            return;
+    const updateAllDiagrams = useCallback(() => {
+        if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
+            return null;
         }
-        // Logic to update the diagrams when the current node changes
-        prevCurrentNodeId.current = currentNode?.id;
-        updateAllDiagrams();
-    }, [currentNode?.id, updateAllDiagrams]);
+        setDiagramErrors({});
+        setGlobalError(null);
+        setDiagrams((oldDiagrams) => {
+            Object.values(oldDiagrams).forEach((diagram) => {
+                diagram.svg = null; // reset svg
+            });
+            return oldDiagrams;
+        });
+        Object.values(diagrams).forEach((diagram) => {
+            fetchDiagramSvg(diagram);
+        });
+    }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
+
+    useDiagramEventListener({ createDiagram, removeDiagram });
+    useDiagramNotificationsListener({ updateAllDiagrams });
 
     useEffect(() => {
-        if (!isStatusBuilt(currentNode?.data?.globalBuildStatus) || isStatusBuilt(prevCurrentNodeStatus.current)) {
+        if (!currentNode?.id) {
             return;
         }
-        // Logic to update the diagrams when the current node satus changes
-        prevCurrentNodeStatus.current = currentNode?.data?.globalBuildStatus;
+        if (currentNode.id === prevCurrentNodeId.current) {
+            // if same node and status didn't change then do not update diagrams
+            if (
+                currentNode.data?.globalBuildStatus === prevCurrentNodeStatus.current &&
+                (currentNode.type === NodeType.ROOT || isStatusBuilt(currentNode?.data?.globalBuildStatus))
+            ) {
+                return;
+            }
+        }
+        prevCurrentNodeId.current = currentNode.id; // ok something relevant has changed
+        prevCurrentNodeStatus.current = currentNode.data?.globalBuildStatus;
+        if (currentNode?.type !== NodeType.ROOT && !isStatusBuilt(currentNode?.data?.globalBuildStatus)) {
+            // if current node is not root and not built, set global error and do not update diagrams
+            setGlobalError('InvalidNode');
+            return;
+        }
         updateAllDiagrams();
-    }, [currentNode?.data?.globalBuildStatus, updateAllDiagrams]);
+    }, [currentNode?.id, currentNode?.type, currentNode?.data?.globalBuildStatus, updateAllDiagrams]);
 
     useEffect(() => {
         if (currentRootNetworkUuid === prevCurrentRootNetworkUuid.current) {
@@ -349,5 +430,5 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
-    return { diagrams, removeDiagram, createDiagram };
+    return { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram };
 };
