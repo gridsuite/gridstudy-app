@@ -34,9 +34,10 @@ import { NodeType } from 'components/graph/tree-node.type';
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
     onAddDiagram: (diagram: Diagram) => void;
+    onDiagramAlreadyExists?: (diagramUuid: UUID) => void;
 };
 
-export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelProps) => {
+export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     // context
@@ -70,27 +71,30 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
 
     const diagramAlreadyExists = useCallback(
         (diagramParams: DiagramParams) => {
-            if (diagramParams.type === DiagramType.VOLTAGE_LEVEL) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
-                    .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
-            } else if (diagramParams.type === DiagramType.SUBSTATION) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
-                    .some((d) => d.substationId === diagramParams.substationId);
-            } else if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-                    .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
-            } else if (diagramParams.type === DiagramType.NAD_FROM_ELEMENT) {
-                return Object.values(diagrams)
-                    .filter((diagram) => diagram.type === DiagramType.NAD_FROM_ELEMENT)
-                    .some(
-                        (d) =>
-                            d.elementUuid === diagramParams.elementUuid && d.elementType === diagramParams.elementType
-                    );
+            switch (diagramParams.type) {
+                case DiagramType.VOLTAGE_LEVEL:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
+                        .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
+                case DiagramType.SUBSTATION:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
+                        .some((d) => d.substationId === diagramParams.substationId);
+                case DiagramType.NETWORK_AREA_DIAGRAM:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
+                        .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
+                case DiagramType.NAD_FROM_ELEMENT:
+                    return Object.values(diagrams)
+                        .filter((diagram) => diagram.type === DiagramType.NAD_FROM_ELEMENT)
+                        .some(
+                            (d) =>
+                                d.elementUuid === diagramParams.elementUuid &&
+                                d.elementType === diagramParams.elementType
+                        );
+                default:
+                    return false;
             }
-            return false;
         },
         [diagrams]
     );
@@ -337,6 +341,41 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
         [getDiagramTitle, getUrl, intl, snackError]
     );
 
+    const findSimilarDiagram = useCallback(
+        (diagramParams: DiagramParams): Diagram | undefined => {
+            switch (diagramParams.type) {
+                case DiagramType.VOLTAGE_LEVEL:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.VOLTAGE_LEVEL &&
+                            diagram.voltageLevelId === diagramParams.voltageLevelId
+                    );
+                case DiagramType.SUBSTATION:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.SUBSTATION &&
+                            diagram.substationId === diagramParams.substationId
+                    );
+                case DiagramType.NETWORK_AREA_DIAGRAM:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagram.voltageLevelIds.every((vlId) => diagramParams.voltageLevelIds.includes(vlId))
+                    );
+                case DiagramType.NAD_FROM_ELEMENT:
+                    return Object.values(diagrams).find(
+                        (diagram) =>
+                            diagram.type === DiagramType.NAD_FROM_ELEMENT &&
+                            diagram.elementUuid === diagramParams.elementUuid &&
+                            diagram.elementType === diagramParams.elementType
+                    );
+                default:
+                    return undefined;
+            }
+        },
+        [diagrams]
+    );
+
     const createDiagram = useCallback(
         (diagramParams: DiagramParams) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
@@ -344,13 +383,24 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram }: UseDiagramModelP
                 return;
             }
             if (diagramAlreadyExists(diagramParams)) {
-                // blink the diagram
+                // blink the similar diagram
+                const similarDiagram = findSimilarDiagram(diagramParams);
+                if (similarDiagram) {
+                    onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
+                }
                 return;
             }
             const diagram = createPendingDiagram(diagramParams);
             fetchDiagramSvg(diagram);
         },
-        [createPendingDiagram, diagramAlreadyExists, fetchDiagramSvg, filterDiagramParams]
+        [
+            createPendingDiagram,
+            diagramAlreadyExists,
+            fetchDiagramSvg,
+            filterDiagramParams,
+            findSimilarDiagram,
+            onDiagramAlreadyExists,
+        ]
     );
 
     const updateDiagram = useCallback(
