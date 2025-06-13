@@ -12,6 +12,7 @@ import {
     BALANCES_ADJUSTMENT_TARGET,
     BALANCES_ADJUSTMENT_ZONE,
     BALANCES_ADJUSTMENT_ZONES,
+    SELECTED,
 } from '../../../utils/field-constants';
 import DndTable from '../../../utils/dnd-table/dnd-table';
 import React, { useCallback, useMemo } from 'react';
@@ -54,14 +55,15 @@ export default function BalancesAdjustmentTable() {
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE,
                 editable: true,
                 type: DndColumnType.CUSTOM as const,
-                component: (rowIndex: number) => SelectInput({
-                    name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE}`,
-                    options: Object.keys(ShiftEquipmentType).map((value) => {
-                        return { id: value, label: value };
+                component: (rowIndex: number) =>
+                    SelectInput({
+                        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE}`,
+                        options: Object.keys(ShiftEquipmentType).map((value) => {
+                            return { id: value, label: value };
+                        }),
+                        disableClearable: true,
+                        sx: styles.autocomplete,
                     }),
-                    disableClearable: true,
-                    sx: styles.autocomplete
-                }),
                 initialValue: ShiftEquipmentType.GENERATOR,
                 width: '150px',
             },
@@ -70,14 +72,15 @@ export default function BalancesAdjustmentTable() {
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_TYPE,
                 editable: true,
                 type: DndColumnType.CUSTOM as const,
-                component: (rowIndex: number) => SelectInput({
-                    name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_TYPE}`,
-                    options: Object.keys(ShiftType).map((value) => {
-                        return { id: value, label: value };
+                component: (rowIndex: number) =>
+                    SelectInput({
+                        name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_TYPE}`,
+                        options: Object.keys(ShiftType).map((value) => {
+                            return { id: value, label: value };
+                        }),
+                        disableClearable: true,
+                        sx: styles.autocomplete,
                     }),
-                    disableClearable: true,
-                    sx: styles.autocomplete
-                }),
                 initialValue: ShiftType.PROPORTIONAL,
                 width: '150px',
             },
@@ -103,6 +106,7 @@ export default function BalancesAdjustmentTable() {
 
     const createRow = useCallback(() => {
         const newRowData: Record<string, unknown> = {};
+        newRowData[SELECTED] = false;
         columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return [newRowData];
     }, [columnsDefinition]);
@@ -116,6 +120,8 @@ export default function BalancesAdjustmentTable() {
             tableHeight={270}
             withLeftButtons={false}
             withAddRowsDialog={false}
+            disableDragAndDrop={true}
+            showMoveArrow={false}
         />
     );
 }

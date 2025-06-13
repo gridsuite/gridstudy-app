@@ -14,14 +14,6 @@ export enum ViewState {
     OPENED = 'opened',
 }
 
-export enum SubstationLayout {
-    HORIZONTAL = 'horizontal',
-    VERTICAL = 'vertical',
-    SMART = 'smart',
-    SMARTHORIZONTALCOMPACTION = 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION = 'smartVerticalCompaction',
-}
-
 export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',
@@ -43,6 +35,7 @@ export function isSldType(type: DiagramType): type is SLD {
 
 // Create diagram parameters
 type DiagramBaseParams = {
+    diagramUuid: UUID;
     type: DiagramType;
 };
 
@@ -62,6 +55,7 @@ type NetworkAreaDiagramParams = DiagramBaseParams & {
 type NetworkAreaDiagramFromConfigParams = DiagramBaseParams & {
     type: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    nadName: string;
 };
 
 export type DiagramParams =
@@ -94,6 +88,7 @@ export type NetworkAreaDiagram = DiagramBase & {
 export type NetworkAreaDiagramFromConfig = DiagramBase & {
     type: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    nadName: string;
 };
 
 export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram | NetworkAreaDiagramFromConfig;

@@ -9,14 +9,15 @@ import { AutocompleteInputProps, genHelperError } from '@gridsuite/commons-ui';
 import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
 import { styles } from './styles';
 import { useController } from 'react-hook-form';
-import { SyntheticEvent, useMemo } from 'react';
-import { Autocomplete, AutocompleteProps, TextField } from '@mui/material';
+import { SyntheticEvent } from 'react';
+import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
 
 type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, false>, 'limitTags'> & {
     name: AutocompleteInputProps['name'];
+    label?: TextFieldProps['label'];
 };
 
-export default function CountriesAutocomplete({ name, ...props }: CountriesAutocompleteProps) {
+export default function CountriesAutocomplete({ name, label, ...props }: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
 
     const {
@@ -26,7 +27,7 @@ export default function CountriesAutocomplete({ name, ...props }: CountriesAutoc
 
     const handleChange = (_: SyntheticEvent, value: string[]) => {
         onChange(value);
-    }
+    };
 
     return (
         <Autocomplete
@@ -41,11 +42,14 @@ export default function CountriesAutocomplete({ name, ...props }: CountriesAutoc
                 <TextField
                     inputRef={ref}
                     inputProps={{ ...inputProps }}
+                    label={label}
                     {...genHelperError(error?.message)}
                     {...rest}
                 />
             )}
             getOptionLabel={(value) => translate(value)}
+            autoHighlight={true}
+            disableCloseOnSelect={true}
             {...props}
         />
     );

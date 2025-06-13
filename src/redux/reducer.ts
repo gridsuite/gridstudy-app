@@ -26,6 +26,7 @@ import {
     USER_VALIDATION_ERROR,
     UserAction,
     UserValidationErrorAction,
+    NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -229,24 +230,11 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import {
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    MAP_BASEMAP_MAPBOX,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
     PARAM_COMPUTED_LANGUAGE,
     PARAM_DEVELOPER_MODE,
-    PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
@@ -294,7 +282,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { EQUIPMENT_TYPES as NetworkViewerEquipmentType, LineFlowMode } from '@powsybl/network-viewer';
+import { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -306,9 +294,8 @@ import {
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
-import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { DiagramType, isNadType, isSldType, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
@@ -324,6 +311,10 @@ export enum NotificationType {
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
+    BUILD_COMPLETED = 'buildCompleted',
+    NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
+    UPDATE_FINISHED = 'UPDATE_FINISHED',
+    DELETE_FINISHED = 'DELETE_FINISHED',
 }
 
 export enum RootNetworkIndexationStatus {
@@ -406,6 +397,20 @@ export interface RootNetworksDeletionStartedEventData {
 export interface RootNetworksUpdatedEventData {
     headers: RootNetworksUpdatedEventDataHeaders;
     payload: undefined;
+}
+export interface NodeUpdatedEventData {
+    headers: NodeUpdatedEventDataHeader;
+    payload: undefined;
+}
+
+interface NodeUpdatedEventDataHeader {
+    studyUuid: UUID;
+    updateType: string;
+    timestamp: number;
+    nodes?: UUID[];
+    node?: UUID;
+    substationsIds: string;
+    rootNetworkUuid: UUID;
 }
 
 // Notification types
@@ -523,6 +528,7 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
 type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NAD_FROM_CONFIG;
     nadFromConfigUuid: UUID;
+    nadName: string;
 };
 
 export type DiagramEvent =
@@ -567,18 +573,8 @@ export interface AppConfigState {
     [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
     [PARAM_LIMIT_REDUCTION]: number;
     [PARAM_USE_NAME]: boolean;
-    [PARAM_LINE_FULL_PATH]: boolean;
-    [PARAM_LINE_PARALLEL_PATH]: boolean;
-    [PARAM_MAP_MANUAL_REFRESH]: boolean;
-    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-    [PARAM_CENTER_LABEL]: boolean;
-    [PARAM_DIAGONAL_LABEL]: boolean;
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
-    [PARAM_COMPONENT_LIBRARY]: unknown | null;
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
 }
 
@@ -802,19 +798,9 @@ const initialState: AppState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
-    [PARAM_LINE_FULL_PATH]: true,
-    [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
-    [PARAM_MAP_MANUAL_REFRESH]: true,
-    [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
-    [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
-    [PARAM_CENTER_LABEL]: false,
-    [PARAM_DIAGONAL_LABEL]: false,
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,
-    [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_DEVELOPER_MODE]: false,
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
 
     recentGlobalFilters: [],
@@ -1671,6 +1657,7 @@ export const reducer = createReducer(initialState, (builder) => {
             diagramType: DiagramType.NAD_FROM_CONFIG,
             eventType: DiagramEventType.CREATE,
             nadFromConfigUuid: action.nadConfigUuid as UUID,
+            nadName: action.nadName,
         };
     });
 

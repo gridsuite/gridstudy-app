@@ -12,7 +12,17 @@ import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
 
-const keyToKeepInSessionStorage = ['type', 'voltageLevelId', 'substationId', 'voltageLevelIds', 'depth']; // static
+const keyToKeepInSessionStorage = [
+    'diagramUuid',
+    'type',
+    'voltageLevelId',
+    'substationId',
+    'voltageLevelIds',
+    'depth',
+    'nadFromConfigUuid',
+    'nadName', // TODO this is the name of the NAD from config, it could change in explore then it's not updated in session storage
+    // we must get the name from the uuid when we open the diagram and update it by notification if necessary Hack for now.
+]; // static
 
 type useDiagramSessionStorageProps = {
     diagrams: Record<UUID, Diagram>;
@@ -21,7 +31,6 @@ type useDiagramSessionStorageProps = {
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-
     // at mount
     useEffect(() => {
         if (!studyUuid) {

@@ -107,7 +107,7 @@ export default function LccConverterStation({
                     <TextInput
                         name={`${id}.${CONVERTER_STATION_ID}`}
                         label={'converterStationId'}
-                        disabled={isModification}
+                        formProps={{ disabled: isModification }}
                     />
                 </GridItem>
                 <GridItem size={4}>{stationNameField}</GridItem>

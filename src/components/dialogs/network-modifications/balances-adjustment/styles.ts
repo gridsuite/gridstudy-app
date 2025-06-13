@@ -14,7 +14,7 @@ export const styles = {
             justifyContent: 'flex-start',
             flexWrap: 'nowrap',
             padding: '1px',
-            paddingLeft: '5px'
+            paddingLeft: '5px',
         },
         '.MuiAutocomplete-tag': {
             maxWidth: '100px',
