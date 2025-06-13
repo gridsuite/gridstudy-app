@@ -45,8 +45,7 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
                     }, {});
                 const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
 
-                let genericFiltersIdentifiablesIds: string[] = [];
-
+                let genericFiltersIdentifiablesIds: Record<string, string[]> = {};
                 if (genericFilters?.length > 0) {
                     //We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
                     const filtersUuids = genericFilters
@@ -58,9 +57,23 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
                         currentRootNetworkUuid,
                         filtersUuids
                     );
-                    genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>
-                        filterEquipments.identifiableAttributes.flatMap((identifiable) => identifiable.id)
-                    );
+                    response.forEach((filterEq) => {
+                        if (filterEq.identifiableAttributes.length > 0) {
+                            if (!genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type]) {
+                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] = [];
+                            }
+                            const equipIds = filterEq.identifiableAttributes.map((identifiable) => identifiable.id);
+                            if (genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type].length === 0) {
+                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] = equipIds;
+                            } else {
+                                // intersection here because it is a AND
+                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] =
+                                    genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type].filter(
+                                        (id) => equipIds.includes(id)
+                                    );
+                            }
+                        }
+                    });
                 }
 
                 const computedFilter = buildExpertFilter(
