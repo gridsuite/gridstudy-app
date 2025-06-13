@@ -499,6 +499,7 @@ export function DiagramPane({
                                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.name }),
                                 align: 'right',
                                 elementName: diagramState.name,
+                                elementType: diagramState.type,
                             } as const;
                         }
 
