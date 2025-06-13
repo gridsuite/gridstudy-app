@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { DndTable, DndColumnType, SelectInput } from '@gridsuite/commons-ui';
 import {
     BALANCES_ADJUSTMENT,
     BALANCES_ADJUSTMENT_COUNTRIES,
@@ -14,14 +15,11 @@ import {
     BALANCES_ADJUSTMENT_ZONES,
     SELECTED,
 } from '../../../utils/field-constants';
-import DndTable from '../../../utils/dnd-table/dnd-table';
 import React, { useCallback, useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import { DndColumnType } from '../../../utils/dnd-table/dnd-table.type';
 import { ShiftEquipmentType, ShiftType } from '../../../../services/network-modification-types';
 import { useIntl } from 'react-intl';
 import CountriesAutocomplete from './countries-autocomplete';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { styles } from './styles';
 
 export default function BalancesAdjustmentTable() {
@@ -33,7 +31,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentZone',
                 dataKey: BALANCES_ADJUSTMENT_ZONE,
                 editable: true,
-                type: DndColumnType.TEXT as const,
+                type: DndColumnType.TEXT,
                 initialValue: '',
                 width: '100px',
             },
@@ -41,7 +39,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentCountry',
                 dataKey: BALANCES_ADJUSTMENT_COUNTRIES,
                 editable: true,
-                type: DndColumnType.CUSTOM as const,
+                type: DndColumnType.CUSTOM,
                 component: (rowIndex: number) =>
                     CountriesAutocomplete({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_COUNTRIES}`,
@@ -54,7 +52,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentShiftEquipmentType',
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE,
                 editable: true,
-                type: DndColumnType.CUSTOM as const,
+                type: DndColumnType.CUSTOM,
                 component: (rowIndex: number) =>
                     SelectInput({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE}`,
@@ -71,7 +69,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentShiftType',
                 dataKey: BALANCES_ADJUSTMENT_SHIFT_TYPE,
                 editable: true,
-                type: DndColumnType.CUSTOM as const,
+                type: DndColumnType.CUSTOM,
                 component: (rowIndex: number) =>
                     SelectInput({
                         name: `${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ZONES}[${rowIndex}].${BALANCES_ADJUSTMENT_SHIFT_TYPE}`,
@@ -88,7 +86,7 @@ export default function BalancesAdjustmentTable() {
                 label: 'BalancesAdjustmentTarget',
                 dataKey: BALANCES_ADJUSTMENT_TARGET,
                 editable: true,
-                type: DndColumnType.NUMERIC as const,
+                type: DndColumnType.NUMERIC,
                 initialValue: 0,
                 width: '100px',
             },
@@ -118,7 +116,6 @@ export default function BalancesAdjustmentTable() {
             createRows={createRow}
             columnsDefinition={columnsDefinition}
             tableHeight={270}
-            withLeftButtons={false}
             withAddRowsDialog={false}
             disableDragAndDrop={true}
             showMoveArrow={false}

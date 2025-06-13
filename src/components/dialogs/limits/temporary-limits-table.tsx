@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ColumnNumeric, ColumnText, DndColumnType, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -16,7 +16,6 @@ import { SELECTED } from '../../utils/field-constants';
 import { TableNumericalInput } from '../../utils/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../../utils/rhf-inputs/table-inputs/table-text-input';
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import { ColumnNumeric, ColumnText, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 
 const styles = {
     columnsStyle: {

@@ -6,7 +6,7 @@
  */
 import { Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { DndTable, DndColumnType, ColumnNumeric, ColumnText, DndColumn, FloatInput } from '@gridsuite/commons-ui';
 import {
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
@@ -21,9 +21,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
-import DndTable from '../../utils/dnd-table/dnd-table';
 import TemporaryLimitsTable from './temporary-limits-table';
-import { ColumnNumeric, ColumnText, DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 
@@ -211,7 +209,6 @@ export function LimitsSidePane({
                     createRows={createRows}
                     columnsDefinition={columnsDefinition}
                     tableHeight={270}
-                    withLeftButtons={false}
                     withAddRowsDialog={false}
                     previousValues={temporaryLimitsPreviousValues}
                     disableTableCell={disableTableCell}
