@@ -14,7 +14,14 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import { GsLang, GsLangUser, GsTheme, Identifiable, NetworkVisualizationParameters } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    GsLang,
+    GsLangUser,
+    GsTheme,
+    Identifiable,
+    NetworkVisualizationParameters,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -138,7 +145,7 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | LoadNadFromConfigAction
+    | LoadNadFromElementAction
     | SetEditNadModeAction
     | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction;
@@ -876,17 +883,23 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     };
 }
 
-export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
-export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
-    nadConfigUuid: string;
-    nadName: string;
+export const LOAD_NAD_FROM_ELEMENT = 'LOAD_NAD_FROM_ELEMENT';
+export type LoadNadFromElementAction = Readonly<Action<typeof LOAD_NAD_FROM_ELEMENT>> & {
+    elementUuid: string;
+    elementType: ElementType;
+    elementName: string;
 };
 
-export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
+export function loadNadFromElement(
+    elementId: string,
+    elementType: ElementType,
+    elementName: string
+): LoadNadFromElementAction {
     return {
-        type: LOAD_NAD_FROM_CONFIG,
-        nadConfigUuid: nadConfigUuid,
-        nadName: nadName,
+        type: LOAD_NAD_FROM_ELEMENT,
+        elementUuid: elementId,
+        elementType: elementType,
+        elementName: elementName,
     };
 }
 
