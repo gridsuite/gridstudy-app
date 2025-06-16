@@ -6,26 +6,23 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    getStudyShortCircuitParameters,
+    NotificationsUrlKeys,
+    ShortCircuitParametersInfos,
+    useNotificationsListener,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { getShortCircuitParameters } from '../../../services/study/short-circuit-analysis';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { ComputingType } from '@gridsuite/commons-ui';
-import { AppState } from 'redux/reducer';
+import { AppState, StudyUpdatedEventData } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
-import { isComputationParametersUpdated } from './use-parameters-notification';
+import { haveComputationParametersChanged } from './use-parameters-notification';
 
-export type UseGetShortCircuitParametersProps = [
-    ShortCircuitParametersInfos | null,
-    React.Dispatch<React.SetStateAction<ShortCircuitParametersInfos | null>>,
-];
-
-export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProps => {
+export const useGetShortCircuitParameters = (): ShortCircuitParametersInfos | null => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
-
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState<ShortCircuitParametersInfos | null>(null);
 
@@ -33,8 +30,8 @@ export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProp
 
     const fetchShortCircuitParameters = useCallback(
         (studyUuid: UUID) => {
-            getShortCircuitParameters(studyUuid)
-                .then((params: ShortCircuitParametersInfos) => {
+            getStudyShortCircuitParameters(studyUuid)
+                .then((params) => {
                     setShortCircuitParams(params);
                 })
                 .catch((error) => {
@@ -53,16 +50,24 @@ export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProp
         }
     }, [shortCircuitAvailability, studyUuid, fetchShortCircuitParameters]);
 
-    // fetch the parameter if SHORT_CIRCUIT  notification type is received.
-    useEffect(() => {
-        if (
-            studyUuid &&
-            shortCircuitAvailability === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputingType.SHORT_CIRCUIT, studyUpdated)
-        ) {
-            fetchShortCircuitParameters(studyUuid);
-        }
-    }, [studyUuid, shortCircuitAvailability, fetchShortCircuitParameters, studyUpdated]);
+    const shortCircuitParamsUpdated = useCallback(
+        (event: MessageEvent<string>) => {
+            const eventData = JSON.parse(event.data);
+            if (
+                studyUuid &&
+                eventData.headers.studyUuid === studyUuid &&
+                shortCircuitAvailability === OptionalServicesStatus.Up &&
+                haveComputationParametersChanged(ComputingType.SHORT_CIRCUIT, eventData as StudyUpdatedEventData)
+            ) {
+                fetchShortCircuitParameters(studyUuid);
+            }
+        },
+        [studyUuid, fetchShortCircuitParameters, shortCircuitAvailability]
+    );
 
-    return [shortCircuitParams, setShortCircuitParams];
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: shortCircuitParamsUpdated,
+    });
+
+    return shortCircuitParams;
 };

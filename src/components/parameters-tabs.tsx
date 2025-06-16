@@ -37,7 +37,6 @@ import {
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
-import { ShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -65,6 +64,7 @@ import {
     useParametersBackend,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
+    ShortCircuitParametersInLine,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 
@@ -190,7 +190,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
 
-    const useShortCircuitParameters = useGetShortCircuitParameters();
+    const shortCircuitParameters = useGetShortCircuitParameters();
 
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
@@ -291,9 +291,10 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
             case TAB_VALUES.shortCircuitParamsTabValue:
                 return (
-                    <ShortCircuitParameters
-                        useShortCircuitParameters={useShortCircuitParameters}
+                    <ShortCircuitParametersInLine
+                        studyUuid={studyUuid}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        shortCircuitParameters={shortCircuitParameters}
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
@@ -330,7 +331,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         networkVisualizationsParameters,
         nonEvacuatedEnergyBackend,
         useNonEvacuatedEnergyParameters,
-        useShortCircuitParameters,
+        shortCircuitParameters,
         user,
         useStateEstimationParameters,
     ]);

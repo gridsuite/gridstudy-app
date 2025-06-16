@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import {
     DirectoryItemSelector,
@@ -22,7 +22,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { setEditNadMode } from 'redux/actions';
+import { UUID } from 'crypto';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -56,16 +56,16 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
-    onLoad?: (nadConfigId: string, nadName: string) => void;
+    onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    isEditNadMode: boolean;
+    onToggleEditNadMode?: (isEditMode: boolean) => void;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEditNadMode, onToggleEditNadMode }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const isEditMode = useSelector((state: AppState) => state.isEditMode);
-    const dispatch = useDispatch();
 
     const handleCloseSaveDialog = () => {
         setIsSaveDialogOpen(false);
@@ -89,21 +89,21 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
         }
     };
 
-    const handleLoad = (nadConfigId: string, nadName: string) => {
+    const handleLoad = (elementUuid: UUID, elementType: ElementType, elementName: string) => {
         if (onLoad) {
-            onLoad(nadConfigId, nadName);
+            onLoad(elementUuid, elementType, elementName);
         }
     };
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0) {
-            handleLoad(selectedElements[0].id, selectedElements[0].name);
+            handleLoad(selectedElements[0].id, selectedElements[0].type!, selectedElements[0].name);
         }
         handleCloseLoadSelector();
     };
 
     const handleToggleEditMode = () => {
-        dispatch(setEditNadMode(!isEditMode));
+        onToggleEditNadMode?.(!isEditNadMode);
     };
 
     /**
@@ -133,7 +133,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
             </Box>
             <Box sx={styles.buttonPanel}>
                 <Button size="small" sx={styles.button} onClick={handleToggleEditMode}>
-                    <FormattedMessage id={isEditMode ? 'save' : 'EditNad'} />
+                    <FormattedMessage id={isEditNadMode ? 'save' : 'EditNad'} />
                 </Button>
             </Box>
             {studyUuid && (
@@ -151,7 +151,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad }) => 
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
-                            types={[ElementType.DIAGRAM_CONFIG]}
+                            types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                             title={intl.formatMessage({
                                 id: 'GenerateFromGridexplore',
                             })}

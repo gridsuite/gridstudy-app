@@ -72,7 +72,7 @@ const getRegulatingTerminalPhaseTapChangerValidationSchema = () => ({
         }),
 });
 
-const phaseTapChangerValidationSchema = (id) => ({
+const phaseTapChangerValidationSchema = (isModification, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup
@@ -117,7 +117,7 @@ const phaseTapChangerValidationSchema = (id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: true,
+                is: (enabled) => enabled && !isModification,
                 then: (schema) => schema.required(),
             }),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
@@ -146,7 +146,7 @@ const phaseTapChangerValidationSchema = (id) => ({
                 })
             )
             .when(ENABLED, {
-                is: true,
+                is: (enabled) => enabled && !isModification,
                 then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
             })
             .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
@@ -157,45 +157,8 @@ const phaseTapChangerValidationSchema = (id) => ({
     }),
 });
 
-const phaseTapChangerModificationValidationSchema = (id) => ({
-    [id]: yup.object().shape({
-        [ENABLED]: yup.bool().required(),
-        [REGULATION_MODE]: yup.string().nullable(),
-        [REGULATION_TYPE]: yup.string().nullable(),
-        [REGULATION_SIDE]: yup.string().nullable(),
-        [CURRENT_LIMITER_REGULATING_VALUE]: yup.number().nullable().positive('CurrentLimiterMustBeGreaterThanZero'),
-        [FLOW_SET_POINT_REGULATING_VALUE]: yup.number().nullable(),
-        [TARGET_DEADBAND]: yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
-        [LOW_TAP_POSITION]: yup.number().nullable(),
-        [HIGH_TAP_POSITION]: yup.number().nullable(),
-        [TAP_POSITION]: yup.number().nullable(),
-        [STEPS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [STEPS_TAP]: yup.number().required(),
-                    [STEPS_RESISTANCE]: yup.number(),
-                    [STEPS_REACTANCE]: yup.number(),
-                    [STEPS_CONDUCTANCE]: yup.number(),
-                    [STEPS_SUSCEPTANCE]: yup.number(),
-                    [STEPS_RATIO]: yup.number(),
-                    [STEPS_ALPHA]: yup.number(),
-                })
-            )
-            .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
-                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
-                return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
-            }),
-        ...getRegulatingTerminalPhaseTapChangerValidationSchema(),
-    }),
-});
-
-export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerValidationSchema(id);
-};
-
-export const getPhaseTapChangerModificationValidationSchema = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerModificationValidationSchema(id);
+export const getPhaseTapChangerValidationSchema = (isModification = false, id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerValidationSchema(isModification, id);
 };
 
 const phaseTapChangerEmptyFormData = (isModification, id) => ({

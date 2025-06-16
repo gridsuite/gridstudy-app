@@ -19,7 +19,10 @@ const keyToKeepInSessionStorage = [
     'substationId',
     'voltageLevelIds',
     'depth',
-    'nadFromConfigUuid',
+    'elementUuid',
+    'elementType',
+    'elementName', // TODO this is the name of the NAD from element, it could change in explore then it's not updated in session storage
+    // we must get the name from the uuid when we open the diagram and update it by notification if necessary Hack for now.
 ]; // static
 
 type useDiagramSessionStorageProps = {
