@@ -131,6 +131,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
 
     const equipmentTypeField = (
         <AutocompleteInput
+            readOnly
             isOptionEqualToValue={richTypeEquals}
             name={TYPE}
             label="Type"
@@ -153,7 +154,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
-            inputTransform={(value) => value}
+            inputTransform={(value) => value ?? ''}
             outputTransform={(value) => (value === '' ? null : getObjectId(value))}
             size={'small'}
             formProps={filledTextField}
