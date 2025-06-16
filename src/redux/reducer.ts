@@ -222,8 +222,8 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
-    NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
-    NetworkAreaDiagramSelectedVoltageLevelAction,
+    NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS,
+    NetworkAreaDiagramExpandedVoltageLevelIdsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -460,7 +460,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
-    selectedVoltageLevelNad: string[] | null;
+    expandedVoltageLevelIds: string[];
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
@@ -629,7 +629,7 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
-    selectedVoltageLevelNad: null,
+    expandedVoltageLevelIds: [],
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
@@ -1605,16 +1605,16 @@ export const reducer = createReducer(initialState, (builder) => {
     );
 
     builder.addCase(
-        NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
-        (state, action: NetworkAreaDiagramSelectedVoltageLevelAction) => {
-            if (!action.selectedVoltageLevelNad) {
-                state.selectedVoltageLevelNad = []; // reset
+        NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS,
+        (state, action: NetworkAreaDiagramExpandedVoltageLevelIdsAction) => {
+            if (action.expandedVoltageLevelIds.length === 0) {
+                state.expandedVoltageLevelIds = []; // reset
                 return;
             }
-            const existing = state.selectedVoltageLevelNad ?? [];
-            const toAdd = action.selectedVoltageLevelNad;
+            const existing = state.expandedVoltageLevelIds;
+            const toAdd = action.expandedVoltageLevelIds;
 
-            state.selectedVoltageLevelNad = Array.from(new Set([...existing, ...toAdd]));
+            state.expandedVoltageLevelIds = Array.from(new Set([...existing, ...toAdd]));
         }
     );
 

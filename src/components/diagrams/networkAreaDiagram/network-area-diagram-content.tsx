@@ -29,7 +29,7 @@ import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import {
-    setNetworkAreaDiagramSelectedVoltageLevel,
+    setNetworkAreaDiagramExpandedVoltageLevelIds,
     storeNetworkAreaDiagramNodeMovement,
     storeNetworkAreaDiagramTextNodeMovement,
 } from '../../../redux/actions';
@@ -66,10 +66,12 @@ type NetworkAreaDiagramContentProps = {
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNadFromElement?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    onSelectNode?: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, onSelectNode } =
+        props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -145,7 +147,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [dispatch, nadIdentifier]
     );
 
-    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
+    const onSelectNodeCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
             setClickedEquipmentId(equipmentId);
             setShouldDisplayMenu(true);
@@ -230,7 +232,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
-                OnLeftClickCallback,
+                onSelectNodeCallback,
                 isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
@@ -302,7 +304,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         nadIdentifier,
         onMoveTextNodeCallback,
         isEditNadMode,
-        OnLeftClickCallback,
+        onSelectNodeCallback,
     ]);
 
     /**
@@ -340,7 +342,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     <CustomMenuItem
                         onClick={() => {
                             if (clickedEquipmentId) {
-                                dispatch(setNetworkAreaDiagramSelectedVoltageLevel([clickedEquipmentId]));
+                                dispatch(setNetworkAreaDiagramExpandedVoltageLevelIds([clickedEquipmentId]));
+                                onSelectNode?.(clickedEquipmentId);
                             }
                             closeMenu();
                         }}

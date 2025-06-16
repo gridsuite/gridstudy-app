@@ -260,7 +260,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const payload = {
                     voltageLevelsIds: diagram.voltageLevelIds,
-                    expandedVoltageLevelIds: diagram.selectedVoltageLevel ?? null,
+                    expandedVoltageLevelIds: diagram.expandedVoltageLevelIds,
                 };
                 fetchOptions = {
                     method: 'POST',

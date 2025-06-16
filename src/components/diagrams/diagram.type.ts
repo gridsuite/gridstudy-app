@@ -52,6 +52,7 @@ type NetworkAreaDiagramParams = DiagramBaseParams & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
     depth: number;
+    expandedVoltageLevelIds: string[];
 };
 type NetworkAreaDiagramFromElementParams = DiagramBaseParams & {
     type: DiagramType.NAD_FROM_ELEMENT;
@@ -86,7 +87,7 @@ export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
     depth: number;
-    selectedVoltageLevel?: string[] | null;
+    expandedVoltageLevelIds: string[];
 };
 export type NetworkAreaDiagramFromElement = DiagramBase & {
     type: DiagramType.NAD_FROM_ELEMENT;
