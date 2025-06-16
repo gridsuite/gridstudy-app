@@ -997,7 +997,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    visible: existingColDef ? existingColDef.visible : true,
+                    visible: column.visible ?? existingColDef?.visible ?? true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
                 return colDef;
@@ -1016,7 +1016,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tables.uuid = action.collectionUuid;
         state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
             ...tabDef,
-            columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
+            columns: tabDef.columns.map((col) => ({
+                ...col,
+                visible: col.visible ?? true,
+                locked: false,
+            })),
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)

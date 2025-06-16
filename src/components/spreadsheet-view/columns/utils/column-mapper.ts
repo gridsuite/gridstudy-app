@@ -82,6 +82,7 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
                 },
             },
             valueGetter: createValueGetter(colDef),
+            hide: !colDef.visible,
             editable: false,
             enableCellChangeFlash: true,
         };
