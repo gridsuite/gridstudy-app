@@ -87,7 +87,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
-    const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [menuAnchorPosition, setMenuAnchorPosition] = useState<Point | null>(null);
     const [clickedEquipmentId, setClickedEquipmentId] = useState<string>();
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
 
@@ -149,7 +149,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         if (mousePosition) {
             setClickedEquipmentId(equipmentId);
             setShouldDisplayMenu(true);
-            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+            setMenuAnchorPosition(mousePosition);
         }
     }, []);
 
@@ -328,30 +328,21 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             )}
             {shouldDisplayMenu && (
                 <Menu
-                    open={!!menuAnchorPosition}
+                    open={shouldDisplayMenu}
                     onClose={closeMenu}
                     anchorReference="anchorPosition"
                     anchorPosition={
                         menuAnchorPosition !== null
-                            ? { top: menuAnchorPosition.mouseY, left: menuAnchorPosition.mouseX }
+                            ? { top: menuAnchorPosition.y, left: menuAnchorPosition.x }
                             : undefined
                     }
-                    style={{
-                        width: 'auto',
-                        maxHeight: 'auto',
-                    }}
                 >
                     <CustomMenuItem
-                        style={{
-                            paddingTop: '1px',
-                            paddingBottom: '1px',
-                        }}
                         onClick={() => {
                             if (clickedEquipmentId) {
                                 dispatch(setNetworkAreaDiagramSelectedVoltageLevel([clickedEquipmentId]));
                             }
-                            setMenuAnchorPosition(null);
-                            setShouldDisplayMenu(false);
+                            closeMenu();
                         }}
                     >
                         <ListItemIcon>
