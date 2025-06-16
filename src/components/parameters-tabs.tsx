@@ -47,7 +47,6 @@ import {
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
 import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
-import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
@@ -65,6 +64,7 @@ import {
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     ShortCircuitParametersInLine,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 

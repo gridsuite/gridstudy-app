@@ -13,8 +13,7 @@ import { IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({

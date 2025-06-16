@@ -12,11 +12,10 @@ import { setComputationStarting, setComputingStatus, setComputingStatusInfos, se
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
-import { ComputingType } from '@gridsuite/commons-ui';
 
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { ContingencyListSelector } from './dialogs/contingency-list-selector';

@@ -16,8 +16,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from 'components/utils/running-status';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 

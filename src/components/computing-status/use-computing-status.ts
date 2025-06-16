@@ -112,6 +112,7 @@ const shouldRequestBeCanceled = (
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
  * @param optionalServiceAvailabilityStatus status of an optional service
+ * @param computingStatusInfosFetcher method fetching status infos
  */
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
@@ -213,9 +214,10 @@ export const useComputingStatus: UseComputingStatusProps = (
             if (isComputationCompleted(status)) {
                 dispatch(setLastCompletedComputation(computingType));
             }
-        } catch (e) {
+        } catch (e: any) {
             if (!canceledRequest) {
                 dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
+                console.error(e?.message);
             }
         }
 

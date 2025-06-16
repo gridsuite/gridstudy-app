@@ -29,6 +29,7 @@ import {
     TreeViewFinderNodeProps,
     UseParametersBackendReturnProps,
     useSnackMessage,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
 import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
@@ -44,7 +45,6 @@ import {
     PARAM_SA_PROVIDER,
 } from 'utils/config-params';
 import LineSeparator from '../../commons/line-separator';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 

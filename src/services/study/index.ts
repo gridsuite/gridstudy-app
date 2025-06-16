@@ -8,8 +8,7 @@
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { ElementType, EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ElementType, EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
 import type { Svg } from 'components/diagrams/diagram-common';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 

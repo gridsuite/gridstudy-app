@@ -17,6 +17,7 @@ import {
     TreeViewFinderNodeProps,
     UseParametersBackendReturnProps,
     useSnackMessage,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -72,7 +73,6 @@ import {
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
-import { ComputingType } from '@gridsuite/commons-ui';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
