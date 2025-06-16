@@ -12,12 +12,12 @@ import {
     DiagramParams,
     DiagramType,
     NetworkAreaDiagram,
-    NetworkAreaDiagramFromConfig,
+    NetworkAreaDiagramFromElement,
     SubstationDiagram,
     VoltageLevelDiagram,
 } from '../diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromConfig } from 'services/study';
+import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromElement } from 'services/study';
 import { useDiagramNotificationsListener } from './use-diagram-notifications-listener';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -84,10 +84,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     return Object.values(diagrams)
                         .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
                         .some((d) => diagramParams.voltageLevelIds.every((vlId) => d.voltageLevelIds.includes(vlId)));
-                case DiagramType.NAD_FROM_CONFIG:
+                case DiagramType.NAD_FROM_ELEMENT:
                     return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.NAD_FROM_CONFIG)
-                        .some((d) => d.nadFromConfigUuid === diagramParams.nadFromConfigUuid);
+                        .filter((diagram) => diagram.type === DiagramType.NAD_FROM_ELEMENT)
+                        .some(
+                            (d) =>
+                                d.elementUuid === diagramParams.elementUuid &&
+                                d.elementType === diagramParams.elementType
+                        );
                 default:
                     return false;
             }
@@ -196,20 +200,27 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
         ]
     );
-    const checkAndGetNetworkAreaDiagramFromConfigUrl = useCallback(
-        (diagram: NetworkAreaDiagramFromConfig) => {
+    const checkAndGetNetworkAreaDiagramFromElementUrl = useCallback(
+        (diagram: NetworkAreaDiagramFromElement) => {
             if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
                 return null;
             }
 
-            return getNetworkAreaDiagramUrlFromConfig(
+            return getNetworkAreaDiagramUrlFromElement(
                 studyUuid,
                 currentNode?.id,
                 currentRootNetworkUuid,
-                diagram.nadFromConfigUuid
+                diagram.elementUuid,
+                diagram.elementType,
+                networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
             );
         },
-        [studyUuid, currentNode, currentRootNetworkUuid]
+        [
+            studyUuid,
+            currentNode,
+            currentRootNetworkUuid,
+            networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        ]
     );
 
     const getUrl = useCallback(
@@ -226,13 +237,13 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 return checkAndGetSubstationSingleLineDiagramUrl(diagram);
             } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return checkAndGetNetworkAreaDiagramUrl(diagram);
-            } else if (diagram.type === DiagramType.NAD_FROM_CONFIG) {
-                return checkAndGetNetworkAreaDiagramFromConfigUrl(diagram);
+            } else if (diagram.type === DiagramType.NAD_FROM_ELEMENT) {
+                return checkAndGetNetworkAreaDiagramFromElementUrl(diagram);
             }
             return null;
         },
         [
-            checkAndGetNetworkAreaDiagramFromConfigUrl,
+            checkAndGetNetworkAreaDiagramFromElementUrl,
             checkAndGetNetworkAreaDiagramUrl,
             checkAndGetSubstationSingleLineDiagramUrl,
             checkAndGetVoltageLevelSingleLineDiagramUrl,
@@ -351,11 +362,12 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagram.voltageLevelIds.every((vlId) => diagramParams.voltageLevelIds.includes(vlId))
                     );
-                case DiagramType.NAD_FROM_CONFIG:
+                case DiagramType.NAD_FROM_ELEMENT:
                     return Object.values(diagrams).find(
                         (diagram) =>
-                            diagram.type === DiagramType.NAD_FROM_CONFIG &&
-                            diagram.nadFromConfigUuid === diagramParams.nadFromConfigUuid
+                            diagram.type === DiagramType.NAD_FROM_ELEMENT &&
+                            diagram.elementUuid === diagramParams.elementUuid &&
+                            diagram.elementType === diagramParams.elementType
                     );
                 default:
                     return undefined;

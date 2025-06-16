@@ -7,6 +7,7 @@
 
 import { UUID } from 'crypto';
 import { Svg } from './diagram-common';
+import { ElementType } from '@gridsuite/commons-ui';
 
 export enum ViewState {
     PINNED = 'pinned',
@@ -18,13 +19,13 @@ export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',
     NETWORK_AREA_DIAGRAM = 'network-area-diagram',
-    NAD_FROM_CONFIG = 'nad-from-config',
+    NAD_FROM_ELEMENT = 'nad-from-element',
 }
 
-export type NAD = DiagramType.NETWORK_AREA_DIAGRAM | DiagramType.NAD_FROM_CONFIG;
+export type NAD = DiagramType.NETWORK_AREA_DIAGRAM | DiagramType.NAD_FROM_ELEMENT;
 
 export function isNadType(type: DiagramType): type is NAD {
-    return type === DiagramType.NETWORK_AREA_DIAGRAM || type === DiagramType.NAD_FROM_CONFIG;
+    return type === DiagramType.NETWORK_AREA_DIAGRAM || type === DiagramType.NAD_FROM_ELEMENT;
 }
 
 export type SLD = DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
@@ -52,17 +53,18 @@ type NetworkAreaDiagramParams = DiagramBaseParams & {
     voltageLevelIds: string[];
     depth: number;
 };
-type NetworkAreaDiagramFromConfigParams = DiagramBaseParams & {
-    type: DiagramType.NAD_FROM_CONFIG;
-    nadFromConfigUuid: UUID;
-    nadName: string;
+type NetworkAreaDiagramFromElementParams = DiagramBaseParams & {
+    type: DiagramType.NAD_FROM_ELEMENT;
+    elementUuid: UUID;
+    elementType: ElementType;
+    elementName: string;
 };
 
 export type DiagramParams =
     | VoltageLevelDiagramParams
     | SubstationDiagramParams
     | NetworkAreaDiagramParams
-    | NetworkAreaDiagramFromConfigParams;
+    | NetworkAreaDiagramFromElementParams;
 
 // diagrams model
 export type DiagramBase = {
@@ -85,10 +87,11 @@ export type NetworkAreaDiagram = DiagramBase & {
     voltageLevelIds: string[];
     depth: number;
 };
-export type NetworkAreaDiagramFromConfig = DiagramBase & {
-    type: DiagramType.NAD_FROM_CONFIG;
-    nadFromConfigUuid: UUID;
-    nadName: string;
+export type NetworkAreaDiagramFromElement = DiagramBase & {
+    type: DiagramType.NAD_FROM_ELEMENT;
+    elementUuid: UUID;
+    elementType: ElementType;
+    elementName: string;
 };
 
-export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram | NetworkAreaDiagramFromConfig;
+export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram | NetworkAreaDiagramFromElement;

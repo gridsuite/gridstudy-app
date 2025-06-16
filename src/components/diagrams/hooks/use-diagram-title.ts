@@ -33,8 +33,8 @@ export const useDiagramTitle = () => {
                 case DiagramType.NETWORK_AREA_DIAGRAM:
                     return diagram.voltageLevelIds.join(', ');
 
-                case DiagramType.NAD_FROM_CONFIG:
-                    return diagram.nadName;
+                case DiagramType.NAD_FROM_ELEMENT:
+                    return diagram.elementName;
 
                 default:
                     return 'diagram type unknown';
