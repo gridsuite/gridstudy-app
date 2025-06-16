@@ -21,6 +21,7 @@ import {
     GsTheme,
     Identifiable,
     NetworkVisualizationParameters,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
@@ -39,7 +40,6 @@ import type {
     TableSortKeysType,
     ComputingStatusInfos,
 } from './reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
