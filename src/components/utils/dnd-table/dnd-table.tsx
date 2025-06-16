@@ -456,7 +456,7 @@ const DndTable = (props: DndTableProps) => {
                         withResetButton={withResetButton}
                         disableUploadButton={disableAddingRows}
                         disabled={disabled}
-                        handleUploadButton={props.handleResetButton}
+                        handleUploadButton={props.handleUploadButton}
                         uploadButtonMessageId={props.uploadButtonMessageId}
                         handleResetButton={props.handleResetButton}
                         resetButtonMessageId={props.resetButtonMessageId}
