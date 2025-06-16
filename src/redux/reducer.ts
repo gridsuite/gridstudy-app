@@ -11,6 +11,7 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
+    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -70,12 +71,12 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
-    LOAD_NAD_FROM_CONFIG,
+    LOAD_NAD_FROM_ELEMENT,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
-    LoadNadFromConfigAction,
+    LoadNadFromElementAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -246,7 +247,6 @@ import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-st
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
-import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,
@@ -284,7 +284,6 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -300,163 +299,18 @@ import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types'
 import { DiagramType, isNadType, isSldType, ViewState } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
+import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
-export enum NotificationType {
-    STUDY = 'study',
-    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
-    NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
-    LOADFLOW_RESULT = 'loadflowResult',
-    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
-    ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
-    ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-    SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
-    SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
-    SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
-    BUILD_COMPLETED = 'buildCompleted',
-    NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
-    UPDATE_FINISHED = 'UPDATE_FINISHED',
-    DELETE_FINISHED = 'DELETE_FINISHED',
-}
-
-export enum RootNetworkIndexationStatus {
-    NOT_INDEXED = 'NOT_INDEXED',
-    INDEXING_ONGOING = 'INDEXING_ONGOING',
-    INDEXED = 'INDEXED',
-}
+// Redux state
+export type StudyUpdated = {
+    force: number; //IntRange<0, 1>;
+} & StudyUpdateNotification;
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
     nodeId: UUID;
 }
-
-// Headers
-export interface StudyUpdatedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    parentNode: UUID;
-    rootNetworkUuid: UUID;
-    timestamp: number;
-    node?: UUID;
-    nodes?: UUID[];
-    error?: string;
-    userId?: string;
-    computationType?: ComputingType;
-}
-
-interface RootNetworksDeletionStartedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworksUuids: UUID[];
-}
-
-interface LoadflowResultEventDataHeaders {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworkUuid: UUID;
-}
-
-interface RootNetworksUpdatedEventDataHeaders {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworkUuid?: UUID; // all root networks if absent
-    error?: string;
-}
-
-// Payloads
-export interface DeletedEquipment {
-    equipmentId: string;
-    equipmentType: NetworkViewerEquipmentType;
-}
-
-export interface NetworkImpactsInfos {
-    impactedSubstationsIds: UUID[];
-    deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
-}
-
-// EventData
-export interface StudyUpdatedEventData {
-    headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
-}
-
-interface StudyUpdatedEventDataUnknown {
-    headers: StudyUpdatedEventDataHeader;
-    payload: string;
-}
-
-export interface LoadflowResultEventData {
-    headers: LoadflowResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface RootNetworksDeletionStartedEventData {
-    headers: RootNetworksDeletionStartedEventDataHeader;
-    payload: undefined;
-}
-
-export interface RootNetworksUpdatedEventData {
-    headers: RootNetworksUpdatedEventDataHeaders;
-    payload: undefined;
-}
-export interface NodeUpdatedEventData {
-    headers: NodeUpdatedEventDataHeader;
-    payload: undefined;
-}
-
-interface NodeUpdatedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    timestamp: number;
-    nodes?: UUID[];
-    node?: UUID;
-    substationsIds: string;
-    rootNetworkUuid: UUID;
-}
-
-// Notification types
-type StudyUpdatedStudy = {
-    type: NotificationType.STUDY;
-    eventData: StudyUpdatedEventData;
-};
-
-type StudyUpdatedUndefined = {
-    type: undefined;
-    eventData: StudyUpdatedEventDataUnknown;
-};
-
-type LoadflowResultNotification = {
-    type: NotificationType.LOADFLOW_RESULT;
-    eventData: LoadflowResultEventData;
-};
-
-type RootNetworksUpdatedNotification = {
-    type: NotificationType.ROOT_NETWORKS_UPDATED;
-    eventData: RootNetworksUpdatedEventData;
-};
-
-type RootNetworksUpdateFailedNotification = {
-    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
-    eventData: RootNetworksUpdatedEventData;
-};
-
-type RootNetworkDeletionStartedNotification = {
-    type: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
-    eventData: RootNetworksDeletionStartedEventData;
-};
-
-// Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & (
-    | StudyUpdatedUndefined
-    | StudyUpdatedStudy
-    | LoadflowResultNotification
-    | RootNetworksUpdatedNotification
-    | RootNetworksUpdateFailedNotification
-    | RootNetworkDeletionStartedNotification
-);
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -487,6 +341,7 @@ export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
 
 export type DiagramState = {
     id: UUID;
+    type?: ElementType;
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
@@ -527,10 +382,11 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
     voltageLevelIds: string[];
 };
 
-type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_CONFIG;
-    nadFromConfigUuid: UUID;
-    nadName: string;
+type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NAD_FROM_ELEMENT;
+    elementUuid: UUID;
+    elementType: ElementType;
+    elementName: string;
 };
 
 export type DiagramEvent =
@@ -538,7 +394,7 @@ export type DiagramEvent =
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
     | CreateNADDiagramEvent
-    | CreateNADFromConfigDiagramEvent;
+    | CreateNADFromElementDiagramEvent;
 
 export type NadNodeMovement = {
     nadIdentifier: string;
@@ -998,7 +854,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    visible: existingColDef ? existingColDef.visible : true,
+                    visible: column.visible ?? existingColDef?.visible ?? true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
                 return colDef;
@@ -1017,7 +873,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tables.uuid = action.collectionUuid;
         state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
             ...tabDef,
-            columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
+            columns: tabDef.columns.map((col) => ({
+                ...col,
+                visible: col.visible ?? true,
+                locked: false,
+            })),
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
@@ -1391,7 +1251,7 @@ export const reducer = createReducer(initialState, (builder) => {
      * of them pinned, etc).
      * The other types of diagrams all have their own state.
      *
-     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_CONFIG) opened at once, but there can be
+     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_ELEMENT) opened at once, but there can be
      * multiple SLD (VOLTAGE_LEVEL or SUBSTATION) opened at the same time.
      */
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
@@ -1401,11 +1261,11 @@ export const reducer = createReducer(initialState, (builder) => {
         );
 
         if (isNadType(action.svgType)) {
-            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_CONFIG, and vice versa
+            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_ELEMENT, and vice versa
             if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_CONFIG);
+                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_ELEMENT);
             }
-            if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
+            if (action.svgType === DiagramType.NAD_FROM_ELEMENT) {
                 diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
             }
 
@@ -1446,7 +1306,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
                 // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
                 // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
-                // Note : for NAD_FROM_CONFIG, this should work as long as there is only one NAD in the diagramStates.
+                // Note : for NAD_FROM_ELEMENT, this should work as long as there is only one NAD in the diagramStates.
                 if (state.fullScreenDiagram?.svgType && isSldType(state.fullScreenDiagram?.svgType)) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
@@ -1634,16 +1494,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
     });
 
-    builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
+    builder.addCase(LOAD_NAD_FROM_ELEMENT, (state, action: LoadNadFromElementAction) => {
         // Reset depth to zero
         state.networkAreaDiagramDepth = 0;
 
         // Reset the potential movements stored for this particular NAD
         state.nadNodeMovements = state.nadNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+            (movement) => movement.nadIdentifier !== action.elementUuid
         );
         state.nadTextNodeMovements = state.nadTextNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+            (movement) => movement.nadIdentifier !== action.elementUuid
         );
 
         // We close all the other NAD ...
@@ -1651,17 +1511,19 @@ export const reducer = createReducer(initialState, (builder) => {
         diagramStates = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
         // ... and create the new NAD
         diagramStates.push({
-            id: action.nadConfigUuid as UUID,
-            name: action.nadName,
-            svgType: DiagramType.NAD_FROM_CONFIG,
+            id: action.elementUuid as UUID,
+            type: action.elementType,
+            name: action.elementName,
+            svgType: DiagramType.NAD_FROM_ELEMENT,
             state: ViewState.OPENED,
         });
         state.diagramStates = diagramStates;
         state.latestDiagramEvent = {
-            diagramType: DiagramType.NAD_FROM_CONFIG,
+            diagramType: DiagramType.NAD_FROM_ELEMENT,
             eventType: DiagramEventType.CREATE,
-            nadFromConfigUuid: action.nadConfigUuid as UUID,
-            nadName: action.nadName,
+            elementUuid: action.elementUuid as UUID,
+            elementType: action.elementType,
+            elementName: action.elementName,
         };
     });
 
