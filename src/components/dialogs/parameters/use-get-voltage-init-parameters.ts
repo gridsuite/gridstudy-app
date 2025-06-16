@@ -56,7 +56,6 @@ export const useGetVoltageInitParameters = (): VoltageInitStudyParameters | null
             const eventData = JSON.parse(event.data);
             if (
                 studyUuid &&
-                eventData.headers.studyUuid === studyUuid &&
                 voltageInitAvailability === OptionalServicesStatus.Up &&
                 haveComputationParametersChanged(
                     ComputingType.VOLTAGE_INITIALIZATION,
