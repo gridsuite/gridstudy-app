@@ -17,6 +17,16 @@ import { BUILD_STATUS } from 'components/network/constants';
 import { Box } from '@mui/material';
 import { sortSeverityList } from 'utils/report/report-severity';
 
+const styles = {
+    reportViewerContainer: {
+        marginTop: 1,
+        height: '100%',
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+};
+
 interface ComputationReportViewerProps {
     reportType: ComputingType;
 }
@@ -52,7 +62,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
 
     return (
         <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-            <Box sx={{ marginTop: 1 }}>
+            <Box sx={styles.reportViewerContainer}>
                 {shouldFetchReport && report && (
                     <ReportViewer report={report} reportType={reportType} severities={severities} />
                 )}
