@@ -1607,8 +1607,12 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         NETWORK_AREA_DIAGRAM_SELECTED_VOLTAGE_LEVEL,
         (state, action: NetworkAreaDiagramSelectedVoltageLevelAction) => {
+            if (!action.selectedVoltageLevelNad) {
+                state.selectedVoltageLevelNad = []; // reset
+                return;
+            }
             const existing = state.selectedVoltageLevelNad ?? [];
-            const toAdd = action.selectedVoltageLevelNad ?? [];
+            const toAdd = action.selectedVoltageLevelNad;
 
             state.selectedVoltageLevelNad = Array.from(new Set([...existing, ...toAdd]));
         }
