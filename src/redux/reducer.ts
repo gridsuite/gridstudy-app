@@ -11,6 +11,7 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
+    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -70,12 +71,12 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
-    LOAD_NAD_FROM_CONFIG,
+    LOAD_NAD_FROM_ELEMENT,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
-    LoadNadFromConfigAction,
+    LoadNadFromElementAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -485,6 +486,7 @@ export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
 
 export type DiagramState = {
     id: UUID;
+    type?: ElementType;
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
@@ -525,10 +527,11 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
     voltageLevelIds: string[];
 };
 
-type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_CONFIG;
-    nadFromConfigUuid: UUID;
-    nadName: string;
+type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NAD_FROM_ELEMENT;
+    elementUuid: UUID;
+    elementType: ElementType;
+    elementName: string;
 };
 
 export type DiagramEvent =
@@ -536,7 +539,7 @@ export type DiagramEvent =
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
     | CreateNADDiagramEvent
-    | CreateNADFromConfigDiagramEvent;
+    | CreateNADFromElementDiagramEvent;
 
 export type NadNodeMovement = {
     nadIdentifier: string;
@@ -1391,7 +1394,7 @@ export const reducer = createReducer(initialState, (builder) => {
      * of them pinned, etc).
      * The other types of diagrams all have their own state.
      *
-     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_CONFIG) opened at once, but there can be
+     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_ELEMENT) opened at once, but there can be
      * multiple SLD (VOLTAGE_LEVEL or SUBSTATION) opened at the same time.
      */
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
@@ -1401,11 +1404,11 @@ export const reducer = createReducer(initialState, (builder) => {
         );
 
         if (isNadType(action.svgType)) {
-            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_CONFIG, and vice versa
+            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_ELEMENT, and vice versa
             if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_CONFIG);
+                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_ELEMENT);
             }
-            if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
+            if (action.svgType === DiagramType.NAD_FROM_ELEMENT) {
                 diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
             }
 
@@ -1446,7 +1449,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
                 // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
                 // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
-                // Note : for NAD_FROM_CONFIG, this should work as long as there is only one NAD in the diagramStates.
+                // Note : for NAD_FROM_ELEMENT, this should work as long as there is only one NAD in the diagramStates.
                 if (state.fullScreenDiagram?.svgType && isSldType(state.fullScreenDiagram?.svgType)) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
@@ -1634,16 +1637,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
     });
 
-    builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
+    builder.addCase(LOAD_NAD_FROM_ELEMENT, (state, action: LoadNadFromElementAction) => {
         // Reset depth to zero
         state.networkAreaDiagramDepth = 0;
 
         // Reset the potential movements stored for this particular NAD
         state.nadNodeMovements = state.nadNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+            (movement) => movement.nadIdentifier !== action.elementUuid
         );
         state.nadTextNodeMovements = state.nadTextNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.nadConfigUuid
+            (movement) => movement.nadIdentifier !== action.elementUuid
         );
 
         // We close all the other NAD ...
@@ -1651,17 +1654,19 @@ export const reducer = createReducer(initialState, (builder) => {
         diagramStates = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
         // ... and create the new NAD
         diagramStates.push({
-            id: action.nadConfigUuid as UUID,
-            name: action.nadName,
-            svgType: DiagramType.NAD_FROM_CONFIG,
+            id: action.elementUuid as UUID,
+            type: action.elementType,
+            name: action.elementName,
+            svgType: DiagramType.NAD_FROM_ELEMENT,
             state: ViewState.OPENED,
         });
         state.diagramStates = diagramStates;
         state.latestDiagramEvent = {
-            diagramType: DiagramType.NAD_FROM_CONFIG,
+            diagramType: DiagramType.NAD_FROM_ELEMENT,
             eventType: DiagramEventType.CREATE,
-            nadFromConfigUuid: action.nadConfigUuid as UUID,
-            nadName: action.nadName,
+            elementUuid: action.elementUuid as UUID,
+            elementType: action.elementType,
+            elementName: action.elementName,
         };
     });
 

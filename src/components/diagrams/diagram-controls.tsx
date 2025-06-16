@@ -56,7 +56,7 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
-    onLoad?: (nadConfigUuid: UUID, nadName: string) => void;
+    onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
 }
@@ -89,15 +89,15 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
         }
     };
 
-    const handleLoad = (nadConfigUuid: UUID, nadName: string) => {
+    const handleLoad = (elementUuid: UUID, elementType: ElementType, elementName: string) => {
         if (onLoad) {
-            onLoad(nadConfigUuid, nadName);
+            onLoad(elementUuid, elementType, elementName);
         }
     };
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0) {
-            handleLoad(selectedElements[0].id, selectedElements[0].name);
+            handleLoad(selectedElements[0].id, selectedElements[0].type!, selectedElements[0].name);
         }
         handleCloseLoadSelector();
     };
@@ -151,7 +151,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
-                            types={[ElementType.DIAGRAM_CONFIG]}
+                            types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                             title={intl.formatMessage({
                                 id: 'GenerateFromGridexplore',
                             })}
