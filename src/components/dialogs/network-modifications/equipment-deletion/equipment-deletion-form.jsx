@@ -131,6 +131,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
 
     const equipmentTypeField = (
         <AutocompleteInput
+            readOnly
             isOptionEqualToValue={richTypeEquals}
             name={TYPE}
             label="Type"
