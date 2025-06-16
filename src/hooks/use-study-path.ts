@@ -120,10 +120,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
-                isMetadataUpdatedNotification(studyUpdatedForce.eventData)
-            ) {
+            if (isMetadataUpdatedNotification(studyUpdatedForce.eventData)) {
                 fetchStudyPath();
             }
         }

@@ -75,12 +75,12 @@ export const useNodeAliases = () => {
     const listenerAliasesUpdated = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
-            if (isSpreadsheetNodeAliasesUpdatedNotification(eventData) && eventData.headers.studyUuid === studyUuid) {
+            if (isSpreadsheetNodeAliasesUpdatedNotification(eventData)) {
                 // aliases change notification
                 fetchNodeAliases();
             }
         },
-        [fetchNodeAliases, studyUuid]
+        [fetchNodeAliases]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

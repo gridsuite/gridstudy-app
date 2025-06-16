@@ -154,11 +154,7 @@ const App = () => {
     const networkVisuParamsUpdated = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            if (
-                studyUuid &&
-                isNetworkVisualizationParametersUpdatedNotification(eventData) &&
-                eventData.headers.studyUuid === studyUuid
-            ) {
+            if (studyUuid && isNetworkVisualizationParametersUpdatedNotification(eventData)) {
                 getNetworkVisualizationParameters(studyUuid).then((params) =>
                     updateNetworkVisualizationsParams(params)
                 );
