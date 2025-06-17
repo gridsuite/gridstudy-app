@@ -231,6 +231,10 @@ export enum NodeInsertModes {
     NewBranch = 'CHILD',
 }
 
+export enum NodeSequenceType {
+    SECURITY_SEQUENCE = 'SECURITY_SEQUENCE',
+}
+
 interface NodeCreatedEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NODE_CREATED;
     parentNode: UUID;

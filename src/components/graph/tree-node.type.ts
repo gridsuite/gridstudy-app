@@ -66,6 +66,7 @@ type NodeCommonData = {
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
+    nodeType?: NetworkModificationNodeType;
 };
 export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
 
@@ -77,3 +78,7 @@ export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
 export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
+
+export const isModificationNode = (node: CurrentTreeNode): node is ModificationNode => {
+    return node.type === NodeType.NETWORK_MODIFICATION;
+};
