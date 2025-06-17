@@ -17,9 +17,10 @@ import { useSelector } from 'react-redux';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import ComputingType from '../../computing-status/computing-type';
-import { AppState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
+import { isComputationParametersUpdatedNotification } from 'types/notification-types';
 
 export const useGetShortCircuitParameters = (): ShortCircuitParametersInfos | null => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -55,9 +56,9 @@ export const useGetShortCircuitParameters = (): ShortCircuitParametersInfos | nu
             const eventData = JSON.parse(event.data);
             if (
                 studyUuid &&
-                eventData.headers.studyUuid === studyUuid &&
                 shortCircuitAvailability === OptionalServicesStatus.Up &&
-                haveComputationParametersChanged(ComputingType.SHORT_CIRCUIT, eventData as StudyUpdatedEventData)
+                isComputationParametersUpdatedNotification(eventData) &&
+                haveComputationParametersChanged(ComputingType.SHORT_CIRCUIT, eventData)
             ) {
                 fetchShortCircuitParameters(studyUuid);
             }
