@@ -13,7 +13,7 @@ import {
     CONNECTED,
     CREATIONS_TABLE,
     EQUIPMENT_ID,
-    FREQUENCY_REGULATION,
+    PARTICIPATE,
     REACTIVE_CAPABILITY_CURVE,
     TYPE,
     VOLTAGE_REGULATION_ON,
@@ -171,13 +171,6 @@ const TabularCreationForm = () => {
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                transformHeader: (header: string) => {
-                    // transform header to creation field
-                    const transformedHeader = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find(
-                        (field) => intl.formatMessage({ id: field.id }) === header
-                    );
-                    return transformedHeader ?? header;
-                },
                 transform: (value) => value.trim(),
             });
         }
@@ -228,12 +221,8 @@ const TabularCreationForm = () => {
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            if (
-                field.id === VOLTAGE_REGULATION_ON ||
-                field.id === CONNECTED ||
-                field.id === FREQUENCY_REGULATION ||
-                field.id === REACTIVE_CAPABILITY_CURVE
-            ) {
+            const booleanColumns = [VOLTAGE_REGULATION_ON, CONNECTED, PARTICIPATE, REACTIVE_CAPABILITY_CURVE];
+            if (booleanColumns.includes(field.id)) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
