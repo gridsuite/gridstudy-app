@@ -12,11 +12,12 @@ import { DiagramType } from './diagram.type';
 import {
     closeDiagram,
     closeDiagrams,
-    loadNadFromConfig,
+    loadNadFromElement,
     minimizeDiagram,
     openDiagram,
     togglePinDiagram,
 } from '../../redux/actions';
+import { ElementType } from '@gridsuite/commons-ui';
 
 export const useDiagram = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -56,9 +57,9 @@ export const useDiagram = () => {
         [dispatch]
     );
 
-    const loadNadFromConfigView = useCallback(
-        (nadConfigUuid: string, nadName: string) => {
-            dispatch(loadNadFromConfig(nadConfigUuid, nadName));
+    const loadNadFromElementView = useCallback(
+        (elementUuid: string, elementType: ElementType, elementName: string) => {
+            dispatch(loadNadFromElement(elementUuid, elementType, elementName));
         },
         [dispatch]
     );
@@ -69,6 +70,6 @@ export const useDiagram = () => {
         togglePinDiagramView,
         closeDiagramView,
         closeDiagramViews,
-        loadNadFromConfigView,
+        loadNadFromElementView,
     };
 };

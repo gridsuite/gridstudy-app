@@ -20,7 +20,7 @@ import { HttpStatusCode } from '../../../../utils/http-status-code';
 export default function GlobalFilterProvider({
     children,
     onChange: handleChange,
-    preloadedGlobalFilters = [],
+    preloadedGlobalFilters,
     filterCategories,
     genericFiltersStrictMode = false,
     equipmentTypes = undefined,
@@ -38,10 +38,13 @@ export default function GlobalFilterProvider({
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     // may be a filter type or a recent filter or whatever category
     const [filterGroupSelected, setFilterGroupSelected] = useState<string>(FilterType.VOLTAGE_LEVEL);
-    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters);
+    const [selectedGlobalFilters, setSelectedGlobalFilters] = useState<GlobalFilter[]>(preloadedGlobalFilters ?? []);
 
     useEffect(() => {
-        setSelectedGlobalFilters(preloadedGlobalFilters);
+        //If preloadedGlobalFilters is set it keeps the global filter state in sync
+        if (preloadedGlobalFilters !== undefined) {
+            setSelectedGlobalFilters(preloadedGlobalFilters);
+        }
     }, [preloadedGlobalFilters]);
 
     const checkSelectedFiltersPromise = useCallback(
