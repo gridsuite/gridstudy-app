@@ -24,7 +24,7 @@ export default function ConnectionCellRenderer({ name }: Readonly<ConnectionCell
         if (checked === null) {
             return '#808080';
         }
-        return undefined;
+        return '';
     };
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
