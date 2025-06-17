@@ -73,6 +73,7 @@ import {
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
+import { convertReactiveCapabilityCurvePointsFromBackToFront } from '../tabular-creation/tabular-creation-utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -223,60 +224,6 @@ export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification
         }
         modification[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
     }
-};
-
-const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
-    const curvePoint1 = value[0];
-    const curvePoint2 = value[1];
-    const curvePoint3 = value[2];
-
-    if (!curvePoint1) {
-        return [];
-    }
-
-    const result = [
-        {
-            key: REACTIVE_CAPABILITY_CURVE_P_MIN,
-            value: curvePoint1.p,
-        },
-        {
-            key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
-            value: curvePoint1.maxQ,
-        },
-        {
-            key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
-            value: curvePoint1.minQ,
-        },
-    ];
-
-    if (curvePoint2) {
-        const isLastPoint = !curvePoint3;
-
-        result.push(
-            {
-                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_P_MAX : REACTIVE_CAPABILITY_CURVE_P_0,
-                value: curvePoint2.p,
-            },
-            {
-                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
-                value: curvePoint2.maxQ,
-            },
-            {
-                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
-                value: curvePoint2.minQ,
-            }
-        );
-    }
-
-    if (curvePoint3) {
-        result.push(
-            { key: REACTIVE_CAPABILITY_CURVE_P_MAX, value: curvePoint3.p },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, value: curvePoint3.maxQ },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, value: curvePoint3.minQ }
-        );
-    }
-
-    return result;
 };
 
 export const convertGeneratorModificationFromBackToFront = (modification: Modification) => {

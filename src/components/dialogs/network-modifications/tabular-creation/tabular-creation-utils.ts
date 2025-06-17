@@ -172,7 +172,7 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
-const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
+export const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
     const curvePoint1 = value[0];
     const curvePoint2 = value[1];
     const curvePoint3 = value[2];
