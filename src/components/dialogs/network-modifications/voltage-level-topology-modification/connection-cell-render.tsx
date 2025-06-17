@@ -8,6 +8,7 @@
 import React from 'react';
 import CheckboxNullableInput from '../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
+import { useController } from 'react-hook-form';
 
 type ConnectionCellRendererProps = {
     name: string;
@@ -15,15 +16,29 @@ type ConnectionCellRendererProps = {
 
 export default function ConnectionCellRenderer({ name }: Readonly<ConnectionCellRendererProps>) {
     const intl = useIntl();
+    const {
+        field: { value },
+    } = useController({ name });
+    const getColor = (checked: boolean | null): string => {
+        // turn the label in grey when no modification
+        if (checked === null) {
+            return '#808080';
+        }
+    };
     return (
-        <CheckboxNullableInput
-            name={name}
-            label={(checked: boolean | null) =>
-                // cell value presents 'close'
-                checked !== null
-                    ? intl.formatMessage({ id: checked ? 'Closed' : 'Open' })
-                    : intl.formatMessage({ id: 'NoModification' })
-            }
-        />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <CheckboxNullableInput
+                name={name}
+                label={(checked: boolean | null) =>
+                    // cell value presents 'close'
+                    checked !== null
+                        ? intl.formatMessage({ id: checked ? 'Closed' : 'Open' })
+                        : intl.formatMessage({ id: 'NoModification' })
+                }
+                style={{
+                    color: getColor(value),
+                }}
+            />
+        </div>
     );
 }
