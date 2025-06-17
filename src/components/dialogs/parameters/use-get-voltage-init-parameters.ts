@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState, StudyUpdatedEventData } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer';
 import {
     NotificationsUrlKeys,
     useNotificationsListener,
@@ -20,6 +20,7 @@ import { getVoltageInitStudyParameters } from '../../../services/study/voltage-i
 import ComputingType from '../../computing-status/computing-type';
 import { UUID } from 'crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
+import { isComputationParametersUpdatedNotification } from 'types/notification-types';
 
 export const useGetVoltageInitParameters = (): VoltageInitStudyParameters | null => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -57,10 +58,8 @@ export const useGetVoltageInitParameters = (): VoltageInitStudyParameters | null
             if (
                 studyUuid &&
                 voltageInitAvailability === OptionalServicesStatus.Up &&
-                haveComputationParametersChanged(
-                    ComputingType.VOLTAGE_INITIALIZATION,
-                    eventData as StudyUpdatedEventData
-                )
+                isComputationParametersUpdatedNotification(eventData) &&
+                haveComputationParametersChanged(ComputingType.VOLTAGE_INITIALIZATION, eventData)
             ) {
                 fetchVoltageInitStudyParameters(studyUuid);
             }
