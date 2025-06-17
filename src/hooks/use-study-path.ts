@@ -16,10 +16,10 @@ import {
 import { computeFullPath } from '../utils/compute-title';
 import { studyUpdated } from '../redux/actions';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
 import { useDispatch, useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';
+import { isMetadataUpdatedNotification } from 'types/notification-types';
 
 export default function useStudyPath(studyUuid: UUID | null) {
     const [studyName, setStudyName] = useState<string>();
@@ -120,10 +120,7 @@ export default function useStudyPath(studyUuid: UUID | null) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'metadata_updated'
-            ) {
+            if (isMetadataUpdatedNotification(studyUpdatedForce.eventData)) {
                 fetchStudyPath();
             }
         }
