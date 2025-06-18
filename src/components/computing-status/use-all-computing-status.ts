@@ -34,45 +34,88 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
+import { NotificationType } from 'types/notification-types';
 
 // status invalidations
-const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
-const securityAnalysisStatusInvalidations = ['securityAnalysis_status', 'securityAnalysis_failed'];
-const sensitivityAnalysisStatusInvalidations = ['sensitivityAnalysis_status', 'sensitivityAnalysis_failed'];
-const nonEvacuatedEnergyStatusInvalidations = ['nonEvacuatedEnergy_status', 'nonEvacuatedEnergy_failed'];
-const shortCircuitAnalysisStatusInvalidations = ['shortCircuitAnalysis_status', 'shortCircuitAnalysis_failed'];
-const oneBusShortCircuitAnalysisStatusInvalidations = [
-    'oneBusShortCircuitAnalysis_status',
-    'oneBusShortCircuitAnalysis_failed',
+const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
+const securityAnalysisStatusInvalidations = [
+    NotificationType.SECURITY_ANALYSIS_STATUS,
+    NotificationType.SECURITY_ANALYSIS_FAILED,
 ];
-const dynamicSimulationStatusInvalidations = ['dynamicSimulation_status', 'dynamicSimulation_failed'];
-const dynamicSecurityAnalysisStatusInvalidations = ['dynamicSecurityAnalysis_status', 'dynamicSecurityAnalysis_failed'];
-const voltageInitStatusInvalidations = ['voltageInit_status', 'voltageInit_failed'];
-const stateEstimationStatusInvalidations = ['stateEstimation_status', 'stateEstimation_failed'];
+const sensitivityAnalysisStatusInvalidations = [
+    NotificationType.SENSITIVITY_ANALYSIS_STATUS,
+    NotificationType.SENSITIVITY_ANALYSIS_FAILED,
+];
+const nonEvacuatedEnergyStatusInvalidations = [
+    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS,
+    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
+];
+const shortCircuitAnalysisStatusInvalidations = [
+    NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS,
+    NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED,
+];
+const oneBusShortCircuitAnalysisStatusInvalidations = [
+    NotificationType.ONE_BUS_SC_ANALYSIS_STATUS,
+    NotificationType.ONE_BUS_SC_ANALYSIS_FAILED,
+];
+const dynamicSimulationStatusInvalidations = [
+    NotificationType.DYNAMIC_SIMULATION_STATUS,
+    NotificationType.DYNAMIC_SIMULATION_FAILED,
+];
+const dynamicSecurityAnalysisStatusInvalidations = [
+    NotificationType.DYNAMIC_SECURITY_ANALYSIS_STATUS,
+    NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED,
+];
+const voltageInitStatusInvalidations = [NotificationType.VOLTAGE_INIT_STATUS, NotificationType.VOLTAGE_INIT_FAILED];
+const stateEstimationStatusInvalidations = [
+    NotificationType.STATE_ESTIMATION_STATUS,
+    NotificationType.STATE_ESTIMATION_FAILED,
+];
 
 // status completions
-const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
-const securityAnalysisStatusCompletions = ['securityAnalysisResult', 'securityAnalysis_failed'];
-const sensitivityAnalysisStatusCompletions = ['sensitivityAnalysisResult', 'sensitivityAnalysis_failed'];
-const nonEvacuatedEnergyStatusCompletions = ['nonEvacuatedEnergyResult', 'nonEvacuatedEnergy_failed'];
-const shortCircuitAnalysisStatusCompletions = ['shortCircuitAnalysisResult', 'shortCircuitAnalysis_failed'];
-const oneBusShortCircuitAnalysisStatusCompletions = [
-    'oneBusShortCircuitAnalysisResult',
-    'oneBusShortCircuitAnalysis_failed',
+const loadFlowStatusCompletions = [NotificationType.LOADFLOW_RESULT, NotificationType.LOADFLOW_FAILED];
+const securityAnalysisStatusCompletions = [
+    NotificationType.SECURITY_ANALYSIS_RESULT,
+    NotificationType.SECURITY_ANALYSIS_FAILED,
 ];
-const dynamicSimulationStatusCompletions = ['dynamicSimulationResult', 'dynamicSimulation_failed'];
-const dynamicSecurityAnalysisStatusCompletions = ['dynamicSecurityAnalysisResult', 'dynamicSecurityAnalysis_failed'];
-const voltageInitStatusCompletions = ['voltageInitResult', 'voltageInit_failed'];
-const stateEstimationStatusCompletions = ['stateEstimationResult', 'stateEstimation_failed'];
+const sensitivityAnalysisStatusCompletions = [
+    NotificationType.SENSITIVITY_ANALYSIS_RESULT,
+    NotificationType.SENSITIVITY_ANALYSIS_FAILED,
+];
+const nonEvacuatedEnergyStatusCompletions = [
+    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT,
+    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
+];
+const shortCircuitAnalysisStatusCompletions = [
+    NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT,
+    NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED,
+];
+const oneBusShortCircuitAnalysisStatusCompletions = [
+    NotificationType.ONE_BUS_SC_ANALYSIS_RESULT,
+    NotificationType.ONE_BUS_SC_ANALYSIS_FAILED,
+];
+const dynamicSimulationStatusCompletions = [
+    NotificationType.DYNAMIC_SIMULATION_RESULT,
+    NotificationType.DYNAMIC_SIMULATION_FAILED,
+];
+const dynamicSecurityAnalysisStatusCompletions = [
+    NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT,
+    NotificationType.DYNAMIC_SECURITY_ANALYSIS_FAILED,
+];
+const voltageInitStatusCompletions = [NotificationType.VOLTAGE_INIT_RESULT, NotificationType.VOLTAGE_INIT_FAILED];
+const stateEstimationStatusCompletions = [
+    NotificationType.STATE_ESTIMATION_RESULT,
+    NotificationType.STATE_ESTIMATION_FAILED,
+];
 
 // result invalidations
-export const loadflowResultInvalidations = ['loadflowResult'];
-export const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
-export const nonEvacuatedEnergyResultInvalidations = ['nonEvacuatedEnergyResult'];
-export const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
-export const dynamicSecurityAnalysisResultInvalidations = ['dynamicSecurityAnalysisResult'];
-export const voltageInitResultInvalidations = ['voltageInitResult'];
-export const stateEstimationResultInvalidations = ['stateEstimationResult'];
+export const loadflowResultInvalidations = [NotificationType.LOADFLOW_RESULT];
+export const securityAnalysisResultInvalidations = [NotificationType.SECURITY_ANALYSIS_RESULT];
+export const nonEvacuatedEnergyResultInvalidations = [NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT];
+export const dynamicSimulationResultInvalidations = [NotificationType.DYNAMIC_SIMULATION_RESULT];
+export const dynamicSecurityAnalysisResultInvalidations = [NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT];
+export const voltageInitResultInvalidations = [NotificationType.VOLTAGE_INIT_RESULT];
+export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMATION_RESULT];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {

@@ -10,11 +10,12 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';
-import { AppState, StudyUpdated, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusInfos, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 import { isComputingTypeWithAdditionalInfos, toComputingStatusInfos } from './computing-status-utils';
+import { StudyUpdatedEventData } from 'types/notification-types';
 
 interface UseComputingStatusProps {
     (
@@ -54,7 +55,7 @@ function isWorthUpdate(
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
+    const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData; // TODO narrowing by predicate
     const headers = studyUpdatedEventData?.headers;
     const updateType = headers?.updateType;
     const node = headers?.node;

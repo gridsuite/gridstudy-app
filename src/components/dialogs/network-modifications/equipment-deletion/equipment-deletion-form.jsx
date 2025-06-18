@@ -138,6 +138,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             onChangeCallback={handleChange}
             getOptionLabel={getOptionLabel}
             size={'small'}
+            inputTransform={(value) => typesOptions.find((option) => option === value) || value}
             formProps={filledTextField}
         />
     );
@@ -153,7 +154,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
-            inputTransform={(value) => value}
+            inputTransform={(value) => value ?? ''}
             outputTransform={(value) => (value === '' ? null : getObjectId(value))}
             size={'small'}
             formProps={filledTextField}
