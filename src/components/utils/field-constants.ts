@@ -36,8 +36,14 @@ export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'terminalConnected';
+export const CONNECTION_DIRECTION1 = 'connectionDirection1';
+export const CONNECTION_NAME1 = 'connectionName1';
+export const CONNECTION_POSITION1 = 'connectionPosition1';
 export const CONNECTED1 = 'connected1';
 export const CONNECTED2 = 'connected2';
+export const CONNECTION_DIRECTION2 = 'connectionDirection2';
+export const CONNECTION_NAME2 = 'connectionName2';
+export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';

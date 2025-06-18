@@ -1222,7 +1222,13 @@
 
     "Connect": "Reconnect ?",
     "connected1": "Connected 1",
+    "connectionName1": "Connection name 1",
+    "connectionDirection1": "Connection direction 1",
+    "connectionPosition1": "Connection position 1",
     "connected2": "Connected 2",
+    "connectionName2": "Connection name 2",
+    "connectionDirection2": "Connection direction 2",
+    "connectionPosition2": "Connection position 2",
     "ConnectedT3WSide1": "Connected 1",
     "ConnectedT3WSide2": "Connected 2",
     "ConnectedT3WSide3": "Connected 3",
