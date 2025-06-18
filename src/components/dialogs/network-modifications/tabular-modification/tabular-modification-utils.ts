@@ -10,6 +10,7 @@ import {
     B,
     B1,
     B2,
+    BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
     CONNECTED1,
     CONNECTED2,
@@ -68,6 +69,7 @@ import {
     TARGET_Q,
     TARGET_V,
     TRANSIENT_REACTANCE,
+    VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
     X,
 } from 'components/utils/field-constants';
@@ -124,7 +126,25 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         PLANNED_OUTAGE_RATE,
         FORCED_OUTAGE_RATE,
     ],
-    BATTERY: [EQUIPMENT_ID, MIN_P, TARGET_P, MAX_P, TARGET_Q, CONNECTED],
+    BATTERY: [
+        EQUIPMENT_ID,
+        EQUIPMENT_NAME,
+        VOLTAGE_LEVEL_ID,
+        BUS_OR_BUSBAR_SECTION_ID,
+        CONNECTED,
+        CONNECTION_NAME,
+        CONNECTION_DIRECTION,
+        CONNECTION_POSITION,
+        MIN_P,
+        MAX_P,
+        MIN_Q,
+        MAX_Q,
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
+        TARGET_P,
+        TARGET_Q,
+        PARTICIPATE,
+        DROOP,
+    ],
     VOLTAGE_LEVEL: [EQUIPMENT_ID, NOMINAL_V, LOW_VOLTAGE_LIMIT, HIGH_VOLTAGE_LIMIT],
     SHUNT_COMPENSATOR: [
         EQUIPMENT_ID,
@@ -236,7 +256,7 @@ export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification
     }
 };
 
-export const convertGeneratorModificationFromBackToFront = (modification: Modification) => {
+export const convertGeneratorOrBatteryModificationFromBackToFront = (modification: Modification) => {
     const formattedModification: Modification = {};
     Object.keys(modification).forEach((key) => {
         if (key === REACTIVE_CAPABILITY_CURVE_POINTS) {
@@ -252,7 +272,7 @@ export const convertGeneratorModificationFromBackToFront = (modification: Modifi
     return formattedModification;
 };
 
-export const convertGeneratorModificationFromFrontToBack = (modification: Modification) => {
+export const convertGeneratorOrBatteryModificationFromFrontToBack = (modification: Modification) => {
     const formattedModification: Modification = { ...modification };
     convertReactiveCapabilityCurvePointsFromFrontToBack(formattedModification);
     // Remove the individual reactive capability curve fields
