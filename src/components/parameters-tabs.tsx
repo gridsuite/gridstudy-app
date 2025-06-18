@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
@@ -50,7 +50,6 @@ import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated
 import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
-import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
@@ -61,10 +60,11 @@ import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
 import {
-    useParametersBackend,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
+    SecurityAnalysisParametersInline,
     ShortCircuitParametersInLine,
+    useParametersBackend,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 
@@ -269,9 +269,11 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
             case TAB_VALUES.securityAnalysisParamsTabValue:
                 return (
-                    <SecurityAnalysisParameters
+                    <SecurityAnalysisParametersInline
+                        studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
