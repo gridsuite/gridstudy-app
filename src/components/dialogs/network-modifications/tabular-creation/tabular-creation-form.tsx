@@ -11,16 +11,17 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
-    EQUIPMENT_ID,
     CREATIONS_TABLE,
+    EQUIPMENT_ID,
+    PARTICIPATE,
+    REACTIVE_CAPABILITY_CURVE,
     TYPE,
     VOLTAGE_REGULATION_ON,
-    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
+import { styles, TABULAR_CREATION_FIELDS, TabularCreationField } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
@@ -38,34 +39,75 @@ const TabularCreationForm = () => {
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(CREATIONS_TABLE);
-            // check required fields are defined
-            let fieldNameInError: string = '';
+            let requiredFieldNameInError: string = '';
+
+            let requiredDependantFieldNameInError: string = '';
+            let dependantFieldNameInError: string = '';
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
                     const found = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
                         return field.id === key;
                     });
+                    // check required fields are defined
                     if (found !== undefined && found.required && (result[key] === undefined || result[key] === null)) {
-                        fieldNameInError = key;
+                        requiredFieldNameInError = key;
                         return false;
                     }
+
+                    //check requiredIf rule
+                    if (found?.requiredIf) {
+                        const dependentValue = result[found.requiredIf.id];
+                        if (
+                            dependentValue !== undefined &&
+                            dependentValue !== null &&
+                            (result[key] === undefined || result[key] === null)
+                        ) {
+                            dependantFieldNameInError = key;
+                            requiredDependantFieldNameInError = found.requiredIf.id;
+                            return false;
+                        }
+                    }
+
                     return true;
                 });
-                return fieldNameInError !== '';
+                return (
+                    requiredFieldNameInError !== '' ||
+                    dependantFieldNameInError !== '' ||
+                    requiredDependantFieldNameInError !== ''
+                );
             });
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
-            if (fieldNameInError !== '') {
+            if (requiredFieldNameInError !== '') {
                 setError(CREATIONS_TABLE, {
                     type: 'custom',
-                    message:
-                        intl.formatMessage({
+                    message: intl.formatMessage(
+                        {
                             id: 'FieldRequired',
-                        }) +
-                        intl.formatMessage({
-                            id: fieldNameInError,
-                        }),
+                        },
+                        {
+                            requiredFieldNameInError: intl.formatMessage({
+                                id: requiredFieldNameInError,
+                            }),
+                        }
+                    ),
+                });
+            }
+            if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                setError(CREATIONS_TABLE, {
+                    type: 'custom',
+                    message: intl.formatMessage(
+                        {
+                            id: 'DependantFieldMissing',
+                        },
+                        {
+                            requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
+                            dependantField: intl.formatMessage({
+                                id: requiredDependantFieldNameInError,
+                            }),
+                        }
+                    ),
                 });
             }
         },
@@ -129,13 +171,6 @@ const TabularCreationForm = () => {
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                transformHeader: (header: string) => {
-                    // transform header to creation field
-                    const transformedHeader = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find(
-                        (field) => intl.formatMessage({ id: field.id }) === header
-                    );
-                    return transformedHeader ?? header;
-                },
                 transform: (value) => value.trim(),
             });
         }
@@ -186,7 +221,8 @@ const TabularCreationForm = () => {
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            if (field.id === VOLTAGE_REGULATION_ON || field.id === CONNECTED || field.id === FREQUENCY_REGULATION) {
+            const booleanColumns = [VOLTAGE_REGULATION_ON, CONNECTED, PARTICIPATE, REACTIVE_CAPABILITY_CURVE];
+            if (booleanColumns.includes(field.id)) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
