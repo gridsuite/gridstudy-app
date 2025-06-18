@@ -7,7 +7,6 @@
 
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
-    ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -18,18 +17,15 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
-    FREQUENCY_REGULATION,
     LOAD_TYPE,
     MARGINAL_COST,
     MAX_P,
     MAX_Q,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
-    MAXIMUM_REACTIVE_POWER,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
     MIN_Q,
-    MINIMUM_REACTIVE_POWER,
     P0,
     PARTICIPATE,
     PLANNED_ACTIVE_POWER_SET_POINT,
@@ -48,7 +44,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
     REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
-    REACTIVE_POWER_SET_POINT,
     REGULATING_TERMINAL_ID,
     REGULATING_TERMINAL_TYPE,
     REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
@@ -61,7 +56,6 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 
@@ -102,18 +96,18 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: MIN_P, required: true },
         { id: MAX_P, required: true },
         { id: RATED_S, required: false },
-        { id: MINIMUM_REACTIVE_POWER, required: false },
-        { id: MAXIMUM_REACTIVE_POWER, required: false },
+        { id: MIN_Q, required: false },
+        { id: MAX_Q, required: false },
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
-        { id: ACTIVE_POWER_SET_POINT, required: false },
-        { id: REACTIVE_POWER_SET_POINT, required: false },
+        { id: TARGET_P, required: false },
+        { id: TARGET_Q, required: false },
         { id: VOLTAGE_REGULATION_ON, required: true },
-        { id: VOLTAGE_SET_POINT, required: false },
+        { id: TARGET_V, required: false },
         { id: REGULATING_TERMINAL_ID, required: false },
         { id: REGULATING_TERMINAL_TYPE, required: false },
         { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
         { id: Q_PERCENT, required: false },
-        { id: FREQUENCY_REGULATION, required: true },
+        { id: PARTICIPATE, required: true },
         { id: DROOP, required: false },
         { id: TRANSIENT_REACTANCE, required: false },
         { id: STEP_UP_TRANSFORMER_REACTANCE, required: false },
@@ -146,12 +140,12 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: CONNECTION_POSITION, required: false },
         { id: MIN_P, required: true },
         { id: MAX_P, required: true },
-        { id: MINIMUM_REACTIVE_POWER, required: false },
-        { id: MAXIMUM_REACTIVE_POWER, required: false },
+        { id: MIN_Q, required: false },
+        { id: MAX_Q, required: false },
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
-        { id: ACTIVE_POWER_SET_POINT, required: false },
-        { id: REACTIVE_POWER_SET_POINT, required: false },
-        { id: FREQUENCY_REGULATION, required: true },
+        { id: TARGET_P, required: false },
+        { id: TARGET_Q, required: false },
+        { id: PARTICIPATE, required: true },
         { id: DROOP, required: false },
     ],
     SHUNT_COMPENSATOR: [
@@ -178,7 +172,7 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
-const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
+export const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
     const curvePoint1 = value[0];
     const curvePoint2 = value[1];
     const curvePoint3 = value[2];
@@ -269,44 +263,18 @@ export const convertCreationFieldFromBackToFront = (
           }
         | unknown
 ) => {
-    switch (key) {
-        case PARTICIPATE:
-            return { key: FREQUENCY_REGULATION, value: value };
-        case TARGET_V:
-            return { key: VOLTAGE_SET_POINT, value: value };
-        case TARGET_P:
-            return { key: ACTIVE_POWER_SET_POINT, value: value };
-        case TARGET_Q:
-            return { key: REACTIVE_POWER_SET_POINT, value: value };
-        case MIN_Q:
-            return { key: MINIMUM_REACTIVE_POWER, value: value };
-        case MAX_Q:
-            return { key: MAXIMUM_REACTIVE_POWER, value: value };
-        case REACTIVE_CAPABILITY_CURVE_POINTS:
-            return convertReactiveCapabilityCurvePointsFromBackToFront(value as ReactiveCapabilityCurvePoints[]);
-        default:
-            return { key: key, value: value };
+    if (key === REACTIVE_CAPABILITY_CURVE_POINTS) {
+        return convertReactiveCapabilityCurvePointsFromBackToFront(value as ReactiveCapabilityCurvePoints[]);
+    } else {
+        return { key: key, value: value };
     }
 };
 
 export const convertCreationFieldFromFrontToBack = (key: string, value: string | number | boolean) => {
-    switch (key) {
-        case FREQUENCY_REGULATION:
-            return { key: PARTICIPATE, value: value };
-        case VOLTAGE_SET_POINT:
-            return { key: TARGET_V, value: value };
-        case ACTIVE_POWER_SET_POINT:
-            return { key: TARGET_P, value: value };
-        case REACTIVE_POWER_SET_POINT:
-            return { key: TARGET_Q, value: value };
-        case MINIMUM_REACTIVE_POWER:
-            return { key: MIN_Q, value: value };
-        case MAXIMUM_REACTIVE_POWER:
-            return { key: MAX_Q, value: value };
-        case CONNECTION_DIRECTION:
-            return { key: key, value: value ?? 'UNDEFINED' };
-        default:
-            return { key: key, value: value };
+    if (key === CONNECTION_DIRECTION) {
+        return { key: key, value: value ?? 'UNDEFINED' };
+    } else {
+        return { key: key, value: value };
     }
 };
 

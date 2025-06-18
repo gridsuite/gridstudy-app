@@ -17,6 +17,7 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     COUNTRY,
+    DROOP,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -29,19 +30,37 @@ import {
     LOW_VOLTAGE_LIMIT,
     MARGINAL_COST,
     MAX_P,
+    MAX_Q,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MAXIMUM_SECTION_COUNT,
     MIN_P,
+    MIN_Q,
     NOMINAL_V,
     P0,
+    PARTICIPATE,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q0,
+    Q_PERCENT,
     R,
     RATED_S,
     RATED_U1,
     RATED_U2,
+    REACTIVE_CAPABILITY_CURVE,
+    REACTIVE_CAPABILITY_CURVE_P_0,
+    REACTIVE_CAPABILITY_CURVE_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_POINTS,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
+    REGULATING_TERMINAL_ID,
+    REGULATING_TERMINAL_TYPE,
+    REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
     STEP_UP_TRANSFORMER_REACTANCE,
@@ -53,23 +72,51 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../utils/utils';
+import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
+import { convertReactiveCapabilityCurvePointsFromBackToFront } from '../tabular-creation/tabular-creation-utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
 }
 
+const REACTIVE_CAPABILITY_CURVE_FIELDS = [
+    REACTIVE_CAPABILITY_CURVE,
+    REACTIVE_CAPABILITY_CURVE_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
+    REACTIVE_CAPABILITY_CURVE_P_0,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
+    REACTIVE_CAPABILITY_CURVE_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX,
+    REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX,
+];
+
 export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     GENERATOR: [
         EQUIPMENT_ID,
+        EQUIPMENT_NAME,
         ENERGY_SOURCE,
+        CONNECTED,
+        CONNECTION_NAME,
+        CONNECTION_DIRECTION,
+        CONNECTION_POSITION,
         MIN_P,
         MAX_P,
-        TARGET_P,
         RATED_S,
+        MIN_Q,
+        MAX_Q,
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
+        TARGET_P,
         TARGET_Q,
         VOLTAGE_REGULATION_ON,
         TARGET_V,
-        CONNECTED,
+        REGULATING_TERMINAL_ID,
+        REGULATING_TERMINAL_TYPE,
+        REGULATING_TERMINAL_VOLTAGE_LEVEL_ID,
+        Q_PERCENT,
+        PARTICIPATE,
+        DROOP,
         TRANSIENT_REACTANCE,
         STEP_UP_TRANSFORMER_REACTANCE,
         PLANNED_ACTIVE_POWER_SET_POINT,
@@ -162,4 +209,66 @@ export const convertOutputValues = (key: string, value: string | number) => {
         return value;
     }
     return toModificationOperation(convertOutputValue(convertCamelToSnake(key), value));
+};
+
+export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification: Record<string, unknown>) => {
+    if (modification[REACTIVE_CAPABILITY_CURVE]) {
+        //Convert list data to matrix
+        const rccPoints = [];
+        if (modification[REACTIVE_CAPABILITY_CURVE_P_MIN] !== null) {
+            rccPoints.push({
+                p: modification[REACTIVE_CAPABILITY_CURVE_P_MIN],
+                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
+                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
+            });
+        }
+        if (modification[REACTIVE_CAPABILITY_CURVE_P_0] !== null) {
+            rccPoints.push({
+                p: modification[REACTIVE_CAPABILITY_CURVE_P_0],
+                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
+                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
+            });
+        }
+        if (modification[REACTIVE_CAPABILITY_CURVE_P_MAX] !== null) {
+            rccPoints.push({
+                p: modification[REACTIVE_CAPABILITY_CURVE_P_MAX],
+                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
+                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
+            });
+        }
+        modification[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
+    }
+};
+
+export const convertGeneratorModificationFromBackToFront = (modification: Modification) => {
+    const formattedModification: Modification = {};
+    Object.keys(modification).forEach((key) => {
+        if (key === REACTIVE_CAPABILITY_CURVE_POINTS) {
+            convertReactiveCapabilityCurvePointsFromBackToFront(
+                modification[key] as ReactiveCapabilityCurvePoints[]
+            ).forEach((point) => {
+                formattedModification[point.key] = point.value;
+            });
+        } else {
+            formattedModification[key] = convertInputValues(key, modification[key]);
+        }
+    });
+    return formattedModification;
+};
+
+export const convertGeneratorModificationFromFrontToBack = (modification: Modification) => {
+    const formattedModification: Modification = { ...modification };
+    convertReactiveCapabilityCurvePointsFromFrontToBack(formattedModification);
+    // Remove the individual reactive capability curve fields
+    REACTIVE_CAPABILITY_CURVE_FIELDS.forEach((field) => {
+        if (field !== REACTIVE_CAPABILITY_CURVE) {
+            delete formattedModification[field];
+        }
+    });
+    Object.keys(formattedModification).forEach((key) => {
+        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS) {
+            formattedModification[key] = convertOutputValues(key, formattedModification[key]);
+        }
+    });
+    return formattedModification;
 };
