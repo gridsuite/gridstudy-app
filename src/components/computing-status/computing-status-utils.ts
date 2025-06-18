@@ -15,9 +15,9 @@ export const isParameterizedComputingType = (
     return computingType === ComputingType.LOAD_FLOW;
 };
 
-export function toComputingStatusInfos<K extends ParameterizedComputingType>(
-    computingStatusInfos: unknown,
+export function toComputingStatusParameters<K extends ParameterizedComputingType>(
+    computingStatusParameters: unknown,
     computingType: K
 ): ComputingStatusParameters[K] | null {
-    return computingStatusInfos as ComputingStatusParameters[K];
+    return computingStatusParameters as ComputingStatusParameters[K];
 }

@@ -16,7 +16,7 @@ import { setComputingStatus, setComputingStatusParameters, setLastCompletedCompu
 import { AppDispatch } from '../../redux/store';
 import {
     isParameterizedComputingType,
-    toComputingStatusInfos as toComputingStatusParameters,
+    toComputingStatusParameters as toComputingStatusParameters,
 } from './computing-status-utils';
 import { StudyUpdatedEventData } from 'types/notification-types';
 
@@ -35,7 +35,7 @@ interface UseComputingStatusProps {
         resultConversion: (x: string | null) => RunningStatus,
         computingType: ComputingType,
         optionalServiceAvailabilityStatus?: OptionalServicesStatus,
-        computingStatusInfosFetcher?: (
+        computingStatusParametersFetcher?: (
             studyUuid: UUID,
             nodeUuid: UUID,
             currentRootNetworkUuid: UUID
@@ -116,7 +116,7 @@ const shouldRequestBeCanceled = (
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
  * @param optionalServiceAvailabilityStatus status of an optional service
- * @param computingStatusInfosFetcher method fetching status infos
+ * @param computingStatusParametersFetcher method fetching status infos
  */
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
@@ -128,7 +128,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     resultConversion,
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up,
-    computingStatusInfosFetcher
+    computingStatusParametersFetcher
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
@@ -149,13 +149,13 @@ export const useComputingStatus: UseComputingStatusProps = (
     const handleComputingStatusParameters = useCallback(
         async (computationStatus: RunningStatus, canceledRequest: boolean) => {
             if (
-                computingStatusInfosFetcher &&
+                computingStatusParametersFetcher &&
                 computationStatus !== RunningStatus.IDLE &&
                 isParameterizedComputingType(computingType)
             ) {
                 nodeUuidRef.current = nodeUuid;
                 rootNetworkUuidRef.current = currentRootNetworkUuid;
-                const computingStatusParametersResult = await computingStatusInfosFetcher(
+                const computingStatusParametersResult = await computingStatusParametersFetcher(
                     studyUuid,
                     nodeUuid,
                     currentRootNetworkUuid
@@ -179,7 +179,7 @@ export const useComputingStatus: UseComputingStatusProps = (
                 );
             }
         },
-        [computingStatusInfosFetcher, computingType, currentRootNetworkUuid, dispatch, nodeUuid, studyUuid]
+        [computingStatusParametersFetcher, computingType, currentRootNetworkUuid, dispatch, nodeUuid, studyUuid]
     );
 
     const update = useCallback(async () => {
@@ -210,7 +210,7 @@ export const useComputingStatus: UseComputingStatusProps = (
             ) {
                 return;
             }
-            // if request has not been canceled for any reason, fetch if necessary computingStatusInfos
+            // if request has not been canceled for any reason, fetch if necessary computingStatusParameters
             const status = resultConversion(computingStatusResult);
             dispatch(setComputingStatus(computingType, status));
             if (isComputationCompleted(status)) {

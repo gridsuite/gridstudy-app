@@ -53,7 +53,7 @@ const checkDynamicSimulationParameters = (studyUuid) => {
 };
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
-    const loadFlowStatusInfos = useSelector((state) => state.computingStatusInfos[ComputingType.LOAD_FLOW]);
+    const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
 
     // only one of those type can be different from idle, depending on loadFlowStatusInfos.withRatioTapChangers
     const loadFlowWithoutRatioTapChangersStatus = useMemo(
