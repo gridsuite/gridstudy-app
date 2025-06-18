@@ -113,6 +113,7 @@ import { LccModificationDialog } from '../../../dialogs/network-modifications/hv
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
+import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -301,6 +302,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
                     label: 'VOLTAGE_LEVEL_TOPOLOGY',
                     action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
+                    label: 'CreateVoltageLevelTopology',
+                    action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
