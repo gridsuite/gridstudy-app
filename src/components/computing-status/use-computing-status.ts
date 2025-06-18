@@ -14,10 +14,7 @@ import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
-import {
-    isParameterizedComputingType,
-    toComputingStatusParameters as toComputingStatusParameters,
-} from './computing-status-utils';
+import { isParameterizedComputingType, toComputingStatusParameters } from './computing-status-utils';
 import { StudyUpdatedEventData } from 'types/notification-types';
 
 interface UseComputingStatusProps {
