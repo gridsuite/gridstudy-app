@@ -15,6 +15,8 @@ import {
     CONNECTED2,
     EQUIPMENT_ID,
     MODIFICATIONS_TABLE,
+    PARTICIPATE,
+    REACTIVE_CAPABILITY_CURVE,
     TYPE,
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
@@ -179,12 +181,15 @@ const TabularModificationForm = () => {
             }
             columnDef.field = field;
             columnDef.headerName = intl.formatMessage({ id: field });
-            if (
-                field === VOLTAGE_REGULATION_ON ||
-                field === CONNECTED ||
-                field === CONNECTED1 ||
-                field === CONNECTED2
-            ) {
+            const booleanColumns = [
+                VOLTAGE_REGULATION_ON,
+                CONNECTED,
+                CONNECTED1,
+                CONNECTED2,
+                REACTIVE_CAPABILITY_CURVE,
+                PARTICIPATE,
+            ];
+            if (booleanColumns.includes(field)) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
