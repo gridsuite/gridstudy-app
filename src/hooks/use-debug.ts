@@ -13,11 +13,9 @@ import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
-import { UPDATE_TYPE_HEADER } from '../components/use-node-data';
 import { useIntl } from 'react-intl';
 import { downloadDebugDynamicSecurityAnalysis } from '../services/dynamic-security-analysis';
-
-export const UPDATE_TYPE_STUDY_DEBUG = 'STUDY_DEBUG';
+import { NotificationType } from '../types/notification-types';
 
 const debugFetchers = {
     [ComputingType.DYNAMIC_SIMULATION]: downloadDebugDynamicSimulation,
@@ -117,8 +115,8 @@ export default function useDebug({
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             console.log('XXX evenData', { eventData });
-            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-            if (updateTypeHeader === UPDATE_TYPE_STUDY_DEBUG) {
+            const updateTypeHeader = eventData.headers.updateType;
+            if (updateTypeHeader === NotificationType.STUDY_DEBUG) {
                 const {
                     studyUuid,
                     node: nodeUuid,
