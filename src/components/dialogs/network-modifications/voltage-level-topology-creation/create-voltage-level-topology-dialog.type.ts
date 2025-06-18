@@ -8,5 +8,5 @@ import {SECTION_COUNT, SWITCH_KINDS} from '../../../utils/field-constants';
 
 export type CreateVoltageLevelTopologyDialogSchemaForm = {
     [SECTION_COUNT]: number;
-    [SWITCH_KINDS]: string[];
+    [SWITCH_KINDS]: {switchKind: string} [];
 };

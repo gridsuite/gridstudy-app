@@ -36,7 +36,7 @@ const formSchema = yup.object().shape({
         .string()
         .nullable()
         .when([SECTION_COUNT], {
-            is: (sectionCount) => sectionCount > 1,
+            is: (sectionCount: number) => sectionCount > 1,
             then: (schema) => schema.required(),
         }),
 });
