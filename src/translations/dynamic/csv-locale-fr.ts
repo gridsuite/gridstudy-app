@@ -15,6 +15,8 @@ const csv_locale_fr = {
         '#,,AUXILIARY | FICTITIOUS | UNDEFINED,,,true | false,,TOP | BOTTOM | UNDEFINED,,,',
     'TabularModificationSkeletonComment.GENERATOR':
         '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,,true | false,,,,,,,,,,,,true | false,,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,,,,,,,,',
+    'TabularModificationSkeletonComment.BATTERY':
+        '#,,true | false,,TOP | BOTTOM | UNDEFINED,,,,,,true | false,,,,,,,,,,,,true | false,requis si participate est true',
     'TabularModificationSkeletonComment.LOAD': '#,,AUXILIARY | FICTITIOUS,true | false,,TOP | BOTTOM,,,',
     'TabularModificationSkeletonComment.SUBSTATION':
         '#,Code à 2 lettres de la norme ISO 3166-1 (FR ES PT IT CH DE BE LU NL GB ...)',
