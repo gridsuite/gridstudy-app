@@ -23,7 +23,7 @@ const csv_locale_en = {
     'TabularCreationSkeletonComment.SHUNT_COMPENSATOR':
         '#,,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,REACTOR | CAPACITOR | required if maxQAtNominalV is set,,,',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
-        '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,,REACTOR | CAPACITOR,,,true | false',
+        '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR,,',
 };
 
 export default csv_locale_en;

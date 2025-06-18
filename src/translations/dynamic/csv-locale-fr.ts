@@ -23,7 +23,7 @@ const csv_locale_fr = {
     'TabularCreationSkeletonComment.SHUNT_COMPENSATOR':
         '#,,,,true | false,,TOP | BOTTOM | UNDEFINED,,,,REACTOR | CAPACITOR | requis si maxQAtNominalV est définit,,,',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
-        '#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.,,,REACTOR | CAPACITOR,,,true | false',
+        '#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR,,',
 };
 
 export default csv_locale_fr;
