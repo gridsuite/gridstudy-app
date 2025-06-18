@@ -1214,8 +1214,8 @@
     "deleteNodeConfirmation": "\"{nodeName}\" will be deleted.",
     "deleteSubTreeConfirmation": "\"{nodeName}\" {nodesNumber, plural, =0 {will be deleted.} =1 {and its subtree with one node will be deleted.} other {and its subtree with # nodes will be deleted.}}",
 
-    "IpMin": "ISC min (kA)",
-    "IpMax": "ISC max (kA)",
+    "ipMin": "ISC min (kA)",
+    "ipMax": "ISC max (kA)",
     "marginalCost": "Startup cost",
 
     "dialog.button.leave": "Leave",

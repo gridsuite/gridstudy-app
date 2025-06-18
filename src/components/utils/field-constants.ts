@@ -208,6 +208,8 @@ export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
+export const IP_MIN = 'ipMin';
+export const IP_MAX = 'ipMax';
 // dnd table
 export const SELECTED = 'selected';
 

@@ -1210,8 +1210,8 @@
     "deleteNodeConfirmation": "\"{nodeName}\" va être supprimé.",
     "deleteSubTreeConfirmation": "\"{nodeName}\" {nodesNumber, plural, =0 {va être supprimé.} =1 {et son sous-arbre contenant un nœud vont être supprimés} other {et son sous-arbre contenant # nœuds vont être supprimés.}}",
 
-    "IpMin": "ICC min (kA)",
-    "IpMax": "ICC max (kA)",
+    "ipMin": "ICC min (kA)",
+    "ipMax": "ICC max (kA)",
     "marginalCost": "Coût de démarrage",
 
     "Connect": "Reconnexion ?",
