@@ -19,6 +19,8 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
+    convertGeneratorModificationFromBackToFront,
+    convertGeneratorModificationFromFrontToBack,
     convertInputValues,
     convertOutputValues,
     formatModification,
@@ -74,10 +76,14 @@ const TabularModificationDialog = ({
         if (editData) {
             const equipmentType = getEquipmentTypeFromModificationType(editData?.modificationType);
             const modifications = editData?.modifications.map((modif) => {
-                const modification = {};
-                Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertInputValues(key, modif[key]);
-                });
+                let modification = formatModification(modif);
+                if (equipmentType === 'GENERATOR') {
+                    modification = convertGeneratorModificationFromBackToFront(modification);
+                } else {
+                    Object.keys(modification).forEach((key) => {
+                        modification[key] = convertInputValues(key, modif[key]);
+                    });
+                }
                 return modification;
             });
             reset({
@@ -91,12 +97,21 @@ const TabularModificationDialog = ({
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
             const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                const modification = {
+                let modification = {
                     type: modificationType,
                 };
-                Object.keys(row).forEach((key) => {
-                    modification[key] = convertOutputValues(key, row[key]);
-                });
+                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR) {
+                    const generatorModification = convertGeneratorModificationFromFrontToBack(row);
+                    modification = {
+                        ...generatorModification,
+                        ...modification,
+                    };
+                } else {
+                    Object.keys(row).forEach((key) => {
+                        modification[key] = convertOutputValues(key, row[key]);
+                    });
+                }
+
                 return modification;
             });
             createTabulareModification(
