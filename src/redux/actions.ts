@@ -35,7 +35,7 @@ import type {
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
-    ComputingStatusInfos,
+    ComputingStatusParameters,
 } from './reducer';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
@@ -118,7 +118,7 @@ export type AppActions =
     | DecrementNetworkAreaDiagramDepthAction
     | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
-    | SetComputingStatusInfosAction<ComputingTypeWithAdditionalInfos>
+    | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
@@ -1031,24 +1031,24 @@ export function setComputingStatus(
     };
 }
 
-export type ComputingTypeWithAdditionalInfos = ComputingType.LOAD_FLOW;
+export type ParameterizedComputingType = ComputingType.LOAD_FLOW;
 
 export const SET_COMPUTING_STATUS_INFOS = 'SET_COMPUTING_STATUS_INFOS';
-export type SetComputingStatusInfosAction<K extends keyof ComputingStatusInfos> = Readonly<
+export type SetComputingStatusParametersAction<K extends ParameterizedComputingType> = Readonly<
     Action<typeof SET_COMPUTING_STATUS_INFOS>
 > & {
     computingType: K;
-    computingStatusInfos: ComputingStatusInfos[K];
+    computingStatusParameters: ComputingStatusParameters[K];
 };
 
-export function setComputingStatusInfos<K extends keyof ComputingStatusInfos>(
+export function setComputingStatusParameters<K extends ParameterizedComputingType>(
     computingType: K,
-    computingStatusInfos: ComputingStatusInfos[K]
-): SetComputingStatusInfosAction<K> {
+    computingStatusParameters: ComputingStatusParameters[K]
+): SetComputingStatusParametersAction<K> {
     return {
         type: SET_COMPUTING_STATUS_INFOS,
         computingType: computingType,
-        computingStatusInfos: computingStatusInfos,
+        computingStatusParameters: computingStatusParameters,
     };
 }
 

@@ -8,7 +8,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { setComputationStarting, setComputingStatus, setComputingStatusInfos, setLogsFilter } from '../redux/actions';
+import {
+    setComputationStarting,
+    setComputingStatus,
+    setComputingStatusParameters,
+    setLogsFilter,
+} from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
@@ -182,7 +187,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         () =>
-                            dispatch(setComputingStatusInfos(ComputingType.LOAD_FLOW, { withRatioTapChangers: false })),
+                            dispatch(
+                                setComputingStatusParameters(ComputingType.LOAD_FLOW, { withRatioTapChangers: false })
+                            ),
                         () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
                         () => {},
                         null,
@@ -199,7 +206,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         () =>
-                            dispatch(setComputingStatusInfos(ComputingType.LOAD_FLOW, { withRatioTapChangers: true })),
+                            dispatch(
+                                setComputingStatusParameters(ComputingType.LOAD_FLOW, { withRatioTapChangers: true })
+                            ),
                         () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
                         () => {},
                         null,

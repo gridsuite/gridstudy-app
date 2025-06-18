@@ -12,9 +12,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
-import { setComputingStatus, setComputingStatusInfos, setLastCompletedComputation } from '../../redux/actions';
+import { setComputingStatus, setComputingStatusParameters, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
-import { isComputingTypeWithAdditionalInfos, toComputingStatusInfos } from './computing-status-utils';
+import {
+    isParameterizedComputingType,
+    toComputingStatusInfos as toComputingStatusParameters,
+} from './computing-status-utils';
 import { StudyUpdatedEventData } from 'types/notification-types';
 
 interface UseComputingStatusProps {
@@ -143,16 +146,16 @@ export const useComputingStatus: UseComputingStatusProps = (
         [completions]
     );
 
-    const handleComputingStatusInfos = useCallback(
+    const handleComputingStatusParameters = useCallback(
         async (computationStatus: RunningStatus, canceledRequest: boolean) => {
             if (
                 computingStatusInfosFetcher &&
                 computationStatus !== RunningStatus.IDLE &&
-                isComputingTypeWithAdditionalInfos(computingType)
+                isParameterizedComputingType(computingType)
             ) {
                 nodeUuidRef.current = nodeUuid;
                 rootNetworkUuidRef.current = currentRootNetworkUuid;
-                const computingStatusInfosResult = await computingStatusInfosFetcher(
+                const computingStatusParametersResult = await computingStatusInfosFetcher(
                     studyUuid,
                     nodeUuid,
                     currentRootNetworkUuid
@@ -169,9 +172,9 @@ export const useComputingStatus: UseComputingStatusProps = (
                     return;
                 }
                 dispatch(
-                    setComputingStatusInfos(
+                    setComputingStatusParameters(
                         computingType,
-                        toComputingStatusInfos(computingStatusInfosResult, computingType)
+                        toComputingStatusParameters(computingStatusParametersResult, computingType)
                     )
                 );
             }
@@ -210,11 +213,11 @@ export const useComputingStatus: UseComputingStatusProps = (
             // if request has not been canceled for any reason, fetch if necessary computingStatusInfos
             const status = resultConversion(computingStatusResult);
             dispatch(setComputingStatus(computingType, status));
-            await handleComputingStatusInfos(status, canceledRequest);
-
             if (isComputationCompleted(status)) {
                 dispatch(setLastCompletedComputation(computingType));
             }
+
+            await handleComputingStatusParameters(status, canceledRequest);
         } catch (e: any) {
             if (!canceledRequest) {
                 dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
@@ -232,7 +235,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         computingStatusFetcher,
         studyUuid,
         resultConversion,
-        handleComputingStatusInfos,
+        handleComputingStatusParameters,
         computingType,
         isComputationCompleted,
     ]);

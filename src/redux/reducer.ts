@@ -224,8 +224,8 @@ import {
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
     SET_COMPUTING_STATUS_INFOS,
-    SetComputingStatusInfosAction,
-    ComputingTypeWithAdditionalInfos,
+    SetComputingStatusParametersAction,
+    ParameterizedComputingType,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -326,13 +326,12 @@ export interface ComputingStatus {
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
-export interface CommonStatusInfos {}
-export interface LoadFlowStatusInfos extends CommonStatusInfos {
+export interface LoadFlowStatusParameters {
     withRatioTapChangers: boolean;
 }
 
-export interface ComputingStatusInfos {
-    [ComputingType.LOAD_FLOW]: LoadFlowStatusInfos | null;
+export interface ComputingStatusParameters {
+    [ComputingType.LOAD_FLOW]: LoadFlowStatusParameters | null;
 }
 
 export type TableSortConfig = Record<string, SortConfig[]>;
@@ -460,7 +459,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     currentRootNetworkUuid: UUID | null;
     rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
-    computingStatusInfos: ComputingStatusInfos;
+    computingStatusParameters: ComputingStatusParameters;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
@@ -654,7 +653,7 @@ const initialState: AppState = {
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },
-    computingStatusInfos: {
+    computingStatusParameters: {
         [ComputingType.LOAD_FLOW]: null,
     },
     computationStarting: false,
@@ -1764,8 +1763,8 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(
         SET_COMPUTING_STATUS_INFOS,
-        (state, action: SetComputingStatusInfosAction<ComputingTypeWithAdditionalInfos>) => {
-            state.computingStatusInfos[action.computingType] = action.computingStatusInfos;
+        (state, action: SetComputingStatusParametersAction<ParameterizedComputingType>) => {
+            state.computingStatusParameters[action.computingType] = action.computingStatusParameters;
         }
     );
 

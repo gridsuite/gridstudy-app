@@ -6,18 +6,18 @@
  */
 
 import { ComputingType } from '@gridsuite/commons-ui';
-import { ComputingTypeWithAdditionalInfos } from 'redux/actions';
-import { ComputingStatusInfos } from 'redux/reducer';
+import { ParameterizedComputingType } from 'redux/actions';
+import { ComputingStatusParameters } from 'redux/reducer';
 
-export const isComputingTypeWithAdditionalInfos = (
+export const isParameterizedComputingType = (
     computingType: ComputingType
-): computingType is ComputingTypeWithAdditionalInfos => {
+): computingType is ParameterizedComputingType => {
     return computingType === ComputingType.LOAD_FLOW;
 };
 
-export function toComputingStatusInfos<K extends ComputingTypeWithAdditionalInfos>(
+export function toComputingStatusInfos<K extends ParameterizedComputingType>(
     computingStatusInfos: unknown,
     computingType: K
-): ComputingStatusInfos[K] | null {
-    return computingStatusInfos as ComputingStatusInfos[K];
+): ComputingStatusParameters[K] | null {
+    return computingStatusInfos as ComputingStatusParameters[K];
 }
