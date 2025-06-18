@@ -10,7 +10,6 @@ import {
     B,
     B1,
     B2,
-    BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
     CONNECTED1,
     CONNECTED2,
@@ -69,7 +68,6 @@ import {
     TARGET_Q,
     TARGET_V,
     TRANSIENT_REACTANCE,
-    VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
     X,
 } from 'components/utils/field-constants';
@@ -129,8 +127,6 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     BATTERY: [
         EQUIPMENT_ID,
         EQUIPMENT_NAME,
-        VOLTAGE_LEVEL_ID,
-        BUS_OR_BUSBAR_SECTION_ID,
         CONNECTED,
         CONNECTION_NAME,
         CONNECTION_DIRECTION,
