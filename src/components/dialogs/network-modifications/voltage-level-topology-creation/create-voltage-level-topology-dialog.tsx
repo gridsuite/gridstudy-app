@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ALIGNED_BUSES_OR_BUSBAR_COUNT, SECTION_COUNT } from 'components/utils/field-constants';
+import { SECTION_COUNT, SWITCH_KIND, SWITCH_KINDS, SWITCHES_BETWEEN_SECTIONS } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,14 +23,22 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { createVoltageLevelTopology } from '../../../../services/study/network-modifications';
 import { CreateVoltageLevelTopologyInfos } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [SECTION_COUNT]: null,
-    [ALIGNED_BUSES_OR_BUSBAR_COUNT]: null,
+    [SWITCHES_BETWEEN_SECTIONS]: '',
+    [SWITCH_KINDS]: [],
 };
 const formSchema = yup.object().shape({
     [SECTION_COUNT]: yup.number().nullable(),
-    [ALIGNED_BUSES_OR_BUSBAR_COUNT]: yup.number().nullable(),
+    [SWITCHES_BETWEEN_SECTIONS]: yup
+        .string()
+        .nullable()
+        .when([SECTION_COUNT], {
+            is: (sectionCount) => sectionCount > 1,
+            then: (schema) => schema.required(),
+        }),
 });
 export type CreateVoltageLevelTopologyDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateVoltageLevelTopologyInfos;
@@ -55,18 +63,27 @@ export default function CreateVoltageLevelTopologyDialog({
     });
 
     const { reset } = formMethods;
+    const intl = useIntl();
 
     useEffect(() => {
         if (editData) {
             if (editData?.voltageLevelId) {
                 setSelectedId(editData.voltageLevelId);
             }
+            const switchKinds =
+                editData.switchKinds?.map((switchKind) => ({
+                    [SWITCH_KIND]: switchKind,
+                })) || [];
+            const switchesBetweenSections =
+                editData.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
+
             reset({
                 [SECTION_COUNT]: editData?.sectionCount ?? '',
-                [ALIGNED_BUSES_OR_BUSBAR_COUNT]: editData?.alignedBusesOrBusbarCount ?? '',
+                [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
+                [SWITCH_KINDS]: switchKinds,
             });
         }
-    }, [editData, reset]);
+    }, [editData, reset, intl]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -84,7 +101,9 @@ export default function CreateVoltageLevelTopologyDialog({
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
                 voltageLevelId: selectedId,
                 sectionCount: voltageLevelTopology[SECTION_COUNT],
-                alignedBusesOrBusbarCount: voltageLevelTopology[ALIGNED_BUSES_OR_BUSBAR_COUNT],
+                switchKinds: voltageLevelTopology[SWITCH_KINDS].map((e) => {
+                    return e.switchKind;
+                }),
             } satisfies CreateVoltageLevelTopologyInfos;
             createVoltageLevelTopology({
                 createVoltageLevelTopologyInfos: createVoltageLevelTopologyInfos,

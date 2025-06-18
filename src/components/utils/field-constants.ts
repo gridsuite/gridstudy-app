@@ -205,7 +205,6 @@ export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';
 export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
 export const BUS_BAR_COUNT = 'busbarCount';
 export const SECTION_COUNT = 'sectionCount';
-export const ALIGNED_BUSES_OR_BUSBAR_COUNT = 'alignedBusesOrBusbarCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';

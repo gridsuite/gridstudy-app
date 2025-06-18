@@ -6,7 +6,7 @@
  */
 
 import { FloatInput, Option } from '@gridsuite/commons-ui';
-import { ALIGNED_BUSES_OR_BUSBAR_COUNT, SECTION_COUNT } from 'components/utils/field-constants';
+import { SECTION_COUNT } from 'components/utils/field-constants';
 import GridItem from '../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
@@ -15,10 +15,10 @@ import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { filledTextField } from '../../dialog-utils';
-import GridSection from '../../commons/grid-section';
 import { UUID } from 'crypto';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { SwitchesBetweenSections } from "../voltage-level/switches-between-sections/switches-between-sections";
 
 export interface CreateVoltageLevelTopologyFormProps {
     sectionOptions: Option[];
@@ -59,9 +59,6 @@ export default function CreateVoltageLevelTopologyForm({
     );
 
     const sectionCountField = <FloatInput name={`${SECTION_COUNT}`} label={'SectionCount'} />;
-    const alignedBusesOrBusbarCount = (
-        <FloatInput name={`${ALIGNED_BUSES_OR_BUSBAR_COUNT}`} label={'AlignedBusesOrBusbarCount'} />
-    );
 
     const diagramToolTip = (
         <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
@@ -71,26 +68,22 @@ export default function CreateVoltageLevelTopologyForm({
 
     return (
         <>
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
                 <GridItem size={4}>{voltageLevelIdField}</GridItem>
                 {isNodeBuilt(currentNode) && (
                     <GridItem size={3}>
-                        <Grid sx={{ paddingTop: 1 }}>
-                            <Button onClick={handleClickOpenDiagramPane} variant="outlined">
-                                <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
-                            </Button>
-                            {diagramToolTip}
-                        </Grid>
+                        <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                            <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
+                        </Button>
+                        {diagramToolTip}
                     </GridItem>
                 )}
             </Grid>
-            <GridSection title={'test'} />
-            <Grid container>
+            <Grid container spacing={3} sx={{ paddingTop: 4 }}>
                 <GridItem size={4}>{sectionCountField}</GridItem>
-            </Grid>
-
-            <Grid container>
-                <GridItem size={4}>{alignedBusesOrBusbarCount}</GridItem>
+                <GridItem size={8}>
+                    <SwitchesBetweenSections />
+                </GridItem>
             </Grid>
             <Box>
                 <PositionDiagramPane

@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ALIGNED_BUSES_OR_BUSBAR_COUNT, SECTION_COUNT } from '../../../utils/field-constants';
+import {SECTION_COUNT, SWITCH_KINDS} from '../../../utils/field-constants';
 
 export type CreateVoltageLevelTopologyDialogSchemaForm = {
     [SECTION_COUNT]: number;
-    [ALIGNED_BUSES_OR_BUSBAR_COUNT]: number;
+    [SWITCH_KINDS]: string[];
 };

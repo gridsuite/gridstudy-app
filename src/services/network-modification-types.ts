@@ -807,7 +807,7 @@ export interface CreateVoltageLevelTopologyInfos {
     uuid?: string;
     voltageLevelId: string;
     sectionCount: number;
-    alignedBusesOrBusbarCount: number;
+    switchKinds: string[];
 }
 
 export type NetworkModificationRequestInfos = {
