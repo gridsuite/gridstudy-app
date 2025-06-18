@@ -7,12 +7,11 @@
 
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import DndTable from '../../../../utils/dnd-table/dnd-table';
 import { SELECTED } from '../../../../utils/field-constants';
+import { DndTable, DndColumn, DndColumnType } from '@gridsuite/commons-ui';
 import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { AppState } from '../../../../../redux/reducer';
-import { DndColumn, DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { NODE_ALIAS, NODE_NAME, NODES_ALIASES } from './nodes-config-dialog.utils';
 
@@ -74,7 +73,6 @@ const NodeConfigTable = () => {
             useFieldArrayOutput={useNodesAliasesFieldArrayOutput}
             createRows={createNodeAliasRows}
             withAddRowsDialog={false}
-            withLeftButtons={false}
             disableDragAndDrop={true}
             showMoveArrow={false}
         />
