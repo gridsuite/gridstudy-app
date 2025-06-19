@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -141,6 +141,10 @@ const TabularModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const dataFetching = useMemo(() => {
+        return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
+    }, [editDataFetchStatus, isUpdate]);
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -150,10 +154,10 @@ const TabularModificationDialog = ({
                 onSave={onSubmit}
                 titleId="TabularModification"
                 open={open}
-                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm />
+                <TabularModificationForm dataFetching={dataFetching} />
             </ModificationDialog>
         </CustomFormProvider>
     );
