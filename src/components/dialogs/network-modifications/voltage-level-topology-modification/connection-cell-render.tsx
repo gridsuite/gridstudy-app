@@ -22,7 +22,7 @@ export default function ConnectionCellRenderer({ name }: Readonly<ConnectionCell
     const color = useMemo(() => {
         // turn the label in grey when no modification
         if (value === null) {
-            return '#808080';
+            return 'grey';
         }
         return '';
     }, [value]);
