@@ -12,14 +12,14 @@ import ComputingType, { formatComputingTypeLabel } from '../components/computing
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
-import { downloadDebugDynamicSimulation } from '../services/dynamic-simulation';
+import { downloadDebugFileDynamicSimulation } from '../services/dynamic-simulation';
 import { useIntl } from 'react-intl';
-import { downloadDebugDynamicSecurityAnalysis } from '../services/dynamic-security-analysis';
+import { downloadDebugFileDynamicSecurityAnalysis } from '../services/dynamic-security-analysis';
 import { NotificationType } from '../types/notification-types';
 
-const debugFetchers = {
-    [ComputingType.DYNAMIC_SIMULATION]: downloadDebugDynamicSimulation,
-    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: downloadDebugDynamicSecurityAnalysis,
+const downloadDebugFileFetchers = {
+    [ComputingType.DYNAMIC_SIMULATION]: downloadDebugFileDynamicSimulation,
+    [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: downloadDebugFileDynamicSecurityAnalysis,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
 export function buildDebugIdentifier({
@@ -55,12 +55,21 @@ export function unsetDebug(identifier: string) {
     }
 }
 
-function useDownloadDebugFile() {
-    const { snackError, snackWarning } = useSnackMessage();
+export default function useComputationDebug({
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
+}: {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
+}) {
+    const intl = useIntl();
+    const { snackWarning, snackInfo, snackError } = useSnackMessage();
 
     const downloadDebugFile = useCallback(
         (resultUuid: UUID, computingType: ComputingType) => {
-            debugFetchers[computingType]?.(resultUuid) // download debug file from a specific computation server
+            downloadDebugFileFetchers[computingType]?.(resultUuid) // download a debug file from a specific computation server
                 .then(async (response) => {
                     // Get the filename
                     const contentDisposition = response.headers.get('Content-Disposition');
@@ -94,22 +103,6 @@ function useDownloadDebugFile() {
         },
         [snackWarning, snackError]
     );
-
-    return downloadDebugFile;
-}
-
-export default function useDebug({
-    studyUuid,
-    nodeUuid,
-    rootNetworkUuid,
-}: {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    rootNetworkUuid: UUID;
-}) {
-    const intl = useIntl();
-    const { snackWarning, snackInfo } = useSnackMessage();
-    const downloadDebugFile = useDownloadDebugFile();
 
     const onDebugNotification = useCallback(
         (event: MessageEvent<string>) => {

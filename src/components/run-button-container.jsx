@@ -37,7 +37,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import useDebug from '../hooks/use-debug';
+import useComputationDebug from '../hooks/use-computation-debug';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -97,7 +97,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
     // --- for running in debug mode --- //
-    const subscribeDebug = useDebug({
+    const subscribeDebug = useComputationDebug({
         studyUuid: studyUuid,
         nodeUuid: currentNode?.id,
         rootNetworkUuid: currentRootNetworkUuid,
