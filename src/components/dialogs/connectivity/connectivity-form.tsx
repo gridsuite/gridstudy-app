@@ -201,14 +201,16 @@ export function ConnectivityForm({
         />
     );
 
-    const previousConnectedField = useMemo(() => {
-        if (!isEquipmentModification) {
-            return null;
-        }
-        return previousValues?.terminalConnected
-            ? intl.formatMessage({ id: 'connected' })
-            : intl.formatMessage({ id: 'disconnected' });
-    }, [intl, previousValues, isEquipmentModification]);
+    const previousConnectedField =
+        (() => {
+            if (!isEquipmentModification) {
+                return null;
+            }
+            return previousValues?.terminalConnected
+                ? intl.formatMessage({ id: 'connected' })
+                : intl.formatMessage({ id: 'disconnected' });
+        },
+        [intl, previousValues, isEquipmentModification]);
 
     const getTooltipMessageId = useMemo(() => {
         if (!isNodeBuilt(currentNode)) {
