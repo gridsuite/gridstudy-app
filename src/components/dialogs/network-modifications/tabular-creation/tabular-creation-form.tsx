@@ -29,9 +29,13 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
-const TabularCreationForm = () => {
-    const intl = useIntl();
+export interface TabularCreationFormProps {
+    dataFetching: boolean;
+}
 
+export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFormProps>) {
+    const intl = useIntl();
+    const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
@@ -79,6 +83,7 @@ const TabularCreationForm = () => {
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
+            setIsFetching(false);
             if (requiredFieldNameInError !== '') {
                 setError(CREATIONS_TABLE, {
                     type: 'custom',
@@ -160,10 +165,16 @@ const TabularCreationForm = () => {
     });
 
     useEffect(() => {
+        setIsFetching(dataFetching);
+    }, [dataFetching]);
+
+    useEffect(() => {
         if (selectedFileError) {
             setValue(CREATIONS_TABLE, []);
             clearErrors(CREATIONS_TABLE);
+            setIsFetching(false);
         } else if (selectedFile) {
+            setIsFetching(true);
             // @ts-ignore
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
@@ -258,6 +269,7 @@ const TabularCreationForm = () => {
             <Grid item xs={12} sx={styles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
+                    loading={isFetching}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     pagination
@@ -268,6 +280,6 @@ const TabularCreationForm = () => {
             </Grid>
         </Grid>
     );
-};
+}
 
 export default TabularCreationForm;
