@@ -104,7 +104,10 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
-                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR || TABULAR_MODIFICATION_TYPES.BATTERY) {
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
                     const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
                     modification = {
                         ...generatorOrBatteryModification,
@@ -115,7 +118,6 @@ const TabularModificationDialog = ({
                         modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
                     });
                 }
-
                 return modification;
             });
             createTabulareModification(
