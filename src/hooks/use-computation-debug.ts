@@ -16,6 +16,8 @@ import { downloadDebugFileDynamicSimulation } from '../services/dynamic-simulati
 import { useIntl } from 'react-intl';
 import { downloadDebugFileDynamicSecurityAnalysis } from '../services/dynamic-security-analysis';
 import { NotificationType } from '../types/notification-types';
+import { useSelector } from 'react-redux';
+import { AppState } from '../redux/reducer';
 
 const downloadDebugFileFetchers = {
     [ComputingType.DYNAMIC_SIMULATION]: downloadDebugFileDynamicSimulation,
@@ -66,6 +68,7 @@ export default function useComputationDebug({
 }) {
     const intl = useIntl();
     const { snackWarning, snackInfo, snackError } = useSnackMessage();
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const downloadDebugFile = useCallback(
         (resultUuid: UUID, computingType: ComputingType) => {
@@ -108,12 +111,13 @@ export default function useComputationDebug({
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY_DEBUG) {
+            if (updateTypeHeader === NotificationType.COMPUTATION_DEBUG_FILE_STATUS) {
                 const {
                     studyUuid,
                     node: nodeUuid,
                     rootNetworkUuid,
                     computationType: computingType,
+                    userId: userIdNotif,
                     resultUuid,
                     error,
                 } = eventData.headers;
@@ -124,7 +128,7 @@ export default function useComputationDebug({
                     computingType,
                 });
                 const debug = isDebug(debugIdentifierNotif);
-                if (debug) {
+                if (debug && userIdNotif === userId) {
                     // download by notif once, so unset the debug identifier
                     unsetDebug(debugIdentifierNotif);
                     if (error) {
@@ -138,7 +142,7 @@ export default function useComputationDebug({
                 }
             }
         },
-        [downloadDebugFile, snackWarning]
+        [downloadDebugFile, userId, snackWarning]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: onDebugNotification });

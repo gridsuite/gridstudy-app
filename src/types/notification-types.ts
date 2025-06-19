@@ -14,7 +14,7 @@ export enum NotificationType {
     STUDY_NETWORK_RECREATION_DONE = 'study_network_recreation_done',
     METADATA_UPDATED = 'metadata_updated',
     STUDY_ALERT = 'STUDY_ALERT',
-    STUDY_DEBUG = 'STUDY_DEBUG',
+    COMPUTATION_DEBUG_FILE_STATUS = 'computationDebugFileStatus',
     // Build
     STUDY = 'study',
     NODE_BUILD_COMPLETED = 'buildCompleted',
