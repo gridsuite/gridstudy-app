@@ -242,7 +242,7 @@ const TabularCreationForm = () => {
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_skeleton'}
+                        filename={watchType + '_creation_skeleton'}
                         disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>

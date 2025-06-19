@@ -209,7 +209,7 @@ const TabularModificationForm = () => {
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_skeleton'}
+                        filename={watchType + '_modification_skeleton'}
                         disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
