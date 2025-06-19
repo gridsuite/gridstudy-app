@@ -1346,6 +1346,7 @@
     "regulatingTerminalId": "Regulated equipment",
     "qPercent": "Reactive percentage",
     "frequencyRegulation": "Active power regulation",
+    "participate": "Active power regulation",
     "droop": "Droop",
     "FieldRequired": "At least one value is missing for required field : \"{requiredFieldNameInError}\"",
     "DependantFieldMissing": "\"{requiredField}\" is required if the following field is set : \"{dependantField}\"",
@@ -1458,7 +1459,7 @@
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
-    "previousConnection" : "Prev. connection",
+    "previousConnection": "Prev. connection",
 
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "RegulationSection": "Regulation",
