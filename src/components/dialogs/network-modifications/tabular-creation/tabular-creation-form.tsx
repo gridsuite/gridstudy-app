@@ -28,9 +28,13 @@ import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
 const TabularCreationForm = () => {
     const intl = useIntl();
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const { setValue, clearErrors, setError, getValues } = useFormContext();
 
@@ -134,7 +138,7 @@ const TabularCreationForm = () => {
         let commentData: string[][] = [];
         if (csvTranslatedColumns) {
             // First comment line contains header translation
-            commentData.push(['#' + csvTranslatedColumns.join(',')]);
+            commentData.push(['#' + csvTranslatedColumns.join(language === 'fr' ? ';' : ',')]);
             if (!!intl.messages['TabularCreationSkeletonComment.' + watchType]) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
@@ -145,7 +149,7 @@ const TabularCreationForm = () => {
             }
         }
         return commentData;
-    }, [intl, watchType, csvTranslatedColumns]);
+    }, [intl, watchType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -171,10 +175,18 @@ const TabularCreationForm = () => {
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                transform: (value) => value.trim(),
+                transform: (value) => {
+                    value = value.trim();
+                    // Only transform if we're in French mode and the value is a number that has a comma
+                    // is there a better way to do this?
+                    if (language === 'fr' && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
+                        return value.replace(',', '.');
+                    }
+                    return value;
+                },
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular creation
@@ -244,6 +256,7 @@ const TabularCreationForm = () => {
                         datas={commentLines}
                         filename={watchType + '_skeleton'}
                         disabled={!csvColumns}
+                        separator={language === 'fr' ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />

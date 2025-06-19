@@ -10,9 +10,13 @@ import { ProcessCellForExportParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 import { CsvDownloadProps } from './csv-export.type';
 import { formatNAValue } from '../custom-aggrid/utils/format-values-utils';
+import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../redux/reducer';
 
 export const useCsvExport = () => {
     const intl = useIntl();
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const getCSVFilename = useCallback((tableName: string) => {
         return tableName
@@ -31,12 +35,18 @@ export const useCsvExport = () => {
                 if (params.column.getColId() === 'limitName') {
                     return formatNAValue(params.value, intl);
                 }
+
+                // If the language is in French, we change the decimal separator
+                if (language === 'fr' && typeof params.value === 'number') {
+                    return params.value.toString().replace('.', ',');
+                }
                 return params.value;
             };
             const prefix = props.tableNamePrefix ?? '';
 
             props.gridRef?.current?.api?.exportDataAsCsv({
                 suppressQuotes: false,
+                columnSeparator: language === 'fr' ? ';' : ',',
                 columnKeys: props.columns.map((col) => col.colId).filter(hasColId),
                 skipColumnHeaders: props.skipColumnHeaders,
                 processHeaderCallback: (params) =>
@@ -45,7 +55,7 @@ export const useCsvExport = () => {
                 processCellCallback: processCell,
             });
         },
-        [getCSVFilename, intl]
+        [getCSVFilename, intl, language]
     );
 
     return { downloadCSVData };

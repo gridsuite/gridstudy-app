@@ -30,6 +30,9 @@ import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
@@ -37,6 +40,8 @@ const TabularModificationForm = () => {
     const { snackWarning } = useSnackMessage();
 
     const { setValue, clearErrors, getValues } = useFormContext();
+
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const getTypeLabel = useCallback(
         (type: string) =>
@@ -88,7 +93,7 @@ const TabularModificationForm = () => {
         let commentData: string[][] = [];
         if (csvTranslatedColumns) {
             // First comment line contains header translation
-            commentData.push(['#' + csvTranslatedColumns.join(',')]);
+            commentData.push(['#' + csvTranslatedColumns.join(language === 'fr' ? ';' : ',')]);
             if (!!intl.messages['TabularModificationSkeletonComment.' + watchType]) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
@@ -99,7 +104,7 @@ const TabularModificationForm = () => {
             }
         }
         return commentData;
-    }, [intl, watchType, csvTranslatedColumns]);
+    }, [intl, watchType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -123,6 +128,7 @@ const TabularModificationForm = () => {
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 comments: '#',
+                delimiter: language === 'fr' ? ';' : ',',
                 complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
@@ -131,10 +137,18 @@ const TabularModificationForm = () => {
                     );
                     return transformedHeader ?? header;
                 },
-                transform: (value) => value.trim(),
+                transform: (value) => {
+                    value = value.trim();
+                    // Only transform if we're in French mode and the value is a number that has a comma
+                    // is there a better way to do this?
+                    if (language === 'fr' && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
+                        return value.replace(',', '.');
+                    }
+                    return value;
+                },
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular modification
@@ -211,6 +225,7 @@ const TabularModificationForm = () => {
                         datas={commentLines}
                         filename={watchType + '_skeleton'}
                         disabled={!csvColumns}
+                        separator={language === 'fr' ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />

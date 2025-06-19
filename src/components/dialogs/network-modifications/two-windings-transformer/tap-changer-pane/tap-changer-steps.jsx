@@ -183,10 +183,19 @@ const TapChangerSteps = ({
         });
     }
 
-    const handleImportTapRule = (selectedFile, setFileParseError) => {
+    const handleImportTapRule = (selectedFile, language, setFileParseError) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
+            transform: (value) => {
+                value = value.trim();
+                // Only transform if we're in French mode and the value is a number that has a comma
+                // is there a better way to do this?
+                if (language === 'fr' && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
+                    return value.replace(',', '.');
+                }
+                return value;
+            },
             complete: function (results) {
                 if (results.data.length > MAX_ROWS_NUMBER) {
                     setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));

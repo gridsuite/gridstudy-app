@@ -12,8 +12,12 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 import { CancelButton, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { PARAM_LANGUAGE } from '../../../../../utils/config-params.js';
 
 export const ImportRuleDialog = (props) => {
+    const language = useSelector((state) => state[PARAM_LANGUAGE]);
+
     const handleCloseDialog = () => {
         props.setOpenImportRuleDialog(false);
     };
@@ -27,7 +31,7 @@ export const ImportRuleDialog = (props) => {
 
     const handleSave = () => {
         if (!selectedFileError) {
-            props.handleImportTapRule(selectedFile);
+            props.handleImportTapRule(selectedFile, language);
             handleCloseDialog();
         }
     };
@@ -47,6 +51,7 @@ export const ImportRuleDialog = (props) => {
                         <CsvDownloader
                             columns={props.csvColumns}
                             datas={[]}
+                            separator={language === 'fr' ? ';' : ','}
                             filename={props.ruleType === PHASE_TAP ? 'tap-dephasing-rule' : 'tap-regulating-rule'}
                         >
                             <Button variant="contained">
