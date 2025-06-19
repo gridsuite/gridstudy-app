@@ -134,16 +134,36 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         PLANNED_OUTAGE_RATE,
         FORCED_OUTAGE_RATE,
     ],
-    BATTERY: [EQUIPMENT_ID, MIN_P, TARGET_P, MAX_P, TARGET_Q, CONNECTED],
+    BATTERY: [
+        EQUIPMENT_ID,
+        EQUIPMENT_NAME,
+        CONNECTED,
+        CONNECTION_NAME,
+        CONNECTION_DIRECTION,
+        CONNECTION_POSITION,
+        MIN_P,
+        MAX_P,
+        MIN_Q,
+        MAX_Q,
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
+        TARGET_P,
+        TARGET_Q,
+        PARTICIPATE,
+        DROOP,
+    ],
     VOLTAGE_LEVEL: [EQUIPMENT_ID, EQUIPMENT_NAME, NOMINAL_V, LOW_VOLTAGE_LIMIT, HIGH_VOLTAGE_LIMIT, IP_MIN, IP_MAX],
     SHUNT_COMPENSATOR: [
         EQUIPMENT_ID,
+        EQUIPMENT_NAME,
+        CONNECTED,
+        CONNECTION_NAME,
+        CONNECTION_DIRECTION,
+        CONNECTION_POSITION,
         MAXIMUM_SECTION_COUNT,
         SECTION_COUNT,
         SHUNT_COMPENSATOR_TYPE,
         MAX_Q_AT_NOMINAL_V,
         MAX_SUSCEPTANCE,
-        CONNECTED,
     ],
     LINE: [
         EQUIPMENT_ID,
@@ -283,7 +303,7 @@ export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification
 
 export const getFieldType = (modificationType: string, key: string) => {
     let fieldType = key;
-    // In rare cases, the key used in tabular modification does not match the key used in atomic modification,
+    // In some cases, the key used in tabular modification does not match the key used in atomic modification,
     // criteria filters, and commons-ui convert functions.
     if (modificationType === TABULAR_MODIFICATION_TYPES.VOLTAGE_LEVEL) {
         if (key === IP_MIN) {
@@ -295,7 +315,7 @@ export const getFieldType = (modificationType: string, key: string) => {
     return fieldType;
 };
 
-export const convertGeneratorModificationFromBackToFront = (modification: Modification) => {
+export const convertGeneratorOrBatteryModificationFromBackToFront = (modification: Modification) => {
     const formattedModification: Modification = {};
     Object.keys(modification).forEach((key) => {
         if (key === REACTIVE_CAPABILITY_CURVE_POINTS) {
@@ -305,16 +325,13 @@ export const convertGeneratorModificationFromBackToFront = (modification: Modifi
                 formattedModification[point.key] = point.value;
             });
         } else {
-            formattedModification[key] = convertInputValues(
-                getFieldType(TABULAR_MODIFICATION_TYPES.GENERATOR, key),
-                modification[key]
-            );
+            formattedModification[key] = convertInputValues(key, modification[key]);
         }
     });
     return formattedModification;
 };
 
-export const convertGeneratorModificationFromFrontToBack = (modification: Modification) => {
+export const convertGeneratorOrBatteryModificationFromFrontToBack = (modification: Modification) => {
     const formattedModification: Modification = { ...modification };
     convertReactiveCapabilityCurvePointsFromFrontToBack(formattedModification);
     // Remove the individual reactive capability curve fields
@@ -325,10 +342,7 @@ export const convertGeneratorModificationFromFrontToBack = (modification: Modifi
     });
     Object.keys(formattedModification).forEach((key) => {
         if (key !== REACTIVE_CAPABILITY_CURVE_POINTS) {
-            formattedModification[key] = convertOutputValues(
-                getFieldType(TABULAR_MODIFICATION_TYPES.GENERATOR, key),
-                formattedModification[key]
-            );
+            formattedModification[key] = convertOutputValues(key, formattedModification[key]);
         }
     });
     return formattedModification;

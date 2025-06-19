@@ -19,8 +19,8 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
-    convertGeneratorModificationFromBackToFront,
-    convertGeneratorModificationFromFrontToBack,
+    convertGeneratorOrBatteryModificationFromBackToFront,
+    convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
     convertOutputValues,
     formatModification,
@@ -78,8 +78,11 @@ const TabularModificationDialog = ({
             const modificationType = editData.modificationType;
             const modifications = editData.modifications.map((modif) => {
                 let modification = formatModification(modif);
-                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR) {
-                    modification = convertGeneratorModificationFromBackToFront(modification);
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
+                    modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
                 } else {
                     Object.keys(modification).forEach((key) => {
                         modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
@@ -101,10 +104,10 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
-                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR) {
-                    const generatorModification = convertGeneratorModificationFromFrontToBack(row);
+                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR || TABULAR_MODIFICATION_TYPES.BATTERY) {
+                    const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
                     modification = {
-                        ...generatorModification,
+                        ...generatorOrBatteryModification,
                         ...modification,
                     };
                 } else {

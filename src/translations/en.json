@@ -1465,7 +1465,7 @@
     "nodeAliasesRetrievingError": "An error occured while retrieving node aliases",
     "nodeAliasesUpdateError": "An error occured while updating node aliases",
     "mustBeGreaterOrEqualToZero": "Must be greater than or equal to 0",
-    "previousConnection" : "Prev. connection",
+    "previousConnection": "Prev. connection",
 
     "confirmRootNetworkCreation": "The study {studyName} will switch to a visualization adapted for the analysis of multiple root networks.\n\n\nThis interface change is irreversible.",
     "RegulationSection": "Regulation",
