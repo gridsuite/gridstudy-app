@@ -374,8 +374,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
-        (computingType) => {
-            switch (computingType) {
+        (runnableType) => {
+            switch (runnableType) {
                 case 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS':
                     return loadFlowWithoutRatioTapChangersStatus;
                 case 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS':

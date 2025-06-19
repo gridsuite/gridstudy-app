@@ -137,7 +137,6 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
         ComputingType.LOAD_FLOW,
-        undefined,
         fetchLoadFlowStatusInfos
     );
 
@@ -150,6 +149,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         securityAnalysisStatusCompletions,
         getSecurityAnalysisRunningStatus,
         ComputingType.SECURITY_ANALYSIS,
+        undefined,
         securityAnalysisAvailability
     );
 
@@ -162,6 +162,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         sensitivityAnalysisStatusCompletions,
         getSensitivityAnalysisRunningStatus,
         ComputingType.SENSITIVITY_ANALYSIS,
+        undefined,
         sensitivityAnalysisAvailability
     );
 
@@ -174,6 +175,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         nonEvacuatedEnergyStatusCompletions,
         getNonEvacuatedEnergyRunningStatus,
         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
+        undefined,
         nonEvacuatedEnergyAvailability
     );
 
@@ -186,6 +188,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         shortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
         ComputingType.SHORT_CIRCUIT,
+        undefined,
         shortCircuitAvailability
     );
 
@@ -198,6 +201,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         oneBusShortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
         ComputingType.SHORT_CIRCUIT_ONE_BUS,
+        undefined,
         shortCircuitAvailability
     );
 
@@ -210,6 +214,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         dynamicSimulationStatusCompletions,
         getDynamicSimulationRunningStatus,
         ComputingType.DYNAMIC_SIMULATION,
+        undefined,
         dynamicSimulationAvailability
     );
 
@@ -222,6 +227,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         dynamicSecurityAnalysisStatusCompletions,
         getDynamicSecurityAnalysisRunningStatus,
         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+        undefined,
         dynamicSecurityAnalysisAvailability
     );
 
@@ -234,6 +240,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         voltageInitStatusCompletions,
         getVoltageInitRunningStatus,
         ComputingType.VOLTAGE_INITIALIZATION,
+        undefined,
         voltageInitAvailability
     );
 
@@ -246,6 +253,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         stateEstimationStatusCompletions,
         getStateEstimationRunningStatus,
         ComputingType.STATE_ESTIMATION,
+        undefined,
         stateEstimationAvailability
     );
 };

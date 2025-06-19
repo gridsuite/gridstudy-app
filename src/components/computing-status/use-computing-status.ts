@@ -31,12 +31,12 @@ interface UseComputingStatusProps {
         completions: string[],
         resultConversion: (x: string | null) => RunningStatus,
         computingType: ComputingType,
-        optionalServiceAvailabilityStatus?: OptionalServicesStatus,
         computingStatusParametersFetcher?: (
             studyUuid: UUID,
             nodeUuid: UUID,
             currentRootNetworkUuid: UUID
-        ) => Promise<string | null>
+        ) => Promise<string | null>,
+        optionalServiceAvailabilityStatus?: OptionalServicesStatus
     ): void;
 }
 
@@ -112,8 +112,8 @@ const shouldRequestBeCanceled = (
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
- * @param optionalServiceAvailabilityStatus status of an optional service
  * @param computingStatusParametersFetcher method fetching status infos
+ * @param optionalServiceAvailabilityStatus status of an optional service
  */
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
@@ -124,8 +124,8 @@ export const useComputingStatus: UseComputingStatusProps = (
     completions,
     resultConversion,
     computingType,
-    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up,
-    computingStatusParametersFetcher
+    computingStatusParametersFetcher,
+    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const rootNetworkUuidRef = useRef<UUID | null>(null);
