@@ -23,8 +23,7 @@ const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-a
 export function startSensitivityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    debug: boolean
+    currentRootNetworkUuid: UUID
 ): Promise<void> {
     console.info(
         `Running sensi on ${studyUuid} for root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`

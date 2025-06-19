@@ -1,7 +1,7 @@
 {
-    "debugText": "Les données de calcul seront téléchargées à la fin de ce dernier",
-    "debugFileNotFoundHeader": "Les données de calcul non trouvées",
-    "debugFileErrorHeader": "Télechargement des données de calcul",
+    "debug.message.downloadFile": "À la fin du calcul ses données seront téléchargées.",
+    "debug.header.fileNotFound": "Données de calcul non trouvées",
+    "debug.header.fileError": "Échec du téléchargement des données de calcul",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",

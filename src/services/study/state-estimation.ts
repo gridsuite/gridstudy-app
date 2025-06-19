@@ -13,8 +13,7 @@ import { StateEstimationParameters } from '../../components/dialogs/parameters/s
 export function startStateEstimation(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    debug: boolean
+    currentRootNetworkUuid: UUID
 ): Promise<void> {
     console.info(
         `Running state estimation on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`

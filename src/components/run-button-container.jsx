@@ -134,12 +134,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         [dispatch, snackError]
     );
 
-    const handleStartSecurityAnalysis = (contingencyListNames, debug) => {
+    const handleStartSecurityAnalysis = (contingencyListNames) => {
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
             null,
-            () =>
-                startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames, debug),
+            () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames),
             () => {},
             null,
             null
@@ -175,11 +174,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         return {
             [ComputingType.LOAD_FLOW]: {
                 messageId: 'LoadFlow',
-                startComputation(debug) {
+                startComputation() {
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         null,
-                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startLoadFlowError'
@@ -191,9 +190,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.SECURITY_ANALYSIS]: {
                 messageId: 'SecurityAnalysis',
-                startComputation(debug) {
+                startComputation() {
                     setShowContingencyListSelector(true);
-                    setRunWithDebug(debug);
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SECURITY_ANALYSIS, () =>
@@ -203,11 +201,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.SENSITIVITY_ANALYSIS]: {
                 messageId: 'SensitivityAnalysis',
-                startComputation(debug) {
+                startComputation() {
                     startComputationAsync(
                         ComputingType.SENSITIVITY_ANALYSIS,
                         null,
-                        () => startSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startSensitivityAnalysisError'
@@ -221,12 +219,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: {
                 messageId: 'NonEvacuatedEnergyAnalysis',
-                startComputation(debug) {
+                startComputation() {
                     startComputationAsync(
                         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
                         null,
                         () => {
-                            return startNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetworkUuid, debug);
+                            return startNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetworkUuid);
                         },
                         () => {},
                         null,
@@ -241,11 +239,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.SHORT_CIRCUIT]: {
                 messageId: 'ShortCircuitAnalysis',
-                startComputation(debug) {
+                startComputation() {
                     startComputationAsync(
                         ComputingType.SHORT_CIRCUIT,
                         null,
-                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startShortCircuitError'
@@ -318,11 +316,11 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
             [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
-                startComputation(debug) {
+                startComputation() {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INITIALIZATION,
                         null,
-                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
                         'startVoltageInitError'
@@ -336,12 +334,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.STATE_ESTIMATION]: {
                 messageId: 'StateEstimation',
-                startComputation(debug) {
+                startComputation() {
                     startComputationAsync(
                         ComputingType.STATE_ESTIMATION,
                         null,
                         () => {
-                            return startStateEstimation(studyUuid, currentNode?.id, currentRootNetworkUuid, debug);
+                            return startStateEstimation(studyUuid, currentNode?.id, currentRootNetworkUuid);
                         },
                         () => {},
                         null,
@@ -452,9 +450,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 open={showContingencyListSelector}
                 onClose={() => {
                     setShowContingencyListSelector(false);
-                    setRunWithDebug(false);
                 }}
-                onStart={(params) => handleStartSecurityAnalysis(params, runWithDebug)}
+                onStart={(params) => handleStartSecurityAnalysis(params)}
             />
             {!disabled && showDynamicSimulationParametersSelector && (
                 <DynamicSimulationParametersSelector

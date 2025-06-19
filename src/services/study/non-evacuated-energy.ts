@@ -12,11 +12,10 @@ import { UUID } from 'crypto';
 export function startNonEvacuatedEnergy(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    debug: boolean
+    currentRootNetworkUuid: UUID
 ): Promise<void> {
     console.info(
-        `Running non evacuated energy analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
+        `Running non evacuated energy analysis on study ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +

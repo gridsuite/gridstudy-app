@@ -12,13 +12,13 @@ const SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX = APP_NAME.toUpperCase() + '_DEBUG_
 export function getDebugState() {
     const objJson = sessionStorage.getItem(SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX);
     if (objJson) {
-        const obj = JSON.parse(objJson) as Record<string, boolean>;
-        return new Map(Object.entries(obj));
+        const array = JSON.parse(objJson) as string[];
+        return new Set(array);
     }
-    return null;
+    return undefined;
 }
 
-export function saveDebugState(newDebugState: Map<string, boolean>) {
-    const obj = Object.fromEntries(newDebugState.entries());
-    sessionStorage.setItem(SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX, JSON.stringify(obj));
+export function saveDebugState(newDebugState: Set<string>) {
+    const array = Array.from(newDebugState);
+    sessionStorage.setItem(SESSION_STORAGE_DEBUG_STATE_KEY_PREFIX, JSON.stringify(array));
 }

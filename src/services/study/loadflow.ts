@@ -52,16 +52,11 @@ export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     });
 }
 
-export function startLoadFlow(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    debug: boolean
-): Promise<void> {
+export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> {
     console.info(
-        'Running loadflow on ' +
+        'Running loadflow on study ' +
             studyUuid +
-            ' on root network ' +
+            ', on root network ' +
             currentRootNetworkUuid +
             ' and node ' +
             currentNodeUuid
@@ -74,7 +69,7 @@ export function startLoadFlow(
 
 export function stopLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Stopping loadFlow on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Stopping loadFlow on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const stopLoadFlowUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -85,7 +80,7 @@ export function stopLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, currentRoot
 
 export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Fetching loadFlow status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching loadFlow status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -101,7 +96,7 @@ export function fetchLoadFlowResult(
     queryParams: ResultsQueryParams
 ) {
     console.info(
-        `Fetching loadflow result on '${studyUuid}', node '${currentNodeUuid}' and current root network '${currentRootNetworkUuid}' ...`
+        `Fetching loadflow result on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});

@@ -37,21 +37,21 @@ export function buildDebugIdentifier({
 }
 
 export function setDebug(identifier: string) {
-    const debugState = getDebugState() ?? new Map();
-    debugState.set(identifier, true);
+    const debugState = getDebugState() ?? new Set();
+    debugState.add(identifier);
     saveDebugState(debugState);
 }
 
-export function getDebug(identifier: string) {
+export function isDebug(identifier: string) {
     const debugState = getDebugState();
-    return debugState ? debugState.get(identifier) : null;
+    return debugState && debugState.has(identifier);
 }
 
 export function unsetDebug(identifier: string) {
-    const debugSate = getDebugState();
-    if (debugSate) {
-        debugSate.delete(identifier);
-        saveDebugState(debugSate);
+    const debugState = getDebugState();
+    if (debugState) {
+        debugState.delete(identifier);
+        saveDebugState(debugState);
     }
 }
 
@@ -81,13 +81,13 @@ function useDownloadDebugFile() {
                     if (error.status === HttpStatusCode.NOT_FOUND) {
                         // not found
                         snackWarning({
-                            headerId: 'debugFileNotFoundHeader',
+                            headerId: 'debug.header.fileNotFound',
                         });
                     } else {
                         // or whatever error
                         snackError({
                             messageTxt: error.message,
-                            headerId: 'debugFileErrorHeader',
+                            headerId: 'debug.header.fileError',
                         });
                     }
                 });
@@ -114,7 +114,6 @@ export default function useDebug({
     const onDebugNotification = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
-            console.log('XXX evenData', { eventData });
             const updateTypeHeader = eventData.headers.updateType;
             if (updateTypeHeader === NotificationType.STUDY_DEBUG) {
                 const {
@@ -131,9 +130,9 @@ export default function useDebug({
                     rootNetworkUuid,
                     computingType,
                 });
-                const debug = getDebug(debugIdentifierNotif);
+                const debug = isDebug(debugIdentifierNotif);
                 if (debug) {
-                    // download by notif once, so unset debug identifier
+                    // download by notif once, so unset the debug identifier
                     unsetDebug(debugIdentifierNotif);
                     if (error) {
                         snackWarning({
@@ -166,7 +165,7 @@ export default function useDebug({
                 headerTxt: intl.formatMessage({
                     id: formatComputingTypeLabel(computingType),
                 }),
-                messageTxt: intl.formatMessage({ id: 'debugText' }),
+                messageTxt: intl.formatMessage({ id: 'debug.message.downloadFile' }),
             });
         },
         [studyUuid, nodeUuid, rootNetworkUuid, snackInfo, intl]

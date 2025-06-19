@@ -24,7 +24,7 @@ export function fetchDynamicSecurityAnalysisProviders() {
 export function downloadDebugDynamicSecurityAnalysis(resultUuid: UUID): Promise<Response> {
     console.info(`Download dynamic security analysis debug file of '${resultUuid}' ...`);
 
-    const url = getDynamicSecurityAnalysisUrl() + `results/${resultUuid}/download/debug-file`;
+    const url = getDynamicSecurityAnalysisUrl() + `results/${resultUuid}/download-debug-file`;
 
     console.debug(url);
     return backendFetch(url, {
