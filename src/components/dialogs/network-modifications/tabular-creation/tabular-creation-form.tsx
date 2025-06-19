@@ -253,7 +253,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_creation_skeleton'}
+                        filename={watchType + '_creation_template'}
                         disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>

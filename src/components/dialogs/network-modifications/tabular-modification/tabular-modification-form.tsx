@@ -219,7 +219,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_modification_skeleton'}
+                        filename={watchType + '_modification_template'}
                         disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
