@@ -18,14 +18,17 @@ import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { CurrentTreeNode, NodeType } from '../tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 type SubMenuItem = {
     onRoot: boolean;
     action: () => void;
     id: string;
     disabled?: boolean;
+    hidden?: boolean;
 };
 
 type MenuItem = {
@@ -33,6 +36,7 @@ type MenuItem = {
     action?: () => void;
     id: string;
     disabled?: boolean;
+    hidden?: boolean;
     subMenuItems?: Record<string, SubMenuItem>;
     sectionEnd?: boolean;
 };
@@ -41,6 +45,7 @@ type NodeMenuItems = Record<string, MenuItem>;
 interface CreateNodeMenuProps {
     position: { x: number; y: number };
     handleNodeCreation: (element: CurrentTreeNode, type: NodeType, insertMode: NodeInsertModes) => void;
+    handleSecuritySequenceCreation: (element: CurrentTreeNode) => void;
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
@@ -101,6 +106,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     handleBuildNode,
     handleUnbuildNode,
     handleNodeCreation,
+    handleSecuritySequenceCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
     activeNode,
@@ -120,6 +126,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const isModificationsInProgress = useSelector((state: AppState) => state.isModificationsInProgress);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
@@ -135,6 +142,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
     function pasteNetworkModificationNode(insertMode: NodeInsertModes) {
         handlePasteNode(activeNode.id, insertMode);
+        handleClose();
+    }
+
+    function createSecuritySequence() {
+        handleSecuritySequenceCreation(activeNode);
         handleClose();
     }
 
@@ -255,6 +267,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
+            hidden: isSecurityModificationNode(activeNode),
             id: 'createNetworkModificationNode',
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
@@ -274,19 +287,28 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 },
             },
         },
+        CREATE_SECURITY_SEQUENCE: {
+            onRoot: true,
+            hidden: !enableDeveloperMode || isSecurityModificationNode(activeNode),
+            action: () => createSecuritySequence(),
+            id: 'createSecuritySequence',
+        },
         COPY_MODIFICATION_NODE: {
             onRoot: false,
+            hidden: isSecurityModificationNode(activeNode),
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
         },
         CUT_MODIFICATION_NODE: {
             onRoot: false,
+            hidden: isSecurityModificationNode(activeNode),
             action: () =>
                 isNodeAlreadySelectedForCut() ? cancelCutNetworkModificationNode() : cutNetworkModificationNode(),
             id: isNodeAlreadySelectedForCut() ? 'cancelCutNetworkModificationNode' : 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
+            hidden: isSecurityModificationNode(activeNode),
             id: 'pasteNetworkModificationNode',
             disabled: !isNodePastingAllowed(),
             subMenuItems: {
@@ -325,12 +347,14 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         COPY_SUBTREE: {
             onRoot: false,
+            hidden: isSecurityModificationNode(activeNode),
             action: () => copySubtree(),
             id: 'copyNetworkModificationSubtree',
             disabled: isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
         },
         CUT_SUBTREE: {
             onRoot: false,
+            hidden: isSecurityModificationNode(activeNode),
             action: () => (isSubtreeAlreadySelectedForCut() ? cancelCutSubtree() : cutSubtree()),
             id: isSubtreeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationSubtree'
@@ -340,6 +364,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         PASTE_SUBTREE: {
             onRoot: true,
+            hidden: isSecurityModificationNode(activeNode),
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
             disabled: !isSubtreePastingAllowed(),
@@ -352,6 +377,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         RESTORE_NODES: {
             onRoot: true,
+            hidden: isSecurityModificationNode(activeNode),
             action: () => restoreNodes(),
             id: 'restoreNodes',
             disabled: !isNodeRestorationAllowed(),
@@ -367,7 +393,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     const renderMenuItems = useCallback(
         (nodeMenuItems: NodeMenuItems) => {
             return Object.values(nodeMenuItems).map((item) => {
-                if (activeNode?.type === NodeType.ROOT && !item.onRoot) {
+                if ((activeNode?.type === NodeType.ROOT && !item.onRoot) || item.hidden) {
                     return undefined; // do not show this item in menu
                 }
                 if (item.subMenuItems === undefined) {
