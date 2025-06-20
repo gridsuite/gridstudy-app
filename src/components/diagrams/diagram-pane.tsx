@@ -52,11 +52,16 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromElement } from '../../services/study';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
-import { CurrentTreeNode } from '../graph/tree-node.type';
+import {
+    isLoadflowResultNotification,
+    isNodeBuildCompletedNotification,
+    isStudyNotification,
+} from 'types/notification-types';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
@@ -943,21 +948,26 @@ export function DiagramPane({
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
-            if (studyUpdatedEventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
+        if (isLoadflowResultNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
                 return;
             }
-            if (studyUpdatedEventData.headers.updateType === 'loadflowResult') {
-                //TODO reload data more intelligently
+            //TODO reload data more intelligently
+            updateDiagramsByCurrentNode();
+        }
+        if (isStudyNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+            // FM if we want to reload data more precisely, we need more information from notifications
+            updateDiagramsByCurrentNode();
+        }
+        if (isNodeBuildCompletedNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+            if (studyUpdatedForce.eventData.headers.node === currentNodeRef.current?.id) {
                 updateDiagramsByCurrentNode();
-            } else if (studyUpdatedEventData.headers.updateType === 'study') {
-                // FM if we want to reload data more precisely, we need more information from notifications
-                updateDiagramsByCurrentNode();
-            } else if (studyUpdatedEventData.headers.updateType === 'buildCompleted') {
-                if (studyUpdatedEventData.headers.node === currentNodeRef.current?.id) {
-                    updateDiagramsByCurrentNode();
-                }
             }
         }
     }, [studyUpdatedForce, studyUuid, updateDiagramsByCurrentNode, updateDiagramsByIds, closeDiagramViews]);

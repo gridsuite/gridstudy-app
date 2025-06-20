@@ -25,7 +25,6 @@ import {
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
@@ -34,8 +33,6 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
-    RootNetworkIndexationStatus,
-    StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
@@ -64,6 +61,7 @@ import {
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -562,10 +560,10 @@ export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableD
 
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
-    eventData: StudyUpdatedEventData;
+    eventData: StudyUpdateEventData;
 };
 
-export function studyUpdated(eventData: StudyUpdatedEventData): StudyUpdatedAction {
+export function studyUpdated(eventData: StudyUpdateEventData): StudyUpdatedAction {
     return { type: STUDY_UPDATED, eventData };
 }
 
