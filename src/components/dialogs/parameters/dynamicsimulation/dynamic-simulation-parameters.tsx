@@ -33,11 +33,11 @@ import {
     ProviderParam,
     SubmitButton,
     useParametersBackend,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
-import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
 import { PROVIDER } from '../../../utils/field-constants';
 import { SolverInfos } from 'services/study/dynamic-simulation.type';

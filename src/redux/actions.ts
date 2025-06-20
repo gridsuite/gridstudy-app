@@ -21,6 +21,7 @@ import {
     GsTheme,
     Identifiable,
     NetworkVisualizationParameters,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
@@ -34,8 +35,8 @@ import type {
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
+    ComputingStatusParameters,
 } from './reducer';
-import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
@@ -117,6 +118,7 @@ export type AppActions =
     | DecrementNetworkAreaDiagramDepthAction
     | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
+    | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
@@ -1026,6 +1028,27 @@ export function setComputingStatus(
         type: SET_COMPUTING_STATUS,
         computingType: computingType,
         runningStatus: runningStatus,
+    };
+}
+
+export type ParameterizedComputingType = ComputingType.LOAD_FLOW;
+
+export const SET_COMPUTING_STATUS_INFOS = 'SET_COMPUTING_STATUS_INFOS';
+export type SetComputingStatusParametersAction<K extends ParameterizedComputingType> = Readonly<
+    Action<typeof SET_COMPUTING_STATUS_INFOS>
+> & {
+    computingType: K;
+    computingStatusParameters: ComputingStatusParameters[K];
+};
+
+export function setComputingStatusParameters<K extends ParameterizedComputingType>(
+    computingType: K,
+    computingStatusParameters: ComputingStatusParameters[K]
+): SetComputingStatusParametersAction<K> {
+    return {
+        type: SET_COMPUTING_STATUS_INFOS,
+        computingType: computingType,
+        computingStatusParameters: computingStatusParameters,
     };
 }
 

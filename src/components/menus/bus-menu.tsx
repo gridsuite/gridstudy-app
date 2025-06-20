@@ -13,7 +13,6 @@ import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functio
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -23,7 +22,7 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { EquipmentType, useSnackMessage, CustomMenuItem } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage, CustomMenuItem, ComputingType } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 

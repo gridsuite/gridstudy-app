@@ -7,7 +7,7 @@
 
 import { Theme } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 import { setModificationsDrawerOpen } from '../../../../redux/actions';
@@ -16,7 +16,6 @@ import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
 
 const styles = {

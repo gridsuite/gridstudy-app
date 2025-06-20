@@ -14,7 +14,7 @@ import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shor
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useState } from 'react';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisAllBusResultProps {

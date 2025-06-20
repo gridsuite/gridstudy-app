@@ -28,11 +28,11 @@ import {
     ProviderParam,
     useParametersBackend,
     parametersStyles,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
-import ComputingType from '../../../computing-status/computing-type';
 import { User } from 'oidc-client';
 
 import { LabelledButton, TabPanel } from '../parameters';

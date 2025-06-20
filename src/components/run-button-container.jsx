@@ -8,15 +8,19 @@
 import { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { setComputationStarting, setComputingStatus, setLogsFilter } from '../redux/actions';
+import {
+    setComputationStarting,
+    setComputingStatus,
+    setComputingStatusParameters,
+    setLogsFilter,
+} from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
-import ComputingType from './computing-status/computing-type';
 
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { ContingencyListSelector } from './dialogs/contingency-list-selector';
@@ -49,6 +53,17 @@ const checkDynamicSimulationParameters = (studyUuid) => {
 };
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
+
+    // only one of those type can be different from idle, depending on loadFlowStatusInfos.withRatioTapChangers
+    const loadFlowWithoutRatioTapChangersStatus = useMemo(
+        () => (loadFlowStatusInfos?.withRatioTapChangers ? RunningStatus.IDLE : loadFlowStatus),
+        [loadFlowStatus, loadFlowStatusInfos]
+    );
+    const loadFlowWithRatioTapChangersStatus = useMemo(
+        () => (loadFlowStatusInfos?.withRatioTapChangers ? loadFlowStatus : RunningStatus.IDLE),
+        [loadFlowStatus, loadFlowStatusInfos]
+    );
 
     const securityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]);
 
@@ -166,20 +181,42 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         }
 
         return {
-            [ComputingType.LOAD_FLOW]: {
+            LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS: {
                 messageId: 'LoadFlow',
                 startComputation() {
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
-                        null,
-                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid),
+                        () =>
+                            dispatch(
+                                setComputingStatusParameters(ComputingType.LOAD_FLOW, { withRatioTapChangers: false })
+                            ),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
                         () => {},
                         null,
                         'startLoadFlowError'
                     );
                 },
                 actionOnRunnable() {
-                    actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id));
+                    actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id, false));
+                },
+            },
+            LOAD_FLOW_WITH_RATIO_TAP_CHANGERS: {
+                messageId: 'LoadFlowWithRatioTapChangers',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.LOAD_FLOW,
+                        () =>
+                            dispatch(
+                                setComputingStatusParameters(ComputingType.LOAD_FLOW, { withRatioTapChangers: true })
+                            ),
+                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
+                        () => {},
+                        null,
+                        'startLoadFlowError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id, true));
                 },
             },
             [ComputingType.SECURITY_ANALYSIS]: {
@@ -337,10 +374,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
-        (computingType) => {
-            switch (computingType) {
-                case ComputingType.LOAD_FLOW:
-                    return loadFlowStatus;
+        (runnableType) => {
+            switch (runnableType) {
+                case 'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS':
+                    return loadFlowWithoutRatioTapChangersStatus;
+                case 'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS':
+                    return loadFlowWithRatioTapChangersStatus;
                 case ComputingType.SECURITY_ANALYSIS:
                     return securityAnalysisStatus;
                 case ComputingType.SENSITIVITY_ANALYSIS:
@@ -362,7 +401,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             }
         },
         [
-            loadFlowStatus,
+            loadFlowWithoutRatioTapChangersStatus,
+            loadFlowWithRatioTapChangersStatus,
             securityAnalysisStatus,
             sensitivityAnalysisStatus,
             nonEvacuatedEnergyStatus,
@@ -377,7 +417,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     // list of visible runnable isn't static
     const activeRunnables = useMemo(() => {
         return [
-            ComputingType.LOAD_FLOW,
+            'LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS',
+            'LOAD_FLOW_WITH_RATIO_TAP_CHANGERS',
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]
