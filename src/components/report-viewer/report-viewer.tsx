@@ -37,8 +37,6 @@ type ReportViewerProps = {
     resetFilters?: boolean;
 };
 
-const DEFAULT_CONTAINER_HEIGHT_OFFSET = 170; // The value 170px is fine, but leaves a gap below the report.
-
 export default function ReportViewer({
     report,
     reportType,
@@ -47,9 +45,6 @@ export default function ReportViewer({
 }: Readonly<ReportViewerProps>) {
     const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
     const [highlightedReportId, setHighlightedReportId] = useState<string>();
-    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number>(
-        DEFAULT_CONTAINER_HEIGHT_OFFSET
-    );
 
     const [selectedReport, setSelectedReport] = useState<SelectedReportLog>({
         id: report.id,
@@ -72,16 +67,6 @@ export default function ReportViewer({
         setExpandedTreeReports([reportTree.id]);
         setSelectedReport({ id: reportTree.id, type: reportTreeMap[reportTree.id]?.type });
     }, [reportTree, reportTreeMap]);
-
-    const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
-        setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top ?? DEFAULT_CONTAINER_HEIGHT_OFFSET);
-    }, []);
-
-    // We calculate the remaining height relative to the viewport and the top position of the report.
-    const reportContainerHeight = useMemo(
-        () => `calc(100vh - ${reportVerticalPositionFromTop}px)`,
-        [reportVerticalPositionFromTop]
-    );
 
     const onLogRowClick = useCallback(
         (data: Log | undefined) => {
@@ -127,7 +112,7 @@ export default function ReportViewer({
     const RIGHT_PANEL_MIN_SIZE = 50;
 
     return (
-        <Box width={'100%'} ref={handleReportVerticalPositionFromTop} sx={{ height: reportContainerHeight }}>
+        <Box width={'100%'} sx={{ height: '100%', minHeight: 0 }}>
             <PanelGroup direction="horizontal" ref={panelGroupRef}>
                 <Panel id="treeview-panel" minSize={LEFT_PANEL_MIN_SIZE} defaultSize={LEFT_PANEL_DEFAULT_SIZE}>
                     <VirtualizedTreeview

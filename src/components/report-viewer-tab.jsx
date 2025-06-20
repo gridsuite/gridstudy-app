@@ -25,9 +25,22 @@ import { sortSeverityList } from 'utils/report/report-severity';
 const styles = {
     div: {
         display: 'flex',
+        flexShrink: 0,
     },
     reportOnlyNode: {
         margin: '5px',
+    },
+    reportViewerContainer: {
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    paper: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
     },
 };
 
@@ -92,7 +105,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
 
     return (
         <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-            <Paper className={'singlestretch-child'}>
+            <Paper className={'singlestretch-child'} sx={styles.paper}>
                 <Box sx={styles.div}>
                     <FormControlLabel
                         sx={styles.reportOnlyNode}
@@ -113,12 +126,14 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
                 </Box>
                 {!!report && !disabled && (
-                    <ReportViewer
-                        report={report}
-                        reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
-                        severities={severities}
-                        resetFilters={resetFilters}
-                    />
+                    <Box sx={styles.reportViewerContainer}>
+                        <ReportViewer
+                            report={report}
+                            reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
+                            severities={severities}
+                            resetFilters={resetFilters}
+                        />
+                    </Box>
                 )}
             </Paper>
         </WaitingLoader>
