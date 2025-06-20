@@ -25,6 +25,7 @@ import {
     convertOutputValues,
     formatModification,
     getEquipmentTypeFromModificationType,
+    getFieldType,
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
@@ -74,20 +75,23 @@ const TabularModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromModificationType(editData?.modificationType);
-            const modifications = editData?.modifications.map((modif) => {
+            const modificationType = editData.modificationType;
+            const modifications = editData.modifications.map((modif) => {
                 let modification = formatModification(modif);
-                if (equipmentType === 'GENERATOR' || equipmentType === 'BATTERY') {
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
                     modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
                 } else {
                     Object.keys(modification).forEach((key) => {
-                        modification[key] = convertInputValues(key, modif[key]);
+                        modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
                     });
                 }
                 return modification;
             });
             reset({
-                [TYPE]: equipmentType,
+                [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
             });
         }
@@ -100,7 +104,10 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
-                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR || TABULAR_MODIFICATION_TYPES.BATTERY) {
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
                     const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
                     modification = {
                         ...generatorOrBatteryModification,
@@ -108,10 +115,9 @@ const TabularModificationDialog = ({
                     };
                 } else {
                     Object.keys(row).forEach((key) => {
-                        modification[key] = convertOutputValues(key, row[key]);
+                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
                     });
                 }
-
                 return modification;
             });
             createTabulareModification(
