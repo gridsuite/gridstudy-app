@@ -44,7 +44,7 @@ export function getLoadFlowParametersId(studyUuid: UUID) {
     console.debug(getLoadFlowParametersIdUrl);
     return backendFetchText(getLoadFlowParametersIdUrl).then((response) => {
         // Remove quotes if present to return clean UUID string
-        return response.replace(/^"|"$/g, '');
+        return response.replace(/(^"|"$)/g, '');
     });
 }
 
