@@ -32,7 +32,6 @@ import { ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-import { useDiagram } from '../use-diagram';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -75,7 +74,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { loadNadFromElementView } = useDiagram(); // TODO Remove this when diagram-pane is removed
 
     const nadIdentifier = useMemo(() => {
         if (props.svgType === DiagramType.NAD_FROM_ELEMENT) {
@@ -182,11 +180,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             if (onLoadNadFromElement) {
                 onLoadNadFromElement(elementUuid, elementType, elementName);
-            } else {
-                loadNadFromElementView(elementUuid, elementType, elementName);
             }
         },
-        [loadNadFromElementView, onLoadNadFromElement]
+        [onLoadNadFromElement]
     );
 
     /**

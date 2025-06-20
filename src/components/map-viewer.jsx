@@ -7,7 +7,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStudyDisplayMode } from '../redux/actions';
+import { openDiagram, setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { ReactFlowProvider } from '@xyflow/react';
 import NetworkModificationTreePane from './network-modification-tree-pane';
@@ -127,7 +127,6 @@ const MapViewer = ({
     currentNode,
     currentRootNetworkUuid,
     view,
-    openDiagramView,
     tableEquipment,
     onTableEquipementChanged,
     onChangeTab,
@@ -148,10 +147,10 @@ const MapViewer = ({
         (vlId) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode) {
-                openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
             }
         },
-        [openDiagramView, isInDrawingMode]
+        [dispatch, isInDrawingMode]
     );
 
     function showInSpreadsheet(equipment) {

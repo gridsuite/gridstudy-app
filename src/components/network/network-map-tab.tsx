@@ -40,7 +40,7 @@ import {
     NotificationsUrlKeys,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
@@ -65,7 +65,6 @@ import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
-import { useDiagram } from 'components/diagrams/use-diagram';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -186,7 +185,6 @@ export const NetworkMapTab = ({
 
     const lineFullPathRef = useRef<boolean>();
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
-    const { openDiagramView } = useDiagram();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -1207,12 +1205,12 @@ export const NetworkMapTab = ({
         // TODO code factorization for displaying a VL via a hook
         (optionInfos: EquipmentInfos) => {
             if (optionInfos.type === EquipmentType.SUBSTATION) {
-                openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
+                dispatch(openDiagram(optionInfos.id, DiagramType.SUBSTATION));
             } else if (optionInfos.voltageLevelId) {
-                openDiagramView(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openDiagram(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL));
             }
         },
-        [openDiagramView]
+        [dispatch]
     );
 
     return (

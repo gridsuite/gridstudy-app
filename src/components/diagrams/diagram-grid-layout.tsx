@@ -225,7 +225,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
-        // TODO adapt the layout w and h cnsidering those values
+        // TODO adapt the layout w and h considering those values
     }, []);
 
     const renderDiagrams = useCallback(() => {
