@@ -1256,6 +1256,14 @@ export const reducer = createReducer(initialState, (builder) => {
                 voltageLevelIds: [action.id as UUID],
             };
         }
+
+        // Switch to the grid layout in order to see the newly opened diagram
+        if (
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+        ) {
+            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+        }
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
@@ -1275,6 +1283,14 @@ export const reducer = createReducer(initialState, (builder) => {
             eventType: DiagramEventType.CREATE,
             voltageLevelIds: uniqueIds as UUID[],
         };
+
+        // Switch to the grid layout in order to see the newly opened diagram
+        if (
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+        ) {
+            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+        }
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
