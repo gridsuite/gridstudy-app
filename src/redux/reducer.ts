@@ -222,6 +222,8 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
+    NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS,
+    NetworkAreaDiagramExpandedVoltageLevelIdsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -458,6 +460,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
+    expandedVoltageLevelIds: string[];
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
@@ -626,6 +629,7 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
+    expandedVoltageLevelIds: [],
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
@@ -1597,6 +1601,20 @@ export const reducer = createReducer(initialState, (builder) => {
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
             state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
+        }
+    );
+
+    builder.addCase(
+        NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS,
+        (state, action: NetworkAreaDiagramExpandedVoltageLevelIdsAction) => {
+            if (action.expandedVoltageLevelIds.length === 0) {
+                state.expandedVoltageLevelIds = []; // reset
+                return;
+            }
+            const existing = state.expandedVoltageLevelIds;
+            const toAdd = action.expandedVoltageLevelIds;
+
+            state.expandedVoltageLevelIds = Array.from(new Set([...existing, ...toAdd]));
         }
     );
 

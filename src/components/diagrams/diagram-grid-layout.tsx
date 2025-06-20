@@ -209,7 +209,24 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagram.voltageLevelIds,
+                    expandedVoltageLevelIds: diagram.expandedVoltageLevelIds,
                     depth: newDepth,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const onChangeExpandedVoltageLevelIds = useCallback(
+        (diagramId: UUID, newVLId: string) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    voltageLevelIds: diagram.voltageLevelIds,
+                    depth: diagram.depth,
+                    expandedVoltageLevelIds: [...diagram.expandedVoltageLevelIds, newVLId],
                 });
             }
         },
@@ -283,6 +300,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
                                     onLoadNadFromElement={handleLoadNadFromElement}
+                                    onSelectNode={(vlId) => onChangeExpandedVoltageLevelIds(diagram.diagramUuid, vlId)}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -316,6 +334,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         intl,
         loadingDiagrams,
         onChangeDepth,
+        onChangeExpandedVoltageLevelIds,
         onRemoveItem,
         setDiagramSize,
         showInSpreadsheet,

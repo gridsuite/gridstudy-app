@@ -115,6 +115,7 @@ export type AppActions =
     | ResetNetworkAreaDiagramDepthAction
     | IncrementNetworkAreaDiagramDepthAction
     | DecrementNetworkAreaDiagramDepthAction
+    | NetworkAreaDiagramExpandedVoltageLevelIdsAction
     | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
     | SetComputationStartingAction
@@ -1009,6 +1010,22 @@ export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels: number): N
     return {
         type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         nbVoltageLevels: nbVoltageLevels,
+    };
+}
+
+export const NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS = 'NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS';
+export type NetworkAreaDiagramExpandedVoltageLevelIdsAction = Readonly<
+    Action<typeof NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS>
+> & {
+    expandedVoltageLevelIds: string[];
+};
+
+export function setNetworkAreaDiagramExpandedVoltageLevelIds(
+    expandedVoltageLevelIds: string[]
+): NetworkAreaDiagramExpandedVoltageLevelIdsAction {
+    return {
+        type: NETWORK_AREA_DIAGRAM_EXPANDED_VOLTAGE_LEVEL_IDS,
+        expandedVoltageLevelIds,
     };
 }
 
