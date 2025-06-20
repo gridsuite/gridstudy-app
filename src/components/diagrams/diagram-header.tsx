@@ -10,9 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
-import MinimizeIcon from '@mui/icons-material/Minimize';
-import PushPinIcon from '@mui/icons-material/PushPin';
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import { stopDiagramBlink } from '../../redux/actions';
 import { Theme } from '@mui/material';
@@ -64,11 +61,6 @@ const styles = {
 
 interface DiagramHeaderProps {
     diagramTitle?: string;
-    showMinimizeControl?: boolean;
-    onMinimize?: () => void;
-    showTogglePinControl?: boolean;
-    onTogglePin?: () => void;
-    pinned?: boolean;
     showCloseControl?: boolean;
     onClose?: () => void;
     diagramId?: string;
@@ -77,11 +69,6 @@ interface DiagramHeaderProps {
 
 const DiagramHeader: React.FC<DiagramHeaderProps> = ({
     diagramTitle,
-    showMinimizeControl = false,
-    onMinimize,
-    showTogglePinControl = false,
-    onTogglePin,
-    pinned,
     showCloseControl = false,
     onClose,
     diagramId,
@@ -89,8 +76,6 @@ const DiagramHeader: React.FC<DiagramHeaderProps> = ({
 }) => {
     const dispatch = useDispatch();
 
-    const handleMinimize = useCallback(() => onMinimize && onMinimize(), [onMinimize]);
-    const handleTogglePin = useCallback(() => onTogglePin && onTogglePin(), [onTogglePin]);
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
     /**
@@ -129,16 +114,6 @@ const DiagramHeader: React.FC<DiagramHeaderProps> = ({
                         flexDirection: 'row',
                     }}
                 >
-                    {showMinimizeControl && (
-                        <IconButton sx={styles.actionIcon} onClick={handleMinimize}>
-                            <MinimizeIcon />
-                        </IconButton>
-                    )}
-                    {showTogglePinControl && (
-                        <IconButton sx={pinned ? styles.actionIcon : styles.pinRotate} onClick={handleTogglePin}>
-                            {pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
-                        </IconButton>
-                    )}
                     {showCloseControl && (
                         <IconButton sx={styles.close} onClick={handleClose}>
                             <CloseIcon />

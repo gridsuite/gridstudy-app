@@ -14,14 +14,7 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import {
-    ElementType,
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    Identifiable,
-    NetworkVisualizationParameters,
-} from '@gridsuite/commons-ui';
+import { GsLang, GsLangUser, GsTheme, Identifiable, NetworkVisualizationParameters } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -94,7 +87,6 @@ export type AppActions =
     | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
-    | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
@@ -107,10 +99,6 @@ export type AppActions =
     | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
-    | MinimizeDiagramAction
-    | TogglePinDiagramAction
-    | CloseDiagramAction
-    | CloseDiagramsAction
     | StopDiagramBlinkAction
     | ResetNetworkAreaDiagramDepthAction
     | IncrementNetworkAreaDiagramDepthAction
@@ -145,7 +133,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | LoadNadFromElementAction
     | SetEditNadModeAction
     | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction;
@@ -615,36 +602,6 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
     };
 }
 
-export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
-export type SetFullscreenDiagramAction = Readonly<Action<typeof SET_FULLSCREEN_DIAGRAM>> &
-    (
-        | { diagramId: null }
-        | {
-              diagramId: string;
-              svgType: DiagramType;
-          }
-    );
-
-export function setFullScreenDiagram(diagramIdParam: null): SetFullscreenDiagramAction;
-export function setFullScreenDiagram(diagramIdParam: string, svgTypeParam: DiagramType): SetFullscreenDiagramAction;
-export function setFullScreenDiagram(
-    diagramIdParam: string | null,
-    svgTypeParam?: DiagramType
-): SetFullscreenDiagramAction {
-    if (diagramIdParam === null) {
-        return {
-            type: SET_FULLSCREEN_DIAGRAM,
-            diagramId: diagramIdParam,
-        };
-    } else {
-        return {
-            type: SET_FULLSCREEN_DIAGRAM,
-            diagramId: diagramIdParam,
-            svgType: svgTypeParam!,
-        };
-    }
-}
-
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 export type FavoriteContingencyListsAction = Readonly<Action<typeof FAVORITE_CONTINGENCY_LISTS>> & {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
@@ -826,80 +783,6 @@ export function openNadList(ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
         ids: ids,
-    };
-}
-
-export const MINIMIZE_DIAGRAM = 'MINIMIZE_DIAGRAM';
-export type MinimizeDiagramAction = Readonly<Action<typeof MINIMIZE_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function minimizeDiagram(id: string, svgType: DiagramType): MinimizeDiagramAction {
-    return {
-        type: MINIMIZE_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const TOGGLE_PIN_DIAGRAM = 'TOGGLE_PIN_DIAGRAM';
-export type TogglePinDiagramAction = Readonly<Action<typeof TOGGLE_PIN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function togglePinDiagram(id: string, svgType: DiagramType): TogglePinDiagramAction {
-    return {
-        type: TOGGLE_PIN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
-export type CloseDiagramAction = Readonly<Action<typeof CLOSE_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function closeDiagram(id: string, svgType: DiagramType): CloseDiagramAction {
-    return {
-        type: CLOSE_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const CLOSE_DIAGRAMS = 'CLOSE_DIAGRAMS';
-export type CloseDiagramsAction = Readonly<Action<typeof CLOSE_DIAGRAMS>> & {
-    ids: string[];
-};
-
-export function closeDiagrams(ids: string[]): CloseDiagramsAction {
-    return {
-        type: CLOSE_DIAGRAMS,
-        ids: ids,
-    };
-}
-
-export const LOAD_NAD_FROM_ELEMENT = 'LOAD_NAD_FROM_ELEMENT';
-export type LoadNadFromElementAction = Readonly<Action<typeof LOAD_NAD_FROM_ELEMENT>> & {
-    elementUuid: string;
-    elementType: ElementType;
-    elementName: string;
-};
-
-export function loadNadFromElement(
-    elementId: string,
-    elementType: ElementType,
-    elementName: string
-): LoadNadFromElementAction {
-    return {
-        type: LOAD_NAD_FROM_ELEMENT,
-        elementUuid: elementId,
-        elementType: elementType,
-        elementName: elementName,
     };
 }
 
