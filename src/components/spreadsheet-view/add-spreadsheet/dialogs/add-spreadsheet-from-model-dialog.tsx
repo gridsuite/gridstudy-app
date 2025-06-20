@@ -62,7 +62,7 @@ export default function AddSpreadsheetFromModelDialog({
 
     const { reset, setValue, getValues } = formMethods;
 
-    // Reset form when dialog opens
+    // Reset form when the dialog opens
     useEffect(() => {
         reset(initialSpreadsheetFromModelForm);
     }, [open.value, reset]);
@@ -96,6 +96,8 @@ export default function AddSpreadsheetFromModelDialog({
                         columns: selectedModel.columns,
                         globalFilters: selectedModel.globalFilters,
                         sheetType: selectedModel.sheetType,
+                        nodeAliases: selectedModel.nodeAliases,
+                        resetNodeAliases: resetNodeAliases,
                         tabIndex,
                         tabName,
                         spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
@@ -103,7 +105,6 @@ export default function AddSpreadsheetFromModelDialog({
                         snackError,
                         open,
                     });
-                    resetNodeAliases(true, selectedModel.nodeAliases); // TODO do this in addNewSpreadsheet / handleSucess
                 })
                 .catch((error) => {
                     snackError({
@@ -113,7 +114,7 @@ export default function AddSpreadsheetFromModelDialog({
                 });
             open.setFalse();
         },
-        [studyUuid, tablesDefinitions.length, open, spreadsheetsCollectionUuid, dispatch, snackError, resetNodeAliases]
+        [studyUuid, tablesDefinitions.length, open, resetNodeAliases, spreadsheetsCollectionUuid, dispatch, snackError]
     );
 
     return (
