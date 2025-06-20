@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -47,7 +47,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { NetworkModificationInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1683,12 +1683,24 @@ export function fetchNetworkModifications(
     studyUuid: UUID | null,
     nodeUuid: string,
     onlyStashed: boolean
-): Promise<NetworkModificationInfos[]> {
+): Promise<NetworkModificationMetadata[]> {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('onlyStashed', onlyStashed.toString());
     urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
+
+export function fetchExcludedNetworkModifications(
+    studyUuid: UUID | null,
+    nodeUuid: string
+): Promise<ExcludedNetworkModifications[]> {
+    console.info('Fetching excluded network modifications by root networks for nodeUuid : ', nodeUuid);
+    const urlSearchParams = new URLSearchParams();
+    const modificationsGetUrl = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/excluded-network-modifications?';
+    urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
