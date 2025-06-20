@@ -42,6 +42,12 @@ export const GENERATION_KINDS = [
     { id: 'HYDRO', label: 'Hydro' },
 ];
 
+export const APPLIED_ON_SIDE = [
+    { id: 'appliedOnSide1', label: 'appliedOnSide1' },
+    { id: 'appliedOnSide2', label: 'appliedOnSide2' },
+    { id: 'appliedOnEquipment', label: 'appliedOnEquipment' },
+];
+
 export const COLUMNS_DEFINITIONS_STAGES = [
     {
         label: 'GenerationStageKind',

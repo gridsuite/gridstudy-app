@@ -875,7 +875,11 @@
     "activePowerSetpointMaxValueError": "The active power value must be less than the maximum active power value",
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
-    "SelectedOperationalLimitGroup": "Active limit set",
+    "SelectedOperationalLimitGroupSide1": "Active limit set on side 1",
+    "SelectedOperationalLimitGroupSide2": "Active limit set on side 2",
+    "appliedOnSide1": "side 1",
+    "appliedOnSide2": "side 2",
+    "appliedOnEquipment": "equipment",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
@@ -1505,5 +1509,9 @@
     "thresholdNetPosition": "Net position mismatch threshold",
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
-    "diagramLoadingFail": "An error occurred while loading {diagramName}"
+    "diagramLoadingFail": "An error occurred while loading {diagramName}",
+
+    "limitSets": "limits sets",
+    "ActiveLimitSets": "active limits sets",
+    "LimitGroupAppliedOnLabel": "Applied on : "
 }
