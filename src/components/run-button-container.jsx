@@ -37,6 +37,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import useComputationDebug from '../hooks/use-computation-debug';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -72,6 +73,9 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     const [showDynamicSimulationParametersSelector, setShowDynamicSimulationParametersSelector] = useState(false);
 
+    // a transient state which is used only for a run with popup dialog
+    const [runWithDebug, setRunWithDebug] = useState(false);
+
     const [computationStopped, setComputationStopped] = useState(false);
 
     const { snackError } = useSnackMessage();
@@ -91,6 +95,13 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+
+    // --- for running in debug mode --- //
+    const subscribeDebug = useComputationDebug({
+        studyUuid: studyUuid,
+        nodeUuid: currentNode?.id,
+        rootNetworkUuid: currentRootNetworkUuid,
+    });
 
     const startComputationAsync = useCallback(
         (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
@@ -126,10 +137,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
-            () => {
-                // close the contingency list selection window
-                setShowContingencyListSelector(false);
-            },
+            null,
             () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames),
             () => {},
             null,
@@ -137,21 +145,19 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         );
     };
 
-    const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
+    const handleStartDynamicSimulation = (dynamicSimulationConfiguration, debug) => {
         startComputationAsync(
             ComputingType.DYNAMIC_SIMULATION,
-            () => {
-                // close the dialog
-                setShowDynamicSimulationParametersSelector(false);
-            },
+            null,
             () =>
                 startDynamicSimulation(
                     studyUuid,
                     currentNode?.id,
                     currentRootNetworkUuid,
-                    dynamicSimulationConfiguration
+                    dynamicSimulationConfiguration,
+                    debug
                 ),
-            () => {},
+            () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
             null,
             'DynamicSimulationRunError'
         );
@@ -251,15 +257,29 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.DYNAMIC_SIMULATION]: {
                 messageId: 'DynamicSimulation',
-                startComputation() {
+                startComputation(debug) {
                     checkDynamicSimulationParameters(studyUuid)
                         .then((isValid) => {
                             if (!isValid) {
                                 // open parameters selector to configure mandatory params
                                 setShowDynamicSimulationParametersSelector(true);
+                                setRunWithDebug(true);
                             } else {
                                 // start server side dynamic simulation directly
-                                return startDynamicSimulation(studyUuid, currentNode?.id, currentRootNetworkUuid);
+                                return startComputationAsync(
+                                    ComputingType.DYNAMIC_SIMULATION,
+                                    null,
+                                    () =>
+                                        startDynamicSimulation({
+                                            studyUuid,
+                                            currentNodeUuid: currentNode?.id,
+                                            currentRootNetworkUuid,
+                                            debug,
+                                        }),
+                                    () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
+                                    null,
+                                    'DynamicSimulationRunError'
+                                );
                             }
                         })
                         .catch((error) => {
@@ -277,12 +297,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: {
                 messageId: 'DynamicSecurityAnalysis',
-                startComputation() {
+                startComputation(debug) {
                     startComputationAsync(
                         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
                         null,
-                        () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
-                        () => {},
+                        () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => debug && subscribeDebug(ComputingType.DYNAMIC_SECURITY_ANALYSIS),
                         null,
                         'startDynamicSecurityAnalysisError'
                     );
@@ -333,7 +353,15 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 },
             },
         };
-    }, [dispatch, snackError, startComputationAsync, studyUuid, currentNode?.id, currentRootNetworkUuid]);
+    }, [
+        dispatch,
+        snackError,
+        startComputationAsync,
+        studyUuid,
+        currentNode?.id,
+        currentRootNetworkUuid,
+        subscribeDebug,
+    ]);
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
@@ -420,14 +448,19 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             />
             <ContingencyListSelector
                 open={showContingencyListSelector}
-                onClose={() => setShowContingencyListSelector(false)}
-                onStart={handleStartSecurityAnalysis}
+                onClose={() => {
+                    setShowContingencyListSelector(false);
+                }}
+                onStart={(params) => handleStartSecurityAnalysis(params)}
             />
             {!disabled && showDynamicSimulationParametersSelector && (
                 <DynamicSimulationParametersSelector
                     open={showDynamicSimulationParametersSelector}
-                    onClose={() => setShowDynamicSimulationParametersSelector(false)}
-                    onStart={handleStartDynamicSimulation}
+                    onClose={() => {
+                        setShowDynamicSimulationParametersSelector(false);
+                        setRunWithDebug(false);
+                    }}
+                    onStart={(params) => handleStartDynamicSimulation(params, runWithDebug)}
                     studyUuid={studyUuid}
                 />
             )}
