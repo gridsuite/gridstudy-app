@@ -39,6 +39,7 @@ const formSchema = yup.object().shape({
             is: (sectionCount: number) => sectionCount > 1,
             then: (schema) => schema.required(),
         }),
+    [SWITCH_KINDS]: yup.array().nullable(),
 });
 export type CreateVoltageLevelTopologyDialogProps = EquipmentModificationDialogProps & {
     editData?: CreateVoltageLevelTopologyInfos;
