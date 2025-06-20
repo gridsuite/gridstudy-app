@@ -26,6 +26,8 @@ import {
     G1,
     G2,
     HIGH_VOLTAGE_LIMIT,
+    IP_MIN,
+    IP_MAX,
     LOAD_TYPE,
     LOW_VOLTAGE_LIMIT,
     MARGINAL_COST,
@@ -70,6 +72,14 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
     X,
+    LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+    HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+    CONNECTION_NAME1,
+    CONNECTION_DIRECTION1,
+    CONNECTION_POSITION1,
+    CONNECTION_NAME2,
+    CONNECTION_DIRECTION2,
+    CONNECTION_POSITION2,
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
@@ -141,7 +151,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         PARTICIPATE,
         DROOP,
     ],
-    VOLTAGE_LEVEL: [EQUIPMENT_ID, NOMINAL_V, LOW_VOLTAGE_LIMIT, HIGH_VOLTAGE_LIMIT],
+    VOLTAGE_LEVEL: [EQUIPMENT_ID, EQUIPMENT_NAME, NOMINAL_V, LOW_VOLTAGE_LIMIT, HIGH_VOLTAGE_LIMIT, IP_MIN, IP_MAX],
     SHUNT_COMPENSATOR: [
         EQUIPMENT_ID,
         EQUIPMENT_NAME,
@@ -155,7 +165,24 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         MAX_Q_AT_NOMINAL_V,
         MAX_SUSCEPTANCE,
     ],
-    LINE: [EQUIPMENT_ID, R, X, G1, G2, B1, B2, CONNECTED1, CONNECTED2],
+    LINE: [
+        EQUIPMENT_ID,
+        EQUIPMENT_NAME,
+        R,
+        X,
+        G1,
+        G2,
+        B1,
+        B2,
+        CONNECTED1,
+        CONNECTION_NAME1,
+        CONNECTION_DIRECTION1,
+        CONNECTION_POSITION1,
+        CONNECTED2,
+        CONNECTION_NAME2,
+        CONNECTION_DIRECTION2,
+        CONNECTION_POSITION2,
+    ],
     LOAD: [
         EQUIPMENT_ID,
         EQUIPMENT_NAME,
@@ -167,8 +194,26 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         P0,
         Q0,
     ],
-    TWO_WINDINGS_TRANSFORMER: [EQUIPMENT_ID, R, X, G, B, RATED_U1, RATED_U2, RATED_S, CONNECTED1, CONNECTED2],
-    SUBSTATION: [EQUIPMENT_ID, COUNTRY],
+    TWO_WINDINGS_TRANSFORMER: [
+        EQUIPMENT_ID,
+        EQUIPMENT_NAME,
+        R,
+        X,
+        G,
+        B,
+        RATED_U1,
+        RATED_U2,
+        RATED_S,
+        CONNECTED1,
+        CONNECTION_NAME1,
+        CONNECTION_DIRECTION1,
+        CONNECTION_POSITION1,
+        CONNECTED2,
+        CONNECTION_NAME2,
+        CONNECTION_DIRECTION2,
+        CONNECTION_POSITION2,
+    ],
+    SUBSTATION: [EQUIPMENT_ID, EQUIPMENT_NAME, COUNTRY],
 };
 
 export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
@@ -254,6 +299,20 @@ export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification
         }
         modification[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
     }
+};
+
+export const getFieldType = (modificationType: string, key: string) => {
+    let fieldType = key;
+    // In some cases, the key used in tabular modification does not match the key used in atomic modification,
+    // criteria filters, and commons-ui convert functions.
+    if (modificationType === TABULAR_MODIFICATION_TYPES.VOLTAGE_LEVEL) {
+        if (key === IP_MIN) {
+            fieldType = LOW_SHORT_CIRCUIT_CURRENT_LIMIT;
+        } else if (key === IP_MAX) {
+            fieldType = HIGH_SHORT_CIRCUIT_CURRENT_LIMIT;
+        }
+    }
+    return fieldType;
 };
 
 export const convertGeneratorOrBatteryModificationFromBackToFront = (modification: Modification) => {
