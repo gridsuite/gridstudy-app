@@ -80,14 +80,12 @@ import {
     MapDataLoadingAction,
     MapEquipmentsCreatedAction,
     MapEquipmentsInitializedAction,
-    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_REORDER,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
@@ -196,8 +194,6 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    SET_EDIT_NAD_MODE,
-    SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
     REMOVE_EQUIPMENT_DATA,
@@ -227,7 +223,6 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -322,13 +317,6 @@ export type TableSort = {
 export type TableSortKeysType = keyof TableSort;
 
 export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type DiagramState = {
-    id: UUID;
-    type?: ElementType;
-    svgType: DiagramType;
-    name?: string;
-};
 
 export enum DiagramEventType {
     CREATE = 'create',
@@ -440,7 +428,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
-    networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
@@ -452,7 +439,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
-    diagramStates: DiagramState[];
     latestDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
@@ -596,7 +582,6 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
-    diagramStates: [],
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -605,7 +590,6 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
-    networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
     computingStatus: {
@@ -768,10 +752,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
-
-        if (action.studyRef[0] != null) {
-            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
-        }
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1110,10 +1090,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMapNeeded = action.reloadMapNeeded;
     });
 
-    builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
-        state.isEditMode = action.isEditMode;
-    });
-
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
     });
@@ -1210,29 +1186,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
-        let diagramStates = state.diagramStates;
-        const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-        );
-
-        // We check if the diagram to open is already in the diagramStates.
-        if (diagramToOpenIndex >= 0) {
-            console.info(
-                'Diagram already opened : ' +
-                    diagramStates[diagramToOpenIndex].id +
-                    ' (' +
-                    diagramStates[diagramToOpenIndex].svgType +
-                    ')'
-            );
-        } else {
-            diagramStates.push({
-                id: action.id as UUID,
-                svgType: action.svgType,
-            });
-        }
-
-        state.diagramStates = diagramStates;
-
         if (action.svgType === DiagramType.SUBSTATION) {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
@@ -1263,17 +1216,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
-        const diagramStates = state.diagramStates;
         const uniqueIds = [...new Set(action.ids)];
-        // remove all existing NAD from store, we replace them with lists passed as param
-        const diagramStatesWithoutNad = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
 
-        state.diagramStates = diagramStatesWithoutNad.concat(
-            uniqueIds.map((id) => ({
-                id: id as UUID,
-                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-            }))
-        );
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
@@ -1346,13 +1290,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 correspondingMovement[0].connectionShiftX = action.connectionShiftX;
                 correspondingMovement[0].connectionShiftY = action.connectionShiftY;
             }
-        }
-    );
-
-    builder.addCase(
-        NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-        (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
-            state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
         }
     );
 

@@ -102,7 +102,6 @@ export type AppActions =
     | ResetNetworkAreaDiagramDepthAction
     | IncrementNetworkAreaDiagramDepthAction
     | DecrementNetworkAreaDiagramDepthAction
-    | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
@@ -132,7 +131,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | SetEditNadModeAction
     | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction;
 
@@ -577,18 +575,6 @@ export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeeded
     };
 }
 
-export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
-export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
-    isEditMode: boolean;
-};
-
-export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
-    return {
-        type: SET_EDIT_NAD_MODE,
-        isEditMode,
-    };
-}
-
 export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
@@ -868,20 +854,6 @@ export function storeNetworkAreaDiagramTextNodeMovement(
         shiftY: shiftY,
         connectionShiftX: connectionShiftX,
         connectionShiftY: connectionShiftY,
-    };
-}
-
-export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
-export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
-    Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>
-> & {
-    nbVoltageLevels: number;
-};
-
-export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels: number): NetworkAreaDiagramNbVoltageLevelsAction {
-    return {
-        type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-        nbVoltageLevels: nbVoltageLevels,
     };
 }
 
