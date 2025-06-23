@@ -42,19 +42,20 @@ const RootNetworkChipCellRenderer = ({
             return true;
         }
 
-        const excludedList =
+        const excludedSet = new Set(
             modificationsToExclude.find((item) => item.rootNetworkUuid === rootNetwork.rootNetworkUuid)
-                ?.modificationUuidsToExclude || [];
+                ?.modificationUuidsToExclude || []
+        );
 
-        return !excludedList.includes(modificationUuid);
-    }, [modificationUuid, modificationsToExclude, rootNetwork]);
+        return !excludedSet.has(modificationUuid);
+    }, [modificationUuid, modificationsToExclude, rootNetwork.rootNetworkUuid, rootNetwork.isCreating]);
 
     const updateStatus = useCallback(
         (newStatus: boolean) => {
             if (!studyUuid || !modificationUuid || !currentNode) {
+                setIsLoading(false);
                 return;
             }
-            console.log('herrrreeeeee updating ????');
 
             updateModificationStatusByRootNetwork(
                 studyUuid,
@@ -80,23 +81,30 @@ const RootNetworkChipCellRenderer = ({
         setIsLoading(true);
 
         setModificationsToExclude((prev) => {
-            const updatedExcludedModifications = prev.map((modif) => {
-                if (modif.rootNetworkUuid !== rootNetwork.rootNetworkUuid) {
-                    return modif;
-                }
-
-                const isExcluded = modif.modificationUuidsToExclude.includes(modificationUuid);
-                const modificationUuidsToExclude = isExcluded
-                    ? modif.modificationUuidsToExclude.filter((id) => id !== modificationUuid)
-                    : [...modif.modificationUuidsToExclude, modificationUuid];
-
-                updateStatus(!isExcluded);
-
-                return { ...modif, modificationUuidsToExclude };
-            });
-
             const exists = prev.some((item) => item.rootNetworkUuid === rootNetwork.rootNetworkUuid);
-            if (!exists) {
+
+            if (exists) {
+                const updatedExcludedModifications = prev.map((modif) => {
+                    if (modif.rootNetworkUuid !== rootNetwork.rootNetworkUuid) {
+                        return modif;
+                    }
+
+                    const isExcluded = modif.modificationUuidsToExclude.includes(modificationUuid);
+                    const newModificationUuidsToExclude = isExcluded
+                        ? modif.modificationUuidsToExclude.filter((id) => id !== modificationUuid)
+                        : [...modif.modificationUuidsToExclude, modificationUuid];
+
+                    // If previously excluded, now it is activated (true), else deactivated (false)
+                    updateStatus(isExcluded);
+
+                    return {
+                        ...modif,
+                        modificationUuidsToExclude: newModificationUuidsToExclude,
+                    };
+                });
+
+                return updatedExcludedModifications;
+            } else {
                 updateStatus(false);
                 return [
                     ...prev,
@@ -106,8 +114,6 @@ const RootNetworkChipCellRenderer = ({
                     },
                 ];
             }
-
-            return updatedExcludedModifications;
         });
     }, [modificationUuid, rootNetwork.rootNetworkUuid, setModificationsToExclude, updateStatus]);
 
