@@ -105,23 +105,40 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup
             .string()
             .required()
-            .notOneOf([yup.ref(SUBSTATION_CREATION_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+            .when([ADD_SUBSTATION_CREATION], {
+                is: (addSubstationCreation) => addSubstationCreation === false,
+                then: (schema) =>
+                    schema.notOneOf([yup.ref(SUBSTATION_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+            })
+            .when([ADD_SUBSTATION_CREATION], {
+                is: (addSubstationCreation) => addSubstationCreation === true,
+                then: (schema) =>
+                    schema.notOneOf(
+                        [yup.ref(SUBSTATION_CREATION_ID), null],
+                        'CreateSubstationInVoltageLevelIdenticalId'
+                    ),
+            }),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup
             .string()
             .nullable()
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation) => addSubstationCreation === false,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
             }),
         [SUBSTATION_CREATION_ID]: yup
             .string()
             .nullable()
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation) => addSubstationCreation === true,
-                then: (schema) => schema.required(),
-            })
-            .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+            }),
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
@@ -261,9 +278,16 @@ const VoltageLevelCreationDialog = ({
     // Watch EQUIPMENT_ID and SUBSTATION_CREATION_ID changed
     useEffect(() => {
         const subscription = watch((value, { name }) => {
-            // force trigger validation on SUBSTATION_CREATION_ID if it has a value
+            // Watch EQUIPMENT_ID, SUBSTATION_CREATION_ID and SUBSTATION_CREATION_ID changed
+            // force trigger validation if the target has a value
+            if (name === EQUIPMENT_ID && getValues(SUBSTATION_ID)) {
+                trigger(SUBSTATION_ID);
+            }
             if (name === EQUIPMENT_ID && getValues(SUBSTATION_CREATION_ID)) {
                 trigger(SUBSTATION_CREATION_ID);
+            }
+            if (name === SUBSTATION_ID && getValues(EQUIPMENT_ID)) {
+                trigger(EQUIPMENT_ID);
             }
             if (name === SUBSTATION_CREATION_ID && getValues(EQUIPMENT_ID)) {
                 trigger(EQUIPMENT_ID);
