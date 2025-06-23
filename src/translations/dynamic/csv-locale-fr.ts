@@ -18,8 +18,11 @@ const csv_locale_fr = {
     'TabularModificationSkeletonComment.BATTERY':
         '#;;true | false;;TOP | BOTTOM | UNDEFINED;;;;;;true | false;;;;;;;;;;;;true | false;requis si participate est true',
     'TabularModificationSkeletonComment.LOAD': '#;;AUXILIARY | FICTITIOUS;true | false;;TOP | BOTTOM;;;',
+    'TabularModificationSkeletonComment.LINE': '#;;;;;;;;true | false;;TOP | BOTTOM;;true | false;;TOP | BOTTOM;',
+    'TabularModificationSkeletonComment.TWO_WINDINGS_TRANSFORMER':
+        '#;;;;;;;;;true | false;;TOP | BOTTOM;;true | false;;TOP | BOTTOM;',
     'TabularModificationSkeletonComment.SUBSTATION':
-        '#;Code à 2 lettres de la norme ISO 3166-1 (FR ES PT IT CH DE BE LU NL GB ...)',
+        '#;;Code à 2 lettres de la norme ISO 3166-1 (FR ES PT IT CH DE BE LU NL GB ...)',
     'TabularCreationSkeletonComment.SHUNT_COMPENSATOR':
         '#;;;;true | false;;TOP | BOTTOM | UNDEFINED;;;;REACTOR | CAPACITOR | requis si maxQAtNominalV est définit;;;',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
