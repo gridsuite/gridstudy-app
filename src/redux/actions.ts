@@ -816,7 +816,7 @@ export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAG
 export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
 > & {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     x: number;
     y: number;
@@ -824,7 +824,7 @@ export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
 };
 
 export function storeNetworkAreaDiagramNodeMovement(
-    nadIdentifier: string,
+    diagramId: UUID,
     equipmentId: string,
     x: number,
     y: number,
@@ -832,7 +832,7 @@ export function storeNetworkAreaDiagramNodeMovement(
 ): StoreNetworkAreaDiagramNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        nadIdentifier: nadIdentifier,
+        diagramId: diagramId,
         equipmentId: equipmentId,
         x: x,
         y: y,
@@ -844,7 +844,7 @@ export const STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT = 'STORE_NETWORK_AREA
 export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
     Action<typeof STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT>
 > & {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     shiftX: number;
     shiftY: number;
@@ -853,7 +853,7 @@ export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
 };
 
 export function storeNetworkAreaDiagramTextNodeMovement(
-    nadIdentifier: string,
+    diagramId: UUID,
     equipmentId: string,
     shiftX: number,
     shiftY: number,
@@ -862,7 +862,7 @@ export function storeNetworkAreaDiagramTextNodeMovement(
 ): StoreNetworkAreaDiagramTextNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-        nadIdentifier: nadIdentifier,
+        diagramId: diagramId,
         equipmentId: equipmentId,
         shiftX: shiftX,
         shiftY: shiftY,

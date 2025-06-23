@@ -4,9 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import { DiagramState } from '../../redux/reducer';
-import { DiagramType } from './diagram.type';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramConfigPosition } from '../../services/explore';
 
@@ -43,25 +40,6 @@ const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
         diagramStates.findIndex((diagramState) => diagramState.id === a?.id && diagramState.svgType === a?.svgType) -
         diagramStates.findIndex((diagramState) => diagramState.id === b?.id && diagramState.svgType === b?.svgType)
     );
-};
-
-/**
- * Will build a distinctive identifier to differenciate between network area diagram instances
- * @param diagramStates the diagrams array of the redux store
- * @param initNadWithGeoData config parameter specifying if the nad uses geographical data
- * @returns {string}
- */
-
-export const getNadIdentifier = (diagramStates: DiagramState[], initNadWithGeoData: boolean): string => {
-    const result =
-        diagramStates
-            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-            .map((diagram) => diagram.id)
-            .sort((a, b) => a.localeCompare(b))
-            .join(',') +
-        'geo' +
-        initNadWithGeoData;
-    return result;
 };
 
 /**

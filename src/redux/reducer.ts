@@ -379,7 +379,7 @@ export type DiagramEvent =
     | CreateNADFromElementDiagramEvent;
 
 export type NadNodeMovement = {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     x: number;
     y: number;
@@ -387,7 +387,7 @@ export type NadNodeMovement = {
 };
 
 export type NadTextMovement = {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     shiftX: number;
     shiftY: number;
@@ -1307,12 +1307,11 @@ export const reducer = createReducer(initialState, (builder) => {
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
             const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
+                    diagramId: action.diagramId,
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
@@ -1330,12 +1329,11 @@ export const reducer = createReducer(initialState, (builder) => {
         STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
             const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadTextNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
+                    diagramId: action.diagramId,
                     equipmentId: action.equipmentId,
                     shiftX: action.shiftX,
                     shiftY: action.shiftY,
