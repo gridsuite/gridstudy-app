@@ -114,6 +114,7 @@ import { LccModificationDialog } from '../../../dialogs/network-modifications/hv
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
+import { NodeType } from 'components/graph/tree-node.type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -507,7 +508,7 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModificationsToRestore = useCallback(() => {
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (currentNode?.type !== NodeType.NETWORK_MODIFICATION) {
             return;
         }
         setIsFetchingModifications(true);
@@ -536,7 +537,7 @@ const NetworkModificationNodeEditor = () => {
 
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (currentNode?.type !== NodeType.NETWORK_MODIFICATION) {
             return;
         }
         setIsFetchingModifications(true);
@@ -567,7 +568,7 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
 
-    const dofetchNetworkModificationsStatusByRootNetwork = useCallback(() => {
+    const dofetchExcludedNetworkModifications = useCallback(() => {
         // Do not fetch modifications status on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
@@ -612,7 +613,7 @@ const NetworkModificationNodeEditor = () => {
             setModificationsToExclude([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
-            dofetchNetworkModificationsStatusByRootNetwork();
+            dofetchExcludedNetworkModifications();
             // reset the network modification and computing logs filter when the user changes the current node
             if (hasNodeChanged) {
                 dispatch(resetLogsFilter());
@@ -624,7 +625,7 @@ const NetworkModificationNodeEditor = () => {
         currentNode,
         dispatch,
         dofetchNetworkModifications,
-        dofetchNetworkModificationsStatusByRootNetwork,
+        dofetchExcludedNetworkModifications,
         modifications,
         modificationsToExclude,
     ]);
