@@ -21,7 +21,7 @@ import { UUID } from 'crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
-import { reorderSpreadsheetColumns } from 'services/study/study-config';
+import { updateColumnStates } from 'services/study/study-config';
 import { AppState } from 'redux/reducer';
 import { ColumnState } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
@@ -100,18 +100,21 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
     }, [tableDefinition?.columns, resetColumnState, handleCloseColumnsSettingDialog]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        // check if column order has changed by comparing uuids
-        const hasOrderChanged = tableDefinition.columns.some((col, index) => col.uuid !== localColumns[index].uuid);
+        // check if columns state has changed
+        const hasColsStatesChanged = tableDefinition.columns.some(
+            (col, index) => col.uuid !== localColumns[index].uuid || col.visible !== localColumns[index].visible
+        );
 
-        // create a Promise chain that conditionally includes the reorder request
-        const updatePromise =
-            hasOrderChanged && studyUuid
-                ? reorderSpreadsheetColumns(
-                      studyUuid,
-                      tableDefinition.uuid,
-                      localColumns.map((col) => col.uuid)
-                  )
-                : Promise.resolve();
+        let updatePromise = Promise.resolve();
+
+        if (hasColsStatesChanged && studyUuid) {
+            const updatedColumnsState = localColumns.map((col, index) => ({
+                columnId: col.uuid,
+                visible: Boolean(col.visible),
+                order: index,
+            }));
+            updatePromise = updateColumnStates(studyUuid, tableDefinition.uuid, updatedColumnsState);
+        }
 
         updatePromise
             .then(() => {

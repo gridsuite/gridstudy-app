@@ -44,18 +44,24 @@ import {
     useDebounce,
     useSnackMessage,
     Identifiable,
+    ElementType,
 } from '@gridsuite/commons-ui';
 import { setEditNadMode, setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
-import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromConfig } from '../../services/study';
+import { fetchSvg, getNetworkAreaDiagramUrl, getNetworkAreaDiagramUrlFromElement } from '../../services/study';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, DiagramState, StudyUpdatedEventData } from 'redux/reducer';
+import { AppState, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramType, isNadType, isSldType, ViewState } from './diagram.type';
 import { useDiagram } from './use-diagram';
-import { CurrentTreeNode } from '../graph/tree-node.type';
+import {
+    isLoadflowResultNotification,
+    isNodeBuildCompletedNotification,
+    isStudyNotification,
+} from 'types/notification-types';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
@@ -139,17 +145,29 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
         ]
     );
-    const checkAndGetNetworkAreaDiagramFromConfigUrl = useCallback(
-        (nadConfigUuid: UUID) =>
+    const checkAndGetNetworkAreaDiagramFromElementUrl = useCallback(
+        (elementUuid: UUID, elementType: ElementType) =>
             isNodeBuilt(currentNode)
-                ? getNetworkAreaDiagramUrlFromConfig(studyUuid, currentNode?.id, currentRootNetworkUuid, nadConfigUuid)
+                ? getNetworkAreaDiagramUrlFromElement(
+                      studyUuid,
+                      currentNode?.id,
+                      currentRootNetworkUuid,
+                      elementUuid,
+                      elementType,
+                      networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
+                  )
                 : null,
-        [studyUuid, currentNode, currentRootNetworkUuid]
+        [
+            studyUuid,
+            currentNode,
+            currentRootNetworkUuid,
+            networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        ]
     );
 
     type FetchSvgDataFn = {
         (svgUrl: string | null, svgType: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL): Promise<SldSvg>;
-        (svgUrl: string | null, svgType: DiagramType.NAD_FROM_CONFIG): Promise<DiagramSvg>;
+        (svgUrl: string | null, svgType: DiagramType.NAD_FROM_ELEMENT): Promise<DiagramSvg>;
         (
             svgUrl: string | null,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -239,13 +257,14 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 });
             }
 
-            function createNetworkAreaDiagramFromConfigView(
-                id: UUID,
+            function createNetworkAreaDiagramFromElementView(
+                elementUuid: UUID,
+                elementType: ElementType,
                 state: ViewState | undefined,
-                nadName: string | undefined
+                elementName: string | undefined
             ) {
-                const svgUrl = checkAndGetNetworkAreaDiagramFromConfigUrl(id);
-                return fetchSvgData(svgUrl, DiagramType.NAD_FROM_CONFIG).then((svg: DiagramSvg) => {
+                const svgUrl = checkAndGetNetworkAreaDiagramFromElementUrl(elementUuid, elementType);
+                return fetchSvgData(svgUrl, DiagramType.NAD_FROM_ELEMENT).then((svg: DiagramSvg) => {
                     let substationsIds: UUID[] = [];
                     svg.additionalMetadata?.voltageLevels
                         .map((vl: VoltageLevel) => ({
@@ -255,12 +274,14 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                             substationsIds.push(voltageLevel.substationId);
                         });
                     return {
-                        id: id,
+                        id: elementUuid,
+                        elementType: elementType,
                         nodeId: currentNode.id,
                         state: state,
-                        name: nadName ?? id,
-                        fetchSvg: () => createNetworkAreaDiagramFromConfigView(id, state, nadName),
-                        svgType: DiagramType.NAD_FROM_CONFIG,
+                        name: elementName ?? elementUuid,
+                        fetchSvg: () =>
+                            createNetworkAreaDiagramFromElementView(elementUuid, elementType, state, elementName),
+                        svgType: DiagramType.NAD_FROM_ELEMENT,
                         depth: 0,
                         substationIds: substationsIds,
                         nadMetadata: svg.metadata,
@@ -322,11 +343,12 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                 return createVoltageLevelDiagramView(partialDiagramView.id!, partialDiagramView.state);
             } else if (partialDiagramView.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(partialDiagramView.id!, partialDiagramView.state);
-            } else if (partialDiagramView.svgType === DiagramType.NAD_FROM_CONFIG) {
-                return createNetworkAreaDiagramFromConfigView(
+            } else if (partialDiagramView.svgType === DiagramType.NAD_FROM_ELEMENT) {
+                return createNetworkAreaDiagramFromElementView(
                     partialDiagramView.id!,
+                    partialDiagramView.elementType!,
                     partialDiagramView.state,
-                    partialDiagramView.nadName
+                    partialDiagramView.elementName
                 );
             } else if (partialDiagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(
@@ -340,7 +362,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             checkAndGetSubstationSingleLineDiagramUrl,
             checkAndGetVoltageLevelSingleLineDiagramUrl,
             checkAndGetNetworkAreaDiagramUrl,
-            checkAndGetNetworkAreaDiagramFromConfigUrl,
+            checkAndGetNetworkAreaDiagramFromElementUrl,
             getNameOrId,
             studyUuid,
             currentNode,
@@ -384,11 +406,12 @@ interface DiagramPaneProps {
 
 type DiagramView = {
     id: UUID;
+    elementType?: ElementType;
     ids?: UUID[];
     svgType: DiagramType;
     state: ViewState;
     name: string;
-    nadName?: string;
+    elementName?: string;
     align: 'left' | 'right' | 'center';
     loadingState: boolean;
     metadata?: SLDMetadata;
@@ -446,7 +469,7 @@ export function DiagramPane({
 
     /**
      * Check if we need to add new diagrams in the 'views' and add them if necessary.
-     * This function works for VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_CONFIG only.
+     * This function works for VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_ELEMENT only.
      * This function do not touch the NETWORK_AREA_DIAGRAMs : they are treated elsewhere.
      */
     const addMissingDiagrams = useCallback(
@@ -454,12 +477,13 @@ export function DiagramPane({
             // We check if we need to add new diagrams
             const diagramsToAdd: {
                 id: UUID;
+                elementType?: ElementType;
                 svgType: DiagramType;
                 state: ViewState;
                 loadingState: boolean;
                 align: 'left' | 'right' | 'center';
                 name: string;
-                nadName?: string;
+                elementName?: string;
             }[] = [];
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -470,7 +494,7 @@ export function DiagramPane({
                     );
                     if (!diagramAlreadyPresentInViews) {
                         let diagramProperties;
-                        if (diagramState.svgType !== DiagramType.NAD_FROM_CONFIG) {
+                        if (diagramState.svgType !== DiagramType.NAD_FROM_ELEMENT) {
                             diagramProperties = {
                                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.id }),
                                 align: 'left',
@@ -479,7 +503,8 @@ export function DiagramPane({
                             diagramProperties = {
                                 name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.name }),
                                 align: 'right',
-                                nadName: diagramState.name,
+                                elementName: diagramState.name,
+                                elementType: diagramState.type,
                             } as const;
                         }
 
@@ -532,7 +557,7 @@ export function DiagramPane({
 
     /**
      * Check if we need to remove old diagrams from the 'views' and remove them if necessary.
-     * This function works for VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_CONFIG only.
+     * This function works for VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_ELEMENT only.
      * This function do not touch the NETWORK_AREA_DIAGRAMs : they are treated elsewhere.
      */
     const removeObsoleteDiagrams = useCallback((diagramStates: DiagramState[]) => {
@@ -562,7 +587,7 @@ export function DiagramPane({
     }, []);
 
     /**
-     * Check if we need to remove or add diagrams or type VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_CONFIG
+     * Check if we need to remove or add diagrams or type VOLTAGE_LEVEL, SUBSTATION and NAD_FROM_ELEMENT
      */
     const removeAndAddDiagrams = useCallback(
         (diagramStates: DiagramState[]) => {
@@ -923,21 +948,26 @@ export function DiagramPane({
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            const studyUpdatedEventData = studyUpdatedForce?.eventData as StudyUpdatedEventData;
-            if (studyUpdatedEventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
+        if (isLoadflowResultNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
                 return;
             }
-            if (studyUpdatedEventData.headers.updateType === 'loadflowResult') {
-                //TODO reload data more intelligently
+            //TODO reload data more intelligently
+            updateDiagramsByCurrentNode();
+        }
+        if (isStudyNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+            // FM if we want to reload data more precisely, we need more information from notifications
+            updateDiagramsByCurrentNode();
+        }
+        if (isNodeBuildCompletedNotification(studyUpdatedForce.eventData)) {
+            if (studyUpdatedForce.eventData.headers.rootNetworkUuid !== currentRootNetworkUuidRef.current) {
+                return;
+            }
+            if (studyUpdatedForce.eventData.headers.node === currentNodeRef.current?.id) {
                 updateDiagramsByCurrentNode();
-            } else if (studyUpdatedEventData.headers.updateType === 'study') {
-                // FM if we want to reload data more precisely, we need more information from notifications
-                updateDiagramsByCurrentNode();
-            } else if (studyUpdatedEventData.headers.updateType === 'buildCompleted') {
-                if (studyUpdatedEventData.headers.node === currentNodeRef.current?.id) {
-                    updateDiagramsByCurrentNode();
-                }
             }
         }
     }, [studyUpdatedForce, studyUuid, updateDiagramsByCurrentNode, updateDiagramsByIds, closeDiagramViews]);
@@ -963,7 +993,7 @@ export function DiagramPane({
             case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_HEIGHT_VOLTAGE_LEVEL;
             case DiagramType.NETWORK_AREA_DIAGRAM:
-            case DiagramType.NAD_FROM_CONFIG:
+            case DiagramType.NAD_FROM_ELEMENT:
                 return DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
@@ -978,7 +1008,7 @@ export function DiagramPane({
             case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_WIDTH_VOLTAGE_LEVEL;
             case DiagramType.NETWORK_AREA_DIAGRAM:
-            case DiagramType.NAD_FROM_CONFIG:
+            case DiagramType.NAD_FROM_ELEMENT:
                 return DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');

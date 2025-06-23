@@ -14,11 +14,17 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import { GsLang, GsLangUser, GsTheme, Identifiable, NetworkVisualizationParameters } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    GsLang,
+    GsLangUser,
+    GsTheme,
+    Identifiable,
+    NetworkVisualizationParameters,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
@@ -27,8 +33,6 @@ import type {
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
-    RootNetworkIndexationStatus,
-    StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
@@ -57,6 +61,7 @@ import {
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -140,7 +145,7 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | LoadNadFromConfigAction
+    | LoadNadFromElementAction
     | SetEditNadModeAction
     | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction;
@@ -555,10 +560,10 @@ export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableD
 
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
-    eventData: StudyUpdatedEventData;
+    eventData: StudyUpdateEventData;
 };
 
-export function studyUpdated(eventData: StudyUpdatedEventData): StudyUpdatedAction {
+export function studyUpdated(eventData: StudyUpdateEventData): StudyUpdatedAction {
     return { type: STUDY_UPDATED, eventData };
 }
 
@@ -878,17 +883,23 @@ export function closeDiagrams(ids: string[]): CloseDiagramsAction {
     };
 }
 
-export const LOAD_NAD_FROM_CONFIG = 'LOAD_NAD_FROM_CONFIG';
-export type LoadNadFromConfigAction = Readonly<Action<typeof LOAD_NAD_FROM_CONFIG>> & {
-    nadConfigUuid: string;
-    nadName: string;
+export const LOAD_NAD_FROM_ELEMENT = 'LOAD_NAD_FROM_ELEMENT';
+export type LoadNadFromElementAction = Readonly<Action<typeof LOAD_NAD_FROM_ELEMENT>> & {
+    elementUuid: string;
+    elementType: ElementType;
+    elementName: string;
 };
 
-export function loadNadFromConfig(nadConfigUuid: string, nadName: string): LoadNadFromConfigAction {
+export function loadNadFromElement(
+    elementId: string,
+    elementType: ElementType,
+    elementName: string
+): LoadNadFromElementAction {
     return {
-        type: LOAD_NAD_FROM_CONFIG,
-        nadConfigUuid: nadConfigUuid,
-        nadName: nadName,
+        type: LOAD_NAD_FROM_ELEMENT,
+        elementUuid: elementId,
+        elementType: elementType,
+        elementName: elementName,
     };
 }
 

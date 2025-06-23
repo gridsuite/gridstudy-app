@@ -36,8 +36,14 @@ export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'terminalConnected';
-export const CONNECTED1 = 'connected1';
-export const CONNECTED2 = 'connected2';
+export const CONNECTION_DIRECTION1 = 'connectionDirection1';
+export const CONNECTION_NAME1 = 'connectionName1';
+export const CONNECTION_POSITION1 = 'connectionPosition1';
+export const CONNECTED1 = 'terminal1Connected';
+export const CONNECTED2 = 'terminal2Connected';
+export const CONNECTION_DIRECTION2 = 'connectionDirection2';
+export const CONNECTION_NAME2 = 'connectionName2';
+export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -208,6 +214,8 @@ export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
+export const IP_MIN = 'ipMin';
+export const IP_MAX = 'ipMax';
 // dnd table
 export const SELECTED = 'selected';
 
@@ -283,29 +291,16 @@ export const FREQUENCY_RESERVE = 'frequencyReserve';
 export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
 export const SUBSTATION_IDS = 'substationIds';
 
-// voltage init
-export const VOLTAGE_LIMITS_MODIFICATION = 'voltageLimitsModification';
-export const VOLTAGE_LIMITS_DEFAULT = 'voltageLimitsDefault';
-export const GENERATORS_SELECTION_TYPE = 'generatorsSelectionType';
-export const VARIABLE_Q_GENERATORS = 'variableQGenerators';
-export const TRANSFORMERS_SELECTION_TYPE = 'twoWindingsTransformersSelectionType';
-export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
-export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
-export const SHUNT_COMPENSATORS_SELECTION_TYPE = 'shuntCompensatorsSelectionType';
-export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
-export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
-export const LEG_SIDE = 'legSide';
-
-export const PRIORITY = 'priority';
-export const FILTER_ID = 'filterId';
-export const FILTER_NAME = 'filterName';
 export const SELECTION_TYPE = 'selectionType';
 
 export const CONNECT = 'connect';
 
 export const CONTAINER_ID = 'containerId';
 export const CONTAINER_NAME = 'containerName';
-export const UPDATE_BUS_VOLTAGE = 'updateBusVoltage';
+
+export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
+export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
+export const LEG_SIDE = 'legSide';
 
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
@@ -486,3 +481,4 @@ export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxN
 export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
 export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
 export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
+export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
