@@ -399,9 +399,8 @@ const App = () => {
                     className="singlestretch-parent"
                     style={{
                         flexGrow: 1,
-                        //Study pane needs 'hidden' when displaying a
-                        //fullscreen sld or when displaying the results or
-                        //elements tables for certain screen sizes because
+                        //Study pane needs 'hidden' when displaying the results
+                        //or elements tables for certain screen sizes because
                         //width/heights are computed programmaticaly and
                         //resizing the page trigger render loops due to
                         //appearing and disappearing scrollbars.
