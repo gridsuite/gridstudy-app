@@ -258,21 +258,13 @@ const VoltageLevelCreationDialog = ({
         [setValue, intl, reset, snackWarning]
     );
 
-    // Watch EQUIPMENT_ID changed
+    // Watch EQUIPMENT_ID and SUBSTATION_CREATION_ID changed
     useEffect(() => {
         const subscription = watch((value, { name }) => {
             // force trigger validation on SUBSTATION_CREATION_ID if it has a value
             if (name === EQUIPMENT_ID && getValues(SUBSTATION_CREATION_ID)) {
                 trigger(SUBSTATION_CREATION_ID);
             }
-        });
-        return () => subscription.unsubscribe();
-    }, [watch, trigger, getValues]);
-
-    // Watch SUBSTATION_CREATION_ID changed
-    useEffect(() => {
-        const subscription = watch((value, { name }) => {
-            // force trigger validation on EQUIPMENT_ID if it has a value
             if (name === SUBSTATION_CREATION_ID && getValues(EQUIPMENT_ID)) {
                 trigger(EQUIPMENT_ID);
             }
