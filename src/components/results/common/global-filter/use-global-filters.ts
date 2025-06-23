@@ -69,7 +69,7 @@ export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalF
         [onFilterChange]
     );
 
-    const getGlobalFilterParameter = useCallback((globalFilters: GlobalFilters | undefined, additionalConfig?: any) => {
+    const getGlobalFilterParameter = useCallback((globalFilters: GlobalFilters | undefined) => {
         let shouldSentParameter = false;
 
         if (globalFilters) {
@@ -89,7 +89,6 @@ export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalF
 
         return {
             ...globalFilters,
-            ...additionalConfig,
         };
     }, []);
 
