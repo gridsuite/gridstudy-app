@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -25,6 +25,7 @@ import {
     convertOutputValues,
     formatModification,
     getEquipmentTypeFromModificationType,
+    getFieldType,
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
@@ -74,20 +75,23 @@ const TabularModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromModificationType(editData?.modificationType);
-            const modifications = editData?.modifications.map((modif) => {
+            const modificationType = editData.modificationType;
+            const modifications = editData.modifications.map((modif) => {
                 let modification = formatModification(modif);
-                if (equipmentType === 'GENERATOR' || equipmentType === 'BATTERY') {
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
                     modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
                 } else {
                     Object.keys(modification).forEach((key) => {
-                        modification[key] = convertInputValues(key, modif[key]);
+                        modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
                     });
                 }
                 return modification;
             });
             reset({
-                [TYPE]: equipmentType,
+                [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
             });
         }
@@ -100,7 +104,10 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
-                if (modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR || TABULAR_MODIFICATION_TYPES.BATTERY) {
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
                     const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
                     modification = {
                         ...generatorOrBatteryModification,
@@ -108,10 +115,9 @@ const TabularModificationDialog = ({
                     };
                 } else {
                     Object.keys(row).forEach((key) => {
-                        modification[key] = convertOutputValues(key, row[key]);
+                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
                     });
                 }
-
                 return modification;
             });
             createTabulareModification(
@@ -141,6 +147,10 @@ const TabularModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const dataFetching = useMemo(() => {
+        return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
+    }, [editDataFetchStatus, isUpdate]);
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -150,10 +160,10 @@ const TabularModificationDialog = ({
                 onSave={onSubmit}
                 titleId="TabularModification"
                 open={open}
-                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm />
+                <TabularModificationForm dataFetching={dataFetching} />
             </ModificationDialog>
         </CustomFormProvider>
     );
