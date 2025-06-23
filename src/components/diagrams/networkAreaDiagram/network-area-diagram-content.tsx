@@ -51,7 +51,7 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNadFromElement?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -161,15 +161,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 })
             );
     };
-
-    const handleLoadFromElement = useCallback(
-        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
-            if (onLoadNadFromElement) {
-                onLoadNadFromElement(elementUuid, elementType, elementName);
-            }
-        },
-        [onLoadNadFromElement]
-    );
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -287,7 +278,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
-                onLoad={handleLoadFromElement}
+                onLoad={onLoadNadFromElement}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
             />
