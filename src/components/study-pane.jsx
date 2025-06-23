@@ -122,6 +122,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     onChangeTab: PropTypes.func,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
 };
 
 export default StudyPane;
