@@ -99,7 +99,6 @@ export type AppActions =
     | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
-    | StopDiagramBlinkAction
     | ResetNetworkAreaDiagramDepthAction
     | IncrementNetworkAreaDiagramDepthAction
     | DecrementNetworkAreaDiagramDepthAction
@@ -783,15 +782,6 @@ export function openNadList(ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
         ids: ids,
-    };
-}
-
-export const STOP_DIAGRAM_BLINK = 'STOP_DIAGRAM_BLINK';
-export type StopDiagramBlinkAction = Readonly<Action<typeof STOP_DIAGRAM_BLINK>>;
-
-export function stopDiagramBlink(): StopDiagramBlinkAction {
-    return {
-        type: STOP_DIAGRAM_BLINK,
     };
 }
 

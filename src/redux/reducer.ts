@@ -178,8 +178,6 @@ import {
     SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
-    STOP_DIAGRAM_BLINK,
-    StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
     STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
@@ -329,7 +327,6 @@ export type DiagramState = {
     id: UUID;
     type?: ElementType;
     svgType: DiagramType;
-    needsToBlink?: boolean;
     name?: string;
 };
 
@@ -1227,7 +1224,6 @@ export const reducer = createReducer(initialState, (builder) => {
                     diagramStates[diagramToOpenIndex].svgType +
                     ')'
             );
-            diagramStates[diagramToOpenIndex].needsToBlink = true;
         } else {
             diagramStates.push({
                 id: action.id as UUID,
@@ -1291,14 +1287,6 @@ export const reducer = createReducer(initialState, (builder) => {
         ) {
             state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
         }
-    });
-
-    builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
-        state.diagramStates.forEach((diagram) => {
-            if (diagram.needsToBlink) {
-                diagram.needsToBlink = undefined;
-            }
-        });
     });
 
     builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {

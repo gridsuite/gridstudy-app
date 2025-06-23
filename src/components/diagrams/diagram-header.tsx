@@ -5,17 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useCallback } from 'react';
 import Box from '@mui/material/Box';
-import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
+import { OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { stopDiagramBlink } from '../../redux/actions';
 import { Theme } from '@mui/material';
-import { AppState } from 'redux/reducer';
-
-const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme: Theme) => ({
@@ -31,31 +26,9 @@ const styles = {
         borderBottom: 'solid 1px',
         borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
     }),
-    actionIcon: (theme: Theme) => ({
-        padding: 0,
-        borderRight: theme.spacing(1),
-    }),
-    pinRotate: (theme: Theme) => ({
-        padding: 0,
-        borderRight: theme.spacing(1),
-        transform: 'rotate(45deg)',
-    }),
     close: (theme: Theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
-    }),
-    blink: (theme: Theme) => ({
-        animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
-        '@keyframes diagramHeaderBlinkAnimation': {
-            // This adds a global css rule, so we keep the rule's name specific.
-            '0%, 25%': {
-                backgroundColor:
-                    theme.palette.mode === 'light' ? theme.palette.action.disabled : theme.palette.action.selected,
-            },
-            '100%': {
-                backgroundColor: theme.palette.background.default,
-            },
-        },
     }),
 };
 
@@ -63,49 +36,13 @@ interface DiagramHeaderProps {
     diagramTitle?: string;
     showCloseControl?: boolean;
     onClose?: () => void;
-    diagramId?: string;
-    svgType?: string;
 }
 
-const DiagramHeader: React.FC<DiagramHeaderProps> = ({
-    diagramTitle,
-    showCloseControl = false,
-    onClose,
-    diagramId,
-    svgType,
-}) => {
-    const dispatch = useDispatch();
-
+const DiagramHeader: React.FC<DiagramHeaderProps> = ({ diagramTitle, showCloseControl = false, onClose }) => {
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
-    /**
-     * BLINKING SYSTEM
-     */
-
-    const [blinking, setBlinking] = useState(false);
-    const needsToBlink = useSelector(
-        (state: AppState) =>
-            state.diagramStates.find((diagram) => diagram.svgType === svgType && diagram.id === diagramId)?.needsToBlink
-    );
-
-    useEffect(() => {
-        if (needsToBlink) {
-            dispatch(stopDiagramBlink());
-            if (!blinking) {
-                setBlinking(true);
-                setTimeout(() => {
-                    setBlinking(false);
-                }, BLINK_LENGTH_MS);
-            }
-        }
-    }, [needsToBlink, dispatch, blinking]);
-
-    /**
-     * RENDER
-     */
-
     return (
-        <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
+        <Box sx={styles.header}>
             <OverflowableText sx={{ flexGrow: '1' }} text={diagramTitle} />
             <Box>
                 <Box
