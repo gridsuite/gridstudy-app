@@ -275,7 +275,7 @@ const VoltageLevelCreationDialog = ({
         [setValue, intl, reset, snackWarning]
     );
 
-    // Watch EQUIPMENT_ID and SUBSTATION_CREATION_ID changed
+    // Supervisor watches to trigger validation for interdependent constraints
     useEffect(() => {
         const subscription = watch((value, { name }) => {
             // Watch EQUIPMENT_ID, SUBSTATION_CREATION_ID and SUBSTATION_CREATION_ID changed
