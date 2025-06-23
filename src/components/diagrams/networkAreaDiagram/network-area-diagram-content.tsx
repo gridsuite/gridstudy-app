@@ -16,23 +16,36 @@ import {
     styles,
     NAD_ZOOM_LEVELS,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
+import {
+    NetworkAreaDiagramViewer,
+    DiagramMetadata,
+    OnToggleNadHoverCallbackType,
+    OnSelectNodeCallbackType,
+} from '@powsybl/network-viewer';
+import AddIcon from '@mui/icons-material/ControlPoint';
+
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
+import {
+    setNetworkAreaDiagramExpandedVoltageLevelIds,
+    storeNetworkAreaDiagramNodeMovement,
+    storeNetworkAreaDiagramTextNodeMovement,
+} from '../../../redux/actions';
 import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomMenuItem, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useDiagram } from '../use-diagram';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -53,10 +66,12 @@ type NetworkAreaDiagramContentProps = {
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNadFromElement?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    onSelectNode?: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, onSelectNode } =
+        props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -74,6 +89,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [menuAnchorPosition, setMenuAnchorPosition] = useState<Point | null>(null);
+    const [clickedEquipmentId, setClickedEquipmentId] = useState<string>();
+    const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
+
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { loadNadFromElementView } = useDiagram(); // TODO Remove this when diagram-pane is removed
 
@@ -127,6 +146,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         },
         [dispatch, nadIdentifier]
     );
+
+    const onSelectNodeCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
+        if (mousePosition) {
+            setClickedEquipmentId(equipmentId);
+            setShouldDisplayMenu(true);
+            setMenuAnchorPosition(mousePosition);
+        }
+    }, []);
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -205,7 +232,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
-                null,
+                onSelectNodeCallback,
                 isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
@@ -277,12 +304,17 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         nadIdentifier,
         onMoveTextNodeCallback,
         isEditNadMode,
+        onSelectNodeCallback,
     ]);
 
     /**
      * RENDER
      */
-
+    const intl = useIntl();
+    const closeMenu = () => {
+        setMenuAnchorPosition(null);
+        setShouldDisplayMenu(false);
+    };
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
@@ -295,6 +327,34 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     equipmentId={hoveredEquipmentId}
                     loadFlowStatus={loadFlowStatus}
                 />
+            )}
+            {shouldDisplayMenu && (
+                <Menu
+                    open={shouldDisplayMenu}
+                    onClose={closeMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        menuAnchorPosition !== null
+                            ? { top: menuAnchorPosition.y, left: menuAnchorPosition.x }
+                            : undefined
+                    }
+                >
+                    <CustomMenuItem
+                        onClick={() => {
+                            if (clickedEquipmentId) {
+                                dispatch(setNetworkAreaDiagramExpandedVoltageLevelIds([clickedEquipmentId]));
+                                onSelectNode?.(clickedEquipmentId);
+                            }
+                            closeMenu();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <AddIcon />
+                        </ListItemIcon>
+
+                        <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'add' })}</Typography>} />
+                    </CustomMenuItem>
+                </Menu>
             )}
             <Box
                 ref={svgRef}

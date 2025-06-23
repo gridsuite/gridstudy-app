@@ -14,6 +14,7 @@ import {
     resetNetworkAreaDiagramDepth,
     setEditNadMode,
     setFullScreenDiagram,
+    setNetworkAreaDiagramExpandedVoltageLevelIds,
 } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import {
@@ -101,6 +102,7 @@ const Diagram: React.FC<DiagramProps> = ({
         closeDiagramView(diagramId, svgType);
         if (isNadType(svgType)) {
             dispatch(resetNetworkAreaDiagramDepth());
+            dispatch(setNetworkAreaDiagramExpandedVoltageLevelIds([]));
             dispatch(setEditNadMode(false));
         }
     };
@@ -114,10 +116,12 @@ const Diagram: React.FC<DiagramProps> = ({
     };
 
     const onIncrementDepthHandler = () => {
+        dispatch(setNetworkAreaDiagramExpandedVoltageLevelIds([]));
         dispatch(incrementNetworkAreaDiagramDepth());
     };
 
     const onDecrementDepthHandler = () => {
+        dispatch(setNetworkAreaDiagramExpandedVoltageLevelIds([]));
         dispatch(decrementNetworkAreaDiagramDepth());
     };
 
