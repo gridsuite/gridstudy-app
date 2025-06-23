@@ -94,8 +94,7 @@ export function fetchSensitivityAnalysisFilterOptions(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    selector: SelectorFilterOptions,
-    globalFilters: GlobalFilters | undefined
+    selector: SelectorFilterOptions
 ): Promise<SensitivityResultFilterOptions | null> {
     console.info(
         `Fetching sensitivity analysis filter options on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`

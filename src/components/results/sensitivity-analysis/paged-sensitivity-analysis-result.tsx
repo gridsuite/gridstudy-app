@@ -130,7 +130,7 @@ function PagedSensitivityAnalysisResult({
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector, globalFilters)
+        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 setOptions(res);
             })
@@ -142,7 +142,7 @@ function PagedSensitivityAnalysisResult({
                     }),
                 });
             });
-    }, [nOrNkIndex, sensiKind, globalFilters, studyUuid, nodeUuid, currentRootNetworkUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, currentRootNetworkUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
