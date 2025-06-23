@@ -33,7 +33,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     resultCount,
     resetSearch,
     placeholder,
-    sx = { minWidth: '30%' },
+    sx,
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
@@ -91,7 +91,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder ? intl.formatMessage({ id: placeholder }) : ''}
-            sx={sx}
+            sx={{ maxWidth: '500px', ...sx }}
             size="small"
             InputProps={{
                 endAdornment: (

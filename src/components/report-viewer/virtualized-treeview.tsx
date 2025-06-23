@@ -167,7 +167,6 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                 resultCount={searchResults.length}
                 resetSearch={resetSearch}
                 placeholder="searchPlaceholderLogsTreeStructure"
-                sx={{ minWidth: '80%' }}
             />
             <Box sx={{ flex: 1 }}>
                 <AutoSizer>

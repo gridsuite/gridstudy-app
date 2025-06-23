@@ -440,7 +440,6 @@ const LogTable = ({
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
                     placeholder="searchPlaceholderLog"
-                    sx={{ maxWidth: '30%' }}
                 />
                 <Box sx={styles.chipContainer}>
                     {severities?.map((severity) => (
