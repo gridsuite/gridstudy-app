@@ -19,10 +19,13 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
+    convertGeneratorOrBatteryModificationFromBackToFront,
+    convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
     convertOutputValues,
     formatModification,
     getEquipmentTypeFromModificationType,
+    getFieldType,
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
@@ -72,16 +75,23 @@ const TabularModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromModificationType(editData?.modificationType);
-            const modifications = editData?.modifications.map((modif) => {
-                const modification = {};
-                Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertInputValues(key, modif[key]);
-                });
+            const modificationType = editData.modificationType;
+            const modifications = editData.modifications.map((modif) => {
+                let modification = formatModification(modif);
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
+                    modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
+                } else {
+                    Object.keys(modification).forEach((key) => {
+                        modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
+                    });
+                }
                 return modification;
             });
             reset({
-                [TYPE]: equipmentType,
+                [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
             });
         }
@@ -91,12 +101,23 @@ const TabularModificationDialog = ({
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
             const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                const modification = {
+                let modification = {
                     type: modificationType,
                 };
-                Object.keys(row).forEach((key) => {
-                    modification[key] = convertOutputValues(key, row[key]);
-                });
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
+                    const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
+                    modification = {
+                        ...generatorOrBatteryModification,
+                        ...modification,
+                    };
+                } else {
+                    Object.keys(row).forEach((key) => {
+                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+                    });
+                }
                 return modification;
             });
             createTabulareModification(
