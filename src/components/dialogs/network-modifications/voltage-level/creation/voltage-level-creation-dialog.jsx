@@ -102,7 +102,10 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_ID]: yup
+            .string()
+            .required()
+            .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup
             .string()
@@ -117,7 +120,8 @@ const formSchema = yup
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation) => addSubstationCreation === true,
                 then: (schema) => schema.required(),
-            }),
+            })
+            .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
