@@ -134,7 +134,7 @@ export function setGlobalFiltersToSpreadsheetConfig(
 export function renameSpreadsheetModel(studyUuid: UUID, spreadsheetModelUuid: UUID, name: string) {
     const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/name`;
     return backendFetchJson(url, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
