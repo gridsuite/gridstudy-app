@@ -105,7 +105,7 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup
             .string()
             .required()
-            .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+            .notOneOf([yup.ref(SUBSTATION_CREATION_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup
             .string()
