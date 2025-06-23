@@ -34,6 +34,7 @@ import { UUID } from 'crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
+import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -45,6 +46,7 @@ export type PagedSensitivityAnalysisResultProps = {
     setPage: (newPage: number) => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
+    globalFilters?: GlobalFilters;
 };
 
 function PagedSensitivityAnalysisResult({
@@ -57,6 +59,7 @@ function PagedSensitivityAnalysisResult({
     setPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
+    globalFilters,
 }: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
 
@@ -127,7 +130,7 @@ function PagedSensitivityAnalysisResult({
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
+        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector, globalFilters)
             .then((res) => {
                 setOptions(res);
             })
@@ -139,7 +142,7 @@ function PagedSensitivityAnalysisResult({
                     }),
                 });
             });
-    }, [nOrNkIndex, sensiKind, studyUuid, currentRootNetworkUuid, nodeUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, globalFilters, studyUuid, nodeUuid, currentRootNetworkUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
@@ -167,7 +170,14 @@ function PagedSensitivityAnalysisResult({
             return { ...elem, column: newColumn };
         });
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector, mappedFilters)
+        fetchSensitivityAnalysisResult(
+            studyUuid,
+            nodeUuid,
+            currentRootNetworkUuid,
+            selector,
+            mappedFilters,
+            globalFilters
+        )
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
@@ -186,12 +196,13 @@ function PagedSensitivityAnalysisResult({
                 setIsLoading(false);
             });
     }, [
+        sortConfig,
         nOrNkIndex,
         sensiKind,
-        page,
         rowsPerPage,
+        page,
         filters,
-        sortConfig,
+        globalFilters,
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
@@ -199,6 +210,12 @@ function PagedSensitivityAnalysisResult({
         intl,
     ]);
 
+    useEffect(() => {
+        if (sensiStatus === RunningStatus.SUCCEED) {
+            fetchFilterOptions();
+            fetchResult();
+        }
+    }, [globalFilters, sensiStatus, fetchResult, fetchFilterOptions]);
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {
             setResult(null);

@@ -24,6 +24,10 @@ import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 import { COMPUTATION_RESULTS_LOGS, SensiTab, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -46,6 +50,9 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters({});
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
 
     const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
@@ -117,6 +124,13 @@ function SensitivityAnalysisResultTab({
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
                         </Tabs>
+                        <Box>
+                            <GlobalFilterSelector
+                                onChange={handleGlobalFilterChange}
+                                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
+                                filterableEquipmentTypes={[EQUIPMENT_TYPES.SUBSTATION, EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            />
+                        </Box>
                         <ExportButton
                             disabled={isCsvButtonDisabled}
                             onClick={handleExportResultAsCsv}
@@ -134,6 +148,7 @@ function SensitivityAnalysisResultTab({
                         setPage={setPage}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
+                        globalFilters={globalFilters}
                     />
                 </>
             )}
