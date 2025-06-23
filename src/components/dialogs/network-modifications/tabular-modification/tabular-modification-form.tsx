@@ -34,11 +34,14 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
-const TabularModificationForm = () => {
+export interface TabularModificationFormProps {
+    dataFetching: boolean;
+}
+
+export function TabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
-
     const { snackWarning } = useSnackMessage();
-
+    const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, getValues } = useFormContext();
 
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
@@ -59,7 +62,8 @@ const TabularModificationForm = () => {
             setValue(MODIFICATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
-            // For shunt compensators, display warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
+            setIsFetching(false);
+            // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
                 results.data.some(
                     (modification) =>
@@ -119,10 +123,16 @@ const TabularModificationForm = () => {
     });
 
     useEffect(() => {
+        setIsFetching(dataFetching);
+    }, [dataFetching]);
+
+    useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
             clearErrors(MODIFICATIONS_TABLE);
+            setIsFetching(false);
         } else if (selectedFile) {
+            setIsFetching(true);
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
@@ -223,7 +233,7 @@ const TabularModificationForm = () => {
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_skeleton'}
+                        filename={watchType + '_modification_template'}
                         disabled={!csvColumns}
                         separator={language === 'fr' ? ';' : ','}
                     >
@@ -240,6 +250,7 @@ const TabularModificationForm = () => {
             <Grid item xs={12} sx={styles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
+                    loading={isFetching}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     pagination
@@ -250,6 +261,6 @@ const TabularModificationForm = () => {
             </Grid>
         </Grid>
     );
-};
+}
 
 export default TabularModificationForm;
