@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { VirtualizedTreeview } from './virtualized-treeview';
@@ -25,8 +25,9 @@ import { Box, Theme } from '@mui/material';
 
 const styles = {
     panelHandlerContainer: (theme: Theme) => ({
+        display: 'flex',
+        alignItems: 'center',
         borderRight: `1px solid ${theme.palette.divider}`,
-        marginRight: theme.spacing(1),
     }),
 };
 
@@ -112,34 +113,32 @@ export default function ReportViewer({
     const RIGHT_PANEL_MIN_SIZE = 50;
 
     return (
-        <Box width={'100%'} sx={{ height: '100%', minHeight: 0 }}>
-            <PanelGroup direction="horizontal" ref={panelGroupRef}>
-                <Panel id="treeview-panel" minSize={LEFT_PANEL_MIN_SIZE} defaultSize={LEFT_PANEL_DEFAULT_SIZE}>
-                    <VirtualizedTreeview
-                        expandedTreeReports={expandedTreeReports}
-                        setExpandedTreeReports={setExpandedTreeReports}
-                        selectedReportId={selectedReport.id}
-                        reportTree={reportTree}
-                        onSelectedItem={handleSelectedItem}
-                        highlightedReportId={highlightedReportId}
-                    />
-                </Panel>
-                <Box display="flex" alignItems="center" sx={styles.panelHandlerContainer}>
-                    <PanelResizeHandle>
-                        <DragIndicatorIcon fontSize="small" sx={{ padding: 0, margin: 0 }} />
-                    </PanelResizeHandle>
-                </Box>
-                <Panel id="logtable-panel" minSize={RIGHT_PANEL_MIN_SIZE}>
-                    <LogTable
-                        selectedReport={selectedReport}
-                        reportType={reportType}
-                        severities={severities}
-                        onRowClick={onLogRowClick}
-                        onFiltersChanged={onFiltersChanged}
-                        resetFilters={resetFilters}
-                    />
-                </Panel>
-            </PanelGroup>
-        </Box>
+        <PanelGroup direction="horizontal" ref={panelGroupRef}>
+            <Panel id="treeview-panel" minSize={LEFT_PANEL_MIN_SIZE} defaultSize={LEFT_PANEL_DEFAULT_SIZE}>
+                <VirtualizedTreeview
+                    expandedTreeReports={expandedTreeReports}
+                    setExpandedTreeReports={setExpandedTreeReports}
+                    selectedReportId={selectedReport.id}
+                    reportTree={reportTree}
+                    onSelectedItem={handleSelectedItem}
+                    highlightedReportId={highlightedReportId}
+                />
+            </Panel>
+            <Box sx={styles.panelHandlerContainer}>
+                <PanelResizeHandle>
+                    <DragIndicatorIcon fontSize="small" />
+                </PanelResizeHandle>
+            </Box>
+            <Panel id="logtable-panel" minSize={RIGHT_PANEL_MIN_SIZE}>
+                <LogTable
+                    selectedReport={selectedReport}
+                    reportType={reportType}
+                    severities={severities}
+                    onRowClick={onLogRowClick}
+                    onFiltersChanged={onFiltersChanged}
+                    resetFilters={resetFilters}
+                />
+            </Panel>
+        </PanelGroup>
     );
 }

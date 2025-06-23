@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useState, useCallback, useRef } from 'react';
-import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
+import { TextField, InputAdornment, IconButton, Box, SxProps } from '@mui/material';
 import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { useDebounce } from '@gridsuite/commons-ui';
@@ -17,7 +17,7 @@ interface QuickSearchProps {
     resultCount: number;
     resetSearch: () => void;
     placeholder?: string;
-    style?: React.CSSProperties;
+    sx?: SxProps;
 }
 
 const styles = {
@@ -33,7 +33,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     resultCount,
     resetSearch,
     placeholder,
-    style = { minWidth: '30%' },
+    sx = { minWidth: '30%' },
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
@@ -91,7 +91,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder ? intl.formatMessage({ id: placeholder }) : ''}
-            sx={{ ...style }}
+            sx={sx}
             size="small"
             InputProps={{
                 endAdornment: (
