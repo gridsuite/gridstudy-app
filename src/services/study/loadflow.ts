@@ -102,13 +102,13 @@ export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, curr
     return backendFetchText(url);
 }
 
-export function fetchLoadFlowStatusInfos(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchLoadFlowComputationInfos(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Fetching loadFlow status infos on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching loadFlow computation infos on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/loadflow/status-infos';
+        '/loadflow/computation-infos';
     console.debug(url);
     return backendFetchJson(url);
 }

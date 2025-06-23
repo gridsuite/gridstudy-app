@@ -28,7 +28,7 @@ import {
     fetchShortCircuitAnalysisStatus,
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
-import { fetchLoadFlowStatus, fetchLoadFlowStatusInfos } from '../../services/study/loadflow';
+import { fetchLoadFlowStatus, fetchLoadFlowComputationInfos } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
@@ -137,7 +137,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
         ComputingType.LOAD_FLOW,
-        fetchLoadFlowStatusInfos
+        fetchLoadFlowComputationInfos
     );
 
     useComputingStatus(
