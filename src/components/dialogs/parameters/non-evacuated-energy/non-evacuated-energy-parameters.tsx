@@ -14,6 +14,7 @@ import {
     SubmitButton,
     UseParametersBackendReturnProps,
     useSnackMessage,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -65,7 +66,6 @@ import {
     NonEvacuatedEnergyParametersForm,
     UseGetNonEvacuatedEnergyParametersReturnProps,
 } from './utils';
-import ComputingType from '../../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
