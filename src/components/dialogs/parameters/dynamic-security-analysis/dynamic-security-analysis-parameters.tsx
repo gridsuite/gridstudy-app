@@ -28,6 +28,7 @@ import {
     ProviderParam,
     useParametersBackend,
     ComputingType,
+    PopupConfirmationDialog,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -123,6 +124,8 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
         dynamicSecurityParametersBackend;
 
+    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
+
     const formattedProviders = useMemo(
         () =>
             Object.entries(providers).map(([key, value]) => ({
@@ -138,7 +141,16 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
     const handleResetParametersAndProvider = useCallback(() => {
         resetProvider();
         resetParameters();
+        setOpenResetConfirmation(false);
     }, [resetParameters, resetProvider]);
+
+    const handleResetClick = useCallback(() => {
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleCancelReset = useCallback(() => {
+        setOpenResetConfirmation(false);
+    }, []);
 
     const formMethods = useForm<DynamicSecurityAnalysisParametersForm>({
         defaultValues: emptyFormData,
@@ -248,11 +260,22 @@ const DynamicSecurityAnalysisParameters: FunctionComponent<DynamicSecurityAnalys
                     paddingTop: 4,
                 })}
             >
-                <LabelledButton callback={handleResetParametersAndProvider} label="resetToDefault" />
+                <LabelledButton callback={handleResetClick} label="resetToDefault" />
                 <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
                     <FormattedMessage id={'validate'} />
                 </SubmitButton>
             </Grid>
+
+            {/* Reset Confirmation Dialog */}
+            {openResetConfirmation && (
+                <PopupConfirmationDialog
+                    message="resetParamsConfirmation"
+                    validateButtonLabel="validate"
+                    openConfirmationPopup={openResetConfirmation}
+                    setOpenConfirmationPopup={handleCancelReset}
+                    handlePopupConfirmation={handleResetParametersAndProvider}
+                />
+            )}
         </CustomFormProvider>
     );
 };
