@@ -46,7 +46,6 @@ import {
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
 import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
-import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
@@ -64,6 +63,7 @@ import {
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     ShortCircuitParametersInLine,
+    ComputingType,
     VoltageInitParametersInLine,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
@@ -112,6 +112,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
+
     const shortCircuitOneBusStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
