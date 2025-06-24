@@ -26,7 +26,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
     const [severities, setSeverities] = useState<SeverityLevel[]>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [isReportLoading, fetchReport, , fetchReportSeverities] = useReportFetcher(reportType);
+    const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(reportType);
     const shouldFetchReport = useMemo(
         () => studyUuid && currentNode?.id && currentNode?.data?.globalBuildStatus !== BUILD_STATUS.NOT_BUILT,
         [studyUuid, currentNode]

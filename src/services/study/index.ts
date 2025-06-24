@@ -160,14 +160,22 @@ export function fetchLogMatches(
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
+    isGlobalLogs: boolean,
     searchTerm: string,
     pageSize: number
 ) {
-    let url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-        '/report/' +
-        reportId +
-        '/logs/search?';
+    let url;
+    if (isGlobalLogs) {
+        url =
+            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/report/logs/search?';
+    } else {
+        url =
+            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/report/' +
+            reportId +
+            '/logs/search?';
+    }
 
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
