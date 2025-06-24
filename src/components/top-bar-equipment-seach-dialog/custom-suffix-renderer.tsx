@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { equipmentStyles, TagRenderer, TagRendererProps } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
-import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from '../diagrams/diagram-common';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { centerOnSubstation, openDiagram } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
@@ -30,8 +29,6 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
-    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
     const centerOnSubstationCB = useCallback(
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -78,14 +75,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
         return (
             <>
                 {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL && (
-                    <IconButton
-                        disabled={
-                            networkAreaDiagramNbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
-                            networkAreaDiagramDepth !== 0
-                        }
-                        onClick={openNetworkAreaDiagramCB}
-                        size="small"
-                    >
+                    <IconButton onClick={openNetworkAreaDiagramCB} size="small">
                         <TimelineIcon fontSize="small" />
                     </IconButton>
                 )}
