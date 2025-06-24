@@ -13,10 +13,9 @@ import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 import { CancelButton, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { PARAM_LANGUAGE } from '../../../../../utils/config-params.js';
 
 export const ImportRuleDialog = (props) => {
-    const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state) => state.computedLanguage);
 
     const handleCloseDialog = () => {
         props.setOpenImportRuleDialog(false);

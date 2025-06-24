@@ -32,7 +32,6 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -44,7 +43,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, getValues } = useFormContext();
 
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const getTypeLabel = useCallback(
         (type: string) =>

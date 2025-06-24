@@ -10,13 +10,12 @@ import { ProcessCellForExportParams } from 'ag-grid-community';
 import { useIntl } from 'react-intl';
 import { CsvDownloadProps } from './csv-export.type';
 import { formatNAValue } from '../custom-aggrid/utils/format-values-utils';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 
 export const useCsvExport = () => {
     const intl = useIntl();
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const getCSVFilename = useCallback((tableName: string) => {
         return tableName
