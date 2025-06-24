@@ -24,7 +24,7 @@ import {
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
 import { IColumnsDef } from '../sensi/columns-definitions';
-import { parametersStyles } from '@gridsuite/commons-ui';
+import { parametersStyles } from '../util/styles';
 
 interface NonEvacuatedEnergyParametersSelectorProps {
     onFormChanged: (hasFormChanged: boolean) => void;

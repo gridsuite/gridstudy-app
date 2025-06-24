@@ -29,7 +29,6 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
-    parametersStyles,
     ProviderParam,
     SubmitButton,
     useParametersBackend,
@@ -57,6 +56,7 @@ import { DynamicSimulationForm, formSchema, TAB_VALUES } from './dynamic-simulat
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { useParametersNotification } from '../use-parameters-notification';
+import { parametersStyles } from '../util/styles';
 
 interface DynamicSimulationParametersProps {
     user: User | null;

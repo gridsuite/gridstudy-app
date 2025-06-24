@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, mergeSx, parametersStyles, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, mergeSx, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
@@ -27,6 +27,7 @@ import { StateEstimationQualityParameters } from './state-estimation-quality-par
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
 import { updateStateEstimationParameters } from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
+import { parametersStyles } from '../util/styles';
 
 export const StateEstimationParameters = ({
     useStateEstimationParameters,

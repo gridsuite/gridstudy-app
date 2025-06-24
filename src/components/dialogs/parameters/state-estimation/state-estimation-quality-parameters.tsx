@@ -24,14 +24,8 @@ import { useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
-import {
-    CustomVoltageLevelTable,
-    FieldLabel,
-    IColumnsDef,
-    ParameterFloat,
-    parametersStyles,
-    SwitchInput,
-} from '@gridsuite/commons-ui';
+import { CustomVoltageLevelTable, FieldLabel, IColumnsDef, ParameterFloat, SwitchInput } from '@gridsuite/commons-ui';
+import { parametersStyles } from '../util/styles';
 
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
