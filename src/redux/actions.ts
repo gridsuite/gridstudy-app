@@ -14,7 +14,14 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import { GsLang, GsLangUser, GsTheme, Identifiable, NetworkVisualizationParameters, ComputingType } from '@gridsuite/commons-ui';
+import {
+    GsLang,
+    GsLangUser,
+    GsTheme,
+    Identifiable,
+    NetworkVisualizationParameters,
+    ComputingType,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
