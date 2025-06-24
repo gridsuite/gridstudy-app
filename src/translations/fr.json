@@ -356,13 +356,6 @@
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
 
-    "ContingencyListsSelection": "Sélection des listes d'aléas",
-    "Execute": "Exécuter",
-    "AddContingencyList": "Ajouter",
-    "DeleteContingencyList": "Supprimer",
-    "getContingencyListError": "Impossible de récupérer les listes d'aléas",
-    "xContingenciesWillBeSimulated": "{x} aléas seront simulés",
-
     "SensitivityAnalysis": "Analyse de sensibilité",
     "SensibilityAnalysisParameters": "Paramètres de l'analyse de sensibilité",
     "VariablesToSimulate": "Variables à simuler",
@@ -525,7 +518,6 @@
 
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
-    "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser le nœud",
     "maxBuiltNodeExceededError": "Vous avez atteint votre quota utilisateur en termes de réalisations par étude, vous ne pouvez donc plus réaliser de nœuds dans cette étude pour le moment. Merci de déréaliser des nœuds afin de redescendre sous le seuil de {limit} réalisations.",
@@ -986,7 +978,6 @@
     "HighTapRatio": "Rapport (prise max)",
     "ImportRegulationRule": "Importer une loi de régleur",
 
-    "AddRows": "Ajouter",
     "DeleteRows": "Supprimer",
     "MoveUpRows": "Monter",
     "MoveDownRows": "Descendre",

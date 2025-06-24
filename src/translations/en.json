@@ -357,13 +357,6 @@
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 
-    "ContingencyListsSelection": "Contingency lists selection",
-    "Execute": "Execute",
-    "AddContingencyList": "Add",
-    "DeleteContingencyList": "Delete",
-    "getContingencyListError": "Can't fetch contingencies lists",
-    "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
-
     "SensitivityAnalysis": "Sensitivity analysis",
     "SensibilityAnalysisParameters": "Sensitivity analysis parameters",
     "VariablesToSimulate": "Variables to simulate",
@@ -524,7 +517,6 @@
     "loadingReport": "Loading logs in progress...",
 
     "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
-    "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "buildNode": "Build node",
     "maxBuiltNodeExceededError": "You have reached your user quota for builds per study, therefore you cannot build further nodes within this study. Please unbuild nodes in order to go below the limit of {limit} builds",
@@ -990,7 +982,6 @@
     "HighTapRatio": "Ratio (high tap position)",
     "ImportRegulationRule": "Import regulation rule",
 
-    "AddRows": "Add",
     "DeleteRows": "Delete",
     "MoveUpRows": "Move up",
     "MoveDownRows": "Move down",
