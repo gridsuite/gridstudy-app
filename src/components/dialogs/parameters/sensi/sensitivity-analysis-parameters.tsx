@@ -13,10 +13,12 @@ import {
     mergeSx,
     MuiSelectInput,
     parametersStyles,
+    PopupConfirmationDialog,
     SubmitButton,
     TreeViewFinderNodeProps,
     UseParametersBackendReturnProps,
     useSnackMessage,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
@@ -72,7 +74,6 @@ import {
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
-import ComputingType from 'components/computing-status/computing-type';
 
 interface SensitivityAnalysisParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
@@ -94,6 +95,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const [providers, , , , , params, , updateParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
+    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
     const formattedProviders = Object.keys(providers).map((key) => ({
         id: key,
@@ -133,6 +135,21 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             });
         });
     }, [studyUuid, snackError]);
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+        resetSensitivityAnalysisParameters();
+        setAnalysisComputeComplexity(0);
+        setOpenResetConfirmation(false);
+    }, [emptyFormData, reset, resetSensitivityAnalysisParameters]);
+
+    const handleResetClick = useCallback(() => {
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleCancelReset = useCallback(() => {
+        setOpenResetConfirmation(false);
+    }, []);
 
     const formatNewParams = useCallback(
         (newParams: SensitivityAnalysisParametersFormSchema): SensitivityAnalysisParametersInfos => {
@@ -482,12 +499,6 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
         }
     }, [params, reset, fromSensitivityAnalysisParamsDataToFormValues]);
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-        resetSensitivityAnalysisParameters();
-        setAnalysisComputeComplexity(0);
-    }, [emptyFormData, reset, resetSensitivityAnalysisParameters]);
-
     const isMaxReached = useMemo(() => analysisComputeComplexity > numberMax, [analysisComputeComplexity]);
 
     useEffect(() => {
@@ -546,7 +557,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                             <Button onClick={() => setOpenCreateParameterDialog(true)}>
                                 <FormattedMessage id="save" />
                             </Button>
-                            <Button onClick={clear}>
+                            <Button onClick={handleResetClick}>
                                 <FormattedMessage id="resetToDefault" />
                             </Button>
                             <SubmitButton
@@ -583,6 +594,17 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                />
+            )}
+
+            {/* Reset Confirmation Dialog */}
+            {openResetConfirmation && (
+                <PopupConfirmationDialog
+                    message="resetParamsConfirmation"
+                    validateButtonLabel="validate"
+                    openConfirmationPopup={openResetConfirmation}
+                    setOpenConfirmationPopup={handleCancelReset}
+                    handlePopupConfirmation={clear}
                 />
             )}
         </>

@@ -9,12 +9,6 @@ import { UUID } from 'crypto';
 import { Svg } from './diagram-common';
 import { ElementType } from '@gridsuite/commons-ui';
 
-export enum ViewState {
-    PINNED = 'pinned',
-    MINIMIZED = 'minimized',
-    OPENED = 'opened',
-}
-
 export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useMemo, useCallback, useState } from 'react';
+import { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -19,20 +19,18 @@ import {
 import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
+import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-import { useDiagram } from '../use-diagram';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -52,11 +50,11 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNadFromElement?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, diagramId } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -68,35 +66,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
     const nadTextNodeMovementsRef = useRef<NadTextMovement[]>([]);
     nadTextNodeMovementsRef.current = nadTextNodeMovements;
-    const diagramStates = useSelector((state: AppState) => state.diagramStates);
-    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { loadNadFromElementView } = useDiagram(); // TODO Remove this when diagram-pane is removed
-
-    const nadIdentifier = useMemo(() => {
-        if (props.svgType === DiagramType.NAD_FROM_ELEMENT) {
-            return props.diagramId;
-        }
-        return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
-    }, [
-        diagramStates,
-        networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
-        props.svgType,
-        props.diagramId,
-    ]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
             // It is possible to not have scalingFactors, so we only save the nodes movements if we have the needed value.
             if (!!props.svgScalingFactor) {
-                dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y, props.svgScalingFactor));
+                dispatch(storeNetworkAreaDiagramNodeMovement(diagramId, equipmentId, x, y, props.svgScalingFactor));
             }
         },
-        [dispatch, nadIdentifier, props.svgScalingFactor]
+        [dispatch, diagramId, props.svgScalingFactor]
     );
 
     const onMoveTextNodeCallback = useCallback(
@@ -116,7 +99,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             // Dispatch the new position of the text node
             dispatch(
                 storeNetworkAreaDiagramTextNodeMovement(
-                    nadIdentifier,
+                    diagramId,
                     equipmentId,
                     shiftX,
                     shiftY,
@@ -125,7 +108,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 )
             );
         },
-        [dispatch, nadIdentifier]
+        [dispatch, diagramId]
     );
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
@@ -178,17 +161,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
     };
 
-    const handleLoadFromElement = useCallback(
-        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
-            if (onLoadNadFromElement) {
-                onLoadNadFromElement(elementUuid, elementType, elementName);
-            } else {
-                loadNadFromElementView(elementUuid, elementType, elementName);
-            }
-        },
-        [loadNadFromElementView, onLoadNadFromElement]
-    );
-
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -215,7 +187,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
+            diagramSizeSetter(diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
             // the user's zoom and scroll state for the current render.
@@ -232,7 +204,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             // Repositioning the previously moved nodes
             const correspondingMovements = nadNodeMovementsRef.current.filter(
-                (movement) => movement.nadIdentifier === nadIdentifier
+                (movement) => movement.diagramId === diagramId
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
@@ -247,7 +219,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             // Repositioning the previously moved text nodes
             const correspondingTextMovements = nadTextNodeMovementsRef.current.filter(
-                (movement) => movement.nadIdentifier === nadIdentifier
+                (movement) => movement.diagramId === diagramId
             );
             if (correspondingTextMovements.length > 0) {
                 correspondingTextMovements.forEach((movement) => {
@@ -266,7 +238,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        props.diagramId,
         props.svgType,
         props.svg,
         props.svgMetadata,
@@ -274,9 +245,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         diagramSizeSetter,
         onMoveNodeCallback,
         OnToggleHoverCallback,
-        nadIdentifier,
         onMoveTextNodeCallback,
         isEditNadMode,
+        diagramId,
     ]);
 
     /**
@@ -306,7 +277,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
-                onLoad={handleLoadFromElement}
+                onLoad={onLoadNadFromElement}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
             />

@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
 
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
