@@ -131,7 +131,6 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
 
     const equipmentTypeField = (
         <AutocompleteInput
-            readOnly
             isOptionEqualToValue={richTypeEquals}
             name={TYPE}
             label="Type"
@@ -139,6 +138,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, currentRootNetworkUuid, e
             onChangeCallback={handleChange}
             getOptionLabel={getOptionLabel}
             size={'small'}
+            inputTransform={(value) => typesOptions.find((option) => option === value) || value}
             formProps={filledTextField}
         />
     );

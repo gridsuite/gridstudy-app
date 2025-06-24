@@ -60,7 +60,7 @@ import {
 } from '../redux/actions';
 import { getNetworkVisualizationParameters, getSpreadsheetConfigCollection } from '../services/study/study-config';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
-import { NotificationType } from '../redux/reducer';
+import { isNetworkVisualizationParametersUpdatedNotification, NotificationType } from 'types/notification-types';
 import {
     getSpreadsheetConfigCollection as getSpreadsheetConfigCollectionFromId,
     getSpreadsheetModel,
@@ -154,11 +154,7 @@ const App = () => {
     const networkVisuParamsUpdated = useCallback(
         (event) => {
             const eventData = JSON.parse(event.data);
-            if (
-                studyUuid &&
-                eventData.headers.updateType === NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED &&
-                eventData.headers.studyUuid === studyUuid
-            ) {
+            if (studyUuid && isNetworkVisualizationParametersUpdatedNotification(eventData)) {
                 getNetworkVisualizationParameters(studyUuid).then((params) =>
                     updateNetworkVisualizationsParams(params)
                 );
@@ -403,9 +399,8 @@ const App = () => {
                     className="singlestretch-parent"
                     style={{
                         flexGrow: 1,
-                        //Study pane needs 'hidden' when displaying a
-                        //fullscreen sld or when displaying the results or
-                        //elements tables for certain screen sizes because
+                        //Study pane needs 'hidden' when displaying the results
+                        //or elements tables for certain screen sizes because
                         //width/heights are computed programmaticaly and
                         //resizing the page trigger render loops due to
                         //appearing and disappearing scrollbars.
