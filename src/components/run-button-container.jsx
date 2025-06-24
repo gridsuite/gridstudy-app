@@ -104,10 +104,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     });
 
     const startComputationAsync = useCallback(
-        (computingType, fnBefore, fnStart, fnThen, fnCatch, errorHeaderId) => {
-            if (fnBefore) {
-                fnBefore();
-            }
+        (computingType, fnStart, fnThen, fnCatch, errorHeaderId) => {
             setComputationStopped(false);
             dispatch(setComputationStarting(true));
             dispatch(setComputingStatus(computingType, RunningStatus.RUNNING));
@@ -137,7 +134,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
-            null,
             () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, contingencyListNames),
             () => {},
             null,
@@ -148,7 +144,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const handleStartDynamicSimulation = (dynamicSimulationConfiguration, debug) => {
         startComputationAsync(
             ComputingType.DYNAMIC_SIMULATION,
-            null,
             () =>
                 startDynamicSimulation({
                     studyUuid,
@@ -177,7 +172,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation() {
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
-                        null,
                         () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
@@ -204,7 +198,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation() {
                     startComputationAsync(
                         ComputingType.SENSITIVITY_ANALYSIS,
-                        null,
                         () => startSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
@@ -222,7 +215,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation() {
                     startComputationAsync(
                         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
-                        null,
                         () => {
                             return startNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetworkUuid);
                         },
@@ -242,7 +234,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation() {
                     startComputationAsync(
                         ComputingType.SHORT_CIRCUIT,
-                        null,
                         () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
@@ -268,7 +259,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                                 // start server side dynamic simulation directly
                                 return startComputationAsync(
                                     ComputingType.DYNAMIC_SIMULATION,
-                                    null,
                                     () =>
                                         startDynamicSimulation({
                                             studyUuid,
@@ -300,7 +290,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation(debug) {
                     startComputationAsync(
                         ComputingType.DYNAMIC_SECURITY_ANALYSIS,
-                        null,
                         () => startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
                         () => debug && subscribeDebug(ComputingType.DYNAMIC_SECURITY_ANALYSIS),
                         null,
@@ -319,7 +308,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation() {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INITIALIZATION,
-                        null,
                         () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid),
                         () => {},
                         null,
@@ -337,7 +325,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 startComputation() {
                     startComputationAsync(
                         ComputingType.STATE_ESTIMATION,
-                        null,
                         () => {
                             return startStateEstimation(studyUuid, currentNode?.id, currentRootNetworkUuid);
                         },
