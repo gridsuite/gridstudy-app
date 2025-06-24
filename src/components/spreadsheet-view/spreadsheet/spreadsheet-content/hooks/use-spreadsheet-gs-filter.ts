@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import { IRowNode } from 'ag-grid-community';
+import { RefObject, useCallback, useEffect, useState } from 'react';
+import { FilterChangedEvent, IRowNode } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
@@ -14,8 +14,17 @@ import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/stu
 import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { AgGridReact } from 'ag-grid-react';
 
-export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: SpreadsheetEquipmentType) => {
+export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
+    event.api.refreshCells();
+};
+
+export const useSpreadsheetGlobalFilter = (
+    gridRef: RefObject<AgGridReact>,
+    tabUuid: UUID,
+    equipmentType: SpreadsheetEquipmentType
+) => {
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
 
@@ -103,7 +112,8 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
 
     useEffect(() => {
         applyGlobalFilter(globalFilterSpreadsheetState);
-    }, [applyGlobalFilter, tabUuid, globalFilterSpreadsheetState]);
+        gridRef.current?.api?.onFilterChanged();
+    }, [applyGlobalFilter, tabUuid, globalFilterSpreadsheetState, gridRef]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 
