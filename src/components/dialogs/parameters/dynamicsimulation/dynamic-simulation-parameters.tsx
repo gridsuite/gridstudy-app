@@ -30,6 +30,7 @@ import {
     isObjectEmpty,
     mergeSx,
     parametersStyles,
+    PopupConfirmationDialog,
     ProviderParam,
     SubmitButton,
     useParametersBackend,
@@ -100,6 +101,8 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     const [providers, provider, , , resetProvider, parameters, , updateParameters, resetParameters] =
         dynamicSimulationParametersBackend;
 
+    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
+
     const formattedProviders = useMemo(
         () =>
             Object.entries(providers).map(([key, value]) => ({
@@ -115,7 +118,16 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     const handleResetParametersAndProvider = useCallback(() => {
         resetProvider();
         resetParameters();
+        setOpenResetConfirmation(false);
     }, [resetParameters, resetProvider]);
+
+    const handleResetClick = useCallback(() => {
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleCancelReset = useCallback(() => {
+        setOpenResetConfirmation(false);
+    }, []);
 
     const formMethods = useForm<DynamicSimulationForm>({
         defaultValues: emptyFormData,
@@ -301,7 +313,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                             paddingLeft: 0,
                         })}
                     >
-                        <Button onClick={handleResetParametersAndProvider}>
+                        <Button onClick={handleResetClick}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
                         <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onError)}>
@@ -310,6 +322,17 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                     </DialogActions>
                 </Grid>
             </Grid>
+
+            {/* Reset Confirmation Dialog */}
+            {openResetConfirmation && (
+                <PopupConfirmationDialog
+                    message="resetParamsConfirmation"
+                    validateButtonLabel="validate"
+                    openConfirmationPopup={openResetConfirmation}
+                    setOpenConfirmationPopup={handleCancelReset}
+                    handlePopupConfirmation={handleResetParametersAndProvider}
+                />
+            )}
         </CustomFormProvider>
     );
 };
