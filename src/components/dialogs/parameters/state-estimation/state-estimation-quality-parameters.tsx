@@ -24,13 +24,19 @@ import { useMemo } from 'react';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import { useIntl } from 'react-intl';
-import { CustomVoltageLevelTable, FieldLabel, IColumnsDef, ParameterFloat, SwitchInput } from '@gridsuite/commons-ui';
+import {
+    CustomVoltageLevelTable,
+    FieldLabel,
+    LimitReductionIColumnsDef,
+    ParameterFloat,
+    SwitchInput,
+} from '@gridsuite/commons-ui';
 import { parametersStyles } from '../util/styles';
 
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<IColumnsDef[]>(() => {
+    const columnsDefinition = useMemo<LimitReductionIColumnsDef[]>(() => {
         const definition = [
             {
                 dataKey: VOLTAGE_LEVEL,
