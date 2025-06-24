@@ -6,8 +6,8 @@
  */
 
 import { Box, Typography } from '@mui/material';
-import { NodeProps } from '@xyflow/react';
-import { nodeHeight, nodeWidth } from '../layout';
+import { Node, NodeProps } from '@xyflow/react';
+import { nodeHeight, NodePlacement, nodeWidth } from '../layout';
 import SecurityIcon from '@mui/icons-material/Security';
 import { FormattedMessage } from 'react-intl';
 
@@ -30,15 +30,17 @@ const styles = {
     },
 };
 
-export function LabeledGroupNode({ data }: NodeProps<any>) {
+export function LabeledGroupNode({
+    data,
+}: NodeProps<Node<{ position: { topLeft: NodePlacement; bottomRight: NodePlacement } }>>) {
     const verticalPadding = (nodeHeight - 60) / 4;
     const horizontalPadding = (nodeWidth - 180) / 2;
 
-    const labeledGroupTopPosition = data.position.topLeft.y * nodeHeight - verticalPadding;
-    const labeledGroupLeftPosition = data.position.topLeft.x * nodeWidth - horizontalPadding;
+    const labeledGroupTopPosition = data.position.topLeft.row * nodeHeight - verticalPadding;
+    const labeledGroupLeftPosition = data.position.topLeft.column * nodeWidth - horizontalPadding;
     const labeledGroupHeight =
-        (data.position.bottomRight.y - data.position.topLeft.y + 1) * nodeHeight - 2 * verticalPadding;
-    const labeledGroupWidth = (data.position.bottomRight.x - data.position.topLeft.x + 1) * nodeWidth;
+        (data.position.bottomRight.row - data.position.topLeft.row + 1) * nodeHeight - 2 * verticalPadding;
+    const labeledGroupWidth = (data.position.bottomRight.column - data.position.topLeft.column + 1) * nodeWidth;
 
     return (
         <Box

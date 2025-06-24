@@ -107,14 +107,8 @@ const NetworkModificationTree = ({
                     data: {
                         label: 'testLabel',
                         position: {
-                            topLeft: {
-                                x: sg.topLeft.column,
-                                y: sg.topLeft.row,
-                            },
-                            bottomRight: {
-                                x: sg.bottomRight.column,
-                                y: sg.bottomRight.row,
-                            },
+                            topLeft: sg.topLeft,
+                            bottomRight: sg.bottomRight,
                         },
                     },
                     style: {

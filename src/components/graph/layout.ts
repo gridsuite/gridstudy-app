@@ -11,7 +11,7 @@ export const nodeWidth = 230;
 export const nodeHeight = 110;
 export const snapGrid = [10, nodeHeight]; // Used for drag and drop
 
-type NodePlacement = {
+export type NodePlacement = {
     row: number;
     column: number;
 };
