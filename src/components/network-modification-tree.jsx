@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, useTheme } from '@mui/material';
+import { Box, styled, useTheme } from '@mui/material';
 import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
@@ -31,6 +31,15 @@ import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+
+const CustomReactFlow = styled(ReactFlow)(({ theme }) => ({
+    '.react-flow__attribution a': {
+        color: theme.palette.text.primary,
+    },
+    '.react-flow__attribution': {
+        backgroundColor: theme.palette.background.paper,
+    },
+}));
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -306,7 +315,7 @@ const NetworkModificationTree = ({
 
     return (
         <Box flexGrow={1} height="100%">
-            <ReactFlow
+            <CustomReactFlow
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={handleNodesChange}
@@ -359,7 +368,7 @@ const NetworkModificationTree = ({
                 </Controls>
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
                 <RootNetworkPanel />
-            </ReactFlow>
+            </CustomReactFlow>
         </Box>
     );
 };
