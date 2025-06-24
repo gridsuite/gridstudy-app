@@ -21,7 +21,13 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { styles, TABULAR_CREATION_FIELDS, TabularCreationField } from './tabular-creation-utils';
+import {
+    styles,
+    TABULAR_CREATION_FIELDS,
+    TabularCreationField,
+    generateCommentLines,
+    transformIfFrenchNumber,
+} from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
@@ -139,20 +145,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     }, [intl, watchType]);
 
     const commentLines = useMemo(() => {
-        let commentData: string[][] = [];
-        if (csvTranslatedColumns) {
-            // First comment line contains header translation
-            commentData.push(['#' + csvTranslatedColumns.join(language === 'fr' ? ';' : ',')]);
-            if (!!intl.messages['TabularCreationSkeletonComment.' + watchType]) {
-                // Optionally a second comment line, if present in translation file
-                commentData.push([
-                    intl.formatMessage({
-                        id: 'TabularCreationSkeletonComment.' + watchType,
-                    }),
-                ]);
-            }
-        }
-        return commentData;
+        return generateCommentLines({ csvTranslatedColumns, intl, watchType, language, formType: 'Creation' });
     }, [intl, watchType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
@@ -161,6 +154,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         header: csvColumns,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
+        language: language,
     });
 
     const watchTable = useWatch({
@@ -185,15 +179,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                transform: (value) => {
-                    value = value.trim();
-                    // Only transform if we're in French mode and the value is a number that has a comma
-                    // is there a better way to do this?
-                    if (language === 'fr' && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
-                        return value.replace(',', '.');
-                    }
-                    return value;
-                },
+                delimiter: language === 'fr' ? ';' : ',',
+                transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
     }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);

@@ -83,9 +83,17 @@ interface UseCSVPickerProps {
     resetTrigger: boolean;
     maxTapNumber?: number;
     disabled?: boolean;
+    language: string;
 }
 
-export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber, disabled = false }: UseCSVPickerProps) => {
+export const useCSVPicker = ({
+    label,
+    header,
+    resetTrigger,
+    maxTapNumber,
+    disabled = false,
+    language,
+}: UseCSVPickerProps) => {
     const intl = useIntl();
 
     const { CSVReader } = useCSVReader();
@@ -101,6 +109,9 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber, disabl
         return (
             <>
                 <CSVReader
+                    config={{
+                        delimiter: language === 'fr' ? ';' : ',',
+                    }}
                     onUploadAccepted={(results: { data: string[][] }, acceptedFile: File) => {
                         setAcceptedFile(acceptedFile);
                         if (results?.data.length > 0 && equals(header, results.data[0])) {
@@ -140,7 +151,7 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber, disabl
                 </CSVReader>
             </>
         );
-    }, [_acceptedFile, disabled, header, intl, label, maxTapNumber, CSVReader]);
+    }, [_acceptedFile, disabled, header, intl, label, maxTapNumber, CSVReader, language]);
 
     return [_acceptedFile, field, fileError] as const;
 };

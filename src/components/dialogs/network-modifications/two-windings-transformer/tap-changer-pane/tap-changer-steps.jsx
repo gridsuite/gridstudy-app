@@ -25,6 +25,7 @@ import {
 import PropTypes from 'prop-types';
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { transformIfFrenchNumber } from '../../tabular-creation/tabular-creation-utils.js';
 
 const TapChangerSteps = ({
     tapChanger,
@@ -187,15 +188,7 @@ const TapChangerSteps = ({
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
-            transform: (value) => {
-                value = value.trim();
-                // Only transform if we're in French mode and the value is a number that has a comma
-                // is there a better way to do this?
-                if (language === 'fr' && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
-                    return value.replace(',', '.');
-                }
-                return value;
-            },
+            transform: (value) => transformIfFrenchNumber(value, language),
             complete: function (results) {
                 if (results.data.length > MAX_ROWS_NUMBER) {
                     setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));

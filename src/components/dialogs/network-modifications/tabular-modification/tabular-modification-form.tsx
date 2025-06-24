@@ -32,6 +32,7 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { generateCommentLines, transformIfFrenchNumber } from '../tabular-creation/tabular-creation-utils';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -93,20 +94,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     }, [intl, watchType]);
 
     const commentLines = useMemo(() => {
-        let commentData: string[][] = [];
-        if (csvTranslatedColumns) {
-            // First comment line contains header translation
-            commentData.push(['#' + csvTranslatedColumns.join(language === 'fr' ? ';' : ',')]);
-            if (!!intl.messages['TabularModificationSkeletonComment.' + watchType]) {
-                // Optionally a second comment line, if present in translation file
-                commentData.push([
-                    intl.formatMessage({
-                        id: 'TabularModificationSkeletonComment.' + watchType,
-                    }),
-                ]);
-            }
-        }
-        return commentData;
+        return generateCommentLines({ csvTranslatedColumns, intl, watchType, language, formType: 'Modification' });
     }, [intl, watchType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
@@ -115,6 +103,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
         header: csvColumns,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
+        language: language,
     });
 
     const watchTable = useWatch({
@@ -146,15 +135,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                     );
                     return transformedHeader ?? header;
                 },
-                transform: (value) => {
-                    value = value.trim();
-                    // Only transform if we're in French mode and the value is a number that has a comma
-                    // is there a better way to do this?
-                    if (language === 'fr' && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
-                        return value.replace(',', '.');
-                    }
-                    return value;
-                },
+                transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
     }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
