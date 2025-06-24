@@ -976,8 +976,8 @@
     "HighTapAlpha": "Shift angle (high tap position)",
     "ImportDephasingRule": "Import dephasing rule",
 
-    "GenerateSkeleton": "Generate CSV skeleton",
-    "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the skeleton",
+    "GenerateSkeleton": "Generate CSV template",
+    "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the template",
     "uploadMessage": " No file selected",
 
     "G": "Magnetizing conductance",

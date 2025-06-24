@@ -7,17 +7,16 @@
 
 import React, { useState, useCallback, SetStateAction } from 'react';
 import { Switch, Tooltip } from '@mui/material';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { NetworkModificationMetadata, useSnackMessage } from '@gridsuite/commons-ui';
 import { setModificationActivated } from 'services/study/network-modifications';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from 'redux/reducer';
 import { ICellRendererParams } from 'ag-grid-community';
-import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
-export interface SwitchCellRendererProps extends ICellRendererParams<NetworkModificationInfos> {
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
+export interface SwitchCellRendererProps extends ICellRendererParams<NetworkModificationMetadata> {
+    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
 }
 
 const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
@@ -30,8 +29,8 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
 
     const { snackError } = useSnackMessage();
 
-    const modificationUuid = data?.modificationInfos.uuid;
-    const modificationActivated = data?.modificationInfos.activated;
+    const modificationUuid = data?.uuid;
+    const modificationActivated = data?.activated;
 
     const updateModification = useCallback(
         (activated: boolean) => {
@@ -52,21 +51,15 @@ const SwitchCellRenderer = (props: SwitchCellRendererProps) => {
     const toggleModificationActive = useCallback(() => {
         setIsLoading(true);
         setModifications((oldModifications) => {
-            const modificationToUpdateIndex = oldModifications.findIndex(
-                (m) => m.modificationInfos.uuid === modificationUuid
-            );
+            const modificationToUpdateIndex = oldModifications.findIndex((m) => m.uuid === modificationUuid);
             if (modificationToUpdateIndex === -1) {
                 return oldModifications;
             }
             const newModifications = [...oldModifications];
-            const newStatus = !newModifications[modificationToUpdateIndex].modificationInfos.activated;
+            const newStatus = !newModifications[modificationToUpdateIndex].activated;
 
             newModifications[modificationToUpdateIndex] = {
                 ...newModifications[modificationToUpdateIndex],
-                modificationInfos: {
-                    ...newModifications[modificationToUpdateIndex].modificationInfos,
-                    activated: newStatus,
-                },
             };
 
             updateModification(newStatus);
