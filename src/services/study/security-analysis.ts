@@ -15,7 +15,7 @@ export function startSecurityAnalysis(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     contingencyListUuids: UUID[]
-) {
+): Promise<void> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
