@@ -972,8 +972,8 @@
     "HighTapAlpha": "Déphasage (prise max)",
     "ImportDephasingRule": "Importer une loi de déphasage",
 
-    "GenerateSkeleton": "Générer le squelette",
-    "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",
+    "GenerateSkeleton": "Générer le modèle",
+    "InvalidRuleHeader": "Le fichier n'a pas le bon en-tête, veuillez vous référer au modèle",
     "uploadMessage": " Aucun fichier sélectionné",
 
     "G": "Conductance magnétisante",

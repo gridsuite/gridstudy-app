@@ -45,11 +45,7 @@ import {
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     CenterOnSubstationAction,
-    CLOSE_DIAGRAM,
-    CLOSE_DIAGRAMS,
     CLOSE_STUDY,
-    CloseDiagramAction,
-    CloseDiagramsAction,
     CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
     CURRENT_ROOT_NETWORK_UUID,
@@ -71,12 +67,10 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
-    LOAD_NAD_FROM_ELEMENT,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
-    LoadNadFromElementAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -86,16 +80,12 @@ import {
     MapDataLoadingAction,
     MapEquipmentsCreatedAction,
     MapEquipmentsInitializedAction,
-    MINIMIZE_DIAGRAM,
-    MinimizeDiagramAction,
-    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_REORDER,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
@@ -155,7 +145,6 @@ import {
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
-    SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -171,7 +160,6 @@ import {
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
-    SetFullscreenDiagramAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
@@ -188,8 +176,6 @@ import {
     SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
-    STOP_DIAGRAM_BLINK,
-    StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
     STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
@@ -198,8 +184,6 @@ import {
     StudyUpdatedAction,
     TABLE_SORT,
     TableSortAction,
-    TOGGLE_PIN_DIAGRAM,
-    TogglePinDiagramAction,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
@@ -210,8 +194,6 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    SET_EDIT_NAD_MODE,
-    SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
     REMOVE_EQUIPMENT_DATA,
@@ -241,7 +223,6 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -294,7 +275,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType, isNadType, isSldType, ViewState } from '../components/diagrams/diagram.type';
+import { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
@@ -336,15 +317,6 @@ export type TableSort = {
 export type TableSortKeysType = keyof TableSort;
 
 export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type DiagramState = {
-    id: UUID;
-    type?: ElementType;
-    svgType: DiagramType;
-    state: ViewState;
-    needsToBlink?: boolean;
-    name?: string;
-};
 
 export enum DiagramEventType {
     CREATE = 'create',
@@ -395,7 +367,7 @@ export type DiagramEvent =
     | CreateNADFromElementDiagramEvent;
 
 export type NadNodeMovement = {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     x: number;
     y: number;
@@ -403,7 +375,7 @@ export type NadNodeMovement = {
 };
 
 export type NadTextMovement = {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     shiftX: number;
     shiftY: number;
@@ -456,7 +428,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
-    networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
@@ -468,14 +439,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
-    diagramStates: DiagramState[];
     latestDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
-    fullScreenDiagram: null | {
-        id: string;
-        svgType?: DiagramType;
-    };
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -608,7 +574,6 @@ const initialState: AppState = {
     // @ts-expect-error TODO can't have empty eventData here
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
-    fullScreenDiagram: null,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
@@ -617,7 +582,6 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
-    diagramStates: [],
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -626,7 +590,6 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
-    networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
     computingStatus: {
@@ -789,10 +752,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
-
-        if (action.studyRef[0] != null) {
-            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
-        }
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1131,21 +1090,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMapNeeded = action.reloadMapNeeded;
     });
 
-    builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
-        state.isEditMode = action.isEditMode;
-    });
-
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
-    });
-
-    builder.addCase(SET_FULLSCREEN_DIAGRAM, (state, action: SetFullscreenDiagramAction) => {
-        state.fullScreenDiagram = action.diagramId
-            ? {
-                  id: action.diagramId,
-                  svgType: action.svgType,
-              }
-            : null;
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
@@ -1239,129 +1185,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isMonoRootStudy = action.isMonoRootStudy;
     });
 
-    /*
-     * The following functions' goal are to update state.diagramStates with nodes of the following type :
-     * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
-     *
-     * Diagrams of NETWORK_AREA_DIAGRAM type should always share the same state (all of them opened, or all
-     * of them pinned, etc).
-     * The other types of diagrams all have their own state.
-     *
-     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_ELEMENT) opened at once, but there can be
-     * multiple SLD (VOLTAGE_LEVEL or SUBSTATION) opened at the same time.
-     */
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
-        let diagramStates = state.diagramStates;
-        const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-        );
-
-        if (isNadType(action.svgType)) {
-            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_ELEMENT, and vice versa
-            if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_ELEMENT);
-            }
-            if (action.svgType === DiagramType.NAD_FROM_ELEMENT) {
-                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
-            }
-
-            // We check if there is already a NAD in the diagramStates.
-            const firstNadIndex = diagramStates.findIndex((diagram) => isNadType(diagram.svgType));
-            if (firstNadIndex < 0) {
-                // If there is no NAD, then we add the new one.
-                diagramStates.push({
-                    id: action.id as UUID,
-                    svgType: action.svgType,
-                    state: ViewState.OPENED,
-                });
-
-                // If there is already a diagram in fullscreen mode, the new opened NAD will take its place.
-                if (state.fullScreenDiagram?.id) {
-                    state.fullScreenDiagram = {
-                        id: action.id,
-                        svgType: action.svgType,
-                    };
-                }
-            } else {
-                // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
-                if (diagramStates[firstNadIndex].state === ViewState.MINIMIZED) {
-                    diagramStates.forEach((diagram) => {
-                        if (isNadType(diagram.svgType)) {
-                            diagram.state = ViewState.OPENED;
-                        }
-                    });
-                }
-                // If the NAD to open is not already in the diagramStates, we add it.
-                if (diagramToOpenIndex < 0) {
-                    diagramStates.push({
-                        id: action.id as UUID,
-                        svgType: action.svgType,
-                        state: diagramStates[firstNadIndex].state,
-                    });
-                }
-
-                // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
-                // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
-                // Note : for NAD_FROM_ELEMENT, this should work as long as there is only one NAD in the diagramStates.
-                if (state.fullScreenDiagram?.svgType && isSldType(state.fullScreenDiagram?.svgType)) {
-                    state.fullScreenDiagram = {
-                        id: diagramStates[firstNadIndex].id,
-                        svgType: action.svgType,
-                    };
-                }
-            }
-        } else {
-            // We check if the SLD to open is already in the diagramStates.
-            if (diagramToOpenIndex >= 0) {
-                // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
-                if (diagramStates[diagramToOpenIndex].state === ViewState.MINIMIZED) {
-                    // We minimize all the other OPENED SLD.
-                    diagramStates.forEach((diagram) => {
-                        if (isSldType(diagram.svgType) && diagram.state === ViewState.OPENED) {
-                            diagram.state = ViewState.MINIMIZED;
-                        }
-                    });
-                    const diagramToOpen = diagramStates[diagramToOpenIndex];
-
-                    // We open and push the SLD to the last position in the array, so it is displayed at the right of the others
-                    diagramToOpen.state = ViewState.OPENED;
-                    diagramStates.splice(diagramToOpenIndex, 1);
-                    diagramStates.push(diagramToOpen);
-                } else {
-                    console.info(
-                        'Diagram already opened : ' +
-                            diagramStates[diagramToOpenIndex].id +
-                            ' (' +
-                            diagramStates[diagramToOpenIndex].svgType +
-                            ')'
-                    );
-                    diagramStates[diagramToOpenIndex].needsToBlink = true;
-                }
-            } else {
-                // We minimize all the other OPENED SLD.
-                diagramStates.forEach((diagram) => {
-                    if (isSldType(diagram.svgType) && diagram.state === ViewState.OPENED) {
-                        diagram.state = ViewState.MINIMIZED;
-                    }
-                });
-                // And we add the new one.
-                diagramStates.push({
-                    id: action.id as UUID,
-                    svgType: action.svgType,
-                    state: ViewState.OPENED,
-                });
-            }
-
-            // If there is already a diagram in fullscreen mode, the new opened SLD will take its place.
-            if (state.fullScreenDiagram?.id) {
-                state.fullScreenDiagram = {
-                    id: action.id,
-                    svgType: action.svgType,
-                };
-            }
-        }
-        state.diagramStates = diagramStates;
-
         if (action.svgType === DiagramType.SUBSTATION) {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
@@ -1381,154 +1205,32 @@ export const reducer = createReducer(initialState, (builder) => {
                 voltageLevelIds: [action.id as UUID],
             };
         }
+
+        // Switch to the grid layout in order to see the newly opened diagram
+        if (
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+        ) {
+            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+        }
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
-        const diagramStates = state.diagramStates;
         const uniqueIds = [...new Set(action.ids)];
-        // remove all existing NAD from store, we replace them with lists passed as param
-        const diagramStatesWithoutNad = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
 
-        state.diagramStates = diagramStatesWithoutNad.concat(
-            uniqueIds.map((id) => ({
-                id: id as UUID,
-                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                state: ViewState.OPENED,
-            }))
-        );
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
             voltageLevelIds: uniqueIds as UUID[],
         };
-    });
 
-    builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
-        const diagramStates = state.diagramStates;
-
-        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // For network area diagrams, the ID is irrelevant, we will minimize all the NETWORK_AREA_DIAGRAMs in the state.diagramStates.
-            diagramStates.forEach((diagram) => {
-                if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                    diagram.state = ViewState.MINIMIZED;
-                }
-            });
-        } else {
-            // For the other types of diagrams, we will update the corresponding diagram.
-            const diagramToMinimizeIndex = diagramStates.findIndex(
-                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-            );
-            if (diagramToMinimizeIndex >= 0) {
-                diagramStates[diagramToMinimizeIndex].state = ViewState.MINIMIZED;
-            }
+        // Switch to the grid layout in order to see the newly opened diagram
+        if (
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+        ) {
+            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
         }
-        state.diagramStates = diagramStates;
-    });
-
-    builder.addCase(TOGGLE_PIN_DIAGRAM, (state, action: TogglePinDiagramAction) => {
-        const diagramStates = state.diagramStates;
-
-        // search targeted diagram among the diagramStates
-        const diagramToPinToggleIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-        );
-        if (diagramToPinToggleIndex >= 0) {
-            if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                // If the current NETWORK_AREA_DIAGRAM is PINNED, we set all NETWORK_AREA_DIAGRAM to OPENED. Otherwise, we set them to PINNED.
-                const newStateForNads =
-                    diagramStates[diagramToPinToggleIndex].state === ViewState.PINNED
-                        ? ViewState.OPENED
-                        : ViewState.PINNED;
-                diagramStates.forEach((diagram) => {
-                    if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                        diagram.state = newStateForNads;
-                    }
-                });
-            } else if (diagramStates[diagramToPinToggleIndex].state !== ViewState.PINNED) {
-                // If the current SLD is minimized or opened, we pin it.
-                diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
-            } else {
-                // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
-                // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
-                const currentlyOpenedDiagramIndex = diagramStates.findIndex(
-                    (diagram) =>
-                        diagram.state === ViewState.OPENED &&
-                        (diagram.svgType === DiagramType.SUBSTATION || diagram.svgType === DiagramType.VOLTAGE_LEVEL)
-                );
-                if (currentlyOpenedDiagramIndex >= 0) {
-                    diagramStates[diagramToPinToggleIndex].state = ViewState.MINIMIZED;
-                } else {
-                    diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
-                }
-            }
-        }
-
-        state.diagramStates = diagramStates;
-    });
-
-    builder.addCase(CLOSE_DIAGRAM, (state, action: CloseDiagramAction) => {
-        let diagramStates = state.diagramStates;
-
-        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // If we close a NETWORK_AREA_DIAGRAM, we close all of them.
-            diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
-        } else {
-            // If we close another type of diagram, we only remove one.
-            const diagramToCloseIndex = diagramStates.findIndex(
-                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-            );
-            if (diagramToCloseIndex >= 0) {
-                diagramStates.splice(diagramToCloseIndex, 1);
-            }
-        }
-
-        state.diagramStates = diagramStates;
-    });
-
-    builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
-        const idsToClose = new Set(action.ids);
-        state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
-    });
-
-    builder.addCase(LOAD_NAD_FROM_ELEMENT, (state, action: LoadNadFromElementAction) => {
-        // Reset depth to zero
-        state.networkAreaDiagramDepth = 0;
-
-        // Reset the potential movements stored for this particular NAD
-        state.nadNodeMovements = state.nadNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.elementUuid
-        );
-        state.nadTextNodeMovements = state.nadTextNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.elementUuid
-        );
-
-        // We close all the other NAD ...
-        let diagramStates = state.diagramStates;
-        diagramStates = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
-        // ... and create the new NAD
-        diagramStates.push({
-            id: action.elementUuid as UUID,
-            type: action.elementType,
-            name: action.elementName,
-            svgType: DiagramType.NAD_FROM_ELEMENT,
-            state: ViewState.OPENED,
-        });
-        state.diagramStates = diagramStates;
-        state.latestDiagramEvent = {
-            diagramType: DiagramType.NAD_FROM_ELEMENT,
-            eventType: DiagramEventType.CREATE,
-            elementUuid: action.elementUuid as UUID,
-            elementType: action.elementType,
-            elementName: action.elementName,
-        };
-    });
-
-    builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
-        state.diagramStates.forEach((diagram) => {
-            if (diagram.needsToBlink) {
-                diagram.needsToBlink = undefined;
-            }
-        });
     });
 
     builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {
@@ -1549,12 +1251,11 @@ export const reducer = createReducer(initialState, (builder) => {
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
             const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
+                    diagramId: action.diagramId,
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
@@ -1572,12 +1273,11 @@ export const reducer = createReducer(initialState, (builder) => {
         STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
             const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadTextNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
+                    diagramId: action.diagramId,
                     equipmentId: action.equipmentId,
                     shiftX: action.shiftX,
                     shiftY: action.shiftY,
@@ -1590,13 +1290,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 correspondingMovement[0].connectionShiftX = action.connectionShiftX;
                 correspondingMovement[0].connectionShiftY = action.connectionShiftY;
             }
-        }
-    );
-
-    builder.addCase(
-        NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-        (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
-            state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
         }
     );
 
