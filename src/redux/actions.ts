@@ -14,14 +14,7 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import {
-    ElementType,
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    Identifiable,
-    NetworkVisualizationParameters,
-} from '@gridsuite/commons-ui';
+import { GsLang, GsLangUser, GsTheme, Identifiable, NetworkVisualizationParameters } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -94,7 +87,6 @@ export type AppActions =
     | StudyUpdatedAction
     | MapDataLoadingAction
     | MapEquipmentsInitializedAction
-    | SetFullscreenDiagramAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
@@ -107,15 +99,9 @@ export type AppActions =
     | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
-    | MinimizeDiagramAction
-    | TogglePinDiagramAction
-    | CloseDiagramAction
-    | CloseDiagramsAction
-    | StopDiagramBlinkAction
     | ResetNetworkAreaDiagramDepthAction
     | IncrementNetworkAreaDiagramDepthAction
     | DecrementNetworkAreaDiagramDepthAction
-    | NetworkAreaDiagramNbVoltageLevelsAction
     | SetComputingStatusAction
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
@@ -145,8 +131,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | LoadNadFromElementAction
-    | SetEditNadModeAction
     | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction;
 
@@ -591,18 +575,6 @@ export function setReloadMapNeeded(reloadMapNeeded: boolean): SetReloadMapNeeded
     };
 }
 
-export const SET_EDIT_NAD_MODE = 'SET_EDIT_NAD_MODE';
-export type SetEditNadModeAction = Readonly<Action<typeof SET_EDIT_NAD_MODE>> & {
-    isEditMode: boolean;
-};
-
-export function setEditNadMode(isEditMode: boolean): SetEditNadModeAction {
-    return {
-        type: SET_EDIT_NAD_MODE,
-        isEditMode,
-    };
-}
-
 export const MAP_EQUIPMENTS_INITIALIZED = 'MAP_EQUIPMENTS_INITIALIZED';
 export type MapEquipmentsInitializedAction = Readonly<Action<typeof MAP_EQUIPMENTS_INITIALIZED>> & {
     newValue: boolean;
@@ -613,36 +585,6 @@ export function setMapEquipementsInitialized(newValue: boolean): MapEquipmentsIn
         type: MAP_EQUIPMENTS_INITIALIZED,
         newValue,
     };
-}
-
-export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
-export type SetFullscreenDiagramAction = Readonly<Action<typeof SET_FULLSCREEN_DIAGRAM>> &
-    (
-        | { diagramId: null }
-        | {
-              diagramId: string;
-              svgType: DiagramType;
-          }
-    );
-
-export function setFullScreenDiagram(diagramIdParam: null): SetFullscreenDiagramAction;
-export function setFullScreenDiagram(diagramIdParam: string, svgTypeParam: DiagramType): SetFullscreenDiagramAction;
-export function setFullScreenDiagram(
-    diagramIdParam: string | null,
-    svgTypeParam?: DiagramType
-): SetFullscreenDiagramAction {
-    if (diagramIdParam === null) {
-        return {
-            type: SET_FULLSCREEN_DIAGRAM,
-            diagramId: diagramIdParam,
-        };
-    } else {
-        return {
-            type: SET_FULLSCREEN_DIAGRAM,
-            diagramId: diagramIdParam,
-            svgType: svgTypeParam!,
-        };
-    }
 }
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
@@ -829,89 +771,6 @@ export function openNadList(ids: string[]): OpenNadListAction {
     };
 }
 
-export const MINIMIZE_DIAGRAM = 'MINIMIZE_DIAGRAM';
-export type MinimizeDiagramAction = Readonly<Action<typeof MINIMIZE_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function minimizeDiagram(id: string, svgType: DiagramType): MinimizeDiagramAction {
-    return {
-        type: MINIMIZE_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const TOGGLE_PIN_DIAGRAM = 'TOGGLE_PIN_DIAGRAM';
-export type TogglePinDiagramAction = Readonly<Action<typeof TOGGLE_PIN_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function togglePinDiagram(id: string, svgType: DiagramType): TogglePinDiagramAction {
-    return {
-        type: TOGGLE_PIN_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
-export type CloseDiagramAction = Readonly<Action<typeof CLOSE_DIAGRAM>> & {
-    id: string;
-    svgType: DiagramType;
-};
-
-export function closeDiagram(id: string, svgType: DiagramType): CloseDiagramAction {
-    return {
-        type: CLOSE_DIAGRAM,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const CLOSE_DIAGRAMS = 'CLOSE_DIAGRAMS';
-export type CloseDiagramsAction = Readonly<Action<typeof CLOSE_DIAGRAMS>> & {
-    ids: string[];
-};
-
-export function closeDiagrams(ids: string[]): CloseDiagramsAction {
-    return {
-        type: CLOSE_DIAGRAMS,
-        ids: ids,
-    };
-}
-
-export const LOAD_NAD_FROM_ELEMENT = 'LOAD_NAD_FROM_ELEMENT';
-export type LoadNadFromElementAction = Readonly<Action<typeof LOAD_NAD_FROM_ELEMENT>> & {
-    elementUuid: string;
-    elementType: ElementType;
-    elementName: string;
-};
-
-export function loadNadFromElement(
-    elementId: string,
-    elementType: ElementType,
-    elementName: string
-): LoadNadFromElementAction {
-    return {
-        type: LOAD_NAD_FROM_ELEMENT,
-        elementUuid: elementId,
-        elementType: elementType,
-        elementName: elementName,
-    };
-}
-
-export const STOP_DIAGRAM_BLINK = 'STOP_DIAGRAM_BLINK';
-export type StopDiagramBlinkAction = Readonly<Action<typeof STOP_DIAGRAM_BLINK>>;
-
-export function stopDiagramBlink(): StopDiagramBlinkAction {
-    return {
-        type: STOP_DIAGRAM_BLINK,
-    };
-}
-
 export const RESET_NETWORK_AREA_DIAGRAM_DEPTH = 'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
 export type ResetNetworkAreaDiagramDepthAction = Readonly<Action<typeof RESET_NETWORK_AREA_DIAGRAM_DEPTH>>;
 
@@ -943,7 +802,7 @@ export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAG
 export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
 > & {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     x: number;
     y: number;
@@ -951,7 +810,7 @@ export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
 };
 
 export function storeNetworkAreaDiagramNodeMovement(
-    nadIdentifier: string,
+    diagramId: UUID,
     equipmentId: string,
     x: number,
     y: number,
@@ -959,7 +818,7 @@ export function storeNetworkAreaDiagramNodeMovement(
 ): StoreNetworkAreaDiagramNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        nadIdentifier: nadIdentifier,
+        diagramId: diagramId,
         equipmentId: equipmentId,
         x: x,
         y: y,
@@ -971,7 +830,7 @@ export const STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT = 'STORE_NETWORK_AREA
 export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
     Action<typeof STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT>
 > & {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     shiftX: number;
     shiftY: number;
@@ -980,7 +839,7 @@ export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
 };
 
 export function storeNetworkAreaDiagramTextNodeMovement(
-    nadIdentifier: string,
+    diagramId: UUID,
     equipmentId: string,
     shiftX: number,
     shiftY: number,
@@ -989,26 +848,12 @@ export function storeNetworkAreaDiagramTextNodeMovement(
 ): StoreNetworkAreaDiagramTextNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-        nadIdentifier: nadIdentifier,
+        diagramId: diagramId,
         equipmentId: equipmentId,
         shiftX: shiftX,
         shiftY: shiftY,
         connectionShiftX: connectionShiftX,
         connectionShiftY: connectionShiftY,
-    };
-}
-
-export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
-export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
-    Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>
-> & {
-    nbVoltageLevels: number;
-};
-
-export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels: number): NetworkAreaDiagramNbVoltageLevelsAction {
-    return {
-        type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-        nbVoltageLevels: nbVoltageLevels,
     };
 }
 

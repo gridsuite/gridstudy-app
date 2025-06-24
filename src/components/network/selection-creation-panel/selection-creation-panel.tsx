@@ -102,6 +102,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         if (formData.selectionType === SELECTION_TYPES.NAD) {
             const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-network-viewer is migrated to TS
 
+            leaveDrawingMode();
             dispatch(
                 openNadList(
                     selectedSubstationsWithVl
@@ -116,7 +117,6 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         .filter((id): id is string => !!id)
                 )
             );
-            leaveDrawingMode();
             return;
         }
 
