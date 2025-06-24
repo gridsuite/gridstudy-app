@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { DndTable, DndColumnType, SelectInput } from '@gridsuite/commons-ui';
 import {
     BALANCES_ADJUSTMENT,
     BALANCES_ADJUSTMENT_COUNTRIES,
@@ -14,14 +15,11 @@ import {
     BALANCES_ADJUSTMENT_ZONES,
     SELECTED,
 } from '../../../utils/field-constants';
-import DndTable from '../../../utils/dnd-table/dnd-table';
 import React, { useCallback, useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import { DndColumnType } from '../../../utils/dnd-table/dnd-table.type';
 import { ShiftEquipmentType, ShiftType } from '../../../../services/network-modification-types';
 import { useIntl } from 'react-intl';
 import CountriesAutocomplete from './countries-autocomplete';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { styles } from './styles';
 
 export default function BalancesAdjustmentTable() {
@@ -118,7 +116,6 @@ export default function BalancesAdjustmentTable() {
             createRows={createRow}
             columnsDefinition={columnsDefinition}
             tableHeight={270}
-            withLeftButtons={false}
             withAddRowsDialog={false}
             disableDragAndDrop={true}
             showMoveArrow={false}

@@ -17,12 +17,13 @@ import {
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { type AppState, EquipmentUpdateType, NotificationType } from 'redux/reducer';
+import { type AppState, EquipmentUpdateType } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
 import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
+import { isStudyNotification } from 'types/notification-types';
 import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -259,8 +260,7 @@ export const useSpreadsheetEquipments = (
     const listenerUpdateEquipmentsLocal = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.STUDY) {
+            if (isStudyNotification(eventData)) {
                 const eventStudyUuid = eventData.headers.studyUuid;
                 const eventNodeUuid = eventData.headers.node;
                 const eventRootNetworkUuid = eventData.headers.rootNetworkUuid;
@@ -269,7 +269,8 @@ export const useSpreadsheetEquipments = (
                     currentNode?.id === eventNodeUuid &&
                     currentRootNetworkUuid === eventRootNetworkUuid
                 ) {
-                    const payload = JSON.parse(eventData.payload);
+                    // @ts-ignore
+                    const payload = JSON.parse(eventData.payload) as NetworkImpactsInfos;
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
                     const impactedElementTypes = payload.impactedElementTypes ?? [];

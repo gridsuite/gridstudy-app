@@ -45,12 +45,13 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     voltageLevelIds: diagramEvent.voltageLevelIds,
                     depth: 0,
                 });
-            } else if (diagramEvent.diagramType === DiagramType.NAD_FROM_CONFIG) {
+            } else if (diagramEvent.diagramType === DiagramType.NAD_FROM_ELEMENT) {
                 createDiagram({
                     diagramUuid: v4() as UUID,
-                    type: DiagramType.NAD_FROM_CONFIG,
-                    nadFromConfigUuid: diagramEvent.nadFromConfigUuid,
-                    nadName: diagramEvent.nadName,
+                    type: DiagramType.NAD_FROM_ELEMENT,
+                    elementUuid: diagramEvent.elementUuid,
+                    elementType: diagramEvent.elementType,
+                    elementName: diagramEvent.elementName,
                 });
             }
         },

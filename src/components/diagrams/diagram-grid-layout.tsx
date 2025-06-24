@@ -10,8 +10,7 @@ import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, darken, IconButton, Theme, useTheme } from '@mui/material';
-import { EquipmentInfos, EquipmentType, OverflowableText } from '@gridsuite/commons-ui';
-import CloseIcon from '@mui/icons-material/Close';
+import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import { UUID } from 'crypto';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
@@ -21,6 +20,7 @@ import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
+import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
@@ -31,7 +31,7 @@ const diagramTypes = [
     DiagramType.VOLTAGE_LEVEL,
     DiagramType.SUBSTATION,
     DiagramType.NETWORK_AREA_DIAGRAM,
-    DiagramType.NAD_FROM_CONFIG,
+    DiagramType.NAD_FROM_ELEMENT,
 ];
 
 const styles = {
@@ -47,14 +47,6 @@ const styles = {
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
                 : theme.networkModificationPanel.backgroundColor,
-    }),
-    header: (theme: Theme) => ({
-        padding: theme.spacing(0.5),
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: theme.palette.background.default,
-        borderBottom: 'solid 1px',
-        borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
     }),
 };
 
@@ -88,6 +80,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
 
     const onAddDiagram = (diagram: Diagram) => {
@@ -106,10 +99,29 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return { lg: new_lg_layouts };
         });
     };
+
+    const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
+        setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
+    }, []);
+
+    const onDiagramAlreadyExists = useCallback(
+        (diagramUuid: UUID) => {
+            setBlinkingDiagrams((oldBlinkingDiagrams) => {
+                if (oldBlinkingDiagrams.includes(diagramUuid)) {
+                    return oldBlinkingDiagrams;
+                }
+                return [...oldBlinkingDiagrams, diagramUuid];
+            });
+            setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
+        },
+        [stopDiagramBlinking]
+    );
+
     const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
         useDiagramModel({
             diagramTypes: diagramTypes,
             onAddDiagram,
+            onDiagramAlreadyExists,
         });
 
     const onRemoveItem = useCallback(
@@ -147,13 +159,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const handleLoadNadFromConfig = useCallback(
-        (nadFromConfigUuid: UUID, nadName: string) => {
+    const handleLoadNadFromElement = useCallback(
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             const diagram: DiagramParams = {
                 diagramUuid: v4() as UUID,
-                type: DiagramType.NAD_FROM_CONFIG,
-                nadFromConfigUuid,
-                nadName: nadName,
+                type: DiagramType.NAD_FROM_ELEMENT,
+                elementUuid: elementUuid,
+                elementType: elementType,
+                elementName: elementName,
             };
             createDiagram(diagram);
         },
@@ -166,13 +179,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         }
         return (
             <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Box sx={styles.header}>
-                    <OverflowableText
-                        className="react-grid-dragHandle"
-                        sx={{ flexGrow: '1' }}
-                        text={'Add a new diagram'}
-                    />
-                </Box>
+                <CardHeader title={'Add a new diagram'} />
                 <Box
                     sx={{
                         display: 'flex',
@@ -218,7 +225,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
-        // TODO adapt the layout w and h cnsidering those values
+        // TODO adapt the layout w and h considering those values
     }, []);
 
     const renderDiagrams = useCallback(() => {
@@ -231,23 +238,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             }
             return (
                 <Box key={diagram.diagramUuid} sx={styles.window}>
-                    <Box sx={styles.header}>
-                        <OverflowableText
-                            className="react-grid-dragHandle"
-                            sx={{ flexGrow: '1' }}
-                            text={diagram.name}
-                        />
-                        <IconButton
-                            size={'small'}
-                            onClick={(e) => {
-                                onRemoveItem(diagram.diagramUuid);
-                                e.stopPropagation();
-                            }}
-                        >
-                            <CloseIcon fontSize="small" />
-                        </IconButton>
-                    </Box>
-
+                    <CardHeader
+                        title={diagram.name}
+                        blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
+                        onClose={() => onRemoveItem(diagram.diagramUuid)}
+                    />
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
                         <AlertCustomMessageNode message={globalError || diagramErrors[diagram.diagramUuid]} noMargin />
                     ) : (
@@ -267,7 +262,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                 />
                             )}
                             {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                                diagram.type === DiagramType.NAD_FROM_CONFIG) && (
+                                diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
                                 <NetworkAreaDiagramContent
                                     diagramId={diagram.diagramUuid}
                                     svg={diagram.svg?.svg ?? undefined}
@@ -287,7 +282,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                                    onLoadNadFromConfig={handleLoadNadFromConfig}
+                                    onLoadNadFromElement={handleLoadNadFromElement}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -311,11 +306,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             );
         });
     }, [
+        blinkingDiagrams,
         diagramErrors,
         diagrams,
         diagramsInEditMode,
         globalError,
-        handleLoadNadFromConfig,
+        handleLoadNadFromElement,
         handleToggleEditMode,
         intl,
         loadingDiagrams,

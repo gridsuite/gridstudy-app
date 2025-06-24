@@ -6,13 +6,15 @@
  */
 
 import { useCallback } from 'react';
-import {
-    NodeUpdatedEventData,
-    NotificationType,
-    RootNetworksUpdatedEventData,
-    StudyUpdatedEventData,
-} from 'redux/reducer';
+
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    isModificationsDeleteFinishedNotification,
+    isModificationsUpdateFinishedNotification,
+    isNodeBuildCompletedNotification,
+    isNodeBuildStatusUpdatedNotification,
+    isRootNetworksUpdatedNotification,
+} from 'types/notification-types';
 
 type UseRootNetworkNotificationsProps = {
     resetSearch: () => void;
@@ -21,18 +23,15 @@ type UseRootNetworkNotificationsProps = {
 export const useRootNetworkSearchNotifications = ({ resetSearch }: UseRootNetworkNotificationsProps) => {
     const handleRootNetworkSearchReset = useCallback(
         (event: MessageEvent<string>) => {
-            const parsedEventData: StudyUpdatedEventData | RootNetworksUpdatedEventData | NodeUpdatedEventData =
-                JSON.parse(event.data);
+            const eventData = JSON.parse(event.data);
             // reset the search result for : build/unbuild, root network update, create and update modifications.
             // The current behavior is subject to change in future user stories.
-            const updateTypeHeader = parsedEventData.headers.updateType;
             const nodesStatus =
-                updateTypeHeader === NotificationType.BUILD_COMPLETED ||
-                updateTypeHeader === NotificationType.NODE_BUILD_STATUS_UPDATED;
-            const rootNetworksStatus = updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED;
+                isNodeBuildCompletedNotification(eventData) || isNodeBuildStatusUpdatedNotification(eventData);
+            const rootNetworksStatus = isRootNetworksUpdatedNotification(eventData);
             const networkModificationsStatus =
-                updateTypeHeader === NotificationType.DELETE_FINISHED ||
-                updateTypeHeader === NotificationType.UPDATE_FINISHED;
+                isModificationsDeleteFinishedNotification(eventData) ||
+                isModificationsUpdateFinishedNotification(eventData);
 
             if (nodesStatus || rootNetworksStatus || networkModificationsStatus) {
                 resetSearch();

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AppState, NotificationType } from '../../../redux/reducer';
+import { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
@@ -13,6 +13,7 @@ import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from 
 import { NodeAlias } from '../types/node-alias.type';
 import { UUID } from 'crypto';
 import { deletedOrRenamedNodes } from 'redux/actions';
+import { isSpreadsheetNodeAliasesUpdatedNotification } from 'types/notification-types';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
@@ -74,15 +75,12 @@ export const useNodeAliases = () => {
     const listenerAliasesUpdated = useCallback(
         (event: MessageEvent) => {
             const eventData = JSON.parse(event.data);
-            if (
-                eventData.headers.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED &&
-                eventData.headers.studyUuid === studyUuid
-            ) {
+            if (isSpreadsheetNodeAliasesUpdatedNotification(eventData)) {
                 // aliases change notification
                 fetchNodeAliases();
             }
         },
-        [fetchNodeAliases, studyUuid]
+        [fetchNodeAliases]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

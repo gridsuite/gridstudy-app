@@ -11,16 +11,17 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
-    EQUIPMENT_ID,
     CREATIONS_TABLE,
+    EQUIPMENT_ID,
+    PARTICIPATE,
+    REACTIVE_CAPABILITY_CURVE,
     TYPE,
     VOLTAGE_REGULATION_ON,
-    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
+import { styles, TABULAR_CREATION_FIELDS, TabularCreationField } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
@@ -28,9 +29,13 @@ import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 
-const TabularCreationForm = () => {
-    const intl = useIntl();
+export interface TabularCreationFormProps {
+    dataFetching: boolean;
+}
 
+export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFormProps>) {
+    const intl = useIntl();
+    const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
@@ -78,6 +83,7 @@ const TabularCreationForm = () => {
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
+            setIsFetching(false);
             if (requiredFieldNameInError !== '') {
                 setError(CREATIONS_TABLE, {
                     type: 'custom',
@@ -159,10 +165,16 @@ const TabularCreationForm = () => {
     });
 
     useEffect(() => {
+        setIsFetching(dataFetching);
+    }, [dataFetching]);
+
+    useEffect(() => {
         if (selectedFileError) {
             setValue(CREATIONS_TABLE, []);
             clearErrors(CREATIONS_TABLE);
+            setIsFetching(false);
         } else if (selectedFile) {
+            setIsFetching(true);
             // @ts-ignore
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
@@ -170,13 +182,6 @@ const TabularCreationForm = () => {
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                transformHeader: (header: string) => {
-                    // transform header to creation field
-                    const transformedHeader = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find(
-                        (field) => intl.formatMessage({ id: field.id }) === header
-                    );
-                    return transformedHeader ?? header;
-                },
                 transform: (value) => value.trim(),
             });
         }
@@ -227,7 +232,8 @@ const TabularCreationForm = () => {
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            if (field.id === VOLTAGE_REGULATION_ON || field.id === CONNECTED || field.id === FREQUENCY_REGULATION) {
+            const booleanColumns = [VOLTAGE_REGULATION_ON, CONNECTED, PARTICIPATE, REACTIVE_CAPABILITY_CURVE];
+            if (booleanColumns.includes(field.id)) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
@@ -247,7 +253,7 @@ const TabularCreationForm = () => {
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_skeleton'}
+                        filename={watchType + '_creation_template'}
                         disabled={!csvColumns}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
@@ -263,6 +269,7 @@ const TabularCreationForm = () => {
             <Grid item xs={12} sx={styles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
+                    loading={isFetching}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     pagination
@@ -273,6 +280,6 @@ const TabularCreationForm = () => {
             </Grid>
         </Grid>
     );
-};
+}
 
 export default TabularCreationForm;

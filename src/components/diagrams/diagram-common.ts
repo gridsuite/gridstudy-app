@@ -13,8 +13,6 @@ import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
-export const LOADING_WIDTH = 300;
-export const LOADING_HEIGHT = 300;
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
@@ -26,21 +24,9 @@ export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
 // To prevent increasing the network area diagram depth when the number of voltage levels in the diagram exceeds this value
 export const NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS = 50;
 
-export const DEFAULT_WIDTH_VOLTAGE_LEVEL = 400;
-export const DEFAULT_HEIGHT_VOLTAGE_LEVEL = 400;
-export const DEFAULT_WIDTH_SUBSTATION = 700;
-export const DEFAULT_HEIGHT_SUBSTATION = 400;
-export const DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM = 400;
-export const DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM = 400;
-
-// Height (in pixels) reserved to allow elements that are in the bottom of the map
-// to not be hidden in normal mode (but they are still hidden in fullscreen mode)
-export const MAP_BOTTOM_OFFSET = 80;
-
-// Percentage of the diagram pane's total height that correspond to the minimum
-// height of opened diagrams: diagrams should not be smaller than 25% of the
-// diagram pane's height.
-export const DIAGRAM_MAP_RATIO_MIN_PERCENTAGE = 0.25;
+// Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
+// corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
+export const NAD_ZOOM_LEVELS = [0, 2000, 3500, 6000, 9000, 12000, 15000];
 
 export const styles = {
     divDiagram: {
@@ -52,9 +38,6 @@ export const styles = {
             width: '100%',
         },
         '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
             display: 'block',
             width: '100%',
             height: '100%',
