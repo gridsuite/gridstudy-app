@@ -31,6 +31,7 @@ import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import zIndex from '@mui/material/styles/zIndex';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -91,11 +92,40 @@ const NetworkModificationTree = ({
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
+    console.log('NODES', nodes);
     const nodesMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
     const updateNodePositions = useCallback(() => {
         if (treeModel && treeModel.treeNodes?.length > 0) {
-            setNodes(getTreeNodesWithUpdatedPositions(treeModel.treeNodes));
+            const [treeNodeWithUpdatedPosition, securityGroups] = getTreeNodesWithUpdatedPositions(treeModel.treeNodes);
+            console.log('CHECKING', securityGroups);
+            setNodes([
+                ...treeNodeWithUpdatedPosition,
+                ...securityGroups.map((sg) => ({
+                    id: Math.random() + 'group',
+                    type: 'GROUP_LABEL',
+                    data: {
+                        label: 'testLabel',
+                        position: {
+                            topLeft: {
+                                x: sg.topLeft.column,
+                                y: sg.topLeft.row,
+                            },
+                            bottomRight: {
+                                x: sg.bottomRight.column,
+                                y: sg.bottomRight.row,
+                            },
+                        },
+                    },
+                    style: {
+                        pointerEvents: 'none',
+                        zIndex: -1,
+                    },
+                    position: { x: 0, y: 0 },
+                    draggable: false,
+                    selectable: false,
+                })),
+            ]);
             setEdges([...treeModel.treeEdges]);
         }
     }, [treeModel, setNodes, setEdges]);
@@ -315,6 +345,7 @@ const NetworkModificationTree = ({
         setCenter(x, y, { zoom: getZoom() });
     };
 
+    console.log('PASSED NODE', nodes);
     return (
         <Box sx={styles}>
             <ReactFlow

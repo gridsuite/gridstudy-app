@@ -8,10 +8,12 @@
 import RootNode from '../nodes/root-node';
 import NetworkModificationNode from '../nodes/network-modification-node';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { LabeledGroupNode } from '../nodes/labeled-group-node';
 
 export const nodeTypes = {
     ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
+    GROUP_LABEL: LabeledGroupNode,
 };
 
 // used to generate translation combined keys with a prefix/suffix for each equipment type

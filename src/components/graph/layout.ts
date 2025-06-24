@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CurrentTreeNode } from './tree-node.type';
+import { CurrentTreeNode, NetworkModificationNodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -79,11 +79,16 @@ class PlacementGrid {
  * E = {row: 2, column: 1}
  * F = {row: 2, column: 2}
  */
-function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
+function getNodePlacements(nodes: CurrentTreeNode[], nodeMap: Map<string, { index: number; node: CurrentTreeNode }>) {
     const nodePlacements = new PlacementGrid();
+    const securityGroupsPlacements: { topLeft: NodePlacement; bottomRight: NodePlacement }[] = [];
     let currentMaxColumn = 0;
+    let securityGroupTopLeftPosition: NodePlacement | undefined;
+    let currentSecurityGroupMaxX: number;
+    let currentSecurityGroupMaxY: number;
 
-    nodes.forEach((node) => {
+    nodes.forEach((node, index) => {
+        const isLast = index === nodes.length - 1;
         if (!node.parentId) {
             // First node, top left.
             nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
@@ -105,10 +110,41 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
                     potentialChildPlacement.column = currentMaxColumn;
                 }
                 nodePlacements.setPlacement(node.id, potentialChildPlacement);
+
+                if (
+                    node.data.nodeType === NetworkModificationNodeType.SECURITY &&
+                    nodeMap.get(node.parentId)?.node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION
+                ) {
+                    if (securityGroupTopLeftPosition) {
+                        securityGroupsPlacements.push({
+                            topLeft: securityGroupTopLeftPosition,
+                            bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
+                        });
+                    }
+                    securityGroupTopLeftPosition = potentialChildPlacement;
+                    currentSecurityGroupMaxX = potentialChildPlacement.column;
+                    currentSecurityGroupMaxY = potentialChildPlacement.row;
+                }
+
+                if (node.data.nodeType === NetworkModificationNodeType.SECURITY) {
+                    currentSecurityGroupMaxX = Math.max(currentSecurityGroupMaxX, potentialChildPlacement.column);
+                    currentSecurityGroupMaxY = Math.max(currentSecurityGroupMaxY, potentialChildPlacement.row);
+                }
+
+                if (
+                    securityGroupTopLeftPosition &&
+                    (isLast || node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION)
+                ) {
+                    securityGroupsPlacements.push({
+                        topLeft: securityGroupTopLeftPosition,
+                        bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
+                    });
+                    securityGroupTopLeftPosition = undefined;
+                }
             }
         }
     });
-    return nodePlacements;
+    return [nodePlacements, securityGroupsPlacements] as const;
 }
 
 /**
@@ -215,20 +251,12 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param nodes
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
  */
-function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementGrid) {
-    // Create a node lookup map and parent-children relationship map
-    const nodeMap = new Map<string, { index: number; node: CurrentTreeNode }>();
-    const childrenMap = new Map<string, CurrentTreeNode[]>();
-
-    nodes.forEach((node, index) => {
-        nodeMap.set(node.id, { index, node });
-        if (node.parentId) {
-            const children = childrenMap.get(node.parentId) || [];
-            children.push(node);
-            childrenMap.set(node.parentId, children);
-        }
-    });
-
+function compressTreePlacements(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    childrenMap: Map<string, CurrentTreeNode[]>
+) {
     // Calculate subtree sizes in a single pass (bottom-up) to have the children nodes sizes ready
     const subTreeSizeMap = new Map<string, number>();
 
@@ -273,16 +301,36 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
     return placements;
 }
 
+function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
+    // Create a node lookup map and parent-children relationship map
+    const nodeMap = new Map<string, { index: number; node: CurrentTreeNode }>();
+    const childrenMap = new Map<string, CurrentTreeNode[]>();
+
+    nodes.forEach((node, index) => {
+        nodeMap.set(node.id, { index, node });
+        if (node.parentId) {
+            const children = childrenMap.get(node.parentId) || [];
+            children.push(node);
+            childrenMap.set(node.parentId, children);
+        }
+    });
+
+    return [nodeMap, childrenMap] as const;
+}
+
 /**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
  */
 export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
-    const uncompressedNodePlacements = getNodePlacements(newNodes);
+    const [nodeMap, childrenMap] = createNodeAndChildrenMap(newNodes);
 
-    const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements);
+    const [uncompressedNodePlacements, securityGroupsPlacements] = getNodePlacements(newNodes, nodeMap);
 
-    return newNodes.map((node) => {
+    console.log('TEST1', newNodes, nodeMap, childrenMap);
+    const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements, nodeMap, childrenMap);
+    console.log('TEST2', nodePlacements, newNodes, nodeMap, childrenMap);
+    const nodesWithUpdatedPositions = newNodes.map((node) => {
         const placement = nodePlacements.getPlacement(node.id);
         if (placement) {
             if (node.parentId) {
@@ -301,6 +349,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
                 y: placement.row * nodeHeight,
             };
         }
+        console.log('NODEPOSITION = ', node);
         return {
             ...node,
             position: {
@@ -309,6 +358,8 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
             },
         };
     });
+
+    return [nodesWithUpdatedPositions, securityGroupsPlacements] as const;
 }
 
 /**
