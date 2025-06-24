@@ -229,6 +229,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_CREATED) {
+                if (isSubtreeImpacted([studyUpdatedForce.eventData.headers.parentNode])) {
+                    resetNodeClipboard();
+                }
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers.newNode).then(
                     (nodes) => {
                         dispatch(
