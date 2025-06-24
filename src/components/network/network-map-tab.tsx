@@ -1092,75 +1092,119 @@ export const NetworkMapTab = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
-    const renderMap = () => (
-        <NetworkMap
-            ref={networkMapRef}
-            mapEquipments={mapEquipments}
-            geoData={geoData}
-            updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
-            displayOverlayLoader={!basicDataReady && mapDataLoading}
-            filteredNominalVoltages={filteredNominalVoltages}
-            labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
-            arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-            initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
-            initialZoom={INITIAL_ZOOM}
-            lineFullPath={lineFullPath}
-            lineParallelPath={lineParallelPath}
-            lineFlowMode={lineFlowMode}
-            useName={useName}
-            visible={visible}
-            disabled={disabled}
-            onSubstationClick={openVoltageLevel}
-            onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
-            onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
-                displayEquipmentMenu(
-                    equipment as unknown as BaseEquipment,
-                    x,
-                    y,
-                    EquipmentType.SUBSTATION,
-                    isInDrawingMode
-                )
-            }
-            onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
-                displayEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
-            }
-            onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
-                displayEquipmentMenu(
-                    equipment as unknown as BaseEquipment,
-                    x,
-                    y,
-                    EquipmentType.HVDC_LINE,
-                    isInDrawingMode
-                )
-            }
-            onVoltageLevelMenuClick={voltageLevelMenuClick}
-            mapBoxToken={mapBoxToken}
-            centerOnSubstation={centerOnSubstation}
-            isManualRefreshBackdropDisplayed={
-                networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
-            }
-            // only 2 things need this to ensure the map keeps the correct size:
-            // - changing study display mode because it changes the map container size
-            //   programmatically
-            // - changing visible when the map provider is changed in the settings because
-            //   it causes a render with the map container having display:none
-            onManualRefreshClick={loadMapManually}
-            triggerMapResizeOnChange={[studyDisplayMode, visible]}
-            renderPopover={renderLinePopover}
-            mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
-            mapTheme={theme?.palette.mode}
-            areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
-            onDrawPolygonModeActive={(active: DRAW_MODES) => {
-                onDrawPolygonModeActive(active);
-            }}
-            onPolygonChanged={(features) => {
-                onPolygonChanged(features);
-            }}
-            onDrawEvent={(event) => {
-                onDrawEvent(event);
-            }}
-            shouldDisableToolTip={!visible || isInDrawingMode}
-        />
+    const renderMap = useCallback(
+        () => (
+            <NetworkMap
+                ref={networkMapRef}
+                mapEquipments={mapEquipments}
+                geoData={geoData}
+                updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
+                displayOverlayLoader={!basicDataReady && mapDataLoading}
+                filteredNominalVoltages={filteredNominalVoltages}
+                labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
+                arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
+                initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
+                initialZoom={INITIAL_ZOOM}
+                lineFullPath={lineFullPath}
+                lineParallelPath={lineParallelPath}
+                lineFlowMode={lineFlowMode}
+                useName={useName}
+                visible={visible}
+                disabled={disabled}
+                onSubstationClick={openVoltageLevel}
+                onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
+                onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
+                    displayEquipmentMenu(
+                        equipment as unknown as BaseEquipment,
+                        x,
+                        y,
+                        EquipmentType.SUBSTATION,
+                        isInDrawingMode
+                    )
+                }
+                onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
+                    displayEquipmentMenu(
+                        equipment as unknown as BaseEquipment,
+                        x,
+                        y,
+                        EquipmentType.LINE,
+                        isInDrawingMode
+                    )
+                }
+                onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
+                    displayEquipmentMenu(
+                        equipment as unknown as BaseEquipment,
+                        x,
+                        y,
+                        EquipmentType.HVDC_LINE,
+                        isInDrawingMode
+                    )
+                }
+                onVoltageLevelMenuClick={voltageLevelMenuClick}
+                mapBoxToken={mapBoxToken}
+                centerOnSubstation={centerOnSubstation}
+                isManualRefreshBackdropDisplayed={
+                    networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+                }
+                // only 2 things need this to ensure the map keeps the correct size:
+                // - changing study display mode because it changes the map container size
+                //   programmatically
+                // - changing visible when the map provider is changed in the settings because
+                //   it causes a render with the map container having display:none
+                onManualRefreshClick={loadMapManually}
+                triggerMapResizeOnChange={[studyDisplayMode, visible]}
+                renderPopover={renderLinePopover}
+                mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
+                mapTheme={theme?.palette.mode}
+                areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
+                onDrawPolygonModeActive={(active: DRAW_MODES) => {
+                    onDrawPolygonModeActive(active);
+                }}
+                onPolygonChanged={(features) => {
+                    onPolygonChanged(features);
+                }}
+                onDrawEvent={(event) => {
+                    onDrawEvent(event);
+                }}
+                shouldDisableToolTip={!visible || isInDrawingMode}
+            />
+        ),
+        [
+            basicDataReady,
+            centerOnSubstation,
+            chooseVoltageLevelForSubstation,
+            currentNode,
+            disabled,
+            displayEquipmentMenu,
+            filteredNominalVoltages,
+            geoData,
+            isInDrawingMode,
+            lineFlowMode,
+            lineFullPath,
+            lineParallelPath,
+            loadFlowStatus,
+            loadMapManually,
+            mapBoxToken,
+            mapDataLoading,
+            mapEquipments,
+            networkMapRef,
+            networkVisuParams.mapParameters.mapBaseMap,
+            networkVisuParams.mapParameters.mapManualRefresh,
+            onDrawEvent,
+            onDrawPolygonModeActive,
+            onPolygonChanged,
+            openVoltageLevel,
+            reloadMapNeeded,
+            renderLinePopover,
+            studyDisplayMode,
+            theme?.palette.mode,
+            updatedHvdcLines,
+            updatedLines,
+            updatedTieLines,
+            useName,
+            visible,
+            voltageLevelMenuClick,
+        ]
     );
 
     // Set up filteredNominalVoltages once at map initialization
