@@ -150,13 +150,13 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             ComputingType.DYNAMIC_SIMULATION,
             null,
             () =>
-                startDynamicSimulation(
+                startDynamicSimulation({
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeUuid: currentNode?.id,
                     currentRootNetworkUuid,
                     dynamicSimulationConfiguration,
-                    debug
-                ),
+                    debug,
+                }),
             () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
             null,
             'DynamicSimulationRunError'
@@ -263,7 +263,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                             if (!isValid) {
                                 // open parameters selector to configure mandatory params
                                 setShowDynamicSimulationParametersSelector(true);
-                                setRunWithDebug(true);
+                                setRunWithDebug(debug);
                             } else {
                                 // start server side dynamic simulation directly
                                 return startComputationAsync(
@@ -448,19 +448,21 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             />
             <ContingencyListSelector
                 open={showContingencyListSelector}
-                onClose={() => {
+                onClose={() => setShowContingencyListSelector(false)}
+                onStart={(params) => {
+                    handleStartSecurityAnalysis(params);
                     setShowContingencyListSelector(false);
                 }}
-                onStart={(params) => handleStartSecurityAnalysis(params)}
             />
             {!disabled && showDynamicSimulationParametersSelector && (
                 <DynamicSimulationParametersSelector
                     open={showDynamicSimulationParametersSelector}
-                    onClose={() => {
+                    onClose={() => setShowDynamicSimulationParametersSelector(false)}
+                    onStart={(params) => {
+                        handleStartDynamicSimulation(params, runWithDebug);
                         setShowDynamicSimulationParametersSelector(false);
                         setRunWithDebug(false);
                     }}
-                    onStart={(params) => handleStartDynamicSimulation(params, runWithDebug)}
                     studyUuid={studyUuid}
                 />
             )}
