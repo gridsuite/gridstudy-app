@@ -188,6 +188,7 @@ const TapChangerSteps = ({
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
+            delimiter: language === 'fr' ? ';' : ',',
             transform: (value) => transformIfFrenchNumber(value, language),
             complete: function (results) {
                 if (results.data.length > MAX_ROWS_NUMBER) {

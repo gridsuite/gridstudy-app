@@ -26,6 +26,7 @@ export const ImportRuleDialog = (props) => {
         header: props.csvColumns,
         resetTrigger: props.openImportRuleDialog,
         maxTapNumber: MAX_ROWS_NUMBER,
+        language: language,
     });
 
     const handleSave = () => {
