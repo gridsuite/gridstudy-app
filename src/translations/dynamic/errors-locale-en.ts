@@ -13,6 +13,9 @@ const errors_locale_en = {
     // DynamicSimulation
     fetchDynamicSimulationParametersError: 'An error occured when fetching the dynamic simulation parameters',
     fetchDynamicSimulationProvidersError: 'An error occured when fetching dynamic simulation provider list',
+    // Other
+    resetLoadFlowParametersWarning:
+        'Impossible to retrieve the load flow parameters defined in the user profile (default values are used)',
     // State estimation
     updateStateEstimationParametersError: 'An error occurred while updating the state estimation parameters',
 };

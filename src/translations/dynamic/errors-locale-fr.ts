@@ -22,6 +22,12 @@ const errors_locale_fr = {
         'Une erreur est survenue lors de la récupération des paramètres de la simulation dynamique',
     fetchDynamicSimulationProvidersError:
         'Une erreur est survenue lors de la récupération des fournisseurs de la simulation dynamique',
+    // Other
+    resetLoadFlowParametersWarning:
+        'Impossible de récupérer les paramètres de calcul de répartition définis dans le profil utilisateur (les valeurs par défaut sont appliquées)',
+    //State estimation
+    updateStateEstimationParametersError:
+        "Une erreur est survenue lors de la mise a jour des paramètres de l'estimateur d'état",
 };
 
 export default errors_locale_fr;

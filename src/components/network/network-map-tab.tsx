@@ -40,7 +40,7 @@ import {
     NotificationsUrlKeys,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
@@ -57,14 +57,14 @@ import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
-import { AppState, LoadflowResultEventData, NotificationType, RootNetworksUpdatedEventData } from 'redux/reducer';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
+import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
+import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
-import { useDiagram } from 'components/diagrams/use-diagram';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -185,7 +185,6 @@ export const NetworkMapTab = ({
 
     const lineFullPathRef = useRef<boolean>();
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
-    const { openDiagramView } = useDiagram();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -847,10 +846,8 @@ export const NetworkMapTab = ({
             if (!isInitialized) {
                 return;
             }
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as LoadflowResultEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.LOADFLOW_RESULT) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
                 if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
                     dispatch(setMapDataLoading(true));
@@ -874,12 +871,10 @@ export const NetworkMapTab = ({
             if (!isInitialized) {
                 return;
             }
-            const parsedEventData: unknown = JSON.parse(event.data);
-            const eventData = parsedEventData as RootNetworksUpdatedEventData;
-            const updateTypeHeader = eventData.headers.updateType;
-            if (updateTypeHeader === NotificationType.ROOT_NETWORKS_UPDATED) {
-                const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
-                if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
+            const eventData: unknown = JSON.parse(event.data);
+            if (isRootNetworksUpdatedNotification(eventData)) {
+                const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
+                if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
                     setInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);
                     dispatch(resetMapEquipment());
@@ -1210,12 +1205,12 @@ export const NetworkMapTab = ({
         // TODO code factorization for displaying a VL via a hook
         (optionInfos: EquipmentInfos) => {
             if (optionInfos.type === EquipmentType.SUBSTATION) {
-                openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
+                dispatch(openDiagram(optionInfos.id, DiagramType.SUBSTATION));
             } else if (optionInfos.voltageLevelId) {
-                openDiagramView(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openDiagram(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL));
             }
         },
-        [openDiagramView]
+        [dispatch]
     );
 
     return (

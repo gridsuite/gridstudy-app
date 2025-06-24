@@ -36,7 +36,6 @@ import {
     getSensitivityAnalysisParameters,
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
-import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
@@ -65,8 +64,10 @@ import {
     SensitivityAnalysisParametersInline,
     ShortCircuitParametersInLine,
     useParametersBackend,
+    VoltageInitParametersInLine,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
+import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -190,9 +191,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     );
 
     const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
-
     const shortCircuitParameters = useGetShortCircuitParameters();
-
+    const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
     useEffect(() => {
@@ -309,7 +309,13 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
                 return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
-                return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
+                return (
+                    <VoltageInitParametersInLine
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                        voltageInitParameters={voltageInitParameters}
+                    />
+                );
             case TAB_VALUES.stateEstimationTabValue:
                 return (
                     <StateEstimationParameters
@@ -343,6 +349,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         user,
         useStateEstimationParameters,
         networkVisualizationsParameters,
+        voltageInitParameters,
     ]);
 
     return (

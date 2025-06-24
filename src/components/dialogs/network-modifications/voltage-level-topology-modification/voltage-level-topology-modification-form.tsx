@@ -7,7 +7,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { Button, Grid, TextField, useTheme } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
@@ -19,10 +19,10 @@ import { filledTextField } from '../../dialog-utils';
 import HeaderWithTooltip from './header-with-tooltip';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import ConnectionCellRenderer from './connection-cell-render';
-import ResetSettings from '@material-symbols/svg-400/outlined/reset_settings.svg?react';
 import { useFormContext } from 'react-hook-form';
 import { SwitchRowForm } from './voltage-level-topology.type';
 import SeparatorCellRenderer from './separator-cell-renderer';
+import { PublishedWithChanges } from '@mui/icons-material';
 
 interface VoltageLevelTopologyModificationFormProps {
     currentNode: CurrentTreeNode;
@@ -38,7 +38,6 @@ export function VoltageLevelTopologyModificationForm({
     isUpdate,
 }: Readonly<VoltageLevelTopologyModificationFormProps>) {
     const intl = useIntl();
-    const theme = useTheme();
     const { getValues, setValue } = useFormContext();
 
     const defaultColDef = useMemo(
@@ -130,7 +129,8 @@ export function VoltageLevelTopologyModificationForm({
     const copyPreviousToCurrentStatus = useCallback(() => {
         const formValues = getValues(TOPOLOGY_MODIFICATION_TABLE);
         formValues.forEach((row: SwitchRowForm, index: number) => {
-            if (row.type === 'SEPARATOR') {
+            // if row.currentConnectionStatus is not null we want to keep the value
+            if (row.type === 'SEPARATOR' || row.currentConnectionStatus !== null) {
                 return;
             }
             // should revert because CURRENT_CONNECTION_STATUS presents 'close' while PREV_CONNECTION_STATUS presents 'open'
@@ -162,16 +162,13 @@ export function VoltageLevelTopologyModificationForm({
                         size="small"
                         onClick={copyPreviousToCurrentStatus}
                         startIcon={
-                            <ResetSettings
+                            <PublishedWithChanges
                                 style={{
                                     width: 24,
                                     height: 24,
-                                    fill: !isUpdate ? theme.palette.action.disabled : theme.palette.primary.main,
-                                    opacity: !isUpdate ? 0.3 : 1,
                                 }}
                             />
                         }
-                        disabled={!isUpdate}
                     >
                         {intl.formatMessage({ id: 'copyPreviousTopologyStatus' })}
                     </Button>
