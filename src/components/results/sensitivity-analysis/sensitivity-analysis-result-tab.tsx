@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useCallback, useState } from 'react';
+import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
@@ -23,7 +23,12 @@ import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
 import { UUID } from 'crypto';
-import { COMPUTATION_RESULTS_LOGS, SensiTab, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
+import {
+    COMPUTATION_RESULTS_LOGS,
+    SensiTab,
+    SENSITIVITY_AT_NODE,
+    SENSITIVITY_IN_DELTA_MW,
+} from './sensitivity-analysis-result.type';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
@@ -107,6 +112,12 @@ function SensitivityAnalysisResultTab({
             .finally(() => setIsCsvExportLoading(false));
     }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders]);
 
+    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+        return sensiTab === SENSITIVITY_AT_NODE
+            ? [EQUIPMENT_TYPES.VOLTAGE_LEVEL]
+            : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+    }, [sensiTab]);
+
     return (
         <>
             <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={handleSensiTabChange} />
@@ -128,7 +139,7 @@ function SensitivityAnalysisResultTab({
                             <GlobalFilterSelector
                                 onChange={handleGlobalFilterChange}
                                 filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
-                                filterableEquipmentTypes={[EQUIPMENT_TYPES.SUBSTATION, EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                                filterableEquipmentTypes={filterableEquipmentTypes}
                             />
                         </Box>
                         <ExportButton
