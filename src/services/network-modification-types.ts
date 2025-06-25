@@ -841,5 +841,6 @@ export type BalancesAdjustmentInfos = {
     balanceType: BalanceType;
     withLoadFlow: boolean;
     loadFlowParametersId: string | null;
+    withRatioTapChangers: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };
