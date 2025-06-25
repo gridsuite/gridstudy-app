@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
@@ -53,7 +53,6 @@ const NetworkModificationTree = ({
 }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const theme = useTheme();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
