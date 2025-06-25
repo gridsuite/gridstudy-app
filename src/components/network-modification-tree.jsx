@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, styled, useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
@@ -32,14 +32,17 @@ import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-const CustomReactFlow = styled(ReactFlow)(({ theme }) => ({
+const styles = (theme) => ({
+    flexGrow: 1,
+    height: '100%',
+    backgroundColor: theme.reactflow.backgroundColor,
     '.react-flow__attribution a': {
         color: theme.palette.text.primary,
     },
     '.react-flow__attribution': {
         backgroundColor: theme.palette.background.paper,
     },
-}));
+});
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -314,8 +317,8 @@ const NetworkModificationTree = ({
     };
 
     return (
-        <Box flexGrow={1} height="100%">
-            <CustomReactFlow
+        <Box sx={styles}>
+            <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={handleNodesChange}
@@ -330,7 +333,6 @@ const NetworkModificationTree = ({
                 nodeTypes={nodeTypes}
                 minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
-                style={{ backgroundColor: theme.reactflow.backgroundColor }}
                 onNodeDragStop={handlePostNodeDragging}
                 disableKeyboardA11y
                 deleteKeyCode={null}
@@ -368,7 +370,7 @@ const NetworkModificationTree = ({
                 </Controls>
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
                 <RootNetworkPanel />
-            </CustomReactFlow>
+            </ReactFlow>
         </Box>
     );
 };
