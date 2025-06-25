@@ -8,7 +8,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CustomAGGrid,
+    ErrorInput,
+    FieldErrorAlert,
+    LANG_FRENCH,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     CONNECTED,
     CONNECTED1,
@@ -30,13 +37,21 @@ import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { generateCommentLines, transformIfFrenchNumber } from '../tabular-creation/tabular-creation-utils';
 
-const TabularModificationForm = () => {
+export interface TabularModificationFormProps {
+    dataFetching: boolean;
+}
+
+export function TabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
-
     const { snackWarning } = useSnackMessage();
-
+    const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, getValues } = useFormContext();
+
+    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const getTypeLabel = useCallback(
         (type: string) =>
@@ -54,7 +69,8 @@ const TabularModificationForm = () => {
             setValue(MODIFICATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
-            // For shunt compensators, display warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
+            setIsFetching(false);
+            // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
                 results.data.some(
                     (modification) =>
@@ -70,36 +86,23 @@ const TabularModificationForm = () => {
         [clearErrors, setValue, snackWarning]
     );
 
-    const watchType = useWatch({
+    const equipmentType = useWatch({
         name: TYPE,
     });
 
     const csvColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType];
-    }, [watchType]);
+        return TABULAR_MODIFICATION_FIELDS[equipmentType];
+    }, [equipmentType]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
             return intl.formatMessage({ id: field });
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     const commentLines = useMemo(() => {
-        let commentData: string[][] = [];
-        if (csvTranslatedColumns) {
-            // First comment line contains header translation
-            commentData.push(['#' + csvTranslatedColumns.join(',')]);
-            if (!!intl.messages['TabularModificationSkeletonComment.' + watchType]) {
-                // Optionally a second comment line, if present in translation file
-                commentData.push([
-                    intl.formatMessage({
-                        id: 'TabularModificationSkeletonComment.' + watchType,
-                    }),
-                ]);
-            }
-        }
-        return commentData;
-    }, [intl, watchType, csvTranslatedColumns]);
+        return generateCommentLines({ csvTranslatedColumns, intl, equipmentType, language, formType: 'Modification' });
+    }, [intl, equipmentType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -107,6 +110,7 @@ const TabularModificationForm = () => {
         header: csvColumns,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
+        language: language,
     });
 
     const watchTable = useWatch({
@@ -114,15 +118,22 @@ const TabularModificationForm = () => {
     });
 
     useEffect(() => {
+        setIsFetching(dataFetching);
+    }, [dataFetching]);
+
+    useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
             clearErrors(MODIFICATIONS_TABLE);
+            setIsFetching(false);
         } else if (selectedFile) {
+            setIsFetching(true);
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 comments: '#',
+                delimiter: language === LANG_FRENCH ? ';' : ',',
                 complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
@@ -131,10 +142,10 @@ const TabularModificationForm = () => {
                     );
                     return transformedHeader ?? header;
                 },
-                transform: (value) => value.trim(),
+                transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular modification
@@ -174,7 +185,7 @@ const TabularModificationForm = () => {
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
             const columnDef: ColDef = {};
             if (field === EQUIPMENT_ID) {
                 columnDef.pinned = true;
@@ -196,7 +207,7 @@ const TabularModificationForm = () => {
             }
             return columnDef;
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -209,8 +220,9 @@ const TabularModificationForm = () => {
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_skeleton'}
+                        filename={equipmentType + '_modification_template'}
                         disabled={!csvColumns}
+                        separator={language === LANG_FRENCH ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />
@@ -225,6 +237,7 @@ const TabularModificationForm = () => {
             <Grid item xs={12} sx={styles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
+                    loading={isFetching}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     pagination
@@ -235,6 +248,6 @@ const TabularModificationForm = () => {
             </Grid>
         </Grid>
     );
-};
+}
 
 export default TabularModificationForm;

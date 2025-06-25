@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import {
+    ComputingType,
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
@@ -17,7 +18,6 @@ import {
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../services/study/voltage-init';
-import ComputingType from '../../computing-status/computing-type';
 import { UUID } from 'crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
 import { isComputationParametersUpdatedNotification } from 'types/notification-types';

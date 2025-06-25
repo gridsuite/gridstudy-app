@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { LANG_FRENCH, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
@@ -57,6 +57,7 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
+import { IntlShape } from 'react-intl';
 import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 
 export interface TabularCreationField {
@@ -284,4 +285,47 @@ export const getEquipmentTypeFromCreationType = (type: string) => {
 
 export const styles = {
     grid: { height: 500, width: '100%' },
+};
+
+interface CommentLinesConfig {
+    csvTranslatedColumns?: string[];
+    intl: IntlShape;
+    equipmentType: string;
+    language: string;
+    formType: 'Creation' | 'Modification';
+}
+
+export const generateCommentLines = ({
+    csvTranslatedColumns,
+    intl,
+    equipmentType,
+    language,
+    formType,
+}: CommentLinesConfig): string[][] => {
+    let commentData: string[][] = [];
+    if (csvTranslatedColumns) {
+        // First comment line contains header translation
+        commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
+
+        // Check for optional second comment line from translation file
+        const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
+
+        if (!!intl.messages[commentKey]) {
+            commentData.push([
+                intl.formatMessage({
+                    id: commentKey,
+                }),
+            ]);
+        }
+    }
+    return commentData;
+};
+
+export const transformIfFrenchNumber = (value: string, language: string): string => {
+    value = value.trim();
+    // Only transform if we're in French mode and the value is a number that has a comma
+    if (language === LANG_FRENCH && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
+        return value.replace(',', '.');
+    }
+    return value;
 };

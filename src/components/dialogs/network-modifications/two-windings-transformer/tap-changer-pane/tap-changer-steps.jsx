@@ -11,7 +11,7 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import { DndTable, IntegerInput, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -25,6 +25,7 @@ import {
 import PropTypes from 'prop-types';
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { transformIfFrenchNumber } from '../../tabular-creation/tabular-creation-utils.js';
 
 const TapChangerSteps = ({
     tapChanger,
@@ -183,10 +184,12 @@ const TapChangerSteps = ({
         });
     }
 
-    const handleImportTapRule = (selectedFile, setFileParseError) => {
+    const handleImportTapRule = (selectedFile, language, setFileParseError) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
+            delimiter: language === LANG_FRENCH ? ';' : ',',
+            transform: (value) => transformIfFrenchNumber(value, language),
             complete: function (results) {
                 if (results.data.length > MAX_ROWS_NUMBER) {
                     setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));
@@ -291,7 +294,7 @@ const TapChangerSteps = ({
                 createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
-                handleResetButton={isModification ? handleResetButton : undefined}
+                handleResetButton={handleResetButton}
                 resetButtonMessageId={resetButtonMessageId}
                 previousValues={previousValues?.[STEPS]}
                 getPreviousValue={getTapPreviousValue}
