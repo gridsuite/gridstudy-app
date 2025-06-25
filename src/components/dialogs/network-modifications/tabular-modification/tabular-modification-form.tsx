@@ -86,23 +86,23 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
         [clearErrors, setValue, snackWarning]
     );
 
-    const watchType = useWatch({
+    const equipmentType = useWatch({
         name: TYPE,
     });
 
     const csvColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType];
-    }, [watchType]);
+        return TABULAR_MODIFICATION_FIELDS[equipmentType];
+    }, [equipmentType]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
             return intl.formatMessage({ id: field });
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     const commentLines = useMemo(() => {
-        return generateCommentLines({ csvTranslatedColumns, intl, watchType, language, formType: 'Modification' });
-    }, [intl, watchType, csvTranslatedColumns, language]);
+        return generateCommentLines({ csvTranslatedColumns, intl, equipmentType, language, formType: 'Modification' });
+    }, [intl, equipmentType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -185,7 +185,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
             const columnDef: ColDef = {};
             if (field === EQUIPMENT_ID) {
                 columnDef.pinned = true;
@@ -207,7 +207,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             }
             return columnDef;
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -220,7 +220,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_modification_template'}
+                        filename={equipmentType + '_modification_template'}
                         disabled={!csvColumns}
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >

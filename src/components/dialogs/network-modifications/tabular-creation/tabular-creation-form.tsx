@@ -128,25 +128,25 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         [clearErrors, setValue, getValues, setError, intl]
     );
 
-    const watchType = useWatch({
+    const equipmentType = useWatch({
         name: TYPE,
     });
 
     const csvColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map((field: TabularCreationField) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field: TabularCreationField) => {
             return field.id;
         });
-    }, [watchType]);
+    }, [equipmentType]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field) => {
             return intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     const commentLines = useMemo(() => {
-        return generateCommentLines({ csvTranslatedColumns, intl, watchType, language, formType: 'Creation' });
-    }, [intl, watchType, csvTranslatedColumns, language]);
+        return generateCommentLines({ csvTranslatedColumns, intl, equipmentType, language, formType: 'Creation' });
+    }, [intl, equipmentType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -223,7 +223,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field) => {
             const columnDef: ColDef = {};
             if (field.id === EQUIPMENT_ID) {
                 columnDef.pinned = true;
@@ -238,7 +238,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             }
             return columnDef;
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -251,7 +251,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_creation_template'}
+                        filename={equipmentType + '_creation_template'}
                         disabled={!csvColumns}
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
