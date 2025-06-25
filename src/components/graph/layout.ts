@@ -5,16 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { NodePlacement } from './layout.type';
+import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, NetworkModificationNodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
 export const snapGrid = [10, nodeHeight]; // Used for drag and drop
-
-export type NodePlacement = {
-    row: number;
-    column: number;
-};
 
 /**
  * Uses a bidirectional map to match a node ID to a NodePlacement.
@@ -335,10 +332,9 @@ function computeSecurityGroupNodes(
     });
 
     return securityGroupsPlacements.map((sg) => ({
-        id: Math.random() + 'group',
-        type: 'GROUP_LABEL',
+        id: sg.firstNodeId + groupIdSuffix,
+        type: LABELED_GROUP_TYPE,
         data: {
-            label: 'testLabel',
             position: {
                 topLeft: sg.topLeft,
                 bottomRight: sg.bottomRight,

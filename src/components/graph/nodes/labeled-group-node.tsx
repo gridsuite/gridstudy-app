@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Typography } from '@mui/material';
-import { Node, NodeProps } from '@xyflow/react';
-import { nodeHeight, NodePlacement, nodeWidth } from '../layout';
+import { Box } from '@mui/material';
+import { NodeProps } from '@xyflow/react';
+import { nodeHeight, nodeWidth } from '../layout';
 import SecurityIcon from '@mui/icons-material/Security';
 import { FormattedMessage } from 'react-intl';
+import { LabeledGroupNodeType } from './labeled-group-node.type';
 
 const styles = {
     border: {
@@ -30,9 +31,7 @@ const styles = {
     },
 };
 
-export function LabeledGroupNode({
-    data,
-}: NodeProps<Node<{ position: { topLeft: NodePlacement; bottomRight: NodePlacement } }>>) {
+export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
     const verticalPadding = (nodeHeight - 60) / 4;
     const horizontalPadding = (nodeWidth - 180) / 2;
 

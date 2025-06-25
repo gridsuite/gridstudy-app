@@ -42,6 +42,15 @@ export default class NetworkModificationTreeModel {
         return this.treeNodes.filter((n) => n.parentId === parentNodeId);
     }
 
+    getAllChildren(parentNodeId: string): CurrentTreeNode[] {
+        const result: CurrentTreeNode[] = [];
+        const children = this.getChildren(parentNodeId);
+        result.push(...children);
+        result.push(...children.flatMap((c) => this.getAllChildren(c.id)));
+
+        return result;
+    }
+
     needReorder(parentNodeId: string, orderedNodeIds: string[]): boolean {
         return (
             this.getChildren(parentNodeId)
