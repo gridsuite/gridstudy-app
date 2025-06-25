@@ -1509,5 +1509,6 @@
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée",
-    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}"
+    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
+    "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site"
 }
