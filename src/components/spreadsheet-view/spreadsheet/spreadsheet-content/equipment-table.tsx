@@ -26,6 +26,7 @@ import { isCalculationRow } from '../../utils/calculation-utils';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { refreshSpreadsheetAfterFilterChanged } from './hooks/use-spreadsheet-gs-filter';
 
 const DEFAULT_ROW_HEIGHT = 28;
 const MAX_CLICK_DURATION = 200;
@@ -180,6 +181,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             suppressNoRowsOverlay={rowData === undefined}
             valueCache={true}
             accentedSort={true}
+            onFilterChanged={refreshSpreadsheetAfterFilterChanged}
         />
     );
 };
