@@ -15,9 +15,10 @@ import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulat
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { AgGridReact } from 'ag-grid-react';
+import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
-    event.api.refreshCells();
+    event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
 };
 
 export const useSpreadsheetGlobalFilter = (
