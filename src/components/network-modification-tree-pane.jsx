@@ -261,6 +261,14 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         )
                     );
                 });
+                if (
+                    studyUpdatedForce.eventData.headers.nodes.some(
+                        (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
+                    ) ||
+                    isSubtreeImpacted(studyUpdatedForce.eventData.headers.nodes)
+                ) {
+                    resetNodeClipboard();
+                }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_MOVED) {
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers.movedNode).then(
                     (nodes) => {
@@ -269,6 +277,14 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         );
                     }
                 );
+                if (
+                    studyUpdatedForce.eventData.headers.nodes.some(
+                        (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
+                    ) ||
+                    isSubtreeImpacted(studyUpdatedForce.eventData.headers.nodes)
+                ) {
+                    resetNodeClipboard();
+                }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODES_DELETED) {
                 if (
                     studyUpdatedForce.eventData.headers.nodes.some(
