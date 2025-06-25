@@ -167,7 +167,14 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
         []
     );
-
+    const isSubtreeImpactedByMovedNode = useCallback(
+        (nodeId) =>
+            (nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_CUT) &&
+            (nodeId === nodeSelectionForCopyRef.current.nodeId ||
+                nodeSelectionForCopyRef.current.allChildrenIds?.includes(nodeId)),
+        []
+    );
     const resetNodeClipboard = useCallback(() => {
         dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
         snackInfo({
@@ -262,10 +269,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     );
                 });
                 if (
-                    studyUpdatedForce.eventData.headers.nodes.some(
-                        (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
-                    ) ||
-                    isSubtreeImpacted(studyUpdatedForce.eventData.headers.nodes)
+                    studyUpdatedForce.eventData.headers.movedNode === nodeSelectionForCopyRef.current.nodeId ||
+                    isSubtreeImpactedByMovedNode(studyUpdatedForce.eventData.headers.movedNode)
                 ) {
                     resetNodeClipboard();
                 }
@@ -278,10 +283,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     }
                 );
                 if (
-                    studyUpdatedForce.eventData.headers.nodes.some(
-                        (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
-                    ) ||
-                    isSubtreeImpacted(studyUpdatedForce.eventData.headers.nodes)
+                    studyUpdatedForce.eventData.headers.movedNode === nodeSelectionForCopyRef.current.nodeId ||
+                    isSubtreeImpactedByMovedNode(studyUpdatedForce.eventData.headers.movedNode)
                 ) {
                     resetNodeClipboard();
                 }
@@ -347,6 +350,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
+        isSubtreeImpactedByMovedNode,
     ]);
 
     const handleCreateNode = useCallback(
@@ -404,7 +408,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     }
                 );
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
+                // dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
             } else if (CopyType.NODE_COPY === nodeSelectionForCopyRef.current.copyType) {
                 copyTreeNode(
                     nodeSelectionForCopyRef.current.sourceStudyUuid,
@@ -421,7 +425,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, snackError, dispatch]
+        [studyUuid, snackError]
     );
 
     const handleRemoveNode = useCallback(
