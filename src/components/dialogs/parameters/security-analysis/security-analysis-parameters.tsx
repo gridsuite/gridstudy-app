@@ -23,12 +23,14 @@ import {
     mergeSx,
     MuiSelectInput,
     parametersStyles,
+    PopupConfirmationDialog,
     SubmitButton,
     toFormValueSaParameters,
     toFormValuesLimitReductions,
     TreeViewFinderNodeProps,
     UseParametersBackendReturnProps,
     useSnackMessage,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
 import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
@@ -44,7 +46,6 @@ import {
     PARAM_SA_PROVIDER,
 } from 'utils/config-params';
 import LineSeparator from '../../commons/line-separator';
-import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 
@@ -70,6 +71,8 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const intl = useIntl();
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
+    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
+    const [pendingResetAction, setPendingResetAction] = useState<'all' | 'parameters' | null>(null);
     const [currentProvider, setCurrentProvider] = useState<string | undefined>(params?.provider);
 
     const { snackError } = useSnackMessage();
@@ -106,14 +109,31 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const watchProvider = watch('provider');
 
-    const resetSAParametersAndProvider = useCallback(() => {
-        resetParameters();
-        resetProvider();
-    }, [resetParameters, resetProvider]);
+    const executeResetAction = useCallback(() => {
+        if (pendingResetAction === 'all') {
+            resetParameters();
+            resetProvider();
+        } else if (pendingResetAction === 'parameters') {
+            resetParameters();
+        }
+        setOpenResetConfirmation(false);
+        setPendingResetAction(null);
+    }, [pendingResetAction, resetParameters, resetProvider]);
 
-    const resetSAParameters = useCallback(() => {
-        resetParameters();
-    }, [resetParameters]);
+    const handleResetAllClick = useCallback(() => {
+        setPendingResetAction('all');
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleResetParametersClick = useCallback(() => {
+        setPendingResetAction('parameters');
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleCancelReset = useCallback(() => {
+        setOpenResetConfirmation(false);
+        setPendingResetAction(null);
+    }, []);
 
     const handleLoadParameter = useCallback(
         (newParams: TreeViewFinderNodeProps[]) => {
@@ -278,8 +298,11 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                                 label="settings.button.chooseSettings"
                             />
                             <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
-                            <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
-                            <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
+                            <LabelledButton callback={handleResetAllClick} label="resetToDefault" />
+                            <LabelledButton
+                                label="resetProviderValuesToDefault"
+                                callback={handleResetParametersClick}
+                            />
                             <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
                                 <FormattedMessage id="validate" />
                             </SubmitButton>
@@ -311,6 +334,17 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                />
+            )}
+
+            {/* Reset Confirmation Dialog */}
+            {openResetConfirmation && (
+                <PopupConfirmationDialog
+                    message="resetParamsConfirmation"
+                    validateButtonLabel="validate"
+                    openConfirmationPopup={openResetConfirmation}
+                    setOpenConfirmationPopup={handleCancelReset}
+                    handlePopupConfirmation={executeResetAction}
                 />
             )}
         </CustomFormProvider>
