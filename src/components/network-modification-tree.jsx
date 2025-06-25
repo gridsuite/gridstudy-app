@@ -31,7 +31,6 @@ import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import zIndex from '@mui/material/styles/zIndex';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -97,29 +96,11 @@ const NetworkModificationTree = ({
 
     const updateNodePositions = useCallback(() => {
         if (treeModel && treeModel.treeNodes?.length > 0) {
-            const [treeNodeWithUpdatedPosition, securityGroups] = getTreeNodesWithUpdatedPositions(treeModel.treeNodes);
-            console.log('CHECKING', securityGroups);
-            setNodes([
-                ...treeNodeWithUpdatedPosition,
-                ...securityGroups.map((sg) => ({
-                    id: Math.random() + 'group',
-                    type: 'GROUP_LABEL',
-                    data: {
-                        label: 'testLabel',
-                        position: {
-                            topLeft: sg.topLeft,
-                            bottomRight: sg.bottomRight,
-                        },
-                    },
-                    style: {
-                        pointerEvents: 'none',
-                        zIndex: -1,
-                    },
-                    position: { x: 0, y: 0 },
-                    draggable: false,
-                    selectable: false,
-                })),
-            ]);
+            const [treeNodeWithUpdatedPosition, securityGroupNodes] = getTreeNodesWithUpdatedPositions(
+                treeModel.treeNodes
+            );
+            console.log('CHECKING', securityGroupNodes);
+            setNodes([...treeNodeWithUpdatedPosition, ...securityGroupNodes]);
             setEdges([...treeModel.treeEdges]);
         }
     }, [treeModel, setNodes, setEdges]);

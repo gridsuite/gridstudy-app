@@ -79,16 +79,11 @@ class PlacementGrid {
  * E = {row: 2, column: 1}
  * F = {row: 2, column: 2}
  */
-function getNodePlacements(nodes: CurrentTreeNode[], nodeMap: Map<string, { index: number; node: CurrentTreeNode }>) {
+function getNodePlacements(nodes: CurrentTreeNode[]) {
     const nodePlacements = new PlacementGrid();
-    const securityGroupsPlacements: { topLeft: NodePlacement; bottomRight: NodePlacement }[] = [];
     let currentMaxColumn = 0;
-    let securityGroupTopLeftPosition: NodePlacement | undefined;
-    let currentSecurityGroupMaxX: number;
-    let currentSecurityGroupMaxY: number;
 
     nodes.forEach((node, index) => {
-        const isLast = index === nodes.length - 1;
         if (!node.parentId) {
             // First node, top left.
             nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
@@ -110,41 +105,10 @@ function getNodePlacements(nodes: CurrentTreeNode[], nodeMap: Map<string, { inde
                     potentialChildPlacement.column = currentMaxColumn;
                 }
                 nodePlacements.setPlacement(node.id, potentialChildPlacement);
-
-                if (
-                    node.data.nodeType === NetworkModificationNodeType.SECURITY &&
-                    nodeMap.get(node.parentId)?.node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION
-                ) {
-                    if (securityGroupTopLeftPosition) {
-                        securityGroupsPlacements.push({
-                            topLeft: securityGroupTopLeftPosition,
-                            bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
-                        });
-                    }
-                    securityGroupTopLeftPosition = potentialChildPlacement;
-                    currentSecurityGroupMaxX = potentialChildPlacement.column;
-                    currentSecurityGroupMaxY = potentialChildPlacement.row;
-                }
-
-                if (node.data.nodeType === NetworkModificationNodeType.SECURITY) {
-                    currentSecurityGroupMaxX = Math.max(currentSecurityGroupMaxX, potentialChildPlacement.column);
-                    currentSecurityGroupMaxY = Math.max(currentSecurityGroupMaxY, potentialChildPlacement.row);
-                }
-
-                if (
-                    securityGroupTopLeftPosition &&
-                    (isLast || node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION)
-                ) {
-                    securityGroupsPlacements.push({
-                        topLeft: securityGroupTopLeftPosition,
-                        bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
-                    });
-                    securityGroupTopLeftPosition = undefined;
-                }
             }
         }
     });
-    return [nodePlacements, securityGroupsPlacements] as const;
+    return nodePlacements;
 }
 
 /**
@@ -318,6 +282,78 @@ function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
     return [nodeMap, childrenMap] as const;
 }
 
+function computeSecurityGroupNodes(
+    nodes: CurrentTreeNode[],
+    placementGrid: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+) {
+    const securityGroupsPlacements: { firstNodeId: string; topLeft: NodePlacement; bottomRight: NodePlacement }[] = [];
+    let securityGroupTopLeftPosition: NodePlacement | undefined;
+    let currentSecurityGroupMaxX: number;
+    let currentSecurityGroupMaxY: number;
+    let groupFirstNodeId: string;
+    nodes.forEach((node, index) => {
+        const isLast = index === nodes.length - 1;
+        const nodePlacement = placementGrid.getPlacement(node.id);
+        if (!node.parentId || !nodePlacement) {
+            return;
+        }
+
+        if (
+            node.data.nodeType === NetworkModificationNodeType.SECURITY &&
+            nodeMap.get(node.parentId)?.node.data.nodeType !== NetworkModificationNodeType.SECURITY
+        ) {
+            if (securityGroupTopLeftPosition) {
+                securityGroupsPlacements.push({
+                    firstNodeId: groupFirstNodeId,
+                    topLeft: securityGroupTopLeftPosition,
+                    bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
+                });
+            }
+            securityGroupTopLeftPosition = nodePlacement;
+            groupFirstNodeId = node.id;
+            currentSecurityGroupMaxX = nodePlacement.column;
+            currentSecurityGroupMaxY = nodePlacement.row;
+        }
+
+        if (node.data.nodeType === NetworkModificationNodeType.SECURITY) {
+            currentSecurityGroupMaxX = Math.max(currentSecurityGroupMaxX, nodePlacement.column);
+            currentSecurityGroupMaxY = Math.max(currentSecurityGroupMaxY, nodePlacement.row);
+        }
+
+        if (
+            securityGroupTopLeftPosition &&
+            (isLast || node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION)
+        ) {
+            securityGroupsPlacements.push({
+                firstNodeId: groupFirstNodeId,
+                topLeft: securityGroupTopLeftPosition,
+                bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
+            });
+            securityGroupTopLeftPosition = undefined;
+        }
+    });
+
+    return securityGroupsPlacements.map((sg) => ({
+        id: Math.random() + 'group',
+        type: 'GROUP_LABEL',
+        data: {
+            label: 'testLabel',
+            position: {
+                topLeft: sg.topLeft,
+                bottomRight: sg.bottomRight,
+            },
+        },
+        style: {
+            pointerEvents: 'none',
+            zIndex: -1,
+        },
+        position: { x: 0, y: 0 },
+        draggable: false,
+        selectable: false,
+    }));
+}
+
 /**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
  */
@@ -325,11 +361,12 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
     const [nodeMap, childrenMap] = createNodeAndChildrenMap(newNodes);
 
-    const [uncompressedNodePlacements, securityGroupsPlacements] = getNodePlacements(newNodes, nodeMap);
+    const uncompressedNodePlacements = getNodePlacements(newNodes);
 
-    console.log('TEST1', newNodes, nodeMap, childrenMap);
     const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements, nodeMap, childrenMap);
-    console.log('TEST2', nodePlacements, newNodes, nodeMap, childrenMap);
+
+    const securityGroupsNodes = computeSecurityGroupNodes(newNodes, nodePlacements, nodeMap);
+
     const nodesWithUpdatedPositions = newNodes.map((node) => {
         const placement = nodePlacements.getPlacement(node.id);
         if (placement) {
@@ -349,7 +386,6 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
                 y: placement.row * nodeHeight,
             };
         }
-        console.log('NODEPOSITION = ', node);
         return {
             ...node,
             position: {
@@ -359,7 +395,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
         };
     });
 
-    return [nodesWithUpdatedPositions, securityGroupsPlacements] as const;
+    return [nodesWithUpdatedPositions, securityGroupsNodes] as const;
 }
 
 /**
