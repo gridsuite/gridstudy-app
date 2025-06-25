@@ -125,7 +125,11 @@ export default function SaveSpreadsheetButton({
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
-            <SaveSpreadsheetDialog tableDefinition={tableDefinition} open={customSaveDialogOpen} />
+            <SaveSpreadsheetDialog
+                tableDefinition={tableDefinition}
+                open={customSaveDialogOpen}
+                nodeAliases={nodeAliases}
+            />
             <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
         </>
     );
