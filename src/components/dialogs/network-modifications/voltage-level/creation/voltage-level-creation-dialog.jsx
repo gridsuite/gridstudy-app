@@ -286,10 +286,7 @@ const VoltageLevelCreationDialog = ({
             if (name === EQUIPMENT_ID && getValues(SUBSTATION_CREATION_ID)) {
                 trigger(SUBSTATION_CREATION_ID);
             }
-            if (name === SUBSTATION_ID && getValues(EQUIPMENT_ID)) {
-                trigger(EQUIPMENT_ID);
-            }
-            if (name === SUBSTATION_CREATION_ID && getValues(EQUIPMENT_ID)) {
+            if ((name === SUBSTATION_ID || name === SUBSTATION_CREATION_ID) && getValues(EQUIPMENT_ID)) {
                 trigger(EQUIPMENT_ID);
             }
         });
