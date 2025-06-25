@@ -11,7 +11,7 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import { DndTable, IntegerInput, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
+import { DndTable, IntegerInput, LANG_FRENCH, MAX_ROWS_NUMBER } from '@gridsuite/commons-ui';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -188,7 +188,7 @@ const TapChangerSteps = ({
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
-            delimiter: language === 'fr' ? ';' : ',',
+            delimiter: language === LANG_FRENCH ? ';' : ',',
             transform: (value) => transformIfFrenchNumber(value, language),
             complete: function (results) {
                 if (results.data.length > MAX_ROWS_NUMBER) {

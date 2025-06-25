@@ -8,7 +8,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CustomAGGrid,
+    ErrorInput,
+    FieldErrorAlert,
+    LANG_FRENCH,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     CONNECTED,
     CONNECTED1,
@@ -126,7 +133,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 comments: '#',
-                delimiter: language === 'fr' ? ';' : ',',
+                delimiter: language === LANG_FRENCH ? ';' : ',',
                 complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
@@ -215,7 +222,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                         datas={commentLines}
                         filename={watchType + '_modification_template'}
                         disabled={!csvColumns}
-                        separator={language === 'fr' ? ';' : ','}
+                        separator={language === LANG_FRENCH ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />

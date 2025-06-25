@@ -12,6 +12,7 @@ import { CsvDownloadProps } from './csv-export.type';
 import { formatNAValue } from '../custom-aggrid/utils/format-values-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
+import { LANG_FRENCH } from '@gridsuite/commons-ui';
 
 export const useCsvExport = () => {
     const intl = useIntl();
@@ -36,7 +37,7 @@ export const useCsvExport = () => {
                 }
 
                 // If the language is in French, we change the decimal separator
-                if (language === 'fr' && typeof params.value === 'number') {
+                if (language === LANG_FRENCH && typeof params.value === 'number') {
                     return params.value.toString().replace('.', ',');
                 }
                 return params.value;
@@ -45,7 +46,7 @@ export const useCsvExport = () => {
 
             props.gridRef?.current?.api?.exportDataAsCsv({
                 suppressQuotes: false,
-                columnSeparator: language === 'fr' ? ';' : ',',
+                columnSeparator: language === LANG_FRENCH ? ';' : ',',
                 columnKeys: props.columns.map((col) => col.colId).filter(hasColId),
                 skipColumnHeaders: props.skipColumnHeaders,
                 processHeaderCallback: (params) =>

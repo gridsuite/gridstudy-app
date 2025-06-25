@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import { styles } from '../../dialogs/dialog-utils';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useCSVReader } from 'react-papaparse';
+import { LANG_FRENCH } from '@gridsuite/commons-ui';
 
 interface UseButtonWithTooltipProps {
     handleClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -110,7 +111,7 @@ export const useCSVPicker = ({
             <>
                 <CSVReader
                     config={{
-                        delimiter: language === 'fr' ? ';' : ',',
+                        delimiter: language === LANG_FRENCH ? ';' : ',',
                     }}
                     onUploadAccepted={(results: { data: string[][] }, acceptedFile: File) => {
                         setAcceptedFile(acceptedFile);

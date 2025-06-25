@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, LANG_FRENCH } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
     CREATIONS_TABLE,
@@ -179,7 +179,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                delimiter: language === 'fr' ? ';' : ',',
+                delimiter: language === LANG_FRENCH ? ';' : ',',
                 transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
@@ -253,7 +253,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                         datas={commentLines}
                         filename={watchType + '_creation_template'}
                         disabled={!csvColumns}
-                        separator={language === 'fr' ? ';' : ','}
+                        separator={language === LANG_FRENCH ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />
