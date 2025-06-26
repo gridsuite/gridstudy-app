@@ -102,21 +102,42 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_ID]: yup
+            .string()
+            .required()
+            .when([ADD_SUBSTATION_CREATION], {
+                is: (addSubstationCreation) => addSubstationCreation === false,
+                then: (schema) =>
+                    schema.notOneOf([yup.ref(SUBSTATION_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
+            })
+            .when([ADD_SUBSTATION_CREATION], {
+                is: (addSubstationCreation) => addSubstationCreation === true,
+                then: (schema) =>
+                    schema.notOneOf(
+                        [yup.ref(SUBSTATION_CREATION_ID), null],
+                        'CreateSubstationInVoltageLevelIdenticalId'
+                    ),
+            }),
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [SUBSTATION_ID]: yup
             .string()
             .nullable()
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation) => addSubstationCreation === false,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
             }),
         [SUBSTATION_CREATION_ID]: yup
             .string()
             .nullable()
             .when([ADD_SUBSTATION_CREATION], {
                 is: (addSubstationCreation) => addSubstationCreation === true,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .notOneOf([yup.ref(EQUIPMENT_ID), null], 'CreateSubstationInVoltageLevelIdenticalId'),
             }),
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
@@ -177,7 +198,7 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues } = formMethods;
+    const { reset, setValue, getValues, watch, trigger } = formMethods;
     const intl = useIntl();
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
@@ -253,6 +274,24 @@ const VoltageLevelCreationDialog = ({
         },
         [setValue, intl, reset, snackWarning]
     );
+
+    // Supervisor watches to trigger validation for interdependent constraints
+    useEffect(() => {
+        const subscription = watch((value, { name }) => {
+            // Watch EQUIPMENT_ID, SUBSTATION_CREATION_ID and SUBSTATION_CREATION_ID changed
+            // force trigger validation if the target has a value
+            if (name === EQUIPMENT_ID && getValues(SUBSTATION_ID)) {
+                trigger(SUBSTATION_ID);
+            }
+            if (name === EQUIPMENT_ID && getValues(SUBSTATION_CREATION_ID)) {
+                trigger(SUBSTATION_CREATION_ID);
+            }
+            if ((name === SUBSTATION_ID || name === SUBSTATION_CREATION_ID) && getValues(EQUIPMENT_ID)) {
+                trigger(EQUIPMENT_ID);
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, trigger, getValues]);
 
     const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 

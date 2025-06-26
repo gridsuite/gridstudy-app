@@ -30,9 +30,11 @@ import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
+import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
 
 interface AddSpreadsheetFromModelDialogProps {
     open: UseStateBooleanReturn;
+    resetNodeAliases: ResetNodeAliasCallback;
 }
 
 /**
@@ -40,6 +42,7 @@ interface AddSpreadsheetFromModelDialogProps {
  */
 export default function AddSpreadsheetFromModelDialog({
     open,
+    resetNodeAliases,
     ...dialogProps
 }: Readonly<AddSpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
@@ -59,7 +62,7 @@ export default function AddSpreadsheetFromModelDialog({
 
     const { reset, setValue, getValues } = formMethods;
 
-    // Reset form when dialog opens
+    // Reset form when the dialog opens
     useEffect(() => {
         reset(initialSpreadsheetFromModelForm);
     }, [open.value, reset]);
@@ -69,7 +72,7 @@ export default function AddSpreadsheetFromModelDialog({
         name: SPREADSHEET_MODEL,
     });
 
-    // Auto-fill spreadsheet name when model is selected
+    // Autofill spreadsheet name when model is selected
     useEffect(() => {
         const currentSpreadsheetName = getValues(SPREADSHEET_NAME);
         if (watchSpreadSheetModel?.length > 0 && currentSpreadsheetName?.length === 0) {
@@ -93,6 +96,8 @@ export default function AddSpreadsheetFromModelDialog({
                         columns: selectedModel.columns,
                         globalFilters: selectedModel.globalFilters,
                         sheetType: selectedModel.sheetType,
+                        nodeAliases: selectedModel.nodeAliases,
+                        resetNodeAliases: resetNodeAliases,
                         tabIndex,
                         tabName,
                         spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
@@ -109,7 +114,7 @@ export default function AddSpreadsheetFromModelDialog({
                 });
             open.setFalse();
         },
-        [studyUuid, tablesDefinitions.length, open, spreadsheetsCollectionUuid, dispatch, snackError]
+        [studyUuid, tablesDefinitions.length, open, resetNodeAliases, spreadsheetsCollectionUuid, dispatch, snackError]
     );
 
     return (
