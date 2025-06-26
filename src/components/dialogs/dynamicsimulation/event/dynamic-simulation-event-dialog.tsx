@@ -188,7 +188,6 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
                 titleId={title}
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={!!equipmentId}
                 isDataFetching={dataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >

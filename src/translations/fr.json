@@ -500,8 +500,6 @@
     "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",
 
-    "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
-
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser le nœud",

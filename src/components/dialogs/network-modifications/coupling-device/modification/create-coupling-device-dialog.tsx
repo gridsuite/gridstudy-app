@@ -172,7 +172,6 @@ export default function CreateCouplingDeviceDialog({
                 open={open}
                 titleId={'CREATE_COUPLING_DEVICE'}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

@@ -501,7 +501,6 @@
     "showReport": "Show logs",
     "loadingReport": "Loading logs in progress...",
 
-    "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "buildNode": "Build node",
