@@ -22,9 +22,12 @@ import { openDiagram } from '../redux/actions.js';
 import { useDispatch } from 'react-redux';
 
 const styles = {
-    tabsContainer: {
-        flexGrow: 1,
-        height: '100%',
+    tabsContainer: (theme) => {
+        return {
+            flexGrow: 1,
+            height: '100%',
+            background: theme.palette.tabBackground,
+        };
     },
     '@global': {
         '@keyframes spin': {
