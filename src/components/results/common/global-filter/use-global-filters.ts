@@ -20,47 +20,45 @@ export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalF
         (value: GlobalFilter[]) => {
             let newGlobalFilter: GlobalFilters = {};
 
-            if (value) {
-                const nominalVs = new Set(
-                    value
-                        .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
-                        .map((filter: GlobalFilter) => filter.label)
-                );
-
-                const genericFilters: Set<string> = new Set(
-                    value
-                        .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
-                        .map((filter: GlobalFilter) => filter.uuid ?? '')
-                        .filter((uuid: string): boolean => uuid !== '')
-                );
-
-                const countryCodes = new Set(
-                    value
-                        .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
-                        .map((filter: GlobalFilter) => filter.label)
-                );
-
-                const substationProperties: Map<string, string[]> = new Map();
+            const nominalVs = new Set(
                 value
-                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
-                    .forEach((filter: GlobalFilter) => {
-                        if (filter.filterSubtype) {
-                            const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
-                            if (subtypeSubstationProperties) {
-                                subtypeSubstationProperties.push(filter.label);
-                            } else {
-                                substationProperties.set(filter.filterSubtype, [filter.label]);
-                            }
+                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
+                    .map((filter: GlobalFilter) => filter.label)
+            );
+
+            const genericFilters: Set<string> = new Set(
+                value
+                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
+                    .map((filter: GlobalFilter) => filter.uuid ?? '')
+                    .filter((uuid: string): boolean => uuid !== '')
+            );
+
+            const countryCodes = new Set(
+                value
+                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
+                    .map((filter: GlobalFilter) => filter.label)
+            );
+
+            const substationProperties: Map<string, string[]> = new Map();
+            value
+                .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
+                .forEach((filter: GlobalFilter) => {
+                    if (filter.filterSubtype) {
+                        const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
+                        if (subtypeSubstationProperties) {
+                            subtypeSubstationProperties.push(filter.label);
+                        } else {
+                            substationProperties.set(filter.filterSubtype, [filter.label]);
                         }
-                    });
+                    }
+                });
 
-                newGlobalFilter.nominalV = [...nominalVs];
-                newGlobalFilter.countryCode = [...countryCodes];
-                newGlobalFilter.genericFilter = [...genericFilters];
+            newGlobalFilter.nominalV = [...nominalVs];
+            newGlobalFilter.countryCode = [...countryCodes];
+            newGlobalFilter.genericFilter = [...genericFilters];
 
-                if (substationProperties.size > 0) {
-                    newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
-                }
+            if (substationProperties.size > 0) {
+                newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
             }
 
             setGlobalFilters(newGlobalFilter);

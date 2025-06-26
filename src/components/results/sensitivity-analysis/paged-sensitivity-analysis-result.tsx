@@ -211,12 +211,6 @@ function PagedSensitivityAnalysisResult({
     ]);
 
     useEffect(() => {
-        if (sensiStatus === RunningStatus.SUCCEED) {
-            fetchFilterOptions();
-            fetchResult();
-        }
-    }, [globalFilters, sensiStatus, fetchResult, fetchFilterOptions]);
-    useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {
             setResult(null);
         }
@@ -224,7 +218,7 @@ function PagedSensitivityAnalysisResult({
             fetchFilterOptions();
             fetchResult();
         }
-    }, [sensiStatus, fetchResult, fetchFilterOptions]);
+    }, [sensiStatus, fetchResult, fetchFilterOptions, globalFilters]);
 
     return (
         <>

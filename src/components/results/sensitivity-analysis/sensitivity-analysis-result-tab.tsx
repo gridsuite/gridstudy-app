@@ -118,6 +118,17 @@ function SensitivityAnalysisResultTab({
             : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
     }, [sensiTab]);
 
+    const globalFiltersComponent = useMemo(
+        () => (
+            <GlobalFilterSelector
+                onChange={handleGlobalFilterChange}
+                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
+                filterableEquipmentTypes={filterableEquipmentTypes}
+            />
+        ),
+        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
+    );
+
     return (
         <>
             <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={handleSensiTabChange} />
@@ -135,13 +146,7 @@ function SensitivityAnalysisResultTab({
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
                         </Tabs>
-                        <Box>
-                            <GlobalFilterSelector
-                                onChange={handleGlobalFilterChange}
-                                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
-                                filterableEquipmentTypes={filterableEquipmentTypes}
-                            />
-                        </Box>
+                        <Box>{globalFiltersComponent}</Box>
                         <ExportButton
                             disabled={isCsvButtonDisabled}
                             onClick={handleExportResultAsCsv}

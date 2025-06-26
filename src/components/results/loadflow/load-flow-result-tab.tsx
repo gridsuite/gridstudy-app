@@ -208,6 +208,17 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return [];
     }, [tabIndex]);
 
+    const globalFiltersComponent = useMemo(
+        () => (
+            <GlobalFilterSelector
+                onChange={handleGlobalFilterChange}
+                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
+                filterableEquipmentTypes={filterableEquipmentTypes}
+            />
+        ),
+        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
+    );
+
     return (
         <>
             <Box sx={styles.flexWrapper}>
@@ -218,11 +229,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
-                    <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
-                        filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
-                        filterableEquipmentTypes={filterableEquipmentTypes}
-                    />
+                    {globalFiltersComponent}
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
