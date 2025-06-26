@@ -21,9 +21,12 @@ import { useDiagram } from './diagrams/use-diagram';
 import HorizontalToolbar from './horizontal-toolbar';
 
 const styles = {
-    tabsContainer: {
-        flexGrow: 1,
-        height: '100%',
+    tabsContainer: (theme) => {
+        return {
+            flexGrow: 1,
+            height: '100%',
+            background: theme.palette.tabBackground,
+        };
     },
     '@global': {
         '@keyframes spin': {
