@@ -5,8 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, mergeSx, parametersStyles, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
-import { GENERAL } from '../voltageinit/voltage-init-parameters-form';
+import {
+    CustomFormProvider,
+    mergeSx,
+    parametersStyles,
+    PopupConfirmationDialog,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
@@ -38,6 +44,7 @@ export const StateEstimationParameters = ({
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [stateEstimationParams, setStateEstimationParams] = useStateEstimationParameters;
+    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
     const initialFormValues = useMemo(
         () =>
@@ -64,7 +71,7 @@ export const StateEstimationParameters = ({
     const onValidationError = useCallback(
         (errors?: any) => {
             let tabsInError = [];
-            if (errors?.[GENERAL] !== undefined) {
+            if (errors?.[TabValue.GENERAL] !== undefined) {
                 tabsInError.push(TabValue.GENERAL);
             }
             if (errors?.[TabValue.WEIGHTS] !== undefined) {
@@ -93,7 +100,16 @@ export const StateEstimationParameters = ({
     const clear = useCallback(() => {
         resetStateEstimationParameters();
         onValidationError();
+        setOpenResetConfirmation(false);
     }, [resetStateEstimationParameters, onValidationError]);
+
+    const handleResetClick = useCallback(() => {
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleCancelReset = useCallback(() => {
+        setOpenResetConfirmation(false);
+    }, []);
 
     const onSubmit = useCallback(
         (newParams: StateEstimationParametersForm) => {
@@ -195,13 +211,24 @@ export const StateEstimationParameters = ({
                             paddingLeft: 0,
                         })}
                     >
-                        <Button onClick={clear}>
+                        <Button onClick={handleResetClick}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
                         <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
                     </DialogActions>
                 </Grid>
             </Grid>
+
+            {/* Reset Confirmation Dialog */}
+            {openResetConfirmation && (
+                <PopupConfirmationDialog
+                    message="resetParamsConfirmation"
+                    validateButtonLabel="validate"
+                    openConfirmationPopup={openResetConfirmation}
+                    setOpenConfirmationPopup={handleCancelReset}
+                    handlePopupConfirmation={clear}
+                />
+            )}
         </CustomFormProvider>
     );
 };

@@ -17,8 +17,9 @@ import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
-import { useDiagram } from './diagrams/use-diagram';
 import HorizontalToolbar from './horizontal-toolbar';
+import { openDiagram } from '../redux/actions.js';
+import { useDispatch } from 'react-redux';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -45,22 +46,24 @@ const styles = {
     },
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = StudyView.MAP, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = StudyView.MAP, onChangeTab, ...props }) => {
+    const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
     });
 
-    const { openDiagramView } = useDiagram();
-
     const disabled = !isNodeBuilt(currentNode);
-    function openVoltageLevelDiagram(vlId) {
-        // TODO code factorization for displaying a VL via a hook
-        if (vlId) {
-            props.onChangeTab(0); // switch to map view
-            openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
-        }
-    }
+    const openVoltageLevelDiagram = useCallback(
+        (vlId) => {
+            // TODO code factorization for displaying a VL via a hook
+            if (vlId) {
+                onChangeTab(0); // switch to map view
+                dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
+            }
+        },
+        [dispatch, onChangeTab]
+    );
 
     const unsetTableEquipment = useCallback(() => {
         setTableEquipment({ id: null, type: null });
@@ -82,10 +85,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         view={view}
-                        openDiagramView={openDiagramView}
                         tableEquipment={tableEquipment}
                         onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
-                        onChangeTab={props.onChangeTab}
+                        onChangeTab={onChangeTab}
                     ></MapViewer>
                 </div>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
@@ -123,6 +125,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     onChangeTab: PropTypes.func,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
 };
 
 export default StudyPane;

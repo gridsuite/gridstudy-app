@@ -21,13 +21,19 @@ import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { SaveFilterConfirmationDialog } from './save-filter-confirmation-dialog';
+import { NodeAlias } from '../../../types/node-alias.type';
 
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
+    nodeAliases: NodeAlias[] | undefined;
 };
 
-export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
+export default function SaveSpreadsheetDialog({
+    tableDefinition,
+    open,
+    nodeAliases,
+}: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
     const tableGlobalFilters = useSelector(
@@ -102,6 +108,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
             sheetType: tableDefinition?.type,
             columns: reorderedColumns,
             globalFilters: includeFilters ? (tableGlobalFilters ?? []) : [],
+            nodeAliases: nodeAliases?.map((n) => n.alias),
         };
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
@@ -132,6 +139,7 @@ export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonl
             sheetType: tableDefinition?.type,
             columns: reorderedColumns,
             globalFilters: includeFilters ? (tableGlobalFilters ?? []) : [],
+            nodeAliases: nodeAliases?.map((n) => n.alias),
         };
 
         updateSpreadsheetModel(id, name, description, spreadsheetConfig)
