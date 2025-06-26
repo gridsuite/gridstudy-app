@@ -509,6 +509,7 @@
     "createNetworkModificationNode": "Créer un nouveau nœud",
     "createNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "pasteNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
+    "createSecuritySequence": "Créer un enchaînement de sécurité",
     "removeNode": "Supprimer le nœud",
     "unbuildNode": "Déréaliser le nœud",
     "exportCaseOnNode": "Exporter la situation",
@@ -520,6 +521,7 @@
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
+    "SequenceCreateError": "Une erreur est survenue lors de la création de l'enchaînement",
     "NodeUpdateColumnPositions": "Une erreur est survenue lors de la mise à jour de la position des nœuds dans l'arbre",
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
     "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
@@ -1499,5 +1501,6 @@
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée",
-    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}"
+    "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
+    "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site"
 }

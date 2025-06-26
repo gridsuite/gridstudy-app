@@ -46,11 +46,13 @@ function convertModificationNodeToReactFlowModelNode(node: NetworkModificationNo
     const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
     const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
     const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
+    const nodeType = networkModificationNodeData?.nodeType;
     return {
         label: node.name,
         description: node.description ?? undefined,
         globalBuildStatus: globalBuildStatus,
         localBuildStatus: localBuildStatus,
+        nodeType: nodeType,
     };
 }
 

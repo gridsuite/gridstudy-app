@@ -509,6 +509,7 @@
     "createNetworkModificationNode": "Create a new node",
     "createNetworkModificationNodeInNewBranch": "in a new branch",
     "pasteNetworkModificationNodeInNewBranch": "in a new branch",
+    "createSecuritySequence": "Create a security sequence",
     "removeNode": "Remove node",
     "unbuildNode": "Unbuild node",
     "exportCaseOnNode": "Export case",
@@ -520,6 +521,7 @@
     "NodeCreateError": "An error occurred while creating node",
     "NodeDeleteError": "An error occurred while deleting node",
     "NodeUpdateError": "An error occurred while updating node",
+    "SequenceCreateError": "An error occurred while creating sequence",
     "NodeUpdateColumnPositions": "An error occured while updating the nodes' positions in the tree",
     "NodeBuildingError": "An error occurred while building node",
     "NodeUnbuildingError": "An error occurred while unbuilding node",
@@ -1504,5 +1506,6 @@
     "thresholdNetPosition": "Net position mismatch threshold",
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
-    "diagramLoadingFail": "An error occurred while loading {diagramName}"
+    "diagramLoadingFail": "An error occurred while loading {diagramName}",
+    "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID"
 }
