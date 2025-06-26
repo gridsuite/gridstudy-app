@@ -268,10 +268,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         )
                     );
                 });
-                if (
-                    studyUpdatedForce.eventData.headers.movedNode === nodeSelectionForCopyRef.current.nodeId ||
-                    isSubtreeImpactedByMovedNode(studyUpdatedForce.eventData.headers.movedNode)
-                ) {
+                const movedNode = studyUpdatedForce.eventData.headers.movedNode;
+                const parentNode = studyUpdatedForce.eventData.headers.parentNode;
+                if (isSubtreeImpactedByMovedNode(movedNode) || isSubtreeImpactedByMovedNode(parentNode)) {
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_MOVED) {
@@ -282,10 +281,10 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         );
                     }
                 );
-                if (
-                    studyUpdatedForce.eventData.headers.movedNode === nodeSelectionForCopyRef.current.nodeId ||
-                    isSubtreeImpactedByMovedNode(studyUpdatedForce.eventData.headers.movedNode)
-                ) {
+                const movedNode = studyUpdatedForce.eventData.headers.movedNode;
+                const parentNode = studyUpdatedForce.eventData.headers.parentNode;
+
+                if (isSubtreeImpactedByMovedNode(movedNode) || isSubtreeImpactedByMovedNode(parentNode)) {
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODES_DELETED) {
@@ -408,7 +407,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     }
                 );
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                // dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
+                dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
             } else if (CopyType.NODE_COPY === nodeSelectionForCopyRef.current.copyType) {
                 copyTreeNode(
                     nodeSelectionForCopyRef.current.sourceStudyUuid,
@@ -425,7 +424,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, snackError]
+        [studyUuid, dispatch, snackError]
     );
 
     const handleRemoveNode = useCallback(
