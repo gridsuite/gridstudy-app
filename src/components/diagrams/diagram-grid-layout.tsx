@@ -17,7 +17,7 @@ import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
+import { DiagramAdditionalMetadata } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
@@ -201,15 +201,33 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, [diagrams]);
 
-    const onChangeDepth = useCallback(
-        (diagramId: UUID, newDepth: number) => {
+    const onExpandAllVoltageLevelIds = useCallback(
+        (diagramId: UUID) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                console.error('CHARLY diagram', diagram);
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    voltageLevelIds: [],
+                    voltageLevelToExpandIds: [...diagram.voltageLevelIds],
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const onExpandVoltageLevelId = useCallback(
+        (diagramId: UUID, newVoltageLevelId: string) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagram.voltageLevelIds,
-                    depth: newDepth,
+                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                 });
             }
         },
@@ -283,21 +301,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
                                     onLoadNadFromElement={handleLoadNadFromElement}
+                                    onSelectNode={(vlId) => onExpandVoltageLevelId(diagram.diagramUuid, vlId)}
                                 />
                             )}
-                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
+                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && ( // TODO CHARLY clean this
                                 <DiagramFooter
                                     showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     counterText={intl.formatMessage({
                                         id: 'depth',
                                     })}
-                                    counterValue={diagram.depth}
-                                    onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
-                                    onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
-                                    incrementCounterDisabled={
-                                        diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
-                                    }
-                                    decrementCounterDisabled={diagram.depth === 0} // loadingState ||
+                                    counterValue={0}
+                                    onIncrementCounter={() => onExpandAllVoltageLevelIds(diagram.diagramUuid)}
+                                    onDecrementCounter={() => alert('TODO CHARLY : obsolete')}
+                                    incrementCounterDisabled={false}
+                                    decrementCounterDisabled={true}
                                 />
                             )}
                         </Box>
@@ -315,7 +332,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         handleToggleEditMode,
         intl,
         loadingDiagrams,
-        onChangeDepth,
+        onExpandAllVoltageLevelIds,
+        onExpandVoltageLevelId,
         onRemoveItem,
         setDiagramSize,
         showInSpreadsheet,
