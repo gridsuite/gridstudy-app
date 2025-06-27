@@ -21,7 +21,7 @@ import {
     BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
     BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS,
 } from '../../../utils/field-constants';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from './styles';
 import { useWatch } from 'react-hook-form';
 
@@ -57,19 +57,6 @@ export default function BalancesAdjustmentAdvancedContent() {
                     />
                 </Grid>
             </Grid>
-            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Grid>
-                    <GridSection title="LoadFlowWithRatioTapChangers" />
-                </Grid>
-                <Grid>
-                    <SwitchInput
-                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS}`}
-                        formProps={{
-                            disabled: !withLoadFlow,
-                        }}
-                    />
-                </Grid>
-            </Grid>
 
             <Grid container spacing={2} direction="column">
                 <GridItem>
@@ -90,6 +77,19 @@ export default function BalancesAdjustmentAdvancedContent() {
                         disableClearable={true}
                     />
                 </GridItem>
+            </Grid>
+            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center', marginLeft: 1, marginTop: 1 }}>
+                <Grid>
+                    <FormattedMessage id="LoadFlowWithRatioTapChangers" />
+                </Grid>
+                <Grid>
+                    <SwitchInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS}`}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
+                    />
+                </Grid>
             </Grid>
             <GridSection title="Algorithm" />
             <Grid container spacing={2} direction="column">
