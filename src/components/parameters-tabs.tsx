@@ -24,7 +24,6 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
-import { fetchSecurityAnalysisProviders, getSecurityAnalysisDefaultLimitReductions } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
@@ -65,6 +64,8 @@ import {
     useParametersBackend,
     ComputingType,
     VoltageInitParametersInLine,
+    fetchSecurityAnalysisProviders,
+    getSecurityAnalysisDefaultLimitReductions,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
