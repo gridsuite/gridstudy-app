@@ -108,6 +108,7 @@ export const SpreadsheetContent = React.memo(
         );
 
         const { isExternalFilterPresent, doesFormulaFilteringPass } = useSpreadsheetGlobalFilter(
+            gridRef,
             tableDefinition?.uuid,
             tableDefinition?.type
         );

@@ -18,14 +18,13 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
