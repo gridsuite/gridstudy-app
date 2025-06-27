@@ -140,7 +140,7 @@ const LogTable = ({
         fetchLogs(selectedReport.id, severityFilter, messageFilter, selectedReport.type, page, rowsPerPage)?.then(
             (pagedLogs) => {
                 const { content, totalElements, totalPages } = pagedLogs;
-                if (totalPages < page) {
+                if (totalPages - 1 < page) {
                     setPage(0);
                 }
                 setCount(totalElements);
