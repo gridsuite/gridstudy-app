@@ -12,11 +12,11 @@ import {
     NotificationsUrlKeys,
     ShortCircuitParametersInfos,
     useNotificationsListener,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
-import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
