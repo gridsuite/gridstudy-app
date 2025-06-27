@@ -226,7 +226,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagram.voltageLevelIds,
-                    voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds
+                    voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds // TODO CHARLY check si ça peut être simplifié
                         ? [...diagram.voltageLevelToExpandIds, newVoltageLevelId]
                         : [newVoltageLevelId],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,

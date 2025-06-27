@@ -28,7 +28,7 @@ import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
 import { useDiagramSessionStorage } from './use-diagram-session-storage';
 import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ElementType } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 
 type UseDiagramModelProps = {
@@ -225,10 +225,10 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 return checkAndGetVoltageLevelSingleLineDiagramUrl(diagram);
             } else if (diagram.type === DiagramType.SUBSTATION) {
                 return checkAndGetSubstationSingleLineDiagramUrl(diagram);
-            } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+            } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM || diagram.type === DiagramType.NAD_FROM_ELEMENT) { // TODO CHARLY clean this, it's only to test right now
                 return checkAndGetNetworkAreaDiagramUrl(diagram);
-            } else if (diagram.type === DiagramType.NAD_FROM_ELEMENT) {
-                return checkAndGetNetworkAreaDiagramFromElementUrl(diagram);
+            // } else if (diagram.type === DiagramType.NAD_FROM_ELEMENT) {
+            //     return checkAndGetNetworkAreaDiagramFromElementUrl(diagram);
             }
             return null;
         },
@@ -248,11 +248,11 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             // make url from type
             const url = getUrl(diagram);
             let fetchOptions: RequestInit = { method: 'GET' };
-            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM || diagram.type === DiagramType.NAD_FROM_ELEMENT) { // TODO CHARLY clean this, it's only to test right now
                 const nadRequestInfos = {
-                    // TODO Use a proper TS type
-                    nadConfigUuid: null,
-                    filterUuid: null,
+                    // TODO CHARLY Use a proper TS type
+                    nadConfigUuid: diagram.type === DiagramType.NAD_FROM_ELEMENT && diagram.elementType === ElementType.DIAGRAM_CONFIG ? diagram.elementUuid : null,
+                    filterUuid: diagram.type === DiagramType.NAD_FROM_ELEMENT && diagram.elementType === ElementType.FILTER ? diagram.elementUuid : null,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,

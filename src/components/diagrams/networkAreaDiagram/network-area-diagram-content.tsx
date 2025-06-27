@@ -163,7 +163,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
-            setVoltageLevelIdToExpand(equipmentId);
+            setVoltageLevelIdToExpand(equipmentId); // TODO CHARLY check si on peut se passer du useState ici
             setShouldDisplayMenu(true);
             setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
         }
