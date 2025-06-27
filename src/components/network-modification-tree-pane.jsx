@@ -168,14 +168,6 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
         []
     );
-    const isSubtreeImpactedByMovedNode = useCallback(
-        (nodeId) =>
-            (nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_COPY ||
-                nodeSelectionForCopyRef.current.copyType === CopyType.SUBTREE_CUT) &&
-            (nodeId === nodeSelectionForCopyRef.current.nodeId ||
-                nodeSelectionForCopyRef.current.allChildrenIds?.includes(nodeId)),
-        []
-    );
     const resetNodeClipboard = useCallback(() => {
         dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
         snackInfo({
@@ -271,7 +263,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 });
                 const movedNode = studyUpdatedForce.eventData.headers.movedNode;
                 const parentNode = studyUpdatedForce.eventData.headers.parentNode;
-                if (isSubtreeImpactedByMovedNode(movedNode) || isSubtreeImpactedByMovedNode(parentNode)) {
+                if (isSubtreeImpacted([movedNode, parentNode])) {
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_MOVED) {
@@ -285,7 +277,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 const movedNode = studyUpdatedForce.eventData.headers.movedNode;
                 const parentNode = studyUpdatedForce.eventData.headers.parentNode;
 
-                if (isSubtreeImpactedByMovedNode(movedNode) || isSubtreeImpactedByMovedNode(parentNode)) {
+                if (isSubtreeImpacted([movedNode, parentNode])) {
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODES_DELETED) {
@@ -350,7 +342,6 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
-        isSubtreeImpactedByMovedNode,
     ]);
 
     const handleCreateNode = useCallback(
