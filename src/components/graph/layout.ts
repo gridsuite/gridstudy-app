@@ -76,11 +76,11 @@ class PlacementGrid {
  * E = {row: 2, column: 1}
  * F = {row: 2, column: 2}
  */
-function getNodePlacements(nodes: CurrentTreeNode[]) {
+function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
     const nodePlacements = new PlacementGrid();
     let currentMaxColumn = 0;
 
-    nodes.forEach((node, index) => {
+    nodes.forEach((node) => {
         if (!node.parentId) {
             // First node, top left.
             nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
