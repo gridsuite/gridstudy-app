@@ -610,6 +610,7 @@
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
+    "LimitSets": "Sets de limites",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -861,11 +862,8 @@
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le limit set contient des limites d'intensité temporaires",
-    "SelectedOperationalLimitGroupSide1": "Côté 1",
-    "SelectedOperationalLimitGroupSide2": "Côté 2",
-    "appliedOnSide1": "Côté 1",
-    "appliedOnSide2": "Côté 2",
-    "appliedOnEquipment": "Ouvrage",
+    "SelectedOperationalLimitGroup": "Set de limites actif",
+    "SelectedOperationalLimitGroups": "Sets de limites actifs",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
     "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
@@ -1514,9 +1512,5 @@
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée",
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
-
-    "limitSets": "Set de limites",
-    "ActiveLimitSets": "Sets de limites actifs",
-    "LimitGroupAppliedOnLabel": "Applicable sur : "
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site"
 }

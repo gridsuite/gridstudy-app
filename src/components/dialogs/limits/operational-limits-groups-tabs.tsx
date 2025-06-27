@@ -383,7 +383,9 @@ export function OperationalLimitsGroupsTabs({
                                     width: '100%',
                                 }}
                             >
-                                <IconButton
+                                {/*TODO basseche : delete this code when done*/}
+
+                                {/*                                <IconButton
                                     size="small"
                                     onClick={addNewLimitSet}
                                     sx={{
@@ -392,7 +394,7 @@ export function OperationalLimitsGroupsTabs({
                                     }}
                                 >
                                     <AddCircleIcon fontSize="small" />
-                                </IconButton>
+                                </IconButton>*/}
                             </Box>
                         )
                     }

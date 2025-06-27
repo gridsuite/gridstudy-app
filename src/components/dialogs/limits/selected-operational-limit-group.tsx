@@ -43,7 +43,6 @@ export const SelectedOperationalLimitGroup = ({
                 label={label}
                 size={'small'}
                 allowNewValue
-                forcePopupIcon
             />
         </Box>
     );
