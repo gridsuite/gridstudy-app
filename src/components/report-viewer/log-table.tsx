@@ -45,6 +45,7 @@ import {
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
+import { reportStyles } from './report.styles';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -69,14 +70,21 @@ const styles = {
         },
         padding: 0.5,
     }),
-    chipContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 1,
-        p: 1,
-        marginBottom: 3,
+    chipContainer: (theme: Theme) => {
+        return {
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: theme.spacing(1),
+        };
     },
-    quickSearch: { width: '100%', flexShrink: 0, marginLeft: 1 },
+    toolContainer: (theme: Theme) => {
+        return {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: theme.spacing(1),
+            mb: theme.spacing(2),
+        };
+    },
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
@@ -423,14 +431,8 @@ const LogTable = ({
     }, [handleSearch]);
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-            }}
-        >
-            <Box sx={styles.quickSearch}>
+        <Box sx={reportStyles.mainContainer}>
+            <Box sx={styles.toolContainer}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
                     onSearch={handleSearch}
@@ -439,20 +441,20 @@ const LogTable = ({
                     resetSearch={resetSearch}
                     placeholder="searchPlaceholderLog"
                 />
+                <Box sx={styles.chipContainer}>
+                    {severities?.map((severity) => (
+                        <Chip
+                            key={severity}
+                            label={severity}
+                            deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            onClick={() => handleChipClick(severity)}
+                            onDelete={() => handleChipClick(severity)}
+                            sx={styles.chip(severity, severityFilter, theme)}
+                        />
+                    ))}
+                </Box>
             </Box>
-            <Box sx={styles.chipContainer}>
-                {severities?.map((severity) => (
-                    <Chip
-                        key={severity}
-                        label={severity}
-                        deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        onClick={() => handleChipClick(severity)}
-                        onDelete={() => handleChipClick(severity)}
-                        sx={styles.chip(severity, severityFilter, theme)}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+            <Box sx={{ flex: 1 }}>
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={COLUMNS_DEFINITIONS}
