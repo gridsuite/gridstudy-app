@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 're
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer';
@@ -99,6 +99,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
@@ -263,6 +264,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 return (
                     <LoadFlowParametersInline
                         studyUuid={studyUuid}
+                        language={languageLocal}
                         parametersBackend={loadFlowParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
                         enableDeveloperMode={enableDeveloperMode}
@@ -332,6 +334,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         view,
         tabValue,
         studyUuid,
+        languageLocal,
         loadFlowParametersBackend,
         enableDeveloperMode,
         securityAnalysisParametersBackend,
