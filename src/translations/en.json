@@ -1515,5 +1515,6 @@
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
+    "add": "Add",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID"
 }
