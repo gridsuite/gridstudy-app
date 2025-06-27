@@ -226,7 +226,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagram.voltageLevelIds,
-                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
+                    voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds
+                        ? [...diagram.voltageLevelToExpandIds, newVoltageLevelId]
+                        : [newVoltageLevelId],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                 });
             }

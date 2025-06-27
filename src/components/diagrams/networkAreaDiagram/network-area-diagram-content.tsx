@@ -66,10 +66,19 @@ type NetworkAreaDiagramContentProps = {
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onSelectNode: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, diagramId } = props;
+    const {
+        diagramSizeSetter,
+        visible,
+        isEditNadMode,
+        onToggleEditNadMode,
+        onLoadNadFromElement,
+        diagramId,
+        onSelectNode,
+    } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -87,7 +96,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
-    const [clickedEquipmentId, setClickedEquipmentId] = useState<string>();
+    const [voltageLevelIdToExpand, setVoltageLevelIdToExpand] = useState<string>();
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
 
     const onMoveNodeCallback = useCallback(
@@ -151,13 +160,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
         [setShouldDisplayTooltip, setAnchorPosition]
     );
+
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
-            setClickedEquipmentId(equipmentId);
+            setVoltageLevelIdToExpand(equipmentId);
             setShouldDisplayMenu(true);
             setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
         }
     }, []);
+
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
@@ -317,9 +328,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                             paddingBottom: '1px',
                         }}
                         onClick={() => {
-                            if (clickedEquipmentId) {
-                                console.log('clicked !! ', clickedEquipmentId);
-                                //    dispatch(setNetworkAreaDiagramSelectedVoltageLevel([clickedEquipmentId]));
+                            if (voltageLevelIdToExpand) {
+                                onSelectNode(voltageLevelIdToExpand);
                             }
                             setMenuAnchorPosition(null);
                             setShouldDisplayMenu(false);
