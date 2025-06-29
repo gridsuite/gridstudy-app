@@ -36,6 +36,7 @@ interface SpreadsheetViewProps {
     equipmentType: SpreadsheetEquipmentType;
     disabled: boolean;
     onEquipmentScrolled: () => void;
+    openDiagram?: (equipmentId: string, diagramType?: string) => void;
 }
 
 export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
@@ -44,6 +45,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     equipmentType,
     disabled,
     onEquipmentScrolled,
+    openDiagram,
 }) => {
     const dispatch = useDispatch();
     const intl = useIntl();
@@ -164,6 +166,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                                     equipmentId={equipmentIdToScrollTo}
                                     onEquipmentScrolled={onEquipmentScrolled}
                                     active={isActive}
+                                    openDiagram={openDiagram}
                                 />
                             </Paper>
                         </TabPanelLazy>
