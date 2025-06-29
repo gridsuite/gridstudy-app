@@ -55,11 +55,11 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
 
     const disabled = !isNodeBuilt(currentNode);
     const openVoltageLevelDiagram = useCallback(
-        (vlId) => {
+        (equipmentId, diagramType = DiagramType.VOLTAGE_LEVEL) => {
             // TODO code factorization for displaying a VL via a hook
-            if (vlId) {
+            if (equipmentId) {
                 onChangeTab(0); // switch to map view
-                dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
+                dispatch(openDiagram(equipmentId, diagramType));
             }
         },
         [dispatch, onChangeTab]
@@ -99,6 +99,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                         equipmentType={tableEquipment.type}
                         disabled={disabled}
                         onEquipmentScrolled={unsetTableEquipment}
+                        openDiagram={openVoltageLevelDiagram}
                     />
                 </TabPanelLazy>
                 <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>

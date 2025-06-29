@@ -31,6 +31,8 @@
     "modifyAccessRights": "Modifier les droits d'accès",
     "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
     "edit": "Modifier",
+    "openSubstationDiagram": "Ouvrir image site",
+    "openVoltageLevelDiagram": "Ouvrir image poste",
     "editSiteProperties": "Modifier les propriétés du site",
 
     "studyNameErrorMsg": "Le nom de l'étude ne doit pas être vide",

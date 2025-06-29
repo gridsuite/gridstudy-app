@@ -11,11 +11,10 @@ import { EquipmentTable } from './equipment-table';
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Alert, Box, Theme } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { RowClickedEvent } from 'ag-grid-community';
 import { NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
@@ -24,6 +23,8 @@ import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { DiagramType } from 'components/diagrams/diagram.type';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -55,6 +56,7 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    openDiagram?: (equipmentId: string, diagramType?: string) => void;
     active: boolean;
 }
 
@@ -68,6 +70,7 @@ export const SpreadsheetContent = React.memo(
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        openDiagram,
         active,
     }: SpreadsheetContentProps) => {
         const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
@@ -117,17 +120,6 @@ export const SpreadsheetContent = React.memo(
             useEquipmentModification({
                 equipmentType: tableDefinition?.type,
             });
-
-        const onRowClicked = useCallback(
-            (event: RowClickedEvent) => {
-                if (currentNode?.type !== NodeType.ROOT) {
-                    const equipmentId = event.data.id;
-                    setEquipmentToUpdateId(equipmentId);
-                    handleOpenModificationDialog(equipmentId);
-                }
-            },
-            [currentNode?.type, handleOpenModificationDialog]
-        );
 
         const handleEquipmentScroll = useCallback(() => {
             if (equipmentId && gridRef.current?.api && isGridReady) {
@@ -200,6 +192,25 @@ export const SpreadsheetContent = React.memo(
             updateFilters(api, filters);
         }, [filters, gridRef, isGridReady, equipments, tableDefinition?.columns]);
 
+        const handleModify = useCallback(
+            (equipmentId: string) => {
+                setEquipmentToUpdateId(equipmentId);
+                handleOpenModificationDialog(equipmentId);
+            },
+            [handleOpenModificationDialog]
+        );
+
+        const handleOpenDiagram = useCallback(
+            (equipmentId: string) => {
+                const diagramType =
+                    tableDefinition?.type === EQUIPMENT_TYPES.SUBSTATION
+                        ? DiagramType.SUBSTATION
+                        : DiagramType.VOLTAGE_LEVEL;
+                openDiagram?.(equipmentId, diagramType);
+            },
+            [openDiagram, tableDefinition?.type]
+        );
+
         return (
             <>
                 {disabled ? (
@@ -214,7 +225,6 @@ export const SpreadsheetContent = React.memo(
                             currentNode={currentNode}
                             columnData={columns}
                             isFetching={isFetching}
-                            onRowClicked={onRowClicked}
                             isDataEditable={isModificationDialogForEquipmentType}
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}
@@ -222,6 +232,9 @@ export const SpreadsheetContent = React.memo(
                             onModelUpdated={onModelUpdated}
                             onFirstDataRendered={onFirstDataRendered}
                             onGridReady={onGridReady}
+                            handleModify={handleModify}
+                            handleOpenDiagram={handleOpenDiagram}
+                            equipmentType={tableDefinition?.type}
                         />
                     </Box>
                 )}
