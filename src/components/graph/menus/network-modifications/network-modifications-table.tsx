@@ -11,12 +11,12 @@ import {
     CellClickedEvent,
     ColDef,
     GetRowIdParams,
-    ICellRendererParams,
     RowClassParams,
     RowDragEndEvent,
     RowDragEnterEvent,
     RowSelectedEvent,
     RowStyle,
+    ValueGetterParams,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, Box, Theme } from '@mui/material';
@@ -31,6 +31,7 @@ import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
+import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
 
 const styles = {
     container: (theme: Theme) => ({
@@ -117,8 +118,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                     modificationCount: modifications?.length,
                     ...nameHeaderProps,
                 },
-                cellRenderer: (params: ICellRendererParams<NetworkModificationMetadata>) =>
-                    getModificationLabel(params?.data),
+                cellRenderer: NetworkModificationNameCellRenderer,
+                valueGetter: (value: ValueGetterParams) => getModificationLabel(value?.data),
                 minWidth: 200,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
