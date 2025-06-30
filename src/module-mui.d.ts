@@ -31,6 +31,10 @@ declare module '@mui/material/styles' {
         };
         reactflow: {
             backgroundColor: string;
+            labeledGroup: {
+                backgroundColor: string;
+                borderColor: string;
+            };
         };
         aggridValueChangeHighlightBackgroundColor: string;
         selectedRow: {
