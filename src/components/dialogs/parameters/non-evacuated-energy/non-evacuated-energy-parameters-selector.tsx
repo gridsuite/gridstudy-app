@@ -11,7 +11,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
-import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as nonEvacuatedEnergyParam from './columns-definitions';
 import {
     NonEvacuatedEnergyContingencies,
@@ -21,10 +20,9 @@ import {
     NonEvacuatedEnergyStagesSelection,
     TAB_VALUES,
 } from './columns-definitions';
-import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
-import { IColumnsDef } from '../sensi/columns-definitions';
-import { parametersStyles } from '@gridsuite/commons-ui';
+import { parametersStyles } from '../util/styles';
+import { IColumnsDef, SensitivityTable, useCreateRowDataSensi } from '@gridsuite/commons-ui';
 
 interface NonEvacuatedEnergyParametersSelectorProps {
     onFormChanged: (hasFormChanged: boolean) => void;

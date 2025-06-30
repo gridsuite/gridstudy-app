@@ -7,7 +7,8 @@
 import { Grid } from '@mui/material';
 import { ESTIM_ALGO_TYPE, ESTIM_LOG_LEVEL, PRINCIPAL_OBSERVABLE_ZONE } from 'components/utils/field-constants';
 import { estimAlgoTypeValues, estimLogLevelValues, TabValue } from './state-estimation-parameters-utils';
-import { FieldLabel, MuiSelectInput, parametersStyles, SwitchInput } from '@gridsuite/commons-ui';
+import { FieldLabel, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { parametersStyles } from '../util/styles';
 
 export const StateEstimationGeneralParameters = () => {
     return (

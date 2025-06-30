@@ -11,12 +11,12 @@ import { useIntl } from 'react-intl';
 import { Box, Grid } from '@mui/material';
 import LineSeparator from '../../commons/line-separator';
 import GridSection from '../../commons/grid-section';
-import { CustomVoltageLevelTable, type IColumnsDef } from '@gridsuite/commons-ui';
+import { CustomVoltageLevelTable, type LimitReductionIColumnsDef } from '@gridsuite/commons-ui';
 
 export const StateEstimationLoadboundsParameters: FunctionComponent = () => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<IColumnsDef[]>(() => {
+    const columnsDefinition = useMemo<LimitReductionIColumnsDef[]>(() => {
         const definition = [
             {
                 dataKey: VOLTAGE_LEVEL,

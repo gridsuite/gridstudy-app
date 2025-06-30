@@ -27,7 +27,6 @@ import {
     SubmitButton,
     ProviderParam,
     useParametersBackend,
-    parametersStyles,
     ComputingType,
     PopupConfirmationDialog,
 } from '@gridsuite/commons-ui';
@@ -42,6 +41,7 @@ import { ID, NAME, PROVIDER } from '../../../utils/field-constants';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { useParametersNotification } from '../use-parameters-notification';
+import { parametersStyles } from '../util/styles';
 
 const scenarioFormSchema = yup
     .object()

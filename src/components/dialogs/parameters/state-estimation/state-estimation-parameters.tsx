@@ -8,7 +8,6 @@ import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMe
 import {
     CustomFormProvider,
     mergeSx,
-    parametersStyles,
     PopupConfirmationDialog,
     SubmitButton,
     useSnackMessage,
@@ -34,6 +33,7 @@ import { StateEstimationQualityParameters } from './state-estimation-quality-par
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
 import { updateStateEstimationParameters } from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
+import { parametersStyles } from '../util/styles';
 
 export const StateEstimationParameters = ({
     useStateEstimationParameters,

@@ -27,16 +27,16 @@ import { useIntl } from 'react-intl';
 import {
     CustomVoltageLevelTable,
     FieldLabel,
-    IColumnsDef,
+    LimitReductionIColumnsDef,
     ParameterFloat,
-    parametersStyles,
     SwitchInput,
 } from '@gridsuite/commons-ui';
+import { parametersStyles } from '../util/styles';
 
 export const StateEstimationQualityParameters = () => {
     const intl = useIntl();
 
-    const columnsDefinition = useMemo<IColumnsDef[]>(() => {
+    const columnsDefinition = useMemo<LimitReductionIColumnsDef[]>(() => {
         const definition = [
             {
                 dataKey: VOLTAGE_LEVEL,
