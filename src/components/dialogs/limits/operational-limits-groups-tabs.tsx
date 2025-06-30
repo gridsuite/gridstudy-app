@@ -23,7 +23,6 @@ import {
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
@@ -301,7 +300,7 @@ export function OperationalLimitsGroupsTabs({
         [finishEditingLimitsGroup]
     );
 
-    const addNewLimitSet = useCallback(() => {
+    /*const addNewLimitSet = useCallback(() => {
         if (editingTabIndex === -1) {
             const newIndex: number = limitsGroups1.length;
             appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`, '');
@@ -314,7 +313,7 @@ export function OperationalLimitsGroupsTabs({
         appendEmptyOperationalLimitsGroup,
         parentFormName,
         startEditingLimitsGroup,
-    ]);
+    ]);*/
 
     return (
         <>

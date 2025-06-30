@@ -119,9 +119,10 @@ export function LimitsPane({
     };
 
     return (
-        <Grid container spacing={2}>
+        <>
+            {/* active limit sets */}
+            <GridSection title="SelectedOperationalLimitGroups" />
             <Grid container item xs={8} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={0}>
-                <GridSection title="SelectedOperationalLimitGroups" />
                 <OperationalLimitGroupSelect
                     selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
                     optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
@@ -135,41 +136,35 @@ export function LimitsPane({
             </Grid>
 
             {/* limits */}
+            <Grid container xs={4.8}>
+                <GridSection title="LimitSets" children={<Button sx={styles.button} startIcon={<AddIcon />} />} />
+            </Grid>
             <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25}>
-                <Grid container xs={4}>
-                    <GridSection title="LimitSets" children={<Button sx={styles.button} startIcon={<AddIcon />} />} />
-                </Grid>
-                <Grid container xs={12}>
-                    {!onlySelectedLimitsGroup && (
-                        <Grid item xs={4}>
-                            <OperationalLimitsGroupsTabs
-                                parentFormName={id}
-                                limitsGroups1={limitsGroups1}
-                                limitsGroups2={limitsGroups2}
-                                indexSelectedLimitSet1={indexSelectedLimitSet1}
-                                indexSelectedLimitSet2={indexSelectedLimitSet2}
-                                setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
-                                setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
-                            />
-                        </Grid>
-                    )}
-                    <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
-                        {onlySelectedLimitsGroup
-                            ? renderSidePane(
-                                  'leftPanel',
-                                  `${id}.${CURRENT_LIMITS_1}`,
-                                  getCurrentLimits1(equipmentToModify)
-                              )
-                            : renderSidePaneAccordingToTabs(
-                                  'leftPanel',
-                                  limitsGroups1,
-                                  indexSelectedLimitSet1,
-                                  `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-                                  getCurrentLimits1(equipmentToModify)
-                              )}
+                {!onlySelectedLimitsGroup && (
+                    <Grid item xs={4}>
+                        <OperationalLimitsGroupsTabs
+                            parentFormName={id}
+                            limitsGroups1={limitsGroups1}
+                            limitsGroups2={limitsGroups2}
+                            indexSelectedLimitSet1={indexSelectedLimitSet1}
+                            indexSelectedLimitSet2={indexSelectedLimitSet2}
+                            setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
+                            setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
+                        />
                     </Grid>
+                )}
+                <Grid item xs={onlySelectedLimitsGroup ? 8 : 6} sx={tabStyles.parametersBox} marginLeft={2}>
+                    {onlySelectedLimitsGroup
+                        ? renderSidePane('leftPanel', `${id}.${CURRENT_LIMITS_1}`, getCurrentLimits1(equipmentToModify))
+                        : renderSidePaneAccordingToTabs(
+                              'leftPanel',
+                              limitsGroups1,
+                              indexSelectedLimitSet1,
+                              `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+                              getCurrentLimits1(equipmentToModify)
+                          )}
                 </Grid>
             </Grid>
-        </Grid>
+        </>
     );
 }
