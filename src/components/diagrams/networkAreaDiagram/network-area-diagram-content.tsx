@@ -43,9 +43,9 @@ import {
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
-import AddIcon from '@mui/icons-material/ControlPoint';
+
+import DiagramEditMenu from '../diagram-edit-menu';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -66,7 +66,8 @@ type NetworkAreaDiagramContentProps = {
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
-    readonly onSelectNode: (vlId: string) => void;
+    readonly onExpandVoltageLevel: (vlId: string) => void;
+    readonly onHideVoltageLevel: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -77,7 +78,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onToggleEditNadMode,
         onLoadNadFromElement,
         diagramId,
-        onSelectNode,
+        onExpandVoltageLevel,
+        onHideVoltageLevel,
     } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
@@ -96,7 +98,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
-    const [voltageLevelIdToExpand, setVoltageLevelIdToExpand] = useState<string>();
+    const [selectedVoltageLevelId, setSelectedVoltageLevelId] = useState<string>();
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
 
     const onMoveNodeCallback = useCallback(
@@ -163,7 +165,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
-            setVoltageLevelIdToExpand(equipmentId); // TODO CHARLY check si on peut se passer du useState ici
+            setSelectedVoltageLevelId(equipmentId); // TODO CHARLY check si on peut se passer du useState ici
             setShouldDisplayMenu(true);
             setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
         }
@@ -308,40 +310,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 />
             )}
             {shouldDisplayMenu && (
-                <Menu
+                <DiagramEditMenu
                     open={!!menuAnchorPosition}
+                    anchorPosition={menuAnchorPosition}
                     onClose={closeMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        menuAnchorPosition !== null
-                            ? { top: menuAnchorPosition.mouseY, left: menuAnchorPosition.mouseX }
-                            : undefined
-                    }
-                    style={{
-                        width: 'auto',
-                        maxHeight: 'auto',
-                    }}
-                >
-                    <CustomMenuItem
-                        style={{
-                            paddingTop: '1px',
-                            paddingBottom: '1px',
-                        }}
-                        onClick={() => {
-                            if (voltageLevelIdToExpand) {
-                                onSelectNode(voltageLevelIdToExpand);
-                            }
-                            setMenuAnchorPosition(null);
-                            setShouldDisplayMenu(false);
-                        }}
-                    >
-                        <ListItemIcon>
-                            <AddIcon />
-                        </ListItemIcon>
-
-                        <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'add' })}</Typography>} />
-                    </CustomMenuItem>
-                </Menu>
+                    onExpandItem={onExpandVoltageLevel}
+                    onHideItem={onHideVoltageLevel}
+                    selectedItemId={selectedVoltageLevelId}
+                />
             )}
             <Box
                 ref={svgRef}

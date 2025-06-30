@@ -229,7 +229,27 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds // TODO CHARLY check si ça peut être simplifié
                         ? [...diagram.voltageLevelToExpandIds, newVoltageLevelId]
                         : [newVoltageLevelId],
-                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds?.filter(
+                        (id) => !diagram.voltageLevelIds.includes(id)
+                    ),
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const onHideVoltageLevelId = useCallback(
+        (diagramId: UUID, voltageLevelIdToOmit: string) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    voltageLevelIds: diagram.voltageLevelIds.filter(id => id != voltageLevelIdToOmit),
+                    voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds
+                        ? [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit]
+                        : [voltageLevelIdToOmit],
                 });
             }
         },
@@ -303,7 +323,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
                                     onLoadNadFromElement={handleLoadNadFromElement}
-                                    onSelectNode={(vlId) => onExpandVoltageLevelId(diagram.diagramUuid, vlId)}
+                                    onExpandVoltageLevel={(vlId) => onExpandVoltageLevelId(diagram.diagramUuid, vlId)}
+                                    onHideVoltageLevel={(vlId) => onHideVoltageLevelId(diagram.diagramUuid, vlId)}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && ( // TODO CHARLY clean this

@@ -11,6 +11,7 @@ import {
     Diagram,
     DiagramParams,
     DiagramType,
+    isNadType,
     NetworkAreaDiagram,
     NetworkAreaDiagramFromElement,
     SubstationDiagram,
@@ -30,6 +31,7 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage, ElementType } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
+import { DiagramAdditionalMetadata } from '../diagram-common';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -225,10 +227,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 return checkAndGetVoltageLevelSingleLineDiagramUrl(diagram);
             } else if (diagram.type === DiagramType.SUBSTATION) {
                 return checkAndGetSubstationSingleLineDiagramUrl(diagram);
-            } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM || diagram.type === DiagramType.NAD_FROM_ELEMENT) { // TODO CHARLY clean this, it's only to test right now
+            } else if (
+                diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
+                diagram.type === DiagramType.NAD_FROM_ELEMENT
+            ) {
+                // TODO CHARLY clean this, it's only to test right now
                 return checkAndGetNetworkAreaDiagramUrl(diagram);
-            // } else if (diagram.type === DiagramType.NAD_FROM_ELEMENT) {
-            //     return checkAndGetNetworkAreaDiagramFromElementUrl(diagram);
+                // } else if (diagram.type === DiagramType.NAD_FROM_ELEMENT) {
+                //     return checkAndGetNetworkAreaDiagramFromElementUrl(diagram);
             }
             return null;
         },
@@ -248,11 +254,19 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             // make url from type
             const url = getUrl(diagram);
             let fetchOptions: RequestInit = { method: 'GET' };
-            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM || diagram.type === DiagramType.NAD_FROM_ELEMENT) { // TODO CHARLY clean this, it's only to test right now
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM || diagram.type === DiagramType.NAD_FROM_ELEMENT) {
+                // TODO CHARLY clean this, it's only to test right now
                 const nadRequestInfos = {
                     // TODO CHARLY Use a proper TS type
-                    nadConfigUuid: diagram.type === DiagramType.NAD_FROM_ELEMENT && diagram.elementType === ElementType.DIAGRAM_CONFIG ? diagram.elementUuid : null,
-                    filterUuid: diagram.type === DiagramType.NAD_FROM_ELEMENT && diagram.elementType === ElementType.FILTER ? diagram.elementUuid : null,
+                    nadConfigUuid:
+                        diagram.type === DiagramType.NAD_FROM_ELEMENT &&
+                        diagram.elementType === ElementType.DIAGRAM_CONFIG
+                            ? diagram.elementUuid
+                            : null,
+                    filterUuid:
+                        diagram.type === DiagramType.NAD_FROM_ELEMENT && diagram.elementType === ElementType.FILTER
+                            ? diagram.elementUuid
+                            : null,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
@@ -285,10 +299,16 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                 }
                                 const newDiagrams = { ...diagrams };
 
+                                const vlIds = data.additionalMetadata?.voltageLevels?.map((vl: { id: any }) => vl.id);
+
                                 newDiagrams[diagram.diagramUuid] = {
                                     ...diagrams[diagram.diagramUuid],
                                     svg: data,
                                     name: getDiagramTitle(diagram, data),
+                                    ...(isNadType(diagram.type) && {
+                                        voltageLevelToExpandIds: [],
+                                        voltageLevelIds: vlIds,
+                                    }),
                                 };
                                 return newDiagrams;
                             });
