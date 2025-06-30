@@ -41,23 +41,13 @@ export const getStudyUrlWithRootNetworkUuid = (
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export function getNetworkAreaDiagramUrl(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    depth: number,
-    withGeoData: boolean
-) {
+export function getNetworkAreaDiagramUrl(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/network-area-diagram?' +
-        new URLSearchParams({
-            depth: depth.toString(),
-            withGeoData: withGeoData.toString(),
-        })
+        '/network-area-diagram'
     );
 }
 
@@ -76,6 +66,7 @@ export function getNetworkAreaDiagramUrlFromElement(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
+            // TODO CHARLY clean ça. Existe encore dans le back ?
             elementParams: JSON.stringify({
                 elementUuid: elementUuid,
                 elementType: elementType,

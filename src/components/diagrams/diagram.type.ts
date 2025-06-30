@@ -43,9 +43,12 @@ type SubstationDiagramParams = DiagramBaseParams & {
     substationId: string;
 };
 type NetworkAreaDiagramParams = DiagramBaseParams & {
+    // TODO CHARLY redondant avec type NetworkAreaDiagram au dessus ?
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
-    depth: number;
+    voltageLevelToExpandIds: string[];
+    voltageLevelToOmitIds: string[];
+    // TODO CHARLY ajouter position
 };
 type NetworkAreaDiagramFromElementParams = DiagramBaseParams & {
     type: DiagramType.NAD_FROM_ELEMENT;
@@ -77,9 +80,11 @@ export type SubstationDiagram = DiagramBase & {
     substationId: string;
 };
 export type NetworkAreaDiagram = DiagramBase & {
+    // TODO CHARLY redondant avec type NetworkAreaDiagramParams au dessus ?
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
-    depth: number;
+    voltageLevelToExpandIds: string[];
+    voltageLevelToOmitIds: string[];
 };
 export type NetworkAreaDiagramFromElement = DiagramBase & {
     type: DiagramType.NAD_FROM_ELEMENT;

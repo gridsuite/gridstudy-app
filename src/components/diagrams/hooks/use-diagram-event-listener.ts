@@ -43,7 +43,8 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     diagramUuid: v4() as UUID,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagramEvent.voltageLevelIds,
-                    depth: 0,
+                    voltageLevelsToExpandIds: diagramEvent.voltageLevelsToExpandIds,
+                    voltageLevelsToOmitIds: diagramEvent.voltageLevelsToOmitIds,
                 });
             } else if (diagramEvent.diagramType === DiagramType.NAD_FROM_ELEMENT) {
                 createDiagram({

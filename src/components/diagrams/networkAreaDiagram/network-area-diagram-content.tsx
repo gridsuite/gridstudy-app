@@ -16,7 +16,12 @@ import {
     styles,
     NAD_ZOOM_LEVELS,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
+import {
+    NetworkAreaDiagramViewer,
+    DiagramMetadata,
+    OnToggleNadHoverCallbackType,
+    OnSelectNodeCallbackType,
+} from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
@@ -27,10 +32,20 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomMenuItem,
+    ElementType,
+    IElementCreationDialog,
+    mergeSx,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
+import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
+import AddIcon from '@mui/icons-material/ControlPoint';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -51,10 +66,19 @@ type NetworkAreaDiagramContentProps = {
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onSelectNode: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, diagramId } = props;
+    const {
+        diagramSizeSetter,
+        visible,
+        isEditNadMode,
+        onToggleEditNadMode,
+        onLoadNadFromElement,
+        diagramId,
+        onSelectNode,
+    } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -71,6 +95,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [voltageLevelIdToExpand, setVoltageLevelIdToExpand] = useState<string>();
+    const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
@@ -134,12 +161,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [setShouldDisplayTooltip, setAnchorPosition]
     );
 
+    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
+        if (mousePosition) {
+            setVoltageLevelIdToExpand(equipmentId); // TODO CHARLY check si on peut se passer du useState ici
+            setShouldDisplayMenu(true);
+            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+        }
+    }, []);
+
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
                 scalingFactor: props.svgScalingFactor,
                 voltageLevelIds: props.svgVoltageLevels ?? [],
-                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [], // TODO CHARLY ici on trouve les positions
             },
             directoryData.name,
             directoryData.description,
@@ -177,7 +212,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
-                null,
+                OnLeftClickCallback,
                 isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
@@ -248,8 +283,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onMoveTextNodeCallback,
         isEditNadMode,
         diagramId,
+        OnLeftClickCallback,
     ]);
-
+    const intl = useIntl();
+    const closeMenu = () => {
+        setMenuAnchorPosition(null);
+        setShouldDisplayMenu(false);
+    };
     /**
      * RENDER
      */
@@ -266,6 +306,42 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     equipmentId={hoveredEquipmentId}
                     loadFlowStatus={loadFlowStatus}
                 />
+            )}
+            {shouldDisplayMenu && (
+                <Menu
+                    open={!!menuAnchorPosition}
+                    onClose={closeMenu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        menuAnchorPosition !== null
+                            ? { top: menuAnchorPosition.mouseY, left: menuAnchorPosition.mouseX }
+                            : undefined
+                    }
+                    style={{
+                        width: 'auto',
+                        maxHeight: 'auto',
+                    }}
+                >
+                    <CustomMenuItem
+                        style={{
+                            paddingTop: '1px',
+                            paddingBottom: '1px',
+                        }}
+                        onClick={() => {
+                            if (voltageLevelIdToExpand) {
+                                onSelectNode(voltageLevelIdToExpand);
+                            }
+                            setMenuAnchorPosition(null);
+                            setShouldDisplayMenu(false);
+                        }}
+                    >
+                        <ListItemIcon>
+                            <AddIcon />
+                        </ListItemIcon>
+
+                        <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'add' })}</Typography>} />
+                    </CustomMenuItem>
+                </Menu>
             )}
             <Box
                 ref={svgRef}

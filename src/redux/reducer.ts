@@ -361,6 +361,9 @@ type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
 type CreateNADDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
     voltageLevelIds: string[];
+    voltageLevelToExpandIds: string[];
+    voltageLevelToOmitIds: string[];
+    // TODO CHARLY ajouter la position ?
 };
 
 type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
