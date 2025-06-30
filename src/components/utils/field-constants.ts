@@ -482,3 +482,4 @@ export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThr
 export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
 export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
+export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';

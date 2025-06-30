@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
@@ -24,7 +24,6 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
-import { fetchSecurityAnalysisProviders, getSecurityAnalysisDefaultLimitReductions } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
@@ -48,7 +47,6 @@ import {
 import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
-import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
@@ -59,12 +57,15 @@ import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
 import {
-    useParametersBackend,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
+    SecurityAnalysisParametersInline,
     ShortCircuitParametersInLine,
+    useParametersBackend,
     ComputingType,
     VoltageInitParametersInLine,
+    fetchSecurityAnalysisProviders,
+    getSecurityAnalysisDefaultLimitReductions,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -272,9 +273,11 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
             case TAB_VALUES.securityAnalysisParamsTabValue:
                 return (
-                    <SecurityAnalysisParameters
+                    <SecurityAnalysisParametersInline
+                        studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
