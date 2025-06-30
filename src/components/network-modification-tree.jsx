@@ -177,7 +177,7 @@ const NetworkModificationTree = ({
 
     /**
      * When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
-     * an ancestor which has siblings.
+     * an ancestor which has siblings, as well as linked labeled groups.
      * To do so, we force the dragged node's positition to stay the same and create a new change for the
      * ancestor, with the ancestor's positions updated by the dragged node's movement.
      * Because a node's position is relative to its parent, by "not moving" the dragged node and "moving"
@@ -230,10 +230,15 @@ const NetworkModificationTree = ({
 
                 draggedBranchIdRef.current = firstAncestorWithSibling.id;
             }
-            // get all moving node due to dragNdrop
+
+            /**
+             * Move labeled groups with dragged nodes
+             */
+
+            // get all moving nodes due to dragNdrop
             const movingNode = [firstAncestorWithSibling, ...treeModel.getAllChildren(firstAncestorWithSibling.id)];
 
-            // for each of those nodes, check if there is a group node attached to it
+            // for each of those nodes, check if there is a labeled group attached to it
             // if there is one, apply the same translation
             changes.push(
                 ...movingNode

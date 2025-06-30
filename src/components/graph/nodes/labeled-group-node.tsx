@@ -61,7 +61,7 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
             sx={styles.border}
         >
             <Box sx={styles.label}>
-                <SecurityIcon style={{ fontSize: '12px' }} />
+                <SecurityIcon sx={{ fontSize: '12px' }} />
                 <FormattedMessage id="labeledGroupSecurity" />
             </Box>
         </Box>
