@@ -279,16 +279,28 @@ function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
     return [nodeMap, childrenMap] as const;
 }
 
+type SecurityGroupPlacementsBuilder =
+    | {
+          isInSecurityGroup: false;
+      }
+    | {
+          isInSecurityGroup: true;
+          securityGroupTopLeftPosition: NodePlacement;
+          currentSecurityGroupMaxX: number;
+          currentSecurityGroupMaxY: number;
+          groupFirstNodeId: string;
+      };
+
+/**
+ * In order to draw labeled group borders, we need to compute SECURITY node groups positions (top-left corner and bottom-right corner since it's a rectangle)
+ */
 function computeSecurityGroupNodes(
     nodes: CurrentTreeNode[],
     placementGrid: PlacementGrid,
     nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
 ) {
     const securityGroupsPlacements: { firstNodeId: string; topLeft: NodePlacement; bottomRight: NodePlacement }[] = [];
-    let securityGroupTopLeftPosition: NodePlacement | undefined;
-    let currentSecurityGroupMaxX: number;
-    let currentSecurityGroupMaxY: number;
-    let groupFirstNodeId: string;
+    let securityGroupBuilder: SecurityGroupPlacementsBuilder = { isInSecurityGroup: false };
     nodes.forEach((node, index) => {
         const isLast = index === nodes.length - 1;
         const nodePlacement = placementGrid.getPlacement(node.id);
@@ -296,38 +308,44 @@ function computeSecurityGroupNodes(
             return;
         }
 
-        if (
-            node.data.nodeType === NetworkModificationNodeType.SECURITY &&
-            nodeMap.get(node.parentId)?.node.data.nodeType !== NetworkModificationNodeType.SECURITY
-        ) {
-            if (securityGroupTopLeftPosition) {
+        // If currently in a security group, if the current node is the last, of if its parent node is not of type SECURITY
+        // then : the current security group is closed, then saved in securityGroupsPlacements
+        // otherwise : the current security group max positions are updated
+        if (securityGroupBuilder.isInSecurityGroup) {
+            if (nodeMap.get(node.parentId)?.node.data.nodeType !== NetworkModificationNodeType.SECURITY || isLast) {
                 securityGroupsPlacements.push({
-                    firstNodeId: groupFirstNodeId,
-                    topLeft: securityGroupTopLeftPosition,
-                    bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
+                    firstNodeId: securityGroupBuilder.groupFirstNodeId,
+                    topLeft: securityGroupBuilder.securityGroupTopLeftPosition,
+                    bottomRight: {
+                        row: securityGroupBuilder.currentSecurityGroupMaxY,
+                        column: securityGroupBuilder.currentSecurityGroupMaxX,
+                    },
                 });
+
+                securityGroupBuilder = {
+                    isInSecurityGroup: false,
+                };
+            } else {
+                securityGroupBuilder.currentSecurityGroupMaxX = Math.max(
+                    securityGroupBuilder.currentSecurityGroupMaxX,
+                    nodePlacement.column
+                );
+                securityGroupBuilder.currentSecurityGroupMaxY = Math.max(
+                    securityGroupBuilder.currentSecurityGroupMaxY,
+                    nodePlacement.row
+                );
             }
-            securityGroupTopLeftPosition = nodePlacement;
-            groupFirstNodeId = node.id;
-            currentSecurityGroupMaxX = nodePlacement.column;
-            currentSecurityGroupMaxY = nodePlacement.row;
         }
 
-        if (node.data.nodeType === NetworkModificationNodeType.SECURITY) {
-            currentSecurityGroupMaxX = Math.max(currentSecurityGroupMaxX, nodePlacement.column);
-            currentSecurityGroupMaxY = Math.max(currentSecurityGroupMaxY, nodePlacement.row);
-        }
-
-        if (
-            securityGroupTopLeftPosition &&
-            (isLast || node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION)
-        ) {
-            securityGroupsPlacements.push({
-                firstNodeId: groupFirstNodeId,
-                topLeft: securityGroupTopLeftPosition,
-                bottomRight: { row: currentSecurityGroupMaxY, column: currentSecurityGroupMaxX },
-            });
-            securityGroupTopLeftPosition = undefined;
+        // If currently not in a security group, and a security node is found, we initiate securityGroupBuilder
+        if (!securityGroupBuilder.isInSecurityGroup && node.data.nodeType === NetworkModificationNodeType.SECURITY) {
+            securityGroupBuilder = {
+                isInSecurityGroup: true,
+                securityGroupTopLeftPosition: nodePlacement,
+                groupFirstNodeId: node.id,
+                currentSecurityGroupMaxX: nodePlacement.column,
+                currentSecurityGroupMaxY: nodePlacement.row,
+            };
         }
     });
 
