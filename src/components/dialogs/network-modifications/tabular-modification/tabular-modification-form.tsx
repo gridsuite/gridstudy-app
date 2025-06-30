@@ -53,15 +53,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
 
     const language = useSelector((state: AppState) => state.computedLanguage);
 
-    const getTypeLabel = useCallback(
-        (type: string) =>
-            type === EQUIPMENT_TYPES.SHUNT_COMPENSATOR
-                ? intl.formatMessage({
-                      id: 'linearShuntCompensators',
-                  })
-                : intl.formatMessage({ id: type }),
-        [intl]
-    );
+    const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
