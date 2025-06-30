@@ -5,26 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
     CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS_1,
     OPERATIONAL_LIMITS_GROUPS_2,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from 'components/utils/field-constants';
-import { FormattedMessage } from 'react-intl';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import GridSection from '../commons/grid-section';
+import { styles } from '../dialog-utils';
+import AddIcon from '@mui/icons-material/ControlPoint';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -53,22 +54,26 @@ export function LimitsPane({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
     });
 
-    const renderTitle = (id: string, selectedFormName: string, optionsFormName: string) => (
-        <>
-            <Grid item xs={onlySelectedLimitsGroup ? 4 : 1}>
-                <Typography variant="h5">
-                    <FormattedMessage id={id} />
-                </Typography>
-            </Grid>
-            {!onlySelectedLimitsGroup && (
+    const OperationalLimitGroupSelect = useCallback(
+        ({
+            selectedFormName,
+            optionsFormName,
+            label,
+        }: {
+            selectedFormName: string;
+            optionsFormName: string;
+            label: string;
+        }) =>
+            !onlySelectedLimitsGroup && (
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={selectedFormName}
                         optionsFormName={optionsFormName}
+                        label={label}
                     />
                 </Grid>
-            )}
-        </>
+            ),
+        [onlySelectedLimitsGroup]
     );
 
     const renderSidePaneAccordingToTabs = (
@@ -112,64 +117,57 @@ export function LimitsPane({
         }
         return null;
     };
-    const getCurrentLimits2 = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits2) {
-            return equipmentToModify.currentLimits2.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup2
-            );
-        }
-        return null;
-    };
 
     return (
         <Grid container spacing={2}>
-            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={2}>
-                {!onlySelectedLimitsGroup && <Grid item xs={1.9} />}
-                {renderTitle('Side1', `${id}.${SELECTED_LIMITS_GROUP_1}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`)}
-                {!onlySelectedLimitsGroup && <Grid item xs={0.25} />}
-                {renderTitle('Side2', `${id}.${SELECTED_LIMITS_GROUP_2}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`)}
+            <Grid container item xs={8} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={0}>
+                <GridSection title="SelectedOperationalLimitGroups" />
+                <OperationalLimitGroupSelect
+                    selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
+                    optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_1}`}
+                    label="Side1"
+                />
+                <OperationalLimitGroupSelect
+                    selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
+                    optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS_2}`}
+                    label="Side2"
+                />
             </Grid>
+
             {/* limits */}
             <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25}>
-                {!onlySelectedLimitsGroup && (
-                    <Grid item xs={1.8}>
-                        <OperationalLimitsGroupsTabs
-                            parentFormName={id}
-                            limitsGroups1={limitsGroups1}
-                            limitsGroups2={limitsGroups2}
-                            indexSelectedLimitSet1={indexSelectedLimitSet1}
-                            indexSelectedLimitSet2={indexSelectedLimitSet2}
-                            setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
-                            setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
-                        />
-                    </Grid>
-                )}
-                <Grid item xs={4} sx={tabStyles.parametersBox}>
-                    {onlySelectedLimitsGroup
-                        ? renderSidePane('leftPanel', `${id}.${CURRENT_LIMITS_1}`, getCurrentLimits1(equipmentToModify))
-                        : renderSidePaneAccordingToTabs(
-                              'leftPanel',
-                              limitsGroups1,
-                              indexSelectedLimitSet1,
-                              `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-                              getCurrentLimits1(equipmentToModify)
-                          )}
+                <Grid container xs={4}>
+                    <GridSection title="LimitSets" children={<Button sx={styles.button} startIcon={<AddIcon />} />} />
                 </Grid>
-                {!onlySelectedLimitsGroup && <Grid item xs={0.25} />}
-                <Grid item xs={4} sx={tabStyles.parametersBox}>
-                    {onlySelectedLimitsGroup
-                        ? renderSidePane(
-                              'rightPanel',
-                              `${id}.${CURRENT_LIMITS_2}`,
-                              getCurrentLimits2(equipmentToModify)
-                          )
-                        : renderSidePaneAccordingToTabs(
-                              'rightPanel',
-                              limitsGroups2,
-                              indexSelectedLimitSet2,
-                              `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
-                              getCurrentLimits2(equipmentToModify)
-                          )}
+                <Grid container xs={12}>
+                    {!onlySelectedLimitsGroup && (
+                        <Grid item xs={4}>
+                            <OperationalLimitsGroupsTabs
+                                parentFormName={id}
+                                limitsGroups1={limitsGroups1}
+                                limitsGroups2={limitsGroups2}
+                                indexSelectedLimitSet1={indexSelectedLimitSet1}
+                                indexSelectedLimitSet2={indexSelectedLimitSet2}
+                                setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
+                                setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
+                            />
+                        </Grid>
+                    )}
+                    <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
+                        {onlySelectedLimitsGroup
+                            ? renderSidePane(
+                                  'leftPanel',
+                                  `${id}.${CURRENT_LIMITS_1}`,
+                                  getCurrentLimits1(equipmentToModify)
+                              )
+                            : renderSidePaneAccordingToTabs(
+                                  'leftPanel',
+                                  limitsGroups1,
+                                  indexSelectedLimitSet1,
+                                  `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+                                  getCurrentLimits1(equipmentToModify)
+                              )}
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

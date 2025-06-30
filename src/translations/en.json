@@ -613,6 +613,7 @@
     "LccCreationError": "Error while creating HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
     "LimitSetCreationEmptyError": "Limit sets names can't be empty",
+    "LimitSets": "Limit sets",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
@@ -879,6 +880,7 @@
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
     "SelectedOperationalLimitGroup": "Active limit set",
+    "SelectedOperationalLimitGroups": "Active limit sets",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
