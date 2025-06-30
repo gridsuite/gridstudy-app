@@ -168,7 +168,6 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
         []
     );
-
     const resetNodeClipboard = useCallback(() => {
         dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
         snackInfo({
@@ -230,6 +229,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_CREATED) {
+                if (isSubtreeImpacted([studyUpdatedForce.eventData.headers.parentNode])) {
+                    resetNodeClipboard();
+                }
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers.newNode).then(
                     (nodes) => {
                         dispatch(
@@ -259,6 +261,11 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         )
                     );
                 });
+                const movedNode = studyUpdatedForce.eventData.headers.movedNode;
+                const parentNode = studyUpdatedForce.eventData.headers.parentNode;
+                if (isSubtreeImpacted([movedNode, parentNode])) {
+                    resetNodeClipboard();
+                }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_MOVED) {
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers.movedNode).then(
                     (nodes) => {
@@ -267,6 +274,12 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         );
                     }
                 );
+                const movedNode = studyUpdatedForce.eventData.headers.movedNode;
+                const parentNode = studyUpdatedForce.eventData.headers.parentNode;
+
+                if (isSubtreeImpacted([movedNode, parentNode])) {
+                    resetNodeClipboard();
+                }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODES_DELETED) {
                 if (
                     studyUpdatedForce.eventData.headers.nodes.some(
@@ -415,7 +428,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, snackError, dispatch]
+        [studyUuid, dispatch, snackError]
     );
 
     const handleRemoveNode = useCallback(
