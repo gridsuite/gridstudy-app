@@ -22,6 +22,7 @@ import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from '
 import { initTableDefinitions } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
+import { DiagramType } from 'components/diagrams/diagram.type';
 
 const styles = {
     invalidNode: {
@@ -36,7 +37,7 @@ interface SpreadsheetViewProps {
     equipmentType: SpreadsheetEquipmentType;
     disabled: boolean;
     onEquipmentScrolled: () => void;
-    openDiagram?: (equipmentId: string, diagramType?: string) => void;
+    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
 }
 
 export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({

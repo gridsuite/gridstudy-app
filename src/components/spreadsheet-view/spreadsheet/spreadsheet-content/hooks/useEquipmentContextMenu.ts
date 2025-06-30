@@ -122,7 +122,7 @@ export const useEquipmentContextMenu = ({
               for (let i = 1; i <= 3; i++) {
                   const voltageLevelKey = `voltageLevelId${i}`;
                   if (equipmentData[voltageLevelKey]) {
-                      const sideLabel = intl.formatMessage({ id: 'Side' }) + i;
+                      const sideLabel = intl.formatMessage({ id: 'Side' }) + ' ' + i;
                       voltageLevels.push({
                           id: equipmentData[voltageLevelKey],
                           label: getDetailsLabel(undefined, sideLabel),
