@@ -54,7 +54,6 @@ export function LimitsSidePane({
     onlySelectedLimitsGroup,
     selectedLimitSetId,
 }: Readonly<LimitsSidePaneProps>) {
-    console.log('-----------limitsGroupFormName : ', limitsGroupFormName);
     const intl = useIntl();
     const { getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({

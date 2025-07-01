@@ -60,17 +60,16 @@ export function LimitsPane({
             selectedFormName: string;
             optionsFormName: string;
             label: string;
-        }) =>
-            !onlySelectedLimitsGroup && (
-                <Grid item xs={3}>
-                    <SelectedOperationalLimitGroup
-                        selectedFormName={selectedFormName}
-                        optionsFormName={optionsFormName}
-                        label={label}
-                    />
-                </Grid>
-            ),
-        [onlySelectedLimitsGroup]
+        }) => (
+            <Grid item xs={3}>
+                <SelectedOperationalLimitGroup
+                    selectedFormName={selectedFormName}
+                    optionsFormName={optionsFormName}
+                    label={label}
+                />
+            </Grid>
+        ),
+        []
     );
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
@@ -140,16 +139,20 @@ export function LimitsPane({
             {/* active limit sets */}
             <GridSection title="SelectedOperationalLimitGroups" />
             <Grid container item xs={8} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={0}>
-                <OperationalLimitGroupSelect
-                    selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
-                    optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
-                    label="Side1"
-                />
-                <OperationalLimitGroupSelect
-                    selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
-                    optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
-                    label="Side2"
-                />
+                {!onlySelectedLimitsGroup && (
+                    <OperationalLimitGroupSelect
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
+                        label="Side1"
+                    />
+                )}
+                {!onlySelectedLimitsGroup && (
+                    <OperationalLimitGroupSelect
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
+                        label="Side2"
+                    />
+                )}
             </Grid>
 
             {/* limits */}
