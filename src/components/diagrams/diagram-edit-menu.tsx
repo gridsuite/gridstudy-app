@@ -14,9 +14,9 @@ interface ContextMenuProps {
     open: boolean;
     anchorPosition: MenuAnchorPosition | null;
     onClose: () => void;
-    onExpandItem: (id: string | undefined) => void;
-    onHideItem: (id: string | undefined) => void;
-    selectedItemId: string | undefined;
+    onExpandItem: (id: string) => void;
+    onHideItem: (id: string) => void;
+    selectedItemId: string;
 }
 
 const DiagramEditMenu: React.FC<ContextMenuProps> = ({

@@ -308,6 +308,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                     ...(isNadType(diagram.type) && {
                                         voltageLevelToExpandIds: [],
                                         voltageLevelIds: vlIds,
+
                                     }),
                                 };
                                 return newDiagrams;

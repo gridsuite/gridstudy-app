@@ -211,7 +211,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: [],
                     voltageLevelToExpandIds: [...diagram.voltageLevelIds],
-                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds ? diagram.voltageLevelToOmitIds: [],
                 });
             }
         },
@@ -229,9 +229,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds // TODO CHARLY check si ça peut être simplifié
                         ? [...diagram.voltageLevelToExpandIds, newVoltageLevelId]
                         : [newVoltageLevelId],
-                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds?.filter(
-                        (id) => !diagram.voltageLevelIds.includes(id)
-                    ),
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                 });
             }
         },
@@ -252,6 +250,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                         : [voltageLevelIdToOmit],
                 });
             }
+            console.log(diagram.voltageLevelIds,diagram.voltageLevelToExpandIds, diagram.voltageLevelToOmitIds);
         },
         [diagrams, updateDiagram]
     );
