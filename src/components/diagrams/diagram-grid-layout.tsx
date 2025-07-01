@@ -319,49 +319,47 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     useDiagramsGridLayoutSessionStorage({ layouts, onLoadFromSessionStorage });
 
     return (
-        <>
-            <ResponsiveGridLayout
-                className="layout"
-                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={{
-                    lg: LG_COLUMN_COUNT,
-                    md: MD_SM_COLUMN_COUNT,
-                    sm: MD_SM_COLUMN_COUNT,
-                    xs: XS_XSS_COLUMN_COUNT,
-                    xxs: XS_XSS_COLUMN_COUNT,
-                }}
-                compactType={'horizontal'}
-                onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
-                layouts={layouts}
-                style={{
-                    backgroundColor:
-                        theme.palette.mode === 'light'
-                            ? darken(theme.palette.background.paper, 0.1)
-                            : theme.reactflow.backgroundColor,
-                    flexGrow: 1,
-                    overflow: 'auto',
-                }}
-                draggableHandle=".react-grid-dragHandle"
-                onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
-                    if (e.target) {
-                        (e.target as HTMLElement).style.cursor = 'grabbing';
-                    }
-                }}
-                onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
-                    if (e.target) {
-                        (e.target as HTMLElement).style.cursor = 'default';
-                    }
-                }}
-            >
-                <DiagramAdder
-                    onLoad={handleLoadNadFromElement}
-                    onSearch={showVoltageLevelDiagram}
-                    onMap={!isMapCardAdded ? onAddMapCard : undefined}
-                    key={'Adder'}
-                />
-                {renderDiagrams()}
-            </ResponsiveGridLayout>
-        </>
+        <ResponsiveGridLayout
+            className="layout"
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={{
+                lg: LG_COLUMN_COUNT,
+                md: MD_SM_COLUMN_COUNT,
+                sm: MD_SM_COLUMN_COUNT,
+                xs: XS_XSS_COLUMN_COUNT,
+                xxs: XS_XSS_COLUMN_COUNT,
+            }}
+            compactType={'horizontal'}
+            onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
+            layouts={layouts}
+            style={{
+                backgroundColor:
+                    theme.palette.mode === 'light'
+                        ? darken(theme.palette.background.paper, 0.1)
+                        : theme.reactflow.backgroundColor,
+                flexGrow: 1,
+                overflow: 'auto',
+            }}
+            draggableHandle=".react-grid-dragHandle"
+            onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
+                if (e.target) {
+                    (e.target as HTMLElement).style.cursor = 'grabbing';
+                }
+            }}
+            onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
+                if (e.target) {
+                    (e.target as HTMLElement).style.cursor = 'default';
+                }
+            }}
+        >
+            <DiagramAdder
+                onLoad={handleLoadNadFromElement}
+                onSearch={showVoltageLevelDiagram}
+                onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                key={'Adder'}
+            />
+            {renderDiagrams()}
+        </ResponsiveGridLayout>
     );
 }
 

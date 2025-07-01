@@ -40,7 +40,7 @@ const styles = {
     }),
 };
 
-interface reactGridLayoutCustomChildComponentProps {
+interface ReactGridLayoutCustomChildComponentProps {
     style?: React.CSSProperties;
     className?: string;
     onMouseDown?: MouseEventHandler<HTMLElement>;
@@ -49,7 +49,7 @@ interface reactGridLayoutCustomChildComponentProps {
     children?: React.ReactNode;
 }
 
-interface DiagramAdderProps extends reactGridLayoutCustomChildComponentProps {
+interface DiagramAdderProps extends ReactGridLayoutCustomChildComponentProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     onSearch: (element: EquipmentInfos) => void;
     onMap?: () => void;
