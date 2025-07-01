@@ -24,13 +24,14 @@ import {
     V,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { CsvExport } from '../../../csv-export/csv-export';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, CsvExport } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
 import { suppressEventsToPreventEditMode } from '../../commons/utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
 const styles = {
     container: {
@@ -181,6 +182,8 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
+
+    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
@@ -507,6 +510,8 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                             tableName={tableName}
                             tableNamePrefix="VoltageInit_"
                             disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
+                            language={language}
+                            exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
                         />
                     </Box>
                     <Box sx={styles.grid}>
@@ -532,6 +537,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             vscConverterStationsColumnDefs,
             shuntCompensatorsColumnDefs,
             busColumnDefs,
+            language,
         ]
     );
 
