@@ -1162,7 +1162,7 @@
     "GenerationAndLoad": "Production et consommation",
     "InsertModificationFrom": "Insérer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
-    "GenerateFromGridexplore": "Générer à partir de GridExplore",
+    "AddFromGridexplore": "Ajouter depuis GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
@@ -1505,6 +1505,6 @@
     "loadFlowModification": "Modification par calcul de répartition appliquée",
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
-    "OpenMapCard": "Ajouter la carte géographique à la grille",
-    "AddNewCard": "Ajouter une nouvelle carte"
+    "OpenMapCard": "Ajouter la carte géographique",
+    "AddNewCard": "Ajouter une nouvelle image"
 }

@@ -9,7 +9,7 @@ import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
-import { Box, darken, Theme, useTheme } from '@mui/material';
+import { Box, Theme, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
@@ -38,17 +38,18 @@ const styles = {
     card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: theme.spacing(1),
     }),
     diagramContainer: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor:
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
+        border:
             theme.palette.mode === 'light'
-                ? theme.palette.background.paper
-                : theme.networkModificationPanel.backgroundColor,
-        borderRadius: '0 0 ' + theme.spacing(1) + ' ' + theme.spacing(1),
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderTop: 'none', // remove the top border to avoid double border with CardHeader
     }),
 };
 
@@ -334,9 +335,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             layouts={layouts}
             style={{
                 backgroundColor:
-                    theme.palette.mode === 'light'
-                        ? darken(theme.palette.background.paper, 0.1)
-                        : theme.reactflow.backgroundColor,
+                    theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
                 flexGrow: 1,
                 overflow: 'auto',
             }}

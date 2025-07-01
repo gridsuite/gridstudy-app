@@ -1,9 +1,14 @@
 .react-grid-item:not(.react-grid-placeholder) {
     background-color: transparent;
-    border-radius: 8px;
+    border: unset;
+    border-radius: 16px;
 }
 
 .react-grid-item.react-grid-placeholder {
     background-color: #757575;
-    border-radius: 8px;
+    border-radius: 16px;
+}
+
+.react-grid-item > .react-resizable-handle.react-resizable-handle-se {
+    margin: 8px;
 }

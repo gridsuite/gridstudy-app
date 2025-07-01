@@ -7,7 +7,6 @@
 
 import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler } from 'react';
 import { Box, IconButton, Theme, Tooltip } from '@mui/material';
-import CardHeader from './card-header';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { Search, Public, Upload } from '@mui/icons-material';
@@ -24,7 +23,6 @@ const styles = {
     card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
-        borderRadius: theme.spacing(1),
     }),
     adderContent: (theme: Theme) => ({
         display: 'flex',
@@ -32,11 +30,12 @@ const styles = {
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor:
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        borderRadius: theme.spacing(2),
+        border:
             theme.palette.mode === 'light'
-                ? theme.palette.background.paper
-                : theme.networkModificationPanel.backgroundColor,
-        borderRadius: '0 0 ' + theme.spacing(1) + ' ' + theme.spacing(1),
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
     }),
 };
 
@@ -73,7 +72,6 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
     };
     return (
         <Box sx={mergeSx(style, styles.card)} ref={ref} {...otherProps}>
-            <CardHeader title={<FormattedMessage id="AddNewCard" />} />
             <Box sx={styles.adderContent}>
                 <FormattedMessage id="AddNewCard" />
                 <Box
@@ -83,7 +81,7 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                         justifyContent: 'center',
                     }}
                 >
-                    <Tooltip title={<FormattedMessage id="GenerateFromGridexplore" />}>
+                    <Tooltip title={<FormattedMessage id="AddFromGridexplore" />}>
                         <IconButton onClick={() => setIsLoadSelectorOpen(true)}>
                             <Upload />
                         </IconButton>
@@ -107,7 +105,7 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                 onClose={selectElement}
                 types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                 title={intl.formatMessage({
-                    id: 'GenerateFromGridexplore',
+                    id: 'AddFromGridexplore',
                 })}
                 multiSelect={false}
             />
