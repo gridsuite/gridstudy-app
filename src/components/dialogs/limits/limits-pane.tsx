@@ -51,25 +51,22 @@ export function LimitsPane({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
 
-    const OperationalLimitGroupSelect = useCallback(
-        ({
-            selectedFormName,
-            optionsFormName,
-            label,
-        }: {
-            selectedFormName: string;
-            optionsFormName: string;
-            label: string;
-        }) => (
-            <Grid item xs={3}>
-                <SelectedOperationalLimitGroup
-                    selectedFormName={selectedFormName}
-                    optionsFormName={optionsFormName}
-                    label={label}
-                />
-            </Grid>
-        ),
-        []
+    const OperationalLimitGroupSelect = ({
+        selectedFormName,
+        optionsFormName,
+        label,
+    }: {
+        selectedFormName: string;
+        optionsFormName: string;
+        label: string;
+    }) => (
+        <Grid item xs={3}>
+            <SelectedOperationalLimitGroup
+                selectedFormName={selectedFormName}
+                optionsFormName={optionsFormName}
+                label={label}
+            />
+        </Grid>
     );
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
@@ -95,35 +92,32 @@ export function LimitsPane({
                 )
         );
 
-    const LimitSetPane = useCallback(
-        ({
-            id,
-            formName,
-            previousCurrentLimits,
-            selectedLimitSetId,
-        }: {
-            id: string;
-            formName: string;
-            previousCurrentLimits: CurrentLimits | null;
-            selectedLimitSetId: string;
-        }) => {
-            return (
-                <>
-                    <LimitsSidePane
-                        key={id}
-                        limitsGroupFormName={formName}
-                        clearableFields={clearableFields}
-                        permanentCurrentLimitPreviousValue={previousCurrentLimits?.permanentLimit}
-                        temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits ?? []}
-                        currentNode={currentNode}
-                        onlySelectedLimitsGroup={onlySelectedLimitsGroup}
-                        selectedLimitSetId={selectedLimitSetId}
-                    />
-                </>
-            );
-        },
-        [clearableFields, currentNode, onlySelectedLimitsGroup]
-    );
+    const LimitSetPane = ({
+        id,
+        formName,
+        previousCurrentLimits,
+        selectedLimitSetId,
+    }: {
+        id: string;
+        formName: string;
+        previousCurrentLimits: CurrentLimits | null;
+        selectedLimitSetId: string;
+    }) => {
+        return (
+            <>
+                <LimitsSidePane
+                    key={id}
+                    limitsGroupFormName={formName}
+                    clearableFields={clearableFields}
+                    permanentCurrentLimitPreviousValue={previousCurrentLimits?.permanentLimit}
+                    temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits ?? []}
+                    currentNode={currentNode}
+                    onlySelectedLimitsGroup={onlySelectedLimitsGroup}
+                    selectedLimitSetId={selectedLimitSetId}
+                />
+            </>
+        );
+    };
 
     const getCurrentLimits1 = (equipmentToModify: any): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits1) {
