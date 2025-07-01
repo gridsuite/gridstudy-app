@@ -47,7 +47,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [resetFilters, setResetFilters] = useState(false);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const intl = useIntl();
-    const [isReportLoading, fetchReport, , fetchReportSeverities] = useReportFetcher(
+    const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(
         COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
     );
 
