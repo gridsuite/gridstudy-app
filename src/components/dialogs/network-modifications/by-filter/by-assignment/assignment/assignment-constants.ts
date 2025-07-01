@@ -292,6 +292,16 @@ export const FIELD_OPTIONS = {
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },
+    OPERATIONAL_LIMITS_GROUP_1: {
+        id: FieldType.OPERATIONAL_LIMITS_GROUP_1,
+        label: 'operationalLimitsGroup1',
+        dataType: DataType.STRING,
+    },
+    OPERATIONAL_LIMITS_GROUP_2: {
+        id: FieldType.OPERATIONAL_LIMITS_GROUP_2,
+        label: 'operationalLimitsGroup2',
+        dataType: DataType.STRING,
+    }
 } as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 
 export const EQUIPMENTS_FIELDS = {
@@ -312,6 +322,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.G2,
         FIELD_OPTIONS.B1,
         FIELD_OPTIONS.B2,
+        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_1,
+        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_2,
     ],
     [EquipmentType.TWO_WINDINGS_TRANSFORMER]: [
         FIELD_OPTIONS.PROPERTY,

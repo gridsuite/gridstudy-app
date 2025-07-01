@@ -79,6 +79,7 @@ function getValueSchema(dataType?: DataType) {
         case DataType.INTEGER:
             schema = yup.number().integer();
             break;
+        case DataType.STRING:
         case DataType.ENUM:
         case DataType.PROPERTY:
             schema = yup.string();
