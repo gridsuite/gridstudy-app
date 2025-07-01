@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu, Typography, ListItemIcon, ListItemText } from '@mui/material';
 import { CustomMenuItem } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/ControlPoint';
-import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useIntl } from 'react-intl';
 
 interface MenuAnchorPosition {
@@ -19,7 +19,7 @@ interface ContextMenuProps {
     selectedItemId: string;
 }
 
-const DiagramEditMenu: React.FC<ContextMenuProps> = ({
+const DiagramVoltageLevelContextMenu: React.FC<ContextMenuProps> = ({
     open,
     anchorPosition,
     onClose,
@@ -66,7 +66,7 @@ const DiagramEditMenu: React.FC<ContextMenuProps> = ({
                 <ListItemIcon>
                     <AddIcon />
                 </ListItemIcon>
-                <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'add' })}</Typography>} />
+                <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'expand' })}</Typography>} />
             </CustomMenuItem>
             <CustomMenuItem
                 style={{
@@ -76,12 +76,12 @@ const DiagramEditMenu: React.FC<ContextMenuProps> = ({
                 onClick={handleHideClick}
             >
                 <ListItemIcon>
-                    <DeleteIcon />
+                    <VisibilityOffIcon />
                 </ListItemIcon>
-                <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'delete' })}</Typography>} />
+                <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'hide' })}</Typography>} />
             </CustomMenuItem>
         </Menu>
     );
 };
 
-export default DiagramEditMenu;
+export default DiagramVoltageLevelContextMenu;
