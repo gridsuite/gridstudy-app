@@ -62,7 +62,7 @@ export const useIntlResultStatusMessages = (
             };
         }
         return { noLimitViolation: intl.formatMessage({ id: 'grid.noLimitViolation' }) };
-    }, [intl, hasNoData]);
+    }, [intl, hasNoData, hasFilters]);
 
     return useMemo(() => {
         return {
