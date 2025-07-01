@@ -31,7 +31,6 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage, ElementType } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
-import { DiagramAdditionalMetadata } from '../diagram-common';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -298,7 +297,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                     return diagrams;
                                 }
                                 const newDiagrams = { ...diagrams };
-
                                 const vlIds = data.additionalMetadata?.voltageLevels?.map((vl: { id: any }) => vl.id);
 
                                 newDiagrams[diagram.diagramUuid] = {
@@ -308,7 +306,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                     ...(isNadType(diagram.type) && {
                                         voltageLevelToExpandIds: [],
                                         voltageLevelIds: vlIds,
-
+                                        voltageLevelToOmitIds: [],
                                     }),
                                 };
                                 return newDiagrams;
