@@ -505,7 +505,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                     <Box sx={styles.csvExport}>
                         <Box style={{ flexGrow: 1 }}></Box>
                         <CsvExport
-                            gridRef={gridRef}
                             columns={columnDefs}
                             tableName={tableName}
                             tableNamePrefix="VoltageInit_"
