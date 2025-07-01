@@ -208,6 +208,10 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SetComputingStatusParametersAction,
     ParameterizedComputingType,
+    SET_APP_LAYOUT,
+    SetAppLayoutAction,
+    SET_GRID_LAYOUT,
+    SetGridLayoutAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -278,11 +282,12 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { Layout } from 'react-grid-layout';
 
 // Redux state
 export type StudyUpdated = {
@@ -417,6 +422,13 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export interface AppLayout {
+    diagram: {
+        gridLayout: Layout[];
+        params: DiagramParams[];
+    };
+}
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -502,6 +514,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
+    appLayout?: AppLayout;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -604,6 +617,7 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
+    appLayout: undefined,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1627,6 +1641,16 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
+    });
+
+    builder.addCase(SET_APP_LAYOUT, (state, action: SetAppLayoutAction) => {
+        state.appLayout = action.appLayout;
+    });
+
+    builder.addCase(SET_GRID_LAYOUT, (state, action: SetGridLayoutAction) => {
+        if (state.appLayout) {
+            state.appLayout.diagram.gridLayout = action.gridLayout;
+        }
     });
 });
 

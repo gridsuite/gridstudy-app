@@ -32,15 +32,16 @@ type useDiagramSessionStorageProps = {
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const diagramParams = useSelector((state: AppState) => state.appLayout?.diagram.params);
+
     // at mount
     useEffect(() => {
-        if (!studyUuid) {
+        if (!studyUuid || !diagramParams) {
             return;
         }
-        const diagrams: DiagramParams[] = loadDiagramsFromSessionStorage(studyUuid);
-        diagrams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
+        diagramParams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [diagramParams]);
 
     // at update
     useEffect(() => {

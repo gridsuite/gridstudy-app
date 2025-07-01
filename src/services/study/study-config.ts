@@ -15,6 +15,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
+import { StudyLayout } from 'hooks/use-app-layout';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -179,5 +180,23 @@ export function reorderSpreadsheetConfigs(studyUuid: UUID, collectionUuid: UUID,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newOrder),
+    });
+}
+
+export function getStudyLayout(studyUuid: UUID) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/study-layout`;
+    console.debug(fetchUrl);
+    return backendFetchJson(fetchUrl);
+}
+
+export function saveStudyLayout(studyUuid: UUID, studyLayout: StudyLayout) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/study-layout`;
+    console.debug(fetchUrl);
+    return backendFetchJson(fetchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(studyLayout),
     });
 }

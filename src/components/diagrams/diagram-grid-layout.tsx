@@ -24,6 +24,8 @@ import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
+import { useDispatch } from 'react-redux';
+import { setGridLayout } from 'redux/actions';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -78,6 +80,7 @@ interface DiagramGridLayoutProps {
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const intl = useIntl();
+    const dispatch = useDispatch();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -346,7 +349,10 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     xxs: XS_XSS_COLUMN_COUNT,
                 }}
                 compactType={'horizontal'}
-                onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
+                onLayoutChange={(currentLayout, allLayouts) => {
+                    setLayouts(allLayouts);
+                    dispatch(setGridLayout(allLayouts.lg));
+                }}
                 layouts={layouts}
                 style={{
                     backgroundColor:

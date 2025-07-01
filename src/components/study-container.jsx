@@ -46,6 +46,7 @@ import {
     NotificationType,
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
+import { useAppLayout } from 'hooks/use-app-layout';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -135,6 +136,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentRootNetworkUuidRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    useAppLayout();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
