@@ -9,11 +9,9 @@ import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
-import { Box, darken, IconButton, Theme, useTheme } from '@mui/material';
+import { Box, darken, Theme, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
-import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import { UUID } from 'crypto';
-import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
@@ -24,6 +22,8 @@ import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
+import { DiagramAdder } from './diagram-adder';
+import './diagram-grid-layout.css'; // Import the CSS file for styling
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -35,10 +35,11 @@ const diagramTypes = [
 ];
 
 const styles = {
-    window: {
+    card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
-    },
+        borderRadius: theme.spacing(1),
+    }),
     diagramContainer: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
@@ -47,6 +48,7 @@ const styles = {
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
                 : theme.networkModificationPanel.backgroundColor,
+        borderRadius: '0 0 ' + theme.spacing(1) + ' ' + theme.spacing(1),
     }),
 };
 
@@ -65,6 +67,12 @@ const initialLayouts = {
             y: 0,
             w: DEFAULT_WIDTH,
             h: DEFAULT_HEIGHT,
+            minH: DEFAULT_HEIGHT,
+            maxH: DEFAULT_HEIGHT,
+            minW: DEFAULT_WIDTH,
+            maxW: DEFAULT_WIDTH,
+            isDraggable: false,
+            static: true,
         },
     ],
 };
@@ -79,13 +87,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const theme = useTheme();
     const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
-    const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
+    const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const new_lg_layouts = old_layouts.lg.filter((layout) => layout.i !== 'Adder');
+            const new_lg_layouts = [...old_layouts.lg];
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
                 x: Infinity,
@@ -173,34 +181,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const renderDiagramAdder = useCallback(() => {
-        if (Object.values(diagrams).length > 0) {
-            return;
-        }
-        return (
-            <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column' }}>
-                <CardHeader title={'Add a new diagram'} />
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flexGrow: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <IconButton
-                        onClick={(e) => {
-                            setIsDialogSearchOpen(true);
-                        }}
-                    >
-                        <LibraryAddOutlinedIcon />
-                    </IconButton>
-                </Box>
-            </div>
-        );
-    }, [diagrams]);
-
     const onChangeDepth = useCallback(
         (diagramId: UUID, newDepth: number) => {
             const diagram = diagrams[diagramId];
@@ -237,7 +217,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 return null;
             }
             return (
-                <Box key={diagram.diagramUuid} sx={styles.window}>
+                <Box key={diagram.diagramUuid} sx={styles.card}>
                     <CardHeader
                         title={diagram.name}
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
@@ -325,10 +305,15 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
         if (savedLayouts) {
-            setLayouts(savedLayouts);
+            setLayouts({ lg: [...initialLayouts.lg, ...savedLayouts.lg] });
         } else {
             setLayouts(initialLayouts);
         }
+    }, []);
+
+    const onAddMapCard = useCallback(() => {
+        // TODO setLayouts to add a map card
+        setIsMapCardAdded(true);
     }, []);
 
     useDiagramsGridLayoutSessionStorage({ layouts, onLoadFromSessionStorage });
@@ -368,15 +353,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     }
                 }}
             >
-                {renderDiagramAdder()}
+                <DiagramAdder
+                    onLoad={handleLoadNadFromElement}
+                    onSearch={showVoltageLevelDiagram}
+                    onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                    key={'Adder'}
+                />
                 {renderDiagrams()}
             </ResponsiveGridLayout>
-            <TopBarEquipmentSearchDialog
-                showVoltageLevelDiagram={showVoltageLevelDiagram}
-                isDialogSearchOpen={isDialogSearchOpen}
-                setIsDialogSearchOpen={setIsDialogSearchOpen}
-                disableEventSearch
-            />
         </>
     );
 }

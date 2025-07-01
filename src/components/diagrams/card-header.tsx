@@ -21,6 +21,7 @@ const styles = {
         backgroundColor: theme.palette.background.default,
         borderBottom: 'solid 1px',
         borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
+        borderRadius: theme.spacing(1) + ' ' + theme.spacing(1) + ' 0 0',
     }),
     blink: (theme: Theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
@@ -38,7 +39,7 @@ const styles = {
 };
 
 interface CardHeaderProps {
-    title?: string;
+    title?: React.ReactNode;
     onClose?: () => void;
     blinking?: boolean;
 }
