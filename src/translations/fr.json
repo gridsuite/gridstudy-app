@@ -581,7 +581,7 @@
     "BUSBAR_SECTION": "Section de jeux de barres",
     "BY_FORMULA": "Par formule",
     "BY_FILTER": "Par filtre",
-    "SHUNT_COMPENSATOR": "Moyen de compensation",
+    "SHUNT_COMPENSATOR": "Moyen de compensation statique",
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "BY_TABLE": "Par tableau",
     "TabularModification": "Modification tabulaire",
