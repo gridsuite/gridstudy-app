@@ -90,7 +90,6 @@ export default function SaveSpreadsheetButton({
                         return;
                     }
                     downloadCSVData({
-                        gridRef,
                         columns: columnsForExport,
                         tableName: tableDefinition.name,
                         language: language,

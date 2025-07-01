@@ -63,7 +63,6 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
             <Box sx={styles.csvExport}>
                 <Box style={{ flexGrow: 1 }}></Box>
                 <CsvExport
-                    gridRef={gridRef}
                     columns={columns}
                     tableName={tableName}
                     disabled={isRowsEmpty}
