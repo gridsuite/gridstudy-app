@@ -4,9 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DndTable, DndColumnType, ColumnNumeric, ColumnText, DndColumn, FloatInput } from '@gridsuite/commons-ui';
+import {
+    DndTable,
+    DndColumnType,
+    ColumnNumeric,
+    ColumnText,
+    DndColumn,
+    FloatInput,
+    SelectInput,
+} from '@gridsuite/commons-ui';
 import {
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
@@ -24,6 +32,8 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import GridSection from '../commons/grid-section';
+import { APPLICATION_SIDE } from '../../network/constants';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
@@ -32,6 +42,7 @@ export interface LimitsSidePaneProps {
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
+    selectedLimitSetId: string;
 }
 
 export function LimitsSidePane({
@@ -41,7 +52,9 @@ export function LimitsSidePane({
     clearableFields,
     currentNode,
     onlySelectedLimitsGroup,
+    selectedLimitSetId,
 }: Readonly<LimitsSidePaneProps>) {
+    console.log('-----------limitsGroupFormName : ', limitsGroupFormName);
     const intl = useIntl();
     const { getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
@@ -195,6 +208,20 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
+            <GridSection title={selectedLimitSetId} />
+            <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
+                <Grid item xs={2}>
+                    <FormattedMessage id="Applicability" />
+                </Grid>
+                <Grid item xs={2}>
+                    <SelectInput
+                        options={Object.values(APPLICATION_SIDE)}
+                        name=""
+                        sx={{ 'flex-grow': 1 }}
+                        size="small"
+                    />
+                </Grid>
+            </Grid>
             <Box>
                 <LimitsChart limitsGroupFormName={limitsGroupFormName} />
             </Box>

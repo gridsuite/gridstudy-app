@@ -881,6 +881,7 @@
     "PermanentCurrentLimitText2": "Permanent current limit 2",
     "SelectedOperationalLimitGroup": "Active limit set",
     "SelectedOperationalLimitGroups": "Active limit sets",
+    "Applicability": "Applicability",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",

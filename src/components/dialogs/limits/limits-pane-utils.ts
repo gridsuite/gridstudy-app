@@ -12,8 +12,7 @@ import {
     CURRENT_LIMITS_2,
     ID,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
+    OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
@@ -85,13 +84,7 @@ const limitsValidationSchema = (id: string, isModification: boolean = false) => 
     };
 
     const completeLimitsGroupSchema = {
-        [OPERATIONAL_LIMITS_GROUPS_1]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
-            .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
-                const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
-                return areArrayElementsUnique(namesArray);
-            }),
-        [OPERATIONAL_LIMITS_GROUPS_2]: yup
+        [OPERATIONAL_LIMITS_GROUPS]: yup
             .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
                 const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
@@ -121,8 +114,7 @@ const limitsEmptyFormData = (id: string, onlySelectedLimits = true) => {
         },
     };
     const limitsGroup = {
-        [OPERATIONAL_LIMITS_GROUPS_1]: [],
-        [OPERATIONAL_LIMITS_GROUPS_2]: [],
+        [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
     };
@@ -157,18 +149,12 @@ export const getSelectedLimitsFormData = (
  * used when the limit set data contain all the limit sets data, including the not selected
  */
 export const getAllLimitsFormData = (
-    {
-        operationalLimitsGroups1 = [],
-        operationalLimitsGroups2 = [],
-        selectedOperationalLimitsGroup1 = null,
-        selectedOperationalLimitsGroup2 = null,
-    },
+    { operationalLimitsGroups = [], selectedOperationalLimitsGroup1 = null, selectedOperationalLimitsGroup2 = null },
     id = LIMITS
 ) => {
     return {
         [id]: {
-            [OPERATIONAL_LIMITS_GROUPS_1]: operationalLimitsGroups1,
-            [OPERATIONAL_LIMITS_GROUPS_2]: operationalLimitsGroups2,
+            [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
         },
