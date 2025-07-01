@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CsvExport } from '../csv-export/csv-export';
 import { FunctionComponent, RefObject } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, CsvExport } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../redux/reducer';
 
 const styles = {
     gridContainer: {
@@ -55,6 +56,8 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     skipColumnHeaders = false,
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
+    const language = useSelector((state: AppState) => state.computedLanguage);
+
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
@@ -65,6 +68,8 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                     tableName={tableName}
                     disabled={isRowsEmpty}
                     skipColumnHeaders={skipColumnHeaders}
+                    language={language}
+                    exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
                 />
             </Box>
             {rows && (
