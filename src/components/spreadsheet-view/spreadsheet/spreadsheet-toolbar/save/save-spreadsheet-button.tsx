@@ -10,7 +10,7 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
 import { SaveSpreadsheetCollectionDialog } from './save-spreadsheet-collection-dialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
@@ -18,7 +18,6 @@ import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
-import { useCsvExport } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 
@@ -84,12 +83,18 @@ export default function SaveSpreadsheetButton({
                 action: () => {
                     // Filter out the rowIndex column before exporting to CSV
                     const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID);
+
+                    const exportDataAsCsv = gridRef.current?.api.exportDataAsCsv;
+                    if (!exportDataAsCsv) {
+                        console.error('Export API is not available.');
+                        return;
+                    }
                     downloadCSVData({
                         gridRef,
                         columns: columnsForExport,
                         tableName: tableDefinition.name,
                         language: language,
-                        exportDataAsCsv: gridRef.current?.api.exportDataAsCsv,
+                        exportDataAsCsv,
                     });
                 },
                 disabled: dataSize === 0,
