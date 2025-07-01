@@ -11,4 +11,5 @@ export const grid_en = {
     'grid.failed': 'Calculation failed',
     'grid.running': 'In progress...',
     'grid.noLimitViolation': 'No limit violation',
+    'grid.noMatchedFilters': 'No match for this filter',
 };

@@ -46,14 +46,20 @@ export function getNoRowsMessage(
 export function getRows(rows: any[] | undefined, status: string): any[] {
     return status === RunningStatus.SUCCEED && rows ? rows : [];
 }
-export const useIntlResultStatusMessages = (intl: IntlShape, hasNoData: boolean = false) => {
+export const useIntlResultStatusMessages = (
+    intl: IntlShape,
+    hasNoData: boolean = false,
+    hasFilters: boolean = false
+) => {
     const specificMessage = useCallback(():
         | { noData: string }
         | { noLimitViolation: string }
         | { fetching: string } => {
         if (hasNoData) {
             // TODO: maybe just fallback to ag-grid default message (ie. `undefined`)?
-            return { noData: intl.formatMessage({ id: 'grid.noRowsToShow' }) };
+            return {
+                noData: intl.formatMessage({ id: !hasFilters ? 'grid.noRowsToShow' : 'grid.noMatchedFilters' }),
+            };
         }
         return { noLimitViolation: intl.formatMessage({ id: 'grid.noLimitViolation' }) };
     }, [intl, hasNoData]);
