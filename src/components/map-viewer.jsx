@@ -327,7 +327,7 @@ const MapViewer = ({
                                 <NetworkMapTab
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
-                                    visible={view === StudyView.Tree && studyDisplayMode !== StudyDisplayMode.TREE}
+                                    visible={view === StudyView.TREE && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                                     lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                                     lineFlowMode={networkVisuParams.mapParameters.lineFlowMode}

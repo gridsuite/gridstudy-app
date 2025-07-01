@@ -50,7 +50,7 @@ const StudyPane = ({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
-    view = StudyView.Tree,
+    view = StudyView.TREE,
     onChangeTab,
     ...props
 }) => {
@@ -84,7 +84,7 @@ const StudyPane = ({
                 <div
                     className="singlestretch-child"
                     style={{
-                        display: view === StudyView.Tree ? null : 'none',
+                        display: view === StudyView.TREE ? null : 'none',
                     }}
                 >
                     <MapViewer
