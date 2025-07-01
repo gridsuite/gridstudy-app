@@ -97,7 +97,7 @@ export function HorizontalToolbar() {
                 sx={{
                     marginLeft: 'auto',
                     marginRight: '20px',
-                    visibility: STUDY_VIEWS?.[appTabIndex] !== StudyView.MAP ? 'hidden' : 'visible',
+                    visibility: STUDY_VIEWS?.[appTabIndex] !== StudyView.Tree ? 'hidden' : 'visible',
                 }}
             >
                 <List

@@ -46,7 +46,14 @@ const styles = {
     },
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = StudyView.MAP, onChangeTab, ...props }) => {
+const StudyPane = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    view = StudyView.Tree,
+    onChangeTab,
+    ...props
+}) => {
     const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -77,7 +84,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                 <div
                     className="singlestretch-child"
                     style={{
-                        display: view === StudyView.MAP ? null : 'none',
+                        display: view === StudyView.Tree ? null : 'none',
                     }}
                 >
                     <MapViewer
