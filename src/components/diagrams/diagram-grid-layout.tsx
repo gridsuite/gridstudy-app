@@ -24,6 +24,7 @@ import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
+import CustomResizeHandle from './custom-resize-handle';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -366,6 +367,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     (e.target as HTMLElement).style.cursor = 'default';
                 }
             }}
+            resizeHandle={<CustomResizeHandle />}
         >
             <DiagramAdder
                 onLoad={handleLoadNadFromElement}
