@@ -211,6 +211,8 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  *
  * @param nodes
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
+ * @param nodeMap nodeId to index in tree and node info map
+ * @param childrenMap nodeId to list of children map
  */
 function compressTreePlacements(
     nodes: CurrentTreeNode[],
@@ -308,7 +310,7 @@ function computeSecurityGroupNodes(
             return;
         }
 
-        // If currently in a security group, if the current node is the last, of if its parent node is not of type SECURITY
+        // If currently in a security group, if the current node is the last, or if its parent node is not of type SECURITY
         // then : the current security group is closed, then saved in securityGroupsPlacements
         // otherwise : the current security group max positions are updated
         if (securityGroupBuilder.isInSecurityGroup) {
