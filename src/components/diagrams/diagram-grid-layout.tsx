@@ -204,6 +204,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
                     voltageLevelIds: [],
                     voltageLevelToExpandIds: [...diagram.voltageLevelIds],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
@@ -220,6 +223,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
@@ -236,6 +242,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
@@ -336,6 +345,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         loadingDiagrams,
         handleExpandAllVoltageLevelIds,
         handleExpandVoltageLevelId,
+        handleHideVoltageLevelId,
         onRemoveItem,
         setDiagramSize,
         showInSpreadsheet,

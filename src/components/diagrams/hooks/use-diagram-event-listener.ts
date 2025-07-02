@@ -42,6 +42,7 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                 createDiagram({
                     diagramUuid: v4() as UUID,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagramEvent.name,
                     nadConfigUuid: diagramEvent.nadConfigUuid,
                     filterUuid: diagramEvent.filterUuid,
                     voltageLevelIds: diagramEvent.voltageLevelIds,

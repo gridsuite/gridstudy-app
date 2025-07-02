@@ -157,7 +157,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             </Box>
             <Box sx={styles.buttonPanel}>
                 <Button size="small" sx={styles.button} onClick={handleToggleEditMode}>
-                    <FormattedMessage id={isEditNadMode ? 'save' : 'EditNad'} />
+                    <FormattedMessage id={isEditNadMode ? 'apply' : 'EditNad'} />
                 </Button>
             </Box>
             {studyUuid && (

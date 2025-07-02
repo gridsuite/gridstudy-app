@@ -11,7 +11,6 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
-    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -362,6 +361,7 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
     filterUuid: UUID | undefined;
+    name: string;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
@@ -1213,6 +1213,7 @@ export const reducer = createReducer(initialState, (builder) => {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
+                name: '',
                 nadConfigUuid: undefined,
                 filterUuid: undefined,
                 voltageLevelIds: [action.id as UUID],
@@ -1236,6 +1237,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
+            name: '',
             nadConfigUuid: undefined,
             filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
