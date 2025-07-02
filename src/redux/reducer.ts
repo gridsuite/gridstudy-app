@@ -212,6 +212,8 @@ import {
     SetAppLayoutAction,
     SET_GRID_LAYOUT,
     SetGridLayoutAction,
+    SET_DIAGRAM_PARAMS_LAYOUT,
+    SetDiagramParamsLayoutAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -1648,8 +1650,16 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_GRID_LAYOUT, (state, action: SetGridLayoutAction) => {
+        //TODO: better solution ?
         if (state.appLayout) {
             state.appLayout.diagram.gridLayout = action.gridLayout;
+        }
+    });
+
+    builder.addCase(SET_DIAGRAM_PARAMS_LAYOUT, (state, action: SetDiagramParamsLayoutAction) => {
+        //TODO: better solution ?
+        if (state.appLayout) {
+            state.appLayout.diagram.params = action.diagramParams;
         }
     });
 });

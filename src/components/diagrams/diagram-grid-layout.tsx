@@ -351,7 +351,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 compactType={'horizontal'}
                 onLayoutChange={(currentLayout, allLayouts) => {
                     setLayouts(allLayouts);
-                    dispatch(setGridLayout(allLayouts.lg));
                 }}
                 layouts={layouts}
                 style={{
@@ -372,7 +371,10 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     if (e.target) {
                         (e.target as HTMLElement).style.cursor = 'default';
                     }
+                    console.log('DISPATCHING LAYOUT', layouts, layout);
+                    dispatch(setGridLayout(layouts.lg));
                 }}
+                onResizeStop={() => dispatch(setGridLayout(layouts.lg))}
             >
                 {renderDiagramAdder()}
                 {renderDiagrams()}

@@ -60,7 +60,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/diagrams/diagram.type';
+import type { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { Layout } from 'react-grid-layout';
@@ -1390,5 +1390,17 @@ export function setGridLayout(gridLayout: Layout[]): SetGridLayoutAction {
     return {
         type: SET_GRID_LAYOUT,
         gridLayout: gridLayout,
+    };
+}
+
+export const SET_DIAGRAM_PARAMS_LAYOUT = 'SET_DIAGRAM_PARAMS_LAYOUT';
+export type SetDiagramParamsLayoutAction = Readonly<Action<typeof SET_DIAGRAM_PARAMS_LAYOUT>> & {
+    diagramParams: DiagramParams[];
+};
+
+export function setDiagramParamsLayout(diagramParams: DiagramParams[]): SetDiagramParamsLayoutAction {
+    return {
+        type: SET_DIAGRAM_PARAMS_LAYOUT,
+        diagramParams: diagramParams,
     };
 }

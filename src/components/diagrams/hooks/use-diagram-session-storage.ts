@@ -7,10 +7,11 @@
 
 import { UUID } from 'crypto';
 import { Diagram, DiagramParams } from '../diagram.type';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
+import { setDiagramParamsLayout } from 'redux/actions';
 
 const keyToKeepInSessionStorage = [
     'diagramUuid',
@@ -31,6 +32,7 @@ type useDiagramSessionStorageProps = {
 };
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
+    const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const diagramParams = useSelector((state: AppState) => state.appLayout?.diagram.params);
 
@@ -52,6 +54,9 @@ export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }:
         const diagramParams = Object.values(diagrams).map((diagram) =>
             Object.fromEntries(Object.entries(diagram).filter(([key]) => keyToKeepInSessionStorage.includes(key)))
         );
+        //TODO: remove cast
+        console.log('SAVING PARAM', diagramParams);
+        dispatch(setDiagramParamsLayout(diagramParams as DiagramParams[]));
         syncDiagramsWithSessionStorage(diagramParams, studyUuid);
-    }, [diagrams, studyUuid]);
+    }, [diagrams, studyUuid, dispatch]);
 };
