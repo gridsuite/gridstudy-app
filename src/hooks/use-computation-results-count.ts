@@ -82,7 +82,7 @@ export const useComputationResultsCount = () => {
 
     const stateEstimationResultPresent =
         enableDeveloperMode &&
-        (stateEstimationStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+        (stateEstimationStatus === RunningStatus.SUCCEED || stateEstimationStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowResultPresent,
