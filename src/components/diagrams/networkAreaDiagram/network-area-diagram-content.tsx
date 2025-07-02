@@ -45,7 +45,7 @@ import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import { useIntl } from 'react-intl';
 
-import DiagramVoltageLevelContextMenu from '../diagram-voltageLevel-contextMenu';
+import NodeContextMenu from './node-context-menu';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -310,7 +310,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 />
             )}
             {shouldDisplayMenu && (
-                <DiagramVoltageLevelContextMenu
+                <NodeContextMenu
                     open={!!menuAnchorPosition}
                     anchorPosition={menuAnchorPosition}
                     onClose={closeMenu}

@@ -16,10 +16,10 @@ interface ContextMenuProps {
     onClose: () => void;
     onExpandItem: (id: string) => void;
     onHideItem: (id: string) => void;
-    selectedItemId: string;
+    selectedItemId: string | undefined;
 }
 
-const DiagramVoltageLevelContextMenu: React.FC<ContextMenuProps> = ({
+const NodeContextMenu: React.FC<ContextMenuProps> = ({
     open,
     anchorPosition,
     onClose,
@@ -84,4 +84,4 @@ const DiagramVoltageLevelContextMenu: React.FC<ContextMenuProps> = ({
     );
 };
 
-export default DiagramVoltageLevelContextMenu;
+export default NodeContextMenu;
