@@ -7,12 +7,11 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStudyDisplayMode } from '../redux/actions';
+import { openDiagram, setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { ReactFlowProvider } from '@xyflow/react';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import NetworkMapTab from './network/network-map-tab';
-import { DiagramPane } from './diagrams/diagram-pane';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -27,8 +26,6 @@ import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
 import DiagramGridLayout from './diagrams/diagram-grid-layout';
-import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 const styles = {
     map: {
@@ -130,7 +127,6 @@ const MapViewer = ({
     currentNode,
     currentRootNetworkUuid,
     view,
-    openDiagramView,
     tableEquipment,
     onTableEquipementChanged,
     onChangeTab,
@@ -144,7 +140,6 @@ const MapViewer = ({
 
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-    const enableDeveloperMode = useParameterState(PARAM_DEVELOPER_MODE);
     const previousStudyDisplayMode = useRef(undefined);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
@@ -152,10 +147,10 @@ const MapViewer = ({
         (vlId) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode) {
-                openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
             }
         },
-        [openDiagramView, isInDrawingMode]
+        [dispatch, isInDrawingMode]
     );
 
     function showInSpreadsheet(equipment) {
@@ -284,16 +279,14 @@ const MapViewer = ({
                         flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE ? '50%' : '100%',
                     }}
                 >
-                    {enableDeveloperMode && (
-                        <DiagramGridLayout
-                            studyUuid={studyUuid}
-                            visible={
-                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                            }
-                            showInSpreadsheet={showInSpreadsheet}
-                        />
-                    )}
+                    <DiagramGridLayout
+                        studyUuid={studyUuid}
+                        visible={
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                        }
+                        showInSpreadsheet={showInSpreadsheet}
+                    />
                 </Box>
                 {/* Map */}
                 <Box
@@ -334,7 +327,7 @@ const MapViewer = ({
                                 <NetworkMapTab
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
-                                    visible={view === StudyView.MAP && studyDisplayMode !== StudyDisplayMode.TREE}
+                                    visible={view === StudyView.TREE && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                                     lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                                     lineFlowMode={networkVisuParams.mapParameters.lineFlowMode}
@@ -362,18 +355,6 @@ const MapViewer = ({
                                     />
                                 )}
                             </Box>
-
-                            <DiagramPane
-                                studyUuid={studyUuid}
-                                showInSpreadsheet={showInSpreadsheet}
-                                currentNode={currentNode}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
-                                visible={
-                                    !isInDrawingMode &&
-                                    view === StudyView.MAP &&
-                                    studyDisplayMode !== StudyDisplayMode.TREE
-                                }
-                            />
 
                             <Box
                                 sx={{

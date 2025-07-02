@@ -15,6 +15,7 @@ import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { NodeAlias } from '../types/node-alias.type';
 import { mapColumns } from '../columns/utils/column-mapper';
+import { DiagramType } from 'components/diagrams/diagram.type';
 
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
@@ -24,6 +25,7 @@ interface SpreadsheetProps {
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
@@ -36,6 +38,7 @@ export const Spreadsheet = React.memo(
         updateNodeAliases,
         equipmentId,
         onEquipmentScrolled,
+        openDiagram,
         active,
     }: SpreadsheetProps) => {
         const gridRef = useRef<AgGridReact>(null);
@@ -79,6 +82,7 @@ export const Spreadsheet = React.memo(
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}
+                    openDiagram={openDiagram}
                     active={active}
                 />
             </>

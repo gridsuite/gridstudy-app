@@ -9,8 +9,7 @@ import { SUBSTATIONS_GENERATORS_ORDERING, SUBSTATION_IDS } from 'components/util
 import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
-import DndTable from 'components/utils/dnd-table/dnd-table';
-import { DndColumnType } from 'components/utils/dnd-table/dnd-table.type';
+import { DndTable, DndColumnType } from '@gridsuite/commons-ui';
 
 const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERING }) => {
     const intl = useIntl();
@@ -52,7 +51,6 @@ const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERIN
                 createRows={createSubstationsGeneratorsOrderingRows}
                 columnsDefinition={columnsDefinition}
                 tableHeight={270}
-                withLeftButtons={false}
                 withAddRowsDialog={false}
             />
         </>

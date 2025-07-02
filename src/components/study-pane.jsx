@@ -17,13 +17,17 @@ import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
-import { useDiagram } from './diagrams/use-diagram';
 import HorizontalToolbar from './horizontal-toolbar';
+import { openDiagram } from '../redux/actions.js';
+import { useDispatch } from 'react-redux';
 
 const styles = {
-    tabsContainer: {
-        flexGrow: 1,
-        height: '100%',
+    tabsContainer: (theme) => {
+        return {
+            flexGrow: 1,
+            height: '100%',
+            background: theme.palette.tabBackground,
+        };
     },
     '@global': {
         '@keyframes spin': {
@@ -42,22 +46,31 @@ const styles = {
     },
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = StudyView.MAP, ...props }) => {
+const StudyPane = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    view = StudyView.TREE,
+    onChangeTab,
+    ...props
+}) => {
+    const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
     });
 
-    const { openDiagramView } = useDiagram();
-
     const disabled = !isNodeBuilt(currentNode);
-    function openVoltageLevelDiagram(vlId) {
-        // TODO code factorization for displaying a VL via a hook
-        if (vlId) {
-            props.onChangeTab(0); // switch to map view
-            openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
-        }
-    }
+    const openVoltageLevelDiagram = useCallback(
+        (equipmentId, diagramType = DiagramType.VOLTAGE_LEVEL) => {
+            // TODO code factorization for displaying a VL via a hook
+            if (equipmentId) {
+                onChangeTab(0); // switch to map view
+                dispatch(openDiagram(equipmentId, diagramType));
+            }
+        },
+        [dispatch, onChangeTab]
+    );
 
     const unsetTableEquipment = useCallback(() => {
         setTableEquipment({ id: null, type: null });
@@ -71,7 +84,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                 <div
                     className="singlestretch-child"
                     style={{
-                        display: view === StudyView.MAP ? null : 'none',
+                        display: view === StudyView.TREE ? null : 'none',
                     }}
                 >
                     <MapViewer
@@ -79,10 +92,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         view={view}
-                        openDiagramView={openDiagramView}
                         tableEquipment={tableEquipment}
                         onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
-                        onChangeTab={props.onChangeTab}
+                        onChangeTab={onChangeTab}
                     ></MapViewer>
                 </div>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
@@ -94,6 +106,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                         equipmentType={tableEquipment.type}
                         disabled={disabled}
                         onEquipmentScrolled={unsetTableEquipment}
+                        openDiagram={openVoltageLevelDiagram}
                     />
                 </TabPanelLazy>
                 <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>
@@ -120,6 +133,9 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     onChangeTab: PropTypes.func,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
 };
 
 export default StudyPane;

@@ -8,9 +8,9 @@
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
-import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
 import { BUILD_STATUS } from '../../components/network/constants';
+import { NodeInsertModes } from 'types/notification-types';
 
 interface Node {
     name: string;
@@ -121,6 +121,22 @@ export function createTreeNode(studyUuid: UUID, parentId: UUID, insertMode: Node
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(node),
+    });
+}
+
+export function createNodeSequence(studyUuid: UUID, parentId: UUID, sequenceType: string) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('sequenceType', sequenceType);
+
+    const nodeCreationUrl =
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentId) + '?' + urlSearchParams.toString();
+    console.debug('%s with sequenceType : %s', nodeCreationUrl, sequenceType);
+    return backendFetch(nodeCreationUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
     });
 }
 

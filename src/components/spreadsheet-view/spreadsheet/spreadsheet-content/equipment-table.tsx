@@ -5,30 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
-import { useTheme } from '@mui/material';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import {
-    ColDef,
-    ColumnMovedEvent,
-    GetRowIdParams,
-    GridOptions,
-    RowClassParams,
-    RowClickedEvent,
-    RowStyle,
-} from 'ag-grid-community';
+import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
+import { useSelector } from 'react-redux';
+import { AgGridReact } from 'ag-grid-react';
 import { AppState } from '../../../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../../../dialogs/commons/utils';
 import { CurrentTreeNode, NodeType } from 'components/graph/tree-node.type';
 import { CalculationRowType } from '../../types/calculation.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
-import { useSelector } from 'react-redux';
-import { AgGridReact } from 'ag-grid-react';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { refreshSpreadsheetAfterFilterChanged } from './hooks/use-spreadsheet-gs-filter';
+import { useEquipmentContextMenu } from './hooks/useEquipmentContextMenu';
 
 const DEFAULT_ROW_HEIGHT = 28;
-const MAX_CLICK_DURATION = 200;
 
 interface RowData {
     id: string;
@@ -61,34 +54,46 @@ interface EquipmentTableProps {
     currentNode: CurrentTreeNode;
     handleColumnDrag: (e: ColumnMovedEvent) => void;
     isFetching: boolean | undefined;
-    onRowClicked?: (event: RowClickedEvent) => void;
     isExternalFilterPresent: GridOptions['isExternalFilterPresent'];
     doesExternalFilterPass: GridOptions['doesExternalFilterPass'];
     onModelUpdated?: GridOptions['onModelUpdated'];
     isDataEditable: boolean;
     onFirstDataRendered: GridOptions['onFirstDataRendered'];
     onGridReady: GridOptions['onGridReady'];
+    handleModify: (equipmentId: string) => void;
+    handleOpenDiagram: (voltageLevelId: string) => void;
+    equipmentType?: string;
 }
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
-    columnData,
     gridRef,
     rowData,
+    columnData,
     currentNode,
     handleColumnDrag,
     isFetching,
-    onRowClicked,
     isExternalFilterPresent,
     doesExternalFilterPass,
     onModelUpdated,
     isDataEditable,
     onFirstDataRendered,
     onGridReady,
+    handleModify,
+    handleOpenDiagram,
+    equipmentType,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
-    const clickTimeRef = useRef<number | null>(null);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
+    const isEditDisabled = currentNode?.type === NodeType.ROOT || !isDataEditable;
+
+    const { contextMenu, menuItems, openContextMenu, closeContextMenu } = useEquipmentContextMenu({
+        equipmentType,
+        isEditDisabled,
+        handleModify,
+        handleOpenDiagram,
+    });
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
@@ -125,61 +130,53 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [currentNode?.type, theme, isDataEditable]
     );
 
-    const gridContext = useMemo(
-        () => ({
-            theme,
-            currentNode: currentNode,
-            studyUuid: studyUuid,
-        }),
-        [currentNode, studyUuid, theme]
-    );
-
-    const handleCellMouseDown = useCallback(() => {
-        clickTimeRef.current = Date.now();
-    }, []);
-
-    const handleRowClicked = useCallback(
-        (event: RowClickedEvent) => {
-            // Prevent row click event on pinned rows
-            if (isCalculationRow(event.node.data?.rowType)) {
-                return;
-            }
-            const clickDuration = Date.now() - (clickTimeRef.current ?? 0);
-            if (clickDuration < MAX_CLICK_DURATION) {
-                onRowClicked?.(event);
-            }
-            clickTimeRef.current = null;
-        },
-        [onRowClicked]
-    );
+    const gridContext = useMemo(() => ({ theme, currentNode, studyUuid }), [currentNode, studyUuid, theme]);
 
     return (
-        <CustomAGGrid
-            ref={gridRef}
-            rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
-            getRowId={getRowId}
-            debounceVerticalScrollbar={true}
-            getRowStyle={getRowStyle}
-            columnDefs={columnData}
-            defaultColDef={defaultColDef}
-            onColumnMoved={handleColumnDrag}
-            suppressDragLeaveHidesColumns={true}
-            rowBuffer={5}
-            onCellMouseDown={handleCellMouseDown}
-            onRowClicked={handleRowClicked}
-            onModelUpdated={onModelUpdated}
-            context={gridContext}
-            rowHeight={DEFAULT_ROW_HEIGHT}
-            loading={isFetching}
-            overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
-            isExternalFilterPresent={isExternalFilterPresent}
-            doesExternalFilterPass={doesExternalFilterPass}
-            onFirstDataRendered={onFirstDataRendered}
-            onGridReady={onGridReady}
-            overrideLocales={AGGRID_LOCALES}
-            suppressNoRowsOverlay={rowData === undefined}
-            valueCache={true}
-            accentedSort={true}
-        />
+        <>
+            <CustomAGGrid
+                ref={gridRef}
+                rowSelection={{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }}
+                getRowId={getRowId}
+                debounceVerticalScrollbar
+                getRowStyle={getRowStyle}
+                columnDefs={columnData}
+                defaultColDef={defaultColDef}
+                onColumnMoved={handleColumnDrag}
+                suppressDragLeaveHidesColumns
+                rowBuffer={5}
+                onModelUpdated={onModelUpdated}
+                context={gridContext}
+                rowHeight={DEFAULT_ROW_HEIGHT}
+                loading={isFetching}
+                overlayLoadingTemplate={intl.formatMessage({ id: 'LoadingRemoteData' })}
+                isExternalFilterPresent={isExternalFilterPresent}
+                doesExternalFilterPass={doesExternalFilterPass}
+                onFirstDataRendered={onFirstDataRendered}
+                onGridReady={onGridReady}
+                overrideLocales={AGGRID_LOCALES}
+                suppressNoRowsOverlay={rowData === undefined}
+                valueCache
+                accentedSort
+                onFilterChanged={refreshSpreadsheetAfterFilterChanged}
+                onCellContextMenu={openContextMenu}
+            />
+
+            <Menu
+                open={contextMenu !== null}
+                onClose={closeContextMenu}
+                anchorReference="anchorPosition"
+                anchorPosition={contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined}
+            >
+                {menuItems.map((item, index) => (
+                    <MenuItem onClick={item.onClick} key={item.label + index}>
+                        <ListItemIcon>
+                            <item.icon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary={item.label} />
+                    </MenuItem>
+                ))}
+            </Menu>
+        </>
     );
 };
