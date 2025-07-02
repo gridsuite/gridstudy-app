@@ -13,10 +13,11 @@ import {
     FloatInput,
     IntegerInput,
     SelectInput,
-    SwitchInput, TextInput,
+    SwitchInput,
+    TextInput,
     useFormatLabelWithUnit,
-    usePrevious
-} from "@gridsuite/commons-ui";
+    usePrevious,
+} from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -136,11 +137,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
                 <SelectInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" options={options} size={'small'} />
             );
         }
-        
+
         if (dataType === DataType.STRING) {
-            return (
-              <TextInput name={`${name}.${index}.${VALUE_FIELD}`} size={'small'} label={"Value"} clearable />
-            );
+            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} size={'small'} label={'Value'} clearable />;
         }
 
         // by default is a numeric type

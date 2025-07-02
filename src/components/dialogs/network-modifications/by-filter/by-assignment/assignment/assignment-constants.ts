@@ -301,7 +301,7 @@ export const FIELD_OPTIONS = {
         id: FieldType.OPERATIONAL_LIMITS_GROUP_2,
         label: 'operationalLimitsGroup2',
         dataType: DataType.STRING,
-    }
+    },
 } as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 
 export const EQUIPMENTS_FIELDS = {
