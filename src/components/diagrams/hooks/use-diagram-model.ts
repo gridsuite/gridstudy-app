@@ -297,7 +297,10 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                     return diagrams;
                                 }
                                 const newDiagrams = { ...diagrams };
-                                const vlIds = (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map((vl: any) => vl.id) ?? [];
+                                const vlIds =
+                                    (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map(
+                                        (vl: any) => vl.id
+                                    ) ?? [];
 
                                 newDiagrams[diagram.diagramUuid] = {
                                     ...diagrams[diagram.diagramUuid],

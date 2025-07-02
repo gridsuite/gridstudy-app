@@ -67,6 +67,7 @@ type NetworkAreaDiagramContentProps = {
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
+    readonly onExpandAllVoltageLevelIds: () => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
 };
 
@@ -79,6 +80,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onLoadNadFromElement,
         diagramId,
         onExpandVoltageLevel,
+        onExpandAllVoltageLevelIds,
         onHideVoltageLevel,
     } = props;
     const dispatch = useDispatch();
@@ -165,7 +167,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
-            setSelectedVoltageLevelId(equipmentId); // TODO CHARLY check si on peut se passer du useState ici
+            setSelectedVoltageLevelId(equipmentId);
             setShouldDisplayMenu(true);
             setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
         }
@@ -332,6 +334,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onLoad={onLoadNadFromElement}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
+                onAugmentDepth={onExpandAllVoltageLevelIds}
             />
         </>
     );

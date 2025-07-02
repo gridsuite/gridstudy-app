@@ -21,8 +21,6 @@ import { DiagramAdditionalMetadata } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
-import DiagramFooter from './diagram-footer';
-import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -77,7 +75,6 @@ interface DiagramGridLayoutProps {
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
-    const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -201,7 +198,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, [diagrams]);
 
-    const onExpandAllVoltageLevelIds = useCallback(
+    const handleExpandAllVoltageLevelIds = useCallback(
         (diagramId: UUID) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -218,7 +215,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [diagrams, updateDiagram]
     );
 
-    const onExpandVoltageLevelId = useCallback(
+    const handleExpandVoltageLevelId = useCallback(
         (diagramId: UUID, newVoltageLevelId: string) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -236,14 +233,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [diagrams, updateDiagram]
     );
 
-    const onHideVoltageLevelId = useCallback(
+    const handleHideVoltageLevelId = useCallback(
         (diagramId: UUID, voltageLevelIdToOmit: string) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
-                    voltageLevelIds: diagram.voltageLevelIds.filter(id => id != voltageLevelIdToOmit),
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id != voltageLevelIdToOmit),
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds
                         ? [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit]
@@ -321,21 +318,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
                                     onLoadNadFromElement={handleLoadNadFromElement}
-                                    onExpandVoltageLevel={(vlId) => onExpandVoltageLevelId(diagram.diagramUuid, vlId)}
-                                    onHideVoltageLevel={(vlId) => onHideVoltageLevelId(diagram.diagramUuid, vlId)}
-                                />
-                            )}
-                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && ( // TODO CHARLY clean this
-                                <DiagramFooter
-                                    showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
-                                    counterText={intl.formatMessage({
-                                        id: 'depth',
-                                    })}
-                                    counterValue={0}
-                                    onIncrementCounter={() => onExpandAllVoltageLevelIds(diagram.diagramUuid)}
-                                    onDecrementCounter={() => alert('TODO CHARLY : obsolete')}
-                                    incrementCounterDisabled={false}
-                                    decrementCounterDisabled={true}
+                                    onExpandVoltageLevel={(vlId) =>
+                                        handleExpandVoltageLevelId(diagram.diagramUuid, vlId)
+                                    }
+                                    onExpandAllVoltageLevelIds={() =>
+                                        handleExpandAllVoltageLevelIds(diagram.diagramUuid)
+                                    }
+                                    onHideVoltageLevel={(vlId) => handleHideVoltageLevelId(diagram.diagramUuid, vlId)}
                                 />
                             )}
                         </Box>
@@ -351,10 +340,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         globalError,
         handleLoadNadFromElement,
         handleToggleEditMode,
-        intl,
         loadingDiagrams,
-        onExpandAllVoltageLevelIds,
-        onExpandVoltageLevelId,
+        handleExpandAllVoltageLevelIds,
+        handleExpandVoltageLevelId,
         onRemoveItem,
         setDiagramSize,
         showInSpreadsheet,
