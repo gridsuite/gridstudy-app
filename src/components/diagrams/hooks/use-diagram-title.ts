@@ -31,10 +31,7 @@ export const useDiagramTitle = () => {
                     return `${diagram.substationId}${getCountrySuffix()}`;
 
                 case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return diagram.voltageLevelIds.join(', ');
-
-                case DiagramType.NAD_FROM_ELEMENT:
-                    return diagram.elementName;
+                    return diagram.elementName ?? diagram.voltageLevelIds.join(', ');
 
                 default:
                     return 'diagram type unknown';

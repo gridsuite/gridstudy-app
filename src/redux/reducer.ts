@@ -360,25 +360,18 @@ type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
 
 type CreateNADDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
+    nadConfigUuid: UUID | undefined;
+    filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
-    // TODO CHARLY ajouter la position ?
-};
-
-type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_ELEMENT;
-    elementUuid: UUID;
-    elementType: ElementType;
-    elementName: string;
 };
 
 export type DiagramEvent =
     | RemoveDiagramEvent
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
-    | CreateNADDiagramEvent
-    | CreateNADFromElementDiagramEvent;
+    | CreateNADDiagramEvent;
 
 export type NadNodeMovement = {
     diagramId: UUID;

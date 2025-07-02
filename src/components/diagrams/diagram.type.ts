@@ -7,25 +7,11 @@
 
 import { UUID } from 'crypto';
 import { Svg } from './diagram-common';
-import { ElementType } from '@gridsuite/commons-ui';
 
 export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
     SUBSTATION = 'substation',
     NETWORK_AREA_DIAGRAM = 'network-area-diagram',
-    NAD_FROM_ELEMENT = 'nad-from-element',
-}
-
-export type NAD = DiagramType.NETWORK_AREA_DIAGRAM | DiagramType.NAD_FROM_ELEMENT;
-
-export function isNadType(type: DiagramType): type is NAD {
-    return type === DiagramType.NETWORK_AREA_DIAGRAM || type === DiagramType.NAD_FROM_ELEMENT;
-}
-
-export type SLD = DiagramType.VOLTAGE_LEVEL | DiagramType.SUBSTATION;
-
-export function isSldType(type: DiagramType): type is SLD {
-    return type === DiagramType.VOLTAGE_LEVEL || type === DiagramType.SUBSTATION;
 }
 
 // Create diagram parameters
@@ -43,25 +29,15 @@ type SubstationDiagramParams = DiagramBaseParams & {
     substationId: string;
 };
 type NetworkAreaDiagramParams = DiagramBaseParams & {
-    // TODO CHARLY redondant avec type NetworkAreaDiagram au dessus ?
     type: DiagramType.NETWORK_AREA_DIAGRAM;
+    nadConfigUuid: UUID | undefined;
+    filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
-    // TODO CHARLY ajouter position
-};
-type NetworkAreaDiagramFromElementParams = DiagramBaseParams & {
-    type: DiagramType.NAD_FROM_ELEMENT;
-    elementUuid: UUID;
-    elementType: ElementType;
-    elementName: string;
 };
 
-export type DiagramParams =
-    | VoltageLevelDiagramParams
-    | SubstationDiagramParams
-    | NetworkAreaDiagramParams
-    | NetworkAreaDiagramFromElementParams;
+export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramParams;
 
 // diagrams model
 export type DiagramBase = {
@@ -80,17 +56,12 @@ export type SubstationDiagram = DiagramBase & {
     substationId: string;
 };
 export type NetworkAreaDiagram = DiagramBase & {
-    // TODO CHARLY redondant avec type NetworkAreaDiagramParams au dessus ?
     type: DiagramType.NETWORK_AREA_DIAGRAM;
+    nadConfigUuid: UUID | undefined;
+    filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
 };
-export type NetworkAreaDiagramFromElement = DiagramBase & {
-    type: DiagramType.NAD_FROM_ELEMENT;
-    elementUuid: UUID;
-    elementType: ElementType;
-    elementName: string;
-};
 
-export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram | NetworkAreaDiagramFromElement;
+export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram;

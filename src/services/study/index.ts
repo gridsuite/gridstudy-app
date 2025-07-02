@@ -8,7 +8,7 @@
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { ElementType, EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
 import type { Svg } from 'components/diagrams/diagram-common';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -48,32 +48,6 @@ export function getNetworkAreaDiagramUrl(studyUuid: UUID, currentNodeUuid: UUID,
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram'
-    );
-}
-
-export function getNetworkAreaDiagramUrlFromElement(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    elementUuid: UUID,
-    elementType: ElementType,
-    initNadWithGeoData: boolean
-) {
-    console.info(
-        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
-    );
-    return (
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/network-area-diagram?' +
-        new URLSearchParams({
-            // TODO CHARLY clean ça. Existe encore dans le back ?
-            elementParams: JSON.stringify({
-                elementUuid: elementUuid,
-                elementType: elementType,
-                depth: 0,
-                withGeoData: initNadWithGeoData,
-            }),
-        })
     );
 }
 

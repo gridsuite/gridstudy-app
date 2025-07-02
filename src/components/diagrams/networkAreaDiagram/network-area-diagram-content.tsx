@@ -32,18 +32,10 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import {
-    ComputingType,
-    CustomMenuItem,
-    ElementType,
-    IElementCreationDialog,
-    mergeSx,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-import { useIntl } from 'react-intl';
 
 import NodeContextMenu from './node-context-menu';
 
@@ -65,7 +57,7 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevelIds: () => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
@@ -77,7 +69,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         visible,
         isEditNadMode,
         onToggleEditNadMode,
-        onLoadNadFromElement,
+        onLoadNad,
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevelIds,
@@ -289,7 +281,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         diagramId,
         OnLeftClickCallback,
     ]);
-    const intl = useIntl();
     const closeMenu = () => {
         setMenuAnchorPosition(null);
         setShouldDisplayMenu(false);
@@ -331,7 +322,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
-                onLoad={onLoadNadFromElement}
+                onLoad={onLoadNad}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onAugmentDepth={onExpandAllVoltageLevelIds}

@@ -17,6 +17,8 @@ const keyToKeepInSessionStorage = [
     'type',
     'voltageLevelId',
     'substationId',
+    'nadConfigUuid',
+    'filterUuid',
     'voltageLevelIds',
     'voltageLevelToExpandIds',
     'voltageLevelToOmitIds',

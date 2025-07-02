@@ -22,15 +22,11 @@ import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-l
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
-const diagramTypes = [
-    DiagramType.VOLTAGE_LEVEL,
-    DiagramType.SUBSTATION,
-    DiagramType.NETWORK_AREA_DIAGRAM,
-    DiagramType.NAD_FROM_ELEMENT,
-];
+const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NETWORK_AREA_DIAGRAM];
 
 const styles = {
     window: {
@@ -156,14 +152,17 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const handleLoadNadFromElement = useCallback(
+    const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             const diagram: DiagramParams = {
                 diagramUuid: v4() as UUID,
-                type: DiagramType.NAD_FROM_ELEMENT,
-                elementUuid: elementUuid,
-                elementType: elementType,
-                elementName: elementName,
+                type: DiagramType.NETWORK_AREA_DIAGRAM,
+                name: elementName,
+                nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
+                filterUuid: elementType === ElementType.FILTER ? elementUuid : undefined,
+                voltageLevelIds: [],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
             };
             createDiagram(diagram);
         },
@@ -202,7 +201,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         (diagramId: UUID) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                console.error('CHARLY diagram', diagram);
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -221,7 +219,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     diagramUuid: diagramId,
-                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM, // TODO CHARLY [A vérifier] normalement ça devrait être correct, mais si y'a plantage c'est ptet parce qu'ici on défini pas tous les champs
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds // TODO CHARLY check si ça peut être simplifié
                         ? [...diagram.voltageLevelToExpandIds, newVoltageLevelId]
@@ -240,7 +238,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
-                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id != voltageLevelIdToOmit),
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds
                         ? [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit]
@@ -296,8 +294,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                 />
                             )}
-                            {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                                diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
+                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
                                 <NetworkAreaDiagramContent
                                     diagramId={diagram.diagramUuid}
                                     svg={diagram.svg?.svg ?? undefined}
@@ -317,7 +314,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                                    onLoadNadFromElement={handleLoadNadFromElement}
+                                    onLoadNad={handleLoadNad}
                                     onExpandVoltageLevel={(vlId) =>
                                         handleExpandVoltageLevelId(diagram.diagramUuid, vlId)
                                     }
@@ -338,7 +335,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         diagrams,
         diagramsInEditMode,
         globalError,
-        handleLoadNadFromElement,
+        handleLoadNad,
         handleToggleEditMode,
         loadingDiagrams,
         handleExpandAllVoltageLevelIds,
