@@ -39,6 +39,15 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
     }),
+    alertMessage: (theme: Theme) => ({
+        borderRadius: '0 0 0 0',
+        border:
+            theme.palette.mode === 'light'
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderTop: 'none', // remove the top border to avoid double border with CardHeader
+        borderBottom: 'none',
+    }),
     diagramContainer: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
@@ -225,7 +234,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                         onClose={() => onRemoveItem(diagram.diagramUuid)}
                     />
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
-                        <AlertCustomMessageNode message={globalError || diagramErrors[diagram.diagramUuid]} noMargin />
+                        <>
+                            <AlertCustomMessageNode
+                                message={globalError || diagramErrors[diagram.diagramUuid]}
+                                noMargin
+                                style={styles.alertMessage}
+                            />
+                            <Box sx={styles.diagramContainer} /> {/* Empty container to keep the layout */}
+                        </>
                     ) : (
                         <Box sx={styles.diagramContainer}>
                             {(diagram.type === DiagramType.VOLTAGE_LEVEL ||
