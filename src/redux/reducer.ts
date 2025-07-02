@@ -1213,7 +1213,11 @@ export const reducer = createReducer(initialState, (builder) => {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
+                nadConfigUuid: undefined,
+                filterUuid: undefined,
                 voltageLevelIds: [action.id as UUID],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
             };
         }
 
@@ -1232,7 +1236,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
+            nadConfigUuid: undefined,
+            filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
+            voltageLevelToExpandIds: [],
+            voltageLevelToOmitIds: [],
         };
 
         // Switch to the grid layout in order to see the newly opened diagram

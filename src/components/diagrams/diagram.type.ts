@@ -30,6 +30,7 @@ type SubstationDiagramParams = DiagramBaseParams & {
 };
 type NetworkAreaDiagramParams = DiagramBaseParams & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
+    name: string;
     nadConfigUuid: UUID | undefined;
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];

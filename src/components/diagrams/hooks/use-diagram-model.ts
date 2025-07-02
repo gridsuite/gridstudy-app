@@ -22,6 +22,7 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
+import { DiagramAdditionalMetadata } from '../diagram-common';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -184,7 +185,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             } else if (diagram.type === DiagramType.SUBSTATION) {
                 return checkAndGetSubstationSingleLineDiagramUrl(diagram);
             } else if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return checkAndGetNetworkAreaDiagramUrl(diagram);
+                return checkAndGetNetworkAreaDiagramUrl();
             }
             return null;
         },

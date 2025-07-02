@@ -219,11 +219,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     diagramUuid: diagramId,
-                    type: DiagramType.NETWORK_AREA_DIAGRAM, // TODO CHARLY [A vérifier] normalement ça devrait être correct, mais si y'a plantage c'est ptet parce qu'ici on défini pas tous les champs
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagram.voltageLevelIds,
-                    voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds // TODO CHARLY check si ça peut être simplifié
-                        ? [...diagram.voltageLevelToExpandIds, newVoltageLevelId]
-                        : [newVoltageLevelId],
+                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                 });
             }
@@ -240,9 +238,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
                     voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds,
-                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds
-                        ? [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit]
-                        : [voltageLevelIdToOmit],
+                    voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
                 });
             }
         },

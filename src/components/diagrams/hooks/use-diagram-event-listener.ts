@@ -45,8 +45,8 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     nadConfigUuid: diagramEvent.nadConfigUuid,
                     filterUuid: diagramEvent.filterUuid,
                     voltageLevelIds: diagramEvent.voltageLevelIds,
-                    voltageLevelsToExpandIds: diagramEvent.voltageLevelsToExpandIds,
-                    voltageLevelsToOmitIds: diagramEvent.voltageLevelsToOmitIds,
+                    voltageLevelToExpandIds: diagramEvent.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagramEvent.voltageLevelToOmitIds,
                 });
             }
         },
