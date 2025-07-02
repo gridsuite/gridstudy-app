@@ -1504,6 +1504,6 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
 
-    "operationalLimitsGroup1": "Set de limites actif côté 1",
-    "operationalLimitsGroup2": "Set de limites actif côté 2"
+    "selectedOperationalLimitsGroup1": "Set de limites actif côté 1",
+    "selectedOperationalLimitsGroup2": "Set de limites actif côté 2"
 }

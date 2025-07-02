@@ -292,14 +292,14 @@ export const FIELD_OPTIONS = {
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },
-    OPERATIONAL_LIMITS_GROUP_1: {
-        id: FieldType.OPERATIONAL_LIMITS_GROUP_1,
-        label: 'operationalLimitsGroup1',
+    SELECTED_OPERATIONAL_LIMITS_GROUP_1: {
+        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
+        label: 'selectedOperationalLimitsGroup1',
         dataType: DataType.STRING,
     },
-    OPERATIONAL_LIMITS_GROUP_2: {
-        id: FieldType.OPERATIONAL_LIMITS_GROUP_2,
-        label: 'operationalLimitsGroup2',
+    SELECTED_OPERATIONAL_LIMITS_GROUP_2: {
+        id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
+        label: 'selectedOperationalLimitsGroup2',
         dataType: DataType.STRING,
     },
 } as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
@@ -322,8 +322,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.G2,
         FIELD_OPTIONS.B1,
         FIELD_OPTIONS.B2,
-        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_1,
-        FIELD_OPTIONS.OPERATIONAL_LIMITS_GROUP_2,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
     ],
     [EquipmentType.TWO_WINDINGS_TRANSFORMER]: [
         FIELD_OPTIONS.PROPERTY,
@@ -342,6 +342,8 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.PHASE_LOW_TAP_POSITION,
         FIELD_OPTIONS.PHASE_TAP_POSITION,
         FIELD_OPTIONS.PHASE_TARGET_DEADBAND,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
+        FIELD_OPTIONS.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
     ],
     [EquipmentType.THREE_WINDINGS_TRANSFORMER]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.GENERATOR]: [
