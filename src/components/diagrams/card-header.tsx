@@ -19,7 +19,7 @@ const styles = {
         paddingLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
         border:
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
