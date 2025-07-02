@@ -28,9 +28,8 @@ import {
     NAME,
     STAGES_DEFINITION_GENERATORS,
 } from '../../../utils/field-constants';
-import { ElementType } from '@gridsuite/commons-ui';
+import { ElementType, ISensiParameters } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { ISensiParameters } from '../sensi/columns-definitions';
 
 export const MONITORED_BRANCHES_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER];
 
