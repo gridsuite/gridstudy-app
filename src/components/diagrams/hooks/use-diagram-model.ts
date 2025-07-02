@@ -203,6 +203,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         (diagram: Diagram) => {
             // make url from type
             const url = getUrl(diagram);
+            if (!url) {
+                return;
+            }
             let fetchOptions: RequestInit = { method: 'GET' };
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const nadRequestInfos = {
@@ -221,86 +224,85 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 };
             }
 
-            if (url) {
-                setLoadingDiagrams((loadingDiagrams) => {
-                    if (loadingDiagrams.includes(diagram.diagramUuid)) {
-                        console.warn(`Diagram ${diagram.diagramUuid} is already being loaded`);
-                        return loadingDiagrams;
+            setLoadingDiagrams((loadingDiagrams) => {
+                if (loadingDiagrams.includes(diagram.diagramUuid)) {
+                    console.warn(`Diagram ${diagram.diagramUuid} is already being loaded`);
+                    return loadingDiagrams;
+                }
+                return [...loadingDiagrams, diagram.diagramUuid];
+            });
+            // fetch the svg
+            fetchSvg(url, fetchOptions)
+                .then((data) => {
+                    if (data == null) {
+                        return;
                     }
-                    return [...loadingDiagrams, diagram.diagramUuid];
-                });
-                // fetch the svg
-                fetchSvg(url, fetchOptions)
-                    .then((data) => {
-                        if (data !== null) {
-                            setDiagrams((diagrams) => {
-                                if (!diagrams[diagram.diagramUuid]) {
-                                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                                    return diagrams;
-                                }
-                                const newDiagrams = { ...diagrams };
-                                const vlIds =
-                                    (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map(
-                                        (vl: any) => vl.id
-                                    ) ?? [];
-
-                                newDiagrams[diagram.diagramUuid] = {
-                                    ...diagrams[diagram.diagramUuid],
-                                    svg: data,
-                                    name: getDiagramTitle(diagram, data),
-                                    ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
-                                        voltageLevelToExpandIds: [],
-                                        voltageLevelIds: vlIds,
-                                        voltageLevelToOmitIds: [],
-                                    }),
-                                };
-                                return newDiagrams;
-                            });
+                    setDiagrams((diagrams) => {
+                        if (!diagrams[diagram.diagramUuid]) {
+                            console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                            return diagrams;
                         }
-                    })
-                    .catch((error) => {
-                        console.error('Error while fetching SVG', error.message);
-                        setDiagrams((diagrams) => {
-                            if (!diagrams[diagram.diagramUuid]) {
-                                console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                                return diagrams;
-                            }
-                            const newDiagrams = { ...diagrams };
+                        const newDiagrams = { ...diagrams };
+                        const vlIds =
+                            (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map(
+                                (vl: any) => vl.id
+                            ) ?? [];
 
-                            newDiagrams[diagram.diagramUuid] = {
-                                ...diagrams[diagram.diagramUuid],
-                                name: intl.formatMessage(
-                                    {
-                                        id: 'diagramLoadingFail',
-                                    },
-                                    { diagramName: getDiagramTitle(diagram) }
-                                ),
-                            };
-                            return newDiagrams;
-                        });
-                        let errorMessage: string;
-                        if (error.status === 404) {
-                            errorMessage =
-                                diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
-                        } else {
-                            errorMessage = 'svgLoadingFail';
-                            snackError({
-                                headerId: errorMessage,
-                            });
-                        }
-                        setDiagramErrors((diagramErrors) => {
-                            return {
-                                ...diagramErrors,
-                                [diagram.diagramUuid]: errorMessage,
-                            };
-                        });
-                    })
-                    .finally(() => {
-                        setLoadingDiagrams((loadingDiagrams) => {
-                            return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
-                        });
+                        newDiagrams[diagram.diagramUuid] = {
+                            ...diagrams[diagram.diagramUuid],
+                            svg: data,
+                            name: getDiagramTitle(diagram, data),
+                            ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
+                                voltageLevelToExpandIds: [],
+                                voltageLevelIds: vlIds,
+                                voltageLevelToOmitIds: [],
+                            }),
+                        };
+                        return newDiagrams;
                     });
-            }
+                })
+                .catch((error) => {
+                    console.error('Error while fetching SVG', error.message);
+                    setDiagrams((diagrams) => {
+                        if (!diagrams[diagram.diagramUuid]) {
+                            console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                            return diagrams;
+                        }
+                        const newDiagrams = { ...diagrams };
+
+                        newDiagrams[diagram.diagramUuid] = {
+                            ...diagrams[diagram.diagramUuid],
+                            name: intl.formatMessage(
+                                {
+                                    id: 'diagramLoadingFail',
+                                },
+                                { diagramName: getDiagramTitle(diagram) }
+                            ),
+                        };
+                        return newDiagrams;
+                    });
+                    let errorMessage: string;
+                    if (error.status === 404) {
+                        errorMessage =
+                            diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
+                    } else {
+                        errorMessage = 'svgLoadingFail';
+                        snackError({
+                            headerId: errorMessage,
+                        });
+                    }
+                    setDiagramErrors((diagramErrors) => {
+                        return {
+                            ...diagramErrors,
+                            [diagram.diagramUuid]: errorMessage,
+                        };
+                    });
+                })
+                .finally(() => {
+                    setLoadingDiagrams((loadingDiagrams) => {
+                        return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
+                    });
+                });
         },
         [getDiagramTitle, getUrl, intl, snackError, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
     );
