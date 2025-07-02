@@ -281,7 +281,7 @@ function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
     return [nodeMap, childrenMap] as const;
 }
 
-type SecurityGroupPlacementsBuilder =
+type SecurityGroupBuilder =
     | {
           isInSecurityGroup: false;
       }
@@ -302,19 +302,20 @@ function computeSecurityGroupNodes(
     nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
 ) {
     const securityGroupsPlacements: { firstNodeId: string; topLeft: NodePlacement; bottomRight: NodePlacement }[] = [];
-    let securityGroupBuilder: SecurityGroupPlacementsBuilder = { isInSecurityGroup: false };
-    nodes.forEach((node, index) => {
-        const isLast = index === nodes.length - 1;
+    let securityGroupBuilder: SecurityGroupBuilder = {
+        isInSecurityGroup: false,
+    } as SecurityGroupBuilder;
+    nodes.forEach((node) => {
         const nodePlacement = placementGrid.getPlacement(node.id);
         if (!node.parentId || !nodePlacement) {
             return;
         }
 
-        // If currently in a security group, if the current node is the last, or if its parent node is not of type SECURITY
+        // If currently in a security group, if current node has a parent node which is not of type SECURITY
         // then : the current security group is closed, then saved in securityGroupsPlacements
         // otherwise : the current security group max positions are updated
         if (securityGroupBuilder.isInSecurityGroup) {
-            if (nodeMap.get(node.parentId)?.node.data.nodeType !== NetworkModificationNodeType.SECURITY || isLast) {
+            if (nodeMap.get(node.parentId)?.node.data.nodeType !== NetworkModificationNodeType.SECURITY) {
                 securityGroupsPlacements.push({
                     firstNodeId: securityGroupBuilder.groupFirstNodeId,
                     topLeft: securityGroupBuilder.securityGroupTopLeftPosition,
@@ -350,6 +351,18 @@ function computeSecurityGroupNodes(
             };
         }
     });
+
+    // if last node was of type security, we need to add last group to the list
+    if (securityGroupBuilder.isInSecurityGroup) {
+        securityGroupsPlacements.push({
+            firstNodeId: securityGroupBuilder.groupFirstNodeId,
+            topLeft: securityGroupBuilder.securityGroupTopLeftPosition,
+            bottomRight: {
+                row: securityGroupBuilder.currentSecurityGroupMaxY,
+                column: securityGroupBuilder.currentSecurityGroupMaxX,
+            },
+        });
+    }
 
     return securityGroupsPlacements.map((sg) => ({
         id: sg.firstNodeId + groupIdSuffix,
