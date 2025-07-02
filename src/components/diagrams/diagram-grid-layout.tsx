@@ -65,7 +65,7 @@ const styles = {
 const LG_COLUMN_COUNT = 12;
 const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
 const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
-const DEFAULT_WIDTH = 3;
+const DEFAULT_WIDTH = 2;
 const DEFAULT_HEIGHT = 2;
 
 const initialLayouts = {
