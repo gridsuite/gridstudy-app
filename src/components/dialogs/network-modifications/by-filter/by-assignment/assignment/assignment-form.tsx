@@ -139,7 +139,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         }
 
         if (dataType === DataType.STRING) {
-            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} size={'small'} label={'Value'} clearable />;
+            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
         }
 
         // by default is a numeric type
