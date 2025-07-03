@@ -207,15 +207,24 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
-            <GridSection title={selectedLimitSetId ?? ''} />
-            <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
-                <Grid item xs={2}>
-                    <FormattedMessage id="Applicability" />
-                </Grid>
-                <Grid item xs={2}>
-                    <SelectInput options={Object.values(APPLICATION_SIDE)} name="" sx={{ flexGrow: 1 }} size="small" />
-                </Grid>
-            </Grid>
+            {!onlySelectedLimitsGroup && (
+                <>
+                    <GridSection title={selectedLimitSetId ?? ''} />
+                    <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
+                        <Grid item xs={2}>
+                            <FormattedMessage id="Applicability" />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <SelectInput
+                                options={Object.values(APPLICATION_SIDE)}
+                                name=""
+                                sx={{ flexGrow: 1 }}
+                                size="small"
+                            />
+                        </Grid>
+                    </Grid>
+                </>
+            )}
             <Box>
                 <LimitsChart limitsGroupFormName={limitsGroupFormName} />
             </Box>

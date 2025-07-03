@@ -25,20 +25,6 @@ export function LimitsPane({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    const renderSidePane = (id: string, formName: string, previousCurrentLimits: CurrentLimits | null) => {
-        return (
-            <LimitsSidePane
-                key={id}
-                limitsGroupFormName={formName}
-                clearableFields={clearableFields}
-                permanentCurrentLimitPreviousValue={previousCurrentLimits?.permanentLimit}
-                temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits ?? []}
-                currentNode={currentNode}
-                onlySelectedLimitsGroup={true}
-            />
-        );
-    };
-
     const getCurrentLimits1 = (equipmentToModify: any): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits1) {
             return equipmentToModify.currentLimits1.find(
@@ -61,10 +47,26 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={8}>
                 <Grid item xs={4} sx={tabStyles.parametersBox}>
-                    {renderSidePane('leftPanel', `${id}.${CURRENT_LIMITS_1}`, getCurrentLimits1(equipmentToModify))}
+                    <LimitsSidePane
+                        key={'leftPanel'}
+                        limitsGroupFormName={`${id}.${CURRENT_LIMITS_1}`}
+                        clearableFields={clearableFields}
+                        permanentCurrentLimitPreviousValue={getCurrentLimits1(equipmentToModify)?.permanentLimit}
+                        temporaryLimitsPreviousValues={getCurrentLimits1(equipmentToModify)?.temporaryLimits ?? []}
+                        currentNode={currentNode}
+                        onlySelectedLimitsGroup={true}
+                    />
                 </Grid>
                 <Grid item xs={4} sx={tabStyles.parametersBox}>
-                    {renderSidePane('rightPanel', `${id}.${CURRENT_LIMITS_2}`, getCurrentLimits2(equipmentToModify))}
+                    <LimitsSidePane
+                        key={'rightPanel'}
+                        limitsGroupFormName={`${id}.${CURRENT_LIMITS_2}`}
+                        clearableFields={clearableFields}
+                        permanentCurrentLimitPreviousValue={getCurrentLimits2(equipmentToModify)?.permanentLimit}
+                        temporaryLimitsPreviousValues={getCurrentLimits2(equipmentToModify)?.temporaryLimits ?? []}
+                        currentNode={currentNode}
+                        onlySelectedLimitsGroup={true}
+                    />
                 </Grid>
             </Grid>
         </Grid>
