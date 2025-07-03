@@ -39,6 +39,14 @@ const styles = {
     card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
+        '& .react-resizable-handle, .card-header-close-button': {
+            visibility: 'hidden',
+        },
+        '&:hover': {
+            '& .react-resizable-handle, .card-header-close-button': {
+                visibility: 'visible',
+            },
+        },
     }),
     alertMessage: (theme: Theme) => ({
         borderRadius: '0 0 0 0',

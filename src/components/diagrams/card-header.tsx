@@ -61,7 +61,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => 
                         flexDirection: 'row',
                     }}
                 >
-                    <IconButton size="small" onClick={onClose}>
+                    <IconButton className="card-header-close-button" size="small" onClick={onClose}>
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 </Box>
