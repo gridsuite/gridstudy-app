@@ -9,22 +9,27 @@ import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
-import { Box, Theme, useTheme } from '@mui/material';
+import { AppBar, Box, Dialog, IconButton, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { Close, Fullscreen } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
+import { DiagramMetadata, LineFlowMode, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
+import NetworkMapTab from 'components/network/network-map-tab';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -105,10 +110,18 @@ interface DiagramGridLayoutProps {
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const intl = useIntl();
+    const dispatch = useDispatch();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
+    const [isMapAdded, setIsMapAdded] = useState(false);
+    const [mapOpen, setMapOpen] = useState(false);
+
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
@@ -197,6 +210,147 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         },
         [createDiagram]
     );
+
+    const handleCloseMap = useCallback(() => {
+        setMapOpen(false);
+        dispatch(resetMapEquipment());
+        dispatch(setMapDataLoading(false));
+        dispatch(setReloadMapNeeded(true));
+    }, [dispatch]);
+
+    const renderMapCardSnippet = useCallback(() => {
+        if (!studyUuid || !currentNode || !currentRootNetworkUuid) {
+            return;
+        }
+        return (
+            <div key={'MapSnippet'} style={{ display: 'flex', flexDirection: 'column' }}>
+                <CardHeader title={'MapSnippet'} onClose={() => setIsMapCardAdded(false)} />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        flexGrow: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Tooltip title={<FormattedMessage id="OpenMapFullscreen" />}>
+                        <span>
+                            <IconButton
+                                disabled={mapOpen}
+                                onClick={(e) => {
+                                    setMapOpen(true);
+                                }}
+                            >
+                                <Fullscreen />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                    <Dialog
+                        open={mapOpen}
+                        onClose={handleCloseMap}
+                        fullScreen
+                        // fullWidth
+                        // maxWidth="xl"
+                        // PaperProps={{
+                        //     sx: {
+                        //         //   width: "50%",
+                        //         minHeight: "100%",
+                        //         flexGrow: 1,
+                        //     },
+                        // }}
+                    >
+                        <AppBar sx={{ position: 'abolute' }}>
+                            <Toolbar>
+                                <IconButton
+                                    // sx={{ position: 'abolute' }}
+                                    edge="start"
+                                    color="inherit"
+                                    onClick={handleCloseMap}
+                                    aria-label="close"
+                                >
+                                    <Close />
+                                </IconButton>
+                                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                                    Fermer
+                                </Typography>
+                            </Toolbar>
+                        </AppBar>
+                        <NetworkMapTab
+                            studyUuid={studyUuid}
+                            visible={mapOpen}
+                            lineFullPath={networkVisuParams.mapParameters.lineFullPath}
+                            lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
+                            lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
+                            openVoltageLevel={() => {}}
+                            currentNode={currentNode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            showInSpreadsheet={(eq) => {
+                                setMapOpen(false);
+                                showInSpreadsheet(eq);
+                            }}
+                            onPolygonChanged={() => {}}
+                            onElementCreated={handleCloseMap}
+                        ></NetworkMapTab>
+                    </Dialog>
+                </Box>
+            </div>
+        );
+    }, [
+        studyUuid,
+        currentNode,
+        currentRootNetworkUuid,
+        mapOpen,
+        handleCloseMap,
+        networkVisuParams.mapParameters.lineFullPath,
+        networkVisuParams.mapParameters.lineParallelPath,
+        networkVisuParams.mapParameters.lineFlowMode,
+        showInSpreadsheet,
+    ]);
+
+    const renderMapCard = useCallback(() => {
+        if (!studyUuid || !currentNode || !currentRootNetworkUuid) {
+            return;
+        }
+        return (
+            <div key={'Map'} style={{ display: 'flex', flexDirection: 'column' }}>
+                <CardHeader
+                    title={'Map'}
+                    onClose={() => {
+                        setIsMapAdded(false);
+                        dispatch(resetMapEquipment());
+                        dispatch(setMapDataLoading(false));
+                        dispatch(setReloadMapNeeded(true));
+                    }}
+                />
+
+                <NetworkMapTab
+                    studyUuid={studyUuid}
+                    visible={mapOpen}
+                    lineFullPath={networkVisuParams.mapParameters.lineFullPath}
+                    lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
+                    lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
+                    openVoltageLevel={() => {}}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    showInSpreadsheet={(eq) => {
+                        showInSpreadsheet(eq);
+                    }}
+                    onPolygonChanged={() => {}}
+                ></NetworkMapTab>
+            </div>
+        );
+    }, [
+        studyUuid,
+        currentNode,
+        currentRootNetworkUuid,
+        mapOpen,
+        networkVisuParams.mapParameters.lineFullPath,
+        networkVisuParams.mapParameters.lineParallelPath,
+        networkVisuParams.mapParameters.lineFlowMode,
+        dispatch,
+        showInSpreadsheet,
+    ]);
 
     const onChangeDepth = useCallback(
         (diagramId: UUID, newDepth: number) => {
@@ -385,6 +539,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 key={'Adder'}
             />
             {renderDiagrams()}
+            {isMapCardAdded && renderMapCardSnippet()}
+            {isMapAdded && renderMapCard()}
         </ResponsiveGridLayout>
     );
 }
