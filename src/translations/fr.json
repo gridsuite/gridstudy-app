@@ -1462,5 +1462,7 @@
     "loadFlowModification": "Modification par calcul de répartition appliquée",
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
-    "labeledGroupSecurity": "Sécurité"
+    "labeledGroupSecurity": "Sécurité",
+    "OpenMapCard": "Ajouter la carte géographique à la grille",
+    "OpenMapFullscreen": "Ouvrir la carte en plein écran"
 }

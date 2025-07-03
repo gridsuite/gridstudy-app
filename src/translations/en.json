@@ -1467,5 +1467,7 @@
     "loadFlowModification": "Loadflow modification applied",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
-    "labeledGroupSecurity": "Security"
+    "labeledGroupSecurity": "Security",
+    "OpenMapCard": "Add a map widget to the grid",
+    "OpenMapFullscreen": "Show map in fullscreen mode"
 }
