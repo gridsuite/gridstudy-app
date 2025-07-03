@@ -591,10 +591,6 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.type, currentNode?.id, studyUuid, snackError, dispatch]);
 
     useEffect(() => {
-        setEditDialogOpen(editData?.type);
-    }, [editData]);
-
-    useEffect(() => {
         if (!currentNode) {
             return;
         }
