@@ -178,6 +178,10 @@ const lightTheme = createTheme({
     },
     reactflow: {
         backgroundColor: 'white',
+        labeledGroup: {
+            backgroundColor: 'white',
+            borderColor: '#11161A',
+        },
     },
 });
 
@@ -254,6 +258,10 @@ const darkTheme = createTheme({
     },
     reactflow: {
         backgroundColor: '#414141',
+        labeledGroup: {
+            backgroundColor: '#11161A',
+            borderColor: '#D9D9D9',
+        },
     },
 });
 
