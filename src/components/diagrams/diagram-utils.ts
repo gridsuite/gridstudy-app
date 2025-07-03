@@ -33,7 +33,7 @@ export function buildPositionsFromNadMetadata(metadata: DiagramMetadata): Diagra
     });
     return Array.from(positionsMap.values());
 }
-K
+
 
 /**
  * Merge existing positions with new positions from NAD metadata.
