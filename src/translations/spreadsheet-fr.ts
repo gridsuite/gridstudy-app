@@ -81,7 +81,7 @@ const spreadsheetFr = {
     'spreadsheet/save/include_filters_no': 'Non',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_collection': 'Collection de tableurs',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Nom du tableur',
-    'spreadsheet/create_new_spreadsheet/equipment_type': "Type d'équipement",
+    'spreadsheet/create_new_spreadsheet/element_type': "Type d'élément",
     'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists': 'Ce nom de tableur existe déjà',
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model': 'Vous devez sélectionner un modèle de tableur',
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection':
