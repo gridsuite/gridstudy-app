@@ -1467,6 +1467,7 @@
     "loadFlowModification": "Loadflow modification applied",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
+    "labeledGroupSecurity": "Security",
 
     "selectedOperationalLimitsGroup1": "Active limit set on side 1",
     "selectedOperationalLimitsGroup2": "Active limit set on side 2"

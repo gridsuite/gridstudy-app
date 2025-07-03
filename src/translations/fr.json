@@ -1462,6 +1462,7 @@
     "loadFlowModification": "Modification par calcul de répartition appliquée",
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
+    "labeledGroupSecurity": "Sécurité",
 
     "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2"
