@@ -23,6 +23,8 @@ import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { DiagramAdditionalMetadata } from '../diagram-common';
+import {buildPositionsFromNadMetadata, mergePositions} from "../diagram-utils";
+import {DiagramMetadata} from "@powsybl/network-viewer";
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -214,7 +216,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
-                    positions: [], // TODO CHARLY ajouter les positions ici, si on les a déjà
+                    positions: diagram.positions,
                     withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
                 };
                 fetchOptions = {
@@ -248,6 +250,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                 (vl: any) => vl.id
                             ) ?? [];
 
+
                         newDiagrams[diagram.diagramUuid] = {
                             ...diagrams[diagram.diagramUuid],
                             svg: data,
@@ -258,8 +261,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                     ...new Set([...diagrams[diagram.diagramUuid].voltageLevelIds, ...vlIdsFromSvg]),
                                 ],
                                 voltageLevelToOmitIds: diagrams[diagram.diagramUuid].voltageLevelToOmitIds.filter(
-                                    (vlId) => !vlIdsFromSvg.includes(vlId)
+                                    (vlId : string) => !vlIdsFromSvg.includes(vlId)
                                 ),
+                                positions : mergePositions(diagrams[diagram.diagramUuid].positions, data.metadata as DiagramMetadata)
                             }),
                         };
                         return newDiagrams;

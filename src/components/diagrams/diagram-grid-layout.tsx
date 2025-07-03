@@ -163,6 +163,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 voltageLevelIds: [],
                 voltageLevelToExpandIds: [],
                 voltageLevelToOmitIds: [],
+                positions: []
             };
             createDiagram(diagram);
         },
@@ -210,6 +211,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     voltageLevelIds: [],
                     voltageLevelToExpandIds: [...diagram.voltageLevelIds],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: diagram.positions
                 });
             }
         },
@@ -229,6 +231,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: diagram.positions
                 });
             }
         },
@@ -246,8 +249,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     nadConfigUuid: diagram.nadConfigUuid,
                     filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
-                    voltageLevelToExpandIds: diagram?.voltageLevelToExpandIds,
+                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
+                    positions: diagram.positions,
                 });
             }
         },

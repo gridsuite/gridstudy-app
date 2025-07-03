@@ -48,6 +48,7 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     voltageLevelIds: diagramEvent.voltageLevelIds,
                     voltageLevelToExpandIds: diagramEvent.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagramEvent.voltageLevelToOmitIds,
+                    positions: diagramEvent.positions
                 });
             }
         },
