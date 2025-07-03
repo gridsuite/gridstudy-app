@@ -31,12 +31,14 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: diagramEvent.voltageLevelId,
+                    name: '',
                 });
             } else if (diagramEvent.diagramType === DiagramType.SUBSTATION) {
                 createDiagram({
                     diagramUuid: v4() as UUID,
                     type: DiagramType.SUBSTATION,
                     substationId: diagramEvent.substationId,
+                    name: '',
                 });
             } else if (diagramEvent.diagramType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 createDiagram({
@@ -48,7 +50,7 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     voltageLevelIds: diagramEvent.voltageLevelIds,
                     voltageLevelToExpandIds: diagramEvent.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagramEvent.voltageLevelToOmitIds,
-                    positions: diagramEvent.positions
+                    positions: diagramEvent.positions,
                 });
             }
         },

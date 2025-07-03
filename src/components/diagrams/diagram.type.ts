@@ -7,7 +7,7 @@
 
 import { UUID } from 'crypto';
 import { Svg } from './diagram-common';
-import {DiagramConfigPosition} from "../../services/explore";
+import { DiagramConfigPosition } from '../../services/explore';
 
 export enum DiagramType {
     VOLTAGE_LEVEL = 'voltage-level',
@@ -19,6 +19,7 @@ export enum DiagramType {
 type DiagramBaseParams = {
     diagramUuid: UUID;
     type: DiagramType;
+    name: string;
 };
 
 type VoltageLevelDiagramParams = DiagramBaseParams & {
@@ -31,13 +32,12 @@ type SubstationDiagramParams = DiagramBaseParams & {
 };
 type NetworkAreaDiagramParams = DiagramBaseParams & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
-    name: string;
     nadConfigUuid: UUID | undefined;
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
-    positions : DiagramConfigPosition[];
+    positions: DiagramConfigPosition[];
 };
 
 export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramParams;
@@ -65,7 +65,7 @@ export type NetworkAreaDiagram = DiagramBase & {
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
-    positions : DiagramConfigPosition[];
+    positions: DiagramConfigPosition[];
 };
 
 export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram;

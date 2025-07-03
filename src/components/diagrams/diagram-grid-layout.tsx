@@ -22,6 +22,7 @@ import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-l
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
+import { useIntl } from 'react-intl';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -71,6 +72,7 @@ interface DiagramGridLayoutProps {
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
+    const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -138,6 +140,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: element.voltageLevelId ?? '',
+                    name: '',
                 };
                 createDiagram(diagram);
             } else if (element.type === EquipmentType.SUBSTATION) {
@@ -145,6 +148,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: v4() as UUID,
                     type: DiagramType.SUBSTATION,
                     substationId: element.id,
+                    name: '',
                 };
                 createDiagram(diagram);
             }
@@ -163,7 +167,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 voltageLevelIds: [],
                 voltageLevelToExpandIds: [],
                 voltageLevelToOmitIds: [],
-                positions: []
+                positions: [],
             };
             createDiagram(diagram);
         },
@@ -211,7 +215,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     voltageLevelIds: [],
                     voltageLevelToExpandIds: [...diagram.voltageLevelIds],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
-                    positions: diagram.positions
+                    positions: diagram.positions,
                 });
             }
         },
@@ -231,7 +235,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
-                    positions: diagram.positions
+                    positions: diagram.positions,
                 });
             }
         },
@@ -281,7 +285,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return (
                 <Box key={diagram.diagramUuid} sx={styles.window}>
                     <CardHeader
-                        title={diagram.name}
+                        title={
+                            loadingDiagrams.includes(diagram.diagramUuid)
+                                ? intl.formatMessage({ id: 'LoadingOf' }, { value: diagram.type })
+                                : diagram.name
+                        }
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
                         onClose={() => onRemoveItem(diagram.diagramUuid)}
                     />
@@ -355,6 +363,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         showInSpreadsheet,
         studyUuid,
         visible,
+        intl,
     ]);
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {

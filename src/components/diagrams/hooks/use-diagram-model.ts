@@ -13,7 +13,7 @@ import {
     DiagramType,
     NetworkAreaDiagram,
     SubstationDiagram,
-    VoltageLevelDiagram
+    VoltageLevelDiagram,
 } from '../diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSvg, getNetworkAreaDiagramUrl } from 'services/study';
@@ -30,8 +30,8 @@ import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { DiagramAdditionalMetadata } from '../diagram-common';
-import { mergePositions} from "../diagram-utils";
-import {DiagramMetadata} from "@powsybl/network-viewer";
+import { mergePositions } from '../diagram-utils';
+import { DiagramMetadata } from '@powsybl/network-viewer';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -98,7 +98,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         (diagramParams: DiagramParams) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
-                name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramParams.type }),
                 svg: null,
             };
             setDiagrams((diagrams) => {
@@ -109,7 +108,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             onAddDiagram(pendingDiagram);
             return pendingDiagram;
         },
-        [intl, onAddDiagram]
+        [onAddDiagram]
     );
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
@@ -257,7 +256,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                 (vl: any) => vl.id
                             ) ?? [];
 
-
                         newDiagrams[diagram.diagramUuid] = {
                             ...diagrams[diagram.diagramUuid],
                             svg: data,
@@ -265,14 +263,18 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
-                                    ...new Set([...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds, ...vlIdsFromSvg]),
+                                    ...new Set([
+                                        ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
+                                        ...vlIdsFromSvg,
+                                    ]),
                                 ],
-                                voltageLevelToOmitIds: (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelToOmitIds
-                                    .filter((vlId : string) => !vlIdsFromSvg.includes(vlId)
-                                ),
-                                positions : mergePositions(
+                                voltageLevelToOmitIds: (
+                                    diagrams[diagram.diagramUuid] as NetworkAreaDiagram
+                                ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
+                                positions: mergePositions(
                                     (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions,
-                                    data.metadata as DiagramMetadata)
+                                    data.metadata as DiagramMetadata
+                                ),
                             }),
                         };
                         return newDiagrams;
