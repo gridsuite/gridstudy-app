@@ -9,13 +9,12 @@ import Box from '@mui/material/Box';
 import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 
 export const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme: Theme) => ({
-        padding: theme.spacing(0.5),
         paddingLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
@@ -50,7 +49,11 @@ interface CardHeaderProps {
 const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => {
     return (
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
-            <OverflowableText className="react-grid-dragHandle" sx={{ flexGrow: '1' }} text={title} />
+            <OverflowableText
+                className="react-grid-dragHandle"
+                sx={{ flexGrow: '1' }}
+                text={<Typography variant="caption">{title}</Typography>}
+            />
             <Box>
                 <Box
                     sx={{
