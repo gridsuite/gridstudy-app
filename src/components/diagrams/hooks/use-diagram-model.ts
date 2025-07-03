@@ -243,7 +243,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             return diagrams;
                         }
                         const newDiagrams = { ...diagrams };
-                        const vlIds =
+                        const vlIdsFromSvg =
                             (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map(
                                 (vl: any) => vl.id
                             ) ?? [];
@@ -254,9 +254,11 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             name: getDiagramTitle(diagram, data),
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
                                 voltageLevelToExpandIds: [],
-                                voltageLevelIds: vlIds,
+                                voltageLevelIds: [
+                                    ...new Set([...diagrams[diagram.diagramUuid].voltageLevelIds, ...vlIdsFromSvg]),
+                                ],
                                 voltageLevelToOmitIds: diagrams[diagram.diagramUuid].voltageLevelToOmitIds.filter(
-                                    (vlId) => !vlIds.includes(vlId)
+                                    (vlId) => !vlIdsFromSvg.includes(vlId)
                                 ),
                             }),
                         };
