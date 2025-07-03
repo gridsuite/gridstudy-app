@@ -16,11 +16,15 @@ export const BLINK_LENGTH_MS = 1800;
 const styles = {
     header: (theme: Theme) => ({
         padding: theme.spacing(0.5),
+        paddingLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
         backgroundColor: theme.palette.background.default,
-        borderBottom: 'solid 1px',
-        borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
+        border:
+            theme.palette.mode === 'light'
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
     }),
     blink: (theme: Theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
@@ -38,7 +42,7 @@ const styles = {
 };
 
 interface CardHeaderProps {
-    title?: string;
+    title?: React.ReactNode;
     onClose?: () => void;
     blinking?: boolean;
 }

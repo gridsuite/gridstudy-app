@@ -9,11 +9,9 @@ import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
-import { Box, darken, IconButton, Theme, useTheme } from '@mui/material';
+import { Box, Theme, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
-import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import { UUID } from 'crypto';
-import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
@@ -22,6 +20,8 @@ import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-l
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
+import { DiagramAdder } from './diagram-adder';
+import './diagram-grid-layout.css'; // Import the CSS file for styling
 import { useIntl } from 'react-intl';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -30,18 +30,30 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NETWORK_AREA_DIAGRAM];
 
 const styles = {
-    window: {
+    card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
-    },
+    }),
+    alertMessage: (theme: Theme) => ({
+        borderRadius: '0 0 0 0',
+        border:
+            theme.palette.mode === 'light'
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderTop: 'none', // remove the top border to avoid double border with CardHeader
+        borderBottom: 'none',
+    }),
     diagramContainer: (theme: Theme) => ({
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor:
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
+        border:
             theme.palette.mode === 'light'
-                ? theme.palette.background.paper
-                : theme.networkModificationPanel.backgroundColor,
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderTop: 'none', // remove the top border to avoid double border with CardHeader
     }),
 };
 
@@ -60,6 +72,12 @@ const initialLayouts = {
             y: 0,
             w: DEFAULT_WIDTH,
             h: DEFAULT_HEIGHT,
+            minH: DEFAULT_HEIGHT,
+            maxH: DEFAULT_HEIGHT,
+            minW: DEFAULT_WIDTH,
+            maxW: DEFAULT_WIDTH,
+            isDraggable: false,
+            static: true,
         },
     ],
 };
@@ -74,21 +92,19 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const theme = useTheme();
     const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
-    const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
+    const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const new_lg_layouts = old_layouts.lg.filter((layout) => layout.i !== 'Adder');
+            const new_lg_layouts = [...old_layouts.lg];
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
                 x: Infinity,
                 y: 0,
                 w: DEFAULT_WIDTH,
                 h: DEFAULT_HEIGHT,
-                minH: DEFAULT_HEIGHT,
-                minW: DEFAULT_WIDTH,
             };
             new_lg_layouts.push(layoutItem);
             return { lg: new_lg_layouts };
@@ -174,34 +190,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const renderDiagramAdder = useCallback(() => {
-        if (Object.values(diagrams).length > 0) {
-            return;
-        }
-        return (
-            <div key={'Adder'} style={{ display: 'flex', flexDirection: 'column' }}>
-                <CardHeader title={'Add a new diagram'} />
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flexGrow: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <IconButton
-                        onClick={(e) => {
-                            setIsDialogSearchOpen(true);
-                        }}
-                    >
-                        <LibraryAddOutlinedIcon />
-                    </IconButton>
-                </Box>
-            </div>
-        );
-    }, [diagrams]);
-
     const handleExpandAllVoltageLevelIds = useCallback(
         (diagramId: UUID) => {
             const diagram = diagrams[diagramId];
@@ -283,7 +271,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 return null;
             }
             return (
-                <Box key={diagram.diagramUuid} sx={styles.window}>
+                <Box key={diagram.diagramUuid} sx={styles.card}>
                     <CardHeader
                         title={
                             loadingDiagrams.includes(diagram.diagramUuid)
@@ -294,7 +282,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                         onClose={() => onRemoveItem(diagram.diagramUuid)}
                     />
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
-                        <AlertCustomMessageNode message={globalError || diagramErrors[diagram.diagramUuid]} noMargin />
+                        <>
+                            <AlertCustomMessageNode
+                                message={globalError || diagramErrors[diagram.diagramUuid]}
+                                noMargin
+                                style={styles.alertMessage}
+                            />
+                            <Box sx={styles.diagramContainer} /> {/* Empty container to keep the layout */}
+                        </>
                     ) : (
                         <Box sx={styles.diagramContainer}>
                             {(diagram.type === DiagramType.VOLTAGE_LEVEL ||
@@ -368,59 +363,62 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
         if (savedLayouts) {
-            setLayouts(savedLayouts);
+            setLayouts({ lg: [...initialLayouts.lg, ...savedLayouts.lg] });
         } else {
             setLayouts(initialLayouts);
         }
     }, []);
 
+    const onAddMapCard = useCallback(() => {
+        // TODO setLayouts to add a map card
+        setIsMapCardAdded(true);
+    }, []);
+
     useDiagramsGridLayoutSessionStorage({ layouts, onLoadFromSessionStorage });
 
     return (
-        <>
-            <ResponsiveGridLayout
-                className="layout"
-                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={{
-                    lg: LG_COLUMN_COUNT,
-                    md: MD_SM_COLUMN_COUNT,
-                    sm: MD_SM_COLUMN_COUNT,
-                    xs: XS_XSS_COLUMN_COUNT,
-                    xxs: XS_XSS_COLUMN_COUNT,
-                }}
-                compactType={'horizontal'}
-                onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
-                layouts={layouts}
-                style={{
-                    backgroundColor:
-                        theme.palette.mode === 'light'
-                            ? darken(theme.palette.background.paper, 0.1)
-                            : theme.reactflow.backgroundColor,
-                    flexGrow: 1,
-                    overflow: 'auto',
-                }}
-                draggableHandle=".react-grid-dragHandle"
-                onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
-                    if (e.target) {
-                        (e.target as HTMLElement).style.cursor = 'grabbing';
-                    }
-                }}
-                onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
-                    if (e.target) {
-                        (e.target as HTMLElement).style.cursor = 'default';
-                    }
-                }}
-            >
-                {renderDiagramAdder()}
-                {renderDiagrams()}
-            </ResponsiveGridLayout>
-            <TopBarEquipmentSearchDialog
-                showVoltageLevelDiagram={showVoltageLevelDiagram}
-                isDialogSearchOpen={isDialogSearchOpen}
-                setIsDialogSearchOpen={setIsDialogSearchOpen}
-                disableEventSearch
+        <ResponsiveGridLayout
+            className="layout"
+            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+            cols={{
+                lg: LG_COLUMN_COUNT,
+                md: MD_SM_COLUMN_COUNT,
+                sm: MD_SM_COLUMN_COUNT,
+                xs: XS_XSS_COLUMN_COUNT,
+                xxs: XS_XSS_COLUMN_COUNT,
+            }}
+            margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
+            compactType={'horizontal'}
+            onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
+            layouts={layouts}
+            style={{
+                backgroundColor:
+                    theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
+                flexGrow: 1,
+                paddingRight: theme.spacing(1),
+                overflow: 'auto',
+            }}
+            draggableHandle=".react-grid-dragHandle"
+            onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
+                if (e.target) {
+                    (e.target as HTMLElement).style.cursor = 'grabbing';
+                }
+            }}
+            onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
+                if (e.target) {
+                    (e.target as HTMLElement).style.cursor = 'default';
+                }
+            }}
+            autoSize={false} // otherwise the grid has strange behavior
+        >
+            <DiagramAdder
+                onLoad={handleLoadNad}
+                onSearch={showVoltageLevelDiagram}
+                onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                key={'Adder'}
             />
-        </>
+            {renderDiagrams()}
+        </ResponsiveGridLayout>
     );
 }
 
