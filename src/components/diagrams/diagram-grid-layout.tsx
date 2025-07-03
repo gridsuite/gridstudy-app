@@ -92,8 +92,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 y: 0,
                 w: DEFAULT_WIDTH,
                 h: DEFAULT_HEIGHT,
-                minH: DEFAULT_HEIGHT,
-                minW: DEFAULT_WIDTH,
             };
             new_lg_layouts.push(layoutItem);
             return { lg: new_lg_layouts };
