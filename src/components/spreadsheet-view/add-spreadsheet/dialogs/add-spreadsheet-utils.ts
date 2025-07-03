@@ -119,7 +119,7 @@ const handleSuccess = (
             resetNodeAliases?.(true, nodeAliases);
             newTableDefinition.columns = model.columns.map((col: ColumnDefinitionDto) => ({
                 ...col,
-                dependencies: col?.dependencies?.length ? JSON.parse(JSON.stringify(col.dependencies)) : undefined,
+                dependencies: col?.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
                 visible: true,
                 locked: false,
             }));
@@ -172,7 +172,7 @@ export const addNewSpreadsheet = ({
 }: AddNewSpreadsheetParams) => {
     const columnsDefinition = mapColumnsDto(columns);
     const newTableDefinition = createNewTableDefinition(columnsDefinition, sheetType, tabIndex, tabName);
-    const spreadsheetConfig = createSpreadsheetConfig(columns, globalFilters, sheetType, tabName);
+    const spreadsheetConfig = createSpreadsheetConfig(columnsDefinition, globalFilters, sheetType, tabName);
 
     addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
         .then((uuid: UUID) =>
