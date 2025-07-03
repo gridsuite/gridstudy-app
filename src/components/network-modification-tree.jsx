@@ -31,6 +31,7 @@ import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -95,7 +96,10 @@ const NetworkModificationTree = ({
 
     const updateNodePositions = useCallback(() => {
         if (treeModel && treeModel.treeNodes?.length > 0) {
-            setNodes(getTreeNodesWithUpdatedPositions(treeModel.treeNodes));
+            const [treeNodeWithUpdatedPosition, securityGroupNodes] = getTreeNodesWithUpdatedPositions(
+                treeModel.treeNodes
+            );
+            setNodes([...treeNodeWithUpdatedPosition, ...securityGroupNodes]);
             setEdges([...treeModel.treeEdges]);
         }
     }, [treeModel, setNodes, setEdges]);
@@ -173,7 +177,7 @@ const NetworkModificationTree = ({
 
     /**
      * When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
-     * an ancestor which has siblings.
+     * an ancestor which has siblings, as well as linked labeled groups.
      * To do so, we force the dragged node's positition to stay the same and create a new change for the
      * ancestor, with the ancestor's positions updated by the dragged node's movement.
      * Because a node's position is relative to its parent, by "not moving" the dragged node and "moving"
@@ -186,7 +190,6 @@ const NetworkModificationTree = ({
     const handleNodeDragging = useCallback(
         (changes) => {
             const currentChange = changes[0]; // corresponds to a list of changes affecting the dragged node
-
             const draggedNode = nodesMap.get(currentChange.id);
             const initialDraggedNodeXPosition = draggedNode.position.x;
 
@@ -200,13 +203,13 @@ const NetworkModificationTree = ({
                 ? nodesMap.get(draggedBranchIdRef.current)
                 : getFirstAncestorWithSibling(nodes, nodesMap, draggedNode);
 
+            const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
             if (!firstAncestorWithSibling || firstAncestorWithSibling.id === currentChange.id) {
                 draggedBranchIdRef.current = draggedNode.id;
             } else {
                 // We calculate the movement of the dragged node and apply it to its ancestor instead.
                 const initialAncestorXPosition = firstAncestorWithSibling.position.x;
                 const initialAncestorYPosition = firstAncestorWithSibling.position.y;
-                const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
 
                 // We will move the ancestor instead of the dragged node, so we force the dragged node's X value
                 // to its initial value.
@@ -227,8 +230,32 @@ const NetworkModificationTree = ({
 
                 draggedBranchIdRef.current = firstAncestorWithSibling.id;
             }
+
+            /**
+             * Move labeled groups with dragged nodes
+             */
+
+            // get all moving nodes due to dragNdrop
+            const movingNode = [firstAncestorWithSibling, ...treeModel.getAllChildren(firstAncestorWithSibling.id)];
+
+            // for each of those nodes, check if there is a labeled group attached to it
+            // if there is one, apply the same translation
+            changes.push(
+                ...movingNode
+                    .map((child) => nodesMap.get(child.id + groupIdSuffix))
+                    .filter((securityGroup) => !!securityGroup)
+                    .map((sg) => ({
+                        id: sg.id,
+                        type: currentChange.type,
+                        dragging: currentChange.dragging,
+                        position: {
+                            x: sg.position.x + draggedNodeDeltaX,
+                            y: sg.position.y,
+                        },
+                    }))
+            );
         },
-        [nodes, nodesMap]
+        [nodes, nodesMap, treeModel]
     );
 
     /**

@@ -35,7 +35,6 @@ import {
     getSensitivityAnalysisParameters,
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
-import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
@@ -60,6 +59,7 @@ import {
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     SecurityAnalysisParametersInline,
+    SensitivityAnalysisParametersInline,
     ShortCircuitParametersInLine,
     useParametersBackend,
     ComputingType,
@@ -92,6 +92,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
@@ -282,9 +284,13 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
                 return (
-                    <SensitivityAnalysisParameters
+                    <SensitivityAnalysisParametersInline
+                        studyUuid={studyUuid}
+                        currentNodeUuid={currentNodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.nonEvacuatedEnergyParamsTabValue:
@@ -339,13 +345,15 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         loadFlowParametersBackend,
         enableDeveloperMode,
         securityAnalysisParametersBackend,
+        currentNodeUuid,
+        currentRootNetworkUuid,
         sensitivityAnalysisBackend,
-        networkVisualizationsParameters,
         nonEvacuatedEnergyBackend,
         useNonEvacuatedEnergyParameters,
         shortCircuitParameters,
         user,
         useStateEstimationParameters,
+        networkVisualizationsParameters,
         voltageInitParameters,
     ]);
 
