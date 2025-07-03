@@ -22,7 +22,9 @@ const keyToKeepInSessionStorage = [
     'voltageLevelIds',
     'voltageLevelToExpandIds',
     'voltageLevelToOmitIds',
-    // TODO CHARLY ajouter les positions
+    // TODO CHARLY Store the NAD's positions here
+    // TODO CHARLY Check with Sylvain if we need to store the name here or not
+    'name',
     'elementUuid',
     'elementType',
     'elementName', // TODO this is the name of the NAD from element, it could change in explore then it's not updated in session storage

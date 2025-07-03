@@ -170,7 +170,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             {
                 scalingFactor: props.svgScalingFactor,
                 voltageLevelIds: props.svgVoltageLevels ?? [],
-                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [], // TODO CHARLY ici on trouve les positions
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
             },
             directoryData.name,
             directoryData.description,
