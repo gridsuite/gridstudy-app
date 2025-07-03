@@ -13,7 +13,7 @@ import { OperationalLimitsGroup } from '../../../services/network-modification-t
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
     optionsFormName: string;
-    label: string;
+    label?: string;
 }
 
 export const SelectedOperationalLimitGroup = ({
@@ -40,7 +40,7 @@ export const SelectedOperationalLimitGroup = ({
             <AutocompleteInput
                 name={selectedFormName}
                 options={opLimitsGroupsNames}
-                label={label}
+                label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
                 allowNewValue
             />

@@ -63,7 +63,6 @@ import {
     getHeaderValidationSchema,
     LineCreationDialogTab,
 } from './line-creation-dialog-utils';
-import { LimitsPane } from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getAllLimitsFormData,
@@ -86,6 +85,7 @@ import {
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
+import { LimitsPaneCreation } from '../../../limits/limits-pane-creation.js';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -395,7 +395,7 @@ const LineCreationDialog = ({
                 </Box>
 
                 <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
-                    <LimitsPane />
+                    <LimitsPaneCreation />
                 </Box>
 
                 <EquipmentSearchDialog
