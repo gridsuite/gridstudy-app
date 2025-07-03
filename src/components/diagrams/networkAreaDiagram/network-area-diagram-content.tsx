@@ -98,6 +98,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
             // It is possible to not have scalingFactors, so we only save the nodes movements if we have the needed value.
+            // TODO CHARLY here we should update the NAD's positions in the use-diagram-model DTO instead of storing it in the reducer
             if (!!props.svgScalingFactor) {
                 dispatch(storeNetworkAreaDiagramNodeMovement(diagramId, equipmentId, x, y, props.svgScalingFactor));
             }
@@ -234,7 +235,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             }
 
             // Repositioning the previously moved nodes
-            const correspondingMovements = nadNodeMovementsRef.current.filter(
+            const correspondingMovements = nadNodeMovementsRef.current.filter( // TODO CHARLY I think the old reducer storage thing for positions is not needed anymore
                 (movement) => movement.diagramId === diagramId
             );
             if (correspondingMovements.length > 0) {
