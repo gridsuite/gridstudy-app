@@ -235,7 +235,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             }
 
             // Repositioning the previously moved nodes
-            const correspondingMovements = nadNodeMovementsRef.current.filter( // TODO CHARLY I think the old reducer storage thing for positions is not needed anymore
+            const correspondingMovements = nadNodeMovementsRef.current.filter(
+                // TODO CHARLY I think the old reducer storage thing for positions is not needed anymore
                 (movement) => movement.diagramId === diagramId
             );
             if (correspondingMovements.length > 0) {
