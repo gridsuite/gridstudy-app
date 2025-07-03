@@ -110,8 +110,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 y: 0,
                 w: DEFAULT_WIDTH,
                 h: DEFAULT_HEIGHT,
-                minH: DEFAULT_HEIGHT,
-                minW: DEFAULT_WIDTH,
             };
             new_lg_layouts.push(layoutItem);
             return { lg: new_lg_layouts };
@@ -346,6 +344,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 xs: XS_XSS_COLUMN_COUNT,
                 xxs: XS_XSS_COLUMN_COUNT,
             }}
+            margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
             compactType={'horizontal'}
             onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
             layouts={layouts}
@@ -353,6 +352,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 backgroundColor:
                     theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
                 flexGrow: 1,
+                paddingRight: theme.spacing(1),
                 overflow: 'auto',
             }}
             draggableHandle=".react-grid-dragHandle"
@@ -366,6 +366,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     (e.target as HTMLElement).style.cursor = 'default';
                 }
             }}
+            autoSize={false} // otherwise the grid has strange behavior
         >
             <DiagramAdder
                 onLoad={handleLoadNadFromElement}
