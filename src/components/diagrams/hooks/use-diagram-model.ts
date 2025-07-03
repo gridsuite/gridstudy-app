@@ -7,7 +7,14 @@
 
 import { UUID } from 'crypto';
 import { useDiagramEventListener } from './use-diagram-event-listener';
-import { Diagram, DiagramParams, DiagramType, SubstationDiagram, VoltageLevelDiagram } from '../diagram.type';
+import {
+    Diagram,
+    DiagramParams,
+    DiagramType,
+    NetworkAreaDiagram,
+    SubstationDiagram,
+    VoltageLevelDiagram
+} from '../diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSvg, getNetworkAreaDiagramUrl } from 'services/study';
 import { useDiagramNotificationsListener } from './use-diagram-notifications-listener';
@@ -23,7 +30,7 @@ import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { DiagramAdditionalMetadata } from '../diagram-common';
-import {buildPositionsFromNadMetadata, mergePositions} from "../diagram-utils";
+import { mergePositions} from "../diagram-utils";
 import {DiagramMetadata} from "@powsybl/network-viewer";
 
 type UseDiagramModelProps = {
@@ -258,12 +265,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
-                                    ...new Set([...diagrams[diagram.diagramUuid].voltageLevelIds, ...vlIdsFromSvg]),
+                                    ...new Set([...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds, ...vlIdsFromSvg]),
                                 ],
-                                voltageLevelToOmitIds: diagrams[diagram.diagramUuid].voltageLevelToOmitIds.filter(
-                                    (vlId : string) => !vlIdsFromSvg.includes(vlId)
+                                voltageLevelToOmitIds: (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelToOmitIds
+                                    .filter((vlId : string) => !vlIdsFromSvg.includes(vlId)
                                 ),
-                                positions : mergePositions(diagrams[diagram.diagramUuid].positions, data.metadata as DiagramMetadata)
+                                positions : mergePositions(
+                                    (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions,
+                                    data.metadata as DiagramMetadata)
                             }),
                         };
                         return newDiagrams;
