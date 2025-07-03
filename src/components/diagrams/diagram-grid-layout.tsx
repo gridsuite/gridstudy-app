@@ -376,6 +376,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 }
             }}
             resizeHandle={<CustomResizeHandle />}
+            margin={[8, 8]}
         >
             <DiagramAdder
                 onLoad={handleLoadNadFromElement}
