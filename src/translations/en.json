@@ -1127,7 +1127,7 @@
     "GenerationAndLoad": "Generation and load",
     "InsertModificationFrom": "Insert from GridExplore",
     "SaveToGridexplore": "Save to GridExplore",
-    "GenerateFromGridexplore": "Generate from GridExplore",
+    "AddFromGridexplore": "Add from GridExplore",
     "SaveToGridexploreError": "An error occurred while saving to GridExplore",
     "diagramConfigCreationMsg": "Network area diagram created in {directory}",
     "diagramConfigUpdateMsg": "Network area diagram {item} updated",
@@ -1467,5 +1467,7 @@
     "loadFlowModification": "Loadflow modification applied",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
-    "labeledGroupSecurity": "Security"
+    "labeledGroupSecurity": "Security",
+    "OpenMapCard": "Add the map",
+    "AddNewCard": "Add a new image"
 }
