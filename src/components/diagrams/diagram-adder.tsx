@@ -65,8 +65,8 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
-        if (selectedElements.length > 0) {
-            onLoad(selectedElements[0].id, selectedElements[0].type!, selectedElements[0].name);
+        if (selectedElements.length > 0 && selectedElements[0].type) {
+            onLoad(selectedElements[0].id, selectedElements[0].type, selectedElements[0].name);
         }
         setIsLoadSelectorOpen(false);
     };
