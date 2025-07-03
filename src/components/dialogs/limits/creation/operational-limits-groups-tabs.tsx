@@ -20,12 +20,12 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { OperationalLimitsGroup } from '../../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
-import { isBlankOrEmpty } from '../../utils/validation-functions';
+import { isBlankOrEmpty } from '../../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 

@@ -13,16 +13,16 @@ import {
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from 'components/utils/field-constants';
-import { LimitsSidePane } from './limits-side-pane';
-import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
+import { LimitsSidePane } from '../limits-side-pane';
+import { SelectedOperationalLimitGroup } from '../selected-operational-limit-group.js';
 import { useCallback, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { CurrentLimits, OperationalLimitsGroup } from '../../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
-import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
-import { styles } from '../dialog-utils';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import GridSection from '../../commons/grid-section';
+import { styles } from '../../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 
 const OperationalLimitGroupSelect = ({

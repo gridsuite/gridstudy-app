@@ -85,7 +85,7 @@ import {
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
-import { LimitsPaneCreation } from '../../../limits/limits-pane-creation.js';
+import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation.tsx';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

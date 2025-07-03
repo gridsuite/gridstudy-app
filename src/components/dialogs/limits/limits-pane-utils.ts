@@ -77,15 +77,18 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         }),
 });
 
-const limitsValidationSchema = (id: string, isModification: boolean = false) => {
+const limitsValidationSchema = (id: string) => {
     const selectedCurrentLimitsSchema = {
-        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(isModification)),
-        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(true)),
+        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(true)),
     };
+    return { [id]: yup.object().shape(selectedCurrentLimitsSchema) };
+};
 
+const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
+            .array(yup.object().shape(limitsGroupValidationSchema(false)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
                 const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
@@ -93,13 +96,11 @@ const limitsValidationSchema = (id: string, isModification: boolean = false) => 
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
     };
-    // for now modifications only use the selected limits set while the creations use complete limits sets
-    // => this is temporary and will be removed once the modification use complete limit sets
-    return { [id]: yup.object().shape(isModification ? selectedCurrentLimitsSchema : completeLimitsGroupSchema) };
+    return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
 
 export const getLimitsValidationSchema = (isModification: boolean = false, id: string = LIMITS) => {
-    return limitsValidationSchema(id, isModification);
+    return isModification ? limitsValidationSchema(id) : limitsValidationSchemaCreation(id);
 };
 
 const limitsEmptyFormData = (id: string, onlySelectedLimits = true) => {

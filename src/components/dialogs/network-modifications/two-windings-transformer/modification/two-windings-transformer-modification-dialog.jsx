@@ -88,7 +88,7 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
-import { LimitsPane } from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/modification/limits-pane.js';
 import {
     addModificationTypeToTemporaryLimits,
     completeCurrentLimitsGroupsToOnlySelected,

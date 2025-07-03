@@ -10,7 +10,7 @@ import {
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -18,7 +18,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { OperationalLimitsGroup } from '../../../../services/network-modification-types';
 import { PopoverProps } from '@mui/material/Popover';
 
 export interface LimitsGroupsContextualMenuProps {
