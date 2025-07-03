@@ -282,6 +282,7 @@ import { RootNetworkMetadata } from 'components/graph/menus/network-modification
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import {DiagramConfigPosition} from "../services/explore";
 
 // Redux state
 export type StudyUpdated = {
@@ -365,6 +366,7 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
     voltageLevelToOmitIds: string[];
+    positions: DiagramConfigPosition[]
 };
 
 export type DiagramEvent =
@@ -1219,6 +1221,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 voltageLevelIds: [action.id as UUID],
                 voltageLevelToExpandIds: [],
                 voltageLevelToOmitIds: [],
+                positions : [],
             };
         }
 
@@ -1243,6 +1246,7 @@ export const reducer = createReducer(initialState, (builder) => {
             voltageLevelIds: uniqueIds as UUID[],
             voltageLevelToExpandIds: [],
             voltageLevelToOmitIds: [],
+            positions : [],
         };
 
         // Switch to the grid layout in order to see the newly opened diagram
