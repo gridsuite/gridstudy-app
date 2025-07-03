@@ -255,7 +255,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: vlIds,
-                                voltageLevelToOmitIds: [],
+                                voltageLevelToOmitIds: diagrams[diagram.diagramUuid].voltageLevelToOmitIds.filter(
+                                    (vlId) => !vlIds.includes(vlId)
+                                ),
                             }),
                         };
                         return newDiagrams;
