@@ -8,7 +8,7 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Box, Button, ButtonProps, Grid, Switch, Typography, TypographyProps } from '@mui/material';
-import { parametersStyles } from '@gridsuite/commons-ui';
+import { parametersStyles } from './util/styles';
 
 interface LabelledButtonProps extends ButtonProps {
     callback: React.MouseEventHandler<HTMLButtonElement>;

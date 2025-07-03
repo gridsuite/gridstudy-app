@@ -129,15 +129,10 @@ export function fetchNodeReportLogs(
     page?: number,
     size?: number
 ) {
-    let url;
-    if (isGlobalLogs) {
-        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs?';
-    } else {
-        url =
-            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/report/' +
-            reportId +
-            '/logs?';
+    let url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs?';
+
+    if (!isGlobalLogs) {
+        url += 'reportId=' + safeEncodeURIComponent(reportId);
     }
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -159,14 +154,16 @@ export function fetchLogMatches(
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
+    isGlobalLogs: boolean,
     searchTerm: string,
     pageSize: number
 ) {
     let url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-        '/report/' +
-        reportId +
-        '/logs/search?';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs/search?';
+
+    if (!isGlobalLogs) {
+        url += 'reportId=' + safeEncodeURIComponent(reportId);
+    }
 
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -188,17 +185,12 @@ export function fetchNodeSeverities(
     reportId: string | null,
     isGlobalLogs: boolean
 ) {
-    let url;
-    if (isGlobalLogs) {
-        url =
-            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/report/aggregated-severities';
-    } else {
-        url =
-            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/report/' +
-            reportId +
-            '/aggregated-severities';
+    let url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+        '/report/aggregated-severities';
+
+    if (!isGlobalLogs) {
+        url += '?reportId=' + safeEncodeURIComponent(reportId);
     }
     return backendFetchJson(url);
 }
