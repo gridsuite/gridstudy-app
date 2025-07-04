@@ -181,7 +181,6 @@ const SubstationModificationDialog = ({
                 titleId="ModifySubstation"
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
