@@ -7,11 +7,10 @@
 
 import {
     ID,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
+    OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,7 +18,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { OperationalLimitsGroup } from '../../../../services/network-modification-types';
 import { PopoverProps } from '@mui/material/Popover';
 
 export interface LimitsGroupsContextualMenuProps {
@@ -53,10 +52,10 @@ export function LimitsGroupsContextualMenu({
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const { append: appendToLimitsGroups1, remove: removeLimitsGroups1 } = useFieldArray({
-        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`,
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const { append: appendToLimitsGroups2, remove: removeLimitsGroups2 } = useFieldArray({
-        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`,
+        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const { getValues, setValue } = useFormContext();
 
@@ -83,7 +82,7 @@ export function LimitsGroupsContextualMenu({
         let newName: string = '';
         if (indexSelectedLimitSet1 !== null) {
             const duplicatedLimits1: OperationalLimitsGroup = getValues(
-                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}[${indexSelectedLimitSet1}]`
+                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${indexSelectedLimitSet1}]`
             );
             newName = duplicatedLimits1.id + '_COPY';
             const newLimitsGroup1: OperationalLimitsGroup = {
@@ -95,7 +94,7 @@ export function LimitsGroupsContextualMenu({
 
         if (indexSelectedLimitSet2 !== null) {
             const duplicatedLimits2: OperationalLimitsGroup = getValues(
-                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}[${indexSelectedLimitSet2}]`
+                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${indexSelectedLimitSet2}]`
             );
             newName = duplicatedLimits2.id + '_COPY';
             const newLimitsGroup2: OperationalLimitsGroup = {
@@ -104,7 +103,7 @@ export function LimitsGroupsContextualMenu({
             };
             appendToLimitsGroups2(newLimitsGroup2);
         }
-        startEditingLimitsGroup(getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`).length - 1, newName);
+        startEditingLimitsGroup(getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`).length - 1, newName);
     };
 
     return (
