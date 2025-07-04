@@ -31,27 +31,26 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: diagramEvent.voltageLevelId,
+                    name: '',
                 });
             } else if (diagramEvent.diagramType === DiagramType.SUBSTATION) {
                 createDiagram({
                     diagramUuid: v4() as UUID,
                     type: DiagramType.SUBSTATION,
                     substationId: diagramEvent.substationId,
+                    name: '',
                 });
             } else if (diagramEvent.diagramType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 createDiagram({
                     diagramUuid: v4() as UUID,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagramEvent.name,
+                    nadConfigUuid: diagramEvent.nadConfigUuid,
+                    filterUuid: diagramEvent.filterUuid,
                     voltageLevelIds: diagramEvent.voltageLevelIds,
-                    depth: 0,
-                });
-            } else if (diagramEvent.diagramType === DiagramType.NAD_FROM_ELEMENT) {
-                createDiagram({
-                    diagramUuid: v4() as UUID,
-                    type: DiagramType.NAD_FROM_ELEMENT,
-                    elementUuid: diagramEvent.elementUuid,
-                    elementType: diagramEvent.elementType,
-                    elementName: diagramEvent.elementName,
+                    voltageLevelToExpandIds: diagramEvent.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagramEvent.voltageLevelToOmitIds,
+                    positions: diagramEvent.positions,
                 });
             }
         },

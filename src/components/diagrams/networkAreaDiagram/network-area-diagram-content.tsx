@@ -16,7 +16,12 @@ import {
     styles,
     NAD_ZOOM_LEVELS,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
+import {
+    NetworkAreaDiagramViewer,
+    DiagramMetadata,
+    OnToggleNadHoverCallbackType,
+    OnSelectNodeCallbackType,
+} from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
@@ -31,6 +36,8 @@ import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMe
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
+
+import NodeContextMenu from './node-context-menu';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -50,11 +57,24 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onExpandVoltageLevel: (vlId: string) => void;
+    readonly onExpandAllVoltageLevelIds: () => void;
+    readonly onHideVoltageLevel: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, diagramId } = props;
+    const {
+        diagramSizeSetter,
+        visible,
+        isEditNadMode,
+        onToggleEditNadMode,
+        onLoadNad,
+        diagramId,
+        onExpandVoltageLevel,
+        onExpandAllVoltageLevelIds,
+        onHideVoltageLevel,
+    } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -71,10 +91,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const [menuAnchorPosition, setMenuAnchorPosition] = useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [selectedVoltageLevelId, setSelectedVoltageLevelId] = useState<string>();
+    const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
             // It is possible to not have scalingFactors, so we only save the nodes movements if we have the needed value.
+            // TODO CHARLY here we should update the NAD's positions in the use-diagram-model DTO instead of storing it in the reducer
             if (!!props.svgScalingFactor) {
                 dispatch(storeNetworkAreaDiagramNodeMovement(diagramId, equipmentId, x, y, props.svgScalingFactor));
             }
@@ -134,6 +158,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [setShouldDisplayTooltip, setAnchorPosition]
     );
 
+    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
+        if (mousePosition) {
+            setSelectedVoltageLevelId(equipmentId);
+            setShouldDisplayMenu(true);
+            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+        }
+    }, []);
+
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
@@ -177,7 +209,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
-                null,
+                OnLeftClickCallback,
                 isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
@@ -204,6 +236,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             // Repositioning the previously moved nodes
             const correspondingMovements = nadNodeMovementsRef.current.filter(
+                // TODO CHARLY I think the old reducer storage thing for positions is not needed anymore
                 (movement) => movement.diagramId === diagramId
             );
             if (correspondingMovements.length > 0) {
@@ -248,8 +281,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onMoveTextNodeCallback,
         isEditNadMode,
         diagramId,
+        OnLeftClickCallback,
     ]);
-
+    const closeMenu = () => {
+        setMenuAnchorPosition(null);
+        setShouldDisplayMenu(false);
+    };
     /**
      * RENDER
      */
@@ -267,6 +304,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus={loadFlowStatus}
                 />
             )}
+            {shouldDisplayMenu && (
+                <NodeContextMenu
+                    open={!!menuAnchorPosition}
+                    anchorPosition={menuAnchorPosition}
+                    onClose={closeMenu}
+                    onExpandItem={onExpandVoltageLevel}
+                    onHideItem={onHideVoltageLevel}
+                    selectedItemId={selectedVoltageLevelId}
+                />
+            )}
             <Box
                 ref={svgRef}
                 sx={mergeSx(
@@ -277,9 +324,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
-                onLoad={onLoadNadFromElement}
+                onLoad={onLoadNad}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
+                onAugmentDepth={onExpandAllVoltageLevelIds}
             />
         </>
     );

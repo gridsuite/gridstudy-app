@@ -11,7 +11,6 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
-    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -283,6 +282,7 @@ import { RootNetworkMetadata } from 'components/graph/menus/network-modification
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { DiagramConfigPosition } from '../services/explore';
 
 // Redux state
 export type StudyUpdated = {
@@ -360,22 +360,20 @@ type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
 
 type CreateNADDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
+    nadConfigUuid: UUID | undefined;
+    filterUuid: UUID | undefined;
+    name: string;
     voltageLevelIds: string[];
-};
-
-type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_ELEMENT;
-    elementUuid: UUID;
-    elementType: ElementType;
-    elementName: string;
+    voltageLevelToExpandIds: string[];
+    voltageLevelToOmitIds: string[];
+    positions: DiagramConfigPosition[];
 };
 
 export type DiagramEvent =
     | RemoveDiagramEvent
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
-    | CreateNADDiagramEvent
-    | CreateNADFromElementDiagramEvent;
+    | CreateNADDiagramEvent;
 
 export type NadNodeMovement = {
     diagramId: UUID;
@@ -1217,7 +1215,13 @@ export const reducer = createReducer(initialState, (builder) => {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
+                name: '',
+                nadConfigUuid: undefined,
+                filterUuid: undefined,
                 voltageLevelIds: [action.id as UUID],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
+                positions: [],
             };
         }
 
@@ -1236,7 +1240,13 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
+            name: '',
+            nadConfigUuid: undefined,
+            filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
+            voltageLevelToExpandIds: [],
+            voltageLevelToOmitIds: [],
+            positions: [],
         };
 
         // Switch to the grid layout in order to see the newly opened diagram
