@@ -21,7 +21,7 @@ import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-l
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import NetworkMapTab from 'components/network/network-map-tab';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,6 +29,8 @@ import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
+import WolrdSvg from 'images/world.svg?react';
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -217,20 +219,19 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             <Box key={'MapSnippet'} sx={styles.card}>
                 <CardHeader title={'MapSnippet'} onClose={() => setIsMapCardAdded(false)} />
                 <Box sx={styles.diagramContainer}>
-                    <Tooltip title={<FormattedMessage id="OpenMapFullscreen" />}>
-                        <span>
-                            <IconButton
-                                disabled={mapOpen}
-                                onClick={(e) => {
-                                    setMapOpen(true);
-                                }}
-                            >
-                                <Fullscreen />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
+                    <WolrdSvg
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            cursor: 'pointer',
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setMapOpen(true);
+                        }}
+                    />
                     <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
-                        <AppBar sx={{ position: 'abolute' }}>
+                        <AppBar sx={{ position: 'absolute' }}>
                             <Toolbar>
                                 <IconButton
                                     // sx={{ position: 'abolute' }}
