@@ -24,6 +24,7 @@ import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
+import CustomResizeHandle from './custom-resize-handle';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -38,6 +39,14 @@ const styles = {
     card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
+        '& .react-resizable-handle, .card-header-close-button': {
+            visibility: 'hidden',
+        },
+        '&:hover': {
+            '& .react-resizable-handle, .card-header-close-button': {
+                visibility: 'visible',
+            },
+        },
     }),
     alertMessage: (theme: Theme) => ({
         borderRadius: '0 0 0 0',
@@ -65,7 +74,7 @@ const styles = {
 const LG_COLUMN_COUNT = 12;
 const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
 const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
-const DEFAULT_WIDTH = 3;
+const DEFAULT_WIDTH = 2;
 const DEFAULT_HEIGHT = 2;
 
 const initialLayouts = {
@@ -367,6 +376,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 }
             }}
             autoSize={false} // otherwise the grid has strange behavior
+            resizeHandle={<CustomResizeHandle />}
         >
             <DiagramAdder
                 onLoad={handleLoadNadFromElement}
