@@ -9,9 +9,9 @@ import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
-import { AppBar, Box, Dialog, IconButton, Theme, Toolbar, Tooltip, Typography, useTheme } from '@mui/material';
+import { AppBar, Box, Dialog, IconButton, Theme, Toolbar, Typography, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
-import { Close, Fullscreen } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
@@ -21,7 +21,7 @@ import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-l
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
@@ -30,6 +30,8 @@ import NetworkMapTab from 'components/network/network-map-tab';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
+import WolrdSvg from 'images/world.svg?react';
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -225,42 +227,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         return (
             <div key={'MapSnippet'} style={{ display: 'flex', flexDirection: 'column' }}>
                 <CardHeader title={'MapSnippet'} onClose={() => setIsMapCardAdded(false)} />
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        flexGrow: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Tooltip title={<FormattedMessage id="OpenMapFullscreen" />}>
-                        <span>
-                            <IconButton
-                                disabled={mapOpen}
-                                onClick={(e) => {
-                                    setMapOpen(true);
-                                }}
-                            >
-                                <Fullscreen />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
-                    <Dialog
-                        open={mapOpen}
-                        onClose={handleCloseMap}
-                        fullScreen
-                        // fullWidth
-                        // maxWidth="xl"
-                        // PaperProps={{
-                        //     sx: {
-                        //         //   width: "50%",
-                        //         minHeight: "100%",
-                        //         flexGrow: 1,
-                        //     },
-                        // }}
-                    >
-                        <AppBar sx={{ position: 'abolute' }}>
+                <Box sx={styles.diagramContainer}>
+                    <WolrdSvg
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            cursor: 'pointer',
+                        }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setMapOpen(true);
+                        }}
+                    />
+                    <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
+                        <AppBar sx={{ position: 'absolute' }}>
                             <Toolbar>
                                 <IconButton
                                     // sx={{ position: 'abolute' }}
