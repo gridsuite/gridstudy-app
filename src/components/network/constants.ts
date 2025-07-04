@@ -61,7 +61,7 @@ export const SIDE = {
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
 } as const;
 
-export const APPLICATION_SIDE = {
+export const APPLICABILITY = {
     EQUIPMENT: { id: 'EQUIPMENT', label: 'Equipment' },
     SIDE1: { id: 'SIDE1', label: 'Side1' },
     SIDE2: { id: 'SIDE2', label: 'Side2' },

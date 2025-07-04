@@ -18,7 +18,7 @@ import { SelectedOperationalLimitGroup } from '../selected-operational-limit-gro
 import { useCallback, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../../services/network-modification-types';
-import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
+import { OperationalLimitsGroupsTabs } from '../operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import GridSection from '../../commons/grid-section';

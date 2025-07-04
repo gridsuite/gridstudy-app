@@ -15,6 +15,7 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
+import { APPLICABILITY } from '../components/network/constants';
 
 export enum OperationType {
     SET = 'SET',
@@ -281,6 +282,7 @@ export interface CurrentLimits {
     id?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
+    applicability?: string;
 }
 
 export interface SubstationModificationInfo {

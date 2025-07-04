@@ -182,7 +182,7 @@ const LineCreationDialog = ({
                         )),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(line.currentLimits1),
+                    [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(line.currentLimits),
                     [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
                     [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),

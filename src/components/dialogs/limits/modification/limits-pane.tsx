@@ -7,10 +7,10 @@
 
 import { Grid } from '@mui/material';
 import { CURRENT_LIMITS_1, CURRENT_LIMITS_2, LIMITS } from 'components/utils/field-constants';
-import { LimitsSidePane } from './limits-side-pane';
-import { CurrentLimits } from '../../../services/network-modification-types';
+import { LimitsSidePane } from '../limits-side-pane';
+import { CurrentLimits } from '../../../../services/network-modification-types';
 import { tabStyles } from 'components/utils/tab-utils';
-import { CurrentTreeNode } from '../../graph/tree-node.type';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
 
 export interface LimitsPaneProps {
     id?: string;

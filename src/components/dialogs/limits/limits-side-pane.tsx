@@ -16,6 +16,7 @@ import {
     SelectInput,
 } from '@gridsuite/commons-ui';
 import {
+    APPLICABIlITY,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -33,12 +34,13 @@ import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import GridSection from '../commons/grid-section';
-import { APPLICATION_SIDE } from '../../network/constants';
+import { APPLICABILITY } from '../../network/constants';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
+    applicabilityPreviousValue?: string;
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
@@ -49,6 +51,7 @@ export function LimitsSidePane({
     limitsGroupFormName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
+    applicabilityPreviousValue,
     clearableFields,
     currentNode,
     onlySelectedLimitsGroup,
@@ -174,21 +177,6 @@ export function LimitsSidePane({
         [getValues, temporaryLimitHasPreviousValue]
     );
 
-    const permanentCurrentLimitField = useMemo(
-        () => (
-            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
-                <FloatInput
-                    name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
-                    label="PermanentCurrentLimitText"
-                    adornment={AmpereAdornment}
-                    previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                    clearable={clearableFields}
-                />
-            </Box>
-        ),
-        [limitsGroupFormName, clearableFields, permanentCurrentLimitPreviousValue]
-    );
-
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
             const temporaryLimits = getValues(arrayFormName);
@@ -205,6 +193,8 @@ export function LimitsSidePane({
         [currentNode, getValues]
     );
 
+    console.log('value : ', getValues(`${limitsGroupFormName}`));
+
     return (
         <Box sx={{ p: 2 }}>
             {!onlySelectedLimitsGroup && (
@@ -216,8 +206,9 @@ export function LimitsSidePane({
                         </Grid>
                         <Grid item xs={2}>
                             <SelectInput
-                                options={Object.values(APPLICATION_SIDE)}
-                                name=""
+                                options={Object.values(APPLICABILITY)}
+                                name={`${limitsGroupFormName}.${APPLICABIlITY}`}
+                                previousValue={applicabilityPreviousValue}
                                 sx={{ flexGrow: 1 }}
                                 size="small"
                             />
@@ -228,7 +219,15 @@ export function LimitsSidePane({
             <Box>
                 <LimitsChart limitsGroupFormName={limitsGroupFormName} />
             </Box>
-            {permanentCurrentLimitField}
+            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
+                <FloatInput
+                    name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
+                    label="PermanentCurrentLimitText"
+                    adornment={AmpereAdornment}
+                    previousValue={permanentCurrentLimitPreviousValue ?? undefined}
+                    clearable={clearableFields}
+                />
+            </Box>
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
