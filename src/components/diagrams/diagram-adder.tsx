@@ -52,11 +52,12 @@ interface DiagramAdderProps extends ReactGridLayoutCustomChildComponentProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     onSearch: (element: EquipmentInfos) => void;
     onMap?: () => void;
+    onMapCard?: () => void;
     key: string;
 }
 
 export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLDivElement>) => {
-    const { onLoad, onSearch, onMap, ...reactGridLayoutCustomChildComponentProps } = props;
+    const { onLoad, onSearch, onMap, onMapCard, ...reactGridLayoutCustomChildComponentProps } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
 
     const intl = useIntl();
@@ -90,6 +91,13 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                         <IconButton onClick={() => setIsDialogSearchOpen(true)}>
                             <Search />
                         </IconButton>
+                    </Tooltip>
+                    <Tooltip title={<FormattedMessage id="OpenMapCard" />}>
+                        <span>
+                            <IconButton disabled={!onMapCard} onClick={onMapCard}>
+                                <Public />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                     <Tooltip title={<FormattedMessage id="OpenMapCard" />}>
                         <span>
