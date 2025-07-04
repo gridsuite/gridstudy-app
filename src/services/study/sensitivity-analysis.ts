@@ -17,6 +17,7 @@ import {
     SensitivityResultFilterOptions,
 } from './sensitivity-analysis.type';
 import { FilterConfig } from '../../types/custom-aggrid-types';
+import { GlobalFilters } from 'components/results/common/global-filter/global-filter-types';
 
 const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
@@ -62,7 +63,8 @@ export function fetchSensitivityAnalysisResult(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     selector: any,
-    filters: FilterConfig[]
+    filters: FilterConfig[],
+    globalFilters: GlobalFilters | undefined
 ): Promise<SensitivityResult | null> {
     console.info(
         `Fetching sensitivity analysis on ${studyUuid}  for root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
@@ -74,6 +76,9 @@ export function fetchSensitivityAnalysisResult(
 
     if (filters?.length) {
         urlSearchParams.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
