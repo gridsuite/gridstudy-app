@@ -17,7 +17,7 @@ import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
 import DiagramGridLayout from './diagrams/diagram-grid-layout';
-import { Box } from '@mui/material';
+import { Box, darken, useTheme } from '@mui/material';
 
 const styles = {
     map: {
@@ -49,6 +49,7 @@ const MapViewer = ({
     onTableEquipementChanged,
     onChangeTab,
 }) => {
+    const theme = useTheme();
     const dispatch = useDispatch();
 
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
@@ -90,12 +91,7 @@ const MapViewer = ({
                             studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
-                        height: '100%',
-                        flexBasis:
-                            studyDisplayMode === StudyDisplayMode.HYBRID ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                                ? '50%'
-                                : '100%',
+                        flexGrow: 1,
                     }}
                 >
                     <ReactFlowProvider>
@@ -114,9 +110,14 @@ const MapViewer = ({
                             studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
-                        height: '100%',
-                        flexDirection: 'column',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE ? '50%' : '100%',
+                        flexGrow: 1,
+                        // Hack to put a padding at bottom of the diagram grid layout,
+                        paddingBottom: theme.spacing(1),
+                        backgroundColor:
+                            theme.palette.mode === 'light'
+                                ? darken(theme.palette.background.paper, 0.1)
+                                : theme.reactflow.backgroundColor,
+                        // end of hack
                     }}
                 >
                     <DiagramGridLayout
@@ -135,8 +136,7 @@ const MapViewer = ({
                             studyDisplayMode === StudyDisplayMode.MAP || studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? 'flex'
                                 : 'none',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
-                        height: '100%',
+                        flexGrow: 1,
                     }}
                 >
                     <Box

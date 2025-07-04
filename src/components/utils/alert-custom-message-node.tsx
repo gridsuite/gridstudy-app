@@ -6,6 +6,7 @@
  */
 
 import { mergeSx } from '@gridsuite/commons-ui';
+import { Theme } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
 
@@ -20,13 +21,14 @@ const styles = {
 interface AlertCustomMessageNodeProps {
     message: string;
     noMargin?: boolean;
+    style?: React.CSSProperties | ((theme: Theme) => React.CSSProperties);
 }
 
 const AlertCustomMessageNode = (props: AlertCustomMessageNodeProps) => {
-    const { noMargin = false, message } = props;
+    const { noMargin = false, message, style } = props;
 
     return (
-        <Alert sx={mergeSx(!noMargin ? styles.customMessageNode : undefined)} severity="warning">
+        <Alert sx={mergeSx(!noMargin ? styles.customMessageNode : undefined, style)} severity="warning">
             <FormattedMessage id={message} />
         </Alert>
     );

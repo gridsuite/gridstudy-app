@@ -29,3 +29,4 @@ Notes :
 - We need to exclude some packages for now :
     - `@mapbox/jsonlint-lines-primitives@2.0.2` is a special license
     - `cartocolor@4.0.2` is Creative Commons but not correctly described in the package
+    - `rw@0.1.4` is a BSD but not correctly described in the package ("BSD*")

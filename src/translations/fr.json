@@ -72,7 +72,7 @@
     "CBAll": "Tous",
     "CBNone": "Aucun",
     "Map": "Carte",
-     "Tree": "Arbre",
+    "Tree": "Arbre",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
     "NoneUpcomingOverload": "Aucune",
@@ -1123,7 +1123,7 @@
     "GenerationAndLoad": "Production et consommation",
     "InsertModificationFrom": "Insérer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
-    "GenerateFromGridexplore": "Générer à partir de GridExplore",
+    "AddFromGridexplore": "Ajouter depuis GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
@@ -1463,6 +1463,9 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
-    "OpenMapCard": "Ajouter la carte géographique à la grille",
-    "OpenMapFullscreen": "Ouvrir la carte en plein écran"
+    "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
+    "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
+    "OpenMapCard": "Ajouter la carte géographique",
+    "OpenMapFullscreen": "Ouvrir la carte en plein écran",
+    "AddNewCard": "Ajouter une nouvelle image"
 }
