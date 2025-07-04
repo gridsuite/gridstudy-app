@@ -121,12 +121,12 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
                     </Grid>
                     <Grid item xs>
                         <SelectInput
-                            options={Object.values(TABLES_TYPES).map((equipmentType) => ({
-                                id: equipmentType,
-                                label: equipmentType,
+                            options={Object.values(TABLES_TYPES).map((elementType) => ({
+                                id: elementType,
+                                label: elementType,
                             }))}
                             name={EQUIPMENT_TYPE_FIELD}
-                            label="spreadsheet/create_new_spreadsheet/equipment_type"
+                            label="spreadsheet/create_new_spreadsheet/element_type"
                             size="small"
                         />
                     </Grid>

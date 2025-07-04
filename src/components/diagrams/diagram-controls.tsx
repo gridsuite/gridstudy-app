@@ -124,7 +124,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
                             <SaveIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'GenerateFromGridexplore'} />}>
+                    <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
                         <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
@@ -153,7 +153,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
                             onClose={selectElement}
                             types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                             title={intl.formatMessage({
-                                id: 'GenerateFromGridexplore',
+                                id: 'AddFromGridexplore',
                             })}
                             multiSelect={false}
                         />

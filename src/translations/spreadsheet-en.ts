@@ -78,7 +78,7 @@ const spreadsheetEn = {
     'spreadsheet/save/include_filters_no': 'No',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_collection': 'Spreadsheet collection',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Spreadsheet name',
-    'spreadsheet/create_new_spreadsheet/equipment_type': 'Equipment type',
+    'spreadsheet/create_new_spreadsheet/element_type': 'Element type',
     'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists': 'Spreadsheet name already exists',
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model': 'You must select a spreadsheet model',
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_collection': 'You must select a spreadsheet collection',
