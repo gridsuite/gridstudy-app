@@ -5,25 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Alert } from '@mui/material';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
-import { useSelector } from 'react-redux';
-import { BUILD_STATUS } from '../../network/constants';
-import { Theme } from '@mui/material/styles';
 import React, { ReactNode } from 'react';
 import { UseFormSearchCopy } from './use-form-search-copy';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { AppState } from '../../../redux/reducer';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
-
-const styles = {
-    warningMessage: (theme: Theme) => ({
-        backgroundColor: theme.formFiller.background,
-    }),
-};
 
 /**
  * Common parts for the Modification Dialog
@@ -43,7 +33,6 @@ export type ModificationDialogContentProps = Omit<DialogProps, 'onClose' | 'aria
     titleId: string;
     onOpenCatalogDialog?: () => void;
     searchCopy?: UseFormSearchCopy;
-    showNodeNotBuiltWarning?: boolean;
     submitButton: ReactNode;
     subtitle?: ReactNode;
 };
@@ -54,7 +43,6 @@ export function ModificationDialogContent({
     titleId,
     onOpenCatalogDialog,
     searchCopy,
-    showNodeNotBuiltWarning = false,
     submitButton,
     subtitle,
     ...dialogProps
@@ -64,8 +52,6 @@ export function ModificationDialogContent({
         handleClick: onOpenCatalogDialog ?? (() => {}),
         icon: <AutoStoriesOutlinedIcon />,
     });
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const isNodeNotBuilt = currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog ?? (() => {}),
@@ -93,13 +79,6 @@ export function ModificationDialogContent({
                     </Grid>
 
                     <Grid item xs={6} container spacing={2} justifyContent={'right'}>
-                        {showNodeNotBuiltWarning && isNodeNotBuilt && (
-                            <Grid item xs={10}>
-                                <Alert severity={'warning'} sx={styles.warningMessage}>
-                                    <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
-                                </Alert>
-                            </Grid>
-                        )}
                         {onOpenCatalogDialog && (
                             <Grid item xs={1}>
                                 {catalogButton}
