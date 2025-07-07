@@ -28,7 +28,7 @@ import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import {
     openDiagram,
     storeNetworkAreaDiagramNodeMovement,
-    storeNetworkAreaDiagramTextNodeMovement
+    storeNetworkAreaDiagramTextNodeMovement,
 } from '../../../redux/actions';
 import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
@@ -162,17 +162,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [setShouldDisplayTooltip, setAnchorPosition]
     );
 
-    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
-        if (mousePosition) {
-            setSelectedVoltageLevelId(equipmentId);
-            if( isEditNadMode) {
-                setShouldDisplayMenu(true);
-                setMenuAnchorPosition(mousePosition ? {mouseX: mousePosition.x, mouseY: mousePosition.y} : null);
-            } else {
-                dispatch(openDiagram(equipmentId, DiagramType.VOLTAGE_LEVEL));
+    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
+        (equipmentId, nodeId, mousePosition) => {
+            if (mousePosition) {
+                setSelectedVoltageLevelId(equipmentId);
+                if (isEditNadMode) {
+                    setShouldDisplayMenu(true);
+                    setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+                } else {
+                    dispatch(openDiagram(equipmentId, DiagramType.VOLTAGE_LEVEL));
+                }
             }
-        }
-    }, [isEditNadMode,dispatch]);
+        },
+        [isEditNadMode, dispatch]
+    );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
