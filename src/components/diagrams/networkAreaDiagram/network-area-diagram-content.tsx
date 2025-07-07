@@ -172,7 +172,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 dispatch(openDiagram(equipmentId, DiagramType.VOLTAGE_LEVEL));
             }
         }
-    }, [isEditNadMode]);
+    }, [isEditNadMode,dispatch]);
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
