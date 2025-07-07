@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useMemo, useCallback, useState } from 'react';
+import { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -14,124 +14,23 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
+    NAD_ZOOM_LEVELS,
 } from '../diagram-common';
-import {
-    CSS_RULE,
-    NetworkAreaDiagramViewer,
-    THRESHOLD_STATUS,
-    DiagramMetadata,
-    OnToggleNadHoverCallbackType,
-} from '@powsybl/network-viewer';
+import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import ComputingType from '../../computing-status/computing-type';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
-import { buildPositionsFromNadMetadata, getNadIdentifier } from '../diagram-utils';
+import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-import { useDiagram } from '../use-diagram';
-
-const dynamicCssRules: CSS_RULE[] = [
-    {
-        cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 2500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-label-box', // tooltips linked to nodes
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-text-edges', // visual link between nodes and their tooltip
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '[class^="nad-vl0to30"], [class*=" nad-vl0to30"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 12000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl30to50"], [class*=" nad-vl30to50"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 12000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl50to70"], [class*=" nad-vl50to70"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 27000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl70to120"], [class*=" nad-vl70to120"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 27000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl120to180"], [class*=" nad-vl120to180"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 36000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '[class^="nad-vl180to300"], [class*=" nad-vl180to300"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 80000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
-    },
-    {
-        cssSelector: '.nad-disconnected .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-dasharray': '10, 10' },
-        aboveThresholdCssDeclaration: { 'stroke-dasharray': '0.5%, 0.5%' },
-        threshold: 2500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-vl-nodes circle.nad-unknown-busnode',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-];
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -149,10 +48,13 @@ type NetworkAreaDiagramContentProps = {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     visible: boolean;
+    isEditNadMode: boolean;
+    onToggleEditNadMode?: (isEditMode: boolean) => void;
+    readonly onLoadNadFromElement: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible } = props;
+    const { diagramSizeSetter, visible, isEditNadMode, onToggleEditNadMode, onLoadNadFromElement, diagramId } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -164,36 +66,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
     const nadTextNodeMovementsRef = useRef<NadTextMovement[]>([]);
     nadTextNodeMovementsRef.current = nadTextNodeMovements;
-    const diagramStates = useSelector((state: AppState) => state.diagramStates);
-    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const isEditNadMode = useSelector((state: AppState) => state.isEditMode);
-    const { loadNadFromConfigView } = useDiagram();
-
-    const nadIdentifier = useMemo(() => {
-        if (props.svgType === DiagramType.NAD_FROM_CONFIG) {
-            return props.diagramId;
-        }
-        return getNadIdentifier(diagramStates, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData);
-    }, [
-        diagramStates,
-        networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
-        props.svgType,
-        props.diagramId,
-    ]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
             // It is possible to not have scalingFactors, so we only save the nodes movements if we have the needed value.
             if (!!props.svgScalingFactor) {
-                dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y, props.svgScalingFactor));
+                dispatch(storeNetworkAreaDiagramNodeMovement(diagramId, equipmentId, x, y, props.svgScalingFactor));
             }
         },
-        [dispatch, nadIdentifier, props.svgScalingFactor]
+        [dispatch, diagramId, props.svgScalingFactor]
     );
 
     const onMoveTextNodeCallback = useCallback(
@@ -213,7 +99,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             // Dispatch the new position of the text node
             dispatch(
                 storeNetworkAreaDiagramTextNodeMovement(
-                    nadIdentifier,
+                    diagramId,
                     equipmentId,
                     shiftX,
                     shiftY,
@@ -222,7 +108,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 )
             );
         },
-        [dispatch, nadIdentifier]
+        [dispatch, diagramId]
     );
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
@@ -275,13 +161,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
     };
 
-    const handleLoadFromConfig = useCallback(
-        (nadConfigUuid: string, nadName: string) => {
-            loadNadFromConfigView(nadConfigUuid, nadName);
-        },
-        [loadNadFromConfigView]
-    );
-
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -301,14 +180,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 isEditNadMode,
                 true,
-                dynamicCssRules,
+                NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
                 null,
                 false
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
+            diagramSizeSetter(diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
             // the user's zoom and scroll state for the current render.
@@ -325,7 +204,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             // Repositioning the previously moved nodes
             const correspondingMovements = nadNodeMovementsRef.current.filter(
-                (movement) => movement.nadIdentifier === nadIdentifier
+                (movement) => movement.diagramId === diagramId
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
@@ -340,7 +219,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             // Repositioning the previously moved text nodes
             const correspondingTextMovements = nadTextNodeMovementsRef.current.filter(
-                (movement) => movement.nadIdentifier === nadIdentifier
+                (movement) => movement.diagramId === diagramId
             );
             if (correspondingTextMovements.length > 0) {
                 correspondingTextMovements.forEach((movement) => {
@@ -359,7 +238,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        props.diagramId,
         props.svgType,
         props.svg,
         props.svgMetadata,
@@ -367,9 +245,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         diagramSizeSetter,
         onMoveNodeCallback,
         OnToggleHoverCallback,
-        nadIdentifier,
         onMoveTextNodeCallback,
         isEditNadMode,
+        diagramId,
     ]);
 
     /**
@@ -397,7 +275,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
                 )}
             />
-            <DiagramControls onSave={handleSaveNadConfig} onLoad={handleLoadFromConfig} />
+            <DiagramControls
+                onSave={handleSaveNadConfig}
+                onLoad={onLoadNadFromElement}
+                isEditNadMode={isEditNadMode}
+                onToggleEditNadMode={onToggleEditNadMode}
+            />
         </>
     );
 }

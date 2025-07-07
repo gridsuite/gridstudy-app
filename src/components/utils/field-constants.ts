@@ -36,8 +36,14 @@ export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
 export const CONNECTED = 'terminalConnected';
-export const CONNECTED1 = 'connected1';
-export const CONNECTED2 = 'connected2';
+export const CONNECTION_DIRECTION1 = 'connectionDirection1';
+export const CONNECTION_NAME1 = 'connectionName1';
+export const CONNECTION_POSITION1 = 'connectionPosition1';
+export const CONNECTED1 = 'terminal1Connected';
+export const CONNECTED2 = 'terminal2Connected';
+export const CONNECTION_DIRECTION2 = 'connectionDirection2';
+export const CONNECTION_NAME2 = 'connectionName2';
+export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -93,6 +99,19 @@ export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE = 'reactiveCapabilityCurve';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
+
+/* Tabylar creations reactive capability curve table values for csv */
+export const REACTIVE_CAPABILITY_CURVE_POINTS = 'reactiveCapabilityCurvePoints';
+export const REACTIVE_CAPABILITY_CURVE_P_MIN = 'reactiveCapabilityCurvePmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN = 'reactiveCapabilityCurveQminPmin';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN = 'reactiveCapabilityCurveQmaxPmin';
+export const REACTIVE_CAPABILITY_CURVE_P_0 = 'reactiveCapabilityCurveP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0 = 'reactiveCapabilityCurveQminP0';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0 = 'reactiveCapabilityCurveQmaxP0';
+export const REACTIVE_CAPABILITY_CURVE_P_MAX = 'reactiveCapabilityCurvePmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX = 'reactiveCapabilityCurveQminPmax';
+export const REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX = 'reactiveCapabilityCurveQmaxPmax';
+
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
 export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const MIN_Q = 'minQ';
@@ -195,6 +214,8 @@ export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
+export const IP_MIN = 'ipMin';
+export const IP_MAX = 'ipMax';
 // dnd table
 export const SELECTED = 'selected';
 
@@ -270,29 +291,16 @@ export const FREQUENCY_RESERVE = 'frequencyReserve';
 export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
 export const SUBSTATION_IDS = 'substationIds';
 
-// voltage init
-export const VOLTAGE_LIMITS_MODIFICATION = 'voltageLimitsModification';
-export const VOLTAGE_LIMITS_DEFAULT = 'voltageLimitsDefault';
-export const GENERATORS_SELECTION_TYPE = 'generatorsSelectionType';
-export const VARIABLE_Q_GENERATORS = 'variableQGenerators';
-export const TRANSFORMERS_SELECTION_TYPE = 'twoWindingsTransformersSelectionType';
-export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
-export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
-export const SHUNT_COMPENSATORS_SELECTION_TYPE = 'shuntCompensatorsSelectionType';
-export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
-export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
-export const LEG_SIDE = 'legSide';
-
-export const PRIORITY = 'priority';
-export const FILTER_ID = 'filterId';
-export const FILTER_NAME = 'filterName';
 export const SELECTION_TYPE = 'selectionType';
 
 export const CONNECT = 'connect';
 
 export const CONTAINER_ID = 'containerId';
 export const CONTAINER_NAME = 'containerName';
-export const UPDATE_BUS_VOLTAGE = 'updateBusVoltage';
+
+export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
+export const RATIO_TAP_CHANGER_TARGET_V = 'ratioTapChangerTargetV';
+export const LEG_SIDE = 'legSide';
 
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
@@ -339,14 +347,6 @@ export const VOLTAGE = 'voltage';
 export const HVDC_LINE_TAB = 'hvdcLineTab';
 export const CONVERTER_STATION_1 = 'converterStation1';
 export const CONVERTER_STATION_2 = 'converterStation2';
-
-export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
-export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParameters';
-export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
-export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS = 'withVSCConverterStations';
-export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
-export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
-export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE = 'initialVoltageProfileMode';
 
 // By formula
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';
@@ -467,3 +467,19 @@ export const SWITCH_ID = 'switchId';
 export const PREV_CONNECTION_STATUS = 'prevConnectionStatus';
 export const CURRENT_CONNECTION_STATUS = 'currentConnectionStatus';
 export const TOPOLOGY_MODIFICATION_TABLE = 'topologyModificationTable';
+
+// BALANCES ADJUSTMENT
+export const BALANCES_ADJUSTMENT = 'balancesAdjustment';
+export const BALANCES_ADJUSTMENT_ZONES = 'balancesAdjustmentZones';
+export const BALANCES_ADJUSTMENT_ZONE = 'balancesAdjustmentZone';
+export const BALANCES_ADJUSTMENT_COUNTRIES = 'balancesAdjustmentCountries';
+export const BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE = 'balancesAdjustmentShiftEquipmentType';
+export const BALANCES_ADJUSTMENT_SHIFT_TYPE = 'balancesAdjustmentShfttType';
+export const BALANCES_ADJUSTMENT_TARGET = 'balancesAdjustmentTarget';
+export const BALANCES_ADJUSTMENT_ADVANCED = 'balancesAdjustmentAdvanced';
+export const BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS = 'balancesAdjustmentMaxNumberIterations';
+export const BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION = 'balancesAdjustmentThresholdNetPosition';
+export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCountriesToBalance';
+export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
+export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
+export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';

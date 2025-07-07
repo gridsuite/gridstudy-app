@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ComputingType from 'components/computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { NETWORK_MODIFICATION } from './report.constant';
 
-export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
+export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'DETAIL' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
 
 export type ComputingAndNetworkModificationType = ComputingType | typeof NETWORK_MODIFICATION;
 
@@ -43,7 +43,8 @@ export interface Report extends BaseReport<Report> {}
 
 export type Log = {
     message: string;
-    severity: ReportSeverity;
+    severity: string;
+    backgroundColor: string;
     depth: number;
     parentId: string;
 };
@@ -59,4 +60,21 @@ export type ReportLog = {
 export type SelectedReportLog = {
     id: string;
     type: ReportType;
+};
+
+export type PagedReportLogs = {
+    content: ReportLog[];
+    totalElements: number;
+    totalPages: number;
+};
+
+export type PagedLogs = {
+    content: Log[];
+    totalElements: number;
+    totalPages: number;
+};
+
+export type MatchPosition = {
+    page: number;
+    rowIndex: number;
 };

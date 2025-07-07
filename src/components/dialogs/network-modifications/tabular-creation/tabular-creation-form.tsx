@@ -8,29 +8,43 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, LANG_FRENCH } from '@gridsuite/commons-ui';
 import {
     CONNECTED,
-    EQUIPMENT_ID,
     CREATIONS_TABLE,
+    EQUIPMENT_ID,
+    PARTICIPATE,
+    REACTIVE_CAPABILITY_CURVE,
     TYPE,
     VOLTAGE_REGULATION_ON,
-    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
+import {
+    styles,
+    TABULAR_CREATION_FIELDS,
+    TabularCreationField,
+    generateCommentLines,
+    transformIfFrenchNumber,
+} from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
-const TabularCreationForm = () => {
+export interface TabularCreationFormProps {
+    dataFetching: boolean;
+}
+
+export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFormProps>) {
     const intl = useIntl();
-
+    const language = useSelector((state: AppState) => state.computedLanguage);
+    const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
@@ -38,72 +52,101 @@ const TabularCreationForm = () => {
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(CREATIONS_TABLE);
-            // check required fields are defined
-            let fieldNameInError: string = '';
+            let requiredFieldNameInError: string = '';
+
+            let requiredDependantFieldNameInError: string = '';
+            let dependantFieldNameInError: string = '';
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
                     const found = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
                         return field.id === key;
                     });
+                    // check required fields are defined
                     if (found !== undefined && found.required && (result[key] === undefined || result[key] === null)) {
-                        fieldNameInError = key;
+                        requiredFieldNameInError = key;
                         return false;
                     }
+
+                    //check requiredIf rule
+                    if (found?.requiredIf) {
+                        const dependentValue = result[found.requiredIf.id];
+                        if (
+                            dependentValue !== undefined &&
+                            dependentValue !== null &&
+                            (result[key] === undefined || result[key] === null)
+                        ) {
+                            dependantFieldNameInError = key;
+                            requiredDependantFieldNameInError = found.requiredIf.id;
+                            return false;
+                        }
+                    }
+
                     return true;
                 });
-                return fieldNameInError !== '';
+                return (
+                    requiredFieldNameInError !== '' ||
+                    dependantFieldNameInError !== '' ||
+                    requiredDependantFieldNameInError !== ''
+                );
             });
             setValue(CREATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
-            if (fieldNameInError !== '') {
+            setIsFetching(false);
+            if (requiredFieldNameInError !== '') {
                 setError(CREATIONS_TABLE, {
                     type: 'custom',
-                    message:
-                        intl.formatMessage({
+                    message: intl.formatMessage(
+                        {
                             id: 'FieldRequired',
-                        }) +
-                        intl.formatMessage({
-                            id: fieldNameInError,
-                        }),
+                        },
+                        {
+                            requiredFieldNameInError: intl.formatMessage({
+                                id: requiredFieldNameInError,
+                            }),
+                        }
+                    ),
+                });
+            }
+            if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                setError(CREATIONS_TABLE, {
+                    type: 'custom',
+                    message: intl.formatMessage(
+                        {
+                            id: 'DependantFieldMissing',
+                        },
+                        {
+                            requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
+                            dependantField: intl.formatMessage({
+                                id: requiredDependantFieldNameInError,
+                            }),
+                        }
+                    ),
                 });
             }
         },
         [clearErrors, setValue, getValues, setError, intl]
     );
 
-    const watchType = useWatch({
+    const equipmentType = useWatch({
         name: TYPE,
     });
 
     const csvColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map((field: TabularCreationField) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field: TabularCreationField) => {
             return field.id;
         });
-    }, [watchType]);
+    }, [equipmentType]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field) => {
             return intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     const commentLines = useMemo(() => {
-        let commentData: string[][] = [];
-        if (csvTranslatedColumns) {
-            // First comment line contains header translation
-            commentData.push(['#' + csvTranslatedColumns.join(',')]);
-            if (!!intl.messages['TabularCreationSkeletonComment.' + watchType]) {
-                // Optionally a second comment line, if present in translation file
-                commentData.push([
-                    intl.formatMessage({
-                        id: 'TabularCreationSkeletonComment.' + watchType,
-                    }),
-                ]);
-            }
-        }
-        return commentData;
-    }, [intl, watchType, csvTranslatedColumns]);
+        return generateCommentLines({ csvTranslatedColumns, intl, equipmentType, language, formType: 'Creation' });
+    }, [intl, equipmentType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -111,6 +154,7 @@ const TabularCreationForm = () => {
         header: csvColumns,
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
+        language: language,
     });
 
     const watchTable = useWatch({
@@ -118,10 +162,16 @@ const TabularCreationForm = () => {
     });
 
     useEffect(() => {
+        setIsFetching(dataFetching);
+    }, [dataFetching]);
+
+    useEffect(() => {
         if (selectedFileError) {
             setValue(CREATIONS_TABLE, []);
             clearErrors(CREATIONS_TABLE);
+            setIsFetching(false);
         } else if (selectedFile) {
+            setIsFetching(true);
             // @ts-ignore
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
@@ -129,17 +179,11 @@ const TabularCreationForm = () => {
                 dynamicTyping: true,
                 comments: '#',
                 complete: handleComplete,
-                transformHeader: (header: string) => {
-                    // transform header to creation field
-                    const transformedHeader = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find(
-                        (field) => intl.formatMessage({ id: field.id }) === header
-                    );
-                    return transformedHeader ?? header;
-                },
-                transform: (value) => value.trim(),
+                delimiter: language === LANG_FRENCH ? ';' : ',',
+                transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular creation
@@ -179,21 +223,22 @@ const TabularCreationForm = () => {
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field) => {
             const columnDef: ColDef = {};
             if (field.id === EQUIPMENT_ID) {
                 columnDef.pinned = true;
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            if (field.id === VOLTAGE_REGULATION_ON || field.id === CONNECTED || field.id === FREQUENCY_REGULATION) {
+            const booleanColumns = [VOLTAGE_REGULATION_ON, CONNECTED, PARTICIPATE, REACTIVE_CAPABILITY_CURVE];
+            if (booleanColumns.includes(field.id)) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
             }
             return columnDef;
         });
-    }, [intl, watchType]);
+    }, [intl, equipmentType]);
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -206,8 +251,9 @@ const TabularCreationForm = () => {
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={watchType + '_skeleton'}
+                        filename={equipmentType + '_creation_template'}
                         disabled={!csvColumns}
+                        separator={language === LANG_FRENCH ? ';' : ','}
                     >
                         <Button variant="contained" disabled={!csvColumns}>
                             <FormattedMessage id="GenerateSkeleton" />
@@ -222,6 +268,7 @@ const TabularCreationForm = () => {
             <Grid item xs={12} sx={styles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
+                    loading={isFetching}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     pagination
@@ -232,6 +279,6 @@ const TabularCreationForm = () => {
             </Grid>
         </Grid>
     );
-};
+}
 
 export default TabularCreationForm;

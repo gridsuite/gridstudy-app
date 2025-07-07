@@ -9,7 +9,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import ComputingType from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from '../../utils/running-status';
 import { useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useIntl } from 'react-intl';

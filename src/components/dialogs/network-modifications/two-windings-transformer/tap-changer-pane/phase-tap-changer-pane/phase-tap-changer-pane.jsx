@@ -165,7 +165,7 @@ const PhaseTapChangerPane = ({
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     voltageLevelOptions={voltageLevelOptions}
                     previousValues={previousValues}
-                    tapChangerEnabledWatcher={phaseTapChangerEnabledWatch}
+                    tapChangerDisabled={!phaseTapChangerEnabledWatch}
                     regulationType={regulationType}
                 />
             )}

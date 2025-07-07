@@ -89,7 +89,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
         [MINIMUM_ACTIVE_POWER]: yup
             .number()
@@ -337,7 +337,6 @@ export default function BatteryModificationDialog({
                 titleId="ModifyBattery"
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

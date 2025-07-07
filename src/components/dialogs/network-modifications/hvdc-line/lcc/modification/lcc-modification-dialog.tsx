@@ -68,7 +68,7 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string(),
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [HVDC_LINE_TAB]: getLccHvdcLineModificationSchema(),
         [CONVERTER_STATION_1]: getLccConverterStationModificationSchema(),
         [CONVERTER_STATION_2]: getLccConverterStationModificationSchema(),
@@ -264,7 +264,6 @@ export const LccModificationDialog = ({
                 }}
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={equipmentId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

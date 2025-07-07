@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -15,14 +15,16 @@ import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
-import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
-import { AgGridReact } from 'ag-grid-react';
 import {
-    ComputingAndNetworkModificationType,
-    ReportLog,
-    SelectedReportLog,
-    SeverityLevel,
-} from 'utils/report/report.type';
+    CellClassParams,
+    CellClickedEvent,
+    GridApi,
+    ICellRendererParams,
+    RowClassParams,
+    RowStyle,
+} from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { ComputingAndNetworkModificationType, Log, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -35,6 +37,8 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
+import CustomTablePagination from 'components/utils/custom-table-pagination';
+import { reportStyles } from './report.styles';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -59,23 +63,32 @@ const styles = {
         },
         padding: 0.5,
     }),
-    chipContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 1,
-        p: 1,
-        marginBottom: 3,
+    chipContainer: (theme: Theme) => {
+        return {
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: theme.spacing(1),
+        };
     },
-    quickSearch: { width: '100%', flexShrink: 0, marginLeft: 1 },
+    toolContainer: (theme: Theme) => {
+        return {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: theme.spacing(1),
+            mb: theme.spacing(2),
+        };
+    },
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
+const PAGE_OPTIONS = [15, 30, 50, 100];
+const DEFAULT_PAGE_COUNT = 15;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
     reportType: ComputingAndNetworkModificationType;
     severities: SeverityLevel[] | undefined;
-    onRowClick: (data: ReportLog) => void;
+    onRowClick: (data: Log | undefined) => void;
     onFiltersChanged: () => void;
     resetFilters?: boolean;
 };
@@ -94,27 +107,34 @@ const LogTable = ({
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
+    const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
+        reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
+    );
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
-    const [rowData, setRowData] = useState<ReportLog[] | null>(null);
+    const [rowData, setRowData] = useState<Log[] | null>(null);
+    const [searchMatches, setSearchMatches] = useState<{ rowIndex: number; page: number }[]>([]);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
+    const [page, setPage] = useState<number>(0);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
+    const [count, setCount] = useState<number>(0);
 
-    // Reset filtersInitialized when reportType changes
+    // Reset filtersInitialized when reportType or severities change
     useEffect(() => {
         setFiltersInitialized(false);
-    }, [reportType]);
+    }, [reportType, severities]);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filters, 'severity') ?? [], [filters]);
     const messageFilter = useMemo(() => getColumnFilterValue(filters, 'message'), [filters]);
 
     const resetSearch = useCallback(() => {
+        setSearchMatches([]);
         setSearchResults([]);
         setCurrentResultIndex(-1);
         setSearchTerm('');
@@ -123,26 +143,20 @@ const LogTable = ({
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityFilter.length === 0) {
             setRowData([]);
-            resetSearch();
             return;
         }
-        fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
-            const minDepth = Math.min(...reportLogs.map((log) => log.depth ?? 0));
-            const transformedLogs = reportLogs.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        depth: (log.depth ?? 0) - minDepth,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    }) as unknown as ReportLog
-            );
-            setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
-            resetSearch();
-        });
-    }, [severityFilter, fetchReportLogs, selectedReport, messageFilter, resetSearch]);
+        fetchLogs(selectedReport.id, severityFilter, messageFilter, selectedReport.type, page, rowsPerPage)?.then(
+            (pagedLogs) => {
+                const { content, totalElements, totalPages } = pagedLogs;
+                if (totalPages - 1 < page) {
+                    setPage(0);
+                }
+                setCount(totalElements);
+                setSelectedRowIndex(-1);
+                setRowData(content);
+            }
+        );
+    }, [severityFilter, fetchLogs, selectedReport.id, selectedReport.type, messageFilter, page, rowsPerPage]);
 
     useEffect(() => {
         if (severities && severities.length > 0) {
@@ -184,8 +198,8 @@ const LogTable = ({
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
                 colId: 'severity',
                 field: 'severity',
-                cellStyle: (params) => ({
-                    backgroundColor: params.data.backgroundColor,
+                cellStyle: (params: CellClassParams<Log>) => ({
+                    backgroundColor: params.data?.backgroundColor ?? theme.palette.background.default,
                     textAlign: 'center',
                 }),
             }),
@@ -206,7 +220,7 @@ const LogTable = ({
                     forceDisplayFilterIcon: true,
                 },
                 flex: 1,
-                cellRenderer: (param: ICellRendererParams) =>
+                cellRenderer: (param: ICellRendererParams<Log>) =>
                     MessageLogCellRenderer({
                         param: param,
                         highlightColor: theme.searchedText.highlightColor,
@@ -220,6 +234,7 @@ const LogTable = ({
         [
             intl,
             reportType,
+            theme.palette.background.default,
             theme.searchedText.highlightColor,
             theme.searchedText.currentHighlightColor,
             searchTerm,
@@ -229,7 +244,7 @@ const LogTable = ({
     );
 
     const handleRowClick = useCallback(
-        (row: CellClickedEvent) => {
+        (row: CellClickedEvent<Log>) => {
             setSelectedRowIndex(row.rowIndex);
             onRowClick(row.data);
         },
@@ -237,7 +252,7 @@ const LogTable = ({
     );
 
     const rowStyleFormat = useCallback(
-        (row: RowClassParams): RowStyle => {
+        (row: RowClassParams<Log>): RowStyle => {
             if (row.rowIndex && row.rowIndex < 0) {
                 return {};
             }
@@ -267,22 +282,8 @@ const LogTable = ({
         api.ensureIndexVisible(matches[index], 'middle');
     }, []);
 
-    const handleSearch = useCallback(
-        (searchTerm: string) => {
-            if (!gridRef.current || !searchTerm) {
-                resetSearch();
-                return;
-            }
-            setSearchTerm(searchTerm);
-            const api = gridRef.current.api;
-            const matches: number[] = [];
-            const searchTermLower = searchTerm.toLowerCase();
-            api.forEachNode((node: IRowNode) => {
-                const { message } = node.data;
-                if (node.rowIndex !== null && message?.toLowerCase().includes(searchTermLower)) {
-                    matches.push(node.rowIndex);
-                }
-            });
+    const handleSearchResults = useCallback(
+        (matches: number[]) => {
             setSearchResults(matches);
             setCurrentResultIndex(matches.length > 0 ? 0 : -1);
 
@@ -290,7 +291,43 @@ const LogTable = ({
                 highlightAndScrollToMatch(0, matches);
             }
         },
-        [highlightAndScrollToMatch, resetSearch]
+        [highlightAndScrollToMatch]
+    );
+
+    const handleSearch = useCallback(
+        (searchTerm: string) => {
+            if (!gridRef.current || !searchTerm) {
+                resetSearch();
+                return;
+            }
+            setSearchTerm(searchTerm);
+
+            fetchLogMatches(
+                selectedReport.id,
+                severityFilter,
+                messageFilter,
+                selectedReport.type,
+                searchTerm,
+                rowsPerPage
+            )?.then((matchesPositions) => {
+                setSearchMatches(matchesPositions);
+                const matches = matchesPositions.map((match: { rowIndex: number; page: number }) => match.rowIndex);
+                if (matches.length > 0) {
+                    setPage(matchesPositions[0].page);
+                }
+                handleSearchResults(matches);
+            });
+        },
+        [
+            fetchLogMatches,
+            handleSearchResults,
+            messageFilter,
+            resetSearch,
+            rowsPerPage,
+            selectedReport.id,
+            selectedReport.type,
+            severityFilter,
+        ]
     );
 
     const handleNavigate = useCallback(
@@ -307,10 +344,11 @@ const LogTable = ({
                 newIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
             }
 
+            setPage(searchMatches[newIndex].page);
             setCurrentResultIndex(newIndex);
             highlightAndScrollToMatch(newIndex, searchResults);
         },
-        [currentResultIndex, searchResults, highlightAndScrollToMatch]
+        [searchResults, highlightAndScrollToMatch, currentResultIndex, searchMatches]
     );
 
     const handleChipClick = useCallback(
@@ -339,38 +377,53 @@ const LogTable = ({
         [dispatch, reportType, severityFilter, messageFilter]
     );
 
+    const handleChangePage = useCallback(
+        (_: any, newPage: number) => {
+            setPage(newPage);
+            // find index of the first element in searchMatches
+            const firstMatchIndex = searchMatches.findIndex((match) => match.page === newPage);
+            setCurrentResultIndex(firstMatchIndex);
+        },
+        [searchMatches]
+    );
+
+    const handleChangeRowsPerPage = useCallback((event: any) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    }, []);
+
+    // This effect enables to recompute the research when selected node, filters or page size change for example
+    useEffect(() => {
+        handleSearch(searchTerm);
+        // We don't want to trigger the effect on searchTerm change because it is already done in QuickSearch component
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [handleSearch]);
+
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-            }}
-        >
-            <Box sx={styles.quickSearch}>
+        <Box sx={reportStyles.mainContainer}>
+            <Box sx={styles.toolContainer}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
-                    selectedReportId={selectedReport.id}
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
                     placeholder="searchPlaceholderLog"
                 />
+                <Box sx={styles.chipContainer}>
+                    {severities?.map((severity) => (
+                        <Chip
+                            key={severity}
+                            label={severity}
+                            deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            onClick={() => handleChipClick(severity)}
+                            onDelete={() => handleChipClick(severity)}
+                            sx={styles.chip(severity, severityFilter, theme)}
+                        />
+                    ))}
+                </Box>
             </Box>
-            <Box sx={styles.chipContainer}>
-                {severities?.map((severity, index) => (
-                    <Chip
-                        key={severity}
-                        label={severity}
-                        deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        onClick={() => handleChipClick(severity)}
-                        onDelete={() => handleChipClick(severity)}
-                        sx={styles.chip(severity, severityFilter, theme)}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+            <Box sx={{ flex: 1 }}>
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={COLUMNS_DEFINITIONS}
@@ -382,6 +435,15 @@ const LogTable = ({
                     overrideLocales={AGGRID_LOCALES}
                 />
             </Box>
+            <CustomTablePagination
+                rowsPerPageOptions={PAGE_OPTIONS}
+                count={count}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPageId="reportLogsPerPage"
+            />
         </Box>
     );
 };

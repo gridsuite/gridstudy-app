@@ -39,7 +39,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
     })
     .concat(modificationPropertiesSchema);
@@ -181,7 +181,6 @@ const SubstationModificationDialog = ({
                 titleId="ModifySubstation"
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

@@ -42,7 +42,7 @@ export type ColumnDefinition = {
     precision?: number;
     formula: string;
     dependencies?: string[];
-    visible?: boolean;
+    visible: boolean;
     locked?: boolean;
 };
 
@@ -52,6 +52,13 @@ export type ColumnDefinitionDto = Omit<ColumnDefinition, 'dependencies'> & {
     filterTolerance?: number;
     filterType?: string;
     filterValue?: string;
+    visible?: boolean;
+};
+
+export type ColumnStateDto = {
+    columnId: UUID;
+    visible: boolean;
+    order: number;
 };
 
 export type SpreadsheetEquipmentsByNodes = {
@@ -64,6 +71,7 @@ export type SpreadsheetConfig = {
     sheetType: SpreadsheetEquipmentType;
     columns: ColumnDefinitionDto[];
     globalFilters?: GlobalFilter[];
+    nodeAliases?: string[];
 };
 
 export type SpreadsheetConfigDto = SpreadsheetConfig & {

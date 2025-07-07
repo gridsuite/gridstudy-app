@@ -11,6 +11,7 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
+    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -26,6 +27,8 @@ import {
     USER_VALIDATION_ERROR,
     UserAction,
     UserValidationErrorAction,
+    NetworkVisualizationParameters,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -43,11 +46,7 @@ import {
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     CenterOnSubstationAction,
-    CLOSE_DIAGRAM,
-    CLOSE_DIAGRAMS,
     CLOSE_STUDY,
-    CloseDiagramAction,
-    CloseDiagramsAction,
     CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
     CURRENT_ROOT_NETWORK_UUID,
@@ -69,12 +68,10 @@ import {
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
-    LOAD_NAD_FROM_CONFIG,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
-    LoadNadFromConfigAction,
     LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
     LogsFilterAction,
@@ -84,16 +81,12 @@ import {
     MapDataLoadingAction,
     MapEquipmentsCreatedAction,
     MapEquipmentsInitializedAction,
-    MINIMIZE_DIAGRAM,
-    MinimizeDiagramAction,
-    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_REORDER,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
@@ -153,7 +146,6 @@ import {
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
-    SET_FULLSCREEN_DIAGRAM,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -169,7 +161,6 @@ import {
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
-    SetFullscreenDiagramAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
@@ -186,8 +177,6 @@ import {
     SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
-    STOP_DIAGRAM_BLINK,
-    StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
     STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
@@ -196,8 +185,6 @@ import {
     StudyUpdatedAction,
     TABLE_SORT,
     TableSortAction,
-    TOGGLE_PIN_DIAGRAM,
-    TogglePinDiagramAction,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
@@ -208,8 +195,6 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    SET_EDIT_NAD_MODE,
-    SetEditNadModeAction,
     DELETED_OR_RENAMED_NODES,
     DeletedOrRenamedNodesAction,
     REMOVE_EQUIPMENT_DATA,
@@ -220,6 +205,9 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
+    SET_COMPUTING_STATUS_INFOS,
+    SetComputingStatusParametersAction,
+    ParameterizedComputingType,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -229,34 +217,18 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import {
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    MAP_BASEMAP_MAPBOX,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
     PARAM_COMPUTED_LANGUAGE,
     PARAM_DEVELOPER_MODE,
-    PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
-import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
     ALL_BUSES,
@@ -294,7 +266,6 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import { EQUIPMENT_TYPES as NetworkViewerEquipmentType, LineFlowMode } from '@powsybl/network-viewer';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -306,168 +277,22 @@ import {
     SpreadsheetEquipmentType,
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
-import { NetworkVisualizationParameters } from '../components/dialogs/parameters/network-visualizations/network-visualizations.types';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType, isNadType, isSldType, SubstationLayout, ViewState } from '../components/diagrams/diagram.type';
+import { DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
+import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 
-export enum NotificationType {
-    STUDY = 'study',
-    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
-    NETWORK_VISUALIZATION_PARAMETERS_UPDATED = 'networkVisualizationParametersUpdated',
-    LOADFLOW_RESULT = 'loadflowResult',
-    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
-    ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
-    ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-    SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
-    SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
-    SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
-    BUILD_COMPLETED = 'buildCompleted',
-    NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
-    UPDATE_FINISHED = 'UPDATE_FINISHED',
-    DELETE_FINISHED = 'DELETE_FINISHED',
-}
-
-export enum RootNetworkIndexationStatus {
-    NOT_INDEXED = 'NOT_INDEXED',
-    INDEXING_ONGOING = 'INDEXING_ONGOING',
-    INDEXED = 'INDEXED',
-}
+// Redux state
+export type StudyUpdated = {
+    force: number; //IntRange<0, 1>;
+} & StudyUpdateNotification;
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
     nodeId: UUID;
 }
-
-// Headers
-export interface StudyUpdatedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    parentNode: UUID;
-    rootNetworkUuid: UUID;
-    timestamp: number;
-    node?: UUID;
-    nodes?: UUID[];
-    error?: string;
-    userId?: string;
-    computationType?: ComputingType;
-}
-
-interface RootNetworksDeletionStartedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworksUuids: UUID[];
-}
-
-interface LoadflowResultEventDataHeaders {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworkUuid: UUID;
-}
-
-interface RootNetworksUpdatedEventDataHeaders {
-    studyUuid: UUID;
-    updateType: string;
-    rootNetworkUuid?: UUID; // all root networks if absent
-    error?: string;
-}
-
-// Payloads
-export interface DeletedEquipment {
-    equipmentId: string;
-    equipmentType: NetworkViewerEquipmentType;
-}
-
-export interface NetworkImpactsInfos {
-    impactedSubstationsIds: UUID[];
-    deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
-}
-
-// EventData
-export interface StudyUpdatedEventData {
-    headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
-}
-
-interface StudyUpdatedEventDataUnknown {
-    headers: StudyUpdatedEventDataHeader;
-    payload: string;
-}
-
-export interface LoadflowResultEventData {
-    headers: LoadflowResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface RootNetworksDeletionStartedEventData {
-    headers: RootNetworksDeletionStartedEventDataHeader;
-    payload: undefined;
-}
-
-export interface RootNetworksUpdatedEventData {
-    headers: RootNetworksUpdatedEventDataHeaders;
-    payload: undefined;
-}
-export interface NodeUpdatedEventData {
-    headers: NodeUpdatedEventDataHeader;
-    payload: undefined;
-}
-
-interface NodeUpdatedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    timestamp: number;
-    nodes?: UUID[];
-    node?: UUID;
-    substationsIds: string;
-    rootNetworkUuid: UUID;
-}
-
-// Notification types
-type StudyUpdatedStudy = {
-    type: NotificationType.STUDY;
-    eventData: StudyUpdatedEventData;
-};
-
-type StudyUpdatedUndefined = {
-    type: undefined;
-    eventData: StudyUpdatedEventDataUnknown;
-};
-
-type LoadflowResultNotification = {
-    type: NotificationType.LOADFLOW_RESULT;
-    eventData: LoadflowResultEventData;
-};
-
-type RootNetworksUpdatedNotification = {
-    type: NotificationType.ROOT_NETWORKS_UPDATED;
-    eventData: RootNetworksUpdatedEventData;
-};
-
-type RootNetworksUpdateFailedNotification = {
-    type: NotificationType.ROOT_NETWORKS_UPDATE_FAILED;
-    eventData: RootNetworksUpdatedEventData;
-};
-
-type RootNetworkDeletionStartedNotification = {
-    type: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
-    eventData: RootNetworksDeletionStartedEventData;
-};
-
-// Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & (
-    | StudyUpdatedUndefined
-    | StudyUpdatedStudy
-    | LoadflowResultNotification
-    | RootNetworksUpdatedNotification
-    | RootNetworksUpdateFailedNotification
-    | RootNetworkDeletionStartedNotification
-);
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -480,6 +305,14 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+}
+
+export interface LoadFlowStatusParameters {
+    withRatioTapChangers: boolean;
+}
+
+export interface ComputingStatusParameters {
+    [ComputingType.LOAD_FLOW]: LoadFlowStatusParameters | null;
 }
 
 export type TableSortConfig = Record<string, SortConfig[]>;
@@ -495,14 +328,6 @@ export type TableSort = {
 export type TableSortKeysType = keyof TableSort;
 
 export type SpreadsheetFilterState = Record<UUID, FilterConfig[]>;
-
-export type DiagramState = {
-    id: UUID;
-    svgType: DiagramType;
-    state: ViewState;
-    needsToBlink?: boolean;
-    name?: string;
-};
 
 export enum DiagramEventType {
     CREATE = 'create',
@@ -538,9 +363,11 @@ type CreateNADDiagramEvent = CreateDiagramEvent & {
     voltageLevelIds: string[];
 };
 
-type CreateNADFromConfigDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_CONFIG;
-    nadFromConfigUuid: UUID;
+type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
+    diagramType: DiagramType.NAD_FROM_ELEMENT;
+    elementUuid: UUID;
+    elementType: ElementType;
+    elementName: string;
 };
 
 export type DiagramEvent =
@@ -548,10 +375,10 @@ export type DiagramEvent =
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
     | CreateNADDiagramEvent
-    | CreateNADFromConfigDiagramEvent;
+    | CreateNADFromElementDiagramEvent;
 
 export type NadNodeMovement = {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     x: number;
     y: number;
@@ -559,7 +386,7 @@ export type NadNodeMovement = {
 };
 
 export type NadTextMovement = {
-    nadIdentifier: string;
+    diagramId: UUID;
     equipmentId: string;
     shiftX: number;
     shiftY: number;
@@ -585,18 +412,8 @@ export interface AppConfigState {
     [PARAM_COMPUTED_LANGUAGE]: GsLangUser;
     [PARAM_LIMIT_REDUCTION]: number;
     [PARAM_USE_NAME]: boolean;
-    [PARAM_LINE_FULL_PATH]: boolean;
-    [PARAM_LINE_PARALLEL_PATH]: boolean;
-    [PARAM_MAP_MANUAL_REFRESH]: boolean;
-    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode;
-    [PARAM_CENTER_LABEL]: boolean;
-    [PARAM_DIAGONAL_LABEL]: boolean;
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout;
-    [PARAM_COMPONENT_LIBRARY]: unknown | null;
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
 }
 
@@ -614,6 +431,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     currentRootNetworkUuid: UUID | null;
     rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
+    computingStatusParameters: ComputingStatusParameters;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
@@ -622,7 +440,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
-    networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
@@ -634,14 +451,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
     mapDataLoading: boolean;
-    diagramStates: DiagramState[];
     latestDiagramEvent: DiagramEvent | undefined;
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
-    fullScreenDiagram: null | {
-        id: string;
-        svgType?: DiagramType;
-    };
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -774,7 +586,6 @@ const initialState: AppState = {
     // @ts-expect-error TODO can't have empty eventData here
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
-    fullScreenDiagram: null,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
@@ -783,7 +594,6 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     isMonoRootStudy: true,
     studyDisplayMode: StudyDisplayMode.HYBRID,
-    diagramStates: [],
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -792,7 +602,6 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
-    networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
     computingStatus: {
@@ -807,6 +616,9 @@ const initialState: AppState = {
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },
+    computingStatusParameters: {
+        [ComputingType.LOAD_FLOW]: null,
+    },
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
         name: key,
@@ -820,19 +632,9 @@ const initialState: AppState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
-    [PARAM_LINE_FULL_PATH]: true,
-    [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LIMIT_REDUCTION]: 100,
-    [PARAM_MAP_MANUAL_REFRESH]: true,
-    [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
-    [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
-    [PARAM_CENTER_LABEL]: false,
-    [PARAM_DIAGONAL_LABEL]: false,
-    [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,
-    [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_DEVELOPER_MODE]: false,
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
 
     recentGlobalFilters: [],
@@ -965,10 +767,6 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
-
-        if (action.studyRef[0] != null) {
-            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
-        }
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1026,7 +824,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const existingColDef = existingTableDefinition.columns.find((tabDef) => tabDef.uuid === column.uuid);
                 const colDef: ColumnDefinition = {
                     ...column,
-                    visible: existingColDef ? existingColDef.visible : true,
+                    visible: column.visible ?? existingColDef?.visible ?? true,
                     locked: existingColDef ? existingColDef.locked : false,
                 };
                 return colDef;
@@ -1045,7 +843,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tables.uuid = action.collectionUuid;
         state.tables.definitions = action.tableDefinitions.map((tabDef) => ({
             ...tabDef,
-            columns: tabDef.columns.map((col) => ({ ...col, visible: true, locked: false })),
+            columns: tabDef.columns.map((col) => ({
+                ...col,
+                visible: col.visible ?? true,
+                locked: false,
+            })),
         }));
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
@@ -1303,21 +1105,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMapNeeded = action.reloadMapNeeded;
     });
 
-    builder.addCase(SET_EDIT_NAD_MODE, (state, action: SetEditNadModeAction) => {
-        state.isEditMode = action.isEditMode;
-    });
-
     builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
         state.isMapEquipmentsInitialized = action.newValue;
-    });
-
-    builder.addCase(SET_FULLSCREEN_DIAGRAM, (state, action: SetFullscreenDiagramAction) => {
-        state.fullScreenDiagram = action.diagramId
-            ? {
-                  id: action.diagramId,
-                  svgType: action.svgType,
-              }
-            : null;
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
@@ -1411,129 +1200,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isMonoRootStudy = action.isMonoRootStudy;
     });
 
-    /*
-     * The following functions' goal are to update state.diagramStates with nodes of the following type :
-     * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
-     *
-     * Diagrams of NETWORK_AREA_DIAGRAM type should always share the same state (all of them opened, or all
-     * of them pinned, etc).
-     * The other types of diagrams all have their own state.
-     *
-     * There can only be one NAD (NETWORK_AREA_DIAGRAM or NAD_FROM_CONFIG) opened at once, but there can be
-     * multiple SLD (VOLTAGE_LEVEL or SUBSTATION) opened at the same time.
-     */
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
-        let diagramStates = state.diagramStates;
-        const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-        );
-
-        if (isNadType(action.svgType)) {
-            // When opening a NETWORK_AREA_DIAGRAM, we remove all the NAD_FROM_CONFIG, and vice versa
-            if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NAD_FROM_CONFIG);
-            }
-            if (action.svgType === DiagramType.NAD_FROM_CONFIG) {
-                diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
-            }
-
-            // We check if there is already a NAD in the diagramStates.
-            const firstNadIndex = diagramStates.findIndex((diagram) => isNadType(diagram.svgType));
-            if (firstNadIndex < 0) {
-                // If there is no NAD, then we add the new one.
-                diagramStates.push({
-                    id: action.id as UUID,
-                    svgType: action.svgType,
-                    state: ViewState.OPENED,
-                });
-
-                // If there is already a diagram in fullscreen mode, the new opened NAD will take its place.
-                if (state.fullScreenDiagram?.id) {
-                    state.fullScreenDiagram = {
-                        id: action.id,
-                        svgType: action.svgType,
-                    };
-                }
-            } else {
-                // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
-                if (diagramStates[firstNadIndex].state === ViewState.MINIMIZED) {
-                    diagramStates.forEach((diagram) => {
-                        if (isNadType(diagram.svgType)) {
-                            diagram.state = ViewState.OPENED;
-                        }
-                    });
-                }
-                // If the NAD to open is not already in the diagramStates, we add it.
-                if (diagramToOpenIndex < 0) {
-                    diagramStates.push({
-                        id: action.id as UUID,
-                        svgType: action.svgType,
-                        state: diagramStates[firstNadIndex].state,
-                    });
-                }
-
-                // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
-                // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
-                // Note : for NAD_FROM_CONFIG, this should work as long as there is only one NAD in the diagramStates.
-                if (state.fullScreenDiagram?.svgType && isSldType(state.fullScreenDiagram?.svgType)) {
-                    state.fullScreenDiagram = {
-                        id: diagramStates[firstNadIndex].id,
-                        svgType: action.svgType,
-                    };
-                }
-            }
-        } else {
-            // We check if the SLD to open is already in the diagramStates.
-            if (diagramToOpenIndex >= 0) {
-                // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
-                if (diagramStates[diagramToOpenIndex].state === ViewState.MINIMIZED) {
-                    // We minimize all the other OPENED SLD.
-                    diagramStates.forEach((diagram) => {
-                        if (isSldType(diagram.svgType) && diagram.state === ViewState.OPENED) {
-                            diagram.state = ViewState.MINIMIZED;
-                        }
-                    });
-                    const diagramToOpen = diagramStates[diagramToOpenIndex];
-
-                    // We open and push the SLD to the last position in the array, so it is displayed at the right of the others
-                    diagramToOpen.state = ViewState.OPENED;
-                    diagramStates.splice(diagramToOpenIndex, 1);
-                    diagramStates.push(diagramToOpen);
-                } else {
-                    console.info(
-                        'Diagram already opened : ' +
-                            diagramStates[diagramToOpenIndex].id +
-                            ' (' +
-                            diagramStates[diagramToOpenIndex].svgType +
-                            ')'
-                    );
-                    diagramStates[diagramToOpenIndex].needsToBlink = true;
-                }
-            } else {
-                // We minimize all the other OPENED SLD.
-                diagramStates.forEach((diagram) => {
-                    if (isSldType(diagram.svgType) && diagram.state === ViewState.OPENED) {
-                        diagram.state = ViewState.MINIMIZED;
-                    }
-                });
-                // And we add the new one.
-                diagramStates.push({
-                    id: action.id as UUID,
-                    svgType: action.svgType,
-                    state: ViewState.OPENED,
-                });
-            }
-
-            // If there is already a diagram in fullscreen mode, the new opened SLD will take its place.
-            if (state.fullScreenDiagram?.id) {
-                state.fullScreenDiagram = {
-                    id: action.id,
-                    svgType: action.svgType,
-                };
-            }
-        }
-        state.diagramStates = diagramStates;
-
         if (action.svgType === DiagramType.SUBSTATION) {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
@@ -1553,151 +1220,32 @@ export const reducer = createReducer(initialState, (builder) => {
                 voltageLevelIds: [action.id as UUID],
             };
         }
+
+        // Switch to the grid layout in order to see the newly opened diagram
+        if (
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+        ) {
+            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+        }
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
-        const diagramStates = state.diagramStates;
         const uniqueIds = [...new Set(action.ids)];
-        // remove all existing NAD from store, we replace them with lists passed as param
-        const diagramStatesWithoutNad = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
 
-        state.diagramStates = diagramStatesWithoutNad.concat(
-            uniqueIds.map((id) => ({
-                id: id as UUID,
-                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                state: ViewState.OPENED,
-            }))
-        );
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
             voltageLevelIds: uniqueIds as UUID[],
         };
-    });
 
-    builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
-        const diagramStates = state.diagramStates;
-
-        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // For network area diagrams, the ID is irrelevant, we will minimize all the NETWORK_AREA_DIAGRAMs in the state.diagramStates.
-            diagramStates.forEach((diagram) => {
-                if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                    diagram.state = ViewState.MINIMIZED;
-                }
-            });
-        } else {
-            // For the other types of diagrams, we will update the corresponding diagram.
-            const diagramToMinimizeIndex = diagramStates.findIndex(
-                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-            );
-            if (diagramToMinimizeIndex >= 0) {
-                diagramStates[diagramToMinimizeIndex].state = ViewState.MINIMIZED;
-            }
+        // Switch to the grid layout in order to see the newly opened diagram
+        if (
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+        ) {
+            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
         }
-        state.diagramStates = diagramStates;
-    });
-
-    builder.addCase(TOGGLE_PIN_DIAGRAM, (state, action: TogglePinDiagramAction) => {
-        const diagramStates = state.diagramStates;
-
-        // search targeted diagram among the diagramStates
-        const diagramToPinToggleIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-        );
-        if (diagramToPinToggleIndex >= 0) {
-            if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                // If the current NETWORK_AREA_DIAGRAM is PINNED, we set all NETWORK_AREA_DIAGRAM to OPENED. Otherwise, we set them to PINNED.
-                const newStateForNads =
-                    diagramStates[diagramToPinToggleIndex].state === ViewState.PINNED
-                        ? ViewState.OPENED
-                        : ViewState.PINNED;
-                diagramStates.forEach((diagram) => {
-                    if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                        diagram.state = newStateForNads;
-                    }
-                });
-            } else if (diagramStates[diagramToPinToggleIndex].state !== ViewState.PINNED) {
-                // If the current SLD is minimized or opened, we pin it.
-                diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
-            } else {
-                // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
-                // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
-                const currentlyOpenedDiagramIndex = diagramStates.findIndex(
-                    (diagram) =>
-                        diagram.state === ViewState.OPENED &&
-                        (diagram.svgType === DiagramType.SUBSTATION || diagram.svgType === DiagramType.VOLTAGE_LEVEL)
-                );
-                if (currentlyOpenedDiagramIndex >= 0) {
-                    diagramStates[diagramToPinToggleIndex].state = ViewState.MINIMIZED;
-                } else {
-                    diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
-                }
-            }
-        }
-
-        state.diagramStates = diagramStates;
-    });
-
-    builder.addCase(CLOSE_DIAGRAM, (state, action: CloseDiagramAction) => {
-        let diagramStates = state.diagramStates;
-
-        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-            // If we close a NETWORK_AREA_DIAGRAM, we close all of them.
-            diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
-        } else {
-            // If we close another type of diagram, we only remove one.
-            const diagramToCloseIndex = diagramStates.findIndex(
-                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
-            );
-            if (diagramToCloseIndex >= 0) {
-                diagramStates.splice(diagramToCloseIndex, 1);
-            }
-        }
-
-        state.diagramStates = diagramStates;
-    });
-
-    builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
-        const idsToClose = new Set(action.ids);
-        state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
-    });
-
-    builder.addCase(LOAD_NAD_FROM_CONFIG, (state, action: LoadNadFromConfigAction) => {
-        // Reset depth to zero
-        state.networkAreaDiagramDepth = 0;
-
-        // Reset the potential movements stored for this particular NAD
-        state.nadNodeMovements = state.nadNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.nadConfigUuid
-        );
-        state.nadTextNodeMovements = state.nadTextNodeMovements.filter(
-            (movement) => movement.nadIdentifier !== action.nadConfigUuid
-        );
-
-        // We close all the other NAD ...
-        let diagramStates = state.diagramStates;
-        diagramStates = diagramStates.filter((diagram) => !isNadType(diagram.svgType));
-        // ... and create the new NAD
-        diagramStates.push({
-            id: action.nadConfigUuid as UUID,
-            name: action.nadName,
-            svgType: DiagramType.NAD_FROM_CONFIG,
-            state: ViewState.OPENED,
-        });
-        state.diagramStates = diagramStates;
-        state.latestDiagramEvent = {
-            diagramType: DiagramType.NAD_FROM_CONFIG,
-            eventType: DiagramEventType.CREATE,
-            nadFromConfigUuid: action.nadConfigUuid as UUID,
-        };
-    });
-
-    builder.addCase(STOP_DIAGRAM_BLINK, (state, _action: StopDiagramBlinkAction) => {
-        state.diagramStates.forEach((diagram) => {
-            if (diagram.needsToBlink) {
-                diagram.needsToBlink = undefined;
-            }
-        });
     });
 
     builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {
@@ -1718,12 +1266,11 @@ export const reducer = createReducer(initialState, (builder) => {
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
             const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
+                    diagramId: action.diagramId,
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
@@ -1741,12 +1288,11 @@ export const reducer = createReducer(initialState, (builder) => {
         STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
             const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadTextNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
+                    diagramId: action.diagramId,
                     equipmentId: action.equipmentId,
                     shiftX: action.shiftX,
                     shiftY: action.shiftY,
@@ -1759,13 +1305,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 correspondingMovement[0].connectionShiftX = action.connectionShiftX;
                 correspondingMovement[0].connectionShiftY = action.connectionShiftY;
             }
-        }
-    );
-
-    builder.addCase(
-        NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
-        (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
-            state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
         }
     );
 
@@ -1914,6 +1453,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     });
+
+    builder.addCase(
+        SET_COMPUTING_STATUS_INFOS,
+        (state, action: SetComputingStatusParametersAction<ParameterizedComputingType>) => {
+            state.computingStatusParameters[action.computingType] = action.computingStatusParameters;
+        }
+    );
 
     builder.addCase(SET_COMPUTATION_STARTING, (state, action: SetComputationStartingAction) => {
         state.computationStarting = action.computationStarting;

@@ -8,9 +8,18 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
-import { fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport } from '../services/study';
+import { fetchNodeReportLogs, fetchNodeSeverities, fetchParentNodesReport, fetchLogMatches } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Log, Report, ReportLog, ReportSeverity, ReportType, SeverityLevel } from '../utils/report/report.type';
+import {
+    MatchPosition,
+    PagedLogs,
+    PagedReportLogs,
+    Report,
+    ReportLog,
+    ReportSeverity,
+    ReportType,
+    SeverityLevel,
+} from '../utils/report/report.type';
 import { getContainerDefaultSeverityList, REPORT_SEVERITY } from '../utils/report/report-severity';
 import { mapReportLogs } from '../utils/report/report-log.mapper';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE, GLOBAL_REPORT_NODE_LABEL } from '../utils/report/report.constant';
@@ -70,13 +79,23 @@ export const useReportFetcher = (
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
+    (reportId: string, reportType?: ReportType) => Promise<SeverityLevel[]> | undefined,
     (
         reportId: string,
         severityList: string[],
+        messageFilter: string,
         reportType: ReportType,
-        filterMessage: string
-    ) => Promise<Log[]> | undefined,
-    (reportId: string, reportType?: ReportType) => Promise<SeverityLevel[]> | undefined,
+        page: number,
+        size: number
+    ) => Promise<PagedLogs> | undefined,
+    (
+        reportId: string,
+        severityList: string[],
+        messageFilter: string,
+        reportType: ReportType,
+        searchTerm: string,
+        pageSize: number
+    ) => Promise<MatchPosition[]> | undefined,
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -134,37 +153,60 @@ export const useReportFetcher = (
         [currentNode, currentRootNetworkUuid, fetch, computingAndNetworkModificationType, studyUuid]
     );
 
-    const fetchReportLogs = useCallback(
-        (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
+    const fetchLogsMatches = useCallback(
+        (
+            reportId: string,
+            severityList: string[],
+            messageFilter: string,
+            reportType: ReportType,
+            searchTerm: string,
+            pageSize: number
+        ) => {
             if (!studyUuid || !currentRootNetworkUuid) {
                 return;
             }
-            let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
-            if (reportType === ReportType.GLOBAL) {
-                fetchPromise = (severityList: string[]) =>
-                    fetchNodeReportLogs(
-                        studyUuid,
-                        currentNode!.id,
-                        currentRootNetworkUuid,
-                        null,
-                        severityList,
-                        messageFilter,
-                        true
-                    );
-            } else {
-                fetchPromise = (severityList: string[], reportId: string) =>
-                    fetchNodeReportLogs(
-                        studyUuid,
-                        currentNode!.id,
-                        currentRootNetworkUuid,
-                        reportId,
-                        severityList,
-                        messageFilter,
-                        false
-                    );
+            return fetchLogMatches(
+                studyUuid,
+                currentNode!.id,
+                currentRootNetworkUuid,
+                reportId,
+                severityList,
+                messageFilter,
+                reportType === ReportType.GLOBAL,
+                searchTerm,
+                pageSize
+            );
+        },
+        [currentNode, currentRootNetworkUuid, studyUuid]
+    );
+
+    const fetchLogs = useCallback(
+        (
+            reportId: string,
+            severityList: string[],
+            messageFilter: string,
+            reportType: ReportType,
+            page: number = 0,
+            size: number
+        ) => {
+            if (!studyUuid || !currentRootNetworkUuid) {
+                return;
             }
-            return fetchPromise(severityList, reportId).then((r) => {
-                return mapReportLogs(prettifyReportLogMessage(r, nodesNames));
+            return fetchNodeReportLogs(
+                studyUuid,
+                currentNode!.id,
+                currentRootNetworkUuid,
+                reportId,
+                severityList,
+                messageFilter,
+                reportType === ReportType.GLOBAL,
+                page,
+                size
+            ).then((r: PagedReportLogs) => {
+                return {
+                    ...r,
+                    content: mapReportLogs(prettifyReportLogMessage(r.content, nodesNames)),
+                };
             });
         },
         [currentNode, currentRootNetworkUuid, studyUuid, nodesNames]
@@ -191,5 +233,5 @@ export const useReportFetcher = (
         [currentNode, studyUuid, currentRootNetworkUuid]
     );
 
-    return [isLoading, fetchRawParentReport, fetchReportLogs, fetchReportSeverities];
+    return [isLoading, fetchRawParentReport, fetchReportSeverities, fetchLogs, fetchLogsMatches];
 };

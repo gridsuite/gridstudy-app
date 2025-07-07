@@ -11,19 +11,31 @@ import {
     OptionalServicesStatus,
     UseParametersBackendReturnProps,
 } from '@gridsuite/commons-ui';
-import { AppState, NotificationType, StudyUpdated, StudyUpdatedEventData } from '../../../redux/reducer';
+import { AppState, StudyUpdated } from '../../../redux/reducer';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import {
+    ComputationParametersUpdatedEventData,
+    isComputationParametersUpdatedNotification,
+} from 'types/notification-types';
+
+export const haveComputationParametersChanged = (
+    type: ComputingType,
+    computationParametersUpdatedEventData: ComputationParametersUpdatedEventData
+) => {
+    return (
+        computationParametersUpdatedEventData.headers &&
+        isValidComputingType(computationParametersUpdatedEventData.headers.computationType) &&
+        computationParametersUpdatedEventData.headers.computationType === type
+    );
+};
 
 export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
-    const studyUpdatedEventData = studyUpdated?.eventData as StudyUpdatedEventData;
-
-    return (
-        studyUpdatedEventData.headers &&
-        studyUpdatedEventData.headers.updateType === NotificationType.COMPUTATION_PARAMETERS_UPDATED &&
-        isValidComputingType(studyUpdatedEventData.headers.computationType) &&
-        studyUpdatedEventData.headers.computationType === type
-    );
+    const studyUpdatedEventData = studyUpdated?.eventData;
+    if (isComputationParametersUpdatedNotification(studyUpdatedEventData)) {
+        return haveComputationParametersChanged(type, studyUpdatedEventData);
+    }
+    return false;
 };
 
 export const useParametersNotification = <T extends ComputingType>(

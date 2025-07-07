@@ -68,7 +68,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getConnectivityWithPositionValidationSchema(true),
         ...getCharacteristicsFormValidationSchema(true),
     })
@@ -279,7 +279,6 @@ const ShuntCompensatorModificationDialog = ({
                 titleId="ModifyShuntCompensator"
                 open={open}
                 disabledSave={disableSave}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

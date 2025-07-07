@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -15,8 +15,10 @@ import { UUID } from 'crypto';
 import {
     Assignment,
     AttachLineInfo,
+    BalancesAdjustmentInfos,
     BatteryCreationInfos,
     BatteryModificationInfos,
+    CreateCouplingDeviceInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -29,6 +31,7 @@ import {
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
+    NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
@@ -44,7 +47,7 @@ import {
     VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
-import { NetworkModificationInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1680,12 +1683,24 @@ export function fetchNetworkModifications(
     studyUuid: UUID | null,
     nodeUuid: string,
     onlyStashed: boolean
-): Promise<NetworkModificationInfos[]> {
+): Promise<NetworkModificationMetadata[]> {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('onlyStashed', onlyStashed.toString());
     urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
+    console.debug(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl);
+}
+
+export function fetchExcludedNetworkModifications(
+    studyUuid: UUID | null,
+    nodeUuid: string
+): Promise<ExcludedNetworkModifications[]> {
+    console.info('Fetching excluded network modifications by root networks for nodeUuid : ', nodeUuid);
+    const urlSearchParams = new URLSearchParams();
+    const modificationsGetUrl = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/excluded-network-modifications?';
+    urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
@@ -2001,5 +2016,66 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
         }),
+    });
+}
+
+export function createCouplingDevice({
+    createCouplingDeviceInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    createCouplingDeviceInfos: CreateCouplingDeviceInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating coupling device');
+    } else {
+        console.info('Creating coupling device');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createCouplingDeviceInfos),
+    });
+}
+
+export function balancesAdjustment({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    ...balancesAdjustmentInfos
+}: Omit<BalancesAdjustmentInfos, 'uuid'> & NetworkModificationRequestInfos) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+        ...balancesAdjustmentInfos,
+    });
+
+    let balancesAdjustmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        console.info('Updating balances adjustment ', body);
+        balancesAdjustmentUrl = balancesAdjustmentUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating balances adjustment ', body);
+    }
+
+    return backendFetchText(balancesAdjustmentUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     });
 }

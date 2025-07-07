@@ -10,17 +10,15 @@ import { useCallback, useMemo, useRef } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
 import { mappingTabs, SUFFIX_TYPES } from './sensitivity-analysis-result-utils.js';
-import { CustomAGGrid, CustomAGGridProps } from '@gridsuite/commons-ui';
+import { CustomAGGrid, CustomAGGridProps, ComputingType } from '@gridsuite/commons-ui';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
-import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
 import { SensiKind, SENSITIVITY_AT_NODE, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
@@ -34,6 +32,12 @@ import type {
 } from 'ag-grid-community';
 import { Sensitivity } from '../../../services/study/sensitivity-analysis.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 
 function isColDef(col: ColDef | ColGroupDef): col is ColDef {
     return (col as ColDef).field !== undefined;
@@ -103,8 +107,6 @@ function SensitivityAnalysisResult({
             pinned?: boolean;
             maxWidth?: number;
         }) => {
-            const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
-
             return makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: labelId }),
                 colId: field,
@@ -116,14 +118,17 @@ function SensitivityAnalysisResult({
                         table: SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
                         tab: mappingTabs(sensiKind, nOrNkIndex),
                     },
-                    filterComponent: isNum ? undefined : CustomAggridAutocompleteFilter,
+                    filterComponent: CustomAggridComparatorFilter,
                     filterComponentParams: {
                         filterParams: {
+                            dataType: isNum ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
+                            comparators: isNum
+                                ? Object.values(FILTER_NUMBER_COMPARATORS)
+                                : [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
                             type: AgGridFilterType.SensitivityAnalysis,
                             tab: mappingTabs(sensiKind, nOrNkIndex),
                             updateFilterCallback: onFilter,
                         },
-                        options: filterOptions,
                     },
                 },
                 maxWidth: maxWidth,
@@ -132,7 +137,7 @@ function SensitivityAnalysisResult({
                 pinned: pinned,
             });
         },
-        [filtersDef, intl, nOrNkIndex, onFilter, sensiKind]
+        [intl, nOrNkIndex, onFilter, sensiKind]
     );
 
     const columnsDefs = useMemo(() => {

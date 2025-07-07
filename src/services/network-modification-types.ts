@@ -789,3 +789,58 @@ export interface TopologyVoltageLevelModificationInfos {
     equipmentId: string;
     equipmentAttributeModificationList: EquipmentAttributeModificationInfos[];
 }
+
+export type CouplingDeviceInfos = {
+    busbarSectionId1: string;
+    busbarSectionId2: string;
+};
+
+export interface CreateCouplingDeviceInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    couplingDeviceInfos: CouplingDeviceInfos;
+}
+
+export type NetworkModificationRequestInfos = {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+};
+
+export enum ShiftEquipmentType {
+    LOAD = 'LOAD',
+    GENERATOR = 'GENERATOR',
+}
+
+export enum ShiftType {
+    PROPORTIONAL = 'PROPORTIONAL',
+    BALANCED = 'BALANCED',
+}
+
+export enum BalanceType {
+    PROPORTIONAL_TO_GENERATION_P = 'PROPORTIONAL_TO_GENERATION_P',
+    PROPORTIONAL_TO_GENERATION_P_MAX = 'PROPORTIONAL_TO_GENERATION_P_MAX',
+    PROPORTIONAL_TO_LOAD = 'PROPORTIONAL_TO_LOAD',
+    PROPORTIONAL_TO_CONFORM_LOAD = 'PROPORTIONAL_TO_CONFORM_LOAD',
+}
+
+export type BalancesAdjustmentZoneInfos = {
+    name: string;
+    countries: string[];
+    netPosition: number;
+    shiftEquipmentType: ShiftEquipmentType;
+    shiftType: ShiftType;
+};
+
+export type BalancesAdjustmentInfos = {
+    uuid: UUID | null;
+    maxNumberIterations: number;
+    thresholdNetPosition: number;
+    countriesToBalance: string[];
+    balanceType: BalanceType;
+    withLoadFlow: boolean;
+    loadFlowParametersId: string | null;
+    withRatioTapChangers: boolean;
+    areas: BalancesAdjustmentZoneInfos[];
+};

@@ -49,6 +49,8 @@ import {
     commonButtonFr,
     componentsFr,
     componentsEn,
+    dndTableFr,
+    dndTableEn,
     equipmentsEn,
     equipmentsFr,
     networkModificationsEn,
@@ -60,6 +62,9 @@ import {
     parametersEn,
     parametersFr,
     NotificationsProvider,
+    MAP_BASEMAP_MAPBOX,
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -88,13 +93,7 @@ import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
-import {
-    PARAM_THEME,
-    basemap_style_theme_key,
-    MAP_BASEMAP_MAPBOX,
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-} from '../utils/config-params';
+import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
@@ -179,6 +178,10 @@ const lightTheme = createTheme({
     },
     reactflow: {
         backgroundColor: 'white',
+        labeledGroup: {
+            backgroundColor: 'white',
+            borderColor: '#11161A',
+        },
     },
 });
 
@@ -255,6 +258,10 @@ const darkTheme = createTheme({
     },
     reactflow: {
         backgroundColor: '#414141',
+        labeledGroup: {
+            backgroundColor: '#11161A',
+            borderColor: '#D9D9D9',
+        },
     },
 });
 
@@ -310,6 +317,7 @@ const messages = {
         ...multipleSelectionDialogEn,
         ...commonButtonEn,
         ...componentsEn,
+        ...dndTableEn,
         ...equipmentsEn,
         ...grid_en,
         ...backend_locale_en,
@@ -343,6 +351,7 @@ const messages = {
         ...multipleSelectionDialogFr,
         ...commonButtonFr,
         ...componentsFr,
+        ...dndTableFr,
         ...equipmentsFr,
         ...grid_fr,
         ...backend_locale_fr,

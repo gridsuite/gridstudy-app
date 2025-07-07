@@ -4,21 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
+import { useState, useCallback, useRef } from 'react';
+import { TextField, InputAdornment, IconButton, Box, SxProps } from '@mui/material';
 import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { useDebounce } from '@gridsuite/commons-ui';
 
 interface QuickSearchProps {
     currentResultIndex: number;
-    selectedReportId: string;
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
     resetSearch: () => void;
     placeholder?: string;
-    style?: React.CSSProperties;
+    sx?: SxProps;
 }
 
 const styles = {
@@ -29,13 +28,12 @@ const styles = {
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
     currentResultIndex,
-    selectedReportId,
     onSearch,
     onNavigate,
     resultCount,
     resetSearch,
     placeholder,
-    style = { minWidth: '30%' },
+    sx,
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
@@ -86,11 +84,6 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
         }
     }, [resetSearch]);
 
-    useEffect(() => {
-        setSearchTerm('');
-        setResultsCountDisplay(false);
-    }, [selectedReportId]);
-
     return (
         <TextField
             inputRef={inputRef}
@@ -98,7 +91,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder ? intl.formatMessage({ id: placeholder }) : ''}
-            sx={{ ...style }}
+            sx={{ maxWidth: '500px', ...sx }}
             size="small"
             InputProps={{
                 endAdornment: (

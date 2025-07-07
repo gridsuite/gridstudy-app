@@ -32,9 +32,17 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         displayedByDefault: false,
         displayedByDefaultForReportContainer: true,
     },
+    DETAIL: {
+        name: 'DETAIL',
+        level: 3,
+        colorName: 'MediumPurple',
+        colorHexCode: '#9370DB',
+        displayedByDefault: false,
+        displayedByDefaultForReportContainer: true,
+    },
     INFO: {
         name: 'INFO',
-        level: 3,
+        level: 4,
         colorName: 'mediumseagreen',
         colorHexCode: '#3CB371',
         displayedByDefault: true,
@@ -42,7 +50,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     },
     WARN: {
         name: 'WARN',
-        level: 4,
+        level: 5,
         colorName: 'orange',
         colorHexCode: '#FFA500',
         displayedByDefault: true,
@@ -50,7 +58,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     },
     ERROR: {
         name: 'ERROR',
-        level: 5,
+        level: 6,
         colorName: 'crimson',
         colorHexCode: '#DC143C',
         displayedByDefault: true,
@@ -58,7 +66,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     },
     FATAL: {
         name: 'FATAL',
-        level: 6,
+        level: 7,
         colorName: 'mediumorchid',
         colorHexCode: '#BA55D3',
         displayedByDefault: true,

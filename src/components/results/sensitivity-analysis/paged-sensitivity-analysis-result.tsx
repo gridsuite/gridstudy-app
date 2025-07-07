@@ -7,7 +7,8 @@
 
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
-    DATA_KEY_TO_FILTER_KEY,
+    DATA_KEY_TO_FILTER_KEY_N,
+    DATA_KEY_TO_FILTER_KEY_NK,
     DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
@@ -17,14 +18,13 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
@@ -158,16 +158,15 @@ function PagedSensitivityAnalysisResult({
             offset: typeof rowsPerPage === 'number' ? page * rowsPerPage : rowsPerPage.value,
             pageSize: typeof rowsPerPage === 'number' ? rowsPerPage : rowsPerPage.value,
             pageNumber: page,
-            ...Object.fromEntries(
-                filters?.map((elem) => [
-                    DATA_KEY_TO_FILTER_KEY[elem.column as keyof typeof DATA_KEY_TO_FILTER_KEY],
-                    elem.value,
-                ])
-            ),
             ...sortSelector,
         };
+        const mappedFilters = filters?.map((elem) => {
+            const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
+            const newColumn = keyMap[elem.column as keyof typeof keyMap];
+            return { ...elem, column: newColumn };
+        });
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector, mappedFilters)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 

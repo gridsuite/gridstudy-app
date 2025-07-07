@@ -7,9 +7,9 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, DialogContentText, Divider, Grid, Tab, Tabs, Typography } from '@mui/material';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from 'redux/reducer';
@@ -24,7 +24,6 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from 'services/study/loadflow';
-import { fetchSecurityAnalysisProviders, getSecurityAnalysisDefaultLimitReductions } from 'services/security-analysis';
 import {
     fetchDefaultSecurityAnalysisProvider,
     getSecurityAnalysisParameters,
@@ -36,9 +35,6 @@ import {
     getSensitivityAnalysisParameters,
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
-import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
-import { ShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
-import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
 import {
@@ -48,11 +44,8 @@ import {
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
 import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
-import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
-import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
-import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
@@ -62,8 +55,20 @@ import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
-import { useParametersBackend, LoadFlowParametersInline } from '@gridsuite/commons-ui';
+import {
+    LoadFlowParametersInline,
+    NetworkVisualizationParametersInline,
+    SecurityAnalysisParametersInline,
+    SensitivityAnalysisParametersInline,
+    ShortCircuitParametersInLine,
+    useParametersBackend,
+    ComputingType,
+    VoltageInitParametersInLine,
+    fetchSecurityAnalysisProviders,
+    getSecurityAnalysisDefaultLimitReductions,
+} from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
+import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
 
 enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
@@ -87,6 +92,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const attemptedLeaveParametersTabIndex = useSelector((state: AppState) => state.attemptedLeaveParametersTabIndex);
     const user = useSelector((state: AppState) => state.user);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
@@ -95,6 +102,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
@@ -105,7 +113,10 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
+    const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
+
     const computationStatus = useSelector((state: AppState) => state.computingStatus[tabValue as ComputingType]);
+
     const shortCircuitOneBusStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
@@ -183,9 +194,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     );
 
     const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
-
-    const useShortCircuitParameters = useGetShortCircuitParameters();
-
+    const shortCircuitParameters = useGetShortCircuitParameters();
+    const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
 
     useEffect(() => {
@@ -257,6 +267,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 return (
                     <LoadFlowParametersInline
                         studyUuid={studyUuid}
+                        language={languageLocal}
                         parametersBackend={loadFlowParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
                         enableDeveloperMode={enableDeveloperMode}
@@ -264,16 +275,22 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
             case TAB_VALUES.securityAnalysisParamsTabValue:
                 return (
-                    <SecurityAnalysisParameters
+                    <SecurityAnalysisParametersInline
+                        studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
                 return (
-                    <SensitivityAnalysisParameters
+                    <SensitivityAnalysisParametersInline
+                        studyUuid={studyUuid}
+                        currentNodeUuid={currentNodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.nonEvacuatedEnergyParamsTabValue:
@@ -285,9 +302,10 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 );
             case TAB_VALUES.shortCircuitParamsTabValue:
                 return (
-                    <ShortCircuitParameters
-                        useShortCircuitParameters={useShortCircuitParameters}
+                    <ShortCircuitParametersInLine
+                        studyUuid={studyUuid}
                         setHaveDirtyFields={setHaveDirtyFields}
+                        shortCircuitParameters={shortCircuitParameters}
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
@@ -295,7 +313,13 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
                 return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
-                return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
+                return (
+                    <VoltageInitParametersInLine
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                        voltageInitParameters={voltageInitParameters}
+                    />
+                );
             case TAB_VALUES.stateEstimationTabValue:
                 return (
                     <StateEstimationParameters
@@ -304,21 +328,33 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                     />
                 );
             case TAB_VALUES.networkVisualizationsParams:
-                return <NetworkVisualizationsParameters setHaveDirtyFields={setHaveDirtyFields} />;
+                return (
+                    <NetworkVisualizationParametersInline
+                        studyUuid={studyUuid}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                        user={user}
+                        parameters={networkVisualizationsParameters}
+                    />
+                );
         }
     }, [
         view,
         tabValue,
         studyUuid,
+        languageLocal,
         loadFlowParametersBackend,
         enableDeveloperMode,
         securityAnalysisParametersBackend,
+        currentNodeUuid,
+        currentRootNetworkUuid,
         sensitivityAnalysisBackend,
         nonEvacuatedEnergyBackend,
         useNonEvacuatedEnergyParameters,
-        useShortCircuitParameters,
+        shortCircuitParameters,
         user,
         useStateEstimationParameters,
+        networkVisualizationsParameters,
+        voltageInitParameters,
     ]);
 
     return (

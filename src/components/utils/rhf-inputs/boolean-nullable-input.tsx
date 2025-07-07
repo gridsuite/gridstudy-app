@@ -19,6 +19,7 @@ interface CheckboxNullableInputProps {
     formProps?: CheckboxProps;
     previousValue?: string;
     nullDisabled?: boolean;
+    style?: { color: string };
 }
 
 const CheckboxNullableInput = ({
@@ -28,6 +29,7 @@ const CheckboxNullableInput = ({
     formProps,
     previousValue,
     nullDisabled,
+    style,
 }: Readonly<CheckboxNullableInputProps>) => {
     const {
         field: { onChange, value },
@@ -72,6 +74,7 @@ const CheckboxNullableInput = ({
                               id: currentLabel,
                           })
                 }
+                sx={style ? { color: style.color } : undefined}
             />
             {previousValue && (
                 <HelperPreviousValue

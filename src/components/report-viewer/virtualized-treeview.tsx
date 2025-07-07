@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import { ReportItem, TreeviewItem } from './treeview-item';
 import { ReportTree } from '../../utils/report/report.type';
@@ -13,20 +13,15 @@ import { useTreeViewScroll } from './use-treeview-scroll';
 import { QuickSearch } from './QuickSearch';
 import { Box, Theme } from '@mui/material';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { reportStyles } from './report.styles';
 
 const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
     treeItem: {
         whiteSpace: 'nowrap',
     },
     labelIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
     }),
-    quickSearch: { minWidth: '100%', flexShrink: 0, marginBottom: 1 },
 };
 
 export interface TreeViewProps {
@@ -164,20 +159,16 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     }, []);
 
     return (
-        <Box sx={styles.container}>
-            <Box sx={styles.quickSearch}>
-                <QuickSearch
-                    currentResultIndex={currentResultIndex}
-                    selectedReportId={reportTree.id}
-                    onSearch={handleSearch}
-                    onNavigate={handleNavigate}
-                    resultCount={searchResults.length}
-                    resetSearch={resetSearch}
-                    placeholder="searchPlaceholderLogsTreeStructure"
-                    style={{ minWidth: '80%' }}
-                />
-            </Box>
-            <Box sx={{ flexGrow: 1 }}>
+        <Box sx={reportStyles.mainContainer}>
+            <QuickSearch
+                currentResultIndex={currentResultIndex}
+                onSearch={handleSearch}
+                onNavigate={handleNavigate}
+                resultCount={searchResults.length}
+                resetSearch={resetSearch}
+                placeholder="searchPlaceholderLogsTreeStructure"
+            />
+            <Box sx={{ flex: 1 }}>
                 <AutoSizer>
                     {({ height, width }) => (
                         <FixedSizeList

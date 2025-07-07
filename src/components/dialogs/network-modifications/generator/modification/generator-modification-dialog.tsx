@@ -119,7 +119,7 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_NAME]: yup.string().nullable(),
         [ENERGY_SOURCE]: yup.string().nullable(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
         [MINIMUM_ACTIVE_POWER]: yup
@@ -413,7 +413,6 @@ export default function GeneratorModificationDialog({
                 titleId="ModifyGenerator"
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
