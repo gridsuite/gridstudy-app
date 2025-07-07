@@ -220,11 +220,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             // Repositioning the nodes with specified positions
             if (props.customPositions.length > 0) {
                 props.customPositions.forEach((position) => {
-                    diagramViewer.moveNodeToCoordinates(
-                        position.voltageLevelId,
-                        position.xposition,
-                        position.yposition
-                    );
+                    if (position.xposition !== undefined && position.yposition !== undefined) {
+                        diagramViewer.moveNodeToCoordinates(
+                            position.voltageLevelId,
+                            position.xposition,
+                            position.yposition
+                        );
+                    }
                 });
             }
             diagramViewerRef.current = diagramViewer;
