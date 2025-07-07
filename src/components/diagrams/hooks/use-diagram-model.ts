@@ -272,7 +272,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                     diagrams[diagram.diagramUuid] as NetworkAreaDiagram
                                 ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
                                 positions: mergePositions(
-                                    (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions,
+                                    (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
                                     data.metadata as DiagramMetadata
                                 ),
                             }),
@@ -381,8 +381,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         ]
     );
 
-    const updateDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
+    const updateDiagramAndFetch = useCallback(
+        (diagramParams: DiagramParams, fetch: boolean) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance doesn't manage this type of diagram
                 return;
@@ -398,9 +398,25 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 ...diagramParams,
             };
             setDiagrams(newDiagrams);
-            fetchDiagramSvg(newDiagrams[diagramParams.diagramUuid]);
+            if (fetch) {
+                fetchDiagramSvg(newDiagrams[diagramParams.diagramUuid]);
+            }
         },
         [diagrams, fetchDiagramSvg, filterDiagramParams]
+    );
+
+    const updateDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            return updateDiagramAndFetch(diagramParams, true);
+        },
+        [updateDiagramAndFetch]
+    );
+
+    const updateDiagramPositions = useCallback(
+        (diagramParams: DiagramParams) => {
+            return updateDiagramAndFetch(diagramParams, false);
+        },
+        [updateDiagramAndFetch]
     );
 
     const removeDiagram = useCallback((id: UUID) => {
@@ -468,5 +484,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
 
-    return { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram };
+    return {
+        diagrams,
+        loadingDiagrams,
+        diagramErrors,
+        globalError,
+        removeDiagram,
+        createDiagram,
+        updateDiagram,
+        updateDiagramPositions,
+    };
 };

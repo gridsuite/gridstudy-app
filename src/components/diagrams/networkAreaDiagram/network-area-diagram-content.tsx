@@ -6,7 +6,7 @@
  */
 
 import { useLayoutEffect, useRef, useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
@@ -24,8 +24,7 @@ import {
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
-import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
+import { AppState } from 'redux/reducer';
 import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
@@ -34,7 +33,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
 import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
-import { createDiagramConfig } from '../../../services/explore';
+import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 
 import NodeContextMenu from './node-context-menu';
@@ -61,6 +60,8 @@ type NetworkAreaDiagramContentProps = {
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevelIds: () => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
+    readonly onMoveNode: (vlId: string, x: number, y: number) => void;
+    readonly customPositions: DiagramConfigPosition[];
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -74,18 +75,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onExpandVoltageLevel,
         onExpandAllVoltageLevelIds,
         onHideVoltageLevel,
+        onMoveNode,
     } = props;
-    const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
-    const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
-    const nadNodeMovementsRef = useRef<NadNodeMovement[]>([]);
-    nadNodeMovementsRef.current = nadNodeMovements;
-    const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
-    const nadTextNodeMovementsRef = useRef<NadTextMovement[]>([]);
-    nadTextNodeMovementsRef.current = nadTextNodeMovements;
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
@@ -97,13 +92,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
-            // It is possible to not have scalingFactors, so we only save the nodes movements if we have the needed value.
-            // TODO CHARLY here we should update the NAD's positions in the use-diagram-model DTO instead of storing it in the reducer
-            if (!!props.svgScalingFactor) {
-                dispatch(storeNetworkAreaDiagramNodeMovement(diagramId, equipmentId, x, y, props.svgScalingFactor));
+            if (onMoveNode) {
+                onMoveNode(equipmentId, x, y);
             }
         },
-        [dispatch, diagramId, props.svgScalingFactor]
+        [onMoveNode]
     );
 
     const onMoveTextNodeCallback = useCallback(
@@ -120,19 +113,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             connectionShiftXOrig: number,
             connectionShiftYOrig: number
         ) => {
-            // Dispatch the new position of the text node
-            dispatch(
-                storeNetworkAreaDiagramTextNodeMovement(
-                    diagramId,
-                    equipmentId,
-                    shiftX,
-                    shiftY,
-                    connectionShiftX,
-                    connectionShiftY
-                )
-            );
+            // TODO Not implemented yet
         },
-        [dispatch, diagramId]
+        []
     );
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
@@ -234,47 +217,23 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
 
-            // Repositioning the previously moved nodes
-            const correspondingMovements = nadNodeMovementsRef.current.filter(
-                // TODO CHARLY I think the old reducer storage thing for positions is not needed anymore
-                (movement) => movement.diagramId === diagramId
-            );
-            if (correspondingMovements.length > 0) {
-                correspondingMovements.forEach((movement) => {
-                    // It is possible to not have scalingFactors, so we only move the nodes if we have the needed value.
-                    if (!!movement.scalingFactor && !!props.svgScalingFactor) {
-                        let adjustedX = (movement.x / movement.scalingFactor) * props.svgScalingFactor;
-                        let adjustedY = (movement.y / movement.scalingFactor) * props.svgScalingFactor;
-                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, adjustedX, adjustedY);
-                    }
-                });
-            }
-
-            // Repositioning the previously moved text nodes
-            const correspondingTextMovements = nadTextNodeMovementsRef.current.filter(
-                (movement) => movement.diagramId === diagramId
-            );
-            if (correspondingTextMovements.length > 0) {
-                correspondingTextMovements.forEach((movement) => {
-                    // If the movement is due to a node move, adjust the text node relative to the node's movement
-                    // In case of text node movement adjust text node position
-                    diagramViewer.moveTextNodeToCoordinates(
-                        movement.equipmentId,
-                        movement.shiftX,
-                        movement.shiftY,
-                        movement.connectionShiftX,
-                        movement.connectionShiftY
+            // Repositioning the nodes with specified positions
+            if (props.customPositions.length > 0) {
+                props.customPositions.forEach((position) => {
+                    diagramViewer.moveNodeToCoordinates(
+                        position.voltageLevelId,
+                        position.xposition,
+                        position.yposition
                     );
                 });
             }
-
             diagramViewerRef.current = diagramViewer;
         }
     }, [
         props.svgType,
         props.svg,
         props.svgMetadata,
-        props.svgScalingFactor,
+        props.customPositions,
         diagramSizeSetter,
         onMoveNodeCallback,
         OnToggleHoverCallback,
