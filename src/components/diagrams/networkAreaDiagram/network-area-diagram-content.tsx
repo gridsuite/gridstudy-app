@@ -25,7 +25,11 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState, NadNodeMovement, NadTextMovement } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
+import {
+    openDiagram,
+    storeNetworkAreaDiagramNodeMovement,
+    storeNetworkAreaDiagramTextNodeMovement
+} from '../../../redux/actions';
 import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
@@ -161,10 +165,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
         if (mousePosition) {
             setSelectedVoltageLevelId(equipmentId);
-            setShouldDisplayMenu(true);
-            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+            if( isEditNadMode) {
+                setShouldDisplayMenu(true);
+                setMenuAnchorPosition(mousePosition ? {mouseX: mousePosition.x, mouseY: mousePosition.y} : null);
+            } else {
+                dispatch(openDiagram(equipmentId, DiagramType.VOLTAGE_LEVEL));
+            }
         }
-    }, []);
+    }, [isEditNadMode]);
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
@@ -210,7 +218,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 OnLeftClickCallback,
-                isEditNadMode,
+                true,
                 true,
                 NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
