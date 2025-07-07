@@ -17,7 +17,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
@@ -145,7 +145,7 @@ function SensitivityAnalysisResultTab({
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
                         </Tabs>
-                        <Box>{globalFiltersComponent}</Box>
+                        <Box sx={{ display: 'flex', flexGrow: 0 }}>{globalFiltersComponent}</Box>
                         <ExportButton
                             disabled={isCsvButtonDisabled}
                             onClick={handleExportResultAsCsv}
