@@ -20,11 +20,13 @@ import { ColDef } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
+import SaveNamingFilterDialog from './save-naming-filter-dialog';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
     SAVE_COLLECTION = 'SAVE_COLLECTION',
     EXPORT_CSV = 'EXPORT_CSV',
+    SAVE_FILTER = 'SAVE_FILTER',
 }
 
 interface SpreadsheetSaveOption {
@@ -54,6 +56,7 @@ export default function SaveSpreadsheetButton({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
     const saveCollectionDialogOpen = useStateBoolean(false);
+    const saveFilterDialogOpen = useStateBoolean(false);
     const { downloadCSVData } = useCsvExport();
     const language = useSelector((state: AppState) => state.computedLanguage);
 
@@ -98,10 +101,17 @@ export default function SaveSpreadsheetButton({
                 },
                 disabled: dataSize === 0,
             },
+            [SpreadsheetSaveOptionId.SAVE_FILTER]: {
+                id: SpreadsheetSaveOptionId.SAVE_FILTER,
+                label: 'spreadsheet/save/options/filter',
+                action: saveFilterDialogOpen.setTrue,
+                disabled: dataSize === 0,
+            },
         }),
         [
             customSaveDialogOpen.setTrue,
             saveCollectionDialogOpen.setTrue,
+            saveFilterDialogOpen.setTrue,
             dataSize,
             columns,
             downloadCSVData,
@@ -145,6 +155,7 @@ export default function SaveSpreadsheetButton({
                 nodeAliases={nodeAliases}
             />
             <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
+            <SaveNamingFilterDialog open={saveFilterDialogOpen} gridRef={gridRef} tableDefinition={tableDefinition} />
         </>
     );
 }
