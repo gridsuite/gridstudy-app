@@ -9,7 +9,6 @@ import {
     CustomFormProvider,
     mergeSx,
     MuiSelectInput,
-    parametersStyles,
     PopupConfirmationDialog,
     SubmitButton,
     UseParametersBackendReturnProps,
@@ -69,6 +68,7 @@ import {
 import { AppState } from 'redux/reducer';
 import LineSeparator from '../../commons/line-separator';
 import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
+import { parametersStyles } from '../util/styles';
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
