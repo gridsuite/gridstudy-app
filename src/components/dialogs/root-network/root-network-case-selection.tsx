@@ -73,7 +73,9 @@ export const RootNetworkCaseSelection = ({
                 </Grid>
                 <Typography m={1} component="span">
                     <Box fontWeight="fontWeightBold">
-                        {!selectedItem ? <FormattedMessage id={'rootNetwork.originalCaseRemoved'} /> : null}
+                        {!selectedItem && isModification ? (
+                            <FormattedMessage id={'rootNetwork.originalCaseRemoved'} />
+                        ) : null}
                     </Box>
                 </Typography>
             </Grid>
