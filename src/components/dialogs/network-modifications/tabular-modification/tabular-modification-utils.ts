@@ -170,7 +170,9 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         { id: RATED_S },
         { id: MIN_Q },
         { id: MAX_Q },
-        ...REACTIVE_CAPABILITY_CURVE_FIELDS.map((field) => { return { id : field.id }}),
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS.map((field) => {
+            return { id: field.id };
+        }),
         { id: TARGET_P },
         { id: TARGET_Q },
         { id: VOLTAGE_REGULATION_ON },
@@ -210,7 +212,9 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         { id: MAX_P },
         { id: MIN_Q },
         { id: MAX_Q },
-        ...REACTIVE_CAPABILITY_CURVE_FIELDS.map((field) => { return { id: field.id }}),
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS.map((field) => {
+            return { id: field.id };
+        }),
         { id: TARGET_P },
         { id: TARGET_Q },
         { id: PARTICIPATE },
