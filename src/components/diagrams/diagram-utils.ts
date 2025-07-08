@@ -35,13 +35,13 @@ export function buildPositionsFromNadMetadata(metadata: DiagramMetadata): Diagra
 }
 
 /**
- * Merge existing positions with new positions from NAD metadata.
+ * Adds to existingPositions the positions from the NAD metadata that are
+ * not already defined.
  *
  * @param existingPositions The existing positions array (can be empty)
  * @param nadMetadata The network area diagram metadata containing new positions
  * @returns A new array with merged positions
  */
-
 export function mergePositions(
     existingPositions: DiagramConfigPosition[],
     nadMetadata: DiagramMetadata | undefined
@@ -49,23 +49,20 @@ export function mergePositions(
     if (!nadMetadata) {
         return [...existingPositions];
     }
-    if (!existingPositions) {
-        return [];
-    }
 
     const positionsMap = new Map<string, DiagramConfigPosition>();
-
     // Add existing positions to the map
     existingPositions.forEach((pos) => {
         positionsMap.set(pos.voltageLevelId, pos);
     });
 
-    // Build positions from metadata
-    const newPositions = buildPositionsFromNadMetadata(nadMetadata);
+    const nadMetadataPositions = buildPositionsFromNadMetadata(nadMetadata);
 
     // Update map with new positions
-    newPositions.forEach((pos) => {
-        positionsMap.set(pos.voltageLevelId, pos);
+    nadMetadataPositions.forEach((position) => {
+        if (!positionsMap.has(position.voltageLevelId)) {
+            positionsMap.set(position.voltageLevelId, position);
+        }
     });
 
     // Convert map back to array

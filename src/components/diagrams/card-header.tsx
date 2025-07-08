@@ -9,17 +9,16 @@ import Box from '@mui/material/Box';
 import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 
 export const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme: Theme) => ({
-        padding: theme.spacing(0.5),
         paddingLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
         border:
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
@@ -50,7 +49,11 @@ interface CardHeaderProps {
 const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => {
     return (
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
-            <OverflowableText className="react-grid-dragHandle" sx={{ flexGrow: '1' }} text={title} />
+            <OverflowableText
+                className="react-grid-dragHandle"
+                sx={{ flexGrow: '1' }}
+                text={<Typography variant="caption">{title}</Typography>}
+            />
             <Box>
                 <Box
                     sx={{
@@ -58,7 +61,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => 
                         flexDirection: 'row',
                     }}
                 >
-                    <IconButton size="small" onClick={onClose}>
+                    <IconButton className="card-header-close-button" size="small" onClick={onClose}>
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 </Box>

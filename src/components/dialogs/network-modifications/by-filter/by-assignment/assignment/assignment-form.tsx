@@ -14,6 +14,7 @@ import {
     IntegerInput,
     SelectInput,
     SwitchInput,
+    TextInput,
     useFormatLabelWithUnit,
     usePrevious,
 } from '@gridsuite/commons-ui';
@@ -135,6 +136,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             return (
                 <SelectInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" options={options} size={'small'} />
             );
+        }
+
+        if (dataType === DataType.STRING) {
+            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
         }
 
         // by default is a numeric type
