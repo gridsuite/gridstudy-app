@@ -10,7 +10,7 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
-import { useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
+import { useCsvExport, useStateBoolean, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { SaveSpreadsheetCollectionDialog } from './save-spreadsheet-collection-dialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
@@ -105,7 +105,7 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.SAVE_FILTER,
                 label: 'spreadsheet/save/options/filter',
                 action: saveFilterDialogOpen.setTrue,
-                disabled: dataSize === 0,
+                disabled: dataSize === 0 || !FILTER_EQUIPMENTS[tableDefinition.type],
             },
         }),
         [
@@ -117,6 +117,7 @@ export default function SaveSpreadsheetButton({
             downloadCSVData,
             gridRef,
             tableDefinition.name,
+            tableDefinition.type,
             language,
         ]
     );
