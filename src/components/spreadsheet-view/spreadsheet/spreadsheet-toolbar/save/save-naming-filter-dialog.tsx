@@ -63,14 +63,13 @@ export default function SaveNamingFilterDialog({
             createFilter(filter, name, description, folderId)
                 .then(() => {
                     snackInfo({ messageTxt: intl.formatMessage({ id: 'FilterCreationSuccess' }) });
-                    handleClose();
                 })
                 .catch((err) => {
                     console.error('Failed to create filter', err);
                     snackError({ messageTxt: intl.formatMessage({ id: 'FilterCreationError' }) });
                 });
         },
-        [gridRef, tableDefinition.type, snackInfo, snackError, intl, handleClose]
+        [gridRef, tableDefinition.type, snackInfo, snackError, intl]
     );
 
     return studyUuid ? (
