@@ -193,8 +193,6 @@ export function LimitsSidePane({
         [currentNode, getValues]
     );
 
-    console.log('value : ', getValues(`${limitsGroupFormName}`));
-
     return (
         <Box sx={{ p: 2 }}>
             {!onlySelectedLimitsGroup && (

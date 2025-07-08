@@ -9,6 +9,7 @@ import { Box, Tab, Tabs, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
+    APPLICABIlITY,
     CURRENT_LIMITS,
     ID,
     OPERATIONAL_LIMITS_GROUPS,
@@ -28,6 +29,7 @@ import { LimitsGroupsContextualMenu } from './creation/limits-groups-contextual-
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
+import { APPLICABILITY } from '../../network/constants';
 
 const limitsStyles = {
     limitsBackground: {
@@ -50,25 +52,30 @@ const limitsStyles = {
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    limitsGroups1: OperationalLimitsGroup[];
-    indexSelectedLimitSet1: number | null;
-    indexSelectedLimitSet2: number | null;
-    setIndexSelectedLimitSet1: React.Dispatch<React.SetStateAction<number | null>>;
-    setIndexSelectedLimitSet2: React.Dispatch<React.SetStateAction<number | null>>;
+    limitsGroups: OperationalLimitsGroup[];
+    indexSelectedLimitSet: number | null;
+    setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+function generateUniqueId(baseName: string, names: string[]): string {
+    let finalId = baseName;
+    let found = false;
+    let increment = 1;
+    let suffix = '';
+    do {
+        found = names.includes(baseName + suffix, 0);
+        if (found) {
+            increment++;
+            suffix = '(' + increment + ')';
+            finalId = baseName + suffix;
+        }
+    } while (found);
+
+    return finalId;
 }
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
-    (
-        {
-            parentFormName,
-            limitsGroups1,
-            setIndexSelectedLimitSet1,
-            setIndexSelectedLimitSet2,
-            indexSelectedLimitSet1,
-            indexSelectedLimitSet2,
-        },
-        ref
-    ) => {
+    ({ parentFormName, limitsGroups, setIndexSelectedLimitSet, indexSelectedLimitSet }, ref) => {
         const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number | null>(0);
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
@@ -119,6 +126,22 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             [setMenuAnchorEl, setSelectedLimitGroupTabIndex, setActivatedByMenuTabIndex]
         );
 
+        // synchronisation of the selected limit set : tabs combine both side 1 and side 2 limits sets which are different
+        // therefore both have separated selection indexes
+        useEffect(() => {
+            if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups.length) {
+                const selectedGroupStr: string = limitsGroups[selectedLimitGroupTabIndex].id;
+                setIndexSelectedLimitSet(
+                    limitsGroups.findIndex(
+                        (limitsGroup: OperationalLimitsGroup) => limitsGroup && limitsGroup.id === selectedGroupStr
+                    )
+                );
+            } else {
+                setSelectedLimitGroupTabIndex(null);
+                setIndexSelectedLimitSet(null);
+            }
+        }, [selectedLimitGroupTabIndex, limitsGroups, setIndexSelectedLimitSet, selectedLimitsGroups1]);
+
         const handleCloseMenu = useCallback(() => {
             setMenuAnchorEl(null);
             setActivatedByMenuTabIndex(null);
@@ -126,44 +149,42 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const startEditingLimitsGroup = useCallback(
             (index: number, name: string | null) => {
-                if (name === null) {
-                    name = limitsGroups1[index].id;
-                }
+                name ??= limitsGroups[index].id;
                 setEditionError('');
                 setEditingTabIndex(index);
                 setEditedLimitGroupName(name);
                 handleCloseMenu();
             },
-            [setEditingTabIndex, handleCloseMenu, limitsGroups1]
+            [setEditingTabIndex, handleCloseMenu, limitsGroups]
         );
 
         // synchronisation of the selected limit set : tabs combine both side 1 and side 2 limits sets which are different
         // therefore both have separated selection indexes
         useEffect(() => {
-            if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups1.length) {
-                const selectedGroupStr: string = limitsGroups1[selectedLimitGroupTabIndex].id;
-                setIndexSelectedLimitSet1(
-                    limitsGroups1.findIndex(
+            if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups.length) {
+                const selectedGroupStr: string = limitsGroups[selectedLimitGroupTabIndex].id;
+                setIndexSelectedLimitSet(
+                    limitsGroups.findIndex(
                         (limitsGroup: OperationalLimitsGroup) => limitsGroup && limitsGroup.id === selectedGroupStr
                     )
                 );
             } else {
                 setSelectedLimitGroupTabIndex(null);
-                setIndexSelectedLimitSet1(null);
-                setIndexSelectedLimitSet2(null);
+                setIndexSelectedLimitSet(null);
             }
-        }, [selectedLimitGroupTabIndex, limitsGroups1, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2]);
+        }, [selectedLimitGroupTabIndex, limitsGroups, setIndexSelectedLimitSet]);
         useEffect(() => {
             // as long as there are limit sets, one should be selected
-            if (selectedLimitGroupTabIndex === null && limitsGroups1.length > 0) {
+            if (selectedLimitGroupTabIndex === null && limitsGroups.length > 0) {
                 setSelectedLimitGroupTabIndex(0);
             }
-        }, [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex, limitsGroups1]);
+        }, [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex, limitsGroups]);
 
-        const appendEmptyOperationalLimitsGroup = useCallback(
+        const prependEmptyOperationalLimitsGroup = useCallback(
             (formName: string, id: string) => {
-                let appendIndex = getValues(formName).length;
-                if (appendIndex === 0) {
+                setEditingTabIndex(0);
+                let operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
+                if (operationalLimiSetGroups?.length === 0) {
                     setValue(formName, []);
                 }
 
@@ -186,43 +207,13 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                             emptyTemporaryLimit,
                         ],
                         [PERMANENT_LIMIT]: null,
+                        [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     },
                 };
-                setValue(`${formName}[${appendIndex}]`, newLimitsGroup);
+                setValue(formName, [newLimitsGroup, ...getValues(formName)]);
             },
             [getValues, setValue]
         );
-
-        // synchronizeOperationalLimitsGroups : all the limit sets from both sides have to be
-        // in both limitsGroups1 and limitsGroups2, even if they don't contain any data
-        /*useEffect(() => {
-        // no synchronization while editing
-        if (editingTabIndex === -1) {
-            limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
-                if (
-                    !isBlankOrEmpty(limitsGroup1.id) &&
-                    !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)
-                ) {
-                    appendEmptyOperationalLimitsGroup(
-                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_2}`,
-                        limitsGroup1.id
-                    );
-                }
-            });
-
-            limitsGroups2.forEach((limitsGroup2: OperationalLimitsGroup) => {
-                if (
-                    !isBlankOrEmpty(limitsGroup2.id) &&
-                    !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)
-                ) {
-                    appendEmptyOperationalLimitsGroup(
-                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-                        limitsGroup2.id
-                    );
-                }
-            });
-        }
-    }, [appendEmptyOperationalLimitsGroup, editingTabIndex, limitsGroups1, parentFormName]);*/
 
         const finishEditingLimitsGroup = useCallback(() => {
             if (editingTabIndex !== -1) {
@@ -232,12 +223,23 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 }
 
                 // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
-                const oldName: string = limitsGroups1[editingTabIndex].id;
-                const indexInLs1: number | undefined = limitsGroups1.findIndex(
+                const oldName: string = limitsGroups[editingTabIndex].id;
+                const indexInLs1: number | undefined = limitsGroups.findIndex(
                     (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
                 );
 
                 // checks if a limit set with that name already exists
+                const sameNameInLs1 = limitsGroups
+                    .filter((ls, index: number) => index !== indexInLs1)
+                    .find(
+                        (limitsGroup: OperationalLimitsGroup) => limitsGroup.id.trim() === editedLimitGroupName.trim()
+                    );
+
+                if (sameNameInLs1) {
+                    setEditionError('LimitSetCreationDuplicateError');
+                    return;
+                }
+
                 if (indexInLs1 !== undefined) {
                     setValue(
                         `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${indexInLs1}].${ID}`,
@@ -257,7 +259,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             getValues,
             editingTabIndex,
             editedLimitGroupName,
-            limitsGroups1,
+            limitsGroups,
             setEditingTabIndex,
             setSelectedLimitGroupTabIndex,
         ]);
@@ -272,10 +274,16 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         const addNewLimitSet = useCallback(() => {
-            const newIndex: number = limitsGroups1.length;
-            appendEmptyOperationalLimitsGroup(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`, '');
-            startEditingLimitsGroup(newIndex, `DEFAULT`);
-        }, [limitsGroups1.length, appendEmptyOperationalLimitsGroup, parentFormName, startEditingLimitsGroup]);
+            const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
+            const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
+            let id = 'DEFAULT';
+            if (operationalLimiSetGroups?.length > 0) {
+                const ids: string[] = operationalLimiSetGroups.map((l) => l.id);
+                id = generateUniqueId('DEFAULT', ids);
+            }
+            prependEmptyOperationalLimitsGroup(formName, id);
+            startEditingLimitsGroup(0, id);
+        }, [parentFormName, getValues, prependEmptyOperationalLimitsGroup, startEditingLimitsGroup]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 
@@ -289,7 +297,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     sx={tabStyles.listDisplay}
                     visibleScrollbar
                 >
-                    {limitsGroups1.map((opLg: OperationalLimitsGroup, index: number) => (
+                    {limitsGroups.map((opLg: OperationalLimitsGroup, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
                             onMouseLeave={() => setHoveredRowIndex(-1)}
@@ -338,10 +346,8 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 </Tabs>
                 <LimitsGroupsContextualMenu
                     parentFormName={parentFormName}
-                    indexSelectedLimitSet1={indexSelectedLimitSet1}
-                    indexSelectedLimitSet2={indexSelectedLimitSet2}
-                    setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
-                    setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
+                    indexSelectedLimitSet={indexSelectedLimitSet}
+                    setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                     menuAnchorEl={menuAnchorEl}
                     handleCloseMenu={handleCloseMenu}
                     activatedByMenuTabIndex={activatedByMenuTabIndex}

@@ -42,7 +42,6 @@ export const SelectedOperationalLimitGroup = ({
                 options={opLimitsGroupsNames}
                 label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
-                allowNewValue
             />
         </Box>
     );

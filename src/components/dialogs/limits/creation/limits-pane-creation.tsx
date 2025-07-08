@@ -56,8 +56,8 @@ export function LimitsPaneCreation({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneCreationProps>) {
-    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number | null>(null);
-    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | null>(null);
+    const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
+
     const myRef: any = useRef<any>(null);
 
     const limitsGroups1: OperationalLimitsGroup[] = useWatch({
@@ -104,19 +104,18 @@ export function LimitsPaneCreation({
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}
-                        limitsGroups1={limitsGroups1}
-                        indexSelectedLimitSet1={indexSelectedLimitSet1}
-                        indexSelectedLimitSet2={indexSelectedLimitSet2}
-                        setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
-                        setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
+                        limitsGroups={limitsGroups1}
+                        indexSelectedLimitSet={indexSelectedLimitSet}
+                        setIndexSelectedLimitSet={setIndexSelectedLimitSet}
+
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
-                    {indexSelectedLimitSet1 !== null &&
+                    {indexSelectedLimitSet !== null &&
                         limitsGroups1.map(
                             (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
-                                indexSelectedLimitSet1 != null &&
-                                index === indexSelectedLimitSet1 && (
+                                indexSelectedLimitSet != null &&
+                                index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id + 'leftPanel'}
                                         limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}`}
