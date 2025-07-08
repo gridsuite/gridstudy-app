@@ -172,3 +172,7 @@ export const VSC_CONVERTER_MODE: Record<VscConverterMode, VscConverterModeValue>
         label: 'side1InverterSide2Rectifier',
     },
 };
+
+export const NUMBER = 'number';
+export const ENUM = 'enum';
+export const BOOLEAN = 'boolean';

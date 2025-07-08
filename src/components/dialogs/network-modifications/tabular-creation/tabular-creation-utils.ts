@@ -59,11 +59,14 @@ import {
 } from 'components/utils/field-constants';
 import { IntlShape } from 'react-intl';
 import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
+import { BOOLEAN, CONNECTION_DIRECTIONS, ENUM, NUMBER, SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 
 export interface TabularCreationField {
     id: string;
     required?: boolean;
     requiredIf?: { id: string };
+    type?: string;
+    options?: string[];
 }
 
 export interface TabularCreationFields {
@@ -154,15 +157,25 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
         { id: EQUIPMENT_NAME, required: false },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true },
+        { id: CONNECTED, required: true, type: BOOLEAN },
         { id: CONNECTION_NAME, required: false },
-        { id: CONNECTION_DIRECTION, required: false },
+        {
+            id: CONNECTION_DIRECTION,
+            required: false,
+            type: ENUM,
+            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
+        },
         { id: CONNECTION_POSITION, required: false },
-        { id: MAXIMUM_SECTION_COUNT, required: true },
-        { id: SECTION_COUNT, required: true },
-        { id: SHUNT_COMPENSATOR_TYPE, requiredIf: { id: MAX_Q_AT_NOMINAL_V } },
-        { id: MAX_Q_AT_NOMINAL_V, requiredIf: { id: SHUNT_COMPENSATOR_TYPE } },
-        { id: MAX_SUSCEPTANCE, required: false },
+        { id: MAXIMUM_SECTION_COUNT, required: true, type: NUMBER },
+        { id: SECTION_COUNT, required: true, type: NUMBER },
+        {
+            id: SHUNT_COMPENSATOR_TYPE,
+            requiredIf: { id: MAX_Q_AT_NOMINAL_V },
+            type: ENUM,
+            options: Object.keys(SHUNT_COMPENSATOR_TYPES),
+        },
+        { id: MAX_Q_AT_NOMINAL_V, requiredIf: { id: SHUNT_COMPENSATOR_TYPE }, type: NUMBER },
+        { id: MAX_SUSCEPTANCE, required: false, type: NUMBER },
     ],
 };
 
@@ -328,4 +341,75 @@ export const transformIfFrenchNumber = (value: string, language: string): string
         return value.replace(',', '.');
     }
     return value;
+};
+
+export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; options?: any[] } | undefined): boolean => {
+    if (!fieldDefinition?.type || value === null || value === undefined) {
+        return true;
+    }
+
+    switch (fieldDefinition.type) {
+        case BOOLEAN:
+            if (value !== true && value !== false) {
+                return false;
+            }
+            break;
+
+        case NUMBER:
+            const parsedNumber = parseFloat(value);
+            if (isNaN(parsedNumber)) {
+                return false;
+            }
+            break;
+
+        case ENUM:
+            if (!fieldDefinition?.options?.includes(value)) {
+                return false;
+            }
+            break;
+
+        default:
+            console.warn(`Unknown type "${fieldDefinition.type}" for value "${value}". Value will be returned as-is.`);
+            break;
+    }
+    return true;
+};
+
+export const setFieldTypeErrorIfNeeded = (
+    fieldTypeInError: string,
+    expectedTypeForFieldInError: string,
+    tableName: string,
+    setError: (tableName: string, error: { type: string; message?: string }) => void,
+    intl: IntlShape
+) => {
+    if (fieldTypeInError !== '') {
+        if (expectedTypeForFieldInError === ENUM) {
+            setError(tableName, {
+                type: 'custom',
+                message: intl.formatMessage(
+                    {
+                        id: 'WrongEnumValue',
+                    },
+                    {
+                        field: intl.formatMessage({ id: fieldTypeInError }),
+                    }
+                ),
+            });
+        } else {
+            setError(tableName, {
+                type: 'custom',
+                message: intl.formatMessage(
+                    {
+                        id: 'WrongFieldType',
+                    },
+                    {
+                        field: intl.formatMessage({ id: fieldTypeInError }),
+                        type: intl.formatMessage({
+                            id: `fieldType.${expectedTypeForFieldInError}`,
+                        }),
+                    }
+                ),
+            });
+        }
+    }
 };
