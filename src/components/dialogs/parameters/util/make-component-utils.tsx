@@ -7,17 +7,10 @@
 
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import {
-    FloatInput,
-    IntegerInput,
-    Option,
-    SelectInput,
-    SwitchInput,
-    TextInput,
-    parametersStyles,
-} from '@gridsuite/commons-ui';
+import { FloatInput, IntegerInput, Option, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import LineSeparator from '../../commons/line-separator';
 import { ReactElement } from 'react';
+import { parametersStyles } from './styles';
 
 // --- define data types --- //
 export enum TYPES {

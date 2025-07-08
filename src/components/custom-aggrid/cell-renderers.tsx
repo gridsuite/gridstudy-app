@@ -136,6 +136,27 @@ export const DefaultCellRenderer = (props: CustomCellRendererProps) => {
     );
 };
 
+export const NetworkModificationNameCellRenderer = (props: CustomCellRendererProps) => {
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={props.value}
+                componentsProps={{
+                    tooltip: {
+                        sx: {
+                            maxWidth: 'none',
+                        },
+                    },
+                }}
+            >
+                <Box sx={styles.overflow}>{props.value}</Box>
+            </Tooltip>
+        </Box>
+    );
+};
+
 export const MessageLogCellRenderer = ({
     param,
     highlightColor,

@@ -86,6 +86,8 @@ function getValueSchema(dataType?: DataType) {
         case DataType.BOOLEAN:
             schema = yup.boolean();
             break;
+        case DataType.STRING:
+            return yup.string().nullable();
         default:
             schema = yup.number();
     }
