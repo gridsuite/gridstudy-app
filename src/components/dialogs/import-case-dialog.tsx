@@ -8,14 +8,23 @@
 import { useIntl } from 'react-intl';
 import { ElementType, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
+import { UUID } from 'crypto';
 
 interface ImportCaseDialogProps {
     open: boolean;
     onClose: () => void;
     onSelectCase: (selectedElement: TreeViewFinderNodeProps) => void;
+    expanded?: UUID[];
+    selected?: UUID[];
 }
 
-const ImportCaseDialog: FunctionComponent<ImportCaseDialogProps> = ({ open, onClose, onSelectCase }) => {
+const ImportCaseDialog: FunctionComponent<ImportCaseDialogProps> = ({
+    open,
+    onClose,
+    onSelectCase,
+    expanded = [],
+    selected = [],
+}) => {
     const intl = useIntl();
 
     const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
@@ -35,6 +44,8 @@ const ImportCaseDialog: FunctionComponent<ImportCaseDialogProps> = ({ open, onCl
                 id: 'chooseCase',
             })}
             multiSelect={false}
+            selected={selected}
+            expanded={expanded}
         />
     );
 };
