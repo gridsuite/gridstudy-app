@@ -35,8 +35,8 @@ import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMe
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-
 import NodeContextMenu from './node-context-menu';
+import { openDiagram } from "../../../redux/actions";
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -75,6 +75,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onExpandVoltageLevel,
         onExpandAllVoltageLevelIds,
         onHideVoltageLevel,
+        onMoveNode,
     } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
@@ -144,8 +145,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
         (equipmentId, nodeId, mousePosition) => {
             if (mousePosition) {
-                setSelectedVoltageLevelId(equipmentId);
                 if (isEditNadMode) {
+                    setSelectedVoltageLevelId(equipmentId);
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
