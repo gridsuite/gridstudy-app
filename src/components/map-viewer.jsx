@@ -18,7 +18,7 @@ import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import SelectionCreationPanel from './network/selection-creation-panel/selection-creation-panel';
 import { StudyDisplayMode } from './network-modification.type';
 import GuidancePopup from './network/guidance-popup';
-import { Button, Typography, Box, useTheme, darken } from '@mui/material';
+import { Button, Typography, Box, useTheme } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
@@ -274,9 +274,7 @@ const MapViewer = ({
                         // Hack to put a padding at bottom of the diagram grid layout,
                         paddingBottom: theme.spacing(1),
                         backgroundColor:
-                            theme.palette.mode === 'light'
-                                ? darken(theme.palette.background.paper, 0.1)
-                                : theme.reactflow.backgroundColor,
+                            theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
                         // end of hack
                     }}
                 >

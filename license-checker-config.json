@@ -23,6 +23,7 @@
         "cartocolor@4.0.2",
         "jackspeak@3.4.3",
         "package-json-from-dist@1.0.1",
-        "path-scurry@1.11.1"
+        "path-scurry@1.11.1",
+        "rw@0.1.4"
     ]
 }

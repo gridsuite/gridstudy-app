@@ -72,7 +72,7 @@
     "CBAll": "Tous",
     "CBNone": "Aucun",
     "Map": "Carte",
-     "Tree": "Arbre",
+    "Tree": "Arbre",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
     "NoneUpcomingOverload": "Aucune",
@@ -1463,6 +1463,8 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
+    "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
+    "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
     "AddNewCard": "Ajouter une nouvelle image"
 }
