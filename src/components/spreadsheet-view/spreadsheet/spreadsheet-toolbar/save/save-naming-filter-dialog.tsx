@@ -9,10 +9,12 @@ import {
     ElementSaveDialog,
     ElementType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     UseStateBooleanReturn,
     useSnackMessage,
     EquipmentType,
     createFilter,
+    saveFilter,
 } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
@@ -72,15 +74,48 @@ export default function SaveNamingFilterDialog({
         [gridRef, tableDefinition.type, snackInfo, snackError, intl]
     );
 
+    const handleUpdate = useCallback(
+        ({ id, name, description }: IElementUpdateDialog) => {
+            const api = gridRef.current?.api;
+            if (!api) {
+                return;
+            }
+            const ids: string[] = [];
+            api.forEachNodeAfterFilter((node) => {
+                if (!isCalculationRow(node.data?.rowType) && node.data?.id) {
+                    ids.push(node.data.id);
+                }
+            });
+            const filter = {
+                id: id,
+                type: 'IDENTIFIER_LIST',
+                equipmentType: tableDefinition.type as unknown as EquipmentType,
+                filterEquipmentsAttributes: ids.map((eqId) => ({ equipmentID: eqId })),
+            };
+            saveFilter(filter, name, description)
+                .then(() => {
+                    snackInfo({ messageTxt: intl.formatMessage({ id: 'FilterUpdateSuccess' }) });
+                })
+                .catch((err) => {
+                    console.error('Failed to update filter', err);
+                    snackError({ messageTxt: intl.formatMessage({ id: 'FilterUpdateError' }) });
+                });
+        },
+        [gridRef, tableDefinition.type, snackInfo, snackError, intl]
+    );
+
     return studyUuid ? (
         <ElementSaveDialog
             open={open.value}
             onClose={handleClose}
             onSave={handleSave}
+            OnUpdate={handleUpdate}
             type={ElementType.FILTER}
             titleId={'spreadsheet/save/filter_dialog_title'}
             studyUuid={studyUuid}
-            createOnlyMode
+            selectorTitleId="spreadsheet/save/select_filter"
+            createLabelId="spreadsheet/save/create_new_filter"
+            updateLabelId="spreadsheet/save/replace_existing_filter"
         />
     ) : null;
 }
