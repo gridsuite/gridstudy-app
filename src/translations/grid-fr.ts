@@ -11,4 +11,5 @@ export const grid_fr = {
     'grid.failed': 'Échec du calcul',
     'grid.running': 'Calcul en cours...',
     'grid.noLimitViolation': 'Pas de contrainte',
+    'grid.noMatchedFilters': 'Aucun résultat pour ce filtrage',
 };
