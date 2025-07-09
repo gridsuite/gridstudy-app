@@ -264,7 +264,6 @@ export const LccModificationDialog = ({
                 }}
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={equipmentId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

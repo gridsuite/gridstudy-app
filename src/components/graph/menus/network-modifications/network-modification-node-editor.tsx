@@ -664,6 +664,7 @@ const NetworkModificationNodeEditor = () => {
             // Do not clear the modifications list, because currentNode is the concerned one
             // this allows to append new modifications to the existing list.
             dofetchNetworkModifications();
+            dofetchExcludedNetworkModifications();
             dispatch(
                 removeNotificationByNode([
                     studyUpdatedEventData.headers.parentNode,
@@ -679,7 +680,14 @@ const NetworkModificationNodeEditor = () => {
             setDeleteInProgress(false);
             dofetchNetworkModifications();
         }
-    }, [dispatch, dofetchNetworkModifications, manageNotification, studyUpdatedForce, cleanClipboard]);
+    }, [
+        dispatch,
+        dofetchNetworkModifications,
+        manageNotification,
+        studyUpdatedForce,
+        cleanClipboard,
+        dofetchExcludedNetworkModifications,
+    ]);
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] = useState(false);
 

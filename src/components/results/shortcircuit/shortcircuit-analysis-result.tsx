@@ -243,6 +243,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onFilter={memoizedSetPageCallback}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
+                filters={filters}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

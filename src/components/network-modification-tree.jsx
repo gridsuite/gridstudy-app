@@ -360,6 +360,7 @@ const NetworkModificationTree = ({
                 minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
                 onNodeDragStop={handlePostNodeDragging}
+                nodeClickDistance={5} // to avoid triggering onNodeDragStop instead of onNodeClick sometimes
                 disableKeyboardA11y
                 deleteKeyCode={null}
                 defaultEdgeOptions={{

@@ -792,7 +792,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 onSave={onSubmit}
                 onValidationError={onValidationError}
                 open={open}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
