@@ -108,7 +108,7 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
     return nodePlacements;
 }
 
-/**
+/** // TODO CHARLY Revoir commentaires, maybe couper la fonction en deux, une partie sticky et l'autre non ? Expliquer pourquoi.
  * Create a Map using row number as keys and column number as value. The column value
  * for each row is either the lowest or highest value among column values of the same row, for the provided nodes.
  *
@@ -126,17 +126,47 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
  * @param getMax If true, returns maximum columns, if false returns minimum columns
  */
 function getColumnsByRows(nodes: CurrentTreeNode[], placements: PlacementGrid, getMax: boolean): Map<number, number> {
+    function isExtreme(contender: number, competition: number) {
+        return getMax ? contender > competition : contender < competition;
+    }
+    function extreme(a, b) {
+        return getMax ? Math.max(a, b) : Math.min(a, b);
+    }
+    function resetSticky() {
+        return getMax ? -Infinity : Infinity;
+    }
+
     const columnsByRow: Map<number, number> = new Map();
+
+    let stickySecurity = resetSticky();
+    let needToRetroactivelyUpdateTheseRows = [];
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (nodePlacement) {
-            if (
-                !columnsByRow.has(nodePlacement.row) ||
-                (getMax
-                    ? nodePlacement.column > columnsByRow.get(nodePlacement.row)!
-                    : nodePlacement.column < columnsByRow.get(nodePlacement.row)!)
-            ) {
-                columnsByRow.set(nodePlacement.row, nodePlacement.column);
+            // TODO CHARLY meilleur commentaires, noms de variables, etc.
+            // TODO CHARLY Ici on gère la sécurité : attention, on peut avoir une diagonale (cas le pire qui part d'en haut à gauche vers en bas à droite)
+            if (node.data?.nodeType === NetworkModificationNodeType.SECURITY) {
+                needToRetroactivelyUpdateTheseRows.push(nodePlacement.row);
+                let contender = extreme(stickySecurity, nodePlacement.column);
+                if (
+                    !columnsByRow.has(nodePlacement.row) ||
+                    isExtreme(contender, columnsByRow.get(nodePlacement.row)!)
+                ) {
+                    needToRetroactivelyUpdateTheseRows.forEach((row) => {
+                        columnsByRow.set(row, contender);
+                    });
+                }
+                stickySecurity = contender;
+            } else {
+                stickySecurity = resetSticky();
+                needToRetroactivelyUpdateTheseRows = []; // TODO CHARLY les deux lignes de reset dans une seule fonction ?
+                let contender = nodePlacement.column;
+                if (
+                    !columnsByRow.has(nodePlacement.row) ||
+                    isExtreme(contender, columnsByRow.get(nodePlacement.row)!)
+                ) {
+                    columnsByRow.set(nodePlacement.row, contender);
+                }
             }
         }
     });
@@ -252,6 +282,7 @@ function compressTreePlacements(
         const leftNodes = nodes.slice(0, currentNodeIndex);
 
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements);
+
         const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements);
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
