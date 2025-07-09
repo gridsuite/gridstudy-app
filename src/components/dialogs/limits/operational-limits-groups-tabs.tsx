@@ -109,12 +109,9 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             [setSelectedLimitGroupTabIndex]
         );
 
-        const handleLimitsGroupNameChange = useCallback(
-            (event: React.ChangeEvent<HTMLInputElement>) => {
-                setEditedLimitGroupName(event.target.value);
-            },
-            [setEditedLimitGroupName]
-        );
+        const handleLimitsGroupNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+            setEditedLimitGroupName(event.target.value);
+        }, []);
 
         const handleOpenMenu = useCallback(
             (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
@@ -248,6 +245,9 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName) {
                         setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                     }
+                    if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`) === oldName) {
+                        setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
+                    }
                 }
                 setSelectedLimitGroupTabIndex(editingTabIndex);
                 setEditingTabIndex(-1);
@@ -354,7 +354,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
-                    editedLimitGroupName={editedLimitGroupName}
                 />
             </>
         );

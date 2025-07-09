@@ -197,7 +197,7 @@ export function LimitsSidePane({
         <Box sx={{ p: 2 }}>
             {!onlySelectedLimitsGroup && (
                 <>
-                    <GridSection title={selectedLimitSetId ?? ''} />
+                    <GridSection title={selectedLimitSetId ?? ''} formatDisabled />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />

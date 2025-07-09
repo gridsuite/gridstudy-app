@@ -107,7 +107,6 @@ export function LimitsPaneCreation({
                         limitsGroups={limitsGroups1}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>

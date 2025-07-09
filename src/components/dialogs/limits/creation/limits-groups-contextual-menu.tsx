@@ -31,7 +31,6 @@ export interface LimitsGroupsContextualMenuProps {
     startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
-    editedLimitGroupName: string;
 }
 
 export function LimitsGroupsContextualMenu({
@@ -44,7 +43,6 @@ export function LimitsGroupsContextualMenu({
     startEditingLimitsGroup,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
-    editedLimitGroupName,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const { append: appendToLimitsGroups, remove: removeLimitsGroups } = useFieldArray({
@@ -54,11 +52,13 @@ export function LimitsGroupsContextualMenu({
 
     const handleDeleteTab = () => {
         if (indexSelectedLimitSet !== null) {
+            const tabId: string = getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`)?.[indexSelectedLimitSet]
+                ?.id;
             // if this operational limit was selected, deselect it
-            if (selectedLimitsGroups1 === editedLimitGroupName) {
+            if (selectedLimitsGroups1 === tabId) {
                 setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, '');
             }
-            if (selectedLimitsGroups2 === editedLimitGroupName) {
+            if (selectedLimitsGroups2 === tabId) {
                 setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, '');
             }
             removeLimitsGroups(indexSelectedLimitSet);
