@@ -186,6 +186,26 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             'DynamicSimulationRunError'
         );
     };
+    const handleStartLoadFlow = useCallback(
+        (withRatioTapChangers) => {
+            startComputationAsync(
+                ComputingType.LOAD_FLOW,
+                () => {
+                    dispatch(
+                        setComputingStatusParameters(ComputingType.LOAD_FLOW, {
+                            withRatioTapChangers: withRatioTapChangers,
+                        })
+                    );
+                },
+                () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, withRatioTapChangers),
+                () => {},
+                null,
+                'startLoadFlowError',
+                () => {}
+            );
+        },
+        [currentNode?.id, currentRootNetworkUuid, dispatch, startComputationAsync, studyUuid]
+    );
 
     const runnables = useMemo(() => {
         function actionOnRunnables(type, fnStop) {
@@ -199,23 +219,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS: {
                 messageId: 'LoadFlow',
                 startComputation() {
-                    checkLoadFlowProvider(studyUuid, () =>
-                        startComputationAsync(
-                            ComputingType.LOAD_FLOW,
-                            () => {
-                                dispatch(
-                                    setComputingStatusParameters(ComputingType.LOAD_FLOW, {
-                                        withRatioTapChangers: false,
-                                    })
-                                );
-                            },
-                            () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
-                            () => {},
-                            null,
-                            'startLoadFlowError',
-                            () => {}
-                        )
-                    );
+                    checkLoadFlowProvider(studyUuid, () => handleStartLoadFlow(false));
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id, false));
@@ -224,21 +228,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             LOAD_FLOW_WITH_RATIO_TAP_CHANGERS: {
                 messageId: 'LoadFlowWithRatioTapChangers',
                 startComputation() {
-                    checkLoadFlowProvider(studyUuid, () =>
-                        startComputationAsync(
-                            ComputingType.LOAD_FLOW,
-                            () =>
-                                dispatch(
-                                    setComputingStatusParameters(ComputingType.LOAD_FLOW, {
-                                        withRatioTapChangers: true,
-                                    })
-                                ),
-                            () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
-                            () => {},
-                            null,
-                            'startLoadFlowError'
-                        )
-                    );
+                    checkLoadFlowProvider(studyUuid, () => handleStartLoadFlow(true));
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.LOAD_FLOW, () => stopLoadFlow(studyUuid, currentNode?.id, true));
@@ -399,6 +389,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         dispatch,
         checkLoadFlowProvider,
         studyUuid,
+        handleStartLoadFlow,
         currentNode?.id,
         currentRootNetworkUuid,
         startComputationAsync,
