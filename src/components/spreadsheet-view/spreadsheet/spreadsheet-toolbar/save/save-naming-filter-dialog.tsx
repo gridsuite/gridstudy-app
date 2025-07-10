@@ -15,12 +15,12 @@ import {
     EquipmentType,
     createFilter,
     saveFilter,
+    NewFilterType,
 } from '@gridsuite/commons-ui';
-import { useCallback } from 'react';
+import { useCallback, RefObject } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
-import { RefObject } from 'react';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { isCalculationRow } from '../../../utils/calculation-utils';
 import { useIntl } from 'react-intl';
@@ -44,24 +44,34 @@ export default function SaveNamingFilterDialog({
         open.setFalse();
     }, [open]);
 
-    const handleSave = useCallback(
-        ({ name, description, folderId }: IElementCreationDialog) => {
+    const getFilterFromGrid = useCallback(
+        (filterId: string | null): NewFilterType | null => {
             const api = gridRef.current?.api;
             if (!api) {
-                return;
+                return null;
             }
             const ids: string[] = [];
-            api.forEachNodeAfterFilter((node) => {
+            api.forEachNodeAfterFilterAndSort((node) => {
                 if (!isCalculationRow(node.data?.rowType) && node.data?.id) {
                     ids.push(node.data.id);
                 }
             });
-            const filter = {
-                id: null,
+            return {
+                id: filterId,
                 type: 'IDENTIFIER_LIST',
                 equipmentType: tableDefinition.type as unknown as EquipmentType,
-                filterEquipmentsAttributes: ids.map((id) => ({ equipmentID: id })),
+                filterEquipmentsAttributes: ids.map((eqId) => ({ equipmentID: eqId })),
             };
+        },
+        [gridRef, tableDefinition.type]
+    );
+
+    const handleSave = useCallback(
+        ({ name, description, folderId }: IElementCreationDialog) => {
+            const filter = getFilterFromGrid(null);
+            if (!filter) {
+                return;
+            }
             createFilter(filter, name, description, folderId)
                 .then(() => {
                     snackInfo({ messageTxt: intl.formatMessage({ id: 'FilterCreationSuccess' }) });
@@ -71,27 +81,15 @@ export default function SaveNamingFilterDialog({
                     snackError({ messageTxt: intl.formatMessage({ id: 'FilterCreationError' }) });
                 });
         },
-        [gridRef, tableDefinition.type, snackInfo, snackError, intl]
+        [getFilterFromGrid, snackInfo, snackError, intl]
     );
 
     const handleUpdate = useCallback(
         ({ id, name, description }: IElementUpdateDialog) => {
-            const api = gridRef.current?.api;
-            if (!api) {
+            const filter = getFilterFromGrid(id);
+            if (!filter) {
                 return;
             }
-            const ids: string[] = [];
-            api.forEachNodeAfterFilter((node) => {
-                if (!isCalculationRow(node.data?.rowType) && node.data?.id) {
-                    ids.push(node.data.id);
-                }
-            });
-            const filter = {
-                id: id,
-                type: 'IDENTIFIER_LIST',
-                equipmentType: tableDefinition.type as unknown as EquipmentType,
-                filterEquipmentsAttributes: ids.map((eqId) => ({ equipmentID: eqId })),
-            };
             saveFilter(filter, name, description)
                 .then(() => {
                     snackInfo({ messageTxt: intl.formatMessage({ id: 'FilterUpdateSuccess' }) });
@@ -101,7 +99,7 @@ export default function SaveNamingFilterDialog({
                     snackError({ messageTxt: intl.formatMessage({ id: 'FilterUpdateError' }) });
                 });
         },
-        [gridRef, tableDefinition.type, snackInfo, snackError, intl]
+        [getFilterFromGrid, snackInfo, snackError, intl]
     );
 
     return studyUuid ? (
