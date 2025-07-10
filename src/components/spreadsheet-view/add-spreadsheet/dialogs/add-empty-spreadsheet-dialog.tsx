@@ -55,8 +55,8 @@ const TABLES_TYPES = [
 
 const DEFAULT_ID_COLUMN: ColumnDefinitionDto = {
     uuid: uuid4() as UUID,
+    name: 'ID',
     id: 'id',
-    name: 'id',
     type: COLUMN_TYPES.TEXT,
     formula: 'id',
     visible: true,
