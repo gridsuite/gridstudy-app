@@ -32,7 +32,7 @@ import {
     startDynamicSimulation,
     stopDynamicSimulation,
 } from '../services/study/dynamic-simulation';
-import { startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
+import { getLoadFlowParameters, startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
 import { startSecurityAnalysis, stopSecurityAnalysis } from '../services/study/security-analysis';
 import { startShortCircuitAnalysis, stopShortCircuitAnalysis } from '../services/study/short-circuit-analysis';
 import { startVoltageInit, stopVoltageInit } from '../services/study/voltage-init';
@@ -41,6 +41,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../services/study/dynamic-security-analysis';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
+import { isSecurityModificationNode } from './graph/tree-node.type.js';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -50,6 +51,9 @@ const checkDynamicSimulationParameters = (studyUuid) => {
         const isMappingValid = mappings.includes(mapping);
         return isMappingValid;
     });
+};
+const getLoadFlowProvider = (studyUuid) => {
+    return getLoadFlowParameters(studyUuid).then((params) => params['provider']);
 };
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -137,7 +141,21 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         },
         [dispatch, snackError]
     );
-
+    //In DynaFlow, we need to verify that the current node is a security node before starting the computation.
+    const checkLoadFlowProvider = useCallback(
+        (studyUuid, handleComputation) => {
+            getLoadFlowParameters(studyUuid).then((result) => {
+                if (!isSecurityModificationNode(currentNode) && result['provider'] === 'DynaFlow') {
+                    snackError({
+                        headerId: 'LoadFlowDynaFlowError',
+                    });
+                } else {
+                    handleComputation();
+                }
+            });
+        },
+        [currentNode, snackError]
+    );
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         startComputationAsync(
             ComputingType.SECURITY_ANALYSIS,
@@ -184,16 +202,22 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             LOAD_FLOW_WITHOUT_RATIO_TAP_CHANGERS: {
                 messageId: 'LoadFlow',
                 startComputation() {
-                    startComputationAsync(
-                        ComputingType.LOAD_FLOW,
-                        () =>
-                            dispatch(
-                                setComputingStatusParameters(ComputingType.LOAD_FLOW, { withRatioTapChangers: false })
-                            ),
-                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
-                        () => {},
-                        null,
-                        'startLoadFlowError'
+                    checkLoadFlowProvider(studyUuid, () =>
+                        startComputationAsync(
+                            ComputingType.LOAD_FLOW,
+                            () => {
+                                dispatch(
+                                    setComputingStatusParameters(ComputingType.LOAD_FLOW, {
+                                        withRatioTapChangers: false,
+                                    })
+                                );
+                            },
+                            () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, false),
+                            () => {},
+                            null,
+                            'startLoadFlowError',
+                            () => {}
+                        )
                     );
                 },
                 actionOnRunnable() {
@@ -203,16 +227,20 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             LOAD_FLOW_WITH_RATIO_TAP_CHANGERS: {
                 messageId: 'LoadFlowWithRatioTapChangers',
                 startComputation() {
-                    startComputationAsync(
-                        ComputingType.LOAD_FLOW,
-                        () =>
-                            dispatch(
-                                setComputingStatusParameters(ComputingType.LOAD_FLOW, { withRatioTapChangers: true })
-                            ),
-                        () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
-                        () => {},
-                        null,
-                        'startLoadFlowError'
+                    checkLoadFlowProvider(studyUuid, () =>
+                        startComputationAsync(
+                            ComputingType.LOAD_FLOW,
+                            () =>
+                                dispatch(
+                                    setComputingStatusParameters(ComputingType.LOAD_FLOW, {
+                                        withRatioTapChangers: true,
+                                    })
+                                ),
+                            () => startLoadFlow(studyUuid, currentNode?.id, currentRootNetworkUuid, true),
+                            () => {},
+                            null,
+                            'startLoadFlowError'
+                        )
                     );
                 },
                 actionOnRunnable() {
@@ -370,7 +398,15 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 },
             },
         };
-    }, [dispatch, snackError, startComputationAsync, studyUuid, currentNode?.id, currentRootNetworkUuid]);
+    }, [
+        dispatch,
+        checkLoadFlowProvider,
+        studyUuid,
+        currentNode?.id,
+        currentRootNetworkUuid,
+        startComputationAsync,
+        snackError,
+    ]);
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(
