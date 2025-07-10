@@ -73,27 +73,31 @@ const styles = {
 
 const LG_COLUMN_COUNT = 12;
 const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
-const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
+const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 3;
 const DEFAULT_WIDTH = 2;
 const DEFAULT_HEIGHT = 2;
 
-const initialLayouts = {
+const defaultCardSizes = {
+    w: DEFAULT_WIDTH,
+    h: DEFAULT_HEIGHT,
+};
+
+const AdderCard = {
+    ...defaultCardSizes,
+    i: 'Adder',
+    x: 0,
+    y: 0,
+    minH: DEFAULT_HEIGHT,
+    maxH: DEFAULT_HEIGHT,
+    minW: DEFAULT_WIDTH,
+    maxW: DEFAULT_WIDTH,
+    isDraggable: false,
+    static: true,
+};
+
+const initialLayouts: Layouts = {
     // ResponsiveGridLayout will attempt to interpolate the rest of breakpoints based on this one
-    lg: [
-        {
-            i: 'Adder',
-            x: 0,
-            y: 0,
-            w: DEFAULT_WIDTH,
-            h: DEFAULT_HEIGHT,
-            minH: DEFAULT_HEIGHT,
-            maxH: DEFAULT_HEIGHT,
-            minW: DEFAULT_WIDTH,
-            maxW: DEFAULT_WIDTH,
-            isDraggable: false,
-            static: true,
-        },
-    ],
+    lg: [AdderCard],
 };
 
 interface DiagramGridLayoutProps {
@@ -112,16 +116,21 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const onAddDiagram = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const new_lg_layouts = [...old_layouts.lg];
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
                 x: Infinity,
                 y: 0,
-                w: DEFAULT_WIDTH,
-                h: DEFAULT_HEIGHT,
+                ...defaultCardSizes,
             };
-            new_lg_layouts.push(layoutItem);
-            return { lg: new_lg_layouts };
+            const newLayouts = Object.fromEntries(
+                Object.entries(old_layouts).map(([breakpoint, breakpoint_layouts]) => {
+                    // Ensure the new layout item is added to each breakpoint
+                    const updatedLayouts = [...breakpoint_layouts];
+                    updatedLayouts.push(layoutItem);
+                    return [breakpoint, updatedLayouts];
+                })
+            );
+            return newLayouts;
         });
     };
 
@@ -152,11 +161,16 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const onRemoveItem = useCallback(
         (diagramUuid: UUID) => {
             setLayouts((old_layouts) => {
-                const new_lg_layouts = old_layouts.lg.filter((layout: Layout) => layout.i !== diagramUuid);
-                if (new_lg_layouts.length === 0) {
-                    return initialLayouts;
+                if (Object.entries(old_layouts).pop()?.[1].length === 2) {
+                    return initialLayouts; // Reset to initial layouts if no diagrams left
                 }
-                return { lg: new_lg_layouts };
+                const newLayouts = Object.fromEntries(
+                    Object.entries(old_layouts).map(([breakpoint, breakpoint_layouts]) => {
+                        const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== diagramUuid);
+                        return [breakpoint, updatedLayouts];
+                    })
+                );
+                return newLayouts;
             });
             removeDiagram(diagramUuid);
         },
@@ -327,9 +341,16 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         visible,
     ]);
 
-    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
+    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
         if (savedLayouts) {
-            setLayouts({ lg: [...initialLayouts.lg, ...savedLayouts.lg] });
+            const newLayouts = Object.fromEntries(
+                Object.entries(savedLayouts).map(([breakpoint, breakpoint_layouts]) => {
+                    const updatedLayouts = [...breakpoint_layouts];
+                    updatedLayouts.unshift(AdderCard);
+                    return [breakpoint, updatedLayouts];
+                })
+            );
+            setLayouts(newLayouts);
         } else {
             setLayouts(initialLayouts);
         }
