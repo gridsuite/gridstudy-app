@@ -59,6 +59,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const [diagramErrors, setDiagramErrors] = useState<Record<UUID, string>>({});
     const [globalError, setGlobalError] = useState<string | null>(null);
 
+    const MAX_NUMBER_OF_NAD_DIAGRAMS = 4;
+
     // Note: This function is mainly used to prevent double fetch when using the PositionDiagram
     const filterDiagramParams = useCallback(
         (diagramParams: DiagramParams[]): DiagramParams[] => {
@@ -354,8 +356,23 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams]
     );
 
+    const countNadDiagrams = (diagrams: { [key: string]: Diagram }) => {
+        return Object.values(diagrams).filter((diagram) => diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
+            .length;
+    };
+
     const createDiagram = useCallback(
         (diagramParams: DiagramParams) => {
+            if (
+                diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM &&
+                countNadDiagrams(diagrams) >= MAX_NUMBER_OF_NAD_DIAGRAMS
+            ) {
+                snackError({
+                    messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
+                });
+                return;
+            }
+
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance don't manage this type of diagram
                 return;
@@ -378,6 +395,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             filterDiagramParams,
             findSimilarDiagram,
             onDiagramAlreadyExists,
+            diagrams,
+            intl,
+            snackError,
         ]
     );
 
