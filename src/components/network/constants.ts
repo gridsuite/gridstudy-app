@@ -173,6 +173,18 @@ export const VSC_CONVERTER_MODE: Record<VscConverterMode, VscConverterModeValue>
     },
 };
 
+export const REGULATING_TERMINAL_TYPES = [
+    'LINE',
+    'TWO_WINDINGS_TRANSFORMER',
+    'GENERATOR',
+    'LOAD',
+    'BATTERY',
+    'SHUNT_COMPENSATOR',
+    'STATIC_VAR_COMPENSATOR',
+    'DANGLING_LINE',
+    'HVDC_CONVERTER_STATION',
+];
+
 export const NUMBER = 'number';
 export const ENUM = 'enum';
 export const BOOLEAN = 'boolean';

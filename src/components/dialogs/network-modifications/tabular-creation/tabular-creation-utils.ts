@@ -59,7 +59,16 @@ import {
 } from 'components/utils/field-constants';
 import { IntlShape } from 'react-intl';
 import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
-import { BOOLEAN, CONNECTION_DIRECTIONS, ENUM, NUMBER, SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
+import {
+    BOOLEAN,
+    CONNECTION_DIRECTIONS,
+    ENERGY_SOURCES,
+    ENUM,
+    LOAD_TYPES,
+    NUMBER,
+    REGULATING_TERMINAL_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
+} from '../../../network/constants';
 
 export interface TabularCreationField {
     id: string;
@@ -90,67 +99,82 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
     GENERATOR: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
-        { id: ENERGY_SOURCE, required: true },
+        { id: ENERGY_SOURCE, required: true, type: ENUM, options: ENERGY_SOURCES.map((energy) => energy.id) },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true },
+        { id: CONNECTED, required: true, type: BOOLEAN },
         { id: CONNECTION_NAME, required: false },
-        { id: CONNECTION_DIRECTION, required: false },
-        { id: CONNECTION_POSITION, required: false },
-        { id: MIN_P, required: true },
-        { id: MAX_P, required: true },
-        { id: RATED_S, required: false },
-        { id: MIN_Q, required: false },
-        { id: MAX_Q, required: false },
+        {
+            id: CONNECTION_DIRECTION,
+            required: false,
+            type: ENUM,
+            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
+        },
+        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        { id: MIN_P, required: true, type: NUMBER },
+        { id: MAX_P, required: true, type: NUMBER },
+        { id: RATED_S, required: false, type: NUMBER },
+        { id: MIN_Q, required: false, type: NUMBER },
+        { id: MAX_Q, required: false, type: NUMBER },
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
-        { id: TARGET_P, required: true },
-        { id: TARGET_Q, required: true },
-        { id: VOLTAGE_REGULATION_ON, required: true },
-        { id: TARGET_V, required: false },
+        { id: TARGET_P, required: true, type: NUMBER },
+        { id: TARGET_Q, required: true, type: NUMBER },
+        { id: VOLTAGE_REGULATION_ON, required: true, type: BOOLEAN },
+        { id: TARGET_V, required: false, type: NUMBER },
         { id: REGULATING_TERMINAL_ID, required: false },
-        { id: REGULATING_TERMINAL_TYPE, required: false },
+        { id: REGULATING_TERMINAL_TYPE, required: false, type: ENUM, options: REGULATING_TERMINAL_TYPES },
         { id: REGULATING_TERMINAL_VOLTAGE_LEVEL_ID, required: false },
-        { id: Q_PERCENT, required: false },
-        { id: PARTICIPATE, required: true },
-        { id: DROOP, required: false },
-        { id: TRANSIENT_REACTANCE, required: false },
-        { id: STEP_UP_TRANSFORMER_REACTANCE, required: false },
-        { id: PLANNED_ACTIVE_POWER_SET_POINT, required: false },
-        { id: MARGINAL_COST, required: false },
-        { id: PLANNED_OUTAGE_RATE, required: false },
-        { id: FORCED_OUTAGE_RATE, required: false },
+        { id: Q_PERCENT, required: false, type: NUMBER },
+        { id: PARTICIPATE, required: true, type: BOOLEAN },
+        { id: DROOP, required: false, type: NUMBER },
+        { id: TRANSIENT_REACTANCE, required: false, type: NUMBER },
+        { id: STEP_UP_TRANSFORMER_REACTANCE, required: false, type: NUMBER },
+        { id: PLANNED_ACTIVE_POWER_SET_POINT, required: false, type: NUMBER },
+        { id: MARGINAL_COST, required: false, type: NUMBER },
+        { id: PLANNED_OUTAGE_RATE, required: false, type: NUMBER },
+        { id: FORCED_OUTAGE_RATE, required: false, type: NUMBER },
     ],
     LOAD: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
-        { id: LOAD_TYPE, required: true },
+        { id: LOAD_TYPE, required: false, type: ENUM, options: LOAD_TYPES.map((load) => load.id) },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true },
+        { id: CONNECTED, required: true, type: BOOLEAN },
         { id: CONNECTION_NAME, required: false },
-        { id: CONNECTION_DIRECTION, required: false },
-        { id: CONNECTION_POSITION, required: false },
-        { id: P0, required: true },
-        { id: Q0, required: true },
+        {
+            id: CONNECTION_DIRECTION,
+            required: false,
+            type: ENUM,
+            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
+        },
+        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        { id: P0, required: true, type: NUMBER },
+        { id: Q0, required: true, type: NUMBER },
     ],
     BATTERY: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true },
+        { id: CONNECTED, required: true, type: BOOLEAN },
         { id: CONNECTION_NAME, required: false },
-        { id: CONNECTION_DIRECTION, required: false },
-        { id: CONNECTION_POSITION, required: false },
-        { id: MIN_P, required: true },
-        { id: MAX_P, required: true },
-        { id: MIN_Q, required: false },
-        { id: MAX_Q, required: false },
+        {
+            id: CONNECTION_DIRECTION,
+            required: false,
+            type: ENUM,
+            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
+        },
+        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        { id: MIN_P, required: true, type: NUMBER },
+        { id: MAX_P, required: true, type: NUMBER },
+        { id: MIN_Q, required: false, type: NUMBER },
+        { id: MAX_Q, required: false, type: NUMBER },
         ...REACTIVE_CAPABILITY_CURVE_FIELDS,
-        { id: TARGET_P, required: true },
-        { id: TARGET_Q, required: true },
-        { id: PARTICIPATE, required: true },
-        { id: DROOP, required: false },
+        { id: TARGET_P, required: true, type: NUMBER },
+        { id: TARGET_Q, required: true, type: NUMBER },
+        { id: PARTICIPATE, required: true, type: BOOLEAN },
+        { id: DROOP, required: false, type: NUMBER },
     ],
     SHUNT_COMPENSATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -355,12 +379,13 @@ export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; opti
             }
             break;
 
-        case NUMBER:
+        case NUMBER: {
             const parsedNumber = parseFloat(value);
             if (isNaN(parsedNumber)) {
                 return false;
             }
             break;
+        }
 
         case ENUM:
             if (!fieldDefinition?.options?.includes(value)) {
