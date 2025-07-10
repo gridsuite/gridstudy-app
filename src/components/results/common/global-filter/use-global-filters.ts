@@ -8,13 +8,15 @@
 import { useCallback, useState } from 'react';
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { FilterType } from '../utils';
+import { useGlobalFilterOptions } from './use-global-filter-options';
 
-interface UseGlobalFiltersProps {
+interface UseGlobalFiltersParams {
     onFilterChange?: (filters: GlobalFilters) => void;
 }
 
-export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalFiltersProps>) {
+export default function useGlobalFilters({ onFilterChange }: UseGlobalFiltersParams) {
     const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleGlobalFilterChange = useCallback(
         (value: GlobalFilter[]) => {
@@ -90,7 +92,7 @@ export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalF
 
     return {
         globalFilters,
-        setGlobalFilters,
+        globalFilterOptions: [...countriesFilter, ...voltageLevelsFilter, ...propertiesFilter],
         handleGlobalFilterChange,
         getGlobalFilterParameter,
     };
