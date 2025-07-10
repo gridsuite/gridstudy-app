@@ -55,7 +55,7 @@ function SensitivityAnalysisResultTab({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
 
     const initTable = () => {
@@ -163,7 +163,7 @@ function SensitivityAnalysisResultTab({
                         setPage={setPage}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                        globalFilters={globalFilters}
+                        globalFilters={getGlobalFilterParameter(globalFilters)}
                     />
                 </>
             )}
