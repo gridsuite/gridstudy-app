@@ -9,11 +9,11 @@ import { useCallback, useState } from 'react';
 import { GlobalFilter, GlobalFilters } from './global-filter-types';
 import { FilterType } from '../utils';
 
-interface UseGlobalFiltersProps {
+interface UseGlobalFiltersParams {
     onFilterChange?: (filters: GlobalFilters) => void;
 }
 
-export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalFiltersProps>) {
+export default function useGlobalFilters({ onFilterChange }: UseGlobalFiltersParams) {
     const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
 
     const handleGlobalFilterChange = useCallback(
@@ -90,7 +90,6 @@ export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalF
 
     return {
         globalFilters,
-        setGlobalFilters,
         handleGlobalFilterChange,
         getGlobalFilterParameter,
     };

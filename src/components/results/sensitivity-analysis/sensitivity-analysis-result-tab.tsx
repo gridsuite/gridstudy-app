@@ -30,8 +30,8 @@ import {
 } from './sensitivity-analysis-result.type';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -56,7 +56,7 @@ function SensitivityAnalysisResultTab({
     );
 
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
@@ -117,15 +117,9 @@ function SensitivityAnalysisResultTab({
             : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
     }, [sensiTab]);
 
-    const globalFiltersComponent = useMemo(
-        () => (
-            <GlobalFilterSelector
-                onChange={handleGlobalFilterChange}
-                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
-                filterableEquipmentTypes={filterableEquipmentTypes}
-            />
-        ),
-        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
     return (
@@ -145,7 +139,13 @@ function SensitivityAnalysisResultTab({
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
                         </Tabs>
-                        <Box sx={{ display: 'flex', flexGrow: 0 }}>{globalFiltersComponent}</Box>
+                        <Box sx={{ display: 'flex', flexGrow: 0 }}>
+                            <GlobalFilterSelector
+                                onChange={handleGlobalFilterChange}
+                                filters={globalFilterOptions}
+                                filterableEquipmentTypes={filterableEquipmentTypes}
+                            />
+                        </Box>
                         <ExportButton
                             disabled={isCsvButtonDisabled}
                             onClick={handleExportResultAsCsv}

@@ -45,8 +45,8 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
+import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 const styles = {
     flexWrapper: {
@@ -82,7 +82,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
@@ -209,15 +209,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return [];
     }, [tabIndex]);
 
-    const globalFiltersComponent = useMemo(
-        () => (
-            <GlobalFilterSelector
-                onChange={handleGlobalFilterChange}
-                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
-                filterableEquipmentTypes={filterableEquipmentTypes}
-            />
-        ),
-        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
     return (
@@ -230,7 +224,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
-                    {globalFiltersComponent}
+                    <GlobalFilterSelector
+                        onChange={handleGlobalFilterChange}
+                        filters={globalFilterOptions}
+                        filterableEquipmentTypes={filterableEquipmentTypes}
+                    />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>
