@@ -20,7 +20,6 @@ import {
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { AppLayout, AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';
-import { frontendToBackendAppLayout } from 'hooks/use-app-layout';
 import { saveStudyLayout } from 'services/study/study-config';
 import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
 import { Layout } from 'react-grid-layout';
