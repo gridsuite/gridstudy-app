@@ -69,15 +69,15 @@ const NodeContextMenu: React.FC<ContextMenuProps> = ({
             anchorPosition={
                 anchorPosition !== null ? { top: anchorPosition.mouseY, left: anchorPosition.mouseX } : undefined
             }
-            style={styles.menu}
+            sx={styles.menu}
         >
-            <CustomMenuItem style={styles.customMenuItem} onClick={handleExpandClick}>
+            <CustomMenuItem sx={styles.customMenuItem} onClick={handleExpandClick}>
                 <ListItemIcon>
                     <AddIcon />
                 </ListItemIcon>
                 <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'expand' })}</Typography>} />
             </CustomMenuItem>
-            <CustomMenuItem style={styles.customMenuItem} onClick={handleHideClick}>
+            <CustomMenuItem sx={styles.customMenuItem} onClick={handleHideClick}>
                 <ListItemIcon>
                     <VisibilityOffIcon />
                 </ListItemIcon>
