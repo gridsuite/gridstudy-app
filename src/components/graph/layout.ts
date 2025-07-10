@@ -7,7 +7,7 @@
 
 import { NodePlacement } from './layout.type';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
-import { CurrentTreeNode, NetworkModificationNodeType } from './tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -125,7 +125,16 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
  * @param placements The grid placements
  * @param getMax If true, returns maximum columns, if false returns minimum columns
  */
-function getColumnsByRows(nodes: CurrentTreeNode[], placements: PlacementGrid, getMax: boolean): Map<number, number> {
+function getColumnsByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    getMax: boolean
+): Map<number, number> {
+    const columnsByRow: Map<number, number> = new Map();
+    let stickyValue;
+    let rowsToRetroactivelyUpdateWithStickyValue = [];
+
     function isExtreme(contender: number, competition: number) {
         return getMax ? contender > competition : contender < competition;
     }
@@ -133,33 +142,42 @@ function getColumnsByRows(nodes: CurrentTreeNode[], placements: PlacementGrid, g
         return getMax ? Math.max(a, b) : Math.min(a, b);
     }
     function resetSticky() {
-        return getMax ? -Infinity : Infinity;
+        stickyValue = getMax ? -Infinity : Infinity;
+        rowsToRetroactivelyUpdateWithStickyValue.length = 0;
     }
 
-    const columnsByRow: Map<number, number> = new Map();
-
-    let stickySecurity = resetSticky();
-    let needToRetroactivelyUpdateTheseRows = [];
+    resetSticky();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (nodePlacement) {
-            // TODO CHARLY meilleur commentaires, noms de variables, etc.
-            // TODO CHARLY Ici on gère la sécurité : attention, on peut avoir une diagonale (cas le pire qui part d'en haut à gauche vers en bas à droite)
-            if (node.data?.nodeType === NetworkModificationNodeType.SECURITY) {
-                needToRetroactivelyUpdateTheseRows.push(nodePlacement.row);
-                let contender = extreme(stickySecurity, nodePlacement.column);
+            // Security nodes are grouped together and enclosed in a rectangle. Each of those rectangles
+            // must not be overlapped by the compression algorithm. To do so, when we are in a security
+            // group of nodes, we consider that every row of this security group has the extreme value
+            // of the whole group, and when we assign a new extreme, we do so to all the rows of the group.
+
+            if (isSecurityModificationNode(node)) {
+                // This test determines if we changed from a security group to another. If this is the case,
+                // we reset the sticky value to only update rows for the new group and not the old one.
+                if (!isSecurityModificationNode(nodeMap.get(node.parentId).node)) {
+                    resetSticky();
+                }
+
+                // We mark each row of a security group in order to update them all when we find a new extreme.
+                rowsToRetroactivelyUpdateWithStickyValue.push(nodePlacement.row);
+
+                let contender = extreme(stickyValue, nodePlacement.column);
                 if (
                     !columnsByRow.has(nodePlacement.row) ||
                     isExtreme(contender, columnsByRow.get(nodePlacement.row)!)
                 ) {
-                    needToRetroactivelyUpdateTheseRows.forEach((row) => {
+                    rowsToRetroactivelyUpdateWithStickyValue.forEach((row) => {
                         columnsByRow.set(row, contender);
                     });
                 }
-                stickySecurity = contender;
+                stickyValue = contender;
             } else {
-                stickySecurity = resetSticky();
-                needToRetroactivelyUpdateTheseRows = []; // TODO CHARLY les deux lignes de reset dans une seule fonction ?
+                resetSticky();
+
                 let contender = nodePlacement.column;
                 if (
                     !columnsByRow.has(nodePlacement.row) ||
@@ -173,12 +191,20 @@ function getColumnsByRows(nodes: CurrentTreeNode[], placements: PlacementGrid, g
     return columnsByRow;
 }
 
-function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
-    return getColumnsByRows(nodes, placements, false);
+function getMinimumColumnByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+): Map<number, number> {
+    return getColumnsByRows(nodes, placements, nodeMap, false);
 }
 
-function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
-    return getColumnsByRows(nodes, placements, true);
+function getMaximumColumnByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+): Map<number, number> {
+    return getColumnsByRows(nodes, placements, nodeMap, true);
 }
 
 /**
@@ -281,9 +307,9 @@ function compressTreePlacements(
         // cases other branches could go under the left neighbor and make edges cross.
         const leftNodes = nodes.slice(0, currentNodeIndex);
 
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements);
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
 
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
@@ -372,7 +398,7 @@ function computeSecurityGroupNodes(
         }
 
         // If currently not in a security group, and a security node is found, we initiate securityGroupBuilder
-        if (!securityGroupBuilder.isInSecurityGroup && node.data.nodeType === NetworkModificationNodeType.SECURITY) {
+        if (!securityGroupBuilder.isInSecurityGroup && isSecurityModificationNode(node)) {
             securityGroupBuilder = {
                 isInSecurityGroup: true,
                 securityGroupTopLeftPosition: nodePlacement,
