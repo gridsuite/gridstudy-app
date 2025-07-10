@@ -87,23 +87,21 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
     };
 
     const frontendToBackendAppLayout = (appLayout: AppLayout): StudyLayout => {
-        if (!appLayout.diagram.gridLayout) {
-            return {
-                diagramLayoutParams: [],
-            };
-        }
         const diagramLayoutParams: DiagramLayoutParam[] = [];
 
-        const mergedById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
+        const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
 
         for (const [layoutKey, layouts] of Object.entries(appLayout.diagram.gridLayout)) {
             for (const { i, ...rest } of layouts) {
-                mergedById[i] = { ...mergedById[i], [layoutKey]: { w: rest.w, h: rest.h, x: rest.x, y: rest.y } };
+                gridLayoutById[i] = {
+                    ...gridLayoutById[i],
+                    [layoutKey]: { w: rest.w, h: rest.h, x: rest.x, y: rest.y },
+                };
             }
         }
 
         appLayout.diagram.params.forEach((param) => {
-            const matchingGridLayout = mergedById[param.diagramUuid];
+            const matchingGridLayout = gridLayoutById[param.diagramUuid];
             if (matchingGridLayout) {
                 diagramLayoutParams.push({
                     gridLayout: matchingGridLayout,

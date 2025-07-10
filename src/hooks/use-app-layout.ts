@@ -26,14 +26,6 @@ export const useAppLayout = () => {
                 dispatch(setAppLayout(backendToFrontendAppLayout(appLayout)));
                 return;
             }
-            dispatch(
-                setAppLayout({
-                    diagram: {
-                        gridLayout: undefined,
-                        params: [],
-                    },
-                })
-            );
         });
     }, [studyUuid, dispatch]);
 };

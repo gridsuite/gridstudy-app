@@ -11,8 +11,6 @@ import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 import { setGridLayout } from 'redux/actions';
 
-// const keyToKeepInSessionStorage = ['i', 'x', 'y', 'h', 'w']; // static
-
 type useDiagramsGridLayoutSessionStorageProps = {
     layouts: Layouts;
     onLoadFromSessionStorage: (layout: Layouts) => void;
@@ -28,11 +26,10 @@ export const useDiagramsGridLayoutSessionStorage = ({
 
     // at mount
     useEffect(() => {
-        if (!studyUuid || !gridLayout) {
+        if (!studyUuid) {
             return;
         }
         onLoadFromSessionStorage(gridLayout);
-        // onLoadFromSessionStorage(loadDiagramsGridLayoutFromSessionStorage(studyUuid));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

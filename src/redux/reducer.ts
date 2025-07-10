@@ -426,7 +426,7 @@ export interface AppConfigState {
 
 export interface AppLayout {
     diagram: {
-        gridLayout?: Layouts;
+        gridLayout: Layouts;
         params: DiagramParams[];
     };
 }
@@ -516,7 +516,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
-    appLayout?: AppLayout;
+    appLayout: AppLayout;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -619,7 +619,12 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
-    appLayout: undefined,
+    appLayout: {
+        diagram: {
+            gridLayout: {},
+            params: [],
+        },
+    },
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1650,17 +1655,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_GRID_LAYOUT, (state, action: SetGridLayoutAction) => {
-        //TODO: better solution ?
-        if (state.appLayout) {
-            state.appLayout.diagram.gridLayout = action.gridLayout;
-        }
+        state.appLayout.diagram.gridLayout = action.gridLayout;
     });
 
     builder.addCase(SET_DIAGRAM_PARAMS_LAYOUT, (state, action: SetDiagramParamsLayoutAction) => {
-        //TODO: better solution ?
-        if (state.appLayout) {
-            state.appLayout.diagram.params = action.diagramParams;
-        }
+        state.appLayout.diagram.params = action.diagramParams;
     });
 });
 
