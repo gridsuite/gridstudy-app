@@ -71,7 +71,12 @@ const TabularModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
+
+    const disableSave = Object.keys(errors).length > 0;
 
     useEffect(() => {
         if (editData) {
@@ -158,6 +163,7 @@ const TabularModificationDialog = ({
                 maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
+                disabledSave={disableSave}
                 titleId="TabularModification"
                 open={open}
                 isDataFetching={dataFetching}

@@ -27,6 +27,8 @@ import {
     TabularCreationField,
     generateCommentLines,
     transformIfFrenchNumber,
+    isFieldTypeOk,
+    setFieldTypeErrorIfNeeded,
 } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
@@ -53,40 +55,52 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         (results: Papa.ParseResult<any>) => {
             clearErrors(CREATIONS_TABLE);
             let requiredFieldNameInError: string = '';
-
             let requiredDependantFieldNameInError: string = '';
             let dependantFieldNameInError: string = '';
+            let fieldTypeInError: string = '';
+            let expectedTypeForFieldInError: string = '';
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
-                    const found = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
+                    const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
                         return field.id === key;
                     });
                     // check required fields are defined
-                    if (found !== undefined && found.required && (result[key] === undefined || result[key] === null)) {
+                    if (
+                        fieldDef !== undefined &&
+                        fieldDef.required &&
+                        (result[key] === undefined || result[key] === null)
+                    ) {
                         requiredFieldNameInError = key;
                         return false;
                     }
 
                     //check requiredIf rule
-                    if (found?.requiredIf) {
-                        const dependentValue = result[found.requiredIf.id];
+                    if (fieldDef?.requiredIf) {
+                        const dependentValue = result[fieldDef.requiredIf.id];
                         if (
                             dependentValue !== undefined &&
                             dependentValue !== null &&
                             (result[key] === undefined || result[key] === null)
                         ) {
                             dependantFieldNameInError = key;
-                            requiredDependantFieldNameInError = found.requiredIf.id;
+                            requiredDependantFieldNameInError = fieldDef.requiredIf.id;
                             return false;
                         }
                     }
 
+                    // check the field types
+                    if (!isFieldTypeOk(result[key], fieldDef)) {
+                        fieldTypeInError = key;
+                        expectedTypeForFieldInError = fieldDef?.type ?? '';
+                        return false;
+                    }
                     return true;
                 });
                 return (
                     requiredFieldNameInError !== '' ||
                     dependantFieldNameInError !== '' ||
-                    requiredDependantFieldNameInError !== ''
+                    requiredDependantFieldNameInError !== '' ||
+                    fieldTypeInError !== ''
                 );
             });
             setValue(CREATIONS_TABLE, results.data, {
@@ -124,6 +138,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     ),
                 });
             }
+            setFieldTypeErrorIfNeeded(fieldTypeInError, expectedTypeForFieldInError, CREATIONS_TABLE, setError, intl);
         },
         [clearErrors, setValue, getValues, setError, intl]
     );
