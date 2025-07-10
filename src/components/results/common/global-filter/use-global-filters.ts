@@ -85,9 +85,7 @@ export default function useGlobalFilters({ onFilterChange }: Readonly<UseGlobalF
             return undefined;
         }
 
-        return {
-            ...globalFilters,
-        };
+        return globalFilters;
     }, []);
 
     return {
