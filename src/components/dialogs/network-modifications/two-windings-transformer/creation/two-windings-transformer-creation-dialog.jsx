@@ -333,7 +333,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         ),
                     }),
                     ...getAllLimitsFormData({
-                        [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(twt.currentLimits1),
+                        [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(twt.currentLimits),
                         [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroup1 ?? null,
                         [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroup2 ?? null,
                     }),
