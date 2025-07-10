@@ -6,12 +6,12 @@
  */
 
 import { useEffect } from 'react';
-import { Layout, Layouts } from 'react-grid-layout';
+import { Layouts } from 'react-grid-layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAppLayout } from 'redux/actions';
 import { AppLayout, AppState } from 'redux/reducer';
 import { getStudyLayout } from 'services/study/study-config';
-import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
+import { StudyLayout } from 'types/study-layout.types';
 
 export const useAppLayout = () => {
     const dispatch = useDispatch();
