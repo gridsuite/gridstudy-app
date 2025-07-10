@@ -10,7 +10,6 @@ import { Diagram, DiagramParams } from '../diagram.type';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
-import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
 import { setDiagramParamsLayout } from 'redux/actions';
 
 const keyToKeepInSessionStorage = [
@@ -55,8 +54,7 @@ export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }:
             Object.fromEntries(Object.entries(diagram).filter(([key]) => keyToKeepInSessionStorage.includes(key)))
         );
         //TODO: remove cast
-        console.log('SAVING PARAM', diagramParams);
         dispatch(setDiagramParamsLayout(diagramParams as DiagramParams[]));
-        syncDiagramsWithSessionStorage(diagramParams, studyUuid);
+        // syncDiagramsWithSessionStorage(diagramParams, studyUuid);
     }, [diagrams, studyUuid, dispatch]);
 };

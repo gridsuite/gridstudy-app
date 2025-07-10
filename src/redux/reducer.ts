@@ -289,7 +289,7 @@ import { RootNetworkMetadata } from 'components/graph/menus/network-modification
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
-import { Layout } from 'react-grid-layout';
+import { Layouts } from 'react-grid-layout';
 
 // Redux state
 export type StudyUpdated = {
@@ -426,7 +426,7 @@ export interface AppConfigState {
 
 export interface AppLayout {
     diagram: {
-        gridLayout: Layout[];
+        gridLayout?: Layouts;
         params: DiagramParams[];
     };
 }

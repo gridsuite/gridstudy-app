@@ -22,7 +22,6 @@ import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
 import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
-import { useDispatch } from 'react-redux';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
@@ -106,7 +105,6 @@ interface DiagramGridLayoutProps {
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const intl = useIntl();
-    const dispatch = useDispatch();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);

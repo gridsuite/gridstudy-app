@@ -9,13 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
-import {
-    loadDiagramsGridLayoutFromSessionStorage,
-    syncDiagramsGridLayoutWithSessionStorage,
-} from 'redux/session-storage/diagram-grid-layout';
 import { setGridLayout } from 'redux/actions';
 
-const keyToKeepInSessionStorage = ['i', 'x', 'y', 'h', 'w']; // static
+// const keyToKeepInSessionStorage = ['i', 'x', 'y', 'h', 'w']; // static
 
 type useDiagramsGridLayoutSessionStorageProps = {
     layouts: Layouts;
@@ -35,34 +31,16 @@ export const useDiagramsGridLayoutSessionStorage = ({
         if (!studyUuid || !gridLayout) {
             return;
         }
-        onLoadFromSessionStorage({ lg: gridLayout });
+        onLoadFromSessionStorage(gridLayout);
         // onLoadFromSessionStorage(loadDiagramsGridLayoutFromSessionStorage(studyUuid));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    //TODO way too many requests
     // at update
-    // useEffect(() => {
-    //     if (!studyUuid || !layouts) {
-    //         return;
-    //     }
-    //     dispatch(setGridLayout(layouts.lg));
-    //     syncDiagramsGridLayoutWithSessionStorage(
-    //         Object.fromEntries(
-    //             Object.entries(layouts).map(([key, layoutArray]) => {
-    //                 return [
-    //                     key,
-    //                     layoutArray
-    //                         .filter((layout) => layout.i !== 'Adder')
-    //                         .map((layout) =>
-    //                             Object.fromEntries(
-    //                                 Object.entries(layout).filter(([key]) => keyToKeepInSessionStorage.includes(key))
-    //                             )
-    //                         ),
-    //                 ];
-    //             })
-    //         ),
-    //         studyUuid
-    //     );
-    // }, [layouts, studyUuid, dispatch]);
+    useEffect(() => {
+        if (!studyUuid || !layouts) {
+            return;
+        }
+        dispatch(setGridLayout(layouts));
+    }, [layouts, studyUuid, dispatch]);
 };

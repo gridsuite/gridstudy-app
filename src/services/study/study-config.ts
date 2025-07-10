@@ -15,7 +15,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
-import { StudyLayout } from 'hooks/use-app-layout';
+import { StudyLayout } from 'types/study-layout.types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');

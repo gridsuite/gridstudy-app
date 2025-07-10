@@ -9,7 +9,7 @@ import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler } from 
 import { Box, IconButton, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
-import { Search, Public, Upload } from '@mui/icons-material';
+import { Search, Public, Upload, Save } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
@@ -18,6 +18,12 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
+import { AppLayout, AppState } from 'redux/reducer';
+import { useSelector } from 'react-redux';
+import { frontendToBackendAppLayout } from 'hooks/use-app-layout';
+import { saveStudyLayout } from 'services/study/study-config';
+import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
+import { Layout } from 'react-grid-layout';
 
 const styles = {
     card: (theme: Theme) => ({
@@ -61,6 +67,9 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
 
     const intl = useIntl();
 
+    const studyLayout = useSelector((state: AppState) => state.appLayout);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
@@ -70,6 +79,45 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
         }
         setIsLoadSelectorOpen(false);
     };
+
+    const handleSaveDiagramLayout = () => {
+        if (!studyUuid || !studyLayout) {
+            return;
+        }
+        saveStudyLayout(studyUuid, frontendToBackendAppLayout(studyLayout));
+    };
+
+    const frontendToBackendAppLayout = (appLayout: AppLayout): StudyLayout => {
+        if (!appLayout.diagram.gridLayout) {
+            return {
+                diagramLayoutParams: [],
+            };
+        }
+        const diagramLayoutParams: DiagramLayoutParam[] = [];
+
+        const mergedById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
+
+        for (const [layoutKey, layouts] of Object.entries(appLayout.diagram.gridLayout)) {
+            for (const { i, ...rest } of layouts) {
+                mergedById[i] = { ...mergedById[i], [layoutKey]: { w: rest.w, h: rest.h, x: rest.x, y: rest.y } };
+            }
+        }
+
+        appLayout.diagram.params.forEach((param) => {
+            const matchingGridLayout = mergedById[param.diagramUuid];
+            if (matchingGridLayout) {
+                diagramLayoutParams.push({
+                    gridLayout: matchingGridLayout,
+                    ...param,
+                });
+            }
+        });
+
+        return {
+            diagramLayoutParams: diagramLayoutParams,
+        };
+    };
+
     return (
         <Box sx={mergeSx(style, styles.card)} ref={ref} {...otherProps}>
             <Box sx={styles.adderContent}>
@@ -97,6 +145,11 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                                 <Public />
                             </IconButton>
                         </span>
+                    </Tooltip>
+                    <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
+                        <IconButton onClick={() => handleSaveDiagramLayout()}>
+                            <Save />
+                        </IconButton>
                     </Tooltip>
                 </Box>
             </Box>

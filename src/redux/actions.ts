@@ -63,7 +63,7 @@ import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import type { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
-import { Layout } from 'react-grid-layout';
+import { Layouts } from 'react-grid-layout';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -1383,10 +1383,10 @@ export function setAppLayout(appLayout: AppLayout): SetAppLayoutAction {
 
 export const SET_GRID_LAYOUT = 'SET_GRID_LAYOUT';
 export type SetGridLayoutAction = Readonly<Action<typeof SET_GRID_LAYOUT>> & {
-    gridLayout: Layout[];
+    gridLayout: Layouts;
 };
 
-export function setGridLayout(gridLayout: Layout[]): SetGridLayoutAction {
+export function setGridLayout(gridLayout: Layouts): SetGridLayoutAction {
     return {
         type: SET_GRID_LAYOUT,
         gridLayout: gridLayout,
