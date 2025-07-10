@@ -9,7 +9,11 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NetworkVisualizationParameters } from '@gridsuite/commons-ui';
-import { SpreadsheetCollectionDto, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
+import {
+    ColumnStateDto,
+    SpreadsheetCollectionDto,
+    SpreadsheetConfig,
+} from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
@@ -69,6 +73,17 @@ export function reorderSpreadsheetColumns(studyUuid: UUID, spreadsheetModelUuid:
     });
 }
 
+export function updateColumnStates(studyUuid: UUID, spreadsheetModelUuid: UUID, columnStates: ColumnStateDto[]) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/states`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(columnStates),
+    });
+}
+
 export function updateSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, columnUuid: UUID, column: any) {
     const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/${columnUuid}`;
     return backendFetchJson(url, {
@@ -119,7 +134,7 @@ export function setGlobalFiltersToSpreadsheetConfig(
 export function renameSpreadsheetModel(studyUuid: UUID, spreadsheetModelUuid: UUID, name: string) {
     const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/name`;
     return backendFetchJson(url, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },

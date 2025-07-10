@@ -12,16 +12,15 @@ import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './sho
 import { GridReadyEvent, RowClassParams, RowDataUpdatedEvent, ValueGetterParams } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit } from '@gridsuite/commons-ui';
+import { CustomAGGrid, unitToKiloUnit, ComputingType } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType, FilterConfig } from '../../../types/custom-aggrid-types';
 import { mappingTabs } from './shortcircuit-analysis-result-content';
 import {
     ColumnContext,
@@ -40,6 +39,7 @@ interface ShortCircuitAnalysisResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onFilter: () => void;
+    filters: FilterConfig[];
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -82,6 +82,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     onGridColumnsChanged,
     onRowDataUpdated,
     onFilter,
+    filters,
 }) => {
     const intl = useIntl();
     const theme = useTheme();
@@ -281,7 +282,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             ]
     );
 
-    const messages = useIntlResultStatusMessages(intl, true);
+    const messages = useIntlResultStatusMessages(intl, true, filters.length > 0);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -419,6 +420,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 overlayNoRowsTemplate={message}
                 onRowDataUpdated={handleRowDataUpdated}
                 overrideLocales={AGGRID_LOCALES}
+                onModelUpdated={({ api }) => {
+                    if (api.getDisplayedRowCount()) {
+                        api.hideOverlay();
+                    } else {
+                        api.showNoRowsOverlay();
+                    }
+                }}
             />
         </Box>
     );

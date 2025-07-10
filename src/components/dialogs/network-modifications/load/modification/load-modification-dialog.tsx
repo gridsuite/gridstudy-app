@@ -289,7 +289,6 @@ export default function LoadModificationDialog({
                 titleId="ModifyLoad"
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

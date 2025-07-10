@@ -17,7 +17,6 @@ import { Box, Grid } from '@mui/material';
 import {
     ADDITIONAL_PROPERTIES,
     B,
-    STATE_ESTIMATION,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
     CONNECTED,
@@ -57,6 +56,7 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
+    STATE_ESTIMATION,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
@@ -91,12 +91,12 @@ import {
 import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
+    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
-    getSelectedLimitsFormData,
     getLimitsValidationSchema,
+    getSelectedLimitsFormData,
     sanitizeLimitNames,
     updateTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -114,14 +114,14 @@ import {
     getComputedPreviousPhaseRegulationType,
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
-    getPhaseTapChangerModificationValidationSchema,
+    getPhaseTapChangerValidationSchema,
 } from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import {
     getComputedPreviousRatioRegulationType,
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
-    getRatioTapChangerModificationValidationSchema,
+    getRatioTapChangerValidationSchema,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
@@ -171,8 +171,8 @@ const formSchema = yup
         ...getCharacteristicsValidationSchema(true),
         ...getLimitsValidationSchema(true),
         ...getStateEstimationValidationSchema(STATE_ESTIMATION),
-        ...getRatioTapChangerModificationValidationSchema(),
-        ...getPhaseTapChangerModificationValidationSchema(),
+        ...getRatioTapChangerValidationSchema(true),
+        ...getPhaseTapChangerValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -792,7 +792,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 onSave={onSubmit}
                 onValidationError={onValidationError}
                 open={open}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

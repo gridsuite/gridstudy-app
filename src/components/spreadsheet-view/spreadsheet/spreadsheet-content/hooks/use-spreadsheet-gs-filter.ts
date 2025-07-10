@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import { IRowNode } from 'ag-grid-community';
+import { RefObject, useCallback, useEffect, useState } from 'react';
+import { FilterChangedEvent, IRowNode } from 'ag-grid-community';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
@@ -14,8 +14,18 @@ import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/stu
 import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { AgGridReact } from 'ag-grid-react';
+import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 
-export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: SpreadsheetEquipmentType) => {
+export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
+    event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
+};
+
+export const useSpreadsheetGlobalFilter = (
+    gridRef: RefObject<AgGridReact>,
+    tabUuid: UUID,
+    equipmentType: SpreadsheetEquipmentType
+) => {
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
 
@@ -45,17 +55,35 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
                     }, {});
                 const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
 
-                let genericFiltersIdentifiablesIds: string[] = [];
-
+                let genericFiltersIdentifiablesIds: Record<string, string[]> = {};
                 if (genericFilters?.length > 0) {
                     //We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
                     const filtersUuids = genericFilters
                         .flatMap((filter) => filter.uuid)
                         .filter((uuid): uuid is UUID => uuid !== undefined);
-                    const response = await evaluateFilters(studyUuid, currentRootNetworkUuid, filtersUuids);
-                    genericFiltersIdentifiablesIds = response.flatMap((filterEquipments) =>
-                        filterEquipments.identifiableAttributes.flatMap((identifiable) => identifiable.id)
+                    const response = await evaluateFilters(
+                        studyUuid,
+                        currentNode.id,
+                        currentRootNetworkUuid,
+                        filtersUuids
                     );
+                    response.forEach((filterEq) => {
+                        if (filterEq.identifiableAttributes.length > 0) {
+                            if (!genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type]) {
+                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] = [];
+                            }
+                            const equipIds = filterEq.identifiableAttributes.map((identifiable) => identifiable.id);
+                            if (genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type].length === 0) {
+                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] = equipIds;
+                            } else {
+                                // intersection here because it is a AND
+                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] =
+                                    genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type].filter(
+                                        (id) => equipIds.includes(id)
+                                    );
+                            }
+                        }
+                    });
                 }
 
                 const computedFilter = buildExpertFilter(
@@ -85,7 +113,8 @@ export const useSpreadsheetGlobalFilter = (tabUuid: UUID, equipmentType: Spreads
 
     useEffect(() => {
         applyGlobalFilter(globalFilterSpreadsheetState);
-    }, [applyGlobalFilter, tabUuid, globalFilterSpreadsheetState]);
+        gridRef.current?.api?.onFilterChanged();
+    }, [applyGlobalFilter, tabUuid, globalFilterSpreadsheetState, gridRef]);
 
     const doesFormulaFilteringPass = useCallback((node: IRowNode) => filterIds.includes(node.data.id), [filterIds]);
 

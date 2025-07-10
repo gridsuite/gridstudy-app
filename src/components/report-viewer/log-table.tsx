@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -15,15 +15,16 @@ import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
-import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
-import { AgGridReact } from 'ag-grid-react';
 import {
-    ComputingAndNetworkModificationType,
-    ReportLog,
-    ReportType,
-    SelectedReportLog,
-    SeverityLevel,
-} from 'utils/report/report.type';
+    CellClassParams,
+    CellClickedEvent,
+    GridApi,
+    ICellRendererParams,
+    RowClassParams,
+    RowStyle,
+} from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { ComputingAndNetworkModificationType, Log, SelectedReportLog, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -37,6 +38,7 @@ import {
 } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
+import { reportStyles } from './report.styles';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
@@ -61,14 +63,21 @@ const styles = {
         },
         padding: 0.5,
     }),
-    chipContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 1,
-        p: 1,
-        marginBottom: 3,
+    chipContainer: (theme: Theme) => {
+        return {
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: theme.spacing(1),
+        };
     },
-    quickSearch: { width: '100%', flexShrink: 0, marginLeft: 1 },
+    toolContainer: (theme: Theme) => {
+        return {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: theme.spacing(1),
+            mb: theme.spacing(2),
+        };
+    },
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
@@ -79,7 +88,7 @@ type LogTableProps = {
     selectedReport: SelectedReportLog;
     reportType: ComputingAndNetworkModificationType;
     severities: SeverityLevel[] | undefined;
-    onRowClick: (data: ReportLog) => void;
+    onRowClick: (data: Log | undefined) => void;
     onFiltersChanged: () => void;
     resetFilters?: boolean;
 };
@@ -98,13 +107,13 @@ const LogTable = ({
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs, , fetchPagedReportLogs, fetchLogMatches] = useReportFetcher(
+    const [, , , fetchLogs, fetchLogMatches] = useReportFetcher(
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
-    const [rowData, setRowData] = useState<ReportLog[] | null>(null);
+    const [rowData, setRowData] = useState<Log[] | null>(null);
     const [searchMatches, setSearchMatches] = useState<{ rowIndex: number; page: number }[]>([]);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
@@ -131,58 +140,23 @@ const LogTable = ({
         setSearchTerm('');
     }, []);
 
-    const getReportLogs = useCallback(() => {
-        fetchReportLogs(selectedReport.id, severityFilter, selectedReport.type, messageFilter)?.then((reportLogs) => {
-            const minDepth = Math.min(...reportLogs.map((log) => log.depth ?? 0));
-            const transformedLogs = reportLogs.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        depth: (log.depth ?? 0) - minDepth,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    }) satisfies ReportLog
-            );
-            setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
-        });
-    }, [fetchReportLogs, messageFilter, selectedReport.id, selectedReport.type, severityFilter]);
-
-    const getPagedReportLogs = useCallback(() => {
-        fetchPagedReportLogs(selectedReport.id, severityFilter, messageFilter, page, rowsPerPage)?.then((pagedLogs) => {
-            const { content, totalElements, totalPages } = pagedLogs;
-            if (totalPages < page) {
-                setPage(0);
-            }
-            setCount(totalElements);
-            const minDepth = Math.min(...content.map((log) => log.depth ?? 0));
-            const transformedLogs = content.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        depth: (log.depth ?? 0) - minDepth,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    }) satisfies ReportLog
-            );
-            setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
-        });
-    }, [fetchPagedReportLogs, messageFilter, page, rowsPerPage, selectedReport.id, severityFilter]);
-
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityFilter.length === 0) {
             setRowData([]);
             return;
         }
-        if (selectedReport.type === ReportType.GLOBAL) {
-            getReportLogs();
-        } else {
-            getPagedReportLogs();
-        }
-    }, [severityFilter.length, selectedReport.type, getReportLogs, getPagedReportLogs]);
+        fetchLogs(selectedReport.id, severityFilter, messageFilter, selectedReport.type, page, rowsPerPage)?.then(
+            (pagedLogs) => {
+                const { content, totalElements, totalPages } = pagedLogs;
+                if (totalPages - 1 < page) {
+                    setPage(0);
+                }
+                setCount(totalElements);
+                setSelectedRowIndex(-1);
+                setRowData(content);
+            }
+        );
+    }, [severityFilter, fetchLogs, selectedReport.id, selectedReport.type, messageFilter, page, rowsPerPage]);
 
     useEffect(() => {
         if (severities && severities.length > 0) {
@@ -224,8 +198,8 @@ const LogTable = ({
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
                 colId: 'severity',
                 field: 'severity',
-                cellStyle: (params) => ({
-                    backgroundColor: params.data.backgroundColor,
+                cellStyle: (params: CellClassParams<Log>) => ({
+                    backgroundColor: params.data?.backgroundColor ?? theme.palette.background.default,
                     textAlign: 'center',
                 }),
             }),
@@ -246,7 +220,7 @@ const LogTable = ({
                     forceDisplayFilterIcon: true,
                 },
                 flex: 1,
-                cellRenderer: (param: ICellRendererParams) =>
+                cellRenderer: (param: ICellRendererParams<Log>) =>
                     MessageLogCellRenderer({
                         param: param,
                         highlightColor: theme.searchedText.highlightColor,
@@ -260,6 +234,7 @@ const LogTable = ({
         [
             intl,
             reportType,
+            theme.palette.background.default,
             theme.searchedText.highlightColor,
             theme.searchedText.currentHighlightColor,
             searchTerm,
@@ -269,7 +244,7 @@ const LogTable = ({
     );
 
     const handleRowClick = useCallback(
-        (row: CellClickedEvent) => {
+        (row: CellClickedEvent<Log>) => {
             setSelectedRowIndex(row.rowIndex);
             onRowClick(row.data);
         },
@@ -277,7 +252,7 @@ const LogTable = ({
     );
 
     const rowStyleFormat = useCallback(
-        (row: RowClassParams): RowStyle => {
+        (row: RowClassParams<Log>): RowStyle => {
             if (row.rowIndex && row.rowIndex < 0) {
                 return {};
             }
@@ -326,30 +301,22 @@ const LogTable = ({
                 return;
             }
             setSearchTerm(searchTerm);
-            const api = gridRef.current.api;
-            let matches: number[] = [];
-            const searchTermLower = searchTerm.toLowerCase();
 
-            if (selectedReport.type === ReportType.GLOBAL) {
-                api.forEachNode((node: IRowNode) => {
-                    const { message } = node.data;
-                    if (node.rowIndex !== null && message?.toLowerCase().includes(searchTermLower)) {
-                        matches.push(node.rowIndex);
-                    }
-                });
+            fetchLogMatches(
+                selectedReport.id,
+                severityFilter,
+                messageFilter,
+                selectedReport.type,
+                searchTerm,
+                rowsPerPage
+            )?.then((matchesPositions) => {
+                setSearchMatches(matchesPositions);
+                const matches = matchesPositions.map((match: { rowIndex: number; page: number }) => match.rowIndex);
+                if (matches.length > 0) {
+                    setPage(matchesPositions[0].page);
+                }
                 handleSearchResults(matches);
-            } else {
-                fetchLogMatches(selectedReport.id, severityFilter, messageFilter, searchTerm, rowsPerPage)?.then(
-                    (matchesPositions) => {
-                        setSearchMatches(matchesPositions);
-                        matches = matchesPositions.map((match: { rowIndex: number; page: number }) => match.rowIndex);
-                        if (matches.length > 0) {
-                            setPage(matchesPositions[0].page);
-                        }
-                        handleSearchResults(matches);
-                    }
-                );
-            }
+            });
         },
         [
             fetchLogMatches,
@@ -377,14 +344,11 @@ const LogTable = ({
                 newIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
             }
 
-            if (selectedReport.type === ReportType.NODE) {
-                setPage(searchMatches[newIndex].page);
-            }
-
+            setPage(searchMatches[newIndex].page);
             setCurrentResultIndex(newIndex);
             highlightAndScrollToMatch(newIndex, searchResults);
         },
-        [searchResults, selectedReport.type, highlightAndScrollToMatch, currentResultIndex, searchMatches]
+        [searchResults, highlightAndScrollToMatch, currentResultIndex, searchMatches]
     );
 
     const handleChipClick = useCallback(
@@ -436,14 +400,8 @@ const LogTable = ({
     }, [handleSearch]);
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-            }}
-        >
-            <Box sx={styles.quickSearch}>
+        <Box sx={reportStyles.mainContainer}>
+            <Box sx={styles.toolContainer}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
                     onSearch={handleSearch}
@@ -452,20 +410,20 @@ const LogTable = ({
                     resetSearch={resetSearch}
                     placeholder="searchPlaceholderLog"
                 />
+                <Box sx={styles.chipContainer}>
+                    {severities?.map((severity) => (
+                        <Chip
+                            key={severity}
+                            label={severity}
+                            deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            onClick={() => handleChipClick(severity)}
+                            onDelete={() => handleChipClick(severity)}
+                            sx={styles.chip(severity, severityFilter, theme)}
+                        />
+                    ))}
+                </Box>
             </Box>
-            <Box sx={styles.chipContainer}>
-                {severities?.map((severity, index) => (
-                    <Chip
-                        key={severity}
-                        label={severity}
-                        deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                        onClick={() => handleChipClick(severity)}
-                        onDelete={() => handleChipClick(severity)}
-                        sx={styles.chip(severity, severityFilter, theme)}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+            <Box sx={{ flex: 1 }}>
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={COLUMNS_DEFINITIONS}
@@ -477,17 +435,15 @@ const LogTable = ({
                     overrideLocales={AGGRID_LOCALES}
                 />
             </Box>
-            {selectedReport.type === ReportType.NODE && (
-                <CustomTablePagination
-                    rowsPerPageOptions={PAGE_OPTIONS}
-                    count={count}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    labelRowsPerPageId="reportLogsPerPage"
-                />
-            )}
+            <CustomTablePagination
+                rowsPerPageOptions={PAGE_OPTIONS}
+                count={count}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPageId="reportLogsPerPage"
+            />
         </Box>
     );
 };

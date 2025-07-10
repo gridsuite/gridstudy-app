@@ -17,7 +17,7 @@ import { RunningStatus } from '../../../utils/running-status';
 import { ComputationReportViewer } from '../../common/computation-report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { ComputingType } from '../../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
 import { nonEvacuatedEnergyResultInvalidations } from '../../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';

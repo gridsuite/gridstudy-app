@@ -20,6 +20,7 @@ import {
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
     BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
+    BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS,
 } from '../../../utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from './styles';
@@ -57,6 +58,7 @@ export default function BalancesAdjustmentAdvancedContent() {
                     />
                 </Grid>
             </Grid>
+
             <Grid container spacing={2} direction="column">
                 <GridItem>
                     <CountriesAutocomplete
@@ -76,6 +78,19 @@ export default function BalancesAdjustmentAdvancedContent() {
                         disableClearable={true}
                     />
                 </GridItem>
+            </Grid>
+            <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center', marginLeft: 1, marginTop: 1 }}>
+                <Grid>
+                    <FormattedMessage id="LoadFlowWithRatioTapChangers" />
+                </Grid>
+                <Grid>
+                    <SwitchInput
+                        name={`${BALANCES_ADJUSTMENT}.${BALANCES_ADJUSTMENT_ADVANCED}.${BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS}`}
+                        formProps={{
+                            disabled: !withLoadFlow,
+                        }}
+                    />
+                </Grid>
             </Grid>
             <GridSection title="Algorithm" />
             <Grid container spacing={2} direction="column">

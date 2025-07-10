@@ -10,21 +10,21 @@ import ReportViewer from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 
 import { useReportFetcher } from '../hooks/use-report-fetcher';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
-import { Box, Paper } from '@mui/material';
 import { ReportType } from 'utils/report/report.type';
 import { sortSeverityList } from 'utils/report/report-severity';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { Box, Switch } from '@mui/material';
 
 const styles = {
     div: {
         display: 'flex',
+        flexShrink: 0,
     },
     reportOnlyNode: {
         margin: '5px',
@@ -47,7 +47,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [resetFilters, setResetFilters] = useState(false);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const intl = useIntl();
-    const [isReportLoading, fetchReport, , fetchReportSeverities] = useReportFetcher(
+    const [isReportLoading, fetchReport, fetchReportSeverities] = useReportFetcher(
         COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
     );
 
@@ -91,37 +91,37 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport, fetchReportSeverities]);
 
     return (
-        <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-            <Paper className={'singlestretch-child'}>
-                <Box sx={styles.div}>
-                    <FormControlLabel
-                        sx={styles.reportOnlyNode}
-                        control={
-                            <Switch
-                                checked={nodeOnlyReport}
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                                onChange={(e) => handleChangeNodeOnlySwitch(e)}
-                                disabled={disabled || rootNodeId === currentNode?.id}
-                            />
-                        }
-                        label={intl.formatMessage({
-                            id: 'LogOnlySingleNode',
-                        })}
-                    />
-                    {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
-                </Box>
-                {!!report && !disabled && (
-                    <ReportViewer
-                        report={report}
-                        reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
-                        severities={severities}
-                        resetFilters={resetFilters}
-                    />
-                )}
-            </Paper>
-        </WaitingLoader>
+        <>
+            {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
+            {!disabled && !!report && (
+                <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <FormControlLabel
+                            sx={styles.reportOnlyNode}
+                            control={
+                                <Switch
+                                    checked={nodeOnlyReport}
+                                    inputProps={{
+                                        'aria-label': 'primary checkbox',
+                                    }}
+                                    onChange={(e) => handleChangeNodeOnlySwitch(e)}
+                                    disabled={disabled || rootNodeId === currentNode?.id}
+                                />
+                            }
+                            label={intl.formatMessage({
+                                id: 'LogOnlySingleNode',
+                            })}
+                        />
+                        <ReportViewer
+                            report={report}
+                            reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
+                            severities={severities}
+                            resetFilters={resetFilters}
+                        />
+                    </Box>
+                </WaitingLoader>
+            )}
+        </>
     );
 };
 

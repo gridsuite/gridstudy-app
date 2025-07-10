@@ -18,7 +18,7 @@ type CountriesAutocompleteProps = Pick<AutocompleteProps<string, true, false, fa
     disabled?: boolean;
 };
 
-export default function CountriesAutocomplete({ name, label, ...props }: CountriesAutocompleteProps) {
+export default function CountriesAutocomplete({ name, label, disabled, ...props }: CountriesAutocompleteProps) {
     const { countryCodes, translate } = useLocalizedCountries();
 
     const {
@@ -33,6 +33,7 @@ export default function CountriesAutocomplete({ name, label, ...props }: Countri
     return (
         <Autocomplete
             multiple
+            disabled={disabled}
             value={value}
             onChange={handleChange}
             options={countryCodes}

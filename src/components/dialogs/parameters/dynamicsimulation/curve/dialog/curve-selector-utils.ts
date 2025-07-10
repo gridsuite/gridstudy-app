@@ -7,12 +7,12 @@
 
 import { ExpertFilter } from 'services/study/filter';
 import {
-    EQUIPMENTS_WITH_ONE_SUBSTATION,
-    EQUIPMENTS_WITH_TWO_SUBSTATIONS,
     EQUIPMENT_TYPES,
     EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE,
+    EQUIPMENTS_WITH_ONE_SUBSTATION,
     EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES,
     EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES,
+    EQUIPMENTS_WITH_TWO_SUBSTATIONS,
 } from '../../../../../utils/equipment-types';
 import { CombinatorType, OperatorType } from '../../../../filter/expert/expert-filter.type';
 import { DataType, FieldType } from '@gridsuite/commons-ui';
@@ -97,7 +97,7 @@ export const buildExpertRules = (
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
     substationProperties: Record<string, string[]> | undefined,
-    ids: string[] | undefined
+    ids: Record<string, string[]> | undefined
 ) => {
     const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
 
@@ -204,15 +204,106 @@ export const buildExpertRules = (
         buildSubstationPropertiesRules(equipmentType, substationProperties, rules);
     }
 
-    // create rule IN for ids
-    if (ids?.length) {
-        const idsRule = {
-            field: FieldType.ID,
-            operator: OperatorType.IN,
-            values: ids,
-            dataType: DataType.STRING,
-        };
-        rules.push(idsRule);
+    // create rule IN or VOLTAGE_LEVEL_ID IN or SUBSTATION_ID IN for ids
+    if (ids && Object.keys(ids).length) {
+        for (const eqType in ids) {
+            if ((eqType as EQUIPMENT_TYPES) === EQUIPMENT_TYPES.SUBSTATION) {
+                if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
+                    const idsRule = {
+                        field: equipmentType !== EQUIPMENT_TYPES.SUBSTATION ? FieldType.SUBSTATION_ID : FieldType.ID,
+                        operator: OperatorType.IN,
+                        values: ids[eqType],
+                        dataType: DataType.STRING,
+                    };
+                    rules.push(idsRule);
+                } else if (EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType)) {
+                    const idsRule = {
+                        combinator: CombinatorType.OR,
+                        dataType: DataType.COMBINATOR,
+                        rules: [
+                            {
+                                field: FieldType.SUBSTATION_ID_1,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                            {
+                                field: FieldType.SUBSTATION_ID_2,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                        ],
+                    };
+                    rules.push(idsRule);
+                }
+            } else if ((eqType as EQUIPMENT_TYPES) === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+                if (EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType)) {
+                    const idsRule = {
+                        field:
+                            equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL ? FieldType.VOLTAGE_LEVEL_ID : FieldType.ID,
+                        operator: OperatorType.IN,
+                        values: ids[eqType],
+                        dataType: DataType.STRING,
+                    };
+                    rules.push(idsRule);
+                } else if (EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES.includes(equipmentType)) {
+                    const idsRule = {
+                        combinator: CombinatorType.OR,
+                        dataType: DataType.COMBINATOR,
+                        rules: [
+                            {
+                                field: FieldType.VOLTAGE_LEVEL_ID_1,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                            {
+                                field: FieldType.VOLTAGE_LEVEL_ID_2,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                        ],
+                    };
+                    rules.push(idsRule);
+                } else if (EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES.includes(equipmentType)) {
+                    const idsRule = {
+                        combinator: CombinatorType.OR,
+                        dataType: DataType.COMBINATOR,
+                        rules: [
+                            {
+                                field: FieldType.VOLTAGE_LEVEL_ID_1,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                            {
+                                field: FieldType.VOLTAGE_LEVEL_ID_2,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                            {
+                                field: FieldType.VOLTAGE_LEVEL_ID_3,
+                                operator: OperatorType.IN,
+                                values: ids[eqType],
+                                dataType: DataType.STRING,
+                            },
+                        ],
+                    };
+                    rules.push(idsRule);
+                }
+            } else {
+                const idsRule = {
+                    field: FieldType.ID,
+                    operator: OperatorType.IN,
+                    values: ids[eqType],
+                    dataType: DataType.STRING,
+                };
+                rules.push(idsRule);
+            }
+        }
     }
 
     return {
@@ -228,7 +319,7 @@ export const buildExpertFilter = (
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
     substationProperties?: Record<string, string[]>,
-    ids?: string[]
+    ids?: Record<string, string[]>
 ): ExpertFilter => {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server

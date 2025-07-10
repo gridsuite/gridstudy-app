@@ -7,19 +7,18 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setStudyDisplayMode } from '../redux/actions';
+import { openDiagram, setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { ReactFlowProvider } from '@xyflow/react';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import NetworkMapTab from './network/network-map-tab';
-import { DiagramPane } from './diagrams/diagram-pane';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import SelectionCreationPanel from './network/selection-creation-panel/selection-creation-panel';
 import { StudyDisplayMode } from './network-modification.type';
 import GuidancePopup from './network/guidance-popup';
-import { Button, Typography, Box } from '@mui/material';
+import { Button, Typography, Box, useTheme } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
@@ -27,8 +26,6 @@ import { StudyView } from './utils/utils';
 import { DiagramType } from './diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
 import DiagramGridLayout from './diagrams/diagram-grid-layout';
-import { useParameterState } from './dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 const styles = {
     map: {
@@ -130,11 +127,11 @@ const MapViewer = ({
     currentNode,
     currentRootNetworkUuid,
     view,
-    openDiagramView,
     tableEquipment,
     onTableEquipementChanged,
     onChangeTab,
 }) => {
+    const theme = useTheme();
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-network-viewer)
     const dispatch = useDispatch();
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
@@ -144,7 +141,6 @@ const MapViewer = ({
 
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-    const enableDeveloperMode = useParameterState(PARAM_DEVELOPER_MODE);
     const previousStudyDisplayMode = useRef(undefined);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
@@ -152,10 +148,10 @@ const MapViewer = ({
         (vlId) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode) {
-                openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+                dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
             }
         },
-        [openDiagramView, isInDrawingMode]
+        [dispatch, isInDrawingMode]
     );
 
     function showInSpreadsheet(equipment) {
@@ -255,12 +251,7 @@ const MapViewer = ({
                             studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
-                        height: '100%',
-                        flexBasis:
-                            studyDisplayMode === StudyDisplayMode.HYBRID ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                                ? '50%'
-                                : '100%',
+                        flexGrow: 1,
                     }}
                 >
                     <ReactFlowProvider>
@@ -279,21 +270,22 @@ const MapViewer = ({
                             studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
-                        height: '100%',
-                        flexDirection: 'column',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE ? '50%' : '100%',
+                        flexGrow: 1,
+                        // Hack to put a padding at bottom of the diagram grid layout,
+                        paddingBottom: theme.spacing(1),
+                        backgroundColor:
+                            theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
+                        // end of hack
                     }}
                 >
-                    {enableDeveloperMode && (
-                        <DiagramGridLayout
-                            studyUuid={studyUuid}
-                            visible={
-                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                            }
-                            showInSpreadsheet={showInSpreadsheet}
-                        />
-                    )}
+                    <DiagramGridLayout
+                        studyUuid={studyUuid}
+                        visible={
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                        }
+                        showInSpreadsheet={showInSpreadsheet}
+                    />
                 </Box>
                 {/* Map */}
                 <Box
@@ -302,8 +294,7 @@ const MapViewer = ({
                             studyDisplayMode === StudyDisplayMode.MAP || studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? 'flex'
                                 : 'none',
-                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
-                        height: '100%',
+                        flexGrow: 1,
                     }}
                 >
                     <Box
@@ -334,7 +325,7 @@ const MapViewer = ({
                                 <NetworkMapTab
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
-                                    visible={view === StudyView.MAP && studyDisplayMode !== StudyDisplayMode.TREE}
+                                    visible={view === StudyView.TREE && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                                     lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                                     lineFlowMode={networkVisuParams.mapParameters.lineFlowMode}
@@ -362,18 +353,6 @@ const MapViewer = ({
                                     />
                                 )}
                             </Box>
-
-                            <DiagramPane
-                                studyUuid={studyUuid}
-                                showInSpreadsheet={showInSpreadsheet}
-                                currentNode={currentNode}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
-                                visible={
-                                    !isInDrawingMode &&
-                                    view === StudyView.MAP &&
-                                    studyDisplayMode !== StudyDisplayMode.TREE
-                                }
-                            />
 
                             <Box
                                 sx={{
