@@ -83,7 +83,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
-    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
@@ -119,14 +119,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                globalFilters: {
-                    ...(globalFilters || {}), // Safe spread with fallback to empty object
-                    limitViolationsTypes:
-                        tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
-                },
+                ...(getGlobalFilterParameter(globalFilters) !== undefined && {
+                    globalFilters: {
+                        ...getGlobalFilterParameter(globalFilters),
+                        limitViolationsTypes:
+                            tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
+                    },
+                }),
             });
         },
-        [tabIndex, filters, intl, sortConfig, globalFilters]
+        [tabIndex, filters, intl, sortConfig, getGlobalFilterParameter, globalFilters]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
