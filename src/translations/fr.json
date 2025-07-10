@@ -927,6 +927,8 @@
     "ContingencyListCreationSuccess": "Liste d'aléas créée avec succès",
     "FilterCreationIgnored": "La création du filtre n'a pas abouti",
     "ContingencyListCreationIgnored": "La création de la liste d'aléas n'a pas abouti",
+    "FilterUpdateSuccess": "Filtre mis à jour avec succès",
+    "FilterUpdateError": "Erreur lors de la mise à jour du filtre",
 
     "Tap": "Prise",
     "DeltaResistance": "Δ Résistance (%)",
