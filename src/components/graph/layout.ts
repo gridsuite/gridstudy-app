@@ -108,9 +108,9 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
     return nodePlacements;
 }
 
-/** // TODO CHARLY Revoir commentaires, maybe couper la fonction en deux, une partie sticky et l'autre non ? Expliquer pourquoi.
- * Create a Map using row number as keys and column number as value. The column value
- * for each row is either the lowest or highest value among column values of the same row, for the provided nodes.
+/**
+ * Create a Map using row number as keys and column number as value. The column value for each row is either
+ * the lowest or highest (extreme) value among column values of the same row for the provided nodes.
  *
  * Example nodes and placements :
  * - NodeA {row:0, column:30}
@@ -119,10 +119,15 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
  * - NodeD {row:2, column:40}
  * - NodeE {row:2, column:80}
  *
- * For these placements, the returned Map would be like this : {0 => 30, 1 => 10, 2 => 40}
+ * For these placements, the returned Map would be, with getMax=false, like this : {0 => 30, 1 => 10, 2 => 40}
+ * and with getMax=true, like this : {0 => 30, 1 => 50, 2 => 80}
+ *
+ * If there are security nodes in the tree, we consider that each group of security nodes share the
+ * same lowest or highest value for each of their rows.
  *
  * @param nodes The nodes to process
  * @param placements The grid placements
+ * @param nodeMap The map used to find a node's parent
  * @param getMax If true, returns maximum columns, if false returns minimum columns
  */
 function getColumnsByRows(
@@ -132,13 +137,17 @@ function getColumnsByRows(
     getMax: boolean
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
-    let stickyValue;
+
+    // These two variables are used to process the groups of security nodes, to make them all match the
+    // same value. When in a security group, we store the extreme value in stickyValue, and the affected rows
+    // in rowsToRetroactivelyUpdateWithStickyValue.
+    let stickyValue: number;
     let rowsToRetroactivelyUpdateWithStickyValue = [];
 
     function isExtreme(contender: number, competition: number) {
         return getMax ? contender > competition : contender < competition;
     }
-    function extreme(a, b) {
+    function extreme(a: number, b: number) {
         return getMax ? Math.max(a, b) : Math.min(a, b);
     }
     function resetSticky() {
@@ -158,7 +167,7 @@ function getColumnsByRows(
             if (isSecurityModificationNode(node)) {
                 // This test determines if we changed from a security group to another. If this is the case,
                 // we reset the sticky value to only update rows for the new group and not the old one.
-                if (!isSecurityModificationNode(nodeMap.get(node.parentId).node)) {
+                if (!isSecurityModificationNode(nodeMap.get(node.parentId!)?.node)) {
                     resetSticky();
                 }
 

@@ -81,7 +81,7 @@ export type CurrentTreeNode = ModificationNode | RootNode;
 
 export const isSecurityModificationNode = (node: CurrentTreeNode | undefined): node is ModificationNode => {
     return (
-        node &&
+        !!node &&
         node.type === NodeType.NETWORK_MODIFICATION &&
         node.data?.nodeType === NetworkModificationNodeType.SECURITY
     );
