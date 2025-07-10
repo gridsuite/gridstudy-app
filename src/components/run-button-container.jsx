@@ -52,9 +52,6 @@ const checkDynamicSimulationParameters = (studyUuid) => {
         return isMappingValid;
     });
 };
-const getLoadFlowProvider = (studyUuid) => {
-    return getLoadFlowParameters(studyUuid).then((params) => params['provider']);
-};
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
