@@ -401,16 +401,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     (e.target as HTMLElement).style.cursor = 'default';
                 }
             }}
-            onResizeStart={(layout, oldItem, newItem, placeholder, e, element) => {
-                if (e.target) {
-                    (e.target as HTMLElement).style.cursor = 'grabbing';
-                }
-            }}
-            onResizeStop={(layout, oldItem, newItem, placeholder, e, element) => {
-                if (e.target) {
-                    (e.target as HTMLElement).style.cursor = 'default';
-                }
-            }}
             autoSize={false} // otherwise the grid has strange behavior
             resizeHandle={<CustomResizeHandle />}
         >
