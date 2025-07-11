@@ -12,6 +12,17 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useIntl } from 'react-intl';
 
+const styles = {
+    menu: {
+        width: 'auto',
+        maxHeight: 'auto',
+    },
+    customMenuItem: {
+        paddingTop: '1px',
+        paddingBottom: '1px',
+    },
+};
+
 interface MenuAnchorPosition {
     mouseX: number;
     mouseY: number;
@@ -58,30 +69,15 @@ const NodeContextMenu: React.FC<ContextMenuProps> = ({
             anchorPosition={
                 anchorPosition !== null ? { top: anchorPosition.mouseY, left: anchorPosition.mouseX } : undefined
             }
-            style={{
-                width: 'auto',
-                maxHeight: 'auto',
-            }}
+            sx={styles.menu}
         >
-            <CustomMenuItem
-                style={{
-                    paddingTop: '1px',
-                    paddingBottom: '1px',
-                }}
-                onClick={handleExpandClick}
-            >
+            <CustomMenuItem sx={styles.customMenuItem} onClick={handleExpandClick}>
                 <ListItemIcon>
                     <AddIcon />
                 </ListItemIcon>
                 <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'expand' })}</Typography>} />
             </CustomMenuItem>
-            <CustomMenuItem
-                style={{
-                    paddingTop: '1px',
-                    paddingBottom: '1px',
-                }}
-                onClick={handleHideClick}
-            >
+            <CustomMenuItem sx={styles.customMenuItem} onClick={handleHideClick}>
                 <ListItemIcon>
                     <VisibilityOffIcon />
                 </ListItemIcon>

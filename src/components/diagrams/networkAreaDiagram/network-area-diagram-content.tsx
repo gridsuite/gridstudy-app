@@ -144,7 +144,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
         (equipmentId, nodeId, mousePosition) => {
-            if (mousePosition) {
+            if (mousePosition && !props.loadingState) {
                 if (isEditNadMode) {
                     setSelectedVoltageLevelId(equipmentId);
                     setShouldDisplayMenu(true);
@@ -154,7 +154,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
         },
-        [isEditNadMode, dispatch]
+        [isEditNadMode, dispatch,props.loadingState]
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
@@ -297,6 +297,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onAugmentDepth={onExpandAllVoltageLevelIds}
+                isDiagramLoading={props.loadingState}
             />
         </>
     );
