@@ -604,6 +604,8 @@
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
+    "LimitSetsTabularModification": "Modification tabulaire de sets de limite",
+    "LimitSets": "Sets de limite",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",

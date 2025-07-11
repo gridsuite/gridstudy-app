@@ -115,6 +115,7 @@ import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-mod
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -199,6 +200,7 @@ const NetworkModificationNodeEditor = () => {
         setEditData(undefined);
     };
 
+    //TODO JKLJKLJ
     function withDefaultParams(Dialog: React.FC<any>) {
         return (
             <Dialog
@@ -365,6 +367,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
                     label: 'BY_FILTER',
                     action: () => withDefaultParams(ModificationByAssignmentDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                    label: 'LimitSets',
+                    action: () => withDefaultParams(LimitSetsModificationDialog),
                 },
             ],
         },
@@ -898,6 +905,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderDialog = () => {
+        console.log(subMenuItemsList, editDialogOpen);
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
     };
 

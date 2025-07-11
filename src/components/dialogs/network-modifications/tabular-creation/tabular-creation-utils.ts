@@ -292,7 +292,7 @@ interface CommentLinesConfig {
     intl: IntlShape;
     equipmentType: string;
     language: string;
-    formType: 'Creation' | 'Modification';
+    formType: 'Creation' | 'Modification' | 'LimitSetsModification';
 }
 
 export const generateCommentLines = ({

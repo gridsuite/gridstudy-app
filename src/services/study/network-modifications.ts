@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import {
+    EquipmentInfos,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    ModificationType,
+    NetworkModificationMetadata
+} from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -1083,13 +1089,14 @@ export function modifyTwoWindingsTransformer({
     });
 }
 
-export function createTabulareModification(
+export function createTabularModification(
     studyUuid: string,
     nodeUuid: UUID,
     modificationType: string,
     modifications: any,
     isUpdate: boolean,
-    modificationUuid: UUID
+    modificationUuid: UUID,
+    type: ModificationType,
 ) {
     let createTabulareModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1107,7 +1114,7 @@ export function createTabulareModification(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+            type: type,
             modificationType: modificationType,
             modifications: modifications,
         }),

@@ -35,6 +35,7 @@ const NetworkModificationsMenu = ({
     anchorEl,
 }: NetworkModificationMenuProps) => {
     const intl = useIntl();
+
     const renderMenuItems = (menuItems: MenuDefinition[]) => {
         return menuItems.map((menuItem) => {
             if (menuItem?.hide) {
