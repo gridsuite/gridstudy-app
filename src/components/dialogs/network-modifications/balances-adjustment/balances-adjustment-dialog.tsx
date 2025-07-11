@@ -18,6 +18,7 @@ import {
     BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS,
     BALANCES_ADJUSTMENT_SHIFT_EQUIPMENT_TYPE,
     BALANCES_ADJUSTMENT_SHIFT_TYPE,
+    BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING,
     BALANCES_ADJUSTMENT_TARGET,
     BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION,
     BALANCES_ADJUSTMENT_WITH_LOAD_FLOW,
@@ -60,6 +61,7 @@ type BalancesAdjustmentForm = {
         [BALANCES_ADJUSTMENT_ADVANCED]: {
             [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: boolean;
             [BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS]: boolean;
+            [BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING]: boolean;
             [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: number;
             [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: number;
             [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: string[];
@@ -83,9 +85,10 @@ const emptyFormData = {
         [BALANCES_ADJUSTMENT_ADVANCED]: {
             [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: true,
             [BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS]: false,
+            [BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING]: false,
             [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: 5,
             [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: 1,
-            [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: [],
+            [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: ['FR'],
             [BALANCES_ADJUSTMENT_BALANCE_TYPE]: BalanceType.PROPORTIONAL_TO_LOAD,
         },
     },
@@ -141,6 +144,7 @@ export function BalancesAdjustmentDialog({
                     [BALANCES_ADJUSTMENT_ADVANCED]: yup.object().shape({
                         [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: yup.boolean().required(),
                         [BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS]: yup.boolean().required(),
+                        [BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING]: yup.boolean().required(),
                         [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: yup.number().integer().positive().required(),
                         [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: yup.number().positive().required(),
                         [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: yup
@@ -183,6 +187,7 @@ export function BalancesAdjustmentDialog({
                     [BALANCES_ADJUSTMENT_ADVANCED]: {
                         [BALANCES_ADJUSTMENT_WITH_LOAD_FLOW]: editData.withLoadFlow,
                         [BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS]: editData.withRatioTapChangers,
+                        [BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING]: editData.subtractLoadFlowBalancing,
                         [BALANCES_ADJUSTMENT_MAX_NUMBER_ITERATIONS]: editData.maxNumberIterations,
                         [BALANCES_ADJUSTMENT_THRESHOLD_NET_POSITION]: editData.thresholdNetPosition,
                         [BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE]: editData.countriesToBalance,
@@ -229,6 +234,10 @@ export function BalancesAdjustmentDialog({
                             BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS
                         ],
                     loadFlowParametersId: loadFlowParametersId,
+                    subtractLoadFlowBalancing:
+                        form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ADVANCED][
+                            BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING
+                        ],
                     areas: form[BALANCES_ADJUSTMENT][BALANCES_ADJUSTMENT_ZONES].map((balanceAdjustment) => {
                         return {
                             name: balanceAdjustment[BALANCES_ADJUSTMENT_ZONE],
