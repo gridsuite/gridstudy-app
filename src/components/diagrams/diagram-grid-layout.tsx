@@ -122,30 +122,28 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 y: 0,
                 ...defaultCardSizes,
             };
-            const newLayouts = Object.fromEntries(
-                Object.entries(old_layouts).map(([breakpoint, breakpoint_layouts]) => {
-                    // Ensure the new layout item is added to each breakpoint
-                    const updatedLayouts = [...breakpoint_layouts];
-                    updatedLayouts.push(layoutItem);
-                    return [breakpoint, updatedLayouts];
-                })
-            );
-            return newLayouts;
+            const oldLayoutsEntries = Object.entries(old_layouts);
+            const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                // Ensure the new layout item is added to each breakpoint
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.push(layoutItem);
+                return [breakpoint, updatedLayouts];
+            });
+            return Object.fromEntries(newLayoutsEntries);
         });
     };
 
     const removeLayoutItem = (cardUuid: UUID) => {
         setLayouts((old_layouts) => {
-            if (Object.entries(old_layouts).pop()?.[1].length === 2) {
+            const oldLayoutsEntries = Object.entries(old_layouts);
+            if (oldLayoutsEntries.pop()?.[1].length === 2) {
                 return initialLayouts; // Reset to initial layouts if no diagrams left
             }
-            const newLayouts = Object.fromEntries(
-                Object.entries(old_layouts).map(([breakpoint, breakpoint_layouts]) => {
-                    const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
-                    return [breakpoint, updatedLayouts];
-                })
-            );
-            return newLayouts;
+            const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
+                return [breakpoint, updatedLayouts];
+            });
+            return Object.fromEntries(newLayoutsEntries);
         });
     };
 
@@ -347,14 +345,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
         if (savedLayouts) {
-            const newLayouts = Object.fromEntries(
-                Object.entries(savedLayouts).map(([breakpoint, breakpoint_layouts]) => {
-                    const updatedLayouts = [...breakpoint_layouts];
-                    updatedLayouts.unshift(AdderCard);
-                    return [breakpoint, updatedLayouts];
-                })
-            );
-            setLayouts(newLayouts);
+            const savedLayoutsEntries = Object.entries(savedLayouts);
+            const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.unshift(AdderCard);
+                return [breakpoint, updatedLayouts];
+            });
+            setLayouts(Object.fromEntries(newLayoutsEntries));
         } else {
             setLayouts(initialLayouts);
         }
