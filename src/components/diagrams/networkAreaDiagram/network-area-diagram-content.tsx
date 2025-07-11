@@ -36,7 +36,7 @@ import DiagramControls from '../diagram-controls';
 import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
-import { openDiagram } from "../../../redux/actions";
+import { openDiagram } from '../../../redux/actions';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -154,7 +154,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
         },
-        [isEditNadMode, dispatch,props.loadingState]
+        [isEditNadMode, dispatch, props.loadingState]
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
