@@ -20,6 +20,7 @@ import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import { Equipment, EquipmentType, CustomMenuItem, CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
+import { useCallback } from 'react';
 
 const styles = {
     menuItem: {
@@ -45,12 +46,12 @@ const ViewInSpreadsheetItem = ({
     itemText: string;
     handleViewInSpreadsheet: HandleViewInSpreadsheet;
 }) => {
+    const handleClick = useCallback(() => {
+        handleViewInSpreadsheet(equipmentType, equipmentId);
+    }, [equipmentId, equipmentType, handleViewInSpreadsheet]);
+
     return (
-        <CustomMenuItem
-            sx={styles.menuItem}
-            onClick={() => handleViewInSpreadsheet(equipmentType, equipmentId)}
-            selected={false}
-        >
+        <CustomMenuItem sx={styles.menuItem} onClick={handleClick} selected={false}>
             <ListItemIcon>
                 <TableChartIcon />
             </ListItemIcon>
