@@ -13,7 +13,7 @@ import { fetchSubstationPropertiesGlobalFilters } from './global-filter-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 
-export const useGlobalFilterData = () => {
+export const useGlobalFilterOptions = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
