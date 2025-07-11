@@ -73,27 +73,31 @@ const styles = {
 
 const LG_COLUMN_COUNT = 12;
 const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
-const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
+const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 3;
 const DEFAULT_WIDTH = 2;
 const DEFAULT_HEIGHT = 2;
 
-const initialLayouts = {
+const defaultCardSizes = {
+    w: DEFAULT_WIDTH,
+    h: DEFAULT_HEIGHT,
+};
+
+const AdderCard = {
+    ...defaultCardSizes,
+    i: 'Adder',
+    x: 0,
+    y: 0,
+    minH: DEFAULT_HEIGHT,
+    maxH: DEFAULT_HEIGHT,
+    minW: DEFAULT_WIDTH,
+    maxW: DEFAULT_WIDTH,
+    isDraggable: false,
+    static: true,
+};
+
+const initialLayouts: Layouts = {
     // ResponsiveGridLayout will attempt to interpolate the rest of breakpoints based on this one
-    lg: [
-        {
-            i: 'Adder',
-            x: 0,
-            y: 0,
-            w: DEFAULT_WIDTH,
-            h: DEFAULT_HEIGHT,
-            minH: DEFAULT_HEIGHT,
-            maxH: DEFAULT_HEIGHT,
-            minW: DEFAULT_WIDTH,
-            maxW: DEFAULT_WIDTH,
-            isDraggable: false,
-            static: true,
-        },
-    ],
+    lg: [AdderCard],
 };
 
 interface DiagramGridLayoutProps {
@@ -101,6 +105,13 @@ interface DiagramGridLayoutProps {
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
+
+const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) => {
+    return entries.map(([breakpoint, breakpoint_layouts]) => {
+        const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
+        return [breakpoint, updatedLayouts];
+    });
+};
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
@@ -110,18 +121,33 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
-    const onAddDiagram = (diagram: Diagram) => {
+    const addLayoutItem = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const new_lg_layouts = [...old_layouts.lg];
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
                 x: Infinity,
                 y: 0,
-                w: DEFAULT_WIDTH,
-                h: DEFAULT_HEIGHT,
+                ...defaultCardSizes,
             };
-            new_lg_layouts.push(layoutItem);
-            return { lg: new_lg_layouts };
+            const oldLayoutsEntries = Object.entries(old_layouts);
+            const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                // Ensure the new layout item is added to each breakpoint
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.push(layoutItem);
+                return [breakpoint, updatedLayouts];
+            });
+            return Object.fromEntries(newLayoutsEntries);
+        });
+    };
+
+    const removeLayoutItem = (cardUuid: UUID) => {
+        setLayouts((old_layouts) => {
+            const oldLayoutsEntries = Object.entries(old_layouts);
+            if (oldLayoutsEntries.pop()?.[1].length === 2) {
+                return initialLayouts; // Reset to initial layouts if no diagrams left
+            }
+            const newLayoutsEntries = removeInLayoutEntries(oldLayoutsEntries, cardUuid);
+            return Object.fromEntries(newLayoutsEntries);
         });
     };
 
@@ -145,19 +171,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
         useDiagramModel({
             diagramTypes: diagramTypes,
-            onAddDiagram,
+            onAddDiagram: addLayoutItem,
             onDiagramAlreadyExists,
         });
 
-    const onRemoveItem = useCallback(
+    const onRemoveCard = useCallback(
         (diagramUuid: UUID) => {
-            setLayouts((old_layouts) => {
-                const new_lg_layouts = old_layouts.lg.filter((layout: Layout) => layout.i !== diagramUuid);
-                if (new_lg_layouts.length === 0) {
-                    return initialLayouts;
-                }
-                return { lg: new_lg_layouts };
-            });
+            removeLayoutItem(diagramUuid);
             removeDiagram(diagramUuid);
         },
         [removeDiagram]
@@ -238,7 +258,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     <CardHeader
                         title={diagram.name}
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
-                        onClose={() => onRemoveItem(diagram.diagramUuid)}
+                        onClose={() => onRemoveCard(diagram.diagramUuid)}
                     />
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
                         <>
@@ -320,16 +340,22 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         intl,
         loadingDiagrams,
         onChangeDepth,
-        onRemoveItem,
+        onRemoveCard,
         setDiagramSize,
         showInSpreadsheet,
         studyUuid,
         visible,
     ]);
 
-    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
+    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
         if (savedLayouts) {
-            setLayouts({ lg: [...initialLayouts.lg, ...savedLayouts.lg] });
+            const savedLayoutsEntries = Object.entries(savedLayouts);
+            const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.unshift(AdderCard);
+                return [breakpoint, updatedLayouts];
+            });
+            setLayouts(Object.fromEntries(newLayoutsEntries));
         } else {
             setLayouts(initialLayouts);
         }
