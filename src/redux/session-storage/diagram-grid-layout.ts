@@ -14,12 +14,9 @@ function getDiagramsGridLayoutKey(studyUuid: UUID) {
     return SESSION_STORAGE_DIAGRAMS_GRID_LAYOUT_KEY_PREFIX + studyUuid;
 }
 
-function encodeNaNOrInfinity(key: string, value: any): any {
+function encodeInfinity(key: string, value: any): any {
     if (key === '') {
         return value; // return the root object as is
-    }
-    if (Number.isNaN(value)) {
-        return 'NaN';
     }
     if (value === Infinity) {
         return 'Infinity';
@@ -27,10 +24,7 @@ function encodeNaNOrInfinity(key: string, value: any): any {
     return value;
 }
 
-function decodeNaNOrInfinity(key: string, value: any): any {
-    if (value === 'NaN') {
-        return NaN;
-    }
+function decodeInfinity(key: string, value: any): any {
     if (value === 'Infinity') {
         return Infinity;
     }
@@ -41,7 +35,7 @@ export function syncDiagramsGridLayoutWithSessionStorage(layouts: unknown, study
     if (studyUuid == null) {
         return;
     }
-    sessionStorage.setItem(getDiagramsGridLayoutKey(studyUuid), JSON.stringify(layouts, encodeNaNOrInfinity));
+    sessionStorage.setItem(getDiagramsGridLayoutKey(studyUuid), JSON.stringify(layouts, encodeInfinity));
 }
 
 export function loadDiagramsGridLayoutFromSessionStorage(studyUuid: UUID) {
@@ -49,7 +43,7 @@ export function loadDiagramsGridLayoutFromSessionStorage(studyUuid: UUID) {
     if (!rawJson) {
         return undefined;
     }
-    const savedLayouts = JSON.parse(rawJson, decodeNaNOrInfinity);
+    const savedLayouts = JSON.parse(rawJson, decodeInfinity);
     if (Object.keys(savedLayouts).length === 0) {
         return undefined;
     }
