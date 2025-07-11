@@ -106,6 +106,13 @@ interface DiagramGridLayoutProps {
     visible: boolean;
 }
 
+const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) => {
+    return entries.map(([breakpoint, breakpoint_layouts]) => {
+        const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
+        return [breakpoint, updatedLayouts];
+    });
+};
+
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const intl = useIntl();
@@ -139,10 +146,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             if (oldLayoutsEntries.pop()?.[1].length === 2) {
                 return initialLayouts; // Reset to initial layouts if no diagrams left
             }
-            const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
-                const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
-                return [breakpoint, updatedLayouts];
-            });
+            const newLayoutsEntries = removeInLayoutEntries(oldLayoutsEntries, cardUuid);
             return Object.fromEntries(newLayoutsEntries);
         });
     };
@@ -393,6 +397,16 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 }
             }}
             onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
+                if (e.target) {
+                    (e.target as HTMLElement).style.cursor = 'default';
+                }
+            }}
+            onResizeStart={(layout, oldItem, newItem, placeholder, e, element) => {
+                if (e.target) {
+                    (e.target as HTMLElement).style.cursor = 'grabbing';
+                }
+            }}
+            onResizeStop={(layout, oldItem, newItem, placeholder, e, element) => {
                 if (e.target) {
                     (e.target as HTMLElement).style.cursor = 'default';
                 }
