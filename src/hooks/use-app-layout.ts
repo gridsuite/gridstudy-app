@@ -24,7 +24,6 @@ export const useAppLayout = () => {
         getStudyLayout(studyUuid).then((appLayout: StudyLayout | null) => {
             if (appLayout) {
                 dispatch(setAppLayout(backendToFrontendAppLayout(appLayout)));
-                return;
             }
         });
     }, [studyUuid, dispatch]);
