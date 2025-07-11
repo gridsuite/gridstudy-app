@@ -60,11 +60,11 @@ export const RootNetworkCaseSelection = ({
                 </Typography>
                 <Grid item>
                     <Button
-                        variant={selectedItem ? 'contained' : undefined}
-                        size={selectedItem ? 'small' : 'medium'}
+                        variant={isModification ? 'contained' : undefined}
+                        size={isModification ? 'small' : 'medium'}
                         onClick={() => setIsDialogOpen(true)}
                     >
-                        {selectedItem ? (
+                        {isModification ? (
                             <FormattedMessage id={'ModifyFromMenu'} />
                         ) : (
                             <FormattedMessage id={'chooseCase'} />
