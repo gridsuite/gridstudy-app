@@ -1286,7 +1286,6 @@ export const NetworkMapTab = ({
                         width: '20%',
                         height: '100%',
                         right: 0,
-                        marginTop: '30px',
                     }}
                 >
                     <SelectionCreationPanel

@@ -18,21 +18,16 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
+import { cardStyles } from './card-styles';
 
 const styles = {
-    card: (theme: Theme) => ({
-        display: 'flex',
-        flexDirection: 'column',
-    }),
     adderContent: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
-        flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
         borderRadius: theme.spacing(2),
-        border:
+        borderTop:
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
                 : `1px solid ${theme.palette.grey[800]}`,
@@ -52,7 +47,7 @@ interface DiagramAdderProps extends ReactGridLayoutCustomChildComponentProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     onSearch: (element: EquipmentInfos) => void;
     onMap?: () => void;
-    key: string;
+    key: string; // Required for React Grid Layout to identify the component
 }
 
 export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLDivElement>) => {
@@ -71,8 +66,8 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
         setIsLoadSelectorOpen(false);
     };
     return (
-        <Box sx={mergeSx(style, styles.card)} ref={ref} {...otherProps}>
-            <Box sx={styles.adderContent}>
+        <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
+            <Box sx={mergeSx(cardStyles.diagramContainer, styles.adderContent)}>
                 <FormattedMessage id="AddNewCard" />
                 <Box
                     sx={{
