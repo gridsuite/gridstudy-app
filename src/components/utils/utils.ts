@@ -138,6 +138,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
                         temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
+                        applicability: elt.applicability,
                     },
                 });
             }

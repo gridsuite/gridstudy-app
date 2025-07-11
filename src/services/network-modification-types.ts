@@ -281,6 +281,7 @@ export interface CurrentLimits {
     id?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
+    applicability?: string;
 }
 
 export interface SubstationModificationInfo {
