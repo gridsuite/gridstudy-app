@@ -114,7 +114,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
-    const onAddDiagram = (diagram: Diagram) => {
+    const addLayoutItem = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
@@ -127,6 +127,21 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     // Ensure the new layout item is added to each breakpoint
                     const updatedLayouts = [...breakpoint_layouts];
                     updatedLayouts.push(layoutItem);
+                    return [breakpoint, updatedLayouts];
+                })
+            );
+            return newLayouts;
+        });
+    };
+
+    const removeLayoutItem = (cardUuid: UUID) => {
+        setLayouts((old_layouts) => {
+            if (Object.entries(old_layouts).pop()?.[1].length === 2) {
+                return initialLayouts; // Reset to initial layouts if no diagrams left
+            }
+            const newLayouts = Object.fromEntries(
+                Object.entries(old_layouts).map(([breakpoint, breakpoint_layouts]) => {
+                    const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
                     return [breakpoint, updatedLayouts];
                 })
             );
@@ -154,24 +169,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
         useDiagramModel({
             diagramTypes: diagramTypes,
-            onAddDiagram,
+            onAddDiagram: addLayoutItem,
             onDiagramAlreadyExists,
         });
 
-    const onRemoveItem = useCallback(
+    const onRemoveCard = useCallback(
         (diagramUuid: UUID) => {
-            setLayouts((old_layouts) => {
-                if (Object.entries(old_layouts).pop()?.[1].length === 2) {
-                    return initialLayouts; // Reset to initial layouts if no diagrams left
-                }
-                const newLayouts = Object.fromEntries(
-                    Object.entries(old_layouts).map(([breakpoint, breakpoint_layouts]) => {
-                        const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== diagramUuid);
-                        return [breakpoint, updatedLayouts];
-                    })
-                );
-                return newLayouts;
-            });
+            removeLayoutItem(diagramUuid);
             removeDiagram(diagramUuid);
         },
         [removeDiagram]
@@ -252,7 +256,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     <CardHeader
                         title={diagram.name}
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
-                        onClose={() => onRemoveItem(diagram.diagramUuid)}
+                        onClose={() => onRemoveCard(diagram.diagramUuid)}
                     />
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
                         <>
@@ -334,7 +338,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         intl,
         loadingDiagrams,
         onChangeDepth,
-        onRemoveItem,
+        onRemoveCard,
         setDiagramSize,
         showInSpreadsheet,
         studyUuid,
