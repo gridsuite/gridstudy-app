@@ -5,16 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
-import {
-    loadDiagramsGridLayoutFromSessionStorage,
-    syncDiagramsGridLayoutWithSessionStorage,
-} from 'redux/session-storage/diagram-grid-layout';
-
-const keyToKeepInSessionStorage = ['i', 'x', 'y', 'h', 'w']; // static
+import { setGridLayout } from 'redux/actions';
 
 type useDiagramsGridLayoutSessionStorageProps = {
     layouts: Layouts;
@@ -25,14 +20,16 @@ export const useDiagramsGridLayoutSessionStorage = ({
     layouts,
     onLoadFromSessionStorage,
 }: useDiagramsGridLayoutSessionStorageProps) => {
+    const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const gridLayout = useSelector((state: AppState) => state.appLayout?.diagram.gridLayout);
 
     // at mount
     useEffect(() => {
         if (!studyUuid) {
             return;
         }
-        onLoadFromSessionStorage(loadDiagramsGridLayoutFromSessionStorage(studyUuid));
+        onLoadFromSessionStorage(gridLayout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -41,22 +38,6 @@ export const useDiagramsGridLayoutSessionStorage = ({
         if (!studyUuid || !layouts) {
             return;
         }
-        syncDiagramsGridLayoutWithSessionStorage(
-            Object.fromEntries(
-                Object.entries(layouts).map(([key, layoutArray]) => {
-                    return [
-                        key,
-                        layoutArray
-                            .filter((layout) => layout.i !== 'Adder')
-                            .map((layout) =>
-                                Object.fromEntries(
-                                    Object.entries(layout).filter(([key]) => keyToKeepInSessionStorage.includes(key))
-                                )
-                            ),
-                    ];
-                })
-            ),
-            studyUuid
-        );
-    }, [layouts, studyUuid]);
+        dispatch(setGridLayout(layouts));
+    }, [layouts, studyUuid, dispatch]);
 };

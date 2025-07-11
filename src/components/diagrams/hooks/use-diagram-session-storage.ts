@@ -7,23 +7,10 @@
 
 import { UUID } from 'crypto';
 import { Diagram, DiagramParams } from '../diagram.type';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
-import { loadDiagramsFromSessionStorage, syncDiagramsWithSessionStorage } from 'redux/session-storage/diagram-state';
-
-const keyToKeepInSessionStorage = [
-    'diagramUuid',
-    'type',
-    'voltageLevelId',
-    'substationId',
-    'voltageLevelIds',
-    'depth',
-    'elementUuid',
-    'elementType',
-    'elementName', // TODO this is the name of the NAD from element, it could change in explore then it's not updated in session storage
-    // we must get the name from the uuid when we open the diagram and update it by notification if necessary Hack for now.
-]; // static
+import { setDiagramParamsLayout } from 'redux/actions';
 
 type useDiagramSessionStorageProps = {
     diagrams: Record<UUID, Diagram>;
@@ -31,26 +18,30 @@ type useDiagramSessionStorageProps = {
 };
 
 export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
+    const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const diagramParams = useSelector((state: AppState) => state.appLayout?.diagram.params);
+
     // at mount
     useEffect(() => {
-        if (!studyUuid) {
+        if (!studyUuid || !diagramParams) {
             return;
         }
-        const diagrams: DiagramParams[] = loadDiagramsFromSessionStorage(studyUuid);
-        diagrams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
+        diagramParams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [diagramParams]);
 
     // at update
     useEffect(() => {
         if (!studyUuid) {
             return;
         }
-        // save diagrams to session storage
-        const diagramParams = Object.values(diagrams).map((diagram) =>
-            Object.fromEntries(Object.entries(diagram).filter(([key]) => keyToKeepInSessionStorage.includes(key)))
-        );
-        syncDiagramsWithSessionStorage(diagramParams, studyUuid);
-    }, [diagrams, studyUuid]);
+
+        const diagramParams: DiagramParams[] = Object.values(diagrams).map((diagram) => {
+            const { name, svg, ...cleanedFields } = diagram;
+            return cleanedFields;
+        });
+
+        dispatch(setDiagramParamsLayout(diagramParams));
+    }, [diagrams, studyUuid, dispatch]);
 };
