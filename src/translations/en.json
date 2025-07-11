@@ -607,6 +607,8 @@
     "LccCreationError": "Error while creating HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
     "LimitSetCreationEmptyError": "Limit sets names can't be empty",
+    "LimitSetsTabularModification": "Tabular modification of limit sets",
+    "LimitSets": "Limit sets",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
