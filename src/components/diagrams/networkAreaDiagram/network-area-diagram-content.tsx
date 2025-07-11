@@ -141,13 +141,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [setShouldDisplayTooltip, setAnchorPosition]
     );
 
-    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback((equipmentId, nodeId, mousePosition) => {
-        if (mousePosition) {
-            setSelectedVoltageLevelId(equipmentId);
-            setShouldDisplayMenu(true);
-            setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
-        }
-    }, []);
+    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
+        (equipmentId, nodeId, mousePosition) => {
+            if (mousePosition && !props.loadingState) {
+                setSelectedVoltageLevelId(equipmentId);
+                setShouldDisplayMenu(true);
+                setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+            }
+        },
+        [props.loadingState]
+    );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
@@ -289,6 +292,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onAugmentDepth={onExpandAllVoltageLevelIds}
+                isDiagramLoading={props.loadingState}
             />
         </>
     );

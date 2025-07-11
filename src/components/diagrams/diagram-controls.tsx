@@ -61,6 +61,7 @@ interface DiagramControlsProps {
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onAugmentDepth?: () => void;
+    isDiagramLoading?: boolean;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
@@ -69,6 +70,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     isEditNadMode,
     onToggleEditNadMode,
     onAugmentDepth,
+    isDiagramLoading,
 }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
@@ -92,7 +94,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     };
 
     const handleClickAugmentDepthIcon = () => {
-        if (onAugmentDepth) {
+        if (onAugmentDepth && !isDiagramLoading) {
             onAugmentDepth();
         }
     };
@@ -147,7 +149,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <>
                             <hr style={{ margin: '2px 4px' }} />
                             <Tooltip title={<FormattedMessage id={'augmentDepth'} />}>
-                                <IconButton sx={styles.actionIcon} onClick={handleClickAugmentDepthIcon}>
+                                <IconButton
+                                    sx={styles.actionIcon}
+                                    onClick={handleClickAugmentDepthIcon}
+                                    disabled={isDiagramLoading}
+                                >
                                     <LoupeIcon sx={styles.icon} />
                                 </IconButton>
                             </Tooltip>
