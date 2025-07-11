@@ -129,6 +129,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 },
                 cellRenderer: NetworkModificationNameCellRenderer,
                 valueGetter: (value: ValueGetterParams) => getModificationLabel(value?.data),
+                rowDragText: getRowDragText,
                 minWidth: 200,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
@@ -181,6 +182,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         isRowDragDisabled,
         modifications.length,
         nameHeaderProps,
+        getRowDragText,
         setModifications,
         isMonoRootStudy,
         rootNetworks,
@@ -222,7 +224,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
                 overrideLocales={AGGRID_LOCALES}
-                rowDragText={getRowDragText}
             />
         </Box>
     );
