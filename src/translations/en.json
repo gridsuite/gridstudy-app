@@ -1369,6 +1369,7 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
+    "rootNetwork.originalCaseRemoved": "The original case has been removed",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
