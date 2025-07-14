@@ -268,6 +268,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                             {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
                                 diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
                                 <NetworkAreaDiagramContent
+                                    showInSpreadsheet={showInSpreadsheet}
                                     diagramId={diagram.diagramUuid}
                                     svg={diagram.svg?.svg ?? undefined}
                                     svgType={diagram.type}

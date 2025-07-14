@@ -15,6 +15,7 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
     NAD_ZOOM_LEVELS,
+    getEquipmentTypeFromFeederType,
 } from '../diagram-common';
 import { NetworkAreaDiagramViewer, DiagramMetadata, OnToggleNadHoverCallbackType } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -27,10 +28,20 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    ElementType,
+    EquipmentType,
+    IElementCreationDialog,
+    mergeSx,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
+import useEquipmentMenu from 'hooks/use-equipment-menu';
+import { MapEquipment } from 'components/menus/base-equipment-menu';
+import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -39,6 +50,7 @@ const equipmentsWithPopover = [
 ];
 
 type NetworkAreaDiagramContentProps = {
+    readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly svgType: DiagramType;
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
@@ -71,6 +83,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
@@ -161,6 +175,51 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
     };
 
+    const {
+        handleOpenModificationDialog,
+        handleDeleteEquipment,
+        handleOpenDynamicSimulationEventDialog,
+        renderDeletionDialog,
+        renderDynamicSimulationEventDialog,
+        renderModificationDialog,
+    } = useEquipmentDialogs({
+        studyUuid: studyUuid!,
+        currentNode: currentNode!,
+        currentRootNetworkUuid: currentRootNetworkUuid!,
+    });
+
+    const { openEquipmentMenu, renderEquipmentMenu } = useEquipmentMenu({
+        currentNode: currentNode!,
+        currentRootNetworkUuid: currentRootNetworkUuid!,
+        studyUuid: studyUuid!,
+        disabled: false,
+        onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
+            props.showInSpreadsheet({
+                equipmentId: equipmentId,
+                equipmentType: equipmentType,
+            });
+        },
+        onDeleteEquipment: handleDeleteEquipment,
+        onOpenModificationDialog: handleOpenModificationDialog,
+        onOpenDynamicSimulationEventDialog: handleOpenDynamicSimulationEventDialog,
+    });
+
+    const showEquipmentMenu = useCallback(
+        (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
+            // don't display the equipment menu in edit mode.
+            if (!isEditNadMode) {
+                const convertedType = getEquipmentTypeFromFeederType(equipmentType);
+
+                if (convertedType) {
+                    // Create a minimal equipment object
+                    const equipment = { id: equipmentId };
+                    openEquipmentMenu(equipment as MapEquipment, mousePosition.x, mousePosition.y, convertedType);
+                }
+            }
+        },
+        [isEditNadMode, openEquipmentMenu]
+    );
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -182,7 +241,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 true,
                 NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
-                null,
+                showEquipmentMenu,
                 false
             );
 
@@ -248,6 +307,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onMoveTextNodeCallback,
         isEditNadMode,
         diagramId,
+        showEquipmentMenu,
     ]);
 
     /**
@@ -281,6 +341,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
             />
+            {renderEquipmentMenu()}
+            {renderModificationDialog()}
+            {renderDeletionDialog()}
+            {renderDynamicSimulationEventDialog()}
         </>
     );
 }
