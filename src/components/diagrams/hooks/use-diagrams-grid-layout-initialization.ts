@@ -10,20 +10,20 @@ import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 
-type UseDiagramsGridLayoutProps = {
+type UseDiagramsGridLayoutInitializationProps = {
     onLoadDiagramLayout: (layout: Layouts) => void;
 };
 
-export const useDiagramsGridLayout = ({ onLoadDiagramLayout }: UseDiagramsGridLayoutProps) => {
+export const useDiagramsGridLayoutInitialization = ({
+    onLoadDiagramLayout,
+}: UseDiagramsGridLayoutInitializationProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const gridLayout = useSelector((state: AppState) => state.appLayoutInit?.diagram.gridLayout);
 
-    // at mount
     useEffect(() => {
         if (!studyUuid) {
             return;
         }
         onLoadDiagramLayout(gridLayout);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [gridLayout, onLoadDiagramLayout, studyUuid]);
 };

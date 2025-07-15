@@ -10,18 +10,16 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 
-type UseDiagramParamsProps = { onLoadDiagramParams: (diagramParams: DiagramParams) => void };
+type UseDiagramParamsInitializationProps = { onLoadDiagramParams: (diagramParams: DiagramParams) => void };
 
-export const useDiagramParams = ({ onLoadDiagramParams }: UseDiagramParamsProps) => {
+export const useDiagramParamsInitialization = ({ onLoadDiagramParams }: UseDiagramParamsInitializationProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const diagramParams = useSelector((state: AppState) => state.appLayoutInit?.diagram.params);
 
-    // at mount
     useEffect(() => {
         if (!studyUuid || !diagramParams) {
             return;
         }
         diagramParams.forEach((diagramParams) => onLoadDiagramParams(diagramParams));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [diagramParams, onLoadDiagramParams, studyUuid]);
 };

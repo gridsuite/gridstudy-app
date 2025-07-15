@@ -16,7 +16,7 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
-import { useDiagramsGridLayout } from './hooks/use-diagrams-grid-layout';
+import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
@@ -122,7 +122,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
-    const addLayoutItem = (diagram: Diagram) => {
+    const addLayoutItem = useCallback((diagram: Diagram) => {
         setLayouts((old_layouts) => {
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
@@ -139,7 +139,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             });
             return Object.fromEntries(newLayoutsEntries);
         });
-    };
+    }, []);
 
     const removeLayoutItem = (cardUuid: UUID) => {
         setLayouts((old_layouts) => {
@@ -369,7 +369,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         setIsMapCardAdded(true);
     }, []);
 
-    useDiagramsGridLayout({ onLoadDiagramLayout });
+    useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
     return (
         <ResponsiveGridLayout
