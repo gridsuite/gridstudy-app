@@ -27,7 +27,7 @@ import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
 import { saveStudyLayout } from 'services/study/study-config';
 import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
-import { AppLayout, DiagramLayout } from 'redux/reducer';
+import { DiagramLayout } from 'redux/reducer';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
