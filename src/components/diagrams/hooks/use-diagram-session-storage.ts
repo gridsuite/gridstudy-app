@@ -5,20 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { Diagram, DiagramParams } from '../diagram.type';
-import { useDispatch, useSelector } from 'react-redux';
+import { DiagramParams } from '../diagram.type';
+import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
-import { setDiagramParamsLayout } from 'redux/actions';
 
-type useDiagramSessionStorageProps = {
-    diagrams: Record<UUID, Diagram>;
-    onLoadFromSessionStorage: (diagramParams: DiagramParams) => void;
-};
+type useDiagramSessionStorageProps = { onLoadFromSessionStorage: (diagramParams: DiagramParams) => void };
 
-export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
-    const dispatch = useDispatch();
+export const useDiagramSessionStorage = ({ onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const diagramParams = useSelector((state: AppState) => state.appLayout?.diagram.params);
 
@@ -30,18 +24,4 @@ export const useDiagramSessionStorage = ({ diagrams, onLoadFromSessionStorage }:
         diagramParams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [diagramParams]);
-
-    // at update
-    useEffect(() => {
-        if (!studyUuid) {
-            return;
-        }
-
-        const diagramParams: DiagramParams[] = Object.values(diagrams).map((diagram) => {
-            const { name, svg, ...cleanedFields } = diagram;
-            return cleanedFields;
-        });
-
-        dispatch(setDiagramParamsLayout(diagramParams));
-    }, [diagrams, studyUuid, dispatch]);
 };

@@ -18,11 +18,6 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { AppLayout, AppState } from 'redux/reducer';
-import { useSelector } from 'react-redux';
-import { saveStudyLayout } from 'services/study/study-config';
-import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
-import { Layout } from 'react-grid-layout';
 
 const styles = {
     card: (theme: Theme) => ({
@@ -56,18 +51,16 @@ interface ReactGridLayoutCustomChildComponentProps {
 interface DiagramAdderProps extends ReactGridLayoutCustomChildComponentProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     onSearch: (element: EquipmentInfos) => void;
+    onLayoutSave: () => void;
     onMap?: () => void;
     key: string;
 }
 
 export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLDivElement>) => {
-    const { onLoad, onSearch, onMap, ...reactGridLayoutCustomChildComponentProps } = props;
+    const { onLoad, onSearch, onMap, onLayoutSave, ...reactGridLayoutCustomChildComponentProps } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
 
     const intl = useIntl();
-
-    const studyLayout = useSelector((state: AppState) => state.appLayout);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
@@ -77,42 +70,6 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
             onLoad(selectedElements[0].id, selectedElements[0].type, selectedElements[0].name);
         }
         setIsLoadSelectorOpen(false);
-    };
-
-    const handleSaveDiagramLayout = () => {
-        if (!studyUuid || !studyLayout) {
-            return;
-        }
-        saveStudyLayout(studyUuid, frontendToBackendAppLayout(studyLayout));
-    };
-
-    const frontendToBackendAppLayout = (appLayout: AppLayout): StudyLayout => {
-        const diagramLayoutParams: DiagramLayoutParam[] = [];
-
-        const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
-
-        for (const [layoutKey, layouts] of Object.entries(appLayout.diagram.gridLayout)) {
-            for (const { i, ...rest } of layouts) {
-                gridLayoutById[i] = {
-                    ...gridLayoutById[i],
-                    [layoutKey]: { w: rest.w, h: rest.h, x: rest.x, y: rest.y },
-                };
-            }
-        }
-
-        appLayout.diagram.params.forEach((param) => {
-            const matchingGridLayout = gridLayoutById[param.diagramUuid];
-            if (matchingGridLayout) {
-                diagramLayoutParams.push({
-                    gridLayout: matchingGridLayout,
-                    ...param,
-                });
-            }
-        });
-
-        return {
-            diagramLayoutParams: diagramLayoutParams,
-        };
     };
 
     return (
@@ -144,7 +101,7 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                         </span>
                     </Tooltip>
                     <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
-                        <IconButton onClick={() => handleSaveDiagramLayout()}>
+                        <IconButton onClick={() => onLayoutSave()}>
                             <Save />
                         </IconButton>
                     </Tooltip>

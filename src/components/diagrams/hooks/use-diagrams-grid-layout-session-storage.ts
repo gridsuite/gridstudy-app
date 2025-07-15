@@ -5,22 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
-import { setGridLayout } from 'redux/actions';
 
 type useDiagramsGridLayoutSessionStorageProps = {
-    layouts: Layouts;
     onLoadFromSessionStorage: (layout: Layouts) => void;
 };
 
 export const useDiagramsGridLayoutSessionStorage = ({
-    layouts,
     onLoadFromSessionStorage,
 }: useDiagramsGridLayoutSessionStorageProps) => {
-    const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const gridLayout = useSelector((state: AppState) => state.appLayout?.diagram.gridLayout);
 
@@ -32,12 +28,4 @@ export const useDiagramsGridLayoutSessionStorage = ({
         onLoadFromSessionStorage(gridLayout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    // at update
-    useEffect(() => {
-        if (!studyUuid || !layouts) {
-            return;
-        }
-        dispatch(setGridLayout(layouts));
-    }, [layouts, studyUuid, dispatch]);
 };

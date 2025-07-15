@@ -1380,27 +1380,3 @@ export function setAppLayout(appLayout: AppLayout): SetAppLayoutAction {
         appLayout: appLayout,
     };
 }
-
-export const SET_GRID_LAYOUT = 'SET_GRID_LAYOUT';
-export type SetGridLayoutAction = Readonly<Action<typeof SET_GRID_LAYOUT>> & {
-    gridLayout: Layouts;
-};
-
-export function setGridLayout(gridLayout: Layouts): SetGridLayoutAction {
-    return {
-        type: SET_GRID_LAYOUT,
-        gridLayout: gridLayout,
-    };
-}
-
-export const SET_DIAGRAM_PARAMS_LAYOUT = 'SET_DIAGRAM_PARAMS_LAYOUT';
-export type SetDiagramParamsLayoutAction = Readonly<Action<typeof SET_DIAGRAM_PARAMS_LAYOUT>> & {
-    diagramParams: DiagramParams[];
-};
-
-export function setDiagramParamsLayout(diagramParams: DiagramParams[]): SetDiagramParamsLayoutAction {
-    return {
-        type: SET_DIAGRAM_PARAMS_LAYOUT,
-        diagramParams: diagramParams,
-    };
-}

@@ -210,10 +210,6 @@ import {
     ParameterizedComputingType,
     SET_APP_LAYOUT,
     SetAppLayoutAction,
-    SET_GRID_LAYOUT,
-    SetGridLayoutAction,
-    SET_DIAGRAM_PARAMS_LAYOUT,
-    SetDiagramParamsLayoutAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -424,11 +420,13 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export interface DiagramLayout {
+    gridLayout: Layouts;
+    params: DiagramParams[];
+}
+
 export interface AppLayout {
-    diagram: {
-        gridLayout: Layouts;
-        params: DiagramParams[];
-    };
+    diagram: DiagramLayout;
 }
 
 export interface AppState extends CommonStoreState, AppConfigState {
@@ -1652,14 +1650,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_APP_LAYOUT, (state, action: SetAppLayoutAction) => {
         state.appLayout = action.appLayout;
-    });
-
-    builder.addCase(SET_GRID_LAYOUT, (state, action: SetGridLayoutAction) => {
-        state.appLayout.diagram.gridLayout = action.gridLayout;
-    });
-
-    builder.addCase(SET_DIAGRAM_PARAMS_LAYOUT, (state, action: SetDiagramParamsLayoutAction) => {
-        state.appLayout.diagram.params = action.diagramParams;
     });
 });
 

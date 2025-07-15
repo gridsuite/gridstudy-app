@@ -25,6 +25,9 @@ import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
+import { saveStudyLayout } from 'services/study/study-config';
+import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
+import { AppLayout, DiagramLayout } from 'redux/reducer';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -184,6 +187,54 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
+    const handleGridLayoutSave = useCallback(() => {
+        if (!studyUuid) {
+            return;
+        }
+
+        const diagramParams: DiagramParams[] = Object.values(diagrams).map((diagram) => {
+            const { name, svg, ...cleanedFields } = diagram;
+            return cleanedFields;
+        });
+
+        saveStudyLayout(
+            studyUuid,
+            frontendToBackendAppLayout({
+                gridLayout: layouts,
+                params: diagramParams,
+            })
+        );
+    }, [diagrams, layouts, studyUuid]);
+
+    const frontendToBackendAppLayout = (diagram: DiagramLayout): StudyLayout => {
+        const diagramLayoutParams: DiagramLayoutParam[] = [];
+
+        const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
+
+        for (const [layoutKey, layouts] of Object.entries(diagram.gridLayout)) {
+            for (const { i, ...rest } of layouts) {
+                gridLayoutById[i] = {
+                    ...gridLayoutById[i],
+                    [layoutKey]: { w: rest.w, h: rest.h, x: rest.x, y: rest.y },
+                };
+            }
+        }
+
+        diagram.params.forEach((param) => {
+            const matchingGridLayout = gridLayoutById[param.diagramUuid];
+            if (matchingGridLayout) {
+                diagramLayoutParams.push({
+                    gridLayout: matchingGridLayout,
+                    ...param,
+                });
+            }
+        });
+
+        return {
+            diagramLayoutParams: diagramLayoutParams,
+        };
+    };
+
     const handleLoadNadFromElement = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             const diagram: DiagramParams = {
@@ -328,7 +379,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     ]);
 
     const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
-        if (savedLayouts) {
+        if (Object.keys(savedLayouts).length > 0) {
             setLayouts({ lg: [...initialLayouts.lg, ...savedLayouts.lg] });
         } else {
             setLayouts(initialLayouts);
@@ -340,7 +391,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         setIsMapCardAdded(true);
     }, []);
 
-    useDiagramsGridLayoutSessionStorage({ layouts, onLoadFromSessionStorage });
+    useDiagramsGridLayoutSessionStorage({ onLoadFromSessionStorage });
 
     return (
         <ResponsiveGridLayout
@@ -382,6 +433,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 onLoad={handleLoadNadFromElement}
                 onSearch={showVoltageLevelDiagram}
                 onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                onLayoutSave={handleGridLayoutSave}
                 key={'Adder'}
             />
             {renderDiagrams()}

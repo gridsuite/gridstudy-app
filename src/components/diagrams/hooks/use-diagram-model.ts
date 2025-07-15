@@ -436,7 +436,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    useDiagramSessionStorage({ diagrams, onLoadFromSessionStorage: createDiagram });
+    useDiagramSessionStorage({ onLoadFromSessionStorage: createDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
