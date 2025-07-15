@@ -48,9 +48,6 @@ export const styles = {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,
         },
-        '& .nad-text-edges': {
-            stroke: theme.palette.text.primary,
-        },
     }),
     divSingleLineDiagram: (theme: Theme) => ({
         '& polyline': {
