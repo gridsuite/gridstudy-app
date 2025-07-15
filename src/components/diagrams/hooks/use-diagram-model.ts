@@ -25,7 +25,7 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
-import { useDiagramSessionStorage } from './use-diagram-session-storage';
+import { useDiagramParams } from './use-diagram-params';
 import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -436,7 +436,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    useDiagramSessionStorage({ onLoadFromSessionStorage: createDiagram });
+    useDiagramParams({ onLoadDiagramParams: createDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {

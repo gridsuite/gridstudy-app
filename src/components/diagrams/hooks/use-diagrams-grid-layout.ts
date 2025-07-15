@@ -5,23 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramParams } from '../diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useEffect } from 'react';
+import { Layouts } from 'react-grid-layout';
 
-type useDiagramSessionStorageProps = { onLoadFromSessionStorage: (diagramParams: DiagramParams) => void };
+type UseDiagramsGridLayoutProps = {
+    onLoadDiagramLayout: (layout: Layouts) => void;
+};
 
-export const useDiagramSessionStorage = ({ onLoadFromSessionStorage }: useDiagramSessionStorageProps) => {
+export const useDiagramsGridLayout = ({ onLoadDiagramLayout }: UseDiagramsGridLayoutProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const diagramParams = useSelector((state: AppState) => state.appLayout?.diagram.params);
+    const gridLayout = useSelector((state: AppState) => state.appLayout?.diagram.gridLayout);
 
     // at mount
     useEffect(() => {
-        if (!studyUuid || !diagramParams) {
+        if (!studyUuid) {
             return;
         }
-        diagramParams.forEach((diagramParams) => onLoadFromSessionStorage(diagramParams));
+        onLoadDiagramLayout(gridLayout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [diagramParams]);
+    }, []);
 };

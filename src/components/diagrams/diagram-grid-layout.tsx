@@ -16,7 +16,7 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
-import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
+import { useDiagramsGridLayout } from './hooks/use-diagrams-grid-layout';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import DiagramFooter from './diagram-footer';
@@ -28,6 +28,7 @@ import CustomResizeHandle from './custom-resize-handle';
 import { saveStudyLayout } from 'services/study/study-config';
 import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
 import { DiagramLayout } from 'redux/reducer';
+import { MAX_INT32 } from 'services/utils';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -207,6 +208,47 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
+    const frontendToBackendAppLayout = useCallback((diagram: DiagramLayout): StudyLayout => {
+        const diagramLayoutParams: DiagramLayoutParam[] = [];
+
+        const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
+
+        for (const [layoutKey, layouts] of Object.entries(diagram.gridLayout)) {
+            for (const { i, w, h, x, y } of layouts) {
+                gridLayoutById[i] = {
+                    ...gridLayoutById[i],
+                    [layoutKey]: {
+                        w: encodeInfinity(w),
+                        h: encodeInfinity(h),
+                        x: encodeInfinity(x),
+                        y: encodeInfinity(y),
+                    },
+                };
+            }
+        }
+
+        diagram.params.forEach((param) => {
+            const matchingGridLayout = gridLayoutById[param.diagramUuid];
+            if (matchingGridLayout) {
+                diagramLayoutParams.push({
+                    ...param,
+                    gridLayout: matchingGridLayout,
+                });
+            }
+        });
+
+        return {
+            diagramLayoutParams: diagramLayoutParams,
+        };
+    }, []);
+
+    const encodeInfinity = (value: number) => {
+        if (value === Infinity) {
+            return MAX_INT32;
+        }
+        return value;
+    };
+
     const handleGridLayoutSave = useCallback(() => {
         if (!studyUuid) {
             return;
@@ -224,36 +266,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 params: diagramParams,
             })
         );
-    }, [diagrams, layouts, studyUuid]);
-
-    const frontendToBackendAppLayout = (diagram: DiagramLayout): StudyLayout => {
-        const diagramLayoutParams: DiagramLayoutParam[] = [];
-
-        const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
-
-        for (const [layoutKey, layouts] of Object.entries(diagram.gridLayout)) {
-            for (const { i, ...rest } of layouts) {
-                gridLayoutById[i] = {
-                    ...gridLayoutById[i],
-                    [layoutKey]: { w: rest.w, h: rest.h, x: rest.x, y: rest.y },
-                };
-            }
-        }
-
-        diagram.params.forEach((param) => {
-            const matchingGridLayout = gridLayoutById[param.diagramUuid];
-            if (matchingGridLayout) {
-                diagramLayoutParams.push({
-                    gridLayout: matchingGridLayout,
-                    ...param,
-                });
-            }
-        });
-
-        return {
-            diagramLayoutParams: diagramLayoutParams,
-        };
-    };
+    }, [diagrams, frontendToBackendAppLayout, layouts, studyUuid]);
 
     const handleLoadNadFromElement = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
@@ -398,13 +411,22 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         visible,
     ]);
 
-    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
+    const onLoadDiagramLayout = useCallback((savedLayouts: Layouts) => {
         if (Object.keys(savedLayouts).length > 0) {
             const savedLayoutsEntries = Object.entries(savedLayouts);
             const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
                 const updatedLayouts = [...breakpoint_layouts];
                 updatedLayouts.unshift(AdderCard);
-                return [breakpoint, updatedLayouts];
+                return [
+                    breakpoint,
+                    updatedLayouts.map((l) => ({
+                        ...l,
+                        w: decodeInfinity(l.w),
+                        h: decodeInfinity(l.h),
+                        x: decodeInfinity(l.x),
+                        y: decodeInfinity(l.y),
+                    })),
+                ];
             });
             setLayouts(Object.fromEntries(newLayoutsEntries));
         } else {
@@ -412,12 +434,19 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         }
     }, []);
 
+    const decodeInfinity = (value: number) => {
+        if (value === MAX_INT32) {
+            return Infinity;
+        }
+        return value;
+    };
+
     const onAddMapCard = useCallback(() => {
         // TODO setLayouts to add a map card
         setIsMapCardAdded(true);
     }, []);
 
-    useDiagramsGridLayoutSessionStorage({ onLoadFromSessionStorage });
+    useDiagramsGridLayout({ onLoadDiagramLayout });
 
     return (
         <ResponsiveGridLayout
