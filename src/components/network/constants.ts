@@ -47,6 +47,7 @@ export const PHASE_REGULATION_MODES = {
 
 export const RATIO_REGULATION_MODES = {
     FIXED_RATIO: {
+        // used in order to set regulating to false, but doesn't exist in powsybl => should not be sent to the back
         id: 'FIXED_RATIO',
         label: 'FixedRatio',
     },
