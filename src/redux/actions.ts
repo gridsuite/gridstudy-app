@@ -1368,14 +1368,14 @@ export function resetDiagramEvent(): ResetDiagramEventAction {
     };
 }
 
-export const SET_APP_LAYOUT = 'SET_APP_LAYOUT';
-export type SetAppLayoutAction = Readonly<Action<typeof SET_APP_LAYOUT>> & {
-    appLayout: AppLayout;
+export const SET_APP_LAYOUT_INIT = 'SET_APP_LAYOUT_INIT';
+export type SetAppLayoutInitAction = Readonly<Action<typeof SET_APP_LAYOUT_INIT>> & {
+    appLayoutInit: AppLayout;
 };
 
-export function setAppLayout(appLayout: AppLayout): SetAppLayoutAction {
+export function setAppLayoutInit(appLayoutInit: AppLayout): SetAppLayoutInitAction {
     return {
-        type: SET_APP_LAYOUT,
-        appLayout: appLayout,
+        type: SET_APP_LAYOUT_INIT,
+        appLayoutInit: appLayoutInit,
     };
 }

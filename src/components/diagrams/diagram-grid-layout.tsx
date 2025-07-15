@@ -25,10 +25,7 @@ import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
-import { saveStudyLayout } from 'services/study/study-config';
-import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
-import { DiagramLayout } from 'redux/reducer';
-import { MAX_INT32 } from 'services/utils';
+import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -208,65 +205,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const frontendToBackendAppLayout = useCallback((diagram: DiagramLayout): StudyLayout => {
-        const diagramLayoutParams: DiagramLayoutParam[] = [];
-
-        const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
-
-        for (const [layoutKey, layouts] of Object.entries(diagram.gridLayout)) {
-            for (const { i, w, h, x, y } of layouts) {
-                gridLayoutById[i] = {
-                    ...gridLayoutById[i],
-                    [layoutKey]: {
-                        w: encodeInfinity(w),
-                        h: encodeInfinity(h),
-                        x: encodeInfinity(x),
-                        y: encodeInfinity(y),
-                    },
-                };
-            }
-        }
-
-        diagram.params.forEach((param) => {
-            const matchingGridLayout = gridLayoutById[param.diagramUuid];
-            if (matchingGridLayout) {
-                diagramLayoutParams.push({
-                    ...param,
-                    gridLayout: matchingGridLayout,
-                });
-            }
-        });
-
-        return {
-            diagramLayoutParams: diagramLayoutParams,
-        };
-    }, []);
-
-    const encodeInfinity = (value: number) => {
-        if (value === Infinity) {
-            return MAX_INT32;
-        }
-        return value;
-    };
-
-    const handleGridLayoutSave = useCallback(() => {
-        if (!studyUuid) {
-            return;
-        }
-
-        const diagramParams: DiagramParams[] = Object.values(diagrams).map((diagram) => {
-            const { name, svg, ...cleanedFields } = diagram;
-            return cleanedFields;
-        });
-
-        saveStudyLayout(
-            studyUuid,
-            frontendToBackendAppLayout({
-                gridLayout: layouts,
-                params: diagramParams,
-            })
-        );
-    }, [diagrams, frontendToBackendAppLayout, layouts, studyUuid]);
+    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
 
     const handleLoadNadFromElement = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
@@ -417,29 +356,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
                 const updatedLayouts = [...breakpoint_layouts];
                 updatedLayouts.unshift(AdderCard);
-                return [
-                    breakpoint,
-                    updatedLayouts.map((l) => ({
-                        ...l,
-                        w: decodeInfinity(l.w),
-                        h: decodeInfinity(l.h),
-                        x: decodeInfinity(l.x),
-                        y: decodeInfinity(l.y),
-                    })),
-                ];
+                return [breakpoint, updatedLayouts];
             });
             setLayouts(Object.fromEntries(newLayoutsEntries));
         } else {
             setLayouts(initialLayouts);
         }
     }, []);
-
-    const decodeInfinity = (value: number) => {
-        if (value === MAX_INT32) {
-            return Infinity;
-        }
-        return value;
-    };
 
     const onAddMapCard = useCallback(() => {
         // TODO setLayouts to add a map card

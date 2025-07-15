@@ -8,9 +8,10 @@
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAppLayout } from 'redux/actions';
+import { setAppLayoutInit } from 'redux/actions';
 import { AppLayout, AppState } from 'redux/reducer';
 import { getStudyLayout } from 'services/study/study-config';
+import { MAX_INT32 } from 'services/utils';
 import { StudyLayout } from 'types/study-layout.types';
 
 export const useAppLayout = () => {
@@ -22,11 +23,19 @@ export const useAppLayout = () => {
             return;
         }
         getStudyLayout(studyUuid).then((appLayout: StudyLayout | null) => {
+            // if not layout is found, 204 is returned with null value
             if (appLayout) {
-                dispatch(setAppLayout(backendToFrontendAppLayout(appLayout)));
+                dispatch(setAppLayoutInit(backendToFrontendAppLayout(appLayout)));
             }
         });
     }, [studyUuid, dispatch]);
+};
+
+const decodeInfinity = (value: number) => {
+    if (value === MAX_INT32) {
+        return Infinity;
+    }
+    return value;
 };
 
 const backendToFrontendAppLayout = (studyLayout: StudyLayout): AppLayout => {
@@ -37,7 +46,12 @@ const backendToFrontendAppLayout = (studyLayout: StudyLayout): AppLayout => {
             if (!gridLayoutResult[layoutKey]) {
                 gridLayoutResult[layoutKey] = [];
             }
-            gridLayoutResult[layoutKey].push({ i: diagramUuid, ...layoutValues });
+            gridLayoutResult[layoutKey].push({
+                ...layoutValues,
+                i: diagramUuid,
+                x: decodeInfinity(layoutValues.x),
+                y: decodeInfinity(layoutValues.y),
+            });
         }
     }
 

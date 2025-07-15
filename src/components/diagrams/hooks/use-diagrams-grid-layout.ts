@@ -16,7 +16,7 @@ type UseDiagramsGridLayoutProps = {
 
 export const useDiagramsGridLayout = ({ onLoadDiagramLayout }: UseDiagramsGridLayoutProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const gridLayout = useSelector((state: AppState) => state.appLayout?.diagram.gridLayout);
+    const gridLayout = useSelector((state: AppState) => state.appLayoutInit?.diagram.gridLayout);
 
     // at mount
     useEffect(() => {

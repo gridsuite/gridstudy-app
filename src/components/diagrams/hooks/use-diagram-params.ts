@@ -14,7 +14,7 @@ type UseDiagramParamsProps = { onLoadDiagramParams: (diagramParams: DiagramParam
 
 export const useDiagramParams = ({ onLoadDiagramParams }: UseDiagramParamsProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const diagramParams = useSelector((state: AppState) => state.appLayout?.diagram.params);
+    const diagramParams = useSelector((state: AppState) => state.appLayoutInit?.diagram.params);
 
     // at mount
     useEffect(() => {

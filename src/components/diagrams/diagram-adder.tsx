@@ -6,10 +6,10 @@
  */
 
 import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler } from 'react';
-import { Box, IconButton, Theme, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
-import { Search, Public, Upload, Save } from '@mui/icons-material';
+import { Search, Public, Upload, Save, SaveOutlined } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
@@ -100,10 +100,12 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                             </IconButton>
                         </span>
                     </Tooltip>
+                </Box>
+                <Box>
                     <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
-                        <IconButton onClick={() => onLayoutSave()}>
-                            <Save />
-                        </IconButton>
+                        <Button sx={{ textTransform: 'uppercase', gap: 1 }} onClick={() => onLayoutSave()}>
+                            <SaveOutlined /> <FormattedMessage id="SaveGridLayout" />
+                        </Button>
                     </Tooltip>
                 </Box>
             </Box>
