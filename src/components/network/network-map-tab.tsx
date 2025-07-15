@@ -209,12 +209,18 @@ export const NetworkMapTab = ({
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
 
-    const { handleOpenModificationDialog, handleOpenDeletionDialog, renderDeletionDialog, renderModificationDialog } =
-        useEquipmentDialogs({
-            studyUuid: studyUuid,
-            currentNode: currentNode,
-            currentRootNetworkUuid: currentRootNetworkUuid,
-        });
+    const {
+        handleOpenModificationDialog,
+        handleOpenDeletionDialog,
+        handleOpenDynamicSimulationEventDialog,
+        renderDeletionDialog,
+        renderModificationDialog,
+        renderDynamicSimulationEventDialog,
+    } = useEquipmentDialogs({
+        studyUuid: studyUuid,
+        currentNode: currentNode,
+        currentRootNetworkUuid: currentRootNetworkUuid,
+    });
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
@@ -258,6 +264,7 @@ export const NetworkMapTab = ({
         },
         onDeleteEquipment: handleDeleteEquipment,
         onOpenModificationDialog: handleOpenModificationDialog,
+        onOpenDynamicSimulationEventDialog: handleOpenDynamicSimulationEventDialog,
     });
 
     const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
@@ -1058,6 +1065,7 @@ export const NetworkMapTab = ({
                     {renderEquipmentMenu()}
                     {renderModificationDialog()}
                     {renderDeletionDialog()}
+                    {renderDynamicSimulationEventDialog()}
                     {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
                 </>
             )}
