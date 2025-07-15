@@ -931,6 +931,8 @@
     "ContingencyListCreationSuccess": "Contingency list successfully created",
     "FilterCreationIgnored": "The creation of the filter didn't complete",
     "ContingencyListCreationIgnored": "The creation of the contingency list didn't complete",
+    "FilterUpdateSuccess": "Filter successfully updated",
+    "FilterUpdateError": "Error while updating the filter",
 
     "Tap": "Tap",
     "DeltaResistance": "Δ Resistance (%)",
@@ -1366,6 +1368,7 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
+    "rootNetwork.originalCaseRemoved": "The original case has been removed",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
