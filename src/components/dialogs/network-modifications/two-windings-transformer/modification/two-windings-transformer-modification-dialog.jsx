@@ -274,10 +274,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twtModification?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
-                    regulationMode:
-                        twtModification?.[PHASE_TAP_CHANGER]?.[REGULATING] === false
-                            ? PHASE_REGULATION_MODES.OFF.id
-                            : twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
+                    regulationMode: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATING]?.value
+                        ? twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value
+                        : PHASE_REGULATION_MODES.OFF.id,
                     regulationType: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_TYPE]?.value,
                     regulationSide: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_SIDE]?.value ?? null,
                     currentLimiterRegulatingValue:
