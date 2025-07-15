@@ -17,7 +17,7 @@ import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
-import { useGlobalFilterData } from '../../../../results/common/global-filter/use-global-filter-data';
+import { useGlobalFilterOptions } from '../../../../results/common/global-filter/use-global-filter-options';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;
@@ -30,7 +30,7 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
     );
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedSetFilters = useCallback(

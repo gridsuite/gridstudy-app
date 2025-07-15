@@ -5,54 +5,49 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid, Typography } from '@mui/material';
-import { CASE_ID, CASE_NAME } from 'components/utils/field-constants';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import ImportCaseDialog from '../import-case-dialog';
-import { TreeViewFinderNodeProps, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
-import { useWatch } from 'react-hook-form';
+import { TreeViewFinderNodeProps, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { FolderOutlined } from '@mui/icons-material';
+import { UUID } from 'crypto';
+import ImportCaseDialog from '../import-case-dialog';
 
 interface RootNetworkCaseSelectionProps {
     onSelectCase: (selectedCase: TreeViewFinderNodeProps) => void;
     isModification: boolean;
+    originalCaseUuid?: UUID;
 }
 
-export const RootNetworkCaseSelection = ({ onSelectCase, isModification }: RootNetworkCaseSelectionProps) => {
+export const RootNetworkCaseSelection = ({
+    onSelectCase,
+    isModification,
+    originalCaseUuid,
+}: RootNetworkCaseSelectionProps) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const caseNameWatch = useWatch({ name: CASE_NAME });
-    const caseIdWatch = useWatch({ name: CASE_ID });
-    const [directoryName, setDirectoryName] = useState('');
-    const { snackError } = useSnackMessage();
+    const [expanded, setExpanded] = useState<UUID[]>([]);
+    const [selectedItem, setSelectedItem] = useState<{ id: UUID; path?: string } | null>(null);
 
     const handleSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
+        const { id, name, parents } = selectedCase;
+        let path;
+        if (parents) {
+            path = [...parents.map((parent) => parent.name), name].join('/');
+        }
+        setSelectedItem({ id, path });
         onSelectCase(selectedCase);
         setIsDialogOpen(false);
     };
 
-    // fetch folder name of selected case to build default file name
     useEffect(() => {
-        if (caseIdWatch) {
-            fetchDirectoryElementPath(caseIdWatch)
-                .then((res) => {
-                    if (!res || res.length < 2) {
-                        snackError({
-                            headerId: 'rootNetworkDirectoryFetchingError',
-                        });
-                        return;
-                    }
-                    const parentFolderIndex = res.length - 2;
-                    setDirectoryName(res[parentFolderIndex].elementName);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'rootNetworkDirectoryFetchingError',
-                    });
-                });
+        if (isModification && !selectedItem && originalCaseUuid) {
+            fetchDirectoryElementPath(originalCaseUuid).then((res) => {
+                setExpanded(res.filter((e) => e.elementUuid !== originalCaseUuid).map((e) => e.elementUuid));
+                const path = res.map((e) => e.elementName).join('/');
+                setSelectedItem({ id: originalCaseUuid, path });
+            });
         }
-    }, [caseIdWatch, snackError]);
+    }, [originalCaseUuid, isModification, selectedItem]);
 
     return (
         <>
@@ -60,29 +55,36 @@ export const RootNetworkCaseSelection = ({ onSelectCase, isModification }: RootN
                 <Grid item display="flex" marginLeft={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item>
-                    <Typography m={1} fontWeight="fontWeightBold">
-                        {directoryName}
-                    </Typography>
-                </Grid>
+                <Typography m={1} component="span">
+                    <Box fontWeight="fontWeightBold">{selectedItem?.path}</Box>
+                </Typography>
                 <Grid item>
                     <Button
-                        variant={caseNameWatch ? 'contained' : undefined}
-                        size={caseNameWatch ? 'small' : 'medium'}
+                        variant={isModification ? 'contained' : undefined}
+                        size={isModification ? 'small' : 'medium'}
                         onClick={() => setIsDialogOpen(true)}
                     >
-                        {caseNameWatch || isModification ? (
+                        {isModification ? (
                             <FormattedMessage id={'ModifyFromMenu'} />
                         ) : (
                             <FormattedMessage id={'chooseCase'} />
                         )}
                     </Button>
                 </Grid>
+                <Typography m={1} component="span">
+                    <Box fontWeight="fontWeightBold">
+                        {!selectedItem && isModification ? (
+                            <FormattedMessage id={'rootNetwork.originalCaseRemoved'} />
+                        ) : null}
+                    </Box>
+                </Typography>
             </Grid>
             <ImportCaseDialog
                 open={isDialogOpen}
                 onClose={() => setIsDialogOpen(false)}
                 onSelectCase={handleSelectCase}
+                expanded={expanded}
+                selected={selectedItem ? [selectedItem.id] : []}
             />
         </>
     );
