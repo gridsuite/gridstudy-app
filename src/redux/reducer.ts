@@ -227,7 +227,7 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { getAllChildren } from 'components/graph/util/model-functions';
+import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
@@ -268,7 +268,12 @@ import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import {
+    CurrentTreeNode,
+    NetworkModificationNodeData,
+    NetworkModificationNodeType,
+    RootNodeData,
+} from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -400,6 +405,7 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
+    nodeType: NetworkModificationNodeType | undefined;
     copyType: ValueOf<typeof CopyType> | null;
     allChildrenIds: string[] | null;
 };
@@ -568,6 +574,7 @@ const initialState: AppState = {
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
+        nodeType: undefined,
         copyType: null,
         allChildrenIds: null,
     },
@@ -1131,16 +1138,25 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
         const nodeSelectionForCopy = action.nodeSelectionForCopy;
-        if (
-            nodeSelectionForCopy.sourceStudyUuid === state.studyUuid &&
-            nodeSelectionForCopy.nodeId &&
-            (nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
-                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT)
-        ) {
-            nodeSelectionForCopy.allChildrenIds = getAllChildren(
-                state.networkModificationTreeModel,
-                nodeSelectionForCopy.nodeId
-            ).map((child) => child.id);
+        if (nodeSelectionForCopy.sourceStudyUuid === state.studyUuid && nodeSelectionForCopy.nodeId) {
+            if (
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT
+            ) {
+                nodeSelectionForCopy.allChildrenIds = getAllChildren(
+                    state.networkModificationTreeModel,
+                    nodeSelectionForCopy.nodeId
+                ).map((child) => child.id);
+            }
+            if (
+                nodeSelectionForCopy.copyType === CopyType.NODE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.NODE_CUT
+            ) {
+                nodeSelectionForCopy.nodeType = getNetworkModificationNode(
+                    state.networkModificationTreeModel,
+                    nodeSelectionForCopy.nodeId
+                )?.data.nodeType;
+            }
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });

@@ -234,6 +234,27 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         );
     }
 
+    function isInsertionAllowed(insertMode: NodeInsertModes): boolean {
+        // Rule 1 : CONSTRUCTION cannot be inserted into SECURITY
+        if (
+            nodeSelectionForCopy.nodeType === NetworkModificationNodeType.CONSTRUCTION &&
+            activeNode?.data?.nodeType === NetworkModificationNodeType.SECURITY
+        ) {
+            return false;
+        }
+
+        // Rule 2 : SECURITY can only be inserted in CHILD mode into CONSTRUCTION or ROOT
+        if (
+            nodeSelectionForCopy.nodeType === NetworkModificationNodeType.SECURITY &&
+            insertMode !== NodeInsertModes.NewBranch &&
+            activeNode?.data?.nodeType !== NetworkModificationNodeType.SECURITY
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
     function isNodeRemovingAllowed() {
         return !isAnyNodeBuilding && !mapDataLoading;
     }
@@ -337,20 +358,17 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         COPY_MODIFICATION_NODE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
         },
         CUT_MODIFICATION_NODE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () =>
                 isNodeAlreadySelectedForCut() ? cancelCutNetworkModificationNode() : cutNetworkModificationNode(),
             id: isNodeAlreadySelectedForCut() ? 'cancelCutNetworkModificationNode' : 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
             id: 'pasteNetworkModificationNode',
             disabled: !isNodePastingAllowed(),
             subMenuItems: {
@@ -358,19 +376,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || !isInsertionAllowed(NodeInsertModes.NewBranch),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || !isInsertionAllowed(NodeInsertModes.Before),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || !isInsertionAllowed(NodeInsertModes.After),
                 },
             },
         },
