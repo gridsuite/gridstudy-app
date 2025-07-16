@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, ReactNode, SetStateAction } from 'react';
+import React, { useCallback, useMemo, SetStateAction } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
     ColDef,
     GetRowIdParams,
+    IRowDragItem,
     RowClassParams,
     RowDragEndEvent,
     RowDragEnterEvent,
@@ -93,7 +94,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const getModificationLabel = useCallback(
-        (modif?: NetworkModificationMetadata): ReactNode => {
+        (modif?: NetworkModificationMetadata, formatBold: boolean = true) => {
             if (!modif) {
                 return '';
             }
@@ -101,11 +102,19 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 { id: 'network_modifications.' + modif.messageType },
                 {
                     ...modif,
-                    ...computeLabel(modif),
+                    ...computeLabel(modif, formatBold),
                 }
             );
         },
         [computeLabel, intl]
+    );
+
+    const getRowDragText = useCallback(
+        (params: IRowDragItem) => {
+            const label = getModificationLabel(params?.rowNode?.data, false);
+            return typeof label === 'string' ? label : '';
+        },
+        [getModificationLabel]
     );
 
     const columnDefs = useMemo(() => {
@@ -120,6 +129,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 },
                 cellRenderer: NetworkModificationNameCellRenderer,
                 valueGetter: (value: ValueGetterParams) => getModificationLabel(value?.data),
+                rowDragText: getRowDragText,
                 minWidth: 200,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
@@ -172,6 +182,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         isRowDragDisabled,
         modifications.length,
         nameHeaderProps,
+        getRowDragText,
         setModifications,
         isMonoRootStudy,
         rootNetworks,
