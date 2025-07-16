@@ -9,7 +9,7 @@ import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler } from 
 import { Box, Button, IconButton, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
-import { Search, Public, Upload, Save, SaveOutlined } from '@mui/icons-material';
+import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
@@ -103,8 +103,12 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                 </Box>
                 <Box>
                     <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
-                        <Button sx={{ textTransform: 'uppercase', gap: 1 }} onClick={() => onLayoutSave()}>
-                            <SaveOutlined /> <FormattedMessage id="SaveGridLayout" />
+                        <Button
+                            startIcon={<SaveOutlined />}
+                            sx={{ textTransform: 'uppercase' }}
+                            onClick={() => onLayoutSave()}
+                        >
+                            <FormattedMessage id="SaveGridLayout" />
                         </Button>
                     </Tooltip>
                 </Box>
