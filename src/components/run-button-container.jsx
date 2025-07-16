@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
 
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_PROVIDER_DYNAFLOW } from '../utils/config-params';
 
 import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
@@ -32,7 +32,7 @@ import {
     startDynamicSimulation,
     stopDynamicSimulation,
 } from '../services/study/dynamic-simulation';
-import { getLoadFlowParameters, startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
+import { getLoadFlowProvider, startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
 import { startSecurityAnalysis, stopSecurityAnalysis } from '../services/study/security-analysis';
 import { startShortCircuitAnalysis, stopShortCircuitAnalysis } from '../services/study/short-circuit-analysis';
 import { startVoltageInit, stopVoltageInit } from '../services/study/voltage-init';
@@ -141,8 +141,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     //In DynaFlow, we need to verify that the current node is a security node before starting the computation.
     const checkLoadFlowProvider = useCallback(
         (studyUuid, handleComputation) => {
-            getLoadFlowParameters(studyUuid).then((result) => {
-                if (!isSecurityModificationNode(currentNode) && result['provider'] === 'DynaFlow') {
+            getLoadFlowProvider(studyUuid).then((provider) => {
+                if (!isSecurityModificationNode(currentNode) && provider === PARAM_PROVIDER_DYNAFLOW) {
                     snackError({
                         headerId: 'LoadFlowDynaFlowError',
                     });
