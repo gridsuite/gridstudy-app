@@ -669,6 +669,7 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
         maxQAtNominalV,
         minQAtNominalV,
         regulationMode,
+        isRegulating,
         voltageSetpoint,
         reactivePowerSetpoint,
         voltageRegulationType,
@@ -717,6 +718,7 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
             maxQAtNominalV: maxQAtNominalV,
             minQAtNominalV: minQAtNominalV,
             regulationMode: regulationMode,
+            isRegulating: isRegulating,
             voltageSetpoint: voltageSetpoint,
             reactivePowerSetpoint: reactivePowerSetpoint,
             voltageRegulationType: voltageRegulationType,
@@ -1881,7 +1883,6 @@ export function modifyVsc({
     converterStation1,
     converterStation2,
     properties,
-    isUpdate,
     modificationUuid,
 }: VSCModificationInfo) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);

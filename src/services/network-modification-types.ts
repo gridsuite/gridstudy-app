@@ -200,6 +200,7 @@ export interface StaticVarCompensatorCreationInfo {
     maxQAtNominalV: number | null;
     minQAtNominalV: number | null;
     regulationMode: string;
+    isRegulating: boolean;
     voltageSetpoint: number;
     reactivePowerSetpoint: number;
     voltageRegulationType: string;
