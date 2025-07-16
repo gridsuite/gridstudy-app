@@ -10,7 +10,7 @@
 }
 
 .react-grid-item > .react-resizable-handle.react-resizable-handle-se {
-    margin: 8px;
+    margin: 4px 2px;
 }
 
 /* override to hide some strange .react-resizable-handle::after div in Diagram Grid Layout*/
