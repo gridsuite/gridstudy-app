@@ -12,12 +12,14 @@ import { UUID } from 'crypto';
 import { Search, Public, Upload } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
+    ElementAttributes,
     ElementType,
     EquipmentInfos,
     mergeSx,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
+import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 
 const styles = {
     card: (theme: Theme) => ({
@@ -70,6 +72,14 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
         }
         setIsLoadSelectorOpen(false);
     };
+
+    const isValidNadImportElement = (val: ElementAttributes): boolean => {
+        return (
+            val.type === ElementType.DIAGRAM_CONFIG ||
+            (val.type === ElementType.FILTER && val.specificMetadata?.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL)
+        );
+    };
+
     return (
         <Box sx={mergeSx(style, styles.card)} ref={ref} {...otherProps}>
             <Box sx={styles.adderContent}>
@@ -103,7 +113,11 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
             <DirectoryItemSelector
                 open={isLoadSelectorOpen}
                 onClose={selectElement}
-                types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
+                types={[ElementType.FILTER, ElementType.DIAGRAM_CONFIG]}
+                equipmentTypes={['']}
+                itemFilter={(val) => {
+                    return isValidNadImportElement(val);
+                }}
                 title={intl.formatMessage({
                     id: 'AddFromGridexplore',
                 })}
