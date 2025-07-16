@@ -56,7 +56,7 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
         border:
             theme.palette.mode === 'light'
@@ -174,7 +174,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         updateDiagramPositions,
     } = useDiagramModel({
         diagramTypes: diagramTypes,
-            onAddDiagram: addLayoutItem,
+        onAddDiagram: addLayoutItem,
         onDiagramAlreadyExists,
     });
 
@@ -474,7 +474,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             }}
             onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
                 if (e.target) {
-                    (e.target as HTMLElement).style.cursor = 'default';
+                    (e.target as HTMLElement).style.cursor = 'grab';
                 }
             }}
             autoSize={false} // otherwise the grid has strange behavior
