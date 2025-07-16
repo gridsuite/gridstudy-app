@@ -38,6 +38,8 @@ import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import { openDiagram } from '../../../redux/actions';
 
+import NodeContextMenu from './node-context-menu';
+
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
