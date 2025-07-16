@@ -8,7 +8,7 @@
 import React from 'react';
 import { Menu, Typography, ListItemIcon, ListItemText } from '@mui/material';
 import { CustomMenuItem } from '@gridsuite/commons-ui';
-import AddIcon from '@mui/icons-material/ControlPoint';
+import LoupeIcon from '@mui/icons-material/Loupe';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useIntl } from 'react-intl';
 
@@ -73,7 +73,7 @@ const NodeContextMenu: React.FC<ContextMenuProps> = ({
         >
             <CustomMenuItem sx={styles.customMenuItem} onClick={handleExpandClick}>
                 <ListItemIcon>
-                    <AddIcon />
+                    <LoupeIcon />
                 </ListItemIcon>
                 <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'expand' })}</Typography>} />
             </CustomMenuItem>
