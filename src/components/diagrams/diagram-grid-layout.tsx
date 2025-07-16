@@ -207,7 +207,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const handleExpandAllVoltageLevelIds = useCallback(
+    const handleExpandAllVoltageLevels = useCallback(
         (diagramId: UUID) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -228,7 +228,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     );
 
     const handleExpandVoltageLevelId = useCallback(
-        (diagramId: UUID, newVoltageLevelId: string) => {
+        (diagramId: UUID, voltageLevelIdToExpand: string) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
@@ -237,8 +237,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     name: diagram.name,
                     nadConfigUuid: diagram.nadConfigUuid,
                     filterUuid: diagram.filterUuid,
-                    voltageLevelIds: diagram.voltageLevelIds,
-                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, newVoltageLevelId],
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToExpand),
+                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, voltageLevelIdToExpand],
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                     positions: diagram.positions,
                 });
@@ -371,9 +371,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     onExpandVoltageLevel={(vlId) =>
                                         handleExpandVoltageLevelId(diagram.diagramUuid, vlId)
                                     }
-                                    onExpandAllVoltageLevelIds={() =>
-                                        handleExpandAllVoltageLevelIds(diagram.diagramUuid)
-                                    }
+                                    onExpandAllVoltageLevels={() => handleExpandAllVoltageLevels(diagram.diagramUuid)}
                                     onHideVoltageLevel={(vlId) => handleHideVoltageLevelId(diagram.diagramUuid, vlId)}
                                     onMoveNode={(vlId, x, y) => handleMoveNode(diagram.diagramUuid, vlId, x, y)}
                                     customPositions={diagram.positions}
@@ -393,7 +391,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         handleLoadNad,
         handleToggleEditMode,
         loadingDiagrams,
-        handleExpandAllVoltageLevelIds,
+        handleExpandAllVoltageLevels,
         handleExpandVoltageLevelId,
         handleHideVoltageLevelId,
         handleMoveNode,

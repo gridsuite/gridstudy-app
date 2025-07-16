@@ -60,7 +60,7 @@ interface DiagramControlsProps {
     onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    onAugmentDepth?: () => void;
+    onExpandAllVoltageLevels?: () => void;
     isDiagramLoading?: boolean;
 }
 
@@ -69,7 +69,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onLoad,
     isEditNadMode,
     onToggleEditNadMode,
-    onAugmentDepth,
+    onExpandAllVoltageLevels,
     isDiagramLoading,
 }) => {
     const intl = useIntl();
@@ -93,9 +93,9 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         setIsLoadSelectorOpen(true);
     };
 
-    const handleClickAugmentDepthIcon = () => {
-        if (onAugmentDepth && !isDiagramLoading) {
-            onAugmentDepth();
+    const handleClickExpandAllVoltageLevelsIcon = () => {
+        if (onExpandAllVoltageLevels && !isDiagramLoading) {
+            onExpandAllVoltageLevels();
         }
     };
 
@@ -148,10 +148,10 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     {isEditNadMode && (
                         <>
                             <hr style={{ margin: '2px 4px' }} />
-                            <Tooltip title={<FormattedMessage id={'augmentDepth'} />}>
+                            <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <IconButton
                                     sx={styles.actionIcon}
-                                    onClick={handleClickAugmentDepthIcon}
+                                    onClick={handleClickExpandAllVoltageLevelsIcon}
                                     disabled={isDiagramLoading}
                                 >
                                     <LoupeIcon sx={styles.icon} />
