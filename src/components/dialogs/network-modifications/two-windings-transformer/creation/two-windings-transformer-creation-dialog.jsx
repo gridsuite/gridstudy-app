@@ -528,6 +528,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
+                    hasLoadTapChangingCapabilities: true,
                     isRegulating: computePhaseTapChangerRegulating(phaseTapChangerFormValues),
                     regulationValue: computePhaseTapChangerRegulationValue(phaseTapChangerFormValues),
                     regulatingTerminalId: computeRegulatingTerminalId(phaseTapChangerFormValues, twt[EQUIPMENT_ID]),
