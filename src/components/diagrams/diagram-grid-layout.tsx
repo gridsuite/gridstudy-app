@@ -174,7 +174,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         updateDiagramPositions,
     } = useDiagramModel({
         diagramTypes: diagramTypes,
-            onAddDiagram: addLayoutItem,
+        onAddDiagram: addLayoutItem,
         onDiagramAlreadyExists,
     });
 
