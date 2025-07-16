@@ -521,10 +521,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     targetV: getValueOrDefault(TARGET_V),
                     targetDeadband: getValueOrDefault(TARGET_DEADBAND),
-                    regulationMode:
-                        ratioTapChangerFormValues?.[REGULATION_MODE] === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
-                            ? getValueOrDefault(REGULATION_MODE)
-                            : null,
                     regulationType: getValueOrDefault(REGULATION_TYPE),
                 };
             }

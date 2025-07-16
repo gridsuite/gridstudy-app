@@ -367,9 +367,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     ? computeRatioTapChangerRegulating(ratioTapChangerFormValues)
                     : null
             );
-            if (ratioTapChangerFormValues?.[REGULATION_MODE] === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id) {
-                ratioTap.regulationMode = toModificationOperation(ratioTapChangerFormValues?.[REGULATION_MODE]);
-            }
             if (regulationType === REGULATION_TYPES.LOCAL.id) {
                 ratioTap.regulationSide = toModificationOperation(ratioTapChangerFormValues?.[REGULATION_SIDE]);
             } else if (regulationType === REGULATION_TYPES.DISTANT.id) {

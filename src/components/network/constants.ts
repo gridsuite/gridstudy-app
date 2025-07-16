@@ -45,13 +45,15 @@ export const PHASE_REGULATION_MODES = {
     OFF: { id: 'OFF', label: 'Off' }, // used for the ui but doesn't exist in powsybl => should not be sent to the back
 } as const;
 
+// only useful for the ui, in order to set isRegulating, should not be sent to the back
 export const RATIO_REGULATION_MODES = {
     FIXED_RATIO: {
-        // used in order to set regulating to false, but doesn't exist in powsybl => should not be sent to the back
+        // isRegulating false
         id: 'FIXED_RATIO',
         label: 'FixedRatio',
     },
     VOLTAGE_REGULATION: {
+        // isRegulating true
         id: 'VOLTAGE_REGULATION',
         label: 'VoltageRegulation',
     },
