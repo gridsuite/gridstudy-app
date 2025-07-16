@@ -15,7 +15,7 @@ export const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme: Theme) => ({
-        paddingLeft: theme.spacing(2),
+        paddingLeft: theme.spacing(1),
         display: 'flex',
         alignItems: 'center',
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
@@ -24,6 +24,7 @@ const styles = {
                 ? `1px solid ${theme.palette.grey[500]}`
                 : `1px solid ${theme.palette.grey[800]}`,
         borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
+        cursor: 'grab',
     }),
     blink: (theme: Theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
@@ -51,7 +52,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => 
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
             <OverflowableText
                 className="react-grid-dragHandle"
-                sx={{ flexGrow: '1' }}
+                sx={{ flexGrow: '1', paddingBottom: '2px' }}
                 text={<Typography variant="caption">{title}</Typography>}
             />
             <Box>
