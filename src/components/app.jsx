@@ -7,11 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getOptionalServiceByServerName,
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from './utils/optional-services';
+import { computeRetrieveOptionalServices } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AnnouncementNotification,
@@ -319,29 +315,7 @@ const App = () => {
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
-                    const retrieveOptionalServices = services.map((service) => {
-                        return {
-                            ...service,
-                            name: getOptionalServiceByServerName(service.name),
-                        };
-                    });
-                    // get all potentially optional services
-                    const optionalServicesNames = Object.keys(OptionalServicesNames);
-
-                    // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
-                    // in that case, we consider it is UP
-                    optionalServicesNames
-                        .filter(
-                            (serviceName) =>
-                                !retrieveOptionalServices.map((service) => service.name).includes(serviceName)
-                        )
-                        .forEach((serviceName) =>
-                            retrieveOptionalServices.push({
-                                name: serviceName,
-                                status: OptionalServicesStatus.Up,
-                            })
-                        );
-                    dispatch(setOptionalServices(retrieveOptionalServices));
+                    dispatch(setOptionalServices(computeRetrieveOptionalServices(services)));
                 })
                 .catch((error) => {
                     snackError({
