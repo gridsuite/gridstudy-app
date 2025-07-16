@@ -10,6 +10,7 @@ import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
+    originalCaseUuid: UUID;
     name: string;
     tag: string;
     isCreating: boolean;
