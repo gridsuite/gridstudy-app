@@ -145,7 +145,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 });
             }
         },
-        [clearErrors, setValue, getValues, setError, intl]
+        [clearErrors, setValue, getValues, snackWarning, setError, intl]
     );
 
     const equipmentType = useWatch({
