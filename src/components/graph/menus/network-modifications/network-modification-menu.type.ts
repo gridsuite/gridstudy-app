@@ -52,6 +52,7 @@ interface MenuDefinitionBase {
     id: string;
     label: string;
     hide?: boolean;
+    isDivider?: false;
 }
 
 export interface MenuDefinitionWithSubItem extends MenuDefinitionBase {
@@ -62,7 +63,11 @@ export interface MenuDefinitionWithoutSubItem extends MenuDefinitionBase {
     action?: () => JSX.Element;
 }
 
-export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSubItem;
+export interface MenuDefinitionDivider {
+    isDivider: true;
+}
+
+export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSubItem | MenuDefinitionDivider;
 
 export interface NetworkModificationData {
     uuid: UUID;

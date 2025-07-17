@@ -38,9 +38,11 @@ const emptyFormData = {
  * Dialog to delete an equipment from its type and ID.
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
+ * @param currentRootNetworkUuid
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param defaultIdValue the default equipment id
+ * @param equipmentType
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
@@ -52,6 +54,7 @@ const EquipmentDeletionDialog = ({
     isUpdate,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     editDataFetchStatus,
+    equipmentType,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -86,13 +89,26 @@ const EquipmentDeletionDialog = ({
         [reset]
     );
 
+    const preSetType = useCallback(
+        (equipmentType) => {
+            reset({
+                [TYPE]: equipmentType,
+            });
+        },
+        [reset]
+    );
+
     useEffect(() => {
+        console.log('test');
+        console.log(equipmentType);
         if (editData) {
             fromEditDataToFormValues(editData);
         } else if (defaultIdValue) {
             fromMenuDataValues(defaultIdValue);
+        } else if (equipmentType) {
+            preSetType(equipmentType);
         }
-    }, [fromEditDataToFormValues, editData, fromMenuDataValues, defaultIdValue]);
+    }, [fromEditDataToFormValues, editData, fromMenuDataValues, defaultIdValue, equipmentType, preSetType]);
 
     const onSubmit = useCallback(
         (formData) => {
