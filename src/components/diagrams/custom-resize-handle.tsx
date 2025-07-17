@@ -12,11 +12,18 @@ type CustomResizeHandleProps = {
     handleAxis?: ResizeHandleAxis;
 };
 
+const styles = {
+    icon: {
+        fontSize: 'medium',
+        rotate: '90deg',
+    },
+};
+
 const CustomResizeHandle = forwardRef((props: CustomResizeHandleProps, ref: Ref<HTMLDivElement>) => {
     const { handleAxis, ...restProps } = props;
     return (
         <div ref={ref} className={`react-resizable-handle react-resizable-handle-${handleAxis}`} {...restProps}>
-            <OpenInFull fontSize="small" sx={{ rotate: '90deg' }} color="action" />
+            <OpenInFull sx={styles.icon} color="action" />
         </div>
     );
 });
