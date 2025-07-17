@@ -141,8 +141,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     //In DynaFlow, we need to verify that the current node is a security node before starting the computation.
     const checkLoadFlowProvider = useCallback(
         (studyUuid, handleComputation) => {
+            if (isSecurityModificationNode(currentNode)) {
+                handleComputation();
+                return;
+            }
             getLoadFlowProvider(studyUuid).then((provider) => {
-                if (!isSecurityModificationNode(currentNode) && provider === PARAM_PROVIDER_DYNAFLOW) {
+                if (provider === PARAM_PROVIDER_DYNAFLOW) {
                     snackError({
                         headerId: 'LoadFlowDynaFlowError',
                     });
