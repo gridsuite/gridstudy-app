@@ -66,16 +66,15 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
 
     const handleDuplicate = useCallback(() => {
         if (studyUuid && columnDefinition?.id) {
-            duplicateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid).then()
-                .catch(
-                    (error) => {
-                        snackError({
-                            messageTxt: error.message,
-                        });
-                    }
-                );;
+            duplicateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid)
+                .then()
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                });
         }
-    }, [columnDefinition, studyUuid, spreadsheetConfigUuid]);
+    }, [columnDefinition, studyUuid, spreadsheetConfigUuid, snackError]);
 
     const handleMenuItemClick = useCallback(
         (option: { id: string; label: string }) => {
