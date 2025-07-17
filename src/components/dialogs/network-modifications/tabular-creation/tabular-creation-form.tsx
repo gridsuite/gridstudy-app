@@ -8,7 +8,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, LANG_FRENCH } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CustomAGGrid,
+    ErrorInput,
+    FieldErrorAlert,
+    LANG_FRENCH,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import {
     CONNECTED,
     CREATIONS_TABLE,
@@ -43,6 +50,7 @@ export interface TabularCreationFormProps {
 
 export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFormProps>) {
     const intl = useIntl();
+    const { snackWarning } = useSnackMessage();
     const language = useSelector((state: AppState) => state.computedLanguage);
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
@@ -93,6 +101,18 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 shouldDirty: true,
             });
             setIsFetching(false);
+            // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
+            if (
+                results.data.some(
+                    (creation) =>
+                        creation.maxSusceptance != null &&
+                        (creation.shuntCompensatorType || creation.maxQAtNominalV != null)
+                )
+            ) {
+                snackWarning({
+                    messageId: 'TabularCreationShuntWarning',
+                });
+            }
             if (requiredFieldNameInError !== '') {
                 setError(CREATIONS_TABLE, {
                     type: 'custom',
