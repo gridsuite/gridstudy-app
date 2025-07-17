@@ -86,6 +86,7 @@ import {
     MenuDefinition,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
+    MenuDefinitionDivider,
     NetworkModificationCopyInfo,
     NetworkModificationCopyType,
     NetworkModificationData,
@@ -574,7 +575,7 @@ const NetworkModificationNodeEditor = () => {
         },
     ];
 
-    const subMenuItemsList = menuDefinition.reduce<(MenuDefinitionWithoutSubItem | MenuDefinitionSubItem)[]>(
+    const subMenuItemsList = menuDefinition.reduce<(MenuDefinitionWithoutSubItem | MenuDefinitionSubItem | MenuDefinitionDivider)[]>(
         (actions, currentMenuItem) =>
             !('subItems' in currentMenuItem)
                 ? [...actions, currentMenuItem]

@@ -512,6 +512,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                         onClose={() => closeDeletionDialog()}
                         editData={undefined}
                         editDataFetchStatus={undefined}
+                        equipmentType={undefined}
                     />
                 );
             default:
