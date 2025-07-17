@@ -107,9 +107,6 @@ export type AppActions =
     | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
-    | ResetNetworkAreaDiagramDepthAction
-    | IncrementNetworkAreaDiagramDepthAction
-    | DecrementNetworkAreaDiagramDepthAction
     | SetComputingStatusAction
     | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
@@ -777,92 +774,6 @@ export function openNadList(ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
         ids: ids,
-    };
-}
-
-export const RESET_NETWORK_AREA_DIAGRAM_DEPTH = 'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
-export type ResetNetworkAreaDiagramDepthAction = Readonly<Action<typeof RESET_NETWORK_AREA_DIAGRAM_DEPTH>>;
-
-export function resetNetworkAreaDiagramDepth(): ResetNetworkAreaDiagramDepthAction {
-    return {
-        type: RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-    };
-}
-
-export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
-export type IncrementNetworkAreaDiagramDepthAction = Readonly<Action<typeof INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH>>;
-
-export function incrementNetworkAreaDiagramDepth(): IncrementNetworkAreaDiagramDepthAction {
-    return {
-        type: INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    };
-}
-
-export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
-export type DecrementNetworkAreaDiagramDepthAction = Readonly<Action<typeof DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH>>;
-
-export function decrementNetworkAreaDiagramDepth(): DecrementNetworkAreaDiagramDepthAction {
-    return {
-        type: DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    };
-}
-
-export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT';
-export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
-    Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
-> & {
-    diagramId: UUID;
-    equipmentId: string;
-    x: number;
-    y: number;
-    scalingFactor: number;
-};
-
-export function storeNetworkAreaDiagramNodeMovement(
-    diagramId: UUID,
-    equipmentId: string,
-    x: number,
-    y: number,
-    scalingFactor: number
-): StoreNetworkAreaDiagramNodeMovementAction {
-    return {
-        type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        diagramId: diagramId,
-        equipmentId: equipmentId,
-        x: x,
-        y: y,
-        scalingFactor: scalingFactor,
-    };
-}
-
-export const STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT';
-export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
-    Action<typeof STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT>
-> & {
-    diagramId: UUID;
-    equipmentId: string;
-    shiftX: number;
-    shiftY: number;
-    connectionShiftX: number;
-    connectionShiftY: number;
-};
-
-export function storeNetworkAreaDiagramTextNodeMovement(
-    diagramId: UUID,
-    equipmentId: string,
-    shiftX: number,
-    shiftY: number,
-    connectionShiftX: number,
-    connectionShiftY: number
-): StoreNetworkAreaDiagramTextNodeMovementAction {
-    return {
-        type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-        diagramId: diagramId,
-        equipmentId: equipmentId,
-        shiftX: shiftX,
-        shiftY: shiftY,
-        connectionShiftX: connectionShiftX,
-        connectionShiftY: connectionShiftY,
     };
 }
 

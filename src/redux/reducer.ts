@@ -11,7 +11,6 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
-    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -53,8 +52,6 @@ import {
     CURRENT_TREE_NODE,
     CurrentRootNetworkUuidAction,
     CurrentTreeNodeAction,
-    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
     DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
@@ -63,8 +60,6 @@ import {
     EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     FavoriteContingencyListsAction,
-    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    IncrementNetworkAreaDiagramDepthAction,
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
@@ -121,14 +116,12 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
-    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetAllSpreadsheetGlobalFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapEquipmentsAction,
-    ResetNetworkAreaDiagramDepthAction,
     SAVE_SPREADSHEET_GS_FILTER,
     SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -177,10 +170,6 @@ import {
     SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
-    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-    StoreNetworkAreaDiagramNodeMovementAction,
-    StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     TABLE_SORT,
@@ -286,6 +275,7 @@ import { CalculationType } from 'components/spreadsheet-view/types/calculation.t
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { Layouts } from 'react-grid-layout';
+import { DiagramConfigPosition } from '../services/explore';
 
 // Redux state
 export type StudyUpdated = {
@@ -363,22 +353,20 @@ type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
 
 type CreateNADDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
+    nadConfigUuid: UUID | undefined;
+    filterUuid: UUID | undefined;
+    name: string;
     voltageLevelIds: string[];
-};
-
-type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_ELEMENT;
-    elementUuid: UUID;
-    elementType: ElementType;
-    elementName: string;
+    voltageLevelToExpandIds: string[];
+    voltageLevelToOmitIds: string[];
+    positions: DiagramConfigPosition[];
 };
 
 export type DiagramEvent =
     | RemoveDiagramEvent
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
-    | CreateNADDiagramEvent
-    | CreateNADFromElementDiagramEvent;
+    | CreateNADDiagramEvent;
 
 export type NadNodeMovement = {
     diagramId: UUID;
@@ -1236,7 +1224,13 @@ export const reducer = createReducer(initialState, (builder) => {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
+                name: '',
+                nadConfigUuid: undefined,
+                filterUuid: undefined,
                 voltageLevelIds: [action.id as UUID],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
+                positions: [],
             };
         }
 
@@ -1255,7 +1249,13 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
+            name: '',
+            nadConfigUuid: undefined,
+            filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
+            voltageLevelToExpandIds: [],
+            voltageLevelToOmitIds: [],
+            positions: [],
         };
 
         // Switch to the grid layout in order to see the newly opened diagram
@@ -1266,66 +1266,6 @@ export const reducer = createReducer(initialState, (builder) => {
             state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
         }
     });
-
-    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {
-        state.networkAreaDiagramDepth = 0;
-    });
-
-    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: IncrementNetworkAreaDiagramDepthAction) => {
-        state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
-    });
-
-    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: DecrementNetworkAreaDiagramDepthAction) => {
-        if (state.networkAreaDiagramDepth > 0) {
-            state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
-        }
-    });
-
-    builder.addCase(
-        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
-            );
-            if (correspondingMovement.length === 0) {
-                state.nadNodeMovements.push({
-                    diagramId: action.diagramId,
-                    equipmentId: action.equipmentId,
-                    x: action.x,
-                    y: action.y,
-                    scalingFactor: action.scalingFactor,
-                });
-            } else {
-                correspondingMovement[0].x = action.x;
-                correspondingMovement[0].y = action.y;
-                correspondingMovement[0].scalingFactor = action.scalingFactor;
-            }
-        }
-    );
-
-    builder.addCase(
-        STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-        (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
-            const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
-                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
-            );
-            if (correspondingMovement.length === 0) {
-                state.nadTextNodeMovements.push({
-                    diagramId: action.diagramId,
-                    equipmentId: action.equipmentId,
-                    shiftX: action.shiftX,
-                    shiftY: action.shiftY,
-                    connectionShiftX: action.connectionShiftX,
-                    connectionShiftY: action.connectionShiftY,
-                });
-            } else {
-                correspondingMovement[0].shiftX = action.shiftX;
-                correspondingMovement[0].shiftY = action.shiftY;
-                correspondingMovement[0].connectionShiftX = action.connectionShiftX;
-                correspondingMovement[0].connectionShiftY = action.connectionShiftY;
-            }
-        }
-    );
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
         Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
