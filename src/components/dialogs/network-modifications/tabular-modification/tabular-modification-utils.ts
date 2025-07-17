@@ -179,9 +179,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         { id: RATED_S, type: NUMBER },
         { id: MIN_Q, type: NUMBER },
         { id: MAX_Q, type: NUMBER },
-        ...REACTIVE_CAPABILITY_CURVE_FIELDS.map((field) => {
-            return { id: field.id };
-        }),
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: TARGET_P, type: NUMBER },
         { id: TARGET_Q, type: NUMBER },
         { id: VOLTAGE_REGULATION_ON, type: BOOLEAN },
@@ -221,9 +219,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         { id: MAX_P, type: NUMBER },
         { id: MIN_Q, type: NUMBER },
         { id: MAX_Q, type: NUMBER },
-        ...REACTIVE_CAPABILITY_CURVE_FIELDS.map((field) => {
-            return { id: field.id };
-        }),
+        ...REACTIVE_CAPABILITY_CURVE_FIELDS,
         { id: TARGET_P, type: NUMBER },
         { id: TARGET_Q, type: NUMBER },
         { id: PARTICIPATE, type: BOOLEAN },
@@ -235,7 +231,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         { id: CONNECTED, type: BOOLEAN },
         { id: CONNECTION_NAME },
         { id: CONNECTION_DIRECTION, type: ENUM, options: CONNECTION_DIRECTIONS.map((direction) => direction.id) },
-        { id: CONNECTION_POSITION },
+        { id: CONNECTION_POSITION, type: NUMBER },
         { id: MAXIMUM_SECTION_COUNT, type: NUMBER },
         { id: SECTION_COUNT, type: NUMBER },
         { id: SHUNT_COMPENSATOR_TYPE, type: ENUM, options: Object.keys(SHUNT_COMPENSATOR_TYPES) },

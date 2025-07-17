@@ -59,6 +59,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             let dependantFieldNameInError: string = '';
             let fieldTypeInError: string = '';
             let expectedTypeForFieldInError: string = '';
+            let expectedValues: string[] | undefined;
+
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
                     const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
@@ -92,6 +94,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     if (!isFieldTypeOk(result[key], fieldDef)) {
                         fieldTypeInError = key;
                         expectedTypeForFieldInError = fieldDef?.type ?? '';
+                        expectedValues = fieldDef?.options;
                         return false;
                     }
                     return true;
@@ -138,7 +141,14 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     ),
                 });
             }
-            setFieldTypeErrorIfNeeded(fieldTypeInError, expectedTypeForFieldInError, CREATIONS_TABLE, setError, intl);
+            setFieldTypeErrorIfNeeded(
+                fieldTypeInError,
+                expectedTypeForFieldInError,
+                CREATIONS_TABLE,
+                setError,
+                intl,
+                expectedValues
+            );
         },
         [clearErrors, setValue, getValues, setError, intl]
     );

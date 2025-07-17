@@ -83,16 +83,16 @@ export interface TabularCreationFields {
 }
 
 const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularCreationField[] = [
-    { id: REACTIVE_CAPABILITY_CURVE, required: true },
-    { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false },
-    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false },
+    { id: REACTIVE_CAPABILITY_CURVE, required: true, type: BOOLEAN },
+    { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_P_0, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_P_MAX, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, required: false, type: NUMBER },
+    { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false, type: NUMBER },
 ];
 
 export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
@@ -189,7 +189,7 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
             type: ENUM,
             options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
         },
-        { id: CONNECTION_POSITION, required: false },
+        { id: CONNECTION_POSITION, required: false, type: NUMBER },
         { id: MAXIMUM_SECTION_COUNT, required: true, type: NUMBER },
         { id: SECTION_COUNT, required: true, type: NUMBER },
         {
@@ -374,7 +374,7 @@ export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; opti
 
     switch (fieldDefinition.type) {
         case BOOLEAN:
-            if (value !== true && value !== false) {
+            if (typeof value !== 'boolean') {
                 return false;
             }
             break;
@@ -405,7 +405,8 @@ export const setFieldTypeErrorIfNeeded = (
     expectedTypeForFieldInError: string,
     tableName: string,
     setError: (tableName: string, error: { type: string; message?: string }) => void,
-    intl: IntlShape
+    intl: IntlShape,
+    expectedValues?: string[]
 ) => {
     if (fieldTypeInError !== '') {
         if (expectedTypeForFieldInError === ENUM) {
@@ -417,6 +418,7 @@ export const setFieldTypeErrorIfNeeded = (
                     },
                     {
                         field: intl.formatMessage({ id: fieldTypeInError }),
+                        expectedValues: expectedValues?.join(', ') ?? '',
                     }
                 ),
             });

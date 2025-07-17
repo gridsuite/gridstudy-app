@@ -1314,7 +1314,7 @@
     "FieldRequired": "At least one value is missing for required field : \"{requiredFieldNameInError}\"",
     "DependantFieldMissing": "\"{requiredField}\" is required if the following field is set : \"{dependantField}\"",
     "WrongFieldType": "\"{field}\" should be of type {type}",
-    "WrongEnumValue": "At least one value is unexpected for field : \"{field}\"",
+    "WrongEnumValue": "At least one value is unexpected for field : \"{field}\", expected values : {expectedValues}",
     "fieldType.boolean": "boolean (true/false)",
     "fieldType.number": "numerical",
     "TieLines": "Tie lines",

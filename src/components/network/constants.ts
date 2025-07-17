@@ -183,6 +183,7 @@ export const REGULATING_TERMINAL_TYPES = [
     'STATIC_VAR_COMPENSATOR',
     'DANGLING_LINE',
     'HVDC_CONVERTER_STATION',
+    'BUSBAR_SECTION',
 ];
 
 export const NUMBER = 'number';

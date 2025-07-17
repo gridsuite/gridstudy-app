@@ -65,6 +65,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             clearErrors(MODIFICATIONS_TABLE);
             let fieldTypeInError: string = '';
             let expectedTypeForFieldInError: string = '';
+            let expectedValues: string[] | undefined;
 
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
@@ -76,6 +77,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                     if (!isFieldTypeOk(result[key], fieldDef)) {
                         fieldTypeInError = key;
                         expectedTypeForFieldInError = fieldDef?.type ?? '';
+                        expectedValues = fieldDef?.options;
                         return false;
                     }
                     return true;
@@ -92,7 +94,8 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 expectedTypeForFieldInError,
                 MODIFICATIONS_TABLE,
                 setError,
-                intl
+                intl,
+                expectedValues
             );
             setIsFetching(false);
             // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
