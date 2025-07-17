@@ -520,7 +520,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     targetV: getValueOrDefault(TARGET_V),
                     targetDeadband: getValueOrDefault(TARGET_DEADBAND),
-                    regulationMode: getValueOrDefault(REGULATION_MODE),
                     regulationType: getValueOrDefault(REGULATION_TYPE),
                 };
             }
