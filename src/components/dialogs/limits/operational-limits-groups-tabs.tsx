@@ -195,6 +195,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 };
                 const newLimitsGroup: OperationalLimitsGroup = {
                     [ID]: id,
+                    [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [CURRENT_LIMITS]: {
                         [TEMPORARY_LIMITS]: [
                             emptyTemporaryLimit,
@@ -204,7 +205,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                             emptyTemporaryLimit,
                         ],
                         [PERMANENT_LIMIT]: null,
-                        [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     },
                 };
                 setValue(formName, [newLimitsGroup, ...getValues(formName)]);

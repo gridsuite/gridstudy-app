@@ -230,7 +230,7 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups1,
+                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups,
                     [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
                     [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
@@ -283,7 +283,7 @@ const LineCreationDialog = ({
                 busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                limitsGroups1: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
                 selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
                 isUpdate: !!editData,

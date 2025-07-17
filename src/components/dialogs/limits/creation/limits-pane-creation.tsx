@@ -118,6 +118,7 @@ export function LimitsPaneCreation({
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id + 'leftPanel'}
                                         limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}`}
+                                        limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
                                             getCurrentLimits1(equipmentToModify)?.permanentLimit

@@ -38,6 +38,7 @@ import { APPLICABILITY } from '../../network/constants';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
+    limitsGroupApplicabilityName?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
     applicabilityPreviousValue?: string;
@@ -49,6 +50,7 @@ export interface LimitsSidePaneProps {
 
 export function LimitsSidePane({
     limitsGroupFormName,
+    limitsGroupApplicabilityName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
     applicabilityPreviousValue,
@@ -195,7 +197,7 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
-            {!onlySelectedLimitsGroup && (
+            {!onlySelectedLimitsGroup && limitsGroupApplicabilityName && (
                 <>
                     <GridSection title={selectedLimitSetId ?? ''} formatDisabled />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
@@ -205,7 +207,7 @@ export function LimitsSidePane({
                         <Grid item xs={2}>
                             <SelectInput
                                 options={Object.values(APPLICABILITY)}
-                                name={`${limitsGroupFormName}.${APPLICABIlITY}`}
+                                name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
                                 previousValue={applicabilityPreviousValue}
                                 sx={{ flexGrow: 1 }}
                                 size="small"

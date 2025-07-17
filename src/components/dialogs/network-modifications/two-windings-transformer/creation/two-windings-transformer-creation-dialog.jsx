@@ -249,7 +249,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups1,
+                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups,
                     selectedOperationalLimitsGroup1: twt.selectedOperationalLimitsGroup1 ?? null,
                     selectedOperationalLimitsGroup2: twt.selectedOperationalLimitsGroup2 ?? null,
                 }),
@@ -540,7 +540,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratedS: characteristics[RATED_S] ?? '',
                 ratedU1: characteristics[RATED_U1],
                 ratedU2: characteristics[RATED_U2],
-                limitsGroups1: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
                 selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
                 voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
