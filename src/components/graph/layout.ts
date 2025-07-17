@@ -7,7 +7,12 @@
 
 import { NodePlacement } from './layout.type';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
-import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
+import {
+    CurrentTreeNode,
+    isSecurityModificationNode,
+    ModificationNode,
+    NetworkModificationNodeType,
+} from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -159,7 +164,7 @@ function getColumnsByRows(
     resetSticky(getMax);
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
-        if (!nodePlacement) {
+        if (!nodePlacement || !node.parentId) {
             return;
         }
         // Security nodes are grouped together and enclosed in a rectangle. Each of those rectangles
@@ -170,7 +175,7 @@ function getColumnsByRows(
         if (isSecurityModificationNode(node)) {
             // This test determines if we changed from a security group to another. If this is the case,
             // we reset the sticky value to only update rows for the new group and not the old one.
-            if (!isSecurityModificationNode(nodeMap.get(node.parentId!)?.node)) {
+            if (!isSecurityModificationNode(nodeMap.get(node.parentId)?.node)) {
                 resetSticky(getMax);
             }
 
