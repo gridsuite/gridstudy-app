@@ -259,6 +259,7 @@ import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import {
     CurrentTreeNode,
+    NetworkModificationNodeInfos,
     NetworkModificationNodeData,
     NetworkModificationNodeType,
     RootNodeData,
@@ -395,7 +396,7 @@ export type NodeSelectionForCopy = {
     nodeId: UUID | null;
     nodeType: NetworkModificationNodeType | undefined;
     copyType: ValueOf<typeof CopyType> | null;
-    allChildrenIds: string[] | null;
+    allChildren: NetworkModificationNodeInfos[] | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -564,7 +565,7 @@ const initialState: AppState = {
         nodeId: null,
         nodeType: undefined,
         copyType: null,
-        allChildrenIds: null,
+        allChildren: null,
     },
     tables: initialTablesState,
     calculationSelections: {},
@@ -1131,20 +1132,18 @@ export const reducer = createReducer(initialState, (builder) => {
                 nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
                 nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT
             ) {
-                nodeSelectionForCopy.allChildrenIds = getAllChildren(
+                nodeSelectionForCopy.allChildren = getAllChildren(
                     state.networkModificationTreeModel,
                     nodeSelectionForCopy.nodeId
-                ).map((child) => child.id);
+                ).map((child) => ({
+                    id: child.id,
+                    nodeType: child.data.nodeType,
+                }));
             }
-            if (
-                nodeSelectionForCopy.copyType === CopyType.NODE_COPY ||
-                nodeSelectionForCopy.copyType === CopyType.NODE_CUT
-            ) {
-                nodeSelectionForCopy.nodeType = getNetworkModificationNode(
-                    state.networkModificationTreeModel,
-                    nodeSelectionForCopy.nodeId
-                )?.data.nodeType;
-            }
+            nodeSelectionForCopy.nodeType = getNetworkModificationNode(
+                state.networkModificationTreeModel,
+                nodeSelectionForCopy.nodeId
+            )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
