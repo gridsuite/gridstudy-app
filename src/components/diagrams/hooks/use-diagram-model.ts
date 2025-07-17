@@ -59,7 +59,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const [diagramErrors, setDiagramErrors] = useState<Record<UUID, string>>({});
     const [globalError, setGlobalError] = useState<string | null>(null);
 
-    const MAX_NUMBER_OF_NAD_DIAGRAMS = 4;
+    const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
 
     // Note: This function is mainly used to prevent double fetch when using the PositionDiagram
     const filterDiagramParams = useCallback(
