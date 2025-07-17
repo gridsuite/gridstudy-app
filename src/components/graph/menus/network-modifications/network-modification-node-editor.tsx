@@ -228,6 +228,7 @@ const NetworkModificationNodeEditor = () => {
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
                 equipmentType={equipmentType}
+                defaultIdValue={null}
             />
         );
     }
@@ -575,7 +576,9 @@ const NetworkModificationNodeEditor = () => {
         },
     ];
 
-    const subMenuItemsList = menuDefinition.reduce<(MenuDefinitionWithoutSubItem | MenuDefinitionSubItem | MenuDefinitionDivider)[]>(
+    const subMenuItemsList = menuDefinition.reduce<
+        (MenuDefinitionWithoutSubItem | MenuDefinitionSubItem | MenuDefinitionDivider)[]
+    >(
         (actions, currentMenuItem) =>
             !('subItems' in currentMenuItem)
                 ? [...actions, currentMenuItem]
