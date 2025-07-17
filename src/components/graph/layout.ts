@@ -144,12 +144,13 @@ function getColumnsByRows(
     let stickyValue: number;
     let rowsToRetroactivelyUpdateWithStickyValue = [];
 
-    function isExtreme(getMax: boolean, contender: number, competition: number) {
+    function isExtreme(contender: number, competition: number | undefined): boolean {
+        if (competition === undefined) {
+            return true;
+        }
         return getMax ? contender > competition : contender < competition;
     }
-    function extreme(getMax: boolean, a: number, b: number) {
-        return getMax ? Math.max(a, b) : Math.min(a, b);
-    }
+
     function resetSticky(getMax: boolean) {
         stickyValue = getMax ? -Infinity : Infinity;
         rowsToRetroactivelyUpdateWithStickyValue.length = 0;
@@ -158,42 +159,41 @@ function getColumnsByRows(
     resetSticky(getMax);
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
-        if (nodePlacement) {
-            // Security nodes are grouped together and enclosed in a rectangle. Each of those rectangles
-            // must not be overlapped by the compression algorithm. To do so, when we are in a security
-            // group of nodes, we consider that every row of this security group has the extreme value
-            // of the whole group, and when we assign a new extreme, we do so to all the rows of the group.
+        if (!nodePlacement) {
+            return;
+        }
+        // Security nodes are grouped together and enclosed in a rectangle. Each of those rectangles
+        // must not be overlapped by the compression algorithm. To do so, when we are in a security
+        // group of nodes, we consider that every row of this security group has the extreme value
+        // of the whole group, and when we assign a new extreme, we do so to all the rows of the group.
 
-            if (isSecurityModificationNode(node)) {
-                // This test determines if we changed from a security group to another. If this is the case,
-                // we reset the sticky value to only update rows for the new group and not the old one.
-                if (!isSecurityModificationNode(nodeMap.get(node.parentId!)?.node)) {
-                    resetSticky(getMax);
-                }
-
-                // We mark each row of a security group in order to update them all when we find a new extreme.
-                rowsToRetroactivelyUpdateWithStickyValue.push(nodePlacement.row);
-
-                let contender = extreme(getMax, stickyValue, nodePlacement.column);
-                if (
-                    !columnsByRow.has(nodePlacement.row) ||
-                    isExtreme(getMax, contender, columnsByRow.get(nodePlacement.row)!)
-                ) {
-                    rowsToRetroactivelyUpdateWithStickyValue.forEach((row) => {
-                        columnsByRow.set(row, contender);
-                    });
-                }
-                stickyValue = contender;
-            } else {
+        if (isSecurityModificationNode(node)) {
+            // This test determines if we changed from a security group to another. If this is the case,
+            // we reset the sticky value to only update rows for the new group and not the old one.
+            if (!isSecurityModificationNode(nodeMap.get(node.parentId!)?.node)) {
                 resetSticky(getMax);
+            }
 
-                let contender = nodePlacement.column;
-                if (
-                    !columnsByRow.has(nodePlacement.row) ||
-                    isExtreme(getMax, contender, columnsByRow.get(nodePlacement.row)!)
-                ) {
-                    columnsByRow.set(nodePlacement.row, contender);
-                }
+            // We mark each row of a security group in order to update them all when we find a new extreme.
+            rowsToRetroactivelyUpdateWithStickyValue.push(nodePlacement.row);
+
+            const contender = getMax
+                ? Math.max(stickyValue, nodePlacement.column)
+                : Math.min(stickyValue, nodePlacement.column);
+
+            if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+                rowsToRetroactivelyUpdateWithStickyValue.forEach((row) => {
+                    columnsByRow.set(row, contender);
+                });
+            }
+
+            stickyValue = contender;
+        } else {
+            resetSticky(getMax);
+
+            const contender = nodePlacement.column;
+            if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+                columnsByRow.set(nodePlacement.row, contender);
             }
         }
     });
