@@ -7,12 +7,7 @@
 
 import { NodePlacement } from './layout.type';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
-import {
-    CurrentTreeNode,
-    isSecurityModificationNode,
-    ModificationNode,
-    NetworkModificationNodeType,
-} from './tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -296,7 +291,7 @@ function compressTreePlacements(
     for (let i = nodes.length - 1; i >= 0; i--) {
         const node = nodes[i];
         const children = childrenMap.get(node.id) || [];
-        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) || 0), 0);
+        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) ?? 0), 0);
         subTreeSizeMap.set(node.id, 1 + childrenSize);
     }
 
