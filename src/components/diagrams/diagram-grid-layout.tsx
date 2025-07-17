@@ -136,14 +136,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     };
 
     const removeLayoutItem = (cardUuid: UUID) => {
-        setLayouts((old_layouts) => {
-            const oldLayoutsEntries = Object.entries(old_layouts);
-            if (oldLayoutsEntries.at(0)?.[1].length === 2) {
-                return initialLayouts; // Reset to initial layouts if no diagrams left
-            }
-            const newLayoutsEntries = removeInLayoutEntries(oldLayoutsEntries, cardUuid);
-            return Object.fromEntries(newLayoutsEntries);
-        });
+        setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
     };
 
     const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
