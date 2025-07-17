@@ -138,7 +138,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const removeLayoutItem = (cardUuid: UUID) => {
         setLayouts((old_layouts) => {
             const oldLayoutsEntries = Object.entries(old_layouts);
-            if (oldLayoutsEntries.pop()?.[1].length === 2) {
+            if (oldLayoutsEntries.at(0)?.[1].length === 2) {
                 return initialLayouts; // Reset to initial layouts if no diagrams left
             }
             const newLayoutsEntries = removeInLayoutEntries(oldLayoutsEntries, cardUuid);
