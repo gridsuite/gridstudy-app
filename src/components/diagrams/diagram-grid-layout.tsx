@@ -310,6 +310,18 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, []);
 
+    const handleVoltageLevelClick = useCallback(
+        (vlId: string): void => {
+            createDiagram({
+                diagramUuid: v4() as UUID,
+                type: DiagramType.VOLTAGE_LEVEL,
+                voltageLevelId: vlId,
+                name: '',
+            });
+        },
+        [createDiagram]
+    );
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -358,6 +370,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                     diagramSizeSetter={setDiagramSize}
                                     visible={visible}
+                                    onNextVoltageLevelClick={handleVoltageLevelClick}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -387,6 +400,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     onExpandAllVoltageLevels={() => handleExpandAllVoltageLevels(diagram.diagramUuid)}
                                     onHideVoltageLevel={(vlId) => handleHideVoltageLevelId(diagram.diagramUuid, vlId)}
                                     onMoveNode={(vlId, x, y) => handleMoveNode(diagram.diagramUuid, vlId, x, y)}
+                                    onVoltageLevelClick={handleVoltageLevelClick}
                                     customPositions={diagram.positions}
                                 />
                             )}
@@ -408,6 +422,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         handleExpandVoltageLevelId,
         handleHideVoltageLevelId,
         handleMoveNode,
+        handleVoltageLevelClick,
         onRemoveCard,
         setDiagramSize,
         showInSpreadsheet,

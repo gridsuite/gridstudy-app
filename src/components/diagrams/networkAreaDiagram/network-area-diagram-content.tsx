@@ -35,7 +35,6 @@ import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMe
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
-
 import NodeContextMenu from './node-context-menu';
 
 const equipmentsWithPopover = [
@@ -62,6 +61,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
+    readonly onVoltageLevelClick: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -75,6 +75,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
         onHideVoltageLevel,
+        onVoltageLevelClick,
         onMoveNode,
     } = props;
     const svgRef = useRef();
@@ -144,12 +145,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
         (equipmentId, nodeId, mousePosition) => {
             if (mousePosition && !props.loadingState) {
-                setSelectedVoltageLevelId(equipmentId);
-                setShouldDisplayMenu(true);
-                setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+                if (isEditNadMode) {
+                    setSelectedVoltageLevelId(equipmentId);
+                    setShouldDisplayMenu(true);
+                    setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
+                } else {
+                    onVoltageLevelClick(equipmentId);
+                }
             }
         },
-        [props.loadingState]
+        [isEditNadMode, onVoltageLevelClick, props.loadingState]
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
@@ -196,7 +201,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 OnLeftClickCallback,
-                isEditNadMode,
+                true,
                 true,
                 NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
