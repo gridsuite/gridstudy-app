@@ -94,6 +94,7 @@ import {
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from '../../../network/constants';
+import { PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
 
 export interface TabularModificationField {
     id: string;
@@ -365,7 +366,11 @@ export const convertGeneratorOrBatteryModificationFromFrontToBack = (modificatio
         }
     });
     Object.keys(formattedModification).forEach((key) => {
-        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS) {
+        if (
+            key !== REACTIVE_CAPABILITY_CURVE_POINTS &&
+            !key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) &&
+            formattedModification[key]?.length
+        ) {
             formattedModification[key] = convertOutputValues(key, formattedModification[key]);
         }
     });

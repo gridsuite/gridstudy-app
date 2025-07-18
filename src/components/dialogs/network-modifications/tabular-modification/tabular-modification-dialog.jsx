@@ -29,6 +29,7 @@ import {
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
+import { PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils.js';
 
 const formSchema = yup
     .object()
@@ -109,6 +110,19 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
+                let propertiesModifications = [];
+                Object.keys(row).forEach((key) => {
+                    if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+                        // if a value is set for a "property_*" column and the current row
+                        propertiesModifications.push({
+                            name: key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''),
+                            value: row[key],
+                            previousValue: row[key],
+                            added: false,
+                            deletionMark: false,
+                        });
+                    }
+                });
                 if (
                     modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
                     modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
@@ -120,8 +134,13 @@ const TabularModificationDialog = ({
                     };
                 } else {
                     Object.keys(row).forEach((key) => {
-                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+                        if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+                            modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+                        }
                     });
+                }
+                if (propertiesModifications.length > 0) {
+                    modification['properties'] = propertiesModifications;
                 }
                 return modification;
             });
@@ -169,7 +188,7 @@ const TabularModificationDialog = ({
                 isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm dataFetching={dataFetching} />
+                <TabularModificationForm dataFetching={dataFetching} isUpdate={isUpdate} />
             </ModificationDialog>
         </CustomFormProvider>
     );

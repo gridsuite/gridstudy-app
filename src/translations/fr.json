@@ -973,6 +973,9 @@
     "InvalidRuleHeader": "Le fichier n'a pas le bon en-tête, veuillez vous référer au modèle",
     "uploadMessage": " Aucun fichier sélectionné",
 
+    "DefinePropertiesButton": "Définir propriétés",
+    "DefinePropertiesTitle": "Définir des propriétés complémentaires",
+
     "G": "Conductance magnétisante",
     "B": "Susceptance magnétisante",
     "RatedVoltage": "Tension d'enroulement",

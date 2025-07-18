@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LANG_FRENCH, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import {
+    EquipmentType,
+    equipmentTypesForPredefinedPropertiesMapper,
+    LANG_FRENCH,
+    MODIFICATION_TYPES,
+    PredefinedProperties,
+} from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
@@ -69,6 +75,7 @@ import {
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from '../../../network/constants';
+import { Property } from '../tabular-modification/properties/property-utils';
 
 export interface TabularCreationField {
     id: string;
@@ -324,12 +331,18 @@ export const styles = {
     grid: { height: 500, width: '100%' },
 };
 
+export type PredefinedEquipmentProperties = {
+    [p: string]: PredefinedProperties;
+};
+
 interface CommentLinesConfig {
     csvTranslatedColumns?: string[];
     intl: IntlShape;
     equipmentType: string;
     language: string;
     formType: 'Creation' | 'Modification';
+    currentProperties?: Property[];
+    predefinedEquipmentProperties?: PredefinedEquipmentProperties;
 }
 
 export const generateCommentLines = ({
@@ -338,21 +351,40 @@ export const generateCommentLines = ({
     equipmentType,
     language,
     formType,
+    currentProperties,
+    predefinedEquipmentProperties,
 }: CommentLinesConfig): string[][] => {
     let commentData: string[][] = [];
     if (csvTranslatedColumns) {
+        const separator = language === LANG_FRENCH ? ';' : ',';
         // First comment line contains header translation
-        commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
+        commentData.push(['#' + csvTranslatedColumns.join(separator)]);
 
-        // Check for optional second comment line from translation file
+        // Check for optional second comment line from the translation file
+        let secondCommentLine: string = '';
         const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
-
         if (!!intl.messages[commentKey]) {
-            commentData.push([
-                intl.formatMessage({
-                    id: commentKey,
-                }),
-            ]);
+            secondCommentLine = intl.formatMessage({ id: commentKey });
+        }
+        const activeProperties = currentProperties?.filter((p) => p.selected).map((p) => p.name);
+        if (predefinedEquipmentProperties && activeProperties) {
+            const networkEquipmentType = equipmentTypesForPredefinedPropertiesMapper(equipmentType as EquipmentType);
+            if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
+                if (secondCommentLine.length === 0) {
+                    const nbSepatator = csvTranslatedColumns.length - 1;
+                    secondCommentLine = separator.repeat(nbSepatator);
+                }
+                activeProperties.forEach((propertyName) => {
+                    const possibleValues =
+                        predefinedEquipmentProperties[networkEquipmentType]?.[propertyName]?.sort((a, b) =>
+                            a.localeCompare(b)
+                        ) ?? [];
+                    secondCommentLine = secondCommentLine + separator + possibleValues.join('|');
+                });
+            }
+        }
+        if (secondCommentLine.length > 0) {
+            commentData.push([secondCommentLine]);
         }
     }
     return commentData;
