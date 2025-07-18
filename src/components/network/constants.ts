@@ -62,7 +62,7 @@ export const SIDE = {
 } as const;
 
 export const APPLICABILITY = {
-    EQUIPMENT: { id: 'EQUIPMENT', label: 'Equipment' },
+    EQUIPMENT: { id: 'EQUIPMENT', label: 'BothSides' },
     SIDE1: { id: 'SIDE1', label: 'Side1' },
     SIDE2: { id: 'SIDE2', label: 'Side2' },
 };
