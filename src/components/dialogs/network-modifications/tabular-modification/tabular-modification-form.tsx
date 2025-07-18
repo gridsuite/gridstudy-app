@@ -41,7 +41,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import {
     generateCommentLines,
-    setFieldTypeErrorIfNeeded,
+    setFieldTypeError,
     transformIfFrenchNumber,
     isFieldTypeOk,
 } from '../tabular-creation/tabular-creation-utils';
@@ -67,36 +67,30 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             let expectedTypeForFieldInError: string = '';
             let expectedValues: string[] | undefined;
 
-            results.data.every((result) => {
-                Object.keys(result).every((key) => {
-                    const fieldDef = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find((field) => {
-                        return field.id === key;
-                    });
+            // check if the csv contains an error
+            if(results.data.flatMap(Object.entries).some(([key, value]) => {
+                const fieldDef = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
+                // check the field types
+                if (!isFieldTypeOk(value, fieldDef)) {
+                    fieldTypeInError = key;
+                    expectedTypeForFieldInError = fieldDef?.type ?? '';
+                    expectedValues = fieldDef?.options;
+                    return true; // “yes, we found an error here” → break some() loop
+                }
+                return false; // keep looking
+            })) {
+                setFieldTypeError(
+                    fieldTypeInError,
+                    expectedTypeForFieldInError,
+                    MODIFICATIONS_TABLE,
+                    setError,
+                    intl,
+                    expectedValues
+                );
+            }
 
-                    // check the field types
-                    if (!isFieldTypeOk(result[key], fieldDef)) {
-                        fieldTypeInError = key;
-                        expectedTypeForFieldInError = fieldDef?.type ?? '';
-                        expectedValues = fieldDef?.options;
-                        return false;
-                    }
-                    return true;
-                });
-                return fieldTypeInError !== '';
-            });
+            setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
 
-            setValue(MODIFICATIONS_TABLE, results.data, {
-                shouldDirty: true,
-            });
-
-            setFieldTypeErrorIfNeeded(
-                fieldTypeInError,
-                expectedTypeForFieldInError,
-                MODIFICATIONS_TABLE,
-                setError,
-                intl,
-                expectedValues
-            );
             setIsFetching(false);
             // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
@@ -106,9 +100,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                         (modification.shuntCompensatorType || modification.maxQAtNominalV)
                 )
             ) {
-                snackWarning({
-                    messageId: 'TabularModificationShuntWarning',
-                });
+                snackWarning({ messageId: 'TabularModificationShuntWarning' });
             }
         },
         [clearErrors, setValue, snackWarning, getValues, setError, intl]
@@ -118,11 +110,10 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
         name: TYPE,
     });
 
-    const csvColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field: TabularModificationField) => {
-            return field.id;
-        });
-    }, [equipmentType]);
+    const csvColumns = useMemo(
+        () => TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field: TabularModificationField) => field.id),
+        [equipmentType]
+    );
 
     const csvTranslatedColumns = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {

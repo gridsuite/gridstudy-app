@@ -400,7 +400,7 @@ export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; opti
     return true;
 };
 
-export const setFieldTypeErrorIfNeeded = (
+export const setFieldTypeError = (
     fieldTypeInError: string,
     expectedTypeForFieldInError: string,
     tableName: string,
@@ -408,35 +408,27 @@ export const setFieldTypeErrorIfNeeded = (
     intl: IntlShape,
     expectedValues?: string[]
 ) => {
-    if (fieldTypeInError !== '') {
-        if (expectedTypeForFieldInError === ENUM) {
-            setError(tableName, {
-                type: 'custom',
-                message: intl.formatMessage(
-                    {
-                        id: 'WrongEnumValue',
-                    },
-                    {
-                        field: intl.formatMessage({ id: fieldTypeInError }),
-                        expectedValues: expectedValues?.join(', ') ?? '',
-                    }
-                ),
-            });
-        } else {
-            setError(tableName, {
-                type: 'custom',
-                message: intl.formatMessage(
-                    {
-                        id: 'WrongFieldType',
-                    },
-                    {
-                        field: intl.formatMessage({ id: fieldTypeInError }),
-                        type: intl.formatMessage({
-                            id: `fieldType.${expectedTypeForFieldInError}`,
-                        }),
-                    }
-                ),
-            });
-        }
+    if (expectedTypeForFieldInError === ENUM) {
+        setError(tableName, {
+            type: 'custom',
+            message: intl.formatMessage(
+                { id: 'WrongEnumValue' },
+                {
+                    field: intl.formatMessage({ id: fieldTypeInError }),
+                    expectedValues: expectedValues?.join(', ') ?? '',
+                }
+            ),
+        });
+    } else {
+        setError(tableName, {
+            type: 'custom',
+            message: intl.formatMessage(
+                { id: 'WrongFieldType' },
+                {
+                    field: intl.formatMessage({ id: fieldTypeInError }),
+                    type: intl.formatMessage({ id: `fieldType.${expectedTypeForFieldInError}` }),
+                }
+            ),
+        });
     }
 };

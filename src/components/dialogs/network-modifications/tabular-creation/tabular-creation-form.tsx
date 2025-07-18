@@ -28,7 +28,7 @@ import {
     generateCommentLines,
     transformIfFrenchNumber,
     isFieldTypeOk,
-    setFieldTypeErrorIfNeeded,
+    setFieldTypeError,
 } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
@@ -61,94 +61,74 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             let expectedTypeForFieldInError: string = '';
             let expectedValues: string[] | undefined;
 
-            results.data.every((result) => {
-                Object.keys(result).every((key) => {
-                    const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
-                        return field.id === key;
-                    });
-                    // check required fields are defined
+            // check if the csv contains an error
+            if(results.data.flatMap(result => Object.entries(result).map(([key, value]) => [result, key, value])).some(([result, key, value]) => {result;
+                const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key );
+                // check required fields are defined
+                if (
+                    fieldDef !== undefined &&
+                    fieldDef.required &&
+                    (value === undefined || value === null)
+                ) {
+                    requiredFieldNameInError = key;
+                    return true; // “yes, we found an error here” → break loop
+                }
+
+                //check requiredIf rule
+                if (fieldDef?.requiredIf) {
+                    const dependentValue = result[fieldDef.requiredIf.id];
                     if (
-                        fieldDef !== undefined &&
-                        fieldDef.required &&
-                        (result[key] === undefined || result[key] === null)
+                        dependentValue !== undefined &&
+                        dependentValue !== null &&
+                        (value === undefined || value === null)
                     ) {
-                        requiredFieldNameInError = key;
-                        return false;
+                        dependantFieldNameInError = key;
+                        requiredDependantFieldNameInError = fieldDef.requiredIf.id;
+                        return true; // “yes, we found an error here” → break loop
                     }
+                }
 
-                    //check requiredIf rule
-                    if (fieldDef?.requiredIf) {
-                        const dependentValue = result[fieldDef.requiredIf.id];
-                        if (
-                            dependentValue !== undefined &&
-                            dependentValue !== null &&
-                            (result[key] === undefined || result[key] === null)
-                        ) {
-                            dependantFieldNameInError = key;
-                            requiredDependantFieldNameInError = fieldDef.requiredIf.id;
-                            return false;
-                        }
-                    }
-
-                    // check the field types
-                    if (!isFieldTypeOk(result[key], fieldDef)) {
-                        fieldTypeInError = key;
-                        expectedTypeForFieldInError = fieldDef?.type ?? '';
-                        expectedValues = fieldDef?.options;
-                        return false;
-                    }
-                    return true;
-                });
-                return (
-                    requiredFieldNameInError !== '' ||
-                    dependantFieldNameInError !== '' ||
-                    requiredDependantFieldNameInError !== '' ||
-                    fieldTypeInError !== ''
+                // check the field types
+                if (!isFieldTypeOk(value, fieldDef)) {
+                    fieldTypeInError = key;
+                    expectedTypeForFieldInError = fieldDef?.type ?? '';
+                    expectedValues = fieldDef?.options;
+                    return true; // “yes, we found an error here” → break loop
+                }
+                return false; // keep looking
+            })) {
+                if (requiredFieldNameInError !== '') {
+                    setError(CREATIONS_TABLE, {
+                        type: 'custom',
+                        message: intl.formatMessage(
+                            { id: 'FieldRequired' },
+                            { requiredFieldNameInError: intl.formatMessage({ id: requiredFieldNameInError }) }
+                        ),
+                    });
+                }
+                if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                    setError(CREATIONS_TABLE, {
+                        type: 'custom',
+                        message: intl.formatMessage(
+                            { id: 'DependantFieldMissing' },
+                            {
+                                requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
+                                dependantField: intl.formatMessage({ id: requiredDependantFieldNameInError }),
+                            }
+                        ),
+                    });
+                }
+                setFieldTypeError(
+                    fieldTypeInError,
+                    expectedTypeForFieldInError,
+                    CREATIONS_TABLE,
+                    setError,
+                    intl,
+                    expectedValues
                 );
-            });
-            setValue(CREATIONS_TABLE, results.data, {
-                shouldDirty: true,
-            });
+            }
+            setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
             setIsFetching(false);
-            if (requiredFieldNameInError !== '') {
-                setError(CREATIONS_TABLE, {
-                    type: 'custom',
-                    message: intl.formatMessage(
-                        {
-                            id: 'FieldRequired',
-                        },
-                        {
-                            requiredFieldNameInError: intl.formatMessage({
-                                id: requiredFieldNameInError,
-                            }),
-                        }
-                    ),
-                });
-            }
-            if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
-                setError(CREATIONS_TABLE, {
-                    type: 'custom',
-                    message: intl.formatMessage(
-                        {
-                            id: 'DependantFieldMissing',
-                        },
-                        {
-                            requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
-                            dependantField: intl.formatMessage({
-                                id: requiredDependantFieldNameInError,
-                            }),
-                        }
-                    ),
-                });
-            }
-            setFieldTypeErrorIfNeeded(
-                fieldTypeInError,
-                expectedTypeForFieldInError,
-                CREATIONS_TABLE,
-                setError,
-                intl,
-                expectedValues
-            );
         },
         [clearErrors, setValue, getValues, setError, intl]
     );
