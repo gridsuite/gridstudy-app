@@ -99,8 +99,6 @@ const EquipmentDeletionDialog = ({
     );
 
     useEffect(() => {
-        console.log('test');
-        console.log(equipmentType);
         if (editData) {
             fromEditDataToFormValues(editData);
         } else if (defaultIdValue) {
