@@ -18,7 +18,7 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 
 const styles = {
     card: (theme: Theme) => ({
