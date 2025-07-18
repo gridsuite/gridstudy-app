@@ -66,8 +66,8 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             if (
                 results.data.some(
                     (modification) =>
-                        modification.maxSusceptance &&
-                        (modification.shuntCompensatorType || modification.maxQAtNominalV)
+                        modification.maxSusceptance != null &&
+                        (modification.shuntCompensatorType || modification.maxQAtNominalV != null)
                 )
             ) {
                 snackWarning({

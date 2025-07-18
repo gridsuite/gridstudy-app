@@ -582,6 +582,7 @@
     "ImportModifications": "Import modifications",
     "TabularModificationError": "Error while creating tabular modification",
     "TabularModificationShuntWarning": "Both maximum reactive power (and/or type) and maximum susceptance have been submitted for the same shunt compensator. Maximum susceptance will thus be ignored.",
+    "TabularCreationShuntWarning": "Both maximum reactive power (and/or type) and maximum susceptance have been submitted for the same shunt compensator. Maximum susceptance will thus be ignored.",
     "equipmentId": "ID",
     "substationName": "Substation name",
     "activePower": "p (MW)",

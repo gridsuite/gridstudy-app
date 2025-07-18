@@ -579,6 +579,7 @@
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
+    "TabularCreationShuntWarning": "La création tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
     "substationName": "Nom du site",
     "activePower": "p (MW)",
