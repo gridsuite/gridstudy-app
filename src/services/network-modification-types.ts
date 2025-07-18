@@ -263,6 +263,7 @@ export interface TwoWindingsTransformerModificationInfo {
 
 export interface OperationalLimitsGroup {
     id: string;
+    applicability?: string;
     currentLimits: CurrentLimits;
 }
 
@@ -519,8 +520,7 @@ export interface LineCreationInfo {
     busOrBusbarSectionId2: string;
     permanentCurrentLimit1: number;
     permanentCurrentLimit2: number;
-    limitsGroups1: OperationalLimitsGroup[];
-    limitsGroups2: OperationalLimitsGroup[];
+    limitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
     isUpdate: boolean;
@@ -587,8 +587,7 @@ export interface TwoWindingsTransformerCreationInfo {
     ratedS: number | null;
     ratedU1: number;
     ratedU2: number;
-    limitsGroups1: OperationalLimitsGroup[];
-    limitsGroups2: OperationalLimitsGroup[];
+    limitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
     voltageLevelId1: string;
