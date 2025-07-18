@@ -24,8 +24,10 @@ const spreadsheetEn = {
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',
     'spreadsheet/custom_column/error/name_le_60': 'Column name must be at most 60 characters',
-    'spreadsheet/custom_column/update_custom_column': 'Update column',
-    'spreadsheet/custom_column/delete_custom_column': 'Delete column',
+    'spreadsheet/custom_column/update_custom_column': 'Update',
+    'spreadsheet/custom_column/delete_custom_column': 'Delete',
+    'spreadsheet/custom_column/duplicate_custom_column': 'Duplicate',
+    'spreadsheet/custom_column/duplicate_column_error': 'Error while duplicating column',
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Are you sure you want to delete the column "{columnName}"?',
     'spreadsheet/custom_column/delete_column_error': 'Error while deleting column',

@@ -105,6 +105,16 @@ export function deleteSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: U
     });
 }
 
+export function duplicateSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, columnUuid: UUID) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/${columnUuid}/duplicate`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, column: any) {
     const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns`;
     return backendFetchJson(url, {
