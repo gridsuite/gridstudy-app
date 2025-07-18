@@ -35,6 +35,7 @@ import type {
     SpreadsheetFilterState,
     TableSortKeysType,
     ComputingStatusParameters,
+    AppLayout,
 } from './reducer';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
@@ -1275,5 +1276,17 @@ export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT
 export function resetDiagramEvent(): ResetDiagramEventAction {
     return {
         type: RESET_DIAGRAM_EVENT,
+    };
+}
+
+export const SET_APP_LAYOUT_INIT = 'SET_APP_LAYOUT_INIT';
+export type SetAppLayoutInitAction = Readonly<Action<typeof SET_APP_LAYOUT_INIT>> & {
+    appLayoutInit: AppLayout;
+};
+
+export function setAppLayoutInit(appLayoutInit: AppLayout): SetAppLayoutInitAction {
+    return {
+        type: SET_APP_LAYOUT_INIT,
+        appLayoutInit: appLayoutInit,
     };
 }

@@ -197,6 +197,8 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SetComputingStatusParametersAction,
     ParameterizedComputingType,
+    SET_APP_LAYOUT_INIT,
+    SetAppLayoutInitAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -267,11 +269,12 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { Layouts } from 'react-grid-layout';
 import { DiagramConfigPosition } from '../services/explore';
 
 // Redux state
@@ -405,6 +408,15 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export interface DiagramLayout {
+    gridLayout: Layouts;
+    params: DiagramParams[];
+}
+
+export interface AppLayout {
+    diagram: DiagramLayout;
+}
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -490,6 +502,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
+    appLayoutInit: AppLayout;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -592,6 +605,12 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
+    appLayoutInit: {
+        diagram: {
+            gridLayout: {},
+            params: [],
+        },
+    },
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1567,6 +1586,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
+    });
+
+    builder.addCase(SET_APP_LAYOUT_INIT, (state, action: SetAppLayoutInitAction) => {
+        state.appLayoutInit = action.appLayoutInit;
     });
 });
 

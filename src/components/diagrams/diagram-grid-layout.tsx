@@ -16,13 +16,14 @@ import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-co
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
-import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
+import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
+import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
 import { useIntl } from 'react-intl';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -116,7 +117,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
-    const addLayoutItem = (diagram: Diagram) => {
+    const addLayoutItem = useCallback((diagram: Diagram) => {
         setLayouts((old_layouts) => {
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
@@ -133,7 +134,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             });
             return Object.fromEntries(newLayoutsEntries);
         });
-    };
+    }, []);
 
     const removeLayoutItem = (cardUuid: UUID) => {
         setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
@@ -201,6 +202,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         },
         [createDiagram]
     );
+
+    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
 
     const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
@@ -416,8 +419,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         intl,
     ]);
 
-    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
-        if (savedLayouts) {
+    const onLoadDiagramLayout = useCallback((savedLayouts: Layouts) => {
+        if (Object.keys(savedLayouts).length > 0) {
             const savedLayoutsEntries = Object.entries(savedLayouts);
             const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
                 const updatedLayouts = [...breakpoint_layouts];
@@ -435,7 +438,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         setIsMapCardAdded(true);
     }, []);
 
-    useDiagramsGridLayoutSessionStorage({ layouts, onLoadFromSessionStorage });
+    useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
     return (
         <ResponsiveGridLayout
@@ -477,6 +480,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                onLayoutSave={handleGridLayoutSave}
                 key={'Adder'}
             />
             {renderDiagrams()}
