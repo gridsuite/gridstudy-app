@@ -257,7 +257,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
+                        ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
+                        : PHASE_REGULATION_MODES.OFF.id,
                     regulationType: getRegulationTypeForEdit(twt, twt?.[PHASE_TAP_CHANGER]),
                     regulationSide: getTapSideForEdit(twt, twt?.[PHASE_TAP_CHANGER]),
                     currentLimiterRegulatingValue:
@@ -362,7 +364,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                         regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
                             ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
-                            : PHASE_REGULATION_MODES.FIXED_TAP.id,
+                            : PHASE_REGULATION_MODES.OFF.id,
                         regulationType: getRegulationTypeForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
                         regulationSide: getTapSideForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
                         currentLimiterRegulatingValue:
@@ -422,6 +424,14 @@ const TwoWindingsTransformerCreationDialog = ({
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
         );
+    };
+
+    const computeRegulationModeValue = (phaseTapChangerFormValues) => {
+        if (phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id) {
+            return null;
+        }
+
+        return phaseTapChangerFormValues?.[REGULATION_MODE];
     };
 
     const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues) => {
@@ -518,6 +528,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
+                    hasLoadTapChangingCapabilities: true,
                     isRegulating: computePhaseTapChangerRegulating(phaseTapChangerFormValues),
                     regulationValue: computePhaseTapChangerRegulationValue(phaseTapChangerFormValues),
                     regulatingTerminalId: computeRegulatingTerminalId(phaseTapChangerFormValues, twt[EQUIPMENT_ID]),
@@ -528,6 +539,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         characteristics[CONNECTIVITY_2]
                     ),
                     ...twt[PHASE_TAP_CHANGER],
+                    regulationMode: computeRegulationModeValue(phaseTapChangerFormValues),
                 };
             }
 

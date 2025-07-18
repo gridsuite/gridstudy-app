@@ -274,7 +274,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twtModification?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
-                    regulationMode: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
+                    regulationMode: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATING]?.value
+                        ? twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value
+                        : PHASE_REGULATION_MODES.OFF.id,
                     regulationType: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_TYPE]?.value,
                     regulationSide: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_SIDE]?.value ?? null,
                     currentLimiterRegulatingValue:
@@ -473,7 +475,16 @@ const TwoWindingsTransformerModificationDialog = ({
             if (phaseTapChangerFormValues?.[ENABLED]) {
                 phaseTap = {
                     [ENABLED]: toModificationOperation(enablePhaseTapChanger),
-                    [REGULATION_MODE]: toModificationOperation(phaseTapChangerFormValues[REGULATION_MODE]),
+                    [REGULATING]: toModificationOperation(
+                        phaseTapChangerFormValues[REGULATION_MODE]
+                            ? phaseTapChangerFormValues[REGULATION_MODE] !== PHASE_REGULATION_MODES.OFF.id
+                            : null
+                    ),
+                    [REGULATION_MODE]: toModificationOperation(
+                        phaseTapChangerFormValues[REGULATION_MODE] !== PHASE_REGULATION_MODES.OFF.id
+                            ? phaseTapChangerFormValues[REGULATION_MODE]
+                            : null
+                    ),
                     [TAP_POSITION]: toModificationOperation(phaseTapChangerFormValues[TAP_POSITION]),
                     [LOW_TAP_POSITION]: toModificationOperation(phaseTapChangerFormValues[LOW_TAP_POSITION]),
                     [STEPS]: phaseTapChangerSteps,
@@ -680,6 +691,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
+
                             reset((formValues) => ({
                                 ...formValues,
                                 ...getSelectedLimitsFormData({
@@ -693,7 +705,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                     hasLoadTapChangingCapabilities: getValues(
                                         `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
                                     ),
-                                    regulationMode: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
+                                    regulationMode:
+                                        getValues(`${RATIO_TAP_CHANGER}.${REGULATING}`) === false
+                                            ? PHASE_REGULATION_MODES.OFF.id
+                                            : getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
                                     targetV: getValues(`${RATIO_TAP_CHANGER}.${TARGET_V}`),
