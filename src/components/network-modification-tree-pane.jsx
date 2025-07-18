@@ -63,6 +63,7 @@ const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
     nodeId: null,
     copyType: null,
+    nodeType: null,
     allChildrenIds: null,
 };
 
@@ -168,6 +169,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
         []
     );
+
     const resetNodeClipboard = useCallback(() => {
         dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
         snackInfo({
@@ -345,7 +347,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     ]);
 
     const handleCreateNode = useCallback(
-        (element, type, insertMode) => {
+        (element, type, insertMode, networkModificationNodeType) => {
             getUniqueNodeName(studyUuid)
                 .then((response) =>
                     createTreeNode(studyUuid, element.id, insertMode, {
@@ -353,6 +355,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         type: type,
                         localBuildStatus: BUILD_STATUS.NOT_BUILT,
                         globalBuildStatus: BUILD_STATUS.NOT_BUILT,
+                        nodeType: networkModificationNodeType,
                     }).catch((error) => {
                         snackError({
                             messageTxt: error.message,

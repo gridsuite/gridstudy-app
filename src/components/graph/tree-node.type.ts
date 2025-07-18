@@ -30,6 +30,10 @@ export type AbstractNode = {
     columnPosition?: number;
 };
 
+export type NetworkModificationNodeInfos = {
+    id: UUID;
+    nodeType?: NetworkModificationNodeType;
+};
 export type StashedNodeProperties = {
     first: AbstractNode;
     second: number; // children size
@@ -81,4 +85,10 @@ export type CurrentTreeNode = ModificationNode | RootNode;
 
 export const isSecurityModificationNode = (node: CurrentTreeNode): node is ModificationNode => {
     return node.type === NodeType.NETWORK_MODIFICATION && node.data.nodeType === NetworkModificationNodeType.SECURITY;
+};
+
+export const isConstructionModificationNode = (node: CurrentTreeNode): node is ModificationNode => {
+    return (
+        node.type === NodeType.NETWORK_MODIFICATION && node.data.nodeType === NetworkModificationNodeType.CONSTRUCTION
+    );
 };

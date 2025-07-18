@@ -137,7 +137,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const isSelectedForCut = () => {
         return (
             (props.id === selectionForCopy?.nodeId && selectionForCopy?.copyType === CopyType.NODE_CUT) ||
-            ((props.id === selectionForCopy?.nodeId || selectionForCopy.allChildrenIds?.includes(props.id)) &&
+            ((props.id === selectionForCopy?.nodeId ||
+                selectionForCopy.allChildren?.map((child) => child.id)?.includes(props.id)) &&
                 selectionForCopy?.copyType === CopyType.SUBTREE_CUT)
         );
     };

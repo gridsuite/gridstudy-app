@@ -18,7 +18,13 @@ import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { CurrentTreeNode, isSecurityModificationNode, NodeType } from '../tree-node.type';
+import {
+    CurrentTreeNode,
+    isConstructionModificationNode,
+    isSecurityModificationNode,
+    NetworkModificationNodeType,
+    NodeType,
+} from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -44,7 +50,12 @@ type NodeMenuItems = Record<string, MenuItem>;
 
 interface CreateNodeMenuProps {
     position: { x: number; y: number };
-    handleNodeCreation: (element: CurrentTreeNode, type: NodeType, insertMode: NodeInsertModes) => void;
+    handleNodeCreation: (
+        element: CurrentTreeNode,
+        type: NodeType,
+        insertMode: NodeInsertModes,
+        networkModificationNodeType: NetworkModificationNodeType
+    ) => void;
     handleSecuritySequenceCreation: (element: CurrentTreeNode) => void;
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
@@ -135,8 +146,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         handleClose();
     }
 
-    function createNetworkModificationNode(insertMode: NodeInsertModes) {
-        handleNodeCreation(activeNode, NodeType.NETWORK_MODIFICATION, insertMode);
+    function createNetworkModificationNode(
+        insertMode: NodeInsertModes,
+        networkModificationNodeType: NetworkModificationNodeType
+    ) {
+        handleNodeCreation(activeNode, NodeType.NETWORK_MODIFICATION, insertMode, networkModificationNodeType);
         handleClose();
     }
 
@@ -220,10 +234,61 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         return (
             !mapDataLoading &&
             ((nodeSelectionForCopy.nodeId !== activeNode.id &&
-                !nodeSelectionForCopy.allChildrenIds?.includes(activeNode.id) &&
+                !nodeSelectionForCopy.allChildren?.map((child) => child.id)?.includes(activeNode.id) &&
                 nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
                 nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY)
         );
+    }
+
+    function isSubtreePasteAllowed(): boolean {
+        if (!nodeSelectionForCopy || !activeNode) {
+            return false;
+        }
+
+        const allChildren = nodeSelectionForCopy.allChildren;
+
+        const isAllOfType = (type: NetworkModificationNodeType) =>
+            allChildren?.every((child) => child.nodeType === type) && nodeSelectionForCopy.nodeType === type;
+
+        const isAllSecurity = isAllOfType(NetworkModificationNodeType.SECURITY);
+        const isAllConstruction = isAllOfType(NetworkModificationNodeType.CONSTRUCTION);
+        const isMixed = !isAllSecurity && !isAllConstruction;
+
+        const isActiveNodeRoot = activeNode.type === NodeType.ROOT;
+        const isActiveNodeConstruction = isConstructionModificationNode(activeNode);
+
+        if (isAllSecurity) {
+            // Rule 1: SECURITY subtree can be inserted on new branch from any node type
+            return true;
+        }
+
+        if (isAllConstruction || isMixed) {
+            // Rule 2: CONSTRUCTION or mixed subtree can only be inserted on new branch from ROOT or CONSTRUCTION node
+            return isActiveNodeRoot || isActiveNodeConstruction;
+        }
+
+        return false;
+    }
+
+    function isNodeInsertionAllowed(insertMode: NodeInsertModes): boolean {
+        // Rule 1 : CONSTRUCTION cannot be inserted into SECURITY
+        if (
+            nodeSelectionForCopy.nodeType === NetworkModificationNodeType.CONSTRUCTION &&
+            activeNode?.data?.nodeType === NetworkModificationNodeType.SECURITY
+        ) {
+            return false;
+        }
+
+        // Rule 2 : SECURITY can only be inserted in CHILD mode into CONSTRUCTION or ROOT
+        if (
+            nodeSelectionForCopy.nodeType === NetworkModificationNodeType.SECURITY &&
+            insertMode !== NodeInsertModes.NewBranch &&
+            activeNode?.data?.nodeType !== NetworkModificationNodeType.SECURITY
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     function isNodeRemovingAllowed() {
@@ -265,24 +330,58 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING ||
                 isModificationsInProgress,
         },
-        CREATE_MODIFICATION_NODE: {
+        CREATE_MODIFICATION_NODE_CONSTRUCTION: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
-            id: 'createNetworkModificationNode',
+            disabled: isSecurityModificationNode(activeNode),
+
+            id: 'createNetworkModificationConstructionNode',
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode(NodeInsertModes.NewBranch),
+                    action: () =>
+                        createNetworkModificationNode(
+                            NodeInsertModes.NewBranch,
+                            NetworkModificationNodeType.CONSTRUCTION
+                        ),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
                 INSERT_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () => createNetworkModificationNode(NodeInsertModes.Before),
+
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNetworkModificationNodeAbove',
                 },
                 INSERT_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode(NodeInsertModes.After),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.CONSTRUCTION),
+                    id: 'insertNetworkModificationNodeBelow',
+                },
+            },
+        },
+        CREATE_MODIFICATION_NODE_SECURITY: {
+            onRoot: true,
+            id: 'createNetworkModificationSecurityNode',
+            subMenuItems: {
+                CREATE_MODIFICATION_NODE: {
+                    onRoot: true,
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.NewBranch, NetworkModificationNodeType.SECURITY),
+                    id: 'createNetworkModificationNodeInNewBranch',
+                },
+                INSERT_MODIFICATION_NODE_BEFORE: {
+                    onRoot: false,
+                    disabled: !isSecurityModificationNode(activeNode),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.SECURITY),
+                    id: 'insertNetworkModificationNodeAbove',
+                },
+                INSERT_MODIFICATION_NODE_AFTER: {
+                    onRoot: true,
+                    disabled: !isSecurityModificationNode(activeNode),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.SECURITY),
                     id: 'insertNetworkModificationNodeBelow',
                 },
             },
@@ -295,20 +394,17 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         COPY_MODIFICATION_NODE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
         },
         CUT_MODIFICATION_NODE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () =>
                 isNodeAlreadySelectedForCut() ? cancelCutNetworkModificationNode() : cutNetworkModificationNode(),
             id: isNodeAlreadySelectedForCut() ? 'cancelCutNetworkModificationNode' : 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
             id: 'pasteNetworkModificationNode',
             disabled: !isNodePastingAllowed(),
             subMenuItems: {
@@ -316,19 +412,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || !isNodeInsertionAllowed(NodeInsertModes.NewBranch),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || !isNodeInsertionAllowed(NodeInsertModes.Before),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || !isNodeInsertionAllowed(NodeInsertModes.After),
                 },
             },
         },
@@ -347,14 +443,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         COPY_SUBTREE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => copySubtree(),
             id: 'copyNetworkModificationSubtree',
             disabled: isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
         },
         CUT_SUBTREE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => (isSubtreeAlreadySelectedForCut() ? cancelCutSubtree() : cutSubtree()),
             id: isSubtreeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationSubtree'
@@ -364,10 +458,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         PASTE_SUBTREE: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
-            disabled: !isSubtreePastingAllowed(),
+            disabled: !isSubtreePastingAllowed() || !isSubtreePasteAllowed(),
         },
         REMOVE_SUBTREE: {
             onRoot: false,

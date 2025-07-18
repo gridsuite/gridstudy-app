@@ -172,3 +172,7 @@ export function getAllChildren(elements: NetworkModificationTreeModel | null, no
     });
     return allChildren;
 }
+
+export const getNetworkModificationNode = (treeModel: NetworkModificationTreeModel | null, nodeId: UUID) => {
+    return treeModel?.treeNodes.find((n) => n.id === nodeId);
+};
