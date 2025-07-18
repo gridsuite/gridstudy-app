@@ -16,17 +16,7 @@ import {
     LANG_FRENCH,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    CONNECTED,
-    CONNECTED1,
-    CONNECTED2,
-    EQUIPMENT_ID,
-    MODIFICATIONS_TABLE,
-    PARTICIPATE,
-    REACTIVE_CAPABILITY_CURVE,
-    TYPE,
-    VOLTAGE_REGULATION_ON,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
@@ -45,6 +35,7 @@ import {
     transformIfFrenchNumber,
     isFieldTypeOk,
 } from '../tabular-creation/tabular-creation-utils';
+import { BOOLEAN } from '../../../network/constants';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -216,19 +207,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id });
-            const booleanColumns = [
-                VOLTAGE_REGULATION_ON,
-                CONNECTED,
-                CONNECTED1,
-                CONNECTED2,
-                REACTIVE_CAPABILITY_CURVE,
-                PARTICIPATE,
-            ];
-            if (booleanColumns.includes(field.id)) {
-                columnDef.cellRenderer = BooleanNullableCellRenderer;
-            } else {
-                columnDef.cellRenderer = DefaultCellRenderer;
-            }
+            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
             return columnDef;
         });
     }, [intl, equipmentType]);

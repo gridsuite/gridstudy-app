@@ -9,15 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, LANG_FRENCH } from '@gridsuite/commons-ui';
-import {
-    CONNECTED,
-    CREATIONS_TABLE,
-    EQUIPMENT_ID,
-    PARTICIPATE,
-    REACTIVE_CAPABILITY_CURVE,
-    TYPE,
-    VOLTAGE_REGULATION_ON,
-} from 'components/utils/field-constants';
+import { CREATIONS_TABLE, EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
@@ -38,6 +30,7 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { BOOLEAN } from '../../../network/constants';
 
 export interface TabularCreationFormProps {
     dataFetching: boolean;
@@ -118,6 +111,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                         ),
                     });
                 }
+                setIsFetching(false);
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
@@ -127,8 +121,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     expectedValues
                 );
             }
-            setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
             setIsFetching(false);
+            setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
         },
         [clearErrors, setValue, getValues, setError, intl]
     );
@@ -235,12 +229,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            const booleanColumns = [VOLTAGE_REGULATION_ON, CONNECTED, PARTICIPATE, REACTIVE_CAPABILITY_CURVE];
-            if (booleanColumns.includes(field.id)) {
-                columnDef.cellRenderer = BooleanNullableCellRenderer;
-            } else {
-                columnDef.cellRenderer = DefaultCellRenderer;
-            }
+            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
             return columnDef;
         });
     }, [intl, equipmentType]);
