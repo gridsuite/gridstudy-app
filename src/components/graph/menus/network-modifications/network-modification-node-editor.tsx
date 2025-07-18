@@ -1025,9 +1025,13 @@ const NetworkModificationNodeEditor = () => {
         const selectedRows = event.api.getSelectedRows(); // Get selected rows
         setSelectedNetworkModifications(selectedRows);
     };
-
+    
     const renderDialog = () => {
-        return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
+        return subMenuItemsList
+          .find((menuItem) =>
+            !('isDivider' in menuItem && menuItem.isDivider) ? menuItem.id === editDialogOpen : null
+          )
+          ?.action?.();
     };
 
     const isImpactedByNotification = useCallback(() => {
