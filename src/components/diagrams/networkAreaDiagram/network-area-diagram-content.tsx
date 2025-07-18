@@ -6,7 +6,7 @@
  */
 
 import { useLayoutEffect, useRef, useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
@@ -36,7 +36,6 @@ import DiagramControls from '../diagram-controls';
 import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
-import { openDiagram } from '../../../redux/actions';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -62,6 +61,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
+    readonly onVoltageLevelClick: (vlId: string) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
@@ -75,9 +75,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
         onHideVoltageLevel,
+        onVoltageLevelClick,
         onMoveNode,
     } = props;
-    const dispatch = useDispatch();
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
@@ -150,11 +150,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
-                    dispatch(openDiagram(equipmentId, DiagramType.VOLTAGE_LEVEL));
+                    onVoltageLevelClick(equipmentId);
                 }
             }
         },
-        [isEditNadMode, dispatch, props.loadingState]
+        [isEditNadMode, onVoltageLevelClick, props.loadingState]
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
