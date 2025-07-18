@@ -15,25 +15,20 @@ import { UUID } from 'crypto';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
+import { DiagramAdditionalMetadata } from './diagram-common';
 import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
-import DiagramFooter from './diagram-footer';
-import { useIntl } from 'react-intl';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
+import { useIntl } from 'react-intl';
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
-const diagramTypes = [
-    DiagramType.VOLTAGE_LEVEL,
-    DiagramType.SUBSTATION,
-    DiagramType.NETWORK_AREA_DIAGRAM,
-    DiagramType.NAD_FROM_ELEMENT,
-];
+const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NETWORK_AREA_DIAGRAM];
 
 const styles = {
     card: (theme: Theme) => ({
@@ -61,7 +56,7 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
         border:
             theme.palette.mode === 'light'
@@ -73,27 +68,31 @@ const styles = {
 
 const LG_COLUMN_COUNT = 12;
 const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
-const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 6;
+const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 3;
 const DEFAULT_WIDTH = 2;
 const DEFAULT_HEIGHT = 2;
 
-const initialLayouts = {
+const defaultCardSizes = {
+    w: DEFAULT_WIDTH,
+    h: DEFAULT_HEIGHT,
+};
+
+const AdderCard = {
+    ...defaultCardSizes,
+    i: 'Adder',
+    x: 0,
+    y: 0,
+    minH: DEFAULT_HEIGHT,
+    maxH: DEFAULT_HEIGHT,
+    minW: DEFAULT_WIDTH,
+    maxW: DEFAULT_WIDTH,
+    isDraggable: false,
+    static: true,
+};
+
+const initialLayouts: Layouts = {
     // ResponsiveGridLayout will attempt to interpolate the rest of breakpoints based on this one
-    lg: [
-        {
-            i: 'Adder',
-            x: 0,
-            y: 0,
-            w: DEFAULT_WIDTH,
-            h: DEFAULT_HEIGHT,
-            minH: DEFAULT_HEIGHT,
-            maxH: DEFAULT_HEIGHT,
-            minW: DEFAULT_WIDTH,
-            maxW: DEFAULT_WIDTH,
-            isDraggable: false,
-            static: true,
-        },
-    ],
+    lg: [AdderCard],
 };
 
 interface DiagramGridLayoutProps {
@@ -101,6 +100,13 @@ interface DiagramGridLayoutProps {
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
+
+const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) => {
+    return entries.map(([breakpoint, breakpoint_layouts]) => {
+        const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
+        return [breakpoint, updatedLayouts];
+    });
+};
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
@@ -110,19 +116,27 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
-    const onAddDiagram = (diagram: Diagram) => {
+    const addLayoutItem = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const new_lg_layouts = [...old_layouts.lg];
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
                 x: Infinity,
                 y: 0,
-                w: DEFAULT_WIDTH,
-                h: DEFAULT_HEIGHT,
+                ...defaultCardSizes,
             };
-            new_lg_layouts.push(layoutItem);
-            return { lg: new_lg_layouts };
+            const oldLayoutsEntries = Object.entries(old_layouts);
+            const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                // Ensure the new layout item is added to each breakpoint
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.push(layoutItem);
+                return [breakpoint, updatedLayouts];
+            });
+            return Object.fromEntries(newLayoutsEntries);
         });
+    };
+
+    const removeLayoutItem = (cardUuid: UUID) => {
+        setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
     };
 
     const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
@@ -142,22 +156,24 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [stopDiagramBlinking]
     );
 
-    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
-        useDiagramModel({
-            diagramTypes: diagramTypes,
-            onAddDiagram,
-            onDiagramAlreadyExists,
-        });
+    const {
+        diagrams,
+        loadingDiagrams,
+        diagramErrors,
+        globalError,
+        removeDiagram,
+        createDiagram,
+        updateDiagram,
+        updateDiagramPositions,
+    } = useDiagramModel({
+        diagramTypes: diagramTypes,
+        onAddDiagram: addLayoutItem,
+        onDiagramAlreadyExists,
+    });
 
-    const onRemoveItem = useCallback(
+    const onRemoveCard = useCallback(
         (diagramUuid: UUID) => {
-            setLayouts((old_layouts) => {
-                const new_lg_layouts = old_layouts.lg.filter((layout: Layout) => layout.i !== diagramUuid);
-                if (new_lg_layouts.length === 0) {
-                    return initialLayouts;
-                }
-                return { lg: new_lg_layouts };
-            });
+            removeLayoutItem(diagramUuid);
             removeDiagram(diagramUuid);
         },
         [removeDiagram]
@@ -170,6 +186,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: element.voltageLevelId ?? '',
+                    name: '',
                 };
                 createDiagram(diagram);
             } else if (element.type === EquipmentType.SUBSTATION) {
@@ -177,6 +194,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     diagramUuid: v4() as UUID,
                     type: DiagramType.SUBSTATION,
                     substationId: element.id,
+                    name: '',
                 };
                 createDiagram(diagram);
             }
@@ -184,33 +202,106 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const handleLoadNadFromElement = useCallback(
+    const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             const diagram: DiagramParams = {
                 diagramUuid: v4() as UUID,
-                type: DiagramType.NAD_FROM_ELEMENT,
-                elementUuid: elementUuid,
-                elementType: elementType,
-                elementName: elementName,
+                type: DiagramType.NETWORK_AREA_DIAGRAM,
+                name: elementName,
+                nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
+                filterUuid: elementType === ElementType.FILTER ? elementUuid : undefined,
+                voltageLevelIds: [],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
+                positions: [],
             };
             createDiagram(diagram);
         },
         [createDiagram]
     );
 
-    const onChangeDepth = useCallback(
-        (diagramId: UUID, newDepth: number) => {
+    const handleExpandAllVoltageLevels = useCallback(
+        (diagramId: UUID) => {
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     diagramUuid: diagramId,
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
-                    voltageLevelIds: diagram.voltageLevelIds,
-                    depth: newDepth,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
+                    voltageLevelIds: [],
+                    voltageLevelToExpandIds: [...diagram.voltageLevelIds],
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: diagram.positions,
                 });
             }
         },
         [diagrams, updateDiagram]
+    );
+
+    const handleExpandVoltageLevelId = useCallback(
+        (diagramId: UUID, voltageLevelIdToExpand: string) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToExpand),
+                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, voltageLevelIdToExpand],
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: diagram.positions,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const handleHideVoltageLevelId = useCallback(
+        (diagramId: UUID, voltageLevelIdToOmit: string) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
+                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
+                    positions: diagram.positions,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const handleMoveNode = useCallback(
+        (diagramId: UUID, vlId: string, x: number, y: number) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                const updatedPositions = diagram.positions.map((position) =>
+                    position.voltageLevelId === vlId ? { ...position, xposition: x, yposition: y } : position
+                );
+
+                updateDiagramPositions({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
+                    voltageLevelIds: diagram.voltageLevelIds,
+                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: updatedPositions,
+                });
+            }
+        },
+        [diagrams, updateDiagramPositions]
     );
 
     const handleToggleEditMode = useCallback((diagramUuid: UUID) => {
@@ -236,9 +327,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             return (
                 <Box key={diagram.diagramUuid} sx={styles.card}>
                     <CardHeader
-                        title={diagram.name}
+                        title={
+                            loadingDiagrams.includes(diagram.diagramUuid)
+                                ? intl.formatMessage({ id: 'LoadingOf' }, { value: diagram.type })
+                                : diagram.name
+                        }
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
-                        onClose={() => onRemoveItem(diagram.diagramUuid)}
+                        onClose={() => onRemoveCard(diagram.diagramUuid)}
                     />
                     {globalError || Object.keys(diagramErrors).includes(diagram.diagramUuid) ? (
                         <>
@@ -265,8 +360,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                 />
                             )}
-                            {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                                diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
+                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
                                 <NetworkAreaDiagramContent
                                     diagramId={diagram.diagramUuid}
                                     svg={diagram.svg?.svg ?? undefined}
@@ -286,22 +380,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                                    onLoadNadFromElement={handleLoadNadFromElement}
-                                />
-                            )}
-                            {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
-                                <DiagramFooter
-                                    showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
-                                    counterText={intl.formatMessage({
-                                        id: 'depth',
-                                    })}
-                                    counterValue={diagram.depth}
-                                    onIncrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth + 1)}
-                                    onDecrementCounter={() => onChangeDepth(diagram.diagramUuid, diagram.depth - 1)}
-                                    incrementCounterDisabled={
-                                        diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
+                                    onLoadNad={handleLoadNad}
+                                    onExpandVoltageLevel={(vlId) =>
+                                        handleExpandVoltageLevelId(diagram.diagramUuid, vlId)
                                     }
-                                    decrementCounterDisabled={diagram.depth === 0} // loadingState ||
+                                    onExpandAllVoltageLevels={() => handleExpandAllVoltageLevels(diagram.diagramUuid)}
+                                    onHideVoltageLevel={(vlId) => handleHideVoltageLevelId(diagram.diagramUuid, vlId)}
+                                    onMoveNode={(vlId, x, y) => handleMoveNode(diagram.diagramUuid, vlId, x, y)}
+                                    customPositions={diagram.positions}
                                 />
                             )}
                         </Box>
@@ -315,21 +401,30 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         diagrams,
         diagramsInEditMode,
         globalError,
-        handleLoadNadFromElement,
+        handleLoadNad,
         handleToggleEditMode,
-        intl,
         loadingDiagrams,
-        onChangeDepth,
-        onRemoveItem,
+        handleExpandAllVoltageLevels,
+        handleExpandVoltageLevelId,
+        handleHideVoltageLevelId,
+        handleMoveNode,
+        onRemoveCard,
         setDiagramSize,
         showInSpreadsheet,
         studyUuid,
         visible,
+        intl,
     ]);
 
-    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts) => {
+    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
         if (savedLayouts) {
-            setLayouts({ lg: [...initialLayouts.lg, ...savedLayouts.lg] });
+            const savedLayoutsEntries = Object.entries(savedLayouts);
+            const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.unshift(AdderCard);
+                return [breakpoint, updatedLayouts];
+            });
+            setLayouts(Object.fromEntries(newLayoutsEntries));
         } else {
             setLayouts(initialLayouts);
         }
@@ -372,14 +467,14 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             }}
             onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
                 if (e.target) {
-                    (e.target as HTMLElement).style.cursor = 'default';
+                    (e.target as HTMLElement).style.cursor = 'grab';
                 }
             }}
             autoSize={false} // otherwise the grid has strange behavior
             resizeHandle={<CustomResizeHandle />}
         >
             <DiagramAdder
-                onLoad={handleLoadNadFromElement}
+                onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onMap={!isMapCardAdded ? onAddMapCard : undefined}
                 key={'Adder'}
