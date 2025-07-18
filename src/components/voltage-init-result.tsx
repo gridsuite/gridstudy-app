@@ -4,29 +4,41 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useSelector } from 'react-redux';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
+import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
+import { Box, Button, LinearProgress, Stack, Theme, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { useParams } from 'react-router';
-import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType, mergeSx } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
     getVoltageInitStudyParameters,
 } from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
-import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import VoltageInitModificationDialog, {
+    EditData,
+} from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
-import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
+import GlobalFilterSelector from './results/common/global-filter/global-filter-selector.js';
+import {
+    BusVoltages,
+    Indicators,
+    ReactiveSlacks,
+    VoltageInitResultProps,
+    VoltageInitResultType,
+} from './voltage-init-result.type';
+import { AppState } from 'redux/reducer';
+import RunningStatus from './utils/running-status';
+import { GridReadyEvent, RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const styles = {
     container: {
@@ -38,29 +50,17 @@ const styles = {
         top: 0,
         left: 0,
     },
-    succeed: (theme) => ({
+    succeed: (theme: Theme) => ({
         color: theme.palette.success.main,
     }),
-    fail: (theme) => ({
+    fail: (theme: Theme) => ({
         color: theme.palette.error.main,
     }),
-    buttonApplyModifications: (theme) => ({
+    buttonApplyModifications: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(2),
     }),
-    gridContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    csvExport: {
-        display: 'flex',
-        alignItems: 'baseline',
-    },
-    grid: {
-        flexGrow: '1',
-    },
     typography: {
         fontWeight: 'bold',
     },
@@ -76,19 +76,30 @@ const styles = {
         fontWeight: 'bold',
         color: 'orange',
     },
+    show: {
+        display: 'inherit',
+    },
+    hide: {
+        display: 'none',
+    },
 };
 
-const VoltageInitResult = ({ result = null, status }) => {
+export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
+    result = null,
+    status,
+    handleGlobalFilterChange,
+    globalFilterOptions,
+}) => {
     const [tabIndex, setTabIndex] = useState(0);
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
     const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
-    const [voltageInitModification, setVoltageInitModification] = useState();
+    const [voltageInitModification, setVoltageInitModification] = useState<EditData>();
 
     const intl = useIntl();
 
@@ -97,7 +108,7 @@ const VoltageInitResult = ({ result = null, status }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact>(null);
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -110,51 +121,55 @@ const VoltageInitResult = ({ result = null, status }) => {
         }),
         []
     );
-    const onRowDataUpdated = useCallback((params) => {
+    const onRowDataUpdated = useCallback((params: any) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
     }, []);
 
-    const onGridReady = useCallback(({ api }) => {
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
         api?.sizeColumnsToFit();
     }, []);
 
     const applyModifications = () => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        cloneVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errCloneVoltageInitModificationMsg',
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
+            cloneVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errCloneVoltageInitModificationMsg',
+                    });
+                    setDisableApplyModifications(false);
+                })
+                .finally(() => {
+                    setApplyingModifications(false);
                 });
-                setDisableApplyModifications(false);
-            })
-            .finally(() => {
-                setApplyingModifications(false);
-            });
+        }
     };
 
     const previewModifications = useCallback(() => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        getVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
-            .then((modificationList) => {
-                // this endpoint returns a list, but we are expecting a single modification here
-                setVoltageInitModification(modificationList.at(0));
-                setPreviewModificationsDialogOpen(true);
-            })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errPreviewVoltageInitModificationMsg',
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
+            getVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
+                .then((modificationList) => {
+                    // this endpoint returns a list, but we are expecting a single modification here
+                    setVoltageInitModification(modificationList.at(0));
+                    setPreviewModificationsDialogOpen(true);
+                })
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errPreviewVoltageInitModificationMsg',
+                    });
+                })
+                .finally(() => {
+                    setDisableApplyModifications(false);
+                    setApplyingModifications(false);
                 });
-            })
-            .finally(() => {
-                setDisableApplyModifications(false);
-                setApplyingModifications(false);
-            });
+        }
     }, [
         currentNode?.id,
         currentRootNetworkUuid,
@@ -167,23 +182,28 @@ const VoltageInitResult = ({ result = null, status }) => {
     const [autoApplyModifications, setAutoApplyModifications] = useState(false);
 
     useEffect(() => {
-        getVoltageInitStudyParameters(studyUuid).then((voltageInitParameters) => {
-            setAutoApplyModifications(voltageInitParameters?.applyModifications ?? false);
-        });
+        if (studyUuid) {
+            getVoltageInitStudyParameters(studyUuid).then((voltageInitParameters) => {
+                setAutoApplyModifications(voltageInitParameters?.applyModifications ?? false);
+            });
+        }
     }, [studyUuid]);
 
     const renderPreviewModificationsDialog = () => {
-        return (
-            <VoltageInitModificationDialog
-                currentNode={currentNode.id}
-                studyUuid={studyUuid}
-                editData={voltageInitModification}
-                onClose={() => setPreviewModificationsDialogOpen(false)}
-                onPreviewModeSubmit={applyModifications}
-                editDataFetchStatus={FetchStatus.IDLE}
-                disabledSave={autoApplyModifications}
-            />
-        );
+        if (voltageInitModification) {
+            return (
+                <VoltageInitModificationDialog
+                    currentNode={currentNode?.id}
+                    studyUuid={studyUuid}
+                    editData={voltageInitModification}
+                    onClose={() => setPreviewModificationsDialogOpen(false)}
+                    onPreviewModeSubmit={applyModifications}
+                    // @ts-ignore
+                    editDataFetchStatus={FetchStatus.IDLE}
+                    disabledSave={autoApplyModifications}
+                />
+            );
+        }
     };
     const indicatorsColumnDefs = useMemo(() => {
         return [
@@ -202,12 +222,12 @@ const VoltageInitResult = ({ result = null, status }) => {
         ];
     }, [intl]);
 
-    function renderHeaderReactiveSlacks(result) {
-        const calculateTotal = (reactiveSlacks, isPositive) => {
+    function renderHeaderReactiveSlacks(result: VoltageInitResultType) {
+        const calculateTotal = (reactiveSlacks: ReactiveSlacks, isPositive: boolean) => {
             return reactiveSlacks
                 ? reactiveSlacks
                       .filter((reactiveSlack) => (isPositive ? reactiveSlack.slack > 0 : reactiveSlack.slack < 0))
-                      .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
+                      .reduce((sum: number, reactiveSlack) => sum + reactiveSlack.slack, 0)
                 : 0;
         };
 
@@ -239,7 +259,7 @@ const VoltageInitResult = ({ result = null, status }) => {
         );
     }
 
-    function renderIndicatorsTable(indicators) {
+    function renderIndicatorsTable(indicators: Indicators) {
         const rows = indicators
             ? Object.entries(indicators).map((i) => {
                   return { key: i[0], value: i[1] };
@@ -261,10 +281,14 @@ const VoltageInitResult = ({ result = null, status }) => {
                     columns={indicatorsColumnDefs}
                     defaultColDef={defaultColDef}
                     tableName={intl.formatMessage({ id: 'Indicators' })}
-                    rows={rows}
+                    rows={rows as any[]}
                     onRowDataUpdated={onRowDataUpdated}
                     onGridReady={onGridReady}
                     skipColumnHeaders={false}
+                    getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
+                        return undefined;
+                    }}
+                    overlayNoRowsTemplate={undefined}
                 />
             </>
         );
@@ -288,7 +312,7 @@ const VoltageInitResult = ({ result = null, status }) => {
         ];
     }, [intl]);
 
-    function renderReactiveSlacksTable(result) {
+    function renderReactiveSlacksTable(result: VoltageInitResultType) {
         return (
             <>
                 {renderHeaderReactiveSlacks(result)}
@@ -302,12 +326,16 @@ const VoltageInitResult = ({ result = null, status }) => {
                     onRowDataUpdated={onRowDataUpdated}
                     onGridReady={onGridReady}
                     skipColumnHeaders={false}
+                    getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
+                        return undefined;
+                    }}
+                    overlayNoRowsTemplate={undefined}
                 />
             </>
         );
     }
 
-    const formatValue = (value, precision, intl) => {
+    const formatValue = (value: number, precision: number, intl: IntlShape) => {
         return isNaN(value) ? intl.formatMessage({ id: 'Undefined' }) : value.toFixed(precision);
     };
 
@@ -325,7 +353,7 @@ const VoltageInitResult = ({ result = null, status }) => {
                 colId: 'v',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'BusVoltage' }) },
                 numeric: true,
-                valueFormatter: (params) => formatValue(params.value, 2, intl),
+                valueFormatter: (params: ValueFormatterParams) => formatValue(params.value, 2, intl),
             },
             {
                 headerName: intl.formatMessage({ id: 'BusAngle' }),
@@ -333,12 +361,12 @@ const VoltageInitResult = ({ result = null, status }) => {
                 colId: 'angle',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'BusAngle' }) },
                 numeric: true,
-                valueFormatter: (params) => formatValue(params.value, 2, intl),
+                valueFormatter: (params: ValueFormatterParams) => formatValue(params.value, 2, intl),
             },
         ];
     }, [intl]);
 
-    function renderBusVoltagesTable(busVoltages) {
+    function renderBusVoltagesTable(busVoltages: BusVoltages) {
         return (
             <RenderTableAndExportCsv
                 gridRef={gridRef}
@@ -349,6 +377,10 @@ const VoltageInitResult = ({ result = null, status }) => {
                 onRowDataUpdated={onRowDataUpdated}
                 onGridReady={onGridReady}
                 skipColumnHeaders={false}
+                getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
+                    return undefined;
+                }}
+                overlayNoRowsTemplate={undefined}
             />
         );
     }
@@ -369,14 +401,21 @@ const VoltageInitResult = ({ result = null, status }) => {
             <>
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
-                        <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
+                        <Tabs value={tabIndex} onChange={(_event, newTabIndex) => setTabIndex(newTabIndex)}>
                             <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
                             <Tab label={intl.formatMessage({ id: 'Indicators' })} />
                             <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
                             <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
                         </Tabs>
                     </Box>
-
+                    <Box sx={mergeSx(tabIndex === 0 || tabIndex === 2 ? styles.show : styles.hide)}>
+                        <GlobalFilterSelector
+                            onChange={handleGlobalFilterChange}
+                            filters={globalFilterOptions}
+                            filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            genericFiltersStrictMode={true}
+                        />
+                    </Box>
                     <Box sx={styles.buttonApplyModifications}>
                         <Button
                             variant="outlined"
@@ -406,9 +445,3 @@ const VoltageInitResult = ({ result = null, status }) => {
 
     return renderTabs();
 };
-
-VoltageInitResult.propTypes = {
-    result: PropTypes.object,
-};
-
-export default VoltageInitResult;

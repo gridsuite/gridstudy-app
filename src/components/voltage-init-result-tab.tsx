@@ -5,16 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import WaitingLoader from './utils/waiting-loader';
-import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';
-import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
 import { UUID } from 'crypto';
 import { AppState } from '../redux/reducer';
+import { VoltageInitResult } from './voltage-init-result';
+import { useMemo } from 'react';
+import { fetchVoltageInitResult } from '../services/study/voltage-init';
+import useGlobalFilters from './results/common/global-filter/use-global-filters';
+import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
@@ -30,12 +32,32 @@ export function VoltageInitResultTab({
     const voltageInitStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
+    );
 
-    const { result: voltageInitResult, isLoading: isWaiting } = useNodeData({
+    const fetchVoltageInitResultWithGlobalFilters = useMemo(
+        () => (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => {
+            return fetchVoltageInitResult(studyUuid, nodeUuid, currentRootNetworkUuid, {
+                filters: null,
+                ...(getGlobalFilterParameter(globalFilters) !== undefined && {
+                    globalFilters: {
+                        ...getGlobalFilterParameter(globalFilters),
+                    },
+                }),
+            });
+        },
+        [getGlobalFilterParameter, globalFilters]
+    );
+
+    const { result: voltageInitResult } = useNodeData({
         studyUuid,
         nodeUuid,
         rootNetworkUuid: currentRootNetworkUuid,
-        fetcher: fetchVoltageInitResult,
+        fetcher: fetchVoltageInitResultWithGlobalFilters,
         invalidations: voltageInitResultInvalidations,
     });
 
@@ -45,8 +67,11 @@ export function VoltageInitResultTab({
             : null;
 
     return (
-        <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
-            <VoltageInitResult result={voltageInitResultToShow} status={voltageInitStatus} />
-        </WaitingLoader>
+        <VoltageInitResult
+            result={voltageInitResultToShow}
+            status={voltageInitStatus}
+            handleGlobalFilterChange={handleGlobalFilterChange}
+            globalFilterOptions={globalFilterOptions}
+        />
     );
 }
