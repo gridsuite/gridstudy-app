@@ -151,12 +151,12 @@ function getColumnsByRows(
         return getMax ? contender > competition : contender < competition;
     }
 
-    function resetSticky(getMax: boolean) {
-        stickyValue = getMax ? -Infinity : Infinity;
+    function resetSticky() {
         rowsToRetroactivelyUpdateWithStickyValue.length = 0;
+        stickyValue = getMax ? -Infinity : Infinity;
     }
 
-    resetSticky(getMax);
+    resetSticky();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (!nodePlacement || !node.parentId) {
@@ -171,7 +171,7 @@ function getColumnsByRows(
             // This test determines if we changed from a security group to another. If this is the case,
             // we reset the sticky value to only update rows for the new group and not the old one.
             if (!isSecurityModificationNode(nodeMap.get(node.parentId)?.node)) {
-                resetSticky(getMax);
+                resetSticky();
             }
 
             // We mark each row of a security group in order to update them all when we find a new extreme.
@@ -189,7 +189,7 @@ function getColumnsByRows(
 
             stickyValue = contender;
         } else {
-            resetSticky(getMax);
+            resetSticky();
 
             const contender = nodePlacement.column;
             if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
