@@ -295,6 +295,7 @@ export const NetworkMapTab = ({
                         onClose={() => closeModificationDialog()}
                         editData={null}
                         editDataFetchStatus={null}
+                        equipmentType={EquipmentType.HVDC_LINE}
                     />
                 );
             default:

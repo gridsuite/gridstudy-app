@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Menu from '@mui/material/Menu';
+import { Divider, Menu } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ChildMenuItem from '../create-child-menu-item';
 import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
@@ -36,7 +36,12 @@ const NetworkModificationsMenu = ({
 }: NetworkModificationMenuProps) => {
     const intl = useIntl();
     const renderMenuItems = (menuItems: MenuDefinition[]) => {
+        let dividerCount = 0;
         return menuItems.map((menuItem) => {
+            if (menuItem.isDivider) {
+                dividerCount += 1;
+                return <Divider key={`divider${dividerCount}`} />;
+            }
             if (menuItem?.hide) {
                 return undefined;
             }
