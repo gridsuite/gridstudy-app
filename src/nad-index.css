@@ -10,10 +10,8 @@
     stroke-width: 0.25%;
     fill: none;
 }
-.nad-text-edges {
-    stroke: black;
-    stroke-width: 0.2%;
-    stroke-dasharray: 6, 7;
+.nad-text-edges { /* Hidden for now */
+    display: none;
 }
 .nad-disconnected .nad-edge-path {
     stroke-dasharray: 0.45%, 0.45%;
@@ -182,9 +180,9 @@ g.nad-disconnected > g.nad-disconnected {
     display: none;
 }
 
-/* Hides the labels and their dashed lines until sufficiently zoomed in. */
+/* Hides the labels until sufficiently zoomed in. */
 :is(.nad-zoom-3500, .nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-label-box, .nad-text-edges
+    .nad-label-box
     ) {
     display: none;
 }

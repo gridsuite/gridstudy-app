@@ -8,15 +8,14 @@
 import { Box } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useState } from 'react';
 import CardHeader from './card-header';
-import { Diagram, DiagramType } from './diagram.type';
+import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import DiagramFooter from './diagram-footer';
 import { ElementType, EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramAdditionalMetadata, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
+import { DiagramAdditionalMetadata } from './diagram-common';
 import { useIntl } from 'react-intl';
 import { cardStyles } from './card-styles';
 
@@ -39,6 +38,7 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     updateDiagram: (diagram: Diagram) => void;
+    updateDiagramPositions: (diagram: DiagramParams) => void;
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
@@ -54,13 +54,66 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         errorMessage,
         showInSpreadsheet,
         updateDiagram,
+        updateDiagramPositions,
         onLoad,
         ...reactGridLayoutCustomChildComponentProps
     } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
     const intl = useIntl();
 
-    const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
+    const [diagramsInEditMode, setDiagramsInEditMode] = useState<boolean>(false);
+
+    const handleExpandAllVoltageLevels = useCallback(() => {
+        if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+            updateDiagram({
+                ...diagram,
+                voltageLevelIds: [],
+                voltageLevelToExpandIds: [...diagram.voltageLevelIds],
+            });
+        }
+    }, [diagram, updateDiagram]);
+
+    const handleExpandVoltageLevelId = useCallback(
+        (voltageLevelIdToExpand: string) => {
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    ...diagram,
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToExpand),
+                    voltageLevelToExpandIds: [...diagram.voltageLevelToExpandIds, voltageLevelIdToExpand],
+                });
+            }
+        },
+        [diagram, updateDiagram]
+    );
+
+    const handleHideVoltageLevelId = useCallback(
+        (voltageLevelIdToOmit: string) => {
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    ...diagram,
+                    voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
+                    voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
+                });
+            }
+        },
+        [diagram, updateDiagram]
+    );
+
+    const handleMoveNode = useCallback(
+        (vlId: string, x: number, y: number) => {
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                const updatedPositions = diagram.positions.map((position) =>
+                    position.voltageLevelId === vlId ? { ...position, xposition: x, yposition: y } : position
+                );
+
+                updateDiagramPositions({
+                    ...diagram,
+                    positions: updatedPositions,
+                });
+            }
+        },
+        [diagram, updateDiagramPositions]
+    );
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
@@ -68,27 +121,13 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         // TODO adapt the layout w and h considering those values
     }, []);
 
-    const handleToggleEditMode = useCallback((diagramUuid: UUID) => {
-        setDiagramsInEditMode((prev) =>
-            prev.includes(diagramUuid) ? prev.filter((id) => id !== diagramUuid) : [...prev, diagramUuid]
-        );
-    }, []);
-
-    const onChangeDepth = useCallback(
-        (newDepth: number) => {
-            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                updateDiagram({
-                    ...diagram,
-                    depth: newDepth,
-                });
-            }
-        },
-        [diagram, updateDiagram]
-    );
-
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CardHeader title={diagram.name} blinking={blinking} onClose={onClose} />
+            <CardHeader
+                title={loading ? intl.formatMessage({ id: 'LoadingOf' }, { value: diagram.type }) : diagram.name}
+                blinking={blinking}
+                onClose={onClose}
+            />
             {errorMessage ? (
                 <>
                     <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />
@@ -109,8 +148,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             visible={visible}
                         />
                     )}
-                    {(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM ||
-                        diagram.type === DiagramType.NAD_FROM_ELEMENT) && (
+                    {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
                         <NetworkAreaDiagramContent
                             diagramId={diagram.diagramUuid}
                             svg={diagram.svg?.svg ?? undefined}
@@ -128,24 +166,14 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             loadingState={loading}
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
-                            isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
-                            onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                            onLoadNadFromElement={onLoad}
-                        />
-                    )}
-                    {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
-                        <DiagramFooter
-                            showCounterControls={diagramsInEditMode.includes(diagram.diagramUuid)}
-                            counterText={intl.formatMessage({
-                                id: 'depth',
-                            })}
-                            counterValue={diagram.depth}
-                            onIncrementCounter={() => onChangeDepth(diagram.depth + 1)}
-                            onDecrementCounter={() => onChangeDepth(diagram.depth - 1)}
-                            incrementCounterDisabled={
-                                diagram.voltageLevelIds.length > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS // loadingState ||
-                            }
-                            decrementCounterDisabled={diagram.depth === 0} // loadingState ||
+                            isEditNadMode={diagramsInEditMode}
+                            onToggleEditNadMode={(isEditMode) => setDiagramsInEditMode(isEditMode)}
+                            onLoadNad={onLoad}
+                            onExpandVoltageLevel={handleExpandVoltageLevelId}
+                            onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
+                            onHideVoltageLevel={handleHideVoltageLevelId}
+                            onMoveNode={handleMoveNode}
+                            customPositions={diagram.positions}
                         />
                     )}
                 </Box>

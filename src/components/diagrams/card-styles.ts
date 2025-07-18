@@ -10,6 +10,14 @@ export const cardStyles = {
     card: (theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
+        '& .react-resizable-handle, .card-header-close-button': {
+            visibility: 'hidden',
+        },
+        '&:hover': {
+            '& .react-resizable-handle, .card-header-close-button': {
+                visibility: 'visible',
+            },
+        },
     }),
     alertMessage: (theme: Theme) => ({
         borderRadius: '0 0 0 0',
@@ -24,7 +32,7 @@ export const cardStyles = {
         flexGrow: 1,
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: '0 0 ' + theme.spacing(2) + ' ' + theme.spacing(2),
         border:
             theme.palette.mode === 'light'
