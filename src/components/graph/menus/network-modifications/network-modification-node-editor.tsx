@@ -1027,11 +1027,8 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderDialog = () => {
-        return subMenuItemsList
-            .find((menuItem) =>
-                !('isDivider' in menuItem && menuItem.isDivider) ? menuItem.id === editDialogOpen : null
-            )
-            ?.action?.();
+        const menuItem = subMenuItemsList.find((item) => 'id' in item && item.id === editDialogOpen);
+        return menuItem && 'action' in menuItem ? menuItem.action?.() : undefined;
     };
 
     const isImpactedByNotification = useCallback(() => {
