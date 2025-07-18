@@ -11,6 +11,7 @@ import { AgGridReactProps } from 'ag-grid-react';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
+import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -79,7 +80,7 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[]>;
+export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[] | GlobalFilters>;
 
 type Sort = {
     empty?: boolean;
