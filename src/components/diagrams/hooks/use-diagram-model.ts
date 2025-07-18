@@ -357,8 +357,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const countOpenedNadDiagrams = (diagrams: Record<UUID, Diagram>) => {
-        return Object.values(diagrams).filter((diagram) => diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-            .length;
+        return Object.values(diagrams).filter((diagram) => diagram?.type === DiagramType.NETWORK_AREA_DIAGRAM).length;
     };
 
     const createDiagram = useCallback(
