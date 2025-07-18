@@ -31,11 +31,6 @@ import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
-});
-
-const limitsGroupValidationCreationSchema = () => ({
-    [ID]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(false)),
 });
@@ -95,7 +90,7 @@ const limitsValidationSchema = (id: string) => {
 const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup
-            .array(yup.object().shape(limitsGroupValidationCreationSchema()))
+            .array(yup.object().shape(limitsGroupValidationSchema(false)))
             .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
                 const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
