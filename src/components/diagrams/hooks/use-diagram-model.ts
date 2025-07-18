@@ -29,7 +29,7 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
-import { DiagramAdditionalMetadata } from '../diagram-common';
+import { DiagramAdditionalMetadata, MAX_NUMBER_OF_NAD_DIAGRAMS } from '../diagram-common';
 import { mergePositions } from '../diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 
@@ -41,7 +41,7 @@ type UseDiagramModelProps = {
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const { snackInfo } = useSnackMessage();
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -58,8 +58,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const [loadingDiagrams, setLoadingDiagrams] = useState<UUID[]>([]);
     const [diagramErrors, setDiagramErrors] = useState<Record<UUID, string>>({});
     const [globalError, setGlobalError] = useState<string | null>(null);
-
-    const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
 
     // Note: This function is mainly used to prevent double fetch when using the PositionDiagram
     const filterDiagramParams = useCallback(
@@ -310,7 +308,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
                     } else {
                         errorMessage = 'svgLoadingFail';
-                        snackError({
+                        snackInfo({
                             headerId: errorMessage,
                         });
                     }
@@ -327,7 +325,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [getDiagramTitle, getUrl, intl, snackError, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [getDiagramTitle, getUrl, intl, snackInfo, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
     );
 
     const findSimilarDiagram = useCallback(
@@ -358,7 +356,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams]
     );
 
-    const countNadDiagrams = (diagrams: { [key: string]: Diagram }) => {
+    const countOpenedNadDiagrams = (diagrams: Record<UUID, Diagram>) => {
         return Object.values(diagrams).filter((diagram) => diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
             .length;
     };
@@ -367,9 +365,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         (diagramParams: DiagramParams) => {
             if (
                 diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM &&
-                countNadDiagrams(diagrams) >= MAX_NUMBER_OF_NAD_DIAGRAMS
+                countOpenedNadDiagrams(diagrams) >= MAX_NUMBER_OF_NAD_DIAGRAMS
             ) {
-                snackError({
+                snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
                 });
                 return;
@@ -399,7 +397,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             onDiagramAlreadyExists,
             diagrams,
             intl,
-            snackError,
+            snackInfo,
         ]
     );
 
