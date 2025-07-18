@@ -38,6 +38,7 @@ import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -47,6 +48,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    globalFilters?: GlobalFilters;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
@@ -57,6 +59,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     customTablePaginationProps,
     onGridColumnsChanged,
     onRowDataUpdated,
+    globalFilters,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -134,6 +137,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             currentRootNetworkUuid,
             type: analysisType,
             selector,
+            globalFilters,
         })
             .then((result: SCAPagedResults | null) => {
                 if (active) {
@@ -171,6 +175,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         filters,
         sortConfig,
         fromFrontColumnToBackKeys,
+        globalFilters,
     ]);
 
     useEffect(() => {
