@@ -9,6 +9,7 @@ import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
+    equipmentsWithPopover,
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
@@ -51,6 +52,7 @@ import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
+import { normalizeEquipmentType } from '../diagram-utils';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -187,20 +189,24 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const closeDeletionDialog = () => {
         setEquipmentToDelete(undefined);
     };
+
     const handleTogglePopover = useCallback(
         (shouldDisplay: boolean, currentTarget: EventTarget | null, equipmentId: string, equipmentType: string) => {
-            setShouldDisplayTooltip(shouldDisplay);
-            if (shouldDisplay) {
+            const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+            const normalizedEquipmentType = normalizeEquipmentType(equipmentType);
+            setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable);
+
+            if (shouldDisplay && isEquipmentHoverable) {
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(equipmentType);
+                setHoveredEquipmentType(normalizedEquipmentType);
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);
                 setHoveredEquipmentType('');
             }
         },
-        [setShouldDisplayTooltip]
+        []
     );
 
     const handleBreakerClick: OnBreakerCallbackType = useCallback(

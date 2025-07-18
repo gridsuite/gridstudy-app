@@ -15,6 +15,7 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
     NAD_ZOOM_LEVELS,
+    equipmentsWithPopover,
 } from '../diagram-common';
 import {
     NetworkAreaDiagramViewer,
@@ -29,20 +30,12 @@ import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FEEDER_TYPES } from 'components/utils/feederType';
 import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 
 import NodeContextMenu from './node-context-menu';
-
-const equipmentsWithPopover = [
-    EQUIPMENT_TYPES.LINE,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
-];
 
 type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
