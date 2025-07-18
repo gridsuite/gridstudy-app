@@ -62,41 +62,41 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             let expectedValues: string[] | undefined;
 
             // check if the csv contains an error
-            if(results.data.flatMap(result => Object.entries(result).map(([key, value]) => [result, key, value])).some(([result, key, value]) => {result;
-                const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key );
-                // check required fields are defined
-                if (
-                    fieldDef !== undefined &&
-                    fieldDef.required &&
-                    (value === undefined || value === null)
-                ) {
-                    requiredFieldNameInError = key;
-                    return true; // “yes, we found an error here” → break loop
-                }
+            if (
+                results.data
+                    .flatMap((result) => Object.entries(result).map(([key, value]) => [result, key, value]))
+                    .some(([result, key, value]) => {
+                        const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
+                        // check required fields are defined
+                        if (fieldDef !== undefined && fieldDef.required && (value === undefined || value === null)) {
+                            requiredFieldNameInError = key;
+                            return true; // “yes, we found an error here” → break loop
+                        }
 
-                //check requiredIf rule
-                if (fieldDef?.requiredIf) {
-                    const dependentValue = result[fieldDef.requiredIf.id];
-                    if (
-                        dependentValue !== undefined &&
-                        dependentValue !== null &&
-                        (value === undefined || value === null)
-                    ) {
-                        dependantFieldNameInError = key;
-                        requiredDependantFieldNameInError = fieldDef.requiredIf.id;
-                        return true; // “yes, we found an error here” → break loop
-                    }
-                }
+                        //check requiredIf rule
+                        if (fieldDef?.requiredIf) {
+                            const dependentValue = result[fieldDef.requiredIf.id];
+                            if (
+                                dependentValue !== undefined &&
+                                dependentValue !== null &&
+                                (value === undefined || value === null)
+                            ) {
+                                dependantFieldNameInError = key;
+                                requiredDependantFieldNameInError = fieldDef.requiredIf.id;
+                                return true; // “yes, we found an error here” → break loop
+                            }
+                        }
 
-                // check the field types
-                if (!isFieldTypeOk(value, fieldDef)) {
-                    fieldTypeInError = key;
-                    expectedTypeForFieldInError = fieldDef?.type ?? '';
-                    expectedValues = fieldDef?.options;
-                    return true; // “yes, we found an error here” → break loop
-                }
-                return false; // keep looking
-            })) {
+                        // check the field types
+                        if (!isFieldTypeOk(value, fieldDef)) {
+                            fieldTypeInError = key;
+                            expectedTypeForFieldInError = fieldDef?.type ?? '';
+                            expectedValues = fieldDef?.options;
+                            return true; // “yes, we found an error here” → break loop
+                        }
+                        return false; // keep looking
+                    })
+            ) {
                 if (requiredFieldNameInError !== '') {
                     setError(CREATIONS_TABLE, {
                         type: 'custom',

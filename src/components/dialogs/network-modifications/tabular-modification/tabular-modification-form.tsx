@@ -68,17 +68,19 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             let expectedValues: string[] | undefined;
 
             // check if the csv contains an error
-            if(results.data.flatMap(Object.entries).some(([key, value]) => {
-                const fieldDef = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
-                // check the field types
-                if (!isFieldTypeOk(value, fieldDef)) {
-                    fieldTypeInError = key;
-                    expectedTypeForFieldInError = fieldDef?.type ?? '';
-                    expectedValues = fieldDef?.options;
-                    return true; // “yes, we found an error here” → break some() loop
-                }
-                return false; // keep looking
-            })) {
+            if (
+                results.data.flatMap(Object.entries).some(([key, value]) => {
+                    const fieldDef = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
+                    // check the field types
+                    if (!isFieldTypeOk(value, fieldDef)) {
+                        fieldTypeInError = key;
+                        expectedTypeForFieldInError = fieldDef?.type ?? '';
+                        expectedValues = fieldDef?.options;
+                        return true; // “yes, we found an error here” → break some() loop
+                    }
+                    return false; // keep looking
+                })
+            ) {
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
