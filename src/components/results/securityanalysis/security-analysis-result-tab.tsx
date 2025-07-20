@@ -125,12 +125,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
-    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-            ? [EQUIPMENT_TYPES.VOLTAGE_LEVEL]
-            : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
-    }, [nmkType]);
-
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
@@ -276,7 +270,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         <GlobalFilterSelector
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
-                            filterableEquipmentTypes={filterableEquipmentTypes}
+                            filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                         />
                     </Box>
                 )}
