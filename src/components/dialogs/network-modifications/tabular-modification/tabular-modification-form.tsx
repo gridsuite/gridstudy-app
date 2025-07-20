@@ -51,6 +51,10 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
+    const equipmentType = useWatch({
+        name: TYPE,
+    });
+
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(MODIFICATIONS_TABLE);
@@ -87,6 +91,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             setIsFetching(false);
             // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
+                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
                 results.data.some(
                     (modification) =>
                         modification.maxSusceptance != null &&
@@ -96,12 +101,8 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 snackWarning({ messageId: 'TabularModificationShuntWarning' });
             }
         },
-        [clearErrors, setValue, snackWarning, getValues, setError, intl]
+        [clearErrors, setValue, equipmentType, getValues, setError, intl, snackWarning]
     );
-
-    const equipmentType = useWatch({
-        name: TYPE,
-    });
 
     const csvColumns = useMemo(
         () => TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field: TabularModificationField) => field.id),

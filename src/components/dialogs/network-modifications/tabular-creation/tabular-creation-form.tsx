@@ -8,7 +8,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, LANG_FRENCH } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    CustomAGGrid,
+    ErrorInput,
+    FieldErrorAlert,
+    LANG_FRENCH,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { CREATIONS_TABLE, EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
@@ -44,6 +51,10 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
+
+    const equipmentType = useWatch({
+        name: TYPE,
+    });
 
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
@@ -113,6 +124,19 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     });
                 }
                 setIsFetching(false);
+                // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
+                if (
+                    equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                    results.data.some(
+                        (creation) =>
+                            creation.maxSusceptance != null &&
+                            (creation.shuntCompensatorType || creation.maxQAtNominalV != null)
+                    )
+                ) {
+                    snackWarning({
+                        messageId: 'TabularCreationShuntWarning',
+                    });
+                }
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
@@ -125,12 +149,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             setIsFetching(false);
             setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
         },
-        [clearErrors, setValue, getValues, setError, intl]
+        [clearErrors, setValue, getValues, equipmentType, setError, intl, snackWarning]
     );
-
-    const equipmentType = useWatch({
-        name: TYPE,
-    });
 
     const csvColumns = useMemo(() => {
         return TABULAR_CREATION_FIELDS[equipmentType]?.map((field: TabularCreationField) => {
