@@ -71,6 +71,7 @@ export type SpreadsheetConfig = {
     sheetType: SpreadsheetEquipmentType;
     columns: ColumnDefinitionDto[];
     globalFilters?: GlobalFilter[];
+    nodeAliases?: string[];
 };
 
 export type SpreadsheetConfigDto = SpreadsheetConfig & {

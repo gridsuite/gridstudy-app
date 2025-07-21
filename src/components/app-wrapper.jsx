@@ -49,6 +49,8 @@ import {
     commonButtonFr,
     componentsFr,
     componentsEn,
+    dndTableFr,
+    dndTableEn,
     equipmentsEn,
     equipmentsFr,
     networkModificationsEn,
@@ -176,6 +178,10 @@ const lightTheme = createTheme({
     },
     reactflow: {
         backgroundColor: 'white',
+        labeledGroup: {
+            backgroundColor: 'white',
+            borderColor: '#11161A',
+        },
     },
 });
 
@@ -252,6 +258,10 @@ const darkTheme = createTheme({
     },
     reactflow: {
         backgroundColor: '#414141',
+        labeledGroup: {
+            backgroundColor: '#11161A',
+            borderColor: '#D9D9D9',
+        },
     },
 });
 
@@ -307,6 +317,7 @@ const messages = {
         ...multipleSelectionDialogEn,
         ...commonButtonEn,
         ...componentsEn,
+        ...dndTableEn,
         ...equipmentsEn,
         ...grid_en,
         ...backend_locale_en,
@@ -340,6 +351,7 @@ const messages = {
         ...multipleSelectionDialogFr,
         ...commonButtonFr,
         ...componentsFr,
+        ...dndTableFr,
         ...equipmentsFr,
         ...grid_fr,
         ...backend_locale_fr,

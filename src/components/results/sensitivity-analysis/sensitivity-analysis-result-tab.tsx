@@ -5,25 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useCallback, useState } from 'react';
+import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
 import { FUNCTION_TYPES, isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
 import { UUID } from 'crypto';
-import { COMPUTATION_RESULTS_LOGS, SensiTab, SENSITIVITY_IN_DELTA_MW } from './sensitivity-analysis-result.type';
+import {
+    COMPUTATION_RESULTS_LOGS,
+    SensiTab,
+    SENSITIVITY_AT_NODE,
+    SENSITIVITY_IN_DELTA_MW,
+} from './sensitivity-analysis-result.type';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -46,6 +54,9 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
@@ -100,6 +111,17 @@ function SensitivityAnalysisResultTab({
             .finally(() => setIsCsvExportLoading(false));
     }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders]);
 
+    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+        return sensiTab === SENSITIVITY_AT_NODE
+            ? [EQUIPMENT_TYPES.VOLTAGE_LEVEL]
+            : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+    }, [sensiTab]);
+
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
+    );
+
     return (
         <>
             <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={handleSensiTabChange} />
@@ -117,6 +139,13 @@ function SensitivityAnalysisResultTab({
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
                         </Tabs>
+                        <Box sx={{ display: 'flex', flexGrow: 0 }}>
+                            <GlobalFilterSelector
+                                onChange={handleGlobalFilterChange}
+                                filters={globalFilterOptions}
+                                filterableEquipmentTypes={filterableEquipmentTypes}
+                            />
+                        </Box>
                         <ExportButton
                             disabled={isCsvButtonDisabled}
                             onClick={handleExportResultAsCsv}
@@ -134,6 +163,7 @@ function SensitivityAnalysisResultTab({
                         setPage={setPage}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
+                        globalFilters={getGlobalFilterParameter(globalFilters)}
                     />
                 </>
             )}

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum EquipmentsSelectionType {
-    ALL_EXCEPT = 'ALL_EXCEPT',
-    NONE_EXCEPT = 'NONE_EXCEPT',
-}
+export type NodePlacement = {
+    row: number;
+    column: number;
+};

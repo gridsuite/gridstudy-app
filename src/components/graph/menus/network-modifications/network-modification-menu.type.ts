@@ -10,9 +10,15 @@ import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
+    originalCaseUuid: UUID;
     name: string;
     tag: string;
     isCreating: boolean;
+}
+
+export interface ExcludedNetworkModifications {
+    rootNetworkUuid: UUID;
+    modificationUuidsToExclude: UUID[];
 }
 
 export interface NetworkModificationMetadata {
@@ -23,11 +29,6 @@ export interface NetworkModificationMetadata {
     activated: boolean;
     messageType: string;
     messageValues: string;
-}
-
-export interface NetworkModificationInfos {
-    modificationInfos: NetworkModificationMetadata;
-    activationStatusByRootNetwork: Record<UUID, boolean>;
 }
 
 export enum NetworkModificationCopyType {

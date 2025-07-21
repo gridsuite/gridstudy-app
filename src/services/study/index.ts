@@ -8,8 +8,7 @@
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { ElementType, EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
-import { ComputingType } from '../../components/computing-status/computing-type';
+import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
 import type { Svg } from 'components/diagrams/diagram-common';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
@@ -42,48 +41,13 @@ export const getStudyUrlWithRootNetworkUuid = (
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export function getNetworkAreaDiagramUrl(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    depth: number,
-    withGeoData: boolean
-) {
+export function getNetworkAreaDiagramUrl(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
     );
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/network-area-diagram?' +
-        new URLSearchParams({
-            depth: depth.toString(),
-            withGeoData: withGeoData.toString(),
-        })
-    );
-}
-
-export function getNetworkAreaDiagramUrlFromElement(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    elementUuid: UUID,
-    elementType: ElementType,
-    initNadWithGeoData: boolean
-) {
-    console.info(
-        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
-    );
-    return (
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/network-area-diagram?' +
-        new URLSearchParams({
-            elementParams: JSON.stringify({
-                elementUuid: elementUuid,
-                elementType: elementType,
-                depth: 0,
-                withGeoData: initNadWithGeoData,
-            }),
-        })
+        '/network-area-diagram'
     );
 }
 
@@ -130,15 +94,10 @@ export function fetchNodeReportLogs(
     page?: number,
     size?: number
 ) {
-    let url;
-    if (isGlobalLogs) {
-        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs?';
-    } else {
-        url =
-            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/report/' +
-            reportId +
-            '/logs?';
+    let url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs?';
+
+    if (!isGlobalLogs) {
+        url += 'reportId=' + safeEncodeURIComponent(reportId);
     }
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -160,14 +119,16 @@ export function fetchLogMatches(
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
+    isGlobalLogs: boolean,
     searchTerm: string,
     pageSize: number
 ) {
     let url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-        '/report/' +
-        reportId +
-        '/logs/search?';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs/search?';
+
+    if (!isGlobalLogs) {
+        url += 'reportId=' + safeEncodeURIComponent(reportId);
+    }
 
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -189,17 +150,12 @@ export function fetchNodeSeverities(
     reportId: string | null,
     isGlobalLogs: boolean
 ) {
-    let url;
-    if (isGlobalLogs) {
-        url =
-            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/report/aggregated-severities';
-    } else {
-        url =
-            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-            '/report/' +
-            reportId +
-            '/aggregated-severities';
+    let url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+        '/report/aggregated-severities';
+
+    if (!isGlobalLogs) {
+        url += '?reportId=' + safeEncodeURIComponent(reportId);
     }
     return backendFetchJson(url);
 }

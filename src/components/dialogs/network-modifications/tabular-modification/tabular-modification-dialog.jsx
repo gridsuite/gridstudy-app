@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -19,10 +19,13 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
+    convertGeneratorOrBatteryModificationFromBackToFront,
+    convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
     convertOutputValues,
     formatModification,
     getEquipmentTypeFromModificationType,
+    getFieldType,
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
@@ -68,20 +71,32 @@ const TabularModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
+
+    const disableSave = Object.keys(errors).length > 0;
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromModificationType(editData?.modificationType);
-            const modifications = editData?.modifications.map((modif) => {
-                const modification = {};
-                Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertInputValues(key, modif[key]);
-                });
+            const modificationType = editData.modificationType;
+            const modifications = editData.modifications.map((modif) => {
+                let modification = formatModification(modif);
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
+                    modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
+                } else {
+                    Object.keys(modification).forEach((key) => {
+                        modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
+                    });
+                }
                 return modification;
             });
             reset({
-                [TYPE]: equipmentType,
+                [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
             });
         }
@@ -91,12 +106,23 @@ const TabularModificationDialog = ({
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
             const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                const modification = {
+                let modification = {
                     type: modificationType,
                 };
-                Object.keys(row).forEach((key) => {
-                    modification[key] = convertOutputValues(key, row[key]);
-                });
+                if (
+                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
+                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
+                ) {
+                    const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
+                    modification = {
+                        ...generatorOrBatteryModification,
+                        ...modification,
+                    };
+                } else {
+                    Object.keys(row).forEach((key) => {
+                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+                    });
+                }
                 return modification;
             });
             createTabulareModification(
@@ -126,6 +152,10 @@ const TabularModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const dataFetching = useMemo(() => {
+        return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
+    }, [editDataFetchStatus, isUpdate]);
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -133,12 +163,13 @@ const TabularModificationDialog = ({
                 maxWidth={'lg'}
                 onClear={clear}
                 onSave={onSubmit}
+                disabledSave={disableSave}
                 titleId="TabularModification"
                 open={open}
-                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm />
+                <TabularModificationForm dataFetching={dataFetching} />
             </ModificationDialog>
         </CustomFormProvider>
     );

@@ -25,6 +25,9 @@ import { dialogStyles } from '../styles/styles';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { getEmptySpreadsheetFormSchema, initialEmptySpreadsheetForm, SPREADSHEET_NAME } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
+import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { ColumnDefinitionDto } from '../../types/spreadsheet.type';
+import { v4 as uuid4 } from 'uuid';
 
 interface AddEmptySpreadsheetDialogProps {
     open: UseStateBooleanReturn;
@@ -49,6 +52,15 @@ const TABLES_TYPES = [
     EquipmentType.BUS,
     EquipmentType.BUSBAR_SECTION,
 ];
+
+const DEFAULT_ID_COLUMN: ColumnDefinitionDto = {
+    uuid: uuid4() as UUID,
+    name: 'ID',
+    id: 'id',
+    type: COLUMN_TYPES.TEXT,
+    formula: 'id',
+    visible: true,
+};
 
 /**
  * Dialog for creating an empty spreadsheet
@@ -87,7 +99,7 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
 
             addNewSpreadsheet({
                 studyUuid,
-                columns: [],
+                columns: [DEFAULT_ID_COLUMN],
                 sheetType: equipmentType,
                 tabIndex,
                 tabName,
@@ -121,12 +133,12 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
                     </Grid>
                     <Grid item xs>
                         <SelectInput
-                            options={Object.values(TABLES_TYPES).map((equipmentType) => ({
-                                id: equipmentType,
-                                label: equipmentType,
+                            options={Object.values(TABLES_TYPES).map((elementType) => ({
+                                id: elementType,
+                                label: elementType,
                             }))}
                             name={EQUIPMENT_TYPE_FIELD}
-                            label="spreadsheet/create_new_spreadsheet/equipment_type"
+                            label="spreadsheet/create_new_spreadsheet/element_type"
                             size="small"
                         />
                     </Grid>

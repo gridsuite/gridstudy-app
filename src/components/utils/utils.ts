@@ -271,7 +271,7 @@ export function arrayFrom(start = 0.0, stop = 0.0, step = 1.0) {
 }
 
 export const StudyView = {
-    MAP: 'Map',
+    TREE: 'Tree',
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
     LOGS: 'Logs',
@@ -279,7 +279,7 @@ export const StudyView = {
 };
 
 export const STUDY_VIEWS = [
-    StudyView.MAP,
+    StudyView.TREE,
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,

@@ -23,7 +23,6 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
-import { useEffect } from 'react';
 import { darken, Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
@@ -89,18 +88,6 @@ export function HorizontalToolbar() {
         dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE));
     }
 
-    useEffect(() => {
-        if (!enableDeveloperMode) {
-            if (
-                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-            ) {
-                dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
-            }
-            dispatch(setEventScenarioDrawerOpen(false));
-        }
-    }, [enableDeveloperMode, dispatch, studyDisplayMode]);
-
     return (
         <Grid container alignItems="center" sx={styles.horizontalToolbar}>
             <Grid sx={{ marginRight: 'auto', marginLeft: '20px' }}>
@@ -110,7 +97,7 @@ export function HorizontalToolbar() {
                 sx={{
                     marginLeft: 'auto',
                     marginRight: '20px',
-                    visibility: STUDY_VIEWS?.[appTabIndex] !== StudyView.MAP ? 'hidden' : 'visible',
+                    visibility: STUDY_VIEWS?.[appTabIndex] !== StudyView.TREE ? 'hidden' : 'visible',
                 }}
             >
                 <List
@@ -267,76 +254,72 @@ export function HorizontalToolbar() {
                             <PublicIcon />
                         </IconButton>
                     </Tooltip>
-                    {enableDeveloperMode && (
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'DiagramGridLayout',
-                            })}
-                            placement="right"
-                            arrow
-                            enterDelay={TOOLTIP_DELAY}
-                            enterNextDelay={TOOLTIP_DELAY}
-                            slotProps={{
-                                popper: {
-                                    sx: {
-                                        '& .MuiTooltip-tooltip': styles.tooltip,
-                                    },
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'DiagramGridLayout',
+                        })}
+                        placement="right"
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                        slotProps={{
+                            popper: {
+                                sx: {
+                                    '& .MuiTooltip-tooltip': styles.tooltip,
                                 },
-                            }}
-                            style={{
-                                marginRight: '8px',
-                            }}
-                        >
-                            <span>
-                                <IconButton
-                                    size={'small'}
-                                    sx={
-                                        studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT
-                                            ? styles.selected
-                                            : styles.notSelected
-                                    }
-                                    onClick={setDiagramGridLayoutDisplay}
-                                >
-                                    <DashboardCustomizeOutlinedIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    )}
-                    {enableDeveloperMode && (
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'DiagramGridLayoutAndTree',
-                            })}
-                            placement="right"
-                            arrow
-                            enterDelay={TOOLTIP_DELAY}
-                            enterNextDelay={TOOLTIP_DELAY}
-                            slotProps={{
-                                popper: {
-                                    sx: {
-                                        '& .MuiTooltip-tooltip': styles.tooltip,
-                                    },
+                            },
+                        }}
+                        style={{
+                            marginRight: '8px',
+                        }}
+                    >
+                        <span>
+                            <IconButton
+                                size={'small'}
+                                sx={
+                                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+                                        ? styles.selected
+                                        : styles.notSelected
+                                }
+                                onClick={setDiagramGridLayoutDisplay}
+                            >
+                                <DashboardCustomizeOutlinedIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'DiagramGridLayoutAndTree',
+                        })}
+                        placement="right"
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                        slotProps={{
+                            popper: {
+                                sx: {
+                                    '& .MuiTooltip-tooltip': styles.tooltip,
                                 },
-                            }}
-                            style={{
-                                marginRight: '8px',
-                            }}
-                        >
-                            <span>
-                                <IconButton
-                                    size={'small'}
-                                    sx={
-                                        studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                                            ? styles.selected
-                                            : styles.notSelected
-                                    }
-                                    onClick={setDiagramGridLayoutAndTreeDisplay}
-                                >
-                                    <AutoAwesomeMosaicOutlinedIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    )}
+                            },
+                        }}
+                        style={{
+                            marginRight: '8px',
+                        }}
+                    >
+                        <span>
+                            <IconButton
+                                size={'small'}
+                                sx={
+                                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                                        ? styles.selected
+                                        : styles.notSelected
+                                }
+                                onClick={setDiagramGridLayoutAndTreeDisplay}
+                            >
+                                <AutoAwesomeMosaicOutlinedIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
                 </List>
             </Grid>
         </Grid>

@@ -847,5 +847,8 @@ export type BalancesAdjustmentInfos = {
     thresholdNetPosition: number;
     countriesToBalance: string[];
     balanceType: BalanceType;
+    withLoadFlow: boolean;
+    loadFlowParametersId: string | null;
+    withRatioTapChangers: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };

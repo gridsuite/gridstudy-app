@@ -8,7 +8,8 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { VoltageInitParam } from '../../components/dialogs/parameters/voltageinit/voltage-init-utils';
+import { VoltageInitStudyParameters } from '@gridsuite/commons-ui';
+import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
 export function startVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
@@ -45,38 +46,32 @@ export function fetchVoltageInitStatus(studyUuid: UUID, currentNodeUuid: UUID, c
     return backendFetchText(url);
 }
 
-export function fetchVoltageInitResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchVoltageInitResult(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    queryParams: ResultsQueryParams
+) {
     console.info(
         `Fetching voltage init result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );
+    const { globalFilters } = queryParams || {};
+    const params = new URLSearchParams({});
+
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/voltage-init/result';
-    console.debug(url);
-    return backendFetchJson(url);
+    const urlWithParams = `${url}?${params.toString()}`;
+
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
 }
 
-export function updateVoltageInitParameters(
-    studyUuid: UUID | null,
-    newParams: VoltageInitParam | Record<string, boolean | null>
-) {
-    console.info('set voltage init parameters');
-    const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
-    console.debug(url);
-
-    console.info('newParams in rest API', newParams);
-
-    return backendFetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newParams),
-    });
-}
-
-export function getVoltageInitStudyParameters(studyUuid: UUID) {
+export function getVoltageInitStudyParameters(studyUuid: UUID): Promise<VoltageInitStudyParameters> {
     console.info('get voltage init study parameters');
     const getVoltageInitParams = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);

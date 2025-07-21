@@ -19,6 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
+import LoupeIcon from '@mui/icons-material/Loupe';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -59,9 +60,18 @@ interface DiagramControlsProps {
     onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
+    onExpandAllVoltageLevels?: () => void;
+    isDiagramLoading?: boolean;
 }
 
-const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEditNadMode, onToggleEditNadMode }) => {
+const DiagramControls: React.FC<DiagramControlsProps> = ({
+    onSave,
+    onLoad,
+    isEditNadMode,
+    onToggleEditNadMode,
+    onExpandAllVoltageLevels,
+    isDiagramLoading,
+}) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
@@ -81,6 +91,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
 
     const handleClickLoadIcon = () => {
         setIsLoadSelectorOpen(true);
+    };
+
+    const handleClickExpandAllVoltageLevelsIcon = () => {
+        if (onExpandAllVoltageLevels && !isDiagramLoading) {
+            onExpandAllVoltageLevels();
+        }
     };
 
     const handleSave = (data: IElementCreationDialog) => {
@@ -124,16 +140,30 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
                             <SaveIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'GenerateFromGridexplore'} />}>
+                    <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
                         <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
+                    {isEditNadMode && (
+                        <>
+                            <hr style={{ margin: '2px 4px' }} />
+                            <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
+                                <IconButton
+                                    sx={styles.actionIcon}
+                                    onClick={handleClickExpandAllVoltageLevelsIcon}
+                                    disabled={isDiagramLoading}
+                                >
+                                    <LoupeIcon sx={styles.icon} />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
                 </Box>
             </Box>
             <Box sx={styles.buttonPanel}>
                 <Button size="small" sx={styles.button} onClick={handleToggleEditMode}>
-                    <FormattedMessage id={isEditNadMode ? 'save' : 'EditNad'} />
+                    <FormattedMessage id={isEditNadMode ? 'apply' : 'EditNad'} />
                 </Button>
             </Box>
             {studyUuid && (
@@ -153,7 +183,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({ onSave, onLoad, isEdi
                             onClose={selectElement}
                             types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                             title={intl.formatMessage({
-                                id: 'GenerateFromGridexplore',
+                                id: 'AddFromGridexplore',
                             })}
                             multiSelect={false}
                         />

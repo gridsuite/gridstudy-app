@@ -29,6 +29,7 @@ import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
 import { GlobalFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
 import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
+import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
 
 const createNewTableDefinition = (
     columns: ColumnDefinition[],
@@ -107,15 +108,18 @@ const handleSuccess = (
     newTableDefinition: SpreadsheetTabDefinition,
     dispatch: Dispatch,
     snackError: any,
-    open: UseStateBooleanReturn
+    open: UseStateBooleanReturn,
+    nodeAliases?: string[],
+    resetNodeAliases?: ResetNodeAliasCallback
 ) => {
     newTableDefinition.uuid = uuid;
     // we need to refetch the model to get the new column uuids
     getSpreadsheetModel(uuid)
         .then((model: SpreadsheetConfigDto) => {
+            resetNodeAliases?.(true, nodeAliases);
             newTableDefinition.columns = model.columns.map((col: ColumnDefinitionDto) => ({
                 ...col,
-                dependencies: col?.dependencies?.length ? JSON.parse(JSON.stringify(col.dependencies)) : undefined,
+                dependencies: col?.dependencies?.length ? JSON.parse(col.dependencies) : undefined,
                 visible: true,
                 locked: false,
             }));
@@ -148,6 +152,8 @@ interface AddNewSpreadsheetParams {
     dispatch: Dispatch;
     snackError: any;
     open: UseStateBooleanReturn;
+    nodeAliases?: string[];
+    resetNodeAliases?: ResetNodeAliasCallback;
 }
 
 export const addNewSpreadsheet = ({
@@ -161,13 +167,17 @@ export const addNewSpreadsheet = ({
     dispatch,
     snackError,
     open,
+    nodeAliases,
+    resetNodeAliases,
 }: AddNewSpreadsheetParams) => {
     const columnsDefinition = mapColumnsDto(columns);
     const newTableDefinition = createNewTableDefinition(columnsDefinition, sheetType, tabIndex, tabName);
-    const spreadsheetConfig = createSpreadsheetConfig(columns, globalFilters, sheetType, tabName);
+    const spreadsheetConfig = createSpreadsheetConfig(columnsDefinition, globalFilters, sheetType, tabName);
 
     addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
-        .then((uuid: UUID) => handleSuccess(uuid, newTableDefinition, dispatch, snackError, open))
+        .then((uuid: UUID) =>
+            handleSuccess(uuid, newTableDefinition, dispatch, snackError, open, nodeAliases, resetNodeAliases)
+        )
         .catch((error) => {
             snackError({
                 messageTxt: error,

@@ -26,7 +26,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -38,7 +38,6 @@ import LineModificationDialog from 'components/dialogs/network-modifications/lin
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { ComputingType } from 'components/computing-status/computing-type';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
@@ -52,7 +51,6 @@ import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
-import { useDiagram } from '../use-diagram';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -71,6 +69,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     readonly visible: boolean;
+    readonly onNextVoltageLevelClick: (voltageLevelId: string) => void;
 }
 
 type EquipmentToModify = {
@@ -118,7 +117,7 @@ function applyInvalidStyles(svgContainer: HTMLElement) {
 }
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
-    const { diagramSizeSetter, studyUuid, visible } = props;
+    const { diagramSizeSetter, studyUuid, visible, onNextVoltageLevelClick } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
@@ -132,7 +131,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
     const [errorMessage, setErrorMessage] = useState('');
-    const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState<EquipmentToModify>();
     const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentToModify>();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
@@ -220,18 +218,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             }
         },
         [studyUuid, currentNode, modificationInProgress]
-    );
-
-    const handleNextVoltageLevelClick = useCallback(
-        (id: string) => {
-            // This function is called by powsybl-network-viewer when clicking on a navigation arrow in a single line diagram.
-            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!studyUuid || !currentNode) {
-                return;
-            }
-            openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
-        },
-        [studyUuid, currentNode, openDiagramView]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>(defaultMenuState);
@@ -546,7 +532,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 props.svgType === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
 
                 // callback on the next voltage arrows
-                isReadyForInteraction ? handleNextVoltageLevelClick : null,
+                isReadyForInteraction ? onNextVoltageLevelClick : null,
 
                 // callback on the breakers
                 isReadyForInteraction && !isNodeReadOnly(currentNode) ? handleBreakerClick : null,
@@ -613,7 +599,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         props.loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
-        handleNextVoltageLevelClick,
+        onNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
         computationStarting,

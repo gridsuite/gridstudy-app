@@ -24,6 +24,7 @@ export enum DataType {
     INTEGER = 'INTEGER',
     DOUBLE = 'DOUBLE',
     PROPERTY = 'PROPERTY',
+    STRING = 'STRING',
 }
 
 export type FieldOptionType = {

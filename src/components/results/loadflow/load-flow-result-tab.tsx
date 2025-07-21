@@ -15,7 +15,6 @@ import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
-import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import {
@@ -31,24 +30,23 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { loadflowResultInvalidations } from '../../computing-status/use-all-computing-status';
-import { FilterType } from '../common/utils';
 import { useNodeData } from 'components/use-node-data';
 import {
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { GlobalFilter, GlobalFilters } from '../common/global-filter/global-filter-types';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import { useGlobalFilterData } from '../common/global-filter/use-global-filter-data';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
+import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 const styles = {
     flexWrapper: {
@@ -84,35 +82,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
-    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterData();
-    const [globalFilter, setGlobalFilter] = useState<GlobalFilters>();
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
-
-    const getGlobalFilterParameter = useCallback(
-        (globalFilter: GlobalFilters | undefined) => {
-            let shouldSentParameter = false;
-            if (globalFilter) {
-                if (
-                    (globalFilter.countryCode && globalFilter.countryCode.length > 0) ||
-                    (globalFilter.nominalV && globalFilter.nominalV.length > 0) ||
-                    (globalFilter.genericFilter && globalFilter.genericFilter.length > 0) ||
-                    globalFilter.substationProperty
-                ) {
-                    shouldSentParameter = true;
-                }
-            }
-            if (!shouldSentParameter) {
-                return undefined;
-            }
-            return {
-                ...globalFilter,
-                limitViolationsTypes:
-                    tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
-            };
-        },
-        [tabIndex]
-    );
 
     const getEnumLabel = useCallback(
         (value: string) =>
@@ -146,10 +119,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                globalFilters: getGlobalFilterParameter(globalFilter),
+                ...(getGlobalFilterParameter(globalFilters) !== undefined && {
+                    globalFilters: {
+                        ...getGlobalFilterParameter(globalFilters),
+                        limitViolationsTypes:
+                            tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
+                    },
+                }),
             });
         },
-        [tabIndex, filters, intl, sortConfig, getGlobalFilterParameter, globalFilter]
+        [tabIndex, filters, intl, sortConfig, getGlobalFilterParameter, globalFilters]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
@@ -210,50 +189,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         setTabIndex(newTabIndex);
     };
 
-    const handleGlobalFilterChange = useCallback((value: GlobalFilter[]) => {
-        let newGlobalFilter: GlobalFilters = {};
-        if (value) {
-            const nominalVs = new Set(
-                value
-                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
-                    .map((filter: GlobalFilter) => filter.label)
-            );
-            const genericFilters: Set<string> = new Set(
-                value
-                    .filter((filter: GlobalFilter): boolean => filter.filterType === FilterType.GENERIC_FILTER)
-                    .map((filter: GlobalFilter) => filter.uuid ?? '')
-                    .filter((uuid: string): boolean => uuid !== '')
-            );
-            const countryCodes = new Set(
-                value
-                    .filter((filter: GlobalFilter) => filter.filterType === FilterType.COUNTRY)
-                    .map((filter: GlobalFilter) => filter.label)
-            );
-            // extract the substation properties and sort them by property name (ie filterSubtype)
-            const substationProperties: Map<string, string[]> = new Map();
-            value
-                .filter((filter: GlobalFilter) => filter.filterType === FilterType.SUBSTATION_PROPERTY)
-                .forEach((filter: GlobalFilter) => {
-                    if (filter.filterSubtype) {
-                        const subtypeSubstationProperties = substationProperties.get(filter.filterSubtype);
-                        if (subtypeSubstationProperties) {
-                            subtypeSubstationProperties.push(filter.label);
-                        } else {
-                            substationProperties.set(filter.filterSubtype, [filter.label]);
-                        }
-                    }
-                });
-
-            newGlobalFilter.nominalV = [...nominalVs];
-            newGlobalFilter.countryCode = [...countryCodes];
-            newGlobalFilter.genericFilter = [...genericFilters];
-            if (substationProperties.size > 0) {
-                newGlobalFilter.substationProperty = Object.fromEntries(substationProperties);
-            }
-        }
-        setGlobalFilter(newGlobalFilter);
-    }, []);
-
     const result = useMemo(() => {
         if (!loadflowResult) {
             return [];
@@ -274,15 +209,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         return [];
     }, [tabIndex]);
 
-    const globalFilters = useMemo(
-        () => (
-            <GlobalFilterSelector
-                onChange={handleGlobalFilterChange}
-                filters={[...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter]}
-                filterableEquipmentTypes={filterableEquipmentTypes}
-            />
-        ),
-        [countriesFilter, filterableEquipmentTypes, handleGlobalFilterChange, voltageLevelsFilter, propertiesFilter]
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
 
     return (
@@ -295,7 +224,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
-                    {globalFilters}
+                    <GlobalFilterSelector
+                        onChange={handleGlobalFilterChange}
+                        filters={globalFilterOptions}
+                        filterableEquipmentTypes={filterableEquipmentTypes}
+                    />
                 </Box>
                 <Box sx={styles.emptySpace}></Box>
             </Box>

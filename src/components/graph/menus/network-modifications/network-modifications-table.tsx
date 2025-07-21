@@ -5,22 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, ReactNode, SetStateAction } from 'react';
+import React, { useCallback, useMemo, SetStateAction } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
     ColDef,
     GetRowIdParams,
-    ICellRendererParams,
+    IRowDragItem,
     RowClassParams,
     RowDragEndEvent,
     RowDragEnterEvent,
     RowSelectedEvent,
     RowStyle,
+    ValueGetterParams,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 import { Badge, Box, Theme } from '@mui/material';
-import { NetworkModificationInfos } from './network-modification-menu.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
@@ -31,6 +31,8 @@ import {
 import RootNetworkChipCellRenderer from './root-network-chip-cell-renderer';
 import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { ExcludedNetworkModifications } from './network-modification-menu.type';
+import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
 
 const styles = {
     container: (theme: Theme) => ({
@@ -51,14 +53,16 @@ const styles = {
 };
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
-    modifications: NetworkModificationInfos[];
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationInfos[]>>;
+    modifications: NetworkModificationMetadata[];
+    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
     handleCellClick?: (event: CellClickedEvent) => void;
     isRowDragDisabled?: boolean;
     isDragging?: boolean;
     onRowDragStart?: (event: RowDragEnterEvent) => void;
     onRowDragEnd?: (event: RowDragEndEvent) => void;
     onRowSelected?: (event: RowSelectedEvent) => void;
+    modificationsToExclude: ExcludedNetworkModifications[];
+    setModificationsToExclude: React.Dispatch<SetStateAction<ExcludedNetworkModifications[]>>;
 }
 
 const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
@@ -70,6 +74,8 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     onRowDragStart,
     onRowDragEnd,
     onRowSelected,
+    modificationsToExclude,
+    setModificationsToExclude,
     ...nameHeaderProps
 }) => {
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
@@ -78,7 +84,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
 
-    const defaultColumnDefinition: ColDef<NetworkModificationInfos> = {
+    const defaultColumnDefinition: ColDef<NetworkModificationMetadata> = {
         sortable: false,
         resizable: false,
         suppressMovable: true,
@@ -88,7 +94,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const getModificationLabel = useCallback(
-        (modif?: NetworkModificationMetadata): ReactNode => {
+        (modif?: NetworkModificationMetadata, formatBold: boolean = true) => {
             if (!modif) {
                 return '';
             }
@@ -96,15 +102,23 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 { id: 'network_modifications.' + modif.messageType },
                 {
                     ...modif,
-                    ...computeLabel(modif),
+                    ...computeLabel(modif, formatBold),
                 }
             );
         },
         [computeLabel, intl]
     );
 
+    const getRowDragText = useCallback(
+        (params: IRowDragItem) => {
+            const label = getModificationLabel(params?.rowNode?.data, false);
+            return typeof label === 'string' ? label : '';
+        },
+        [getModificationLabel]
+    );
+
     const columnDefs = useMemo(() => {
-        const staticColumns: ColDef<NetworkModificationInfos>[] = [
+        const staticColumns: ColDef<NetworkModificationMetadata>[] = [
             {
                 colId: 'modificationName',
                 rowDrag: !isRowDragDisabled,
@@ -113,8 +127,9 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                     modificationCount: modifications?.length,
                     ...nameHeaderProps,
                 },
-                cellRenderer: (params: ICellRendererParams<NetworkModificationInfos>) =>
-                    getModificationLabel(params?.data?.modificationInfos),
+                cellRenderer: NetworkModificationNameCellRenderer,
+                valueGetter: (value: ValueGetterParams) => getModificationLabel(value?.data),
+                rowDragText: getRowDragText,
                 minWidth: 200,
                 flex: 1,
                 cellStyle: { cursor: 'pointer' },
@@ -127,16 +142,18 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 width: 60,
             },
         ];
-        const dynamicColumns: ColDef<NetworkModificationInfos>[] = !isMonoRootStudy
+        const dynamicColumns: ColDef<NetworkModificationMetadata>[] = !isMonoRootStudy
             ? rootNetworks.map((rootNetwork) => {
                   const rootNetworkUuid = rootNetwork.rootNetworkUuid;
                   const isCurrentRootNetwork = rootNetworkUuid === currentRootNetworkUuid;
+
                   return {
                       colId: rootNetworkUuid,
                       cellRenderer: RootNetworkChipCellRenderer,
                       cellRendererParams: {
                           rootNetwork: rootNetwork,
-                          setModifications: setModifications,
+                          modificationsToExclude: modificationsToExclude,
+                          setModificationsToExclude: setModificationsToExclude,
                       },
                       cellStyle: { textAlign: 'center' },
                       headerStyle: { padding: 0 },
@@ -163,20 +180,23 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         return [...staticColumns, ...dynamicColumns];
     }, [
         isRowDragDisabled,
-        modifications?.length,
+        modifications.length,
         nameHeaderProps,
+        getRowDragText,
         setModifications,
         isMonoRootStudy,
         rootNetworks,
         getModificationLabel,
         currentRootNetworkUuid,
+        modificationsToExclude,
+        setModificationsToExclude,
     ]);
 
-    const getRowId = (params: GetRowIdParams<NetworkModificationInfos>) => params.data.modificationInfos.uuid;
+    const getRowId = (params: GetRowIdParams<NetworkModificationMetadata>) => params.data.uuid;
 
-    const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationInfos, unknown>) => {
+    const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationMetadata, unknown>) => {
         const style: RowStyle = {};
-        if (!cellData?.data?.modificationInfos?.activated) {
+        if (!cellData?.data?.activated) {
             style.opacity = 0.4;
         }
         return style;
