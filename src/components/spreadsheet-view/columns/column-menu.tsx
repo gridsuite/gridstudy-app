@@ -71,6 +71,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
+                        headerId: 'spreadsheet/custom_column/duplicate_column_error',
                     });
                 });
         }
@@ -109,7 +110,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerTxt: 'spreadsheet/custom_column/delete_column_error',
+                        headerId: 'spreadsheet/custom_column/delete_column_error',
                     });
                 });
         }
