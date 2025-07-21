@@ -52,7 +52,7 @@ import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
-import { normalizeEquipmentType } from '../diagram-utils';
+import { convertEquipmentType } from '../diagram-utils';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -193,13 +193,13 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const handleTogglePopover = useCallback(
         (shouldDisplay: boolean, currentTarget: EventTarget | null, equipmentId: string, equipmentType: string) => {
             const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
-            const normalizedEquipmentType = normalizeEquipmentType(equipmentType);
+            const convertedEquipmentType = convertEquipmentType(equipmentType);
             setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable);
 
             if (shouldDisplay && isEquipmentHoverable) {
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(normalizedEquipmentType);
+                setHoveredEquipmentType(convertedEquipmentType);
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);

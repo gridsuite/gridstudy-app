@@ -70,7 +70,7 @@ export function mergePositions(
     return Array.from(positionsMap.values());
 }
 
-export function normalizeEquipmentType(equipmentType: string): string {
+export function convertEquipmentType(equipmentType: string): string {
     const typeMapping: Record<string, string> = {
         [FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER]: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
     };
