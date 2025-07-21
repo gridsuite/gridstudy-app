@@ -21,8 +21,6 @@ export const MAX_WIDTH_SUBSTATION = 1200;
 export const MAX_HEIGHT_SUBSTATION = 700;
 export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
 export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
-// To prevent increasing the network area diagram depth when the number of voltage levels in the diagram exceeds this value
-export const NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS = 50;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
@@ -49,9 +47,6 @@ export const styles = {
         '& .nad-label-box': {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,
-        },
-        '& .nad-text-edges': {
-            stroke: theme.palette.text.primary,
         },
     }),
     divSingleLineDiagram: (theme: Theme) => ({

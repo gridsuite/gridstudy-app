@@ -38,6 +38,13 @@ export function getLoadFlowParameters(studyUuid: UUID) {
     return backendFetchJson(getLfParams);
 }
 
+export function getLoadFlowProvider(studyUuid: UUID) {
+    console.info('get load flow provider');
+    const getLfParams = getStudyUrl(studyUuid) + '/loadflow/provider';
+    console.debug(getLfParams);
+    return backendFetchText(getLfParams);
+}
+
 export function getLoadFlowParametersId(studyUuid: UUID) {
     console.info('get load flow parameters id');
     const getLoadFlowParametersIdUrl = getStudyUrl(studyUuid) + '/loadflow/parameters/id';
