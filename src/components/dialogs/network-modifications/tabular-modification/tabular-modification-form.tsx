@@ -55,7 +55,9 @@ export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<Tab
     const propertiesDialogOpen = useStateBoolean(false);
     const language = useSelector((state: AppState) => state.computedLanguage);
     const [properties, setProperties] = useState<Property[]>([]);
-    const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>({});
+    const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>(
+        {}
+    );
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
@@ -137,7 +139,7 @@ export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<Tab
             currentProperties: properties,
             predefinedEquipmentProperties,
         });
-    }, [csvColumns, intl, equipmentType, language, predefinedEquipmentProperties]);
+    }, [csvColumns, intl, equipmentType, language, properties, predefinedEquipmentProperties]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
