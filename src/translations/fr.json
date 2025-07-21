@@ -580,6 +580,7 @@
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
+    "TabularCreationShuntWarning": "La création tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
     "substationName": "Nom du site",
     "activePower": "p (MW)",
@@ -1481,5 +1482,6 @@
     "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
-    "AddNewCard": "Ajouter une nouvelle image"
+    "AddNewCard": "Ajouter une nouvelle image",
+    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
 }
