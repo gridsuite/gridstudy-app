@@ -46,7 +46,7 @@ import { startShortCircuitAnalysis } from '../../../services/study/short-circuit
 import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { openDiagram, setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
+import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
@@ -71,6 +71,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     readonly visible: boolean;
+    readonly onNextVoltageLevelClick: (voltageLevelId: string) => void;
 }
 
 type EquipmentToModify = {
@@ -118,7 +119,7 @@ function applyInvalidStyles(svgContainer: HTMLElement) {
 }
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
-    const { diagramSizeSetter, studyUuid, visible } = props;
+    const { diagramSizeSetter, studyUuid, visible, onNextVoltageLevelClick } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
@@ -223,18 +224,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             }
         },
         [studyUuid, currentNode, modificationInProgress]
-    );
-
-    const handleNextVoltageLevelClick = useCallback(
-        (id: string) => {
-            // This function is called by powsybl-network-viewer when clicking on a navigation arrow in a single line diagram.
-            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!studyUuid || !currentNode) {
-                return;
-            }
-            dispatch(openDiagram(id, DiagramType.VOLTAGE_LEVEL));
-        },
-        [dispatch, studyUuid, currentNode]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>(defaultMenuState);
@@ -549,7 +538,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 props.svgType === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
 
                 // callback on the next voltage arrows
-                isReadyForInteraction ? handleNextVoltageLevelClick : null,
+                isReadyForInteraction ? onNextVoltageLevelClick : null,
 
                 // callback on the breakers
                 isReadyForInteraction && !isNodeReadOnly(currentNode) ? handleBreakerClick : null,
@@ -616,7 +605,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         props.loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
-        handleNextVoltageLevelClick,
+        onNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
         computationStarting,
