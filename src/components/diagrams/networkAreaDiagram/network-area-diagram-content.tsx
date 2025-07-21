@@ -26,7 +26,7 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import { buildPositionsFromNadMetadata } from '../diagram-utils';
+import { buildPositionsFromNadMetadata, convertEquipmentType } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
@@ -120,12 +120,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     left: mousePosition.x + 10,
                 };
 
-                setAnchorPosition(anchorPosition);
-                setHoveredEquipmentId(equipmentId);
-                setHoveredEquipmentType(equipmentType);
-
                 // Only show tooltip if the equipment type is in the hoverable list
                 const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+                const convertedEquipmentType = convertEquipmentType(equipmentType);
+
+                setAnchorPosition(anchorPosition);
+                setHoveredEquipmentId(equipmentId);
+                setHoveredEquipmentType(convertedEquipmentType);
+
                 setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable); // Show or hide based on shouldDisplay
             } else {
                 setShouldDisplayTooltip(false);
