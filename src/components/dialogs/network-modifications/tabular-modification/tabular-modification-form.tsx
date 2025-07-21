@@ -16,21 +16,11 @@ import {
     LANG_FRENCH,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import {
-    CONNECTED,
-    CONNECTED1,
-    CONNECTED2,
-    EQUIPMENT_ID,
-    MODIFICATIONS_TABLE,
-    PARTICIPATE,
-    REACTIVE_CAPABILITY_CURVE,
-    TYPE,
-    VOLTAGE_REGULATION_ON,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_MODIFICATION_FIELDS, styles } from './tabular-modification-utils';
+import { TABULAR_MODIFICATION_FIELDS, styles, TabularModificationField } from './tabular-modification-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
@@ -39,7 +29,13 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { generateCommentLines, transformIfFrenchNumber } from '../tabular-creation/tabular-creation-utils';
+import {
+    generateCommentLines,
+    setFieldTypeError,
+    transformIfFrenchNumber,
+    isFieldTypeOk,
+} from '../tabular-creation/tabular-creation-utils';
+import { BOOLEAN } from '../../../network/constants';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -49,7 +45,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const { setValue, clearErrors, getValues } = useFormContext();
+    const { setValue, clearErrors, setError, getValues } = useFormContext();
 
     const language = useSelector((state: AppState) => state.computedLanguage);
 
@@ -58,9 +54,36 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(MODIFICATIONS_TABLE);
-            setValue(MODIFICATIONS_TABLE, results.data, {
-                shouldDirty: true,
-            });
+            let fieldTypeInError: string = '';
+            let expectedTypeForFieldInError: string = '';
+            let expectedValues: string[] | undefined;
+
+            // check if the csv contains an error
+            if (
+                results.data.flatMap(Object.entries).some(([key, value]) => {
+                    const fieldDef = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
+                    // check the field types
+                    if (!isFieldTypeOk(value, fieldDef)) {
+                        fieldTypeInError = key;
+                        expectedTypeForFieldInError = fieldDef?.type ?? '';
+                        expectedValues = fieldDef?.options;
+                        return true; // “yes, we found an error here” → break some() loop
+                    }
+                    return false; // keep looking
+                })
+            ) {
+                setFieldTypeError(
+                    fieldTypeInError,
+                    expectedTypeForFieldInError,
+                    MODIFICATIONS_TABLE,
+                    setError,
+                    intl,
+                    expectedValues
+                );
+            }
+
+            setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
+
             setIsFetching(false);
             // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
             if (
@@ -70,25 +93,24 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                         (modification.shuntCompensatorType || modification.maxQAtNominalV)
                 )
             ) {
-                snackWarning({
-                    messageId: 'TabularModificationShuntWarning',
-                });
+                snackWarning({ messageId: 'TabularModificationShuntWarning' });
             }
         },
-        [clearErrors, setValue, snackWarning]
+        [clearErrors, setValue, snackWarning, getValues, setError, intl]
     );
 
     const equipmentType = useWatch({
         name: TYPE,
     });
 
-    const csvColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[equipmentType];
-    }, [equipmentType]);
+    const csvColumns = useMemo(
+        () => TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field: TabularModificationField) => field.id),
+        [equipmentType]
+    );
 
     const csvTranslatedColumns = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
-            return intl.formatMessage({ id: field });
+            return intl.formatMessage({ id: field.id });
         });
     }, [intl, equipmentType]);
 
@@ -120,6 +142,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             setIsFetching(false);
         } else if (selectedFile) {
             setIsFetching(true);
+            // @ts-ignore
             Papa.parse(selectedFile as unknown as File, {
                 header: true,
                 skipEmptyLines: true,
@@ -130,7 +153,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 transformHeader: (header: string) => {
                     // transform header to modification field
                     const transformedHeader = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find(
-                        (field) => intl.formatMessage({ id: field }) === header
+                        (field) => intl.formatMessage({ id: field.id }) === header
                     );
                     return transformedHeader ?? header;
                 },
@@ -179,24 +202,12 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
             const columnDef: ColDef = {};
-            if (field === EQUIPMENT_ID) {
+            if (field.id === EQUIPMENT_ID) {
                 columnDef.pinned = true;
             }
-            columnDef.field = field;
-            columnDef.headerName = intl.formatMessage({ id: field });
-            const booleanColumns = [
-                VOLTAGE_REGULATION_ON,
-                CONNECTED,
-                CONNECTED1,
-                CONNECTED2,
-                REACTIVE_CAPABILITY_CURVE,
-                PARTICIPATE,
-            ];
-            if (booleanColumns.includes(field)) {
-                columnDef.cellRenderer = BooleanNullableCellRenderer;
-            } else {
-                columnDef.cellRenderer = DefaultCellRenderer;
-            }
+            columnDef.field = field.id;
+            columnDef.headerName = intl.formatMessage({ id: field.id });
+            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
             return columnDef;
         });
     }, [intl, equipmentType]);
