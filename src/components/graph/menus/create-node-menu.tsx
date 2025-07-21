@@ -247,11 +247,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
         const allChildren = nodeSelectionForCopy.allChildren;
 
-        const isAllOfType = (type: NetworkModificationNodeType) =>
+        const areAllOfType = (type: NetworkModificationNodeType) =>
             allChildren?.every((child) => child.nodeType === type) && nodeSelectionForCopy.nodeType === type;
 
-        const isAllSecurity = isAllOfType(NetworkModificationNodeType.SECURITY);
-        const isAllConstruction = isAllOfType(NetworkModificationNodeType.CONSTRUCTION);
+        const isAllSecurity = areAllOfType(NetworkModificationNodeType.SECURITY);
+        const isAllConstruction = areAllOfType(NetworkModificationNodeType.CONSTRUCTION);
         const isMixed = !isAllSecurity && !isAllConstruction;
 
         const isActiveNodeRoot = activeNode.type === NodeType.ROOT;
