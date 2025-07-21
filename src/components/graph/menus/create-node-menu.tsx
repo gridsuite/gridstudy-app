@@ -18,13 +18,7 @@ import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import {
-    CurrentTreeNode,
-    isConstructionModificationNode,
-    isSecurityModificationNode,
-    NetworkModificationNodeType,
-    NodeType,
-} from '../tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -255,7 +249,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         const isMixed = !isAllSecurity && !isAllConstruction;
 
         const isActiveNodeRoot = activeNode.type === NodeType.ROOT;
-        const isActiveNodeConstruction = isConstructionModificationNode(activeNode);
+        const isActiveNodeConstruction = !isSecurityModificationNode(activeNode);
 
         if (isAllSecurity) {
             // Rule 1: SECURITY subtree can be inserted on new branch from any node type
