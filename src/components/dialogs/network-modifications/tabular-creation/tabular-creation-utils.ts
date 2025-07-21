@@ -367,11 +367,12 @@ export const generateCommentLines = ({
             secondCommentLine = intl.formatMessage({ id: commentKey });
         }
         const activeProperties = currentProperties?.filter((p) => p.selected).map((p) => p.name);
-        if (predefinedEquipmentProperties && activeProperties) {
+        if (activeProperties) {
             const networkEquipmentType = equipmentTypesForPredefinedPropertiesMapper(equipmentType as EquipmentType);
             if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
                 if (secondCommentLine.length === 0) {
-                    const nbSepatator = csvTranslatedColumns.length - 1;
+                    // create an empty row without property columns
+                    const nbSepatator = csvTranslatedColumns.length - 1 - activeProperties.length;
                     secondCommentLine = separator.repeat(nbSepatator);
                 }
                 activeProperties.forEach((propertyName) => {
@@ -379,7 +380,10 @@ export const generateCommentLines = ({
                         predefinedEquipmentProperties[networkEquipmentType]?.[propertyName]?.sort((a, b) =>
                             a.localeCompare(b)
                         ) ?? [];
-                    secondCommentLine = secondCommentLine + separator + possibleValues.join('|');
+                    secondCommentLine = secondCommentLine + separator;
+                    if (possibleValues.length > 1) {
+                        secondCommentLine = secondCommentLine + possibleValues.join(' | ');
+                    }
                 });
             }
         }
