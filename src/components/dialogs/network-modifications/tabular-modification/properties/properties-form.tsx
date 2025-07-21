@@ -6,17 +6,32 @@
  */
 import { Grid } from '@mui/material';
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
-import { ADDITIONAL_PROPERTIES } from '../../../../utils/field-constants';
+import { ADDITIONAL_PROPERTIES, PREDEFINED } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
 import { initializedProperty } from './property-utils';
+import { useCallback } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 const PropertiesForm = () => {
+    const { getValues } = useFormContext();
+    const disabledDeletion = useCallback(
+        (idx: number) => {
+            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            if (properties && typeof properties[idx] !== 'undefined') {
+                return properties[idx][PREDEFINED];
+            }
+            return false;
+        },
+        [getValues]
+    );
+
     const additionalProps = (
         <ExpandableInput
             name={ADDITIONAL_PROPERTIES}
             Field={PropertyForm}
             addButtonLabel={'AddProperty'}
             initialValue={initializedProperty()}
+            disabledDeletion={disabledDeletion}
         />
     );
 

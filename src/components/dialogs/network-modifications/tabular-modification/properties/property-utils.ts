@@ -6,7 +6,6 @@
  */
 import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
-import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export const PROPERTY_CSV_COLUMN_PREFIX = 'property_';
 
@@ -18,16 +17,6 @@ export type Property = {
 
 export type Properties = {
     [ADDITIONAL_PROPERTIES]?: Property[];
-};
-
-export type PredefinedProperties = {
-    [propertyName: string]: string[];
-};
-
-export const fetchPredefinedProperties = (networkElementType: string): Promise<PredefinedProperties | undefined> => {
-    return fetchStudyMetadata().then((studyMetadata) => {
-        return studyMetadata.predefinedEquipmentProperties?.[networkElementType];
-    });
 };
 
 export const emptyProperties: Properties = {
@@ -56,7 +45,7 @@ export const initializedProperty = (): Property => {
     };
 };
 
-export const creationPropertiesSchema = yup.object({
+export const propertiesSchema = yup.object({
     [ADDITIONAL_PROPERTIES]: yup
         .array()
         .of(
@@ -83,4 +72,4 @@ const checkUniquePropertyNames = (
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
 };
 
-export type PropertiesFormType = yup.InferType<typeof creationPropertiesSchema>;
+export type PropertiesFormType = yup.InferType<typeof propertiesSchema>;

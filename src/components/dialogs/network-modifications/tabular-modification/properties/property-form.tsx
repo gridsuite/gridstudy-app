@@ -5,9 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NAME, SELECTED } from 'components/utils/field-constants';
+import { NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
 import { CheckboxInput, TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
+import { useWatch } from 'react-hook-form';
+import { italicFontTextField } from '../../../dialog-utils';
 
 type PropertyFormProps = {
     name: string;
@@ -16,12 +18,27 @@ type PropertyFormProps = {
 
 const PropertyForm = ({ name, index }: PropertyFormProps) => {
     const nameField = <TextInput name={`${name}.${index}.${NAME}`} label={'PropertyName'} />;
+    const nameReadOnlyField = (
+        <TextInput
+            name={`${name}.${index}.${NAME}`}
+            label={'PropertyName'}
+            formProps={{ disabled: true, ...italicFontTextField }}
+        />
+    );
     const selectionField = <CheckboxInput name={`${name}.${index}.${SELECTED}`} />;
+
+    const watchPredefined = useWatch({
+        name: `${name}.${index}.${PREDEFINED}`,
+    });
 
     function renderPropertyLine() {
         return (
             <>
-                <GridItem size={6}>{nameField}</GridItem>
+                {watchPredefined ? (
+                    <GridItem size={10}>{nameReadOnlyField}</GridItem>
+                ) : (
+                    <GridItem size={10}>{nameField}</GridItem>
+                )}
                 <GridItem size={1}>{selectionField}</GridItem>
             </>
         );

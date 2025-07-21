@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import PropertiesForm from './properties-form';
 import {
-    creationPropertiesSchema,
+    propertiesSchema,
     emptyProperties,
     PropertiesFormType,
     buildPredefinedProperties,
@@ -30,8 +30,8 @@ import { PredefinedEquipmentProperties } from '../../tabular-creation/tabular-cr
 
 const styles = {
     dialogContent: {
-        width: '40%',
-        height: '40%',
+        width: '35%',
+        height: '50%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -55,7 +55,7 @@ export default function DefinePropertiesDialog({
 }: Readonly<DefinePropertiesDialogProps>) {
     const formMethods = useForm<PropertiesFormType>({
         defaultValues: emptyProperties,
-        resolver: yupResolver(creationPropertiesSchema),
+        resolver: yupResolver(propertiesSchema),
     });
 
     const { reset } = formMethods;
@@ -85,7 +85,7 @@ export default function DefinePropertiesDialog({
     }, [currentProperties, equipmentType, open, predefinedEquipmentProperties, reset]);
 
     return (
-        <CustomFormProvider validationSchema={creationPropertiesSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={propertiesSchema} {...formMethods}>
             <ModificationDialog
                 titleId={'DefinePropertiesTitle'}
                 open={open.value}
