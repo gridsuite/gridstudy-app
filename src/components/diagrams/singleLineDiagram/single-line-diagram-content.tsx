@@ -206,7 +206,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 setHoveredEquipmentType('');
             }
         },
-        []
+        [setShouldDisplayTooltip]
     );
 
     const handleBreakerClick: OnBreakerCallbackType = useCallback(
