@@ -212,6 +212,7 @@ export const NetworkMapTab = ({
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
     const refIsMapManualRefreshEnabled = useRef<boolean>();
     refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
+    const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
     type EquipmentMenuProps = {
         position?: [number, number] | null;
@@ -1011,9 +1012,10 @@ export const NetworkMapTab = ({
         if (!reloadMapNeeded) {
             return;
         }
-        if (refIsMapManualRefreshEnabled.current) {
+        if (refIsMapManualRefreshEnabled.current && !firstRendering) {
             return; // everything will be done when clicking on the refresh button
         }
+        setFirstRendering(false);
         if (!isMapEquipmentsInitialized) {
             // load default node map equipments
             loadMapEquipments();
@@ -1043,6 +1045,7 @@ export const NetworkMapTab = ({
         isInitialized,
         reloadMapNeeded,
         freezeMapUpdates,
+        firstRendering,
     ]);
 
     useEffect(() => {
