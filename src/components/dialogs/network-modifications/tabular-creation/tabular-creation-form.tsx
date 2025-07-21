@@ -9,15 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, LANG_FRENCH } from '@gridsuite/commons-ui';
-import {
-    CONNECTED,
-    CREATIONS_TABLE,
-    EQUIPMENT_ID,
-    PARTICIPATE,
-    REACTIVE_CAPABILITY_CURVE,
-    TYPE,
-    VOLTAGE_REGULATION_ON,
-} from 'components/utils/field-constants';
+import { CREATIONS_TABLE, EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
@@ -27,6 +19,8 @@ import {
     TabularCreationField,
     generateCommentLines,
     transformIfFrenchNumber,
+    isFieldTypeOk,
+    setFieldTypeError,
 } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
@@ -36,6 +30,7 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { BOOLEAN } from '../../../network/constants';
 
 export interface TabularCreationFormProps {
     dataFetching: boolean;
@@ -53,77 +48,81 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         (results: Papa.ParseResult<any>) => {
             clearErrors(CREATIONS_TABLE);
             let requiredFieldNameInError: string = '';
-
             let requiredDependantFieldNameInError: string = '';
             let dependantFieldNameInError: string = '';
-            results.data.every((result) => {
-                Object.keys(result).every((key) => {
-                    const found = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
-                        return field.id === key;
+            let fieldTypeInError: string = '';
+            let expectedTypeForFieldInError: string = '';
+            let expectedValues: string[] | undefined;
+
+            // check if the csv contains an error
+            if (
+                results.data
+                    .flatMap((result) => Object.entries(result).map(([key, value]) => [result, key, value]))
+                    .some(([result, key, value]) => {
+                        const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
+                        // check required fields are defined
+                        if (fieldDef !== undefined && fieldDef.required && (value === undefined || value === null)) {
+                            requiredFieldNameInError = key;
+                            return true; // “yes, we found an error here” → break loop
+                        }
+
+                        //check requiredIf rule
+                        if (fieldDef?.requiredIf) {
+                            const dependentValue = result[fieldDef.requiredIf.id];
+                            if (
+                                dependentValue !== undefined &&
+                                dependentValue !== null &&
+                                (value === undefined || value === null)
+                            ) {
+                                dependantFieldNameInError = key;
+                                requiredDependantFieldNameInError = fieldDef.requiredIf.id;
+                                return true; // “yes, we found an error here” → break loop
+                            }
+                        }
+
+                        // check the field types
+                        if (!isFieldTypeOk(value, fieldDef)) {
+                            fieldTypeInError = key;
+                            expectedTypeForFieldInError = fieldDef?.type ?? '';
+                            expectedValues = fieldDef?.options;
+                            return true; // “yes, we found an error here” → break loop
+                        }
+                        return false; // keep looking
+                    })
+            ) {
+                if (requiredFieldNameInError !== '') {
+                    setError(CREATIONS_TABLE, {
+                        type: 'custom',
+                        message: intl.formatMessage(
+                            { id: 'FieldRequired' },
+                            { requiredFieldNameInError: intl.formatMessage({ id: requiredFieldNameInError }) }
+                        ),
                     });
-                    // check required fields are defined
-                    if (found !== undefined && found.required && (result[key] === undefined || result[key] === null)) {
-                        requiredFieldNameInError = key;
-                        return false;
-                    }
-
-                    //check requiredIf rule
-                    if (found?.requiredIf) {
-                        const dependentValue = result[found.requiredIf.id];
-                        if (
-                            dependentValue !== undefined &&
-                            dependentValue !== null &&
-                            (result[key] === undefined || result[key] === null)
-                        ) {
-                            dependantFieldNameInError = key;
-                            requiredDependantFieldNameInError = found.requiredIf.id;
-                            return false;
-                        }
-                    }
-
-                    return true;
-                });
-                return (
-                    requiredFieldNameInError !== '' ||
-                    dependantFieldNameInError !== '' ||
-                    requiredDependantFieldNameInError !== ''
+                }
+                if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                    setError(CREATIONS_TABLE, {
+                        type: 'custom',
+                        message: intl.formatMessage(
+                            { id: 'DependantFieldMissing' },
+                            {
+                                requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
+                                dependantField: intl.formatMessage({ id: requiredDependantFieldNameInError }),
+                            }
+                        ),
+                    });
+                }
+                setIsFetching(false);
+                setFieldTypeError(
+                    fieldTypeInError,
+                    expectedTypeForFieldInError,
+                    CREATIONS_TABLE,
+                    setError,
+                    intl,
+                    expectedValues
                 );
-            });
-            setValue(CREATIONS_TABLE, results.data, {
-                shouldDirty: true,
-            });
+            }
             setIsFetching(false);
-            if (requiredFieldNameInError !== '') {
-                setError(CREATIONS_TABLE, {
-                    type: 'custom',
-                    message: intl.formatMessage(
-                        {
-                            id: 'FieldRequired',
-                        },
-                        {
-                            requiredFieldNameInError: intl.formatMessage({
-                                id: requiredFieldNameInError,
-                            }),
-                        }
-                    ),
-                });
-            }
-            if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
-                setError(CREATIONS_TABLE, {
-                    type: 'custom',
-                    message: intl.formatMessage(
-                        {
-                            id: 'DependantFieldMissing',
-                        },
-                        {
-                            requiredField: intl.formatMessage({ id: dependantFieldNameInError }),
-                            dependantField: intl.formatMessage({
-                                id: requiredDependantFieldNameInError,
-                            }),
-                        }
-                    ),
-                });
-            }
+            setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
         },
         [clearErrors, setValue, getValues, setError, intl]
     );
@@ -230,12 +229,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             }
             columnDef.field = field.id;
             columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            const booleanColumns = [VOLTAGE_REGULATION_ON, CONNECTED, PARTICIPATE, REACTIVE_CAPABILITY_CURVE];
-            if (booleanColumns.includes(field.id)) {
-                columnDef.cellRenderer = BooleanNullableCellRenderer;
-            } else {
-                columnDef.cellRenderer = DefaultCellRenderer;
-            }
+            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
             return columnDef;
         });
     }, [intl, equipmentType]);
