@@ -7,7 +7,32 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
+
+import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
+import Alert from '@mui/material/Alert';
+import { useTheme } from '@mui/material/styles';
+import { EquipmentType, mergeSx, useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
+import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
+import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import { BusMenu } from 'components/menus/bus-menu';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { DiagramType } from '../diagram.type';
+import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
+import withOperatingStatusMenu from 'components/menus/operating-status-menu';
+import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
+import BaseEquipmentMenu, { MapEquipment } from 'components/menus/base-equipment-menu';
+import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
+import { deleteEquipment, updateSwitchState } from 'services/study/network-modifications';
+import { openDiagram, setComputationStarting, setComputingStatus, setLogsFilter } from 'redux/actions';
 import {
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
@@ -16,41 +41,17 @@ import {
     MAX_WIDTH_VOLTAGE_LEVEL,
     MIN_HEIGHT,
     MIN_WIDTH,
-    styles,
-} from '../diagram-common';
-import withEquipmentMenu from '../../menus/equipment-menu';
-import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu';
-import withOperatingStatusMenu from '../../menus/operating-status-menu';
-import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
-import { isNodeReadOnly } from '../../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import Alert from '@mui/material/Alert';
-import { useTheme } from '@mui/material/styles';
-import { EquipmentType, mergeSx, useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
-import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
-import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
-import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
-import EquipmentPopover from '../../tooltips/equipment-popover';
-import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
-import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
-import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
-import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
-import { BusMenu } from 'components/menus/bus-menu';
-import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
-import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
-import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
-import { fetchNetworkElementInfos } from '../../../services/study/network';
-import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
-import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { openDiagram, setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
-import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
-import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
-import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { DiagramType } from '../diagram.type';
+} from '../diagram-utils';
+import RunningStatus from 'components/utils/running-status';
+import { startShortCircuitAnalysis } from 'services/study/short-circuit-analysis';
+import { fetchNetworkElementInfos } from 'services/study/network';
+import withEquipmentMenu from 'components/menus/equipment-menu';
+import EquipmentPopover from 'components/tooltips/equipment-popover';
+import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { isNodeReadOnly } from 'components/graph/util/model-functions';
+import { styles } from '../diagram-styles';
+import { DynamicSimulationEventDialog } from 'components/dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 
 type EquipmentMenuState = {
     position: [number, number];

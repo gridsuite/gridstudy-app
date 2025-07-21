@@ -7,18 +7,18 @@
 
 import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
-import { useDiagramModel } from './hooks/use-diagram-model';
-import { Diagram, DiagramParams, DiagramType } from './diagram.type';
+import { useDiagramModel } from './cards/diagrams/hooks/use-diagram-model';
+import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
 import { useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
+import { useDiagramsGridLayoutSessionStorage } from './cards/diagrams/hooks/use-diagrams-grid-layout-session-storage';
 import { v4 } from 'uuid';
-import { DiagramAdder } from './diagram-adder';
-import './diagram-grid-layout.css'; // Import the CSS file for styling
-import { DiagramCard } from './diagram-card';
-import MapCard from './map-card';
-import { BLINK_LENGTH_MS } from './card-header';
+import { DiagramAdder } from './cards/adder/diagram-adder';
+import './grid-layout.css'; // Import the CSS file for styling
+import { DiagramCard } from './cards/diagrams/diagram-card';
+import MapCard from './cards/map/map-card';
+import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -55,7 +55,7 @@ const initialLayouts: Layouts = {
     lg: [AdderCard],
 };
 
-interface DiagramGridLayoutProps {
+interface GridLayoutPanelProps {
     studyUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
@@ -68,7 +68,7 @@ const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) =>
     });
 };
 
-function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
+function GridLayoutPanel({ studyUuid, showInSpreadsheet, visible }: Readonly<GridLayoutPanelProps>) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -282,4 +282,4 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     );
 }
 
-export default DiagramGridLayout;
+export default GridLayoutPanel;

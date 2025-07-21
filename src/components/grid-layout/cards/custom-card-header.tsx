@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Box from '@mui/material/Box';
 import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme, Typography } from '@mui/material';
+import { Box, Theme, Typography } from '@mui/material';
 
 export const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme: Theme) => ({
+        padding: 0,
         paddingLeft: theme.spacing(1),
         display: 'flex',
         alignItems: 'center',
@@ -41,13 +41,13 @@ const styles = {
     }),
 };
 
-interface CardHeaderProps {
+interface CustomCardHeaderProps {
     title?: React.ReactNode;
     onClose?: () => void;
     blinking?: boolean;
 }
 
-const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => {
+const CustomCardHeader: React.FC<CustomCardHeaderProps> = ({ title, onClose, blinking }) => {
     return (
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
             <OverflowableText
@@ -71,4 +71,4 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => 
     );
 };
 
-export default CardHeader;
+export default CustomCardHeader;

@@ -24,7 +24,7 @@ import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/ut
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 const styles = {
     table: (theme: Theme) => ({

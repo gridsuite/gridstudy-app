@@ -22,7 +22,6 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import {
@@ -41,6 +40,7 @@ import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } fro
 import { UUID } from 'crypto';
 import { ConnectablePositionFormInfos } from './connectivity.type';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)

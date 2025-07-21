@@ -59,7 +59,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/diagrams/diagram.type';
+import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 

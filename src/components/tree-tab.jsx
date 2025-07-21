@@ -10,14 +10,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { openDiagram } from '../redux/actions';
 import { ReactFlowProvider } from '@xyflow/react';
 import NetworkModificationTreePane from './network-modification-tree-pane';
-import NetworkMapTab from './network/network-map-tab';
+import NetworkMapPanel from './network/network-map-panel';
 
 import { StudyDisplayMode } from './network-modification.type';
 import { Box, useTheme } from '@mui/material';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type';
+import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import WaitingLoader from './utils/waiting-loader';
-import DiagramGridLayout from './diagrams/diagram-grid-layout';
+import GridLayoutPanel from './grid-layout/grid-layout-panel';
 
 const styles = {
     map: {
@@ -40,7 +40,7 @@ const styles = {
     },
 };
 
-const MapViewer = ({
+const TreeTab = ({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
@@ -88,7 +88,7 @@ const MapViewer = ({
                         display:
                             studyDisplayMode === StudyDisplayMode.TREE ||
                             studyDisplayMode === StudyDisplayMode.HYBRID ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
                         flexGrow: 1,
@@ -106,8 +106,8 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_AND_TREE
                                 ? 'flex'
                                 : 'none',
                         flexGrow: 1,
@@ -118,11 +118,11 @@ const MapViewer = ({
                         // end of hack
                     }}
                 >
-                    <DiagramGridLayout
+                    <GridLayoutPanel
                         studyUuid={studyUuid}
                         visible={
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                            studyDisplayMode === StudyDisplayMode.GRID_LAYOUT ||
+                            studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_AND_TREE
                         }
                         showInSpreadsheet={showInSpreadsheet}
                     />
@@ -151,7 +151,7 @@ const MapViewer = ({
                                     height: '100%',
                                 }}
                             >
-                                <NetworkMapTab
+                                <NetworkMapPanel
                                     studyUuid={studyUuid}
                                     visible={view === StudyView.TREE && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={networkVisuParams.mapParameters.lineFullPath}
@@ -163,7 +163,7 @@ const MapViewer = ({
                                     onChangeTab={onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     onPolygonChanged={() => {}}
-                                ></NetworkMapTab>
+                                />
                             </Box>
                         </Box>
                     </Box>
@@ -173,4 +173,4 @@ const MapViewer = ({
     );
 };
 
-export default MapViewer;
+export default TreeTab;

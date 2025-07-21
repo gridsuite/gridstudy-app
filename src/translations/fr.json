@@ -1442,8 +1442,8 @@
     "currentStatus": "État modifié",
     "Open": "Ouvert",
     "Closed": "Fermé",
-    "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+    "GridLayout": "Grille des diagrammes",
+    "GridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
 
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
     "CreateCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
@@ -1479,5 +1479,6 @@
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
     "AddNewCard": "Ajouter une nouvelle image",
+    "MapCardTitle": "Carte géographique",
     "OpenMapFullscreen": "Ouvrir la carte en plein écran"
 }

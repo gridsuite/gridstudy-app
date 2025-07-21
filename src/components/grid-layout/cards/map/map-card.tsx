@@ -6,7 +6,7 @@
  */
 import { Box, Dialog, Fab, Theme } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useState } from 'react';
-import CardHeader from './card-header';
+import CustomCardHeader from '../custom-card-header';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { EquipmentType, LineFlowMode, mergeSx } from '@gridsuite/commons-ui';
@@ -14,8 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
 import WolrdSvg from 'images/world.svg?react';
-import NetworkMapTab from 'components/network/network-map-tab';
-import { cardStyles } from './card-styles';
+import NetworkMapPanel from 'components/network/network-map-panel';
+import { cardStyles } from '../card-styles';
 import { Close } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 
@@ -64,7 +64,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     if (!studyUuid || !currentNode || !currentRootNetworkUuid || !networkVisuParams) {
         return (
             <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-                <CardHeader title={'MapCard'} onClose={onClose} />
+                <CustomCardHeader title={<FormattedMessage id="MapCardTitle" />} onClose={onClose} />
                 <AlertCustomMessageNode message={'MapCard not available'} noMargin style={cardStyles.alertMessage} />
                 <Box sx={cardStyles.diagramContainer} /> {/* Empty container to keep the layout */}
             </Box>
@@ -73,7 +73,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
 
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CardHeader title={'MapCard'} onClose={onClose} />
+            <CustomCardHeader title={<FormattedMessage id="MapCardTitle" />} onClose={onClose} />
             <Box sx={cardStyles.diagramContainer}>
                 <WolrdSvg
                     style={{
@@ -97,7 +97,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         <Close fontSize="small" />
                         <FormattedMessage id="close" />
                     </Fab>
-                    <NetworkMapTab
+                    <NetworkMapPanel
                         studyUuid={studyUuid}
                         visible={mapOpen}
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
@@ -112,7 +112,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         }}
                         onPolygonChanged={() => {}}
                         onElementCreated={handleCloseMap}
-                    ></NetworkMapTab>
+                    />
                 </Dialog>
             </Box>
             {children}

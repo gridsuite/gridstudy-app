@@ -12,12 +12,14 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
-import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH, Svg } from '../diagram-common';
 import { mergeSx, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
-import DiagramHeader from '../diagram-header';
-import { fetchSvg } from '../../../services/study';
 import { AppState } from 'redux/reducer';
+import { MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, MIN_WIDTH, NoSvg } from '../../diagram-utils';
+import { styles } from '../../diagram-styles';
+import DiagramHeader from './diagram-header';
+import { Svg } from '../../diagram.type';
+import { fetchSvg } from 'services/study';
 
 interface PositionDiagramProps {
     diagramTitle: string;

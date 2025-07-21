@@ -7,15 +7,7 @@
 
 import { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
-import {
-    MIN_HEIGHT,
-    MIN_WIDTH,
-    MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-    MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-    styles,
-    NAD_ZOOM_LEVELS,
-} from '../diagram-common';
+
 import {
     NetworkAreaDiagramViewer,
     DiagramMetadata,
@@ -25,18 +17,27 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
 import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
-import DiagramControls from '../diagram-controls';
-import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 
 import NodeContextMenu from './node-context-menu';
+import { createDiagramConfig, DiagramConfigPosition } from 'services/explore';
+import {
+    buildPositionsFromNadMetadata,
+    MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+    MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+    MIN_HEIGHT,
+    MIN_WIDTH,
+    NAD_ZOOM_LEVELS,
+} from '../diagram-utils';
+import { styles } from '../diagram-styles';
+import RunningStatus from 'components/utils/running-status';
+import DiagramControls from './diagram-controls';
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
