@@ -269,7 +269,6 @@ export const NetworkMapTab = ({
     // When the user enter the drawing mode, we need to switch the study display mode to map
     // and save the previous mode, so we can restore it when the user cancel the drawing
     useEffect(() => {
-        console.log('SBO networkMapRef.current', networkMapRef.current);
         const all = networkMapRef.current?.getMapDrawer()?.getAll();
         if (all === undefined) {
             return;

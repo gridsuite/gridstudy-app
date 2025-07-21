@@ -151,19 +151,7 @@ const MapViewer = ({
                                     height: '100%',
                                 }}
                             >
-                                {/* {isInDrawingMode && (
-                                    // hack to override the bg-color of the draw button when we enter in draw mode
-                                    <Global
-                                        styles={css`
-                                            .mapbox-gl-draw_polygon {
-                                                background-color: lightblue !important;
-                                            }
-                                        `}
-                                    />
-                                )} */}
-
                                 <NetworkMapTab
-                                    // networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
                                     visible={view === StudyView.TREE && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={networkVisuParams.mapParameters.lineFullPath}
@@ -174,33 +162,9 @@ const MapViewer = ({
                                     currentRootNetworkUuid={currentRootNetworkUuid}
                                     onChangeTab={onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    // onDrawPolygonModeActive={onDrawingModeEnter}
                                     onPolygonChanged={() => {}}
-                                    // onDrawEvent={onDrawEvent}
-                                    // isInDrawingMode={isInDrawingMode}
-                                    // onNominalVoltagesChange={setNominalVoltages}
                                 ></NetworkMapTab>
                             </Box>
-
-                            {/* <Box
-                                sx={{
-                                    width: shouldOpenSelectionCreationPanel ? '20%' : '0%',
-                                    height: '100%',
-                                    position: 'absolute',
-                                    right: 0,
-                                }}
-                            >
-                                {shouldOpenSelectionCreationPanel && (
-                                    <SelectionCreationPanel
-                                        getEquipments={getEquipments}
-                                        onCancel={() => {
-                                            setShouldOpenSelectionCreationPanel(false);
-                                        }}
-                                        leaveDrawingMode={leaveDrawingMode}
-                                        nominalVoltages={nominalVoltages}
-                                    />
-                                )}
-                            </Box> */}
                         </Box>
                     </Box>
                 </Box>
