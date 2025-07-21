@@ -1478,5 +1478,6 @@
     "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
-    "AddNewCard": "Ajouter une nouvelle image"
+    "AddNewCard": "Ajouter une nouvelle image",
+    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
 }
