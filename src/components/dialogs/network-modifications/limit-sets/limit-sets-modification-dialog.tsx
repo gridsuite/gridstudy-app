@@ -64,6 +64,7 @@ const formatOperationalLimitGroupsFrontToBack = (
         id: modification[LIMIT_GROUP_NAME],
         side: side,
         modificationType: modification[MODIFICATION_TYPE],
+        temporaryLimitsModificationType: modification[TEMPORARY_LIMITS_MODIFICATION_TYPE],
         currentLimits: {
             permanentLimit: modification[PERMANENT_LIMIT],
             temporaryLimits: formatTemporaryLimitsFrontToBack(modification, amountMaxTemporaryLimits),
@@ -103,7 +104,6 @@ const formatBackToFront = (editData: Modification) => {
 
 const formatOperationalLimitGroupsBackToFront = (group: Modification): Modification[] => {
     const modifications: Modification[] = [];
-    console.log(group);
     for (let modification of group.modifications) {
         for (let operationalLimitGroup of modification.operationalLimitsGroup1) {
             let row: Modification = {};
@@ -111,6 +111,7 @@ const formatOperationalLimitGroupsBackToFront = (group: Modification): Modificat
             row[SIDE] = operationalLimitGroup[SIDE];
             row[LIMIT_GROUP_NAME] = operationalLimitGroup.id;
             row[MODIFICATION_TYPE] = operationalLimitGroup.modificationType;
+            row[TEMPORARY_LIMITS_MODIFICATION_TYPE] = operationalLimitGroup.temporaryLimitsModificationType;
             row[PERMANENT_LIMIT] = operationalLimitGroup.currentLimits.permanentLimit;
 
             const tempLimitFields = formatTemporaryLimitsBackToFront(
