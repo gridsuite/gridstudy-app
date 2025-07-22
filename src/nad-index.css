@@ -42,7 +42,7 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     visibility: hidden;
 }
 .nad-active {
-    fill: #546e7a;
+    fill: #787F81;
 }
 .nad-reactive {
     fill: #0277bd;
@@ -74,10 +74,9 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     background: var(--vl-color, black);
 }
 .nad-edge-infos text {
-    font: 20px serif;
+    font: 20px sans-serif;
     dominant-baseline: middle;
-    stroke: #ffffffaa;
-    stroke-width: 8;
+    stroke-width: 10;
     stroke-linejoin: round;
     paint-order: stroke;
 }
