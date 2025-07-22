@@ -280,6 +280,7 @@ export interface TemporaryLimit extends Limit {
 
 export interface CurrentLimits {
     id?: string;
+    applicability?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
 }

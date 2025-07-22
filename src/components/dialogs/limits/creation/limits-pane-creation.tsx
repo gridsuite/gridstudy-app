@@ -60,7 +60,7 @@ export function LimitsPaneCreation({
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups1: OperationalLimitsGroup[] = useWatch({
+    const limitsGroups: OperationalLimitsGroup[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
 
@@ -104,14 +104,14 @@ export function LimitsPaneCreation({
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
                         parentFormName={id}
-                        limitsGroups={limitsGroups1}
+                        limitsGroups={limitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
-                        limitsGroups1.map(
+                        limitsGroups.map(
                             (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
                                 indexSelectedLimitSet != null &&
                                 index === indexSelectedLimitSet && (
