@@ -71,7 +71,7 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import GuidancePopup from './guidance-popup';
 import { StudyDisplayMode } from 'components/network-modification.type';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
@@ -122,7 +122,7 @@ const styles = {
 
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 
-type NetworkMapTabProps = {
+type NetworkMapPanelProps = {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -140,7 +140,7 @@ type NetworkMapTabProps = {
     onElementCreated?: () => void;
 };
 
-export const NetworkMapTab = ({
+export const NetworkMapPanel = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -157,7 +157,7 @@ export const NetworkMapTab = ({
     // onDrawEvent,
     // onNominalVoltagesChange,
     onElementCreated,
-}: NetworkMapTabProps) => {
+}: NetworkMapPanelProps) => {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
 
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
@@ -1277,8 +1277,8 @@ export const NetworkMapTab = ({
             </Box>
             {isInDrawingMode &&
                 (studyDisplayMode === StudyDisplayMode.MAP ||
-                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE) && (
+                    studyDisplayMode === StudyDisplayMode.GRID_LAYOUT ||
+                    studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_AND_TREE) && (
                     <GuidancePopup onActionClick={leaveDrawingMode} />
                 )}
             {shouldOpenSelectionCreationPanel && (
@@ -1380,4 +1380,4 @@ export const NetworkMapTab = ({
     );
 };
 
-export default NetworkMapTab;
+export default NetworkMapPanel;

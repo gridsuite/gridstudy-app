@@ -18,7 +18,7 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { cardStyles } from './card-styles';
+import { cardStyles } from '../card-styles';
 
 const styles = {
     adderContent: (theme: Theme) => ({

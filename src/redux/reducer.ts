@@ -267,7 +267,7 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
@@ -1217,10 +1217,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // Switch to the grid layout in order to see the newly opened diagram
         if (
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT
         ) {
-            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+            state.studyDisplayMode = StudyDisplayMode.GRID_LAYOUT_AND_TREE;
         }
     });
 
@@ -1241,10 +1241,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // Switch to the grid layout in order to see the newly opened diagram
         if (
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT
         ) {
-            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+            state.studyDisplayMode = StudyDisplayMode.GRID_LAYOUT_AND_TREE;
         }
     });
 

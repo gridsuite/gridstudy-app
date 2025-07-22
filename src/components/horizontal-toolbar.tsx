@@ -81,11 +81,11 @@ export function HorizontalToolbar() {
         dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
     }
 
-    function setDiagramGridLayoutDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT));
+    function setGridLayoutDisplay() {
+        dispatch(setStudyDisplayMode(StudyDisplayMode.GRID_LAYOUT));
     }
-    function setDiagramGridLayoutAndTreeDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE));
+    function setGridLayoutAndTreeDisplay() {
+        dispatch(setStudyDisplayMode(StudyDisplayMode.GRID_LAYOUT_AND_TREE));
     }
 
     return (
@@ -256,7 +256,7 @@ export function HorizontalToolbar() {
                     </Tooltip>
                     <Tooltip
                         title={intl.formatMessage({
-                            id: 'DiagramGridLayout',
+                            id: 'GridLayout',
                         })}
                         placement="right"
                         arrow
@@ -277,11 +277,11 @@ export function HorizontalToolbar() {
                             <IconButton
                                 size={'small'}
                                 sx={
-                                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+                                    studyDisplayMode === StudyDisplayMode.GRID_LAYOUT
                                         ? styles.selected
                                         : styles.notSelected
                                 }
-                                onClick={setDiagramGridLayoutDisplay}
+                                onClick={setGridLayoutDisplay}
                             >
                                 <DashboardCustomizeOutlinedIcon />
                             </IconButton>
@@ -289,7 +289,7 @@ export function HorizontalToolbar() {
                     </Tooltip>
                     <Tooltip
                         title={intl.formatMessage({
-                            id: 'DiagramGridLayoutAndTree',
+                            id: 'GridLayoutAndTree',
                         })}
                         placement="right"
                         arrow
@@ -310,11 +310,11 @@ export function HorizontalToolbar() {
                             <IconButton
                                 size={'small'}
                                 sx={
-                                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
+                                    studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_AND_TREE
                                         ? styles.selected
                                         : styles.notSelected
                                 }
-                                onClick={setDiagramGridLayoutAndTreeDisplay}
+                                onClick={setGridLayoutAndTreeDisplay}
                             >
                                 <AutoAwesomeMosaicOutlinedIcon />
                             </IconButton>
