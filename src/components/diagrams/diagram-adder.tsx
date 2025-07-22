@@ -19,6 +19,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { cardStyles } from './card-styles';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 
 const styles = {
     adderContent: (theme: Theme) => ({
@@ -99,6 +100,7 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                 open={isLoadSelectorOpen}
                 onClose={selectElement}
                 types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
+                equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                 title={intl.formatMessage({
                     id: 'AddFromGridexplore',
                 })}

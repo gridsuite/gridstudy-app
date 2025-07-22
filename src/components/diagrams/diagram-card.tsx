@@ -18,6 +18,7 @@ import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
 import { useIntl } from 'react-intl';
 import { cardStyles } from './card-styles';
+import { v4 } from 'uuid';
 
 interface ReactGridLayoutCustomChildComponentProps {
     style?: React.CSSProperties;
@@ -37,6 +38,7 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    createDiagram: (diagram: DiagramParams) => void;
     updateDiagram: (diagram: Diagram) => void;
     updateDiagramPositions: (diagram: DiagramParams) => void;
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
@@ -53,6 +55,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         onClose,
         errorMessage,
         showInSpreadsheet,
+        createDiagram,
         updateDiagram,
         updateDiagramPositions,
         onLoad,
@@ -121,6 +124,18 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         // TODO adapt the layout w and h considering those values
     }, []);
 
+    const handleVoltageLevelClick = useCallback(
+        (vlId: string): void => {
+            createDiagram({
+                diagramUuid: v4() as UUID,
+                type: DiagramType.VOLTAGE_LEVEL,
+                voltageLevelId: vlId,
+                name: '',
+            });
+        },
+        [createDiagram]
+    );
+
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
             <CardHeader
@@ -146,6 +161,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             loadingState={loading}
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
+                            onNextVoltageLevelClick={handleVoltageLevelClick}
                         />
                     )}
                     {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -173,6 +189,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                             onHideVoltageLevel={handleHideVoltageLevelId}
                             onMoveNode={handleMoveNode}
+                            onVoltageLevelClick={handleVoltageLevelClick}
                             customPositions={diagram.positions}
                         />
                     )}

@@ -264,6 +264,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                         errorMessage={globalError || diagramErrors[diagram.diagramUuid]}
                         onClose={() => onRemoveCard(diagram.diagramUuid)}
                         showInSpreadsheet={showInSpreadsheet}
+                        createDiagram={createDiagram}
                         updateDiagram={updateDiagram}
                         updateDiagramPositions={updateDiagramPositions}
                         onLoad={handleLoadNad}

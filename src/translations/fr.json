@@ -501,7 +501,8 @@
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser le nœud",
     "maxBuiltNodeExceededError": "Vous avez atteint votre quota utilisateur en termes de réalisations par étude, vous ne pouvez donc plus réaliser de nœuds dans cette étude pour le moment. Merci de déréaliser des nœuds afin de redescendre sous le seuil de {limit} réalisations.",
-    "createNetworkModificationNode": "Créer un nouveau nœud",
+    "createNetworkModificationConstructionNode": "Créer un nœud de construction",
+    "createNetworkModificationSecurityNode": "Créer un nœud de sécurité",
     "createNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "pasteNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "createSecuritySequence": "Créer un enchaînement de sécurité",
@@ -580,6 +581,7 @@
     "ImportModifications": "Importer des modifications",
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
+    "TabularCreationShuntWarning": "La création tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
     "substationName": "Nom du site",
     "activePower": "p (MW)",
@@ -1479,5 +1481,5 @@
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
     "AddNewCard": "Ajouter une nouvelle image",
-    "OpenMapFullscreen": "Ouvrir la carte en plein écran"
+    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
 }
