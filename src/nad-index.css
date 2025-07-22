@@ -91,33 +91,37 @@ g.nad-disconnected > g.nad-disconnected {
 
 
 @keyframes line-blink {
-    0%, 100% {
-        stroke: var(--vl-color, black);
-        stroke-width: 0.25%;
-    }
     50% {
-        stroke: #ffeb3b;
-        stroke-width: 0.75%;
+        stroke: #F50057;
+        stroke-width: 0.6%;
+    }
+}
+@keyframes line-blink-nad-zoom-0 {
+    50% {
+        stroke: #F50057;
+        stroke-width: 8;
+    }
+}
+@keyframes line-blink-nad-zoom-9000 {
+    50% {
+        stroke: #F50057;
+        stroke-width: 0.5%;
+    }
+}
+@keyframes line-blink-nad-zoom-12000-15000 {
+    50% {
+        stroke: #F50057;
+        stroke-width: 0.3%;
     }
 }
 @keyframes node-over-blink {
-    0%, 100% {
-        stroke: white;
-        stroke-width: 0.25%;
-    }
     50% {
-        stroke: #ff5722;
-        stroke-width: 0.75%;
+        fill: #D500F9;
     }
 }
 @keyframes node-under-blink {
-    0%, 100% {
-        stroke: white;
-        stroke-width: 0.25%;
-    }
     50% {
-        stroke: #00bcd4;
-        stroke-width: 0.75%;
+        fill: #2979FF;
     }
 }
 .nad-branch-edges .nad-overload .nad-edge-path {
@@ -133,12 +137,19 @@ g.nad-disconnected > g.nad-disconnected {
 /* NETWORK AREA DIAGRAM LEVEL OF DETAIL */
 
 /* Makes the nodes' edges thicker when zooming a lot */
-.nad-zoom-0 :is(
-    .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
-    .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-    .nad-vl-nodes circle.nad-unknown-busnode
-    ) {
-    stroke-width: 3;
+.nad-zoom-0 {
+    :is(
+        .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
+        .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
+        .nad-vl-nodes circle.nad-unknown-busnode
+        ) {
+        stroke-width: 3;
+    }
+    :is(
+        .nad-branch-edges .nad-overload .nad-edge-path
+        ) {
+        animation: line-blink-nad-zoom-0 0.75s infinite steps(1, start);
+    }
 }
 
 /* Makes the dashed lines' spaces consistent when zooming */
@@ -150,21 +161,35 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Between zoom 2000 and 9000, edges use the default 0.25% width.
    We gradually narrow these lines when zooming out, to prevent thick lines when fully zoomed out. */
-.nad-zoom-9000 :is(
-    .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
-    .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-    .nad-vl-nodes circle.nad-unknown-busnode
-    ) {
-    stroke-width: 0.2%;
+.nad-zoom-9000 {
+    :is(
+        .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
+        .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
+        .nad-vl-nodes circle.nad-unknown-busnode
+        ) {
+        stroke-width: 0.2%;
+    }
+    :is(
+        .nad-branch-edges .nad-overload .nad-edge-path
+        ) {
+        animation: line-blink-nad-zoom-9000 0.75s infinite steps(1, start);
+    }
 }
 
 /* Gradually narrows the edges when zooming out, to prevent thick lines when fully zoomed out. */
-:is(.nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
-    .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-    .nad-vl-nodes circle.nad-unknown-busnode
-    ) {
-    stroke-width: 0.1%;
+:is(.nad-zoom-12000, .nad-zoom-15000) {
+    :is(
+        .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
+        .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
+        .nad-vl-nodes circle.nad-unknown-busnode
+        ) {
+        stroke-width: 0.1%;
+    }
+    :is(
+        .nad-branch-edges .nad-overload .nad-edge-path
+        ) {
+        animation: line-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
+    }
 }
 
 /* Hides the data on the lines until sufficiently zoomed in. */
