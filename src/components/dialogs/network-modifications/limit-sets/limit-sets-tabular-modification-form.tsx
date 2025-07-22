@@ -35,18 +35,23 @@ import {
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
     styles,
-    TABULAR_MODIFICATION_FIELDS,
 } from '../tabular-modification/tabular-modification-utils';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
 }
 
+type RepeatableColumn = {
+    id: string;
+    name?: string;
+    index?: number;
+};
+
 export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const [repeatableColumns, setReapeatableColumns] = useState<string[]>([]);
+    const [repeatableColumns, setReapeatableColumns] = useState<RepeatableColumn[]>([]);
 
     const { setValue, clearErrors, getValues, trigger } = useFormContext();
 
@@ -86,21 +91,25 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     });
 
     const computeRepeatableColumns = useCallback(() => {
-        const columns: string[] = [];
+        const columns: RepeatableColumn[] = [];
         trigger(AMOUNT_TEMPORARY_LIMITS).then((valid) => {
             if (valid) {
                 for (let i = 1; i <= amountTemporaryLimits; i++) {
-                    LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS.forEach((field) => {
-                        columns.push(field + i);
-                    });
+                    LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS.forEach((field) =>
+                        columns.push({
+                            id: field + i,
+                            name: field,
+                            index: i,
+                        })
+                    );
                 }
                 setReapeatableColumns(columns);
             }
         });
     }, [amountTemporaryLimits, trigger]);
 
-    const csvColumns = useMemo(() => {
-        return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
+    const csvColumns = useMemo<RepeatableColumn[]>(() => {
+        return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.map((id) => ({ id: id })), ...repeatableColumns];
     }, [repeatableColumns]);
 
     const csvTranslatedColumns = useMemo(() => {
@@ -122,7 +131,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
-        header: csvColumns,
+        header: csvColumns.map((column) => column.id),
         disabled: !csvColumns,
         resetTrigger: typeChangedTrigger,
         language: language,
@@ -156,7 +165,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to modification field
-                    const transformedHeader = TABULAR_MODIFICATION_FIELDS[getValues(TYPE)]?.find(
+                    const transformedHeader = LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.find(
                         (field) => intl.formatMessage({ id: field }) === header
                     );
                     return transformedHeader ?? header;
@@ -206,11 +215,13 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const columnDefs = useMemo(() => {
         return csvColumns.map((field) => {
             const columnDef: ColDef = {};
-            if (field === EQUIPMENT_ID) {
+            if (field.id === EQUIPMENT_ID) {
                 columnDef.pinned = true;
             }
-            columnDef.field = field;
-            columnDef.headerName = intl.formatMessage({ id: field });
+            columnDef.field = field.id;
+
+            const indexLabel = ' ' + (field.index ?? '');
+            columnDef.headerName = intl.formatMessage({ id: (field.name ?? field.id) }) + indexLabel;
             columnDef.cellRenderer = DefaultCellRenderer;
             return columnDef;
         });

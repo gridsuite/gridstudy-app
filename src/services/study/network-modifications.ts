@@ -10,7 +10,7 @@ import {
     EquipmentType,
     MODIFICATION_TYPES,
     ModificationType,
-    NetworkModificationMetadata
+    NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
@@ -1096,7 +1096,7 @@ export function createTabularModification(
     modifications: any,
     isUpdate: boolean,
     modificationUuid: UUID,
-    type: ModificationType,
+    type: ModificationType
 ) {
     let createTabulareModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
