@@ -138,11 +138,12 @@ function getColumnsByRows(
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
 
-    // These two variables are used to process the groups of security nodes, to make them all match the
-    // same value. When in a security group, we store the extreme value in stickyValue, and the affected rows
-    // in rowsToRetroactivelyUpdateWithStickyValue.
-    let stickyValue: number;
-    let rowsToRetroactivelyUpdateWithStickyValue = [];
+    // These two variables are used to process the groups of security nodes, to make them all match the same value.
+    // When in a security group, we store the extreme value in currentExtremeValue, and the rows of the current
+    // security group in rowsToRetroactivelyUpdate.
+    // When we find a new extreme in a security group, we update all its rows with the new value.
+    let currentExtremeValue: number;
+    let rowsToRetroactivelyUpdate = [];
 
     function isExtreme(contender: number, competition: number | undefined): boolean {
         if (competition === undefined) {
@@ -151,12 +152,12 @@ function getColumnsByRows(
         return getMax ? contender > competition : contender < competition;
     }
 
-    function resetSticky() {
-        rowsToRetroactivelyUpdateWithStickyValue.length = 0;
-        stickyValue = getMax ? -Infinity : Infinity;
+    function resetSecurityGroupContext() {
+        rowsToRetroactivelyUpdate.length = 0;
+        currentExtremeValue = getMax ? -Infinity : Infinity;
     }
 
-    resetSticky();
+    resetSecurityGroupContext();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (!nodePlacement || !node.parentId) {
@@ -169,27 +170,27 @@ function getColumnsByRows(
 
         if (isSecurityModificationNode(node)) {
             // This test determines if we changed from a security group to another. If this is the case,
-            // we reset the sticky value to only update rows for the new group and not the old one.
+            // we reset the currentExtremeValue to only update rows for the new group and not the old one.
             if (!isSecurityModificationNode(nodeMap.get(node.parentId)?.node)) {
-                resetSticky();
+                resetSecurityGroupContext();
             }
 
             // We mark each row of a security group in order to update them all when we find a new extreme.
-            rowsToRetroactivelyUpdateWithStickyValue.push(nodePlacement.row);
+            rowsToRetroactivelyUpdate.push(nodePlacement.row);
 
             const contender = getMax
-                ? Math.max(stickyValue, nodePlacement.column)
-                : Math.min(stickyValue, nodePlacement.column);
+                ? Math.max(currentExtremeValue, nodePlacement.column)
+                : Math.min(currentExtremeValue, nodePlacement.column);
 
             if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
-                rowsToRetroactivelyUpdateWithStickyValue.forEach((row) => {
+                rowsToRetroactivelyUpdate.forEach((row) => {
                     columnsByRow.set(row, contender);
                 });
             }
 
-            stickyValue = contender;
+            currentExtremeValue = contender;
         } else {
-            resetSticky();
+            resetSecurityGroupContext();
 
             const contender = nodePlacement.column;
             if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
