@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Dialog, Fab, Theme } from '@mui/material';
+import { Box, Dialog, Fab, Theme, useTheme } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useState } from 'react';
 import CardHeader from './card-header';
 import { UUID } from 'crypto';
@@ -46,8 +46,17 @@ interface MapCardProps extends ReactGridLayoutCustomChildComponentProps {
 export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>) => {
     const { studyUuid, onClose, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
+    const [isHover, setIsHover] = useState(false);
+
+    const handleMouseEnter = () => {
+        setIsHover(true);
+    };
+    const handleMouseLeave = () => {
+        setIsHover(false);
+    };
 
     const dispatch = useDispatch();
+    const theme = useTheme();
 
     const [mapOpen, setMapOpen] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -80,11 +89,15 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         width: '100%',
                         height: '100%',
                         cursor: 'pointer',
+                        backgroundColor: isHover ? 'rgba(0, 0, 0, 0.4)' : 'inherit',
                     }}
+                    fill={isHover ? theme.palette.grey[800] : theme.palette.grey[500]}
                     onClick={(e) => {
                         e.stopPropagation();
                         setMapOpen(true);
                     }}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                 />
                 <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
                     <Fab
