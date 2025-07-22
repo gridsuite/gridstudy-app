@@ -8,6 +8,7 @@
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
+
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     originalCaseUuid: UUID;
@@ -52,7 +53,6 @@ interface MenuDefinitionBase {
     id: string;
     label: string;
     hide?: boolean;
-    isDivider?: false;
 }
 
 export interface MenuDefinitionWithSubItem extends MenuDefinitionBase {
@@ -63,16 +63,19 @@ export interface MenuDefinitionWithoutSubItem extends MenuDefinitionBase {
     action?: () => JSX.Element;
 }
 
-export interface MenuDefinitionDivider {
-    isDivider: true;
-}
-
-export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSubItem | MenuDefinitionDivider;
+export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSubItem;
 
 export interface NetworkModificationData {
     uuid: UUID;
     type: string;
+
     [key: string]: any;
+}
+
+export interface MenuSection {
+    id: string;
+    label?: string;
+    items: MenuDefinition[];
 }
 
 // Cf withDefaultParams : common props for any modification available from the menu
