@@ -83,6 +83,10 @@ export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID }
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 
-export const isSecurityModificationNode = (node: CurrentTreeNode): node is ModificationNode => {
-    return node.type === NodeType.NETWORK_MODIFICATION && node.data.nodeType === NetworkModificationNodeType.SECURITY;
+export const isSecurityModificationNode = (node: CurrentTreeNode | undefined): node is ModificationNode => {
+    return (
+        !!node &&
+        node.type === NodeType.NETWORK_MODIFICATION &&
+        node.data?.nodeType === NetworkModificationNodeType.SECURITY
+    );
 };
