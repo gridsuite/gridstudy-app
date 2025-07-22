@@ -74,7 +74,7 @@ export type AppActions =
     | DeleteEquipmentsAction
     | ResetEquipmentsAction
     | ResetEquipmentsByTypesAction
-    | ResetEquipmentsPostLoadflowAction
+    | ResetEquipmentsPostComputationAction
     | MapEquipmentsCreatedAction
     | LoadNetworkModificationTreeSuccessAction
     | NetworkModificationTreeNodeAddedAction
@@ -278,12 +278,12 @@ export function resetEquipmentsByTypes(equipmentTypes: SpreadsheetEquipmentType[
     };
 }
 
-export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
-export type ResetEquipmentsPostLoadflowAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_LOADFLOW>>;
+export const RESET_EQUIPMENTS_POST_COMPUTATION = 'RESET_EQUIPMENTS_POST_COMPUTATION';
+export type ResetEquipmentsPostComputationAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_COMPUTATION>>;
 
-export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction {
+export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputationAction {
     return {
-        type: RESET_EQUIPMENTS_POST_LOADFLOW,
+        type: RESET_EQUIPMENTS_POST_COMPUTATION,
     };
 }
 
