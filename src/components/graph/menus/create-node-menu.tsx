@@ -264,25 +264,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         return false;
     }
 
-    function isNodeInsertionAllowed(insertMode: NodeInsertModes): boolean {
+    function isNodeInsertionForbidden(insertMode?: NodeInsertModes): boolean {
+        const nodeType = nodeSelectionForCopy.nodeType;
         // Rule 1 : CONSTRUCTION cannot be inserted into SECURITY
-        if (
-            nodeSelectionForCopy.nodeType === NetworkModificationNodeType.CONSTRUCTION &&
-            activeNode?.data?.nodeType === NetworkModificationNodeType.SECURITY
-        ) {
-            return false;
-        }
-
+        const isConstructionInsertionForbidden =
+            nodeType === NetworkModificationNodeType.CONSTRUCTION && isSecurityModificationNode(activeNode);
         // Rule 2 : SECURITY can only be inserted in CHILD mode into CONSTRUCTION or ROOT
-        if (
-            nodeSelectionForCopy.nodeType === NetworkModificationNodeType.SECURITY &&
+        const isSecurityInsertionForbidden =
+            nodeType === NetworkModificationNodeType.SECURITY &&
             insertMode !== NodeInsertModes.NewBranch &&
-            activeNode?.data?.nodeType !== NetworkModificationNodeType.SECURITY
-        ) {
-            return false;
-        }
+            insertMode !== undefined &&
+            !isSecurityModificationNode(activeNode);
 
-        return true;
+        return isConstructionInsertionForbidden || isSecurityInsertionForbidden;
     }
 
     function isNodeRemovingAllowed() {
@@ -400,25 +394,25 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
             id: 'pasteNetworkModificationNode',
-            disabled: !isNodePastingAllowed(),
+            disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(),
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
-                    disabled: !isNodePastingAllowed() || !isNodeInsertionAllowed(NodeInsertModes.NewBranch),
+                    disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.NewBranch),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
-                    disabled: !isNodePastingAllowed() || !isNodeInsertionAllowed(NodeInsertModes.Before),
+                    disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.Before),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
-                    disabled: !isNodePastingAllowed() || !isNodeInsertionAllowed(NodeInsertModes.After),
+                    disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.After),
                 },
             },
         },
