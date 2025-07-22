@@ -187,6 +187,15 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 return [breakpoint, updatedLayouts];
             });
             setLayouts(Object.fromEntries(newLayoutsEntries));
+            // Check if MapCard is already in the saved layouts
+            if (
+                savedLayoutsEntries.some(([_breakpoint, breakpoint_layouts]) =>
+                    breakpoint_layouts.some((layout) => layout.i === 'MapCard')
+                )
+            ) {
+                // then set thi flag to true to render the Map card
+                setIsMapCardAdded(true);
+            }
         } else {
             setLayouts(initialLayouts);
         }
@@ -194,16 +203,20 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const onAddMapCard = useCallback(() => {
         setLayouts((old_layouts) => {
-            const new_lg_layouts = [...old_layouts.lg];
             const layoutItem: Layout = {
                 i: 'MapCard',
                 x: Infinity,
                 y: 0,
-                w: DEFAULT_WIDTH,
-                h: DEFAULT_HEIGHT,
+                ...defaultCardSizes,
             };
-            new_lg_layouts.push(layoutItem);
-            return { lg: new_lg_layouts };
+            const oldLayoutsEntries = Object.entries(old_layouts);
+            const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                // Ensure the new layout item is added to each breakpoint
+                const updatedLayouts = [...breakpoint_layouts];
+                updatedLayouts.push(layoutItem);
+                return [breakpoint, updatedLayouts];
+            });
+            return Object.fromEntries(newLayoutsEntries);
         });
         setIsMapCardAdded(true);
     }, []);
