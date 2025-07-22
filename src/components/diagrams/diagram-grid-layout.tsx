@@ -289,6 +289,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     key={'MapCard'}
                     studyUuid={studyUuid}
                     onClose={() => setIsMapCardAdded(false)}
+                    errorMessage={globalError}
                     showInSpreadsheet={showInSpreadsheet}
                 />
             )}

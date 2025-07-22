@@ -39,12 +39,13 @@ interface ReactGridLayoutCustomChildComponentProps {
 interface MapCardProps extends ReactGridLayoutCustomChildComponentProps {
     studyUuid: UUID;
     onClose: () => void;
+    errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
 
 export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>) => {
-    const { studyUuid, onClose, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
+    const { studyUuid, onClose, errorMessage, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
     const [isHover, setIsHover] = useState(false);
 
@@ -62,6 +63,14 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const clickable = !errorMessage;
+
+    const handleOpenMap = useCallback(() => {
+        dispatch(resetMapEquipment());
+        dispatch(setMapDataLoading(false));
+        dispatch(setReloadMapNeeded(true));
+        setMapOpen(true);
+    }, [dispatch]);
 
     const handleCloseMap = useCallback(() => {
         setMapOpen(false);
@@ -83,19 +92,24 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
             <CardHeader title={'MapCard'} onClose={onClose} />
+            {errorMessage && <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />}
             <Box sx={cardStyles.diagramContainer}>
                 <WolrdSvg
                     style={{
                         width: '100%',
                         height: '100%',
-                        cursor: 'pointer',
-                        backgroundColor: isHover ? 'rgba(0, 0, 0, 0.4)' : 'inherit',
+                        cursor: clickable ? 'pointer' : 'default',
+                        backgroundColor: clickable && isHover ? 'rgba(0, 0, 0, 0.4)' : 'inherit',
                     }}
-                    fill={isHover ? theme.palette.grey[800] : theme.palette.grey[500]}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setMapOpen(true);
-                    }}
+                    fill={clickable && isHover ? theme.palette.grey[800] : theme.palette.grey[500]}
+                    onClick={
+                        clickable
+                            ? (e) => {
+                                  e.stopPropagation();
+                                  handleOpenMap();
+                              }
+                            : undefined
+                    }
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                 />
@@ -120,7 +134,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         showInSpreadsheet={(eq) => {
-                            setMapOpen(false);
+                            handleCloseMap();
                             showInSpreadsheet(eq);
                         }}
                         onPolygonChanged={() => {}}
