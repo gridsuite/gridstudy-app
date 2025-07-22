@@ -16,6 +16,7 @@ import {
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
+    TEMPORARY_LIMITS_MODIFICATION_TYPE,
     TYPE,
 } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
@@ -47,7 +48,7 @@ const formatTemporaryLimitsFrontToBack = (modification: Modification, amountMaxT
                 name: modification[TEMPORARY_LIMIT_NAME + i],
                 value: modification[TEMPORARY_LIMIT_VALUE + i],
                 acceptableDuration: modification[TEMPORARY_LIMIT_DURATION + i],
-                modificationType: 'ADDED',
+                modificationType: modification[TEMPORARY_LIMITS_MODIFICATION_TYPE],
             });
         }
     }
@@ -61,12 +62,12 @@ const formatOperationalLimitGroupsFrontToBack = (
 ) => {
     return {
         id: modification[LIMIT_GROUP_NAME],
+        side: side,
         modificationType: modification[MODIFICATION_TYPE],
         currentLimits: {
             permanentLimit: modification[PERMANENT_LIMIT],
             temporaryLimits: formatTemporaryLimitsFrontToBack(modification, amountMaxTemporaryLimits),
         },
-        side: side,
     };
 };
 

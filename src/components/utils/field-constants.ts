@@ -49,6 +49,7 @@ export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
+export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';

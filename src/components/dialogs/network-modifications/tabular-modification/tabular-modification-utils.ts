@@ -87,6 +87,7 @@ import {
     MODIFICATION_TYPE,
     SIDE,
     LIMIT_GROUP_NAME,
+    TEMPORARY_LIMITS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
@@ -120,6 +121,7 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS = [
     LIMIT_GROUP_NAME,
     PERMANENT_LIMIT,
     MODIFICATION_TYPE,
+    TEMPORARY_LIMITS_MODIFICATION_TYPE,
 ];
 
 export const LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS = [
