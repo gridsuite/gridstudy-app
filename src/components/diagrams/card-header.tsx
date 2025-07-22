@@ -18,7 +18,7 @@ const styles = {
         paddingLeft: theme.spacing(1),
         display: 'flex',
         alignItems: 'center',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         border:
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
