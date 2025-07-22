@@ -200,7 +200,6 @@ const NetworkModificationNodeEditor = () => {
         setEditData(undefined);
     };
 
-    //TODO JKLJKLJ
     function withDefaultParams(Dialog: React.FC<any>) {
         return (
             <Dialog
@@ -905,7 +904,6 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderDialog = () => {
-        console.log(subMenuItemsList, editDialogOpen);
         return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
     };
 
