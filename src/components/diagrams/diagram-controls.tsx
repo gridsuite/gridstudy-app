@@ -16,7 +16,7 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
-import UploadIcon from '@mui/icons-material/Upload';
+import HubIcon from '@mui/icons-material/Hub';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import LoupeIcon from '@mui/icons-material/Loupe';
@@ -27,6 +27,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { useParameterState } from '../dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -176,7 +177,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                                 <>
                                     <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
                                         <IconButton sx={styles.actionIcon} onClick={handleClickNadConfigIcon}>
-                                            <UploadIcon sx={styles.icon} />
+                                            <HubIcon sx={styles.icon} />
                                         </IconButton>
                                     </Tooltip>
                                     <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
@@ -230,6 +231,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             open={isFilterSelectorOpen}
                             onClose={selectFilter}
                             types={[ElementType.FILTER]}
+                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                             title={intl.formatMessage({
                                 id: 'AddFromGridexplore',
                             })}
