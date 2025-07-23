@@ -11,14 +11,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
-    EquipmentToDelete,
+    type EquipmentToDelete,
     removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
 import { type AppState, EquipmentUpdateType } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
@@ -26,7 +26,6 @@ import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
 import { isStudyNotification } from 'types/notification-types';
 import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from 'services/study/network';
 
 const getEquipmentUpdateTypeFromType = (type: SpreadsheetEquipmentType) => {
@@ -172,7 +171,7 @@ export const useSpreadsheetEquipments = (
 
             // Handle updates and resets based on impacted element types
             if (impactedElementTypes.length > 0) {
-                if (impactedElementTypes.includes(EQUIPMENT_TYPES.SUBSTATION)) {
+                if (impactedElementTypes.includes(SpreadsheetEquipmentType.SUBSTATION)) {
                     dispatch(resetEquipments());
                     return;
                 }
@@ -187,8 +186,8 @@ export const useSpreadsheetEquipments = (
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
                 // The formatting of the fetched equipments is done in the reducer
                 if (
-                    type === EQUIPMENT_TYPES.SUBSTATION ||
-                    type === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
+                    type === SpreadsheetEquipmentType.SUBSTATION ||
+                    type === SpreadsheetEquipmentType.VOLTAGE_LEVEL ||
                     !equipmentToUpdateId
                 ) {
                     // we must fetch data for all equipments, as substation data (country) and voltage level data(nominalV)

@@ -514,23 +514,23 @@ const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
 
 export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
-    [EQUIPMENT_TYPES.SUBSTATION]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.LOAD]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.BATTERY]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.TIE_LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.BUS]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BATTERY]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BUS]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.LOAD]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.SHUNT_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.SUBSTATION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.TIE_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.VOLTAGE_LEVEL]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.VSC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
 };
 
 export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
@@ -1297,8 +1297,8 @@ export const reducer = createReducer(initialState, (builder) => {
         // it will be modified when the notifications received after a network modification will be more precise
         const updatedEquipments = action.equipments;
 
-        // equipmentType : type of equipment updated
-        // equipments : list of updated equipments of type <equipmentType>
+        // equipmentType: type of equipment updated
+        // equipments: list of updated equipments of type <equipmentType>
         for (const [updateType, equipments] of Object.entries(updatedEquipments) as [
             EquipmentUpdateType,
             Identifiable[],
@@ -1352,13 +1352,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];
             if (currentEquipments !== undefined) {
                 // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
-                    const currentSubstations = state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
-                        action.nodeId
-                    ] as Substation[] | null;
+                if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
+                    const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
+                        .equipmentsByNodeId[action.nodeId] as Substation[] | null;
                     if (currentSubstations != null) {
-                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[action.nodeId] =
-                            updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
+                        state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
+                            action.nodeId
+                        ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                     }
                 }
 

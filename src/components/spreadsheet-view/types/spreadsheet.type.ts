@@ -6,10 +6,9 @@
  */
 
 import type { UUID } from 'crypto';
-import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { Identifiable } from '@gridsuite/commons-ui';
+import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
-import { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
 
 export type EquipmentFetcher = (
     studyUuid: UUID,
@@ -18,13 +17,25 @@ export type EquipmentFetcher = (
     substationsIds?: string[]
 ) => Promise<any>;
 
-export type SpreadsheetEquipmentType = Exclude<
-    EQUIPMENT_TYPES,
-    | EQUIPMENT_TYPES.HVDC_CONVERTER_STATION
-    | EQUIPMENT_TYPES.SWITCH
-    | EQUIPMENT_TYPES.BREAKER
-    | EQUIPMENT_TYPES.DISCONNECTOR
->;
+export enum SpreadsheetEquipmentType {
+    BATTERY = 'BATTERY',
+    BUS = 'BUS',
+    BUSBAR_SECTION = 'BUSBAR_SECTION',
+    DANGLING_LINE = 'DANGLING_LINE',
+    GENERATOR = 'GENERATOR',
+    HVDC_LINE = 'HVDC_LINE',
+    LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
+    LINE = 'LINE',
+    LOAD = 'LOAD',
+    SHUNT_COMPENSATOR = 'SHUNT_COMPENSATOR',
+    STATIC_VAR_COMPENSATOR = 'STATIC_VAR_COMPENSATOR',
+    SUBSTATION = 'SUBSTATION',
+    THREE_WINDINGS_TRANSFORMER = 'THREE_WINDINGS_TRANSFORMER',
+    TIE_LINE = 'TIE_LINE',
+    TWO_WINDINGS_TRANSFORMER = 'TWO_WINDINGS_TRANSFORMER',
+    VOLTAGE_LEVEL = 'VOLTAGE_LEVEL',
+    VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
+}
 
 export interface SpreadsheetTabDefinition {
     uuid: UUID;

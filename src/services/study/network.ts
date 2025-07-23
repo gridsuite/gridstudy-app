@@ -12,6 +12,7 @@ import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEn
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 import { SwitchInfos } from './network-map.type';
+import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -234,7 +235,7 @@ export function fetchNetworkElementInfos(
     studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: string | undefined | null,
-    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES,
+    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES | SpreadsheetEquipmentType,
     infoType: string,
     elementId: string,
     inUpstreamBuiltParentNode: boolean

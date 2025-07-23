@@ -6,13 +6,16 @@
  */
 
 import { useCallback } from 'react';
-import { EquipmentFetcher, SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from '../types/spreadsheet.type';
-import { UUID } from 'crypto';
+import {
+    type EquipmentFetcher,
+    type SpreadsheetEquipmentsByNodes,
+    SpreadsheetEquipmentType,
+} from '../types/spreadsheet.type';
+import type { UUID } from 'crypto';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { type AppState } from '../../../redux/reducer';
 import { loadEquipments } from '../../../redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import {
     fetchBatteries,
     fetchBusbarSections,
@@ -36,39 +39,39 @@ import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-
 
 const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
     switch (equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
+        case SpreadsheetEquipmentType.SUBSTATION:
             return fetchSubstations;
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+        case SpreadsheetEquipmentType.VOLTAGE_LEVEL:
             return fetchVoltageLevels;
-        case EQUIPMENT_TYPES.LINE:
+        case SpreadsheetEquipmentType.LINE:
             return fetchLines;
-        case EQUIPMENT_TYPES.TIE_LINE:
+        case SpreadsheetEquipmentType.TIE_LINE:
             return fetchTieLines;
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
             return fetchTwoWindingsTransformers;
-        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+        case SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER:
             return fetchThreeWindingsTransformers;
-        case EQUIPMENT_TYPES.HVDC_LINE:
+        case SpreadsheetEquipmentType.HVDC_LINE:
             return fetchHvdcLines;
-        case EQUIPMENT_TYPES.GENERATOR:
+        case SpreadsheetEquipmentType.GENERATOR:
             return fetchGenerators;
-        case EQUIPMENT_TYPES.BATTERY:
+        case SpreadsheetEquipmentType.BATTERY:
             return fetchBatteries;
-        case EQUIPMENT_TYPES.LOAD:
+        case SpreadsheetEquipmentType.LOAD:
             return fetchLoads;
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+        case SpreadsheetEquipmentType.SHUNT_COMPENSATOR:
             return fetchShuntCompensators;
-        case EQUIPMENT_TYPES.DANGLING_LINE:
+        case SpreadsheetEquipmentType.DANGLING_LINE:
             return fetchDanglingLines;
-        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+        case SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR:
             return fetchStaticVarCompensators;
-        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+        case SpreadsheetEquipmentType.VSC_CONVERTER_STATION:
             return fetchVscConverterStations;
-        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+        case SpreadsheetEquipmentType.LCC_CONVERTER_STATION:
             return fetchLccConverterStations;
-        case EQUIPMENT_TYPES.BUS:
+        case SpreadsheetEquipmentType.BUS:
             return fetchBuses;
-        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+        case SpreadsheetEquipmentType.BUSBAR_SECTION:
             return fetchBusbarSections;
     }
 };
