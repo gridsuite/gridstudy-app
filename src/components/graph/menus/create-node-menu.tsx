@@ -18,7 +18,7 @@ import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
-import { CurrentTreeNode, isSecurityModificationNode, NodeType } from '../tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';
 import { NodeInsertModes } from 'types/notification-types';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -44,7 +44,12 @@ type NodeMenuItems = Record<string, MenuItem>;
 
 interface CreateNodeMenuProps {
     position: { x: number; y: number };
-    handleNodeCreation: (element: CurrentTreeNode, type: NodeType, insertMode: NodeInsertModes) => void;
+    handleNodeCreation: (
+        element: CurrentTreeNode,
+        type: NodeType,
+        insertMode: NodeInsertModes,
+        networkModificationNodeType: NetworkModificationNodeType
+    ) => void;
     handleSecuritySequenceCreation: (element: CurrentTreeNode) => void;
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
@@ -135,8 +140,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         handleClose();
     }
 
-    function createNetworkModificationNode(insertMode: NodeInsertModes) {
-        handleNodeCreation(activeNode, NodeType.NETWORK_MODIFICATION, insertMode);
+    function createNetworkModificationNode(
+        insertMode: NodeInsertModes,
+        networkModificationNodeType: NetworkModificationNodeType
+    ) {
+        handleNodeCreation(activeNode, NodeType.NETWORK_MODIFICATION, insertMode, networkModificationNodeType);
         handleClose();
     }
 
@@ -265,24 +273,58 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING ||
                 isModificationsInProgress,
         },
-        CREATE_MODIFICATION_NODE: {
+        CREATE_MODIFICATION_NODE_CONSTRUCTION: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
-            id: 'createNetworkModificationNode',
+            disabled: isSecurityModificationNode(activeNode),
+
+            id: 'createNetworkModificationConstructionNode',
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode(NodeInsertModes.NewBranch),
+                    action: () =>
+                        createNetworkModificationNode(
+                            NodeInsertModes.NewBranch,
+                            NetworkModificationNodeType.CONSTRUCTION
+                        ),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
                 INSERT_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () => createNetworkModificationNode(NodeInsertModes.Before),
+
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNetworkModificationNodeAbove',
                 },
                 INSERT_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode(NodeInsertModes.After),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.CONSTRUCTION),
+                    id: 'insertNetworkModificationNodeBelow',
+                },
+            },
+        },
+        CREATE_MODIFICATION_NODE_SECURITY: {
+            onRoot: true,
+            id: 'createNetworkModificationSecurityNode',
+            subMenuItems: {
+                CREATE_MODIFICATION_NODE: {
+                    onRoot: true,
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.NewBranch, NetworkModificationNodeType.SECURITY),
+                    id: 'createNetworkModificationNodeInNewBranch',
+                },
+                INSERT_MODIFICATION_NODE_BEFORE: {
+                    onRoot: false,
+                    disabled: !isSecurityModificationNode(activeNode),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.SECURITY),
+                    id: 'insertNetworkModificationNodeAbove',
+                },
+                INSERT_MODIFICATION_NODE_AFTER: {
+                    onRoot: true,
+                    disabled: !isSecurityModificationNode(activeNode),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.SECURITY),
                     id: 'insertNetworkModificationNodeBelow',
                 },
             },
