@@ -7,7 +7,7 @@
 
 import { NodePlacement } from './layout.type';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
-import { CurrentTreeNode, NetworkModificationNodeType } from './tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -109,8 +109,8 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
 }
 
 /**
- * Create a Map using row number as keys and column number as value. The column value
- * for each row is either the lowest or highest value among column values of the same row, for the provided nodes.
+ * Create a Map using row number as keys and column number as value. The column value for each row is either
+ * the lowest or highest (extreme) value among column values of the same row for the provided nodes.
  *
  * Example nodes and placements :
  * - NodeA {row:0, column:30}
@@ -119,36 +119,102 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
  * - NodeD {row:2, column:40}
  * - NodeE {row:2, column:80}
  *
- * For these placements, the returned Map would be like this : {0 => 30, 1 => 10, 2 => 40}
+ * For these placements, the returned Map would be, with getMax=false, like this : {0 => 30, 1 => 10, 2 => 40}
+ * and with getMax=true, like this : {0 => 30, 1 => 50, 2 => 80}
+ *
+ * If there are security nodes in the tree, we consider that each group of security nodes share the
+ * same lowest or highest value for each of their rows.
  *
  * @param nodes The nodes to process
  * @param placements The grid placements
+ * @param nodeMap The map used to find a node's parent
  * @param getMax If true, returns maximum columns, if false returns minimum columns
  */
-function getColumnsByRows(nodes: CurrentTreeNode[], placements: PlacementGrid, getMax: boolean): Map<number, number> {
+function getColumnsByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    getMax: boolean
+): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
+
+    // These two variables are used to process the groups of security nodes, to make them all match the same value.
+    // When in a security group, we store the extreme value in currentExtremeValue, and the rows of the current
+    // security group in rowsToRetroactivelyUpdate.
+    // When we find a new extreme in a security group, we update all its rows with the new value.
+    let currentExtremeValue: number;
+    let rowsToRetroactivelyUpdate = [];
+
+    function isExtreme(contender: number, competition: number | undefined): boolean {
+        if (competition === undefined) {
+            return true;
+        }
+        return getMax ? contender > competition : contender < competition;
+    }
+
+    function resetSecurityGroupContext() {
+        rowsToRetroactivelyUpdate.length = 0;
+        currentExtremeValue = getMax ? -Infinity : Infinity;
+    }
+
+    resetSecurityGroupContext();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
-        if (nodePlacement) {
-            if (
-                !columnsByRow.has(nodePlacement.row) ||
-                (getMax
-                    ? nodePlacement.column > columnsByRow.get(nodePlacement.row)!
-                    : nodePlacement.column < columnsByRow.get(nodePlacement.row)!)
-            ) {
-                columnsByRow.set(nodePlacement.row, nodePlacement.column);
+        if (!nodePlacement || !node.parentId) {
+            return;
+        }
+        // Security nodes are grouped together and enclosed in a rectangle. Each of those rectangles
+        // must not be overlapped by the compression algorithm. To do so, when we are in a security
+        // group of nodes, we consider that every row of this security group has the extreme value
+        // of the whole group, and when we assign a new extreme, we do so to all the rows of the group.
+
+        if (isSecurityModificationNode(node)) {
+            // This test determines if we changed from a security group to another. If this is the case,
+            // we reset the currentExtremeValue to only update rows for the new group and not the old one.
+            if (!isSecurityModificationNode(nodeMap.get(node.parentId)?.node)) {
+                resetSecurityGroupContext();
+            }
+
+            // We mark each row of a security group in order to update them all when we find a new extreme.
+            rowsToRetroactivelyUpdate.push(nodePlacement.row);
+
+            const contender = getMax
+                ? Math.max(currentExtremeValue, nodePlacement.column)
+                : Math.min(currentExtremeValue, nodePlacement.column);
+
+            if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+                rowsToRetroactivelyUpdate.forEach((row) => {
+                    columnsByRow.set(row, contender);
+                });
+            }
+
+            currentExtremeValue = contender;
+        } else {
+            resetSecurityGroupContext();
+
+            const contender = nodePlacement.column;
+            if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+                columnsByRow.set(nodePlacement.row, contender);
             }
         }
     });
     return columnsByRow;
 }
 
-function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
-    return getColumnsByRows(nodes, placements, false);
+function getMinimumColumnByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+): Map<number, number> {
+    return getColumnsByRows(nodes, placements, nodeMap, false);
 }
 
-function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
-    return getColumnsByRows(nodes, placements, true);
+function getMaximumColumnByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+): Map<number, number> {
+    return getColumnsByRows(nodes, placements, nodeMap, true);
 }
 
 /**
@@ -226,7 +292,7 @@ function compressTreePlacements(
     for (let i = nodes.length - 1; i >= 0; i--) {
         const node = nodes[i];
         const children = childrenMap.get(node.id) || [];
-        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) || 0), 0);
+        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) ?? 0), 0);
         subTreeSizeMap.set(node.id, 1 + childrenSize);
     }
 
@@ -251,8 +317,9 @@ function compressTreePlacements(
         // cases other branches could go under the left neighbor and make edges cross.
         const leftNodes = nodes.slice(0, currentNodeIndex);
 
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements);
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements);
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
+
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
@@ -341,7 +408,7 @@ function computeSecurityGroupNodes(
         }
 
         // If currently not in a security group, and a security node is found, we initiate securityGroupBuilder
-        if (!securityGroupBuilder.isInSecurityGroup && node.data.nodeType === NetworkModificationNodeType.SECURITY) {
+        if (!securityGroupBuilder.isInSecurityGroup && isSecurityModificationNode(node)) {
             securityGroupBuilder = {
                 isInSecurityGroup: true,
                 securityGroupTopLeftPosition: nodePlacement,
