@@ -28,14 +28,14 @@ import {
     formatBackToFront,
     formatOperationalLimitGroupsFrontToBack,
     formSchema,
-    LimitSetsTabularModification,
+    LimitSetModificationMetadata,
     SchemaType,
 } from './limit-sets-tabular-modification-utils';
 
 interface LimitSetsModificationDialogProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    editData: LimitSetsTabularModification;
+    editData: LimitSetModificationMetadata;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
 }
