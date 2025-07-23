@@ -197,8 +197,8 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SetComputingStatusParametersAction,
     ParameterizedComputingType,
-    SET_APP_LAYOUT_INIT,
-    SetAppLayoutInitAction,
+    SET_DIAGRAM_GRID_LAYOUT,
+    SetDiagramGridLayoutAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -408,13 +408,9 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
-export interface DiagramLayout {
-    gridLayout: Layouts;
+export interface DiagramGridLayoutConfig {
+    gridLayouts: Layouts;
     params: DiagramParams[];
-}
-
-export interface AppLayout {
-    diagram: DiagramLayout;
 }
 
 export interface AppState extends CommonStoreState, AppConfigState {
@@ -502,7 +498,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
-    appLayoutInit: AppLayout;
+    diagramGridLayout: DiagramGridLayoutConfig;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -605,11 +601,9 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
-    appLayoutInit: {
-        diagram: {
-            gridLayout: {},
-            params: [],
-        },
+    diagramGridLayout: {
+        gridLayouts: {},
+        params: [],
     },
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
@@ -1588,8 +1582,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = undefined;
     });
 
-    builder.addCase(SET_APP_LAYOUT_INIT, (state, action: SetAppLayoutInitAction) => {
-        state.appLayoutInit = action.appLayoutInit;
+    builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
+        state.diagramGridLayout = action.diagramGridLayout;
     });
 });
 

@@ -18,12 +18,12 @@ export const useDiagramsGridLayoutInitialization = ({
     onLoadDiagramLayout,
 }: UseDiagramsGridLayoutInitializationProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const gridLayout = useSelector((state: AppState) => state.appLayoutInit?.diagram.gridLayout);
+    const gridLayouts = useSelector((state: AppState) => state.diagramGridLayout.gridLayouts);
 
     useEffect(() => {
         if (!studyUuid) {
             return;
         }
-        onLoadDiagramLayout(gridLayout);
-    }, [gridLayout, onLoadDiagramLayout, studyUuid]);
+        onLoadDiagramLayout(gridLayouts);
+    }, [gridLayouts, onLoadDiagramLayout, studyUuid]);
 };

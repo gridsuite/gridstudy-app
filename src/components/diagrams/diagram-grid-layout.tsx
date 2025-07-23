@@ -282,7 +282,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
-                    voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
+                    voltageLevelToOmitIds: [...(diagram.voltageLevelToOmitIds ?? []), voltageLevelIdToOmit],
                     positions: diagram.positions,
                 });
             }
@@ -295,7 +295,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const updatedPositions = diagram.positions.map((position) =>
-                    position.voltageLevelId === vlId ? { ...position, xposition: x, yposition: y } : position
+                    position.voltageLevelId === vlId ? { ...position, xPosition: x, yPosition: y } : position
                 );
 
                 updateDiagramPositions({

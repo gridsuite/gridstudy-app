@@ -223,11 +223,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             // Repositioning the nodes with specified positions
             if (props.customPositions.length > 0) {
                 props.customPositions.forEach((position) => {
-                    if (position.xposition !== undefined && position.yposition !== undefined) {
+                    if (position.xPosition !== undefined && position.yPosition !== undefined) {
                         diagramViewer.moveNodeToCoordinates(
                             position.voltageLevelId,
-                            position.xposition,
-                            position.yposition
+                            position.xPosition,
+                            position.yPosition
                         );
                     }
                 });

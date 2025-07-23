@@ -6,26 +6,26 @@
  */
 
 import { Layout, Layouts } from 'react-grid-layout';
-import { Diagram, DiagramParams } from '../diagram.type';
+import { Diagram, DiagramParams, DiagramType } from '../diagram.type';
 import { useSelector } from 'react-redux';
-import { AppState, DiagramLayout } from 'redux/reducer';
-import { saveStudyLayout } from 'services/study/study-config';
+import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { useCallback } from 'react';
-import { DiagramLayoutParam, StudyLayout } from 'types/study-layout.types';
+import { DiagramGridLayout, DiagramLayoutParam } from 'types/study-layout.types';
 import { MAX_INT32 } from 'services/utils';
+import { saveDiagramGridLayout } from 'services/study/study-config';
 
 interface UseSaveDiagramLayoutProps {
     layouts: Layouts;
     diagrams: Record<UUID, Diagram>;
 }
 
-const frontendToBackendAppLayout = (diagram: DiagramLayout): StudyLayout => {
-    const diagramLayoutParams: DiagramLayoutParam[] = [];
+const frontendToBackendDiagramGridLayout = (diagram: DiagramGridLayoutConfig): DiagramGridLayout => {
+    const diagramLayouts: DiagramLayoutParam[] = [];
 
     const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
 
-    for (const [layoutKey, layouts] of Object.entries(diagram.gridLayout)) {
+    for (const [layoutKey, layouts] of Object.entries(diagram.gridLayouts)) {
         for (const { i, w, h, x, y } of layouts) {
             gridLayoutById[i] = {
                 ...gridLayoutById[i],
@@ -42,15 +42,18 @@ const frontendToBackendAppLayout = (diagram: DiagramLayout): StudyLayout => {
     diagram.params.forEach((param) => {
         const matchingGridLayout = gridLayoutById[param.diagramUuid];
         if (matchingGridLayout) {
-            diagramLayoutParams.push({
+            // Transform diagram type for backend serialization - cast type to handle backend polymorphism
+            const transformedParam: DiagramLayoutParam = {
                 ...param,
-                gridLayout: matchingGridLayout,
-            });
+                type: param.type === DiagramType.NETWORK_AREA_DIAGRAM ? 'network-area-diagram-details' : param.type,
+                diagramPositions: matchingGridLayout,
+            } as DiagramLayoutParam;
+            diagramLayouts.push(transformedParam);
         }
     });
 
     return {
-        diagramLayoutParams: diagramLayoutParams,
+        diagramLayouts: diagramLayouts,
     };
 };
 
@@ -70,14 +73,14 @@ export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayout
         }
 
         const diagramParams: DiagramParams[] = Object.values(diagrams).map((diagram) => {
-            const { name, svg, ...cleanedFields } = diagram;
+            const { svg, ...cleanedFields } = diagram;
             return cleanedFields;
         });
 
-        saveStudyLayout(
+        saveDiagramGridLayout(
             studyUuid,
-            frontendToBackendAppLayout({
-                gridLayout: layouts,
+            frontendToBackendDiagramGridLayout({
+                gridLayouts: layouts,
                 params: diagramParams,
             })
         );

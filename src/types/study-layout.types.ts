@@ -9,9 +9,9 @@ import { DiagramParams } from 'components/diagrams/diagram.type';
 import { Layout } from 'react-grid-layout';
 
 export type DiagramLayoutParam = DiagramParams & {
-    gridLayout: Record<string, Pick<Layout, 'w' | 'h' | 'x' | 'y'>>;
+    diagramPositions: Record<string, Pick<Layout, 'w' | 'h' | 'x' | 'y'>>;
 };
 
-export interface StudyLayout {
-    diagramLayoutParams: DiagramLayoutParam[];
+export interface DiagramGridLayout {
+    diagramLayouts: DiagramLayoutParam[];
 }

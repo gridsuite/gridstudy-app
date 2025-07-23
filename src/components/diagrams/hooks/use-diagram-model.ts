@@ -217,7 +217,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             let fetchOptions: RequestInit = { method: 'GET' };
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const nadRequestInfos = {
-                    nadConfigUuid: diagram.nadConfigUuid,
+                    nadConfigUuid: diagram.currentNadConfigUuid ?? diagram.nadConfigUuid,
                     filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
@@ -266,13 +266,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
                                     ...new Set([
-                                        ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
+                                        ...((diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds ||
+                                            []),
                                         ...vlIdsFromSvg,
                                     ]),
                                 ],
                                 voltageLevelToOmitIds: (
                                     diagrams[diagram.diagramUuid] as NetworkAreaDiagram
-                                ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
+                                ).voltageLevelToOmitIds?.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
                                 positions: mergePositions(
                                     (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
                                     data.metadata as DiagramMetadata

@@ -14,12 +14,14 @@ type UseDiagramParamsInitializationProps = { onLoadDiagramParams: (diagramParams
 
 export const useDiagramParamsInitialization = ({ onLoadDiagramParams }: UseDiagramParamsInitializationProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const diagramParams = useSelector((state: AppState) => state.appLayoutInit?.diagram.params);
+    const diagramParams = useSelector((state: AppState) => state.diagramGridLayout.params);
 
     useEffect(() => {
         if (!studyUuid || !diagramParams) {
             return;
         }
         diagramParams.forEach((diagramParams) => onLoadDiagramParams(diagramParams));
-    }, [diagramParams, onLoadDiagramParams, studyUuid]);
+        // This effect runs only once for the initial load
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 };

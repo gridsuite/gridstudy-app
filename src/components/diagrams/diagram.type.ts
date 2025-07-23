@@ -61,6 +61,7 @@ export type SubstationDiagram = DiagramBase & {
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
+    currentNadConfigUuid?: UUID;
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];

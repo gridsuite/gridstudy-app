@@ -8,13 +8,13 @@
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAppLayoutInit } from 'redux/actions';
-import { AppLayout, AppState } from 'redux/reducer';
-import { getStudyLayout } from 'services/study/study-config';
+import { setDiagramGridLayout } from 'redux/actions';
+import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
+import { getDiagramGridLayout } from 'services/study/study-config';
 import { MAX_INT32 } from 'services/utils';
-import { StudyLayout } from 'types/study-layout.types';
+import { DiagramGridLayout } from 'types/study-layout.types';
 
-export const useAppLayout = () => {
+export const useDiagramGridLayout = () => {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -22,10 +22,10 @@ export const useAppLayout = () => {
         if (!studyUuid) {
             return;
         }
-        getStudyLayout(studyUuid).then((appLayout: StudyLayout | null) => {
+        getDiagramGridLayout(studyUuid).then((diagramGridLayout: DiagramGridLayout | null) => {
             // if not layout is found, 204 is returned with null value
-            if (appLayout) {
-                dispatch(setAppLayoutInit(backendToFrontendAppLayout(appLayout)));
+            if (diagramGridLayout) {
+                dispatch(setDiagramGridLayout(backendToFrontendGridLayout(diagramGridLayout)));
             }
         });
     }, [studyUuid, dispatch]);
@@ -38,11 +38,11 @@ const decodeInfinity = (value: number) => {
     return value;
 };
 
-const backendToFrontendAppLayout = (studyLayout: StudyLayout): AppLayout => {
+const backendToFrontendGridLayout = (diagramGridLayout: DiagramGridLayout): DiagramGridLayoutConfig => {
     const gridLayoutResult: Layouts = {};
 
-    for (const { diagramUuid, gridLayout } of studyLayout.diagramLayoutParams) {
-        for (const [layoutKey, layoutValues] of Object.entries(gridLayout)) {
+    for (const { diagramUuid, diagramPositions } of diagramGridLayout.diagramLayouts) {
+        for (const [layoutKey, layoutValues] of Object.entries(diagramPositions)) {
             if (!gridLayoutResult[layoutKey]) {
                 gridLayoutResult[layoutKey] = [];
             }
@@ -56,9 +56,7 @@ const backendToFrontendAppLayout = (studyLayout: StudyLayout): AppLayout => {
     }
 
     return {
-        diagram: {
-            gridLayout: gridLayoutResult,
-            params: studyLayout.diagramLayoutParams,
-        },
+        gridLayouts: gridLayoutResult,
+        params: diagramGridLayout.diagramLayouts,
     };
 };
