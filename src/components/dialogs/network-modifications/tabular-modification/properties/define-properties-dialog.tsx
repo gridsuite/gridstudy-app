@@ -23,10 +23,10 @@ import {
     emptyProperties,
     PropertiesFormType,
     buildPredefinedProperties,
-    Property,
+    TabularProperty,
 } from './property-utils';
-import { ADDITIONAL_PROPERTIES } from '../../../../utils/field-constants';
 import { PredefinedEquipmentProperties } from '../../tabular-creation/tabular-creation-utils';
+import { TABULAR_PROPERTIES } from '../../../../utils/field-constants';
 
 const styles = {
     dialogContent: {
@@ -40,7 +40,7 @@ const styles = {
 export type DefinePropertiesDialogProps = {
     open: UseStateBooleanReturn;
     equipmentType: EquipmentType;
-    currentProperties: Property[];
+    currentProperties: TabularProperty[];
     predefinedEquipmentProperties: PredefinedEquipmentProperties;
     onValidate: (formData: PropertiesFormType) => void;
 };
@@ -67,9 +67,9 @@ export default function DefinePropertiesDialog({
 
     useEffect(() => {
         if (open.value && equipmentType) {
-            if (currentProperties.length > 0) {
+            if (currentProperties?.length) {
                 reset({
-                    [ADDITIONAL_PROPERTIES]: currentProperties,
+                    [TABULAR_PROPERTIES]: currentProperties,
                 });
             } else {
                 // init case when no property has been selected before: use predefined properties

@@ -5,26 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import yup from 'components/utils/yup-config';
-import { ADDITIONAL_PROPERTIES, NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
+import { TABULAR_PROPERTIES, NAME, PREDEFINED, SELECTED } from 'components/utils/field-constants';
 
 export const PROPERTY_CSV_COLUMN_PREFIX = 'property_';
 
-export type Property = {
+export type TabularProperty = {
     [NAME]: string;
     [PREDEFINED]: boolean;
     [SELECTED]: boolean;
 };
 
-export type Properties = {
-    [ADDITIONAL_PROPERTIES]?: Property[];
+export type TabularProperties = {
+    [TABULAR_PROPERTIES]?: TabularProperty[];
 };
 
-export const emptyProperties: Properties = {
-    [ADDITIONAL_PROPERTIES]: [] as Property[],
+export const emptyProperties: TabularProperties = {
+    [TABULAR_PROPERTIES]: [] as TabularProperty[],
 };
 
 export const buildPredefinedProperties = (names: string[]) => {
-    let properties: Property[] = [];
+    let properties: TabularProperty[] = [];
     names.forEach((name) => {
         properties.push({
             [NAME]: name,
@@ -33,20 +33,20 @@ export const buildPredefinedProperties = (names: string[]) => {
         });
     });
     return {
-        [ADDITIONAL_PROPERTIES]: properties,
+        [TABULAR_PROPERTIES]: properties,
     };
 };
 
-export const initializedProperty = (): Property => {
+export const initializedProperty = (): TabularProperty => {
     return {
         [NAME]: '',
         [PREDEFINED]: false,
-        [SELECTED]: false,
+        [SELECTED]: true,
     };
 };
 
 export const propertiesSchema = yup.object({
-    [ADDITIONAL_PROPERTIES]: yup
+    [TABULAR_PROPERTIES]: yup
         .array()
         .of(
             yup.object().shape({

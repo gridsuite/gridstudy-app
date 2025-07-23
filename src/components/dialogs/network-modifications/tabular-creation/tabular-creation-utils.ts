@@ -75,7 +75,6 @@ import {
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from '../../../network/constants';
-import { Property } from '../tabular-modification/properties/property-utils';
 
 export interface TabularCreationField {
     id: string;
@@ -341,7 +340,7 @@ interface CommentLinesConfig {
     equipmentType: string;
     language: string;
     formType: 'Creation' | 'Modification';
-    currentProperties?: Property[];
+    currentProperties?: string[];
     predefinedEquipmentProperties?: PredefinedEquipmentProperties;
 }
 
@@ -366,22 +365,21 @@ export const generateCommentLines = ({
         if (!!intl.messages[commentKey]) {
             secondCommentLine = intl.formatMessage({ id: commentKey });
         }
-        const activeProperties = currentProperties?.filter((p) => p.selected).map((p) => p.name);
-        if (activeProperties) {
+        if (currentProperties?.length) {
             const networkEquipmentType = equipmentTypesForPredefinedPropertiesMapper(equipmentType as EquipmentType);
             if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
                 if (secondCommentLine.length === 0) {
                     // create an empty row without property columns
-                    const nbSepatator = csvTranslatedColumns.length - 1 - activeProperties.length;
+                    const nbSepatator = csvTranslatedColumns.length - 1 - currentProperties.length;
                     secondCommentLine = separator.repeat(nbSepatator);
                 }
-                activeProperties.forEach((propertyName) => {
+                currentProperties.forEach((propertyName) => {
                     const possibleValues =
                         predefinedEquipmentProperties[networkEquipmentType]?.[propertyName]?.sort((a, b) =>
                             a.localeCompare(b)
                         ) ?? [];
                     secondCommentLine = secondCommentLine + separator;
-                    if (possibleValues.length > 1) {
+                    if (possibleValues.length > 0) {
                         secondCommentLine = secondCommentLine + possibleValues.join(' | ');
                     }
                 });

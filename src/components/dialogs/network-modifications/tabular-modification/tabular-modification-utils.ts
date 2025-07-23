@@ -95,6 +95,7 @@ import {
     SHUNT_COMPENSATOR_TYPES,
 } from '../../../network/constants';
 import { PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
+import { Property } from '../common/properties/property-utils';
 
 export interface TabularModificationField {
     id: string;
@@ -260,6 +261,16 @@ export const formatModification = (modification: Modification) => {
     //exclude type, date and uuid from modification object
     const { type, date, uuid, ...rest } = modification;
     return rest;
+};
+
+export const addPropertiesFromBack = (modification: Modification, tabularProperties: Property[] | null) => {
+    const updatedModification: Modification = { ...modification };
+    if (tabularProperties?.length) {
+        tabularProperties.forEach((property: Property) => {
+            updatedModification[PROPERTY_CSV_COLUMN_PREFIX + property.name] = property.value;
+        });
+    }
+    return updatedModification;
 };
 
 export const getEquipmentTypeFromModificationType = (type: string) => {

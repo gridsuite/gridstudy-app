@@ -13,12 +13,13 @@ import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { createTabulareModification } from 'services/study/network-modifications';
+import { createTabularModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
+    addPropertiesFromBack,
     convertGeneratorOrBatteryModificationFromBackToFront,
     convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
@@ -29,7 +30,8 @@ import {
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
-import { PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils.js';
+import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils.js';
+import { createPropertyModification } from '../common/properties/property-utils.js';
 
 const formSchema = yup
     .object()
@@ -37,11 +39,13 @@ const formSchema = yup
         [TYPE]: yup.string().nullable().required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
     })
+    .concat(propertiesSchema)
     .required();
 
 const emptyFormData = {
     [TYPE]: null,
     [MODIFICATIONS_TABLE]: [],
+    [TABULAR_PROPERTIES]: [],
 };
 
 /**
@@ -94,11 +98,13 @@ const TabularModificationDialog = ({
                         modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
                     });
                 }
+                modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
                 return modification;
             });
             reset({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
+                [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
             });
         }
     }, [editData, reset, intl]);
@@ -114,13 +120,9 @@ const TabularModificationDialog = ({
                 Object.keys(row).forEach((key) => {
                     if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
                         // if a value is set for a "property_*" column and the current row
-                        propertiesModifications.push({
-                            name: key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''),
-                            value: row[key],
-                            previousValue: row[key],
-                            added: false,
-                            deletionMark: false,
-                        });
+                        propertiesModifications.push(
+                            createPropertyModification(key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''), row[key])
+                        );
                     }
                 });
                 if (
@@ -140,15 +142,16 @@ const TabularModificationDialog = ({
                     });
                 }
                 if (propertiesModifications.length > 0) {
-                    modification['properties'] = propertiesModifications;
+                    modification[TABULAR_PROPERTIES] = propertiesModifications;
                 }
                 return modification;
             });
-            createTabulareModification(
+            createTabularModification(
                 studyUuid,
                 currentNodeUuid,
                 modificationType,
                 modifications,
+                formData[TABULAR_PROPERTIES],
                 !!editData,
                 editData?.uuid
             ).catch((error) => {

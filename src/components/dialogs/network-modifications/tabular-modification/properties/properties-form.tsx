@@ -6,7 +6,7 @@
  */
 import { Grid } from '@mui/material';
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
-import { ADDITIONAL_PROPERTIES, PREDEFINED } from '../../../../utils/field-constants';
+import { TABULAR_PROPERTIES, PREDEFINED } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
 import { initializedProperty } from './property-utils';
 import { useCallback } from 'react';
@@ -14,9 +14,11 @@ import { useFormContext } from 'react-hook-form';
 
 const PropertiesForm = () => {
     const { getValues } = useFormContext();
+
+    // predefined properties cannot be removed from the list
     const disabledDeletion = useCallback(
         (idx: number) => {
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            const properties = getValues(`${TABULAR_PROPERTIES}`);
             if (properties && typeof properties[idx] !== 'undefined') {
                 return properties[idx][PREDEFINED];
             }
@@ -25,9 +27,9 @@ const PropertiesForm = () => {
         [getValues]
     );
 
-    const additionalProps = (
+    const tabularProps = (
         <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
+            name={TABULAR_PROPERTIES}
             Field={PropertyForm}
             addButtonLabel={'AddProperty'}
             initialValue={initializedProperty()}
@@ -35,7 +37,7 @@ const PropertiesForm = () => {
         />
     );
 
-    return <Grid container>{additionalProps}</Grid>;
+    return <Grid container>{tabularProps}</Grid>;
 };
 
 export default PropertiesForm;
