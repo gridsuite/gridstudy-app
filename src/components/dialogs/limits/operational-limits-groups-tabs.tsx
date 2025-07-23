@@ -147,7 +147,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         }, [indexSelectedLimitSet, setIndexSelectedLimitSet, limitsGroups]);
 
         const prependEmptyOperationalLimitsGroup = useCallback(
-            (formName: string, id: string) => {
+            (formName: string, name: string) => {
                 setEditingTabIndex(0);
                 let operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
                 if (operationalLimiSetGroups?.length === 0) {
@@ -163,8 +163,8 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     [SELECTED]: false,
                 };
                 const newLimitsGroup: OperationalLimitsGroup = {
-                    [ID]: id + APPLICABILITY.EQUIPMENT.id,
-                    [NAME]: id,
+                    [ID]: name + APPLICABILITY.EQUIPMENT.id,
+                    [NAME]: name,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [CURRENT_LIMITS]: {
                         [TEMPORARY_LIMITS]: [
@@ -189,29 +189,39 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     return;
                 }
 
-                // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed) // TODO : probableemnt nutile maintenant
+                // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
                 const oldName: string = limitsGroups[editingTabIndex].name;
-                const indexInLs1: number | undefined = limitsGroups.findIndex(
-                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.name === oldName
-                );
 
-                // checks if a limit set with that name already exists // TODO : check spécial autorisant le doublon si le côté d'application est différent
-                const sameNameInLs1 = limitsGroups
-                    .filter((ls, index: number) => index !== indexInLs1)
-                    .find(
-                        (limitsGroup: OperationalLimitsGroup) => limitsGroup.name.trim() === editedLimitGroupName.trim()
+                // checks if a limit set with that name already exists
+                const sameNameInLs1: OperationalLimitsGroup[] = limitsGroups
+                    .filter((ls, index: number) => index !== editingTabIndex)
+                    .filter(
+                        (limitsGroup: OperationalLimitsGroup) =>
+                            limitsGroup.name.trim() === editedLimitGroupName.trim() &&
+                            limitsGroup.id !== limitsGroups[editingTabIndex].id
                     );
 
-                if (sameNameInLs1) {
-                    setEditionError('LimitSetCreationDuplicateError');
-                    return;
+                // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
+                if (sameNameInLs1.length > 0) {
+                    if (sameNameInLs1.length > 1) {
+                        setEditionError('LimitSetNamingError');
+                        return;
+                    } else {
+                        // only one limit set with this name exist => their applicability has to be different
+                        if (sameNameInLs1[0].applicability === limitsGroups[editingTabIndex].applicability) {
+                            setEditionError('LimitSetApplicabilityError');
+                            return;
+                        }
+                    }
                 }
 
-                if (indexInLs1 !== undefined) {
+                if (editingTabIndex !== undefined) {
                     setValue(
-                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${indexInLs1}].${ID}`,
+                        `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${NAME}`,
                         editedLimitGroupName
                     );
+                    const finalId: string = editedLimitGroupName + limitsGroups[editingTabIndex].applicability;
+                    setValue(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${ID}`, finalId);
                     if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName) {
                         setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                     }
@@ -246,13 +256,13 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         const addNewLimitSet = useCallback(() => {
             const formName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
             const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
-            let id = 'DEFAULT';
+            let name = 'DEFAULT';
             if (operationalLimiSetGroups?.length > 0) {
                 const ids: string[] = operationalLimiSetGroups.map((l) => l.name);
-                id = generateUniqueId('DEFAULT', ids);
+                name = generateUniqueId('DEFAULT', ids);
             }
-            prependEmptyOperationalLimitsGroup(formName, id);
-            startEditingLimitsGroup(0, id);
+            prependEmptyOperationalLimitsGroup(formName, name);
+            startEditingLimitsGroup(0, name);
         }, [parentFormName, getValues, prependEmptyOperationalLimitsGroup, startEditingLimitsGroup]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));

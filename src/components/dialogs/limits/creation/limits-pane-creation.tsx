@@ -127,7 +127,7 @@ export function LimitsPaneCreation({
                                         }
                                         currentNode={currentNode}
                                         onlySelectedLimitsGroup={false}
-                                        selectedLimitSetId={operationalLimitsGroup.id}
+                                        selectedLimitSetName={operationalLimitsGroup.name}
                                     />
                                 )
                         )}

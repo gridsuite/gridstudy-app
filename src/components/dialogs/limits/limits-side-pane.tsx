@@ -45,7 +45,7 @@ export interface LimitsSidePaneProps {
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
-    selectedLimitSetId?: string;
+    selectedLimitSetName?: string;
 }
 
 export function LimitsSidePane({
@@ -57,7 +57,7 @@ export function LimitsSidePane({
     clearableFields,
     currentNode,
     onlySelectedLimitsGroup,
-    selectedLimitSetId,
+    selectedLimitSetName,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -199,7 +199,7 @@ export function LimitsSidePane({
         <Box sx={{ p: 2 }}>
             {!onlySelectedLimitsGroup && limitsGroupApplicabilityName && (
                 <>
-                    <GridSection title={selectedLimitSetId ?? ''} formatDisabled />
+                    <GridSection title={selectedLimitSetName ?? ''} formatDisabled />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />
