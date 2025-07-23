@@ -57,7 +57,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     const [diagrams, setDiagrams] = useState<Record<UUID, Diagram>>({});
     const [loadingDiagrams, setLoadingDiagrams] = useState<UUID[]>([]);
     const [diagramErrors, setDiagramErrors] = useState<Record<UUID, string>>({});
-    const [globalError, setGlobalError] = useState<string | null>(null);
+    const [globalError, setGlobalError] = useState<string | undefined>();
 
     // Note: This function is mainly used to prevent double fetch when using the PositionDiagram
     const filterDiagramParams = useCallback(
@@ -454,7 +454,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             return null;
         }
         setDiagramErrors({});
-        setGlobalError(null);
+        setGlobalError(undefined);
         setDiagrams((oldDiagrams) => {
             Object.values(oldDiagrams).forEach((diagram) => {
                 diagram.svg = null; // reset svg
