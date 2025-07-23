@@ -271,14 +271,14 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(VoltageLevelModificationDialog),
                         },
                         {
-                            id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
-                            label: 'VOLTAGE_LEVEL_TOPOLOGY',
-                            action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
-                        },
-                        {
                             id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                             label: 'CREATE_COUPLING_DEVICE',
                             action: () => withDefaultParams(CreateCouplingDeviceDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
+                            label: 'VOLTAGE_LEVEL_TOPOLOGY',
+                            action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
                         },
                         {
                             id: 'DELETE_VOLTAGE_LEVEL',
@@ -319,12 +319,17 @@ const NetworkModificationNodeEditor = () => {
                     subItems: [
                         {
                             id: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
-                            label: 'LineAttachToVoltageLevel',
+                            label: 'menu.create',
                             action: () => withDefaultParams(LineAttachToVoltageLevelDialog),
                         },
                         {
+                            id: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
+                            label: 'LinesAttachToSplitLines',
+                            action: () => withDefaultParams(LinesAttachToSplitLinesDialog),
+                        },
+                        {
                             id: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
-                            label: 'DeleteAttachingLine',
+                            label: 'DeleteContingencyList',
                             action: () => withDefaultParams(DeleteAttachingLineDialog),
                         },
                     ],
@@ -335,7 +340,7 @@ const NetworkModificationNodeEditor = () => {
                     subItems: [
                         {
                             id: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
-                            label: 'LineSplitWithVoltageLevel',
+                            label: 'menu.create',
                             action: () => withDefaultParams(LineSplitWithVoltageLevelDialog),
                         },
                         {
@@ -345,7 +350,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
-                            label: 'DeleteVoltageLevelOnLine',
+                            label: 'DeleteContingencyList',
                             action: () => withDefaultParams(DeleteVoltageLevelOnLineDialog),
                         },
                     ],
@@ -542,14 +547,14 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(TabularModificationDialog),
                         },
                         {
-                            id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-                            label: 'BY_FORMULA',
-                            action: () => withDefaultParams(ByFormulaDialog),
-                        },
-                        {
                             id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
                             label: 'BY_FILTER',
                             action: () => withDefaultParams(ModificationByAssignmentDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+                            label: 'BY_FORMULA',
+                            action: () => withDefaultParams(ByFormulaDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
