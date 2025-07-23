@@ -66,7 +66,7 @@ export function LimitsPaneCreation({
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
-    const getCurrentLimits1 = (equipmentToModify: any): CurrentLimits | null => {
+    const getCurrentLimits = (equipmentToModify: any): CurrentLimits | null => {
         if (equipmentToModify?.currentLimits1) {
             return equipmentToModify.currentLimits1.find(
                 (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
@@ -113,18 +113,17 @@ export function LimitsPaneCreation({
                     {indexSelectedLimitSet !== null &&
                         limitsGroups.map(
                             (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
-                                indexSelectedLimitSet != null &&
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
-                                        key={operationalLimitsGroup.id + 'leftPanel'}
+                                        key={operationalLimitsGroup.id}
                                         limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}`}
                                         limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
-                                            getCurrentLimits1(equipmentToModify)?.permanentLimit
+                                            getCurrentLimits(equipmentToModify)?.permanentLimit
                                         }
                                         temporaryLimitsPreviousValues={
-                                            getCurrentLimits1(equipmentToModify)?.temporaryLimits ?? []
+                                            getCurrentLimits(equipmentToModify)?.temporaryLimits ?? []
                                         }
                                         currentNode={currentNode}
                                         onlySelectedLimitsGroup={false}

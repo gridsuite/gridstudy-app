@@ -263,6 +263,7 @@ export interface TwoWindingsTransformerModificationInfo {
 
 export interface OperationalLimitsGroup {
     id: string;
+    name: string;
     applicability?: string;
     currentLimits: CurrentLimits;
 }

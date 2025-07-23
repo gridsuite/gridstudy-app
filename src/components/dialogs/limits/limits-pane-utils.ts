@@ -30,7 +30,7 @@ import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/networ
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
-    [ID]: yup.string().nonNullable().required(),
+    [ID]: yup.string().nonNullable().required(), // TODO : unique sauf si il y en a 2 et qu'ils ont APPLICABIlITY 1 et 2
     [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(false)),
 });
@@ -304,7 +304,7 @@ export const completeCurrentLimitsGroupsToOnlySelected = (
     selectedOperationalLimitsGroup: string
 ) => {
     if (selectedOperationalLimitsGroup && completeLimitsGroups) {
-        return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.id);
+        return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.name);
     }
     return getLimitsEmptyFormData();
 };

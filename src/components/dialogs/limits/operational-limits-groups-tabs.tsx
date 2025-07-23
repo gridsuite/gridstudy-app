@@ -30,6 +30,7 @@ import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
+import { NAME } from '@gridsuite/commons-ui';
 
 const limitsStyles = {
     limitsBackground: {
@@ -76,7 +77,6 @@ function generateUniqueId(baseName: string, names: string[]): string {
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
     ({ parentFormName, limitsGroups, setIndexSelectedLimitSet, indexSelectedLimitSet }, ref) => {
-        const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number | null>(0);
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
         const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -104,9 +104,9 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const handleTabChange = useCallback(
             (event: React.SyntheticEvent, newValue: number): void => {
-                setSelectedLimitGroupTabIndex(newValue);
+                setIndexSelectedLimitSet(newValue);
             },
-            [setSelectedLimitGroupTabIndex]
+            [setIndexSelectedLimitSet]
         );
 
         const handleLimitsGroupNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,27 +117,11 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
                 event.stopPropagation();
                 setMenuAnchorEl(event.currentTarget);
-                setSelectedLimitGroupTabIndex(index);
+                setIndexSelectedLimitSet(index);
                 setActivatedByMenuTabIndex(index);
             },
-            [setMenuAnchorEl, setSelectedLimitGroupTabIndex, setActivatedByMenuTabIndex]
+            [setMenuAnchorEl, setIndexSelectedLimitSet, setActivatedByMenuTabIndex]
         );
-
-        // synchronisation of the selected limit set : tabs combine both side 1 and side 2 limits sets which are different
-        // therefore both have separated selection indexes
-        useEffect(() => {
-            if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups.length) {
-                const selectedGroupStr: string = limitsGroups[selectedLimitGroupTabIndex].id;
-                setIndexSelectedLimitSet(
-                    limitsGroups.findIndex(
-                        (limitsGroup: OperationalLimitsGroup) => limitsGroup && limitsGroup.id === selectedGroupStr
-                    )
-                );
-            } else {
-                setSelectedLimitGroupTabIndex(null);
-                setIndexSelectedLimitSet(null);
-            }
-        }, [selectedLimitGroupTabIndex, limitsGroups, setIndexSelectedLimitSet, selectedLimitsGroups1]);
 
         const handleCloseMenu = useCallback(() => {
             setMenuAnchorEl(null);
@@ -146,7 +130,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const startEditingLimitsGroup = useCallback(
             (index: number, name: string | null) => {
-                name ??= limitsGroups[index].id;
+                name ??= limitsGroups[index].name;
                 setEditionError('');
                 setEditingTabIndex(index);
                 setEditedLimitGroupName(name);
@@ -155,27 +139,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             [setEditingTabIndex, handleCloseMenu, limitsGroups]
         );
 
-        // synchronisation of the selected limit set : tabs combine both side 1 and side 2 limits sets which are different
-        // therefore both have separated selection indexes
-        useEffect(() => {
-            if (selectedLimitGroupTabIndex != null && selectedLimitGroupTabIndex < limitsGroups.length) {
-                const selectedGroupStr: string = limitsGroups[selectedLimitGroupTabIndex].id;
-                setIndexSelectedLimitSet(
-                    limitsGroups.findIndex(
-                        (limitsGroup: OperationalLimitsGroup) => limitsGroup && limitsGroup.id === selectedGroupStr
-                    )
-                );
-            } else {
-                setSelectedLimitGroupTabIndex(null);
-                setIndexSelectedLimitSet(null);
-            }
-        }, [selectedLimitGroupTabIndex, limitsGroups, setIndexSelectedLimitSet]);
         useEffect(() => {
             // as long as there are limit sets, one should be selected
-            if (selectedLimitGroupTabIndex === null && limitsGroups.length > 0) {
-                setSelectedLimitGroupTabIndex(0);
+            if (indexSelectedLimitSet === null && limitsGroups.length > 0) {
+                setIndexSelectedLimitSet(0);
             }
-        }, [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex, limitsGroups]);
+        }, [indexSelectedLimitSet, setIndexSelectedLimitSet, limitsGroups]);
 
         const prependEmptyOperationalLimitsGroup = useCallback(
             (formName: string, id: string) => {
@@ -194,7 +163,8 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     [SELECTED]: false,
                 };
                 const newLimitsGroup: OperationalLimitsGroup = {
-                    [ID]: id,
+                    [ID]: id + APPLICABILITY.EQUIPMENT.id,
+                    [NAME]: id,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [CURRENT_LIMITS]: {
                         [TEMPORARY_LIMITS]: [
@@ -219,17 +189,17 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     return;
                 }
 
-                // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
-                const oldName: string = limitsGroups[editingTabIndex].id;
+                // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed) // TODO : probableemnt nutile maintenant
+                const oldName: string = limitsGroups[editingTabIndex].name;
                 const indexInLs1: number | undefined = limitsGroups.findIndex(
-                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.id === oldName
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.name === oldName
                 );
 
-                // checks if a limit set with that name already exists
+                // checks if a limit set with that name already exists // TODO : check spécial autorisant le doublon si le côté d'application est différent
                 const sameNameInLs1 = limitsGroups
                     .filter((ls, index: number) => index !== indexInLs1)
                     .find(
-                        (limitsGroup: OperationalLimitsGroup) => limitsGroup.id.trim() === editedLimitGroupName.trim()
+                        (limitsGroup: OperationalLimitsGroup) => limitsGroup.name.trim() === editedLimitGroupName.trim()
                     );
 
                 if (sameNameInLs1) {
@@ -249,7 +219,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                         setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
                     }
                 }
-                setSelectedLimitGroupTabIndex(editingTabIndex);
+                setIndexSelectedLimitSet(editingTabIndex);
                 setEditingTabIndex(-1);
                 setEditionError('');
             }
@@ -261,7 +231,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             editedLimitGroupName,
             limitsGroups,
             setEditingTabIndex,
-            setSelectedLimitGroupTabIndex,
+            setIndexSelectedLimitSet,
         ]);
 
         const handleKeyDown = useCallback(
@@ -278,7 +248,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             const operationalLimiSetGroups: OperationalLimitsGroup[] = getValues(formName);
             let id = 'DEFAULT';
             if (operationalLimiSetGroups?.length > 0) {
-                const ids: string[] = operationalLimiSetGroups.map((l) => l.id);
+                const ids: string[] = operationalLimiSetGroups.map((l) => l.name);
                 id = generateUniqueId('DEFAULT', ids);
             }
             prependEmptyOperationalLimitsGroup(formName, id);
@@ -292,7 +262,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 <Tabs
                     orientation="vertical"
                     variant="fullWidth"
-                    value={selectedLimitGroupTabIndex !== null && selectedLimitGroupTabIndex}
+                    value={indexSelectedLimitSet !== null && indexSelectedLimitSet}
                     onChange={handleTabChange}
                     sx={tabStyles.listDisplay}
                     visibleScrollbar
@@ -324,7 +294,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                             justifyContent: 'space-between',
                                         }}
                                     >
-                                        {opLg.id}
+                                        {opLg.name}
                                         {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                             <IconButton
                                                 size="small"

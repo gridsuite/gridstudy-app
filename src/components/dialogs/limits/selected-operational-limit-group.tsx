@@ -29,7 +29,7 @@ export const SelectedOperationalLimitGroup = ({
         () =>
             optionsValues
                 ? optionsValues
-                      .map((optionObj: OperationalLimitsGroup) => optionObj.id)
+                      .map((optionObj: OperationalLimitsGroup) => optionObj.name)
                       .filter((id: string) => id != null)
                 : [],
         [optionsValues]

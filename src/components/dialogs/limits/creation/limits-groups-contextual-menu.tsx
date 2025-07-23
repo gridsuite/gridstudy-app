@@ -73,7 +73,7 @@ export function LimitsGroupsContextualMenu({
             const duplicatedLimits1: OperationalLimitsGroup = getValues(
                 `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${indexSelectedLimitSet}]`
             );
-            newName = duplicatedLimits1.id + '_COPY';
+            newName = duplicatedLimits1.name + '_COPY';
             const newLimitsGroup1: OperationalLimitsGroup = {
                 ...duplicatedLimits1,
                 [ID]: newName,
