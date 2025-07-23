@@ -25,15 +25,15 @@ export type UseEquipmentModificationProps = {
 
 type EditableEquipmentType = Exclude<
     SpreadsheetEquipmentType,
-    | SpreadsheetEquipmentType.TIE_LINE
-    | SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER
     | SpreadsheetEquipmentType.BUS
     | SpreadsheetEquipmentType.BUSBAR_SECTION
     | SpreadsheetEquipmentType.DANGLING_LINE
-    | SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR
-    | SpreadsheetEquipmentType.VSC_CONVERTER_STATION
-    | SpreadsheetEquipmentType.LCC_CONVERTER_STATION
     | SpreadsheetEquipmentType.HVDC_LINE
+    | SpreadsheetEquipmentType.LCC_CONVERTER_STATION
+    | SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR
+    | SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER
+    | SpreadsheetEquipmentType.TIE_LINE
+    | SpreadsheetEquipmentType.VSC_CONVERTER_STATION
 >;
 
 const EQUIPMENT_DIALOG_MAPPING: Readonly<Record<EditableEquipmentType, FunctionComponent<any>>> = {
