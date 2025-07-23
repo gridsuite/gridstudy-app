@@ -13,32 +13,31 @@ import {
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
-import { Action } from 'redux';
+import type { Action } from 'redux';
 import {
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    Identifiable,
-    NetworkVisualizationParameters,
     ComputingType,
+    type GsLang,
+    type GsLangUser,
+    type GsTheme,
+    type Identifiable,
+    type NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    EquipmentUpdateType,
+    ComputingStatusParameters,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
-    ComputingStatusParameters,
 } from './reducer';
-import { RunningStatus } from '../components/utils/running-status';
-import { IOptionalService } from '../components/utils/optional-services';
-import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { RunningStatus } from '../components/utils/running-status';
+import type { IOptionalService } from '../components/utils/optional-services';
+import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
@@ -53,15 +52,15 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
-    SpreadsheetEquipmentsByNodes,
-    ColumnDefinition,
+    type ColumnDefinition,
+    type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    SpreadsheetTabDefinition,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import type { DiagramType } from '../components/diagrams/diagram.type';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -224,13 +223,13 @@ export function removeEquipmentData(equipmentType: SpreadsheetEquipmentType): Re
 
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>;
+    equipments: Partial<Record<SpreadsheetEquipmentType, Identifiable[]>>;
     nodeId: UUID;
 };
 
 export function updateEquipments(
-    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>,
-    nodeId: UUID
+    equipments: UpdateEquipmentsAction['equipments'],
+    nodeId: UpdateEquipmentsAction['nodeId']
 ): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
