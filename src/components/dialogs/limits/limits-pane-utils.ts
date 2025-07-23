@@ -32,7 +32,7 @@ import { CurrentTreeNode } from '../../graph/tree-node.type';
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(), // TODO : unique sauf si il y en a 2 et qu'ils ont APPLICABIlITY 1 et 2
     [APPLICABIlITY]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(false)),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
 
 const temporaryLimitsValidationSchema = () => {
@@ -170,6 +170,7 @@ export const getAllLimitsFormData = (
 export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]) =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
+        id: baseData.name,
         currentLimits: !currentLimits
             ? null
             : {

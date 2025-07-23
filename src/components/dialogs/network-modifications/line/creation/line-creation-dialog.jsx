@@ -230,7 +230,10 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups,
+                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                        ...baseData,
+                        name: id,
+                    })),
                     [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
                     [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
