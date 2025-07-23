@@ -160,6 +160,7 @@ export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
     REACTIVE_POWER: { id: 'REACTIVE_POWER', label: 'ReactivePowerRegulationText' },
+    // used in order to set regulating to false but doesn't exist in powsybl => should not be sent to the back
     OFF: { id: 'OFF', label: 'Off' },
 } as const;
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
