@@ -324,30 +324,27 @@ export const styles = {
     grid: { height: 500, width: '100%' },
 };
 
-interface CommentLinesConfig {
-    csvTranslatedColumns?: string[];
-    intl: IntlShape;
-    equipmentType: string;
+interface BaseCommentLinesConfig {
+    csvTranslatedColumns: string[];
+    intl: any;
     language: string;
-    formType: 'Creation' | 'Modification' | 'LimitSetsModification';
 }
 
-export const generateCommentLines = ({
-    csvTranslatedColumns,
-    intl,
-    equipmentType,
-    language,
-    formType,
-}: CommentLinesConfig): string[][] => {
+interface ExtendedCommentLinesConfig extends BaseCommentLinesConfig {
+    equipmentType: string;
+    formType: string;
+}
+
+const generateBaseCommentLines = (
+    { csvTranslatedColumns, intl, language }: BaseCommentLinesConfig,
+    commentKey?: string
+): string[][] => {
     let commentData: string[][] = [];
+
     if (csvTranslatedColumns) {
-        // First comment line contains header translation
         commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
 
-        // Check for optional second comment line from translation file
-        const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
-
-        if (!!intl.messages[commentKey]) {
+        if (commentKey && intl.messages[commentKey]) {
             commentData.push([
                 intl.formatMessage({
                     id: commentKey,
@@ -355,7 +352,28 @@ export const generateCommentLines = ({
             ]);
         }
     }
+
     return commentData;
+};
+
+export const generateCommentLines = ({
+    csvTranslatedColumns,
+    intl,
+    equipmentType,
+    language,
+    formType,
+}: ExtendedCommentLinesConfig): string[][] => {
+    const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
+    return generateBaseCommentLines({ csvTranslatedColumns, intl, language }, commentKey);
+};
+
+export const generateLimitSetCommentLines = ({
+    csvTranslatedColumns,
+    intl,
+    language,
+}: BaseCommentLinesConfig): string[][] => {
+    const commentKey = `TabularLimitSetsModificationSkeletonComment`;
+    return generateBaseCommentLines({ csvTranslatedColumns, intl, language }, commentKey);
 };
 
 export const transformIfFrenchNumber = (value: string, language: string): string => {

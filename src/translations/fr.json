@@ -609,7 +609,6 @@
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
     "LimitSetsTabularModification": "Modification tabulaire de sets de limites",
     "amountTemporaryLimits": "Nombre de limites temporaires",
-    "UpdateModel": "Actualiser les colonnes",
     "LimitSets": "Sets de limite",
     "permanentLimit": "IST",
     "acceptableDuration" : "Tempo (s)",

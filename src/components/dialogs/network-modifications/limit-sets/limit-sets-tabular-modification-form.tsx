@@ -29,7 +29,7 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { generateCommentLines, transformIfFrenchNumber } from '../tabular-creation/tabular-creation-utils';
+import { generateLimitSetCommentLines, transformIfFrenchNumber } from '../tabular-creation/tabular-creation-utils';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
@@ -119,14 +119,12 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [intl]);
 
     const commentLines = useMemo(() => {
-        return generateCommentLines({
+        return generateLimitSetCommentLines({
             csvTranslatedColumns,
             intl,
-            equipmentType,
             language,
-            formType: 'LimitSetsModification',
         });
-    }, [intl, equipmentType, csvTranslatedColumns, language]);
+    }, [intl, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -212,20 +210,16 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         []
     );
 
-    const columnDefs = useMemo(() => {
-        return csvColumns.map((field) => {
-            const columnDef: ColDef = {};
-            if (field.id === EQUIPMENT_ID) {
-                columnDef.pinned = true;
-            }
-            columnDef.field = field.id;
-
-            const indexLabel = ' ' + (field.index ?? '');
-            columnDef.headerName = intl.formatMessage({ id: (field.name ?? field.id) }) + indexLabel;
-            columnDef.cellRenderer = DefaultCellRenderer;
-            return columnDef;
-        });
-    }, [csvColumns, intl]);
+    const columnDefs = useMemo<ColDef[]>(
+        () =>
+            csvColumns.map(({ id, name, index }) => ({
+                field: id,
+                pinned: id === EQUIPMENT_ID ? true : undefined,
+                headerName: `${intl.formatMessage({ id: name ?? id })} ${index ?? ''}`,
+                cellRenderer: DefaultCellRenderer,
+            })),
+        [csvColumns, intl]
+    );
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -236,11 +230,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
             <Grid container item spacing={2}>
                 <Grid item>
                     <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
-                </Grid>
-                <Grid item>
-                    <Button variant="contained" onClick={computeRepeatableColumns}>
-                        <FormattedMessage id="UpdateModel" />
-                    </Button>
                 </Grid>
                 <GridItem>
                     <CsvDownloader

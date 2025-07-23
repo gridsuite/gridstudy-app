@@ -26,6 +26,8 @@ const csv_locale_fr = {
         '#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.;;;;true | false;;TOP | BOTTOM;;;;REACTOR | CAPACITOR | requis si maxQAtNominalV est définit;;;',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
         '#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.;;true | false;;TOP | BOTTOM;;;;REACTOR | CAPACITOR;;',
+    'TabularLimitSetsModificationSkeletonComment':
+        '#;ONE | TWO;;;ADDED | MODIFIED | REPLACED;ADDED | MODIFIED | DELETED | REPLACED',
 };
 
 export default csv_locale_fr;

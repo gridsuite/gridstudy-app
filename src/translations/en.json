@@ -612,7 +612,6 @@
     "LimitSetCreationEmptyError": "Limit sets names can't be empty",
     "LimitSetsTabularModification": "Tabular modification of limits sets",
     "amountTemporaryLimits": "Number of temporary limits",
-    "UpdateModel": "Update columns",
     "LimitSets": "Limit sets",
     "permanentLimit": "Permanent current limit",
     "acceptableDuration" : "Duration (s)",
