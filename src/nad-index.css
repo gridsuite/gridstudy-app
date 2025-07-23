@@ -12,10 +12,6 @@
 }
 .nad-text-edges { /* Hidden for now */
     display: none;
-    stroke: black;
-    stroke-width: 3;
-    stroke-dasharray: 6,7;
-    fill: none
 }
 .nad-disconnected .nad-edge-path {
     stroke-dasharray: 0.45%, 0.45%;
@@ -77,7 +73,7 @@ foreignObject.nad-text-nodes {
     margin-right: 10px;
     width: 20px;
     height: 20px;
-    background: var(--nad-vl-color, black);
+    background: var(--vl-color, black);
 }
 .nad-edge-infos text {
     font: 20px serif;

@@ -6,7 +6,7 @@
  */
 
 export const lightThemeCssVars = {
-    '.sld-vl0to30, .nad-vl0to30-line, .sld-vl0to30.sld-bus-0, .nad-vl0to30.nad-bus-0': {
+    '.sld-vl0to30, .nad-vl0to30': {
         '--vl-color': '#ABAE28',
     },
     '.sld-vl0to30.sld-bus-1, .nad-vl0to30.nad-bus-1': {
@@ -36,7 +36,7 @@ export const lightThemeCssVars = {
     '.sld-vl0to30.sld-bus-9, .nad-vl0to30.nad-bus-9': {
         '--vl-color': '#CC80FF',
     },
-    '.sld-vl30to50, .nad-vl30to50-line, .sld-vl30to50.sld-bus-0, .nad-vl30to50.nad-bus-0': {
+    '.sld-vl30to50, .nad-vl30to50': {
         '--vl-color': '#FF8290',
     },
     '.sld-vl30to50.sld-bus-1, .nad-vl30to50.nad-bus-1': {
@@ -66,7 +66,7 @@ export const lightThemeCssVars = {
     '.sld-vl30to50.sld-bus-9, .nad-vl30to50.nad-bus-9': {
         '--vl-color': '#58D058',
     },
-    '.sld-vl50to70, .nad-vl50to70-line, .sld-vl50to70.sld-bus-0, .nad-vl50to70.nad-bus-0': {
+    '.sld-vl50to70, .nad-vl50to70': {
         '--vl-color': '#A020F0',
     },
     '.sld-vl50to70.sld-bus-1, .nad-vl50to70.nad-bus-1': {
@@ -96,7 +96,7 @@ export const lightThemeCssVars = {
     '.sld-vl50to70.sld-bus-9, .nad-vl50to70.nad-bus-9': {
         '--vl-color': '#DAD970',
     },
-    '.sld-vl70to120, .nad-vl70to120-line, .sld-vl70to120.sld-bus-0, .nad-vl70to120.nad-bus-0': {
+    '.sld-vl70to120, .nad-vl70to120': {
         '--vl-color': '#FF9D00',
     },
     '.sld-vl70to120.sld-bus-1, .nad-vl70to120.nad-bus-1': {
@@ -126,7 +126,7 @@ export const lightThemeCssVars = {
     '.sld-vl70to120.sld-bus-9, .nad-vl70to120.nad-bus-9': {
         '--vl-color': '#B0D4FE',
     },
-    '.sld-vl120to180, .nad-vl120to180-line, .sld-vl120to180.sld-bus-0, .nad-vl120to180.nad-bus-0': {
+    '.sld-vl120to180, .nad-vl120to180': {
         '--vl-color': '#00AFAE',
     },
     '.sld-vl120to180.sld-bus-1, .nad-vl120to180.nad-bus-1': {
@@ -156,7 +156,7 @@ export const lightThemeCssVars = {
     '.sld-vl120to180.sld-bus-9, .nad-vl120to180.nad-bus-9': {
         '--vl-color': '#FFC019',
     },
-    '.sld-vl180to300, .nad-vl180to300-line, .sld-vl180to300.sld-bus-0, .nad-vl180to300.nad-bus-0': {
+    '.sld-vl180to300, .nad-vl180to300': {
         '--vl-color': '#32B532',
     },
     '.sld-vl180to300.sld-bus-1, .nad-vl180to300.nad-bus-1': {
@@ -186,7 +186,7 @@ export const lightThemeCssVars = {
     '.sld-vl180to300.sld-bus-9, .nad-vl180to300.nad-bus-9': {
         '--vl-color': '#FFCCD0',
     },
-    '.sld-vl300to500, .nad-vl300to500-line, .sld-vl300to500.sld-bus-0, .nad-vl300to500.nad-bus-0': {
+    '.sld-vl300to500, .nad-vl300to500': {
         '--vl-color': '#FF0000',
     },
     '.sld-vl300to500.sld-bus-1, .nad-vl300to500.nad-bus-1': {
