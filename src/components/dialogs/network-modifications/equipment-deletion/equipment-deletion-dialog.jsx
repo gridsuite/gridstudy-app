@@ -89,7 +89,7 @@ const EquipmentDeletionDialog = ({
         [reset]
     );
 
-    const preSetType = useCallback(
+    const resetFormWithType = useCallback(
         (equipmentType) => {
             reset({
                 [TYPE]: equipmentType,
@@ -104,9 +104,9 @@ const EquipmentDeletionDialog = ({
         } else if (defaultIdValue) {
             fromMenuDataValues(defaultIdValue);
         } else if (equipmentType) {
-            preSetType(equipmentType);
+            resetFormWithType(equipmentType);
         }
-    }, [fromEditDataToFormValues, editData, fromMenuDataValues, defaultIdValue, equipmentType, preSetType]);
+    }, [fromEditDataToFormValues, editData, fromMenuDataValues, defaultIdValue, equipmentType, resetFormWithType]);
 
     const onSubmit = useCallback(
         (formData) => {
