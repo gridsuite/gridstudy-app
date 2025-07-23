@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants.js';
+import { MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularCreation } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.js';
@@ -25,11 +25,14 @@ import {
 } from './tabular-creation-utils.js';
 import { useIntl } from 'react-intl';
 import {
+    addPropertiesFromBack,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
 } from '../tabular-common.js';
+import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.js';
+import { createPropertyModification } from '../../common/properties/property-utils.js';
 
 /**
  * Dialog to create tabular creations based on a csv file.
@@ -63,18 +66,20 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
         if (editData) {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.creationType);
             const creations = editData?.creations.map((creat) => {
-                const creation = {};
+                let creation = {};
                 Object.keys(formatModification(creat)).forEach((key) => {
                     const entry = convertCreationFieldFromBackToFront(key, creat[key]);
                     (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
                         creation[item.key] = item.value;
                     });
                 });
+                creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
                 return creation;
             });
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,
+                [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
             });
         }
     }, [editData, reset, intl]);
@@ -86,13 +91,27 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 const creation = {
                     type: creationType,
                 };
+                let propertiesModifications = [];
                 Object.keys(row).forEach((key) => {
-                    const entry = convertCreationFieldFromFrontToBack(key, row[key]);
-                    creation[entry.key] = entry.value;
+                    if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+                        // if a value is set for a "property_*" column and the current row
+                        propertiesModifications.push(
+                            createPropertyModification(key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''), row[key])
+                        );
+                    }
+                });
+                Object.keys(row).forEach((key) => {
+                    if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+                        const entry = convertCreationFieldFromFrontToBack(key, row[key]);
+                        creation[entry.key] = entry.value;
+                    }
                 });
                 // For now, we do not manage reactive limits by diagram
                 if (creationType === 'GENERATOR_CREATION' || creationType === 'BATTERY_CREATION') {
                     convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
+                }
+                if (propertiesModifications.length > 0) {
+                    creation[TABULAR_PROPERTIES] = propertiesModifications;
                 }
                 return creation;
             });
@@ -101,6 +120,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 currentNodeUuid,
                 creationType,
                 creations,
+                formData[TABULAR_PROPERTIES],
                 !!editData,
                 editData?.uuid
             ).catch((error) => {

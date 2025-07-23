@@ -12,11 +12,13 @@ import {
     AutocompleteInput,
     CustomAGGrid,
     ErrorInput,
+    fetchStudyMetadata,
     FieldErrorAlert,
     LANG_FRENCH,
     useSnackMessage,
+    useStateBoolean,
 } from '@gridsuite/commons-ui';
-import { MODIFICATIONS_TABLE, EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
+import { MODIFICATIONS_TABLE, EQUIPMENT_ID, TYPE, TABULAR_PROPERTIES } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
@@ -34,10 +36,13 @@ import {
     dialogStyles,
     generateCommentLines,
     isFieldTypeOk,
+    PredefinedEquipmentProperties,
     setFieldTypeError,
     TabularField,
     transformIfFrenchNumber,
 } from '../tabular-common';
+import { PropertiesFormType, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from '../properties/property-utils';
+import DefinePropertiesDialog from '../properties/define-properties-dialog';
 
 export interface TabularCreationFormProps {
     dataFetching: boolean;
@@ -49,11 +54,21 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     const language = useSelector((state: AppState) => state.computedLanguage);
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
+    const propertiesDialogOpen = useStateBoolean(false);
+    const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>(
+        {}
+    );
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
     const equipmentType = useWatch({
         name: TYPE,
+    });
+    const tabularProperties = useWatch({
+        name: TABULAR_PROPERTIES,
+    });
+    const watchTable = useWatch({
+        name: MODIFICATIONS_TABLE,
     });
 
     const handleComplete = useCallback(
@@ -152,21 +167,34 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         [clearErrors, setValue, getValues, equipmentType, setError, intl, snackWarning]
     );
 
-    const csvColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field: TabularField) => {
-            return field.id;
-        });
-    }, [equipmentType]);
+    const selectedProperties = useMemo(() => {
+        return (
+            tabularProperties
+                ?.filter((property: TabularProperty) => property.selected)
+                ?.map((property: TabularProperty) => property.name) ?? []
+        );
+    }, [tabularProperties]);
 
-    const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field) => {
-            return intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-        });
-    }, [intl, equipmentType]);
+    const csvColumns = useMemo(() => {
+        return TABULAR_CREATION_FIELDS[equipmentType]
+            ?.map((field: TabularField) => field.id)
+            ?.concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
+    }, [equipmentType, selectedProperties]);
 
     const commentLines = useMemo(() => {
-        return generateCommentLines({ csvTranslatedColumns, intl, equipmentType, language, formType: 'Creation' });
-    }, [intl, equipmentType, csvTranslatedColumns, language]);
+        const csvTranslatedColumns = TABULAR_CREATION_FIELDS[equipmentType]
+            ?.map((field: TabularField) => intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : ''))
+            ?.concat(selectedProperties);
+        return generateCommentLines({
+            csvTranslatedColumns,
+            intl,
+            equipmentType,
+            language,
+            formType: 'Creation',
+            currentProperties: selectedProperties,
+            predefinedEquipmentProperties,
+        });
+    }, [intl, equipmentType, language, selectedProperties, predefinedEquipmentProperties]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
@@ -177,9 +205,11 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         language: language,
     });
 
-    const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
-    });
+    useEffect(() => {
+        fetchStudyMetadata().then((studyMetadata) => {
+            setPredefinedEquipmentProperties(studyMetadata?.predefinedEquipmentProperties ?? {});
+        });
+    }, []);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -215,6 +245,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         setTypeChangedTrigger(!typeChangedTrigger);
         clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
+        setValue(TABULAR_PROPERTIES, []);
     }, [clearErrors, setValue, typeChangedTrigger]);
 
     const equipmentTypeField = (
@@ -242,17 +273,40 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field) => {
-            const columnDef: ColDef = {};
-            if (field.id === EQUIPMENT_ID) {
-                columnDef.pinned = true;
-            }
-            columnDef.field = field.id;
-            columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
-            return columnDef;
-        });
-    }, [intl, equipmentType]);
+        return TABULAR_CREATION_FIELDS[equipmentType]
+            ?.map((field) => {
+                const columnDef: ColDef = {};
+                if (field.id === EQUIPMENT_ID) {
+                    columnDef.pinned = true;
+                }
+                columnDef.field = field.id;
+                columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
+                columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
+                return columnDef;
+            })
+            ?.concat(
+                selectedProperties.map((propertyName: string) => {
+                    const columnDef: ColDef = {};
+                    columnDef.field = PROPERTY_CSV_COLUMN_PREFIX + propertyName;
+                    columnDef.headerName = propertyName;
+                    columnDef.cellRenderer = DefaultCellRenderer;
+                    return columnDef;
+                })
+            );
+    }, [equipmentType, selectedProperties, intl]);
+
+    const onPropertiesChange = (formData: PropertiesFormType) => {
+        const newSelectedProperties =
+            formData[TABULAR_PROPERTIES]?.filter((property: TabularProperty) => property.selected)?.map(
+                (property: TabularProperty) => property.name
+            ) ?? [];
+        if (newSelectedProperties.toString() !== selectedProperties.toString()) {
+            // new columns => reset table
+            clearErrors(MODIFICATIONS_TABLE);
+            setValue(MODIFICATIONS_TABLE, []);
+        }
+        setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
+    };
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -261,6 +315,17 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 <Grid item>{FileField}</Grid>
             </Grid>
             <Grid container item spacing={2} alignItems={'center'}>
+                <Grid item>
+                    <Button
+                        variant="contained"
+                        disabled={!equipmentType}
+                        onClick={() => {
+                            propertiesDialogOpen.setTrue();
+                        }}
+                    >
+                        <FormattedMessage id="DefinePropertiesButton" />
+                    </Button>
+                </Grid>
                 <Grid item>
                     <CsvDownloader
                         columns={csvColumns}
@@ -291,6 +356,13 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     overrideLocales={AGGRID_LOCALES}
                 />
             </Grid>
+            <DefinePropertiesDialog
+                open={propertiesDialogOpen}
+                equipmentType={equipmentType}
+                currentProperties={tabularProperties}
+                predefinedEquipmentProperties={predefinedEquipmentProperties}
+                onValidate={onPropertiesChange}
+            />
         </Grid>
     );
 }

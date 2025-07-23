@@ -1996,6 +1996,7 @@ export function createTabularCreation(
     nodeUuid: UUID,
     creationType: string,
     creations: any,
+    properties: TabularProperty[],
     isUpdate: boolean,
     modificationUuid: UUID
 ) {
@@ -2018,6 +2019,7 @@ export function createTabularCreation(
             type: MODIFICATION_TYPES.TABULAR_CREATION.type,
             creationType: creationType,
             creations: creations,
+            properties: properties,
         }),
     });
 }
