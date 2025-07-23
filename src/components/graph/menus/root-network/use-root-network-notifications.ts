@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchRootNetworks } from 'services/root-network';
-import { setCurrentRootNetworkUuid, setRootNetworks } from 'redux/actions';
+import { setCurrentRootNetworkUuid, setMonoRootStudy, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import {
     isRootNetworkDeletionStartedNotification,
@@ -39,6 +39,9 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
                     // All the root networks must be fully established before the loader can be safely removed.
                     if (res.every((network) => !network.isCreating)) {
                         setIsRootNetworksProcessing(false);
+                    }
+                    if (res.length > 1) {
+                        dispatch(setMonoRootStudy(false));
                     }
                 })
                 .catch((error) => {

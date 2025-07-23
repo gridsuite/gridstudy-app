@@ -427,12 +427,11 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     const computeRegulationModeValue = (phaseTapChangerFormValues) => {
-        switch (phaseTapChangerFormValues?.[REGULATION_MODE]) {
-            case PHASE_REGULATION_MODES.OFF.id:
-                return null;
-            default:
-                return phaseTapChangerFormValues?.[REGULATION_MODE];
+        if (phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id) {
+            return null;
         }
+
+        return phaseTapChangerFormValues?.[REGULATION_MODE];
     };
 
     const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues) => {
@@ -521,7 +520,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     targetV: getValueOrDefault(TARGET_V),
                     targetDeadband: getValueOrDefault(TARGET_DEADBAND),
-                    regulationMode: getValueOrDefault(REGULATION_MODE),
                     regulationType: getValueOrDefault(REGULATION_TYPE),
                 };
             }
@@ -529,6 +527,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
+                    hasLoadTapChangingCapabilities: true,
                     isRegulating: computePhaseTapChangerRegulating(phaseTapChangerFormValues),
                     regulationValue: computePhaseTapChangerRegulationValue(phaseTapChangerFormValues),
                     regulatingTerminalId: computeRegulatingTerminalId(phaseTapChangerFormValues, twt[EQUIPMENT_ID]),

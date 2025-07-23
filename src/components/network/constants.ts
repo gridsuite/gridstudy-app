@@ -45,12 +45,15 @@ export const PHASE_REGULATION_MODES = {
     OFF: { id: 'OFF', label: 'Off' }, // used for the ui but doesn't exist in powsybl => should not be sent to the back
 } as const;
 
+// only useful for the ui, in order to set isRegulating, should not be sent to the back
 export const RATIO_REGULATION_MODES = {
     FIXED_RATIO: {
+        // isRegulating false
         id: 'FIXED_RATIO',
         label: 'FixedRatio',
     },
     VOLTAGE_REGULATION: {
+        // isRegulating true
         id: 'VOLTAGE_REGULATION',
         label: 'VoltageRegulation',
     },
@@ -172,3 +175,20 @@ export const VSC_CONVERTER_MODE: Record<VscConverterMode, VscConverterModeValue>
         label: 'side1InverterSide2Rectifier',
     },
 };
+
+export const REGULATING_TERMINAL_TYPES = [
+    'LINE',
+    'TWO_WINDINGS_TRANSFORMER',
+    'GENERATOR',
+    'LOAD',
+    'BATTERY',
+    'SHUNT_COMPENSATOR',
+    'STATIC_VAR_COMPENSATOR',
+    'DANGLING_LINE',
+    'HVDC_CONVERTER_STATION',
+    'BUSBAR_SECTION',
+];
+
+export const NUMBER = 'number';
+export const ENUM = 'enum';
+export const BOOLEAN = 'boolean';
