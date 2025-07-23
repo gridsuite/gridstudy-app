@@ -16,28 +16,28 @@ import {
     LANG_FRENCH,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { CREATIONS_TABLE, EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
+import { MODIFICATIONS_TABLE, EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import {
-    styles,
-    TABULAR_CREATION_FIELDS,
-    TabularCreationField,
-    generateCommentLines,
-    transformIfFrenchNumber,
-    isFieldTypeOk,
-    setFieldTypeError,
-} from './tabular-creation-utils';
+import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
-import GridItem from '../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
-import { BOOLEAN } from '../../../network/constants';
+import { AppState } from '../../../../../redux/reducer';
+import { BOOLEAN } from '../../../../network/constants';
+import {
+    dialogStyles,
+    generateCommentLines,
+    isFieldTypeOk,
+    setFieldTypeError,
+    TabularField,
+    transformIfFrenchNumber,
+} from '../tabular-common';
 
 export interface TabularCreationFormProps {
     dataFetching: boolean;
@@ -58,7 +58,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
 
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
-            clearErrors(CREATIONS_TABLE);
+            clearErrors(MODIFICATIONS_TABLE);
             let requiredFieldNameInError: string = '';
             let requiredDependantFieldNameInError: string = '';
             let dependantFieldNameInError: string = '';
@@ -103,7 +103,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     })
             ) {
                 if (requiredFieldNameInError !== '') {
-                    setError(CREATIONS_TABLE, {
+                    setError(MODIFICATIONS_TABLE, {
                         type: 'custom',
                         message: intl.formatMessage(
                             { id: 'FieldRequired' },
@@ -112,7 +112,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     });
                 }
                 if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
-                    setError(CREATIONS_TABLE, {
+                    setError(MODIFICATIONS_TABLE, {
                         type: 'custom',
                         message: intl.formatMessage(
                             { id: 'DependantFieldMissing' },
@@ -140,20 +140,20 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
-                    CREATIONS_TABLE,
+                    MODIFICATIONS_TABLE,
                     setError,
                     intl,
                     expectedValues
                 );
             }
             setIsFetching(false);
-            setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
+            setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
         },
         [clearErrors, setValue, getValues, equipmentType, setError, intl, snackWarning]
     );
 
     const csvColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field: TabularCreationField) => {
+        return TABULAR_CREATION_FIELDS[equipmentType]?.map((field: TabularField) => {
             return field.id;
         });
     }, [equipmentType]);
@@ -178,7 +178,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     });
 
     const watchTable = useWatch({
-        name: CREATIONS_TABLE,
+        name: MODIFICATIONS_TABLE,
     });
 
     useEffect(() => {
@@ -187,8 +187,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
 
     useEffect(() => {
         if (selectedFileError) {
-            setValue(CREATIONS_TABLE, []);
-            clearErrors(CREATIONS_TABLE);
+            setValue(MODIFICATIONS_TABLE, []);
+            clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
         } else if (selectedFile) {
             setIsFetching(true);
@@ -206,7 +206,6 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
-        //only available types for tabular creation
         return Object.keys(TABULAR_CREATION_FIELDS).filter(
             (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
@@ -214,8 +213,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
 
     const handleChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
-        clearErrors(CREATIONS_TABLE);
-        setValue(CREATIONS_TABLE, []);
+        clearErrors(MODIFICATIONS_TABLE);
+        setValue(MODIFICATIONS_TABLE, []);
     }, [clearErrors, setValue, typeChangedTrigger]);
 
     const equipmentTypeField = (
@@ -276,11 +275,11 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     </CsvDownloader>
                 </Grid>
                 <Grid item>
-                    <ErrorInput name={CREATIONS_TABLE} InputField={FieldErrorAlert} />
+                    <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
                 </Grid>
             </Grid>
-            <Grid item xs={12} sx={styles.grid}>
+            <Grid item xs={12} sx={dialogStyles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
                     loading={isFetching}

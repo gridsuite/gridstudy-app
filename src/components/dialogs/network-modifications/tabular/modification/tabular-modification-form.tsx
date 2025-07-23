@@ -22,32 +22,33 @@ import { TABULAR_PROPERTIES, EQUIPMENT_ID, MODIFICATIONS_TABLE, TYPE } from 'com
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_MODIFICATION_FIELDS, styles, TabularModificationField } from './tabular-modification-utils';
+import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
-import GridItem from '../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer';
+import { BOOLEAN } from '../../../../network/constants';
+import DefinePropertiesDialog from '../properties/define-properties-dialog';
+import { PropertiesFormType, TabularProperty, PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils';
 import {
+    dialogStyles,
     generateCommentLines,
-    setFieldTypeError,
-    transformIfFrenchNumber,
     isFieldTypeOk,
     PredefinedEquipmentProperties,
-} from '../tabular-creation/tabular-creation-utils';
-import { BOOLEAN } from '../../../network/constants';
-import DefinePropertiesDialog from './properties/define-properties-dialog';
-import { PropertiesFormType, TabularProperty, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
+    setFieldTypeError,
+    TabularField,
+    transformIfFrenchNumber,
+} from '../tabular-common';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
-    isUpdate: boolean;
 }
 
-export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<TabularModificationFormProps>) {
+export function TabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
@@ -129,7 +130,7 @@ export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<Tab
 
     const csvColumns = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[equipmentType]
-            ?.map((field: TabularModificationField) => field.id)
+            ?.map((field: TabularField) => field.id)
             ?.concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
     }, [equipmentType, selectedProperties]);
 
@@ -163,7 +164,7 @@ export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<Tab
         fetchStudyMetadata().then((studyMetadata) => {
             setPredefinedEquipmentProperties(studyMetadata?.predefinedEquipmentProperties ?? {});
         });
-    }, [dataFetching]);
+    }, []);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -197,7 +198,6 @@ export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<Tab
     }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
-        //only available types for tabular modification
         return Object.keys(TABULAR_MODIFICATION_FIELDS).filter(
             (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
@@ -306,7 +306,7 @@ export function TabularModificationForm({ dataFetching, isUpdate }: Readonly<Tab
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
                 </Grid>
             </Grid>
-            <Grid item xs={12} sx={styles.grid}>
+            <Grid item xs={12} sx={dialogStyles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
                     loading={isFetching}

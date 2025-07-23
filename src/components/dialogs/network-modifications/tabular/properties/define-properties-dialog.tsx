@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024, RTE (http://www.rte-france.com)
+ * Copyright © 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -25,8 +25,8 @@ import {
     buildPredefinedProperties,
     TabularProperty,
 } from './property-utils';
-import { PredefinedEquipmentProperties } from '../../tabular-creation/tabular-creation-utils';
 import { TABULAR_PROPERTIES } from '../../../../utils/field-constants';
+import { PredefinedEquipmentProperties } from '../tabular-common';
 
 const styles = {
     dialogContent: {
@@ -72,7 +72,7 @@ export default function DefinePropertiesDialog({
                     [TABULAR_PROPERTIES]: currentProperties,
                 });
             } else {
-                // init case when no property has been selected before: use predefined properties
+                // init case when no property has been selected before: propose predefined properties
                 const networkEquipmentType = equipmentTypesForPredefinedPropertiesMapper(equipmentType);
                 if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
                     const propertyNames = Object.keys(predefinedEquipmentProperties[networkEquipmentType] ?? {}).sort(

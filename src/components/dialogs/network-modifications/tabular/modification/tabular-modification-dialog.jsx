@@ -6,47 +6,35 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { createTabularModification } from 'services/study/network-modifications';
-import { FetchStatus } from 'services/utils';
-import TabularModificationForm from './tabular-modification-form';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from 'components/network/constants.js';
+import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants.js';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
+import { createTabularModification } from 'services/study/network-modifications.js';
+import { FetchStatus } from 'services/utils.js';
+import TabularModificationForm from './tabular-modification-form.js';
 import {
-    addPropertiesFromBack,
     convertGeneratorOrBatteryModificationFromBackToFront,
     convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
     convertOutputValues,
-    formatModification,
     getEquipmentTypeFromModificationType,
     getFieldType,
     TABULAR_MODIFICATION_TYPES,
-} from './tabular-modification-utils';
+} from './tabular-modification-utils.js';
 import { useIntl } from 'react-intl';
-import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils.js';
-import { createPropertyModification } from '../common/properties/property-utils.js';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.string().nullable().required(),
-        [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
-    })
-    .concat(propertiesSchema)
-    .required();
-
-const emptyFormData = {
-    [TYPE]: null,
-    [MODIFICATIONS_TABLE]: [],
-    [TABULAR_PROPERTIES]: [],
-};
+import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.ts';
+import { createPropertyModification } from '../../common/properties/property-utils.ts';
+import {
+    addPropertiesFromBack,
+    emptyTabularFormData,
+    formatModification,
+    tabularFormSchema,
+} from '../tabular-common.js';
 
 /**
  * Dialog to create tabular modification based on a csv file.
@@ -72,8 +60,8 @@ const TabularModificationDialog = ({
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: emptyTabularFormData,
+        resolver: yupResolver(tabularFormSchema),
     });
 
     const {
@@ -165,7 +153,7 @@ const TabularModificationDialog = ({
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyTabularFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -179,7 +167,7 @@ const TabularModificationDialog = ({
     }, [editDataFetchStatus, isUpdate]);
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
@@ -191,7 +179,7 @@ const TabularModificationDialog = ({
                 isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm dataFetching={dataFetching} isUpdate={isUpdate} />
+                <TabularModificationForm dataFetching={dataFetching} />
             </ModificationDialog>
         </CustomFormProvider>
     );

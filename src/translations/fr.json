@@ -591,7 +591,7 @@
     "minActivePower": "P min (MW)",
     "minP": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
-    "ModificationsRequiredTabError": "Au moins une modification est requise",
+    "ModificationsRequiredTabError": "Au moins une modification doit être importée",
 
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
@@ -1293,7 +1293,6 @@
     "linearShuntCompensators": "MCS linéaires",
     "csvExportSensitivityResultError": "Une erreur est survenue lors de l'export des résultats de l'analyse de sensibilité",
     "substationCountry": "Code pays",
-    "CreationsRequiredTabError": "Au moins une création est requise",
     "TabularCreation": "Création tabulaire",
     "ImportCreations": "Importer des créations",
     "TabularCreationError": "Erreur lors de la création tabulaire",

@@ -50,7 +50,6 @@ export const CONNECTION_POSITION2 = 'connectionPosition2';
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
-export const CREATIONS_TABLE = 'creationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';

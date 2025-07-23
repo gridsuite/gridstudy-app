@@ -6,40 +6,30 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { CREATIONS_TABLE, TYPE } from 'components/utils/field-constants';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { createTabularCreation } from 'services/study/network-modifications';
-import { FetchStatus } from 'services/utils';
-import TabularCreationForm from './tabular-creation-form';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from 'components/network/constants.js';
+import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants.js';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
+import { createTabularCreation } from 'services/study/network-modifications.js';
+import { FetchStatus } from 'services/utils.js';
+import TabularCreationForm from './tabular-creation-form.js';
 import {
     convertCreationFieldFromBackToFront,
     convertCreationFieldFromFrontToBack,
-    convertReactiveCapabilityCurvePointsFromFrontToBack,
     getEquipmentTypeFromCreationType,
     TABULAR_CREATION_TYPES,
-} from './tabular-creation-utils';
+} from './tabular-creation-utils.js';
 import { useIntl } from 'react-intl';
-import { formatModification } from '../tabular-modification/tabular-modification-utils';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.string().nullable().required(),
-        [CREATIONS_TABLE]: yup.array().min(1, 'CreationsRequiredTabError').required(),
-    })
-    .required();
-
-const emptyFormData = {
-    [TYPE]: null,
-    [CREATIONS_TABLE]: [],
-};
+import {
+    convertReactiveCapabilityCurvePointsFromFrontToBack,
+    emptyTabularFormData,
+    formatModification,
+    tabularFormSchema,
+} from '../tabular-common.js';
 
 /**
  * Dialog to create tabular creations based on a csv file.
@@ -58,8 +48,8 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: emptyTabularFormData,
+        resolver: yupResolver(tabularFormSchema),
     });
 
     const {
@@ -84,7 +74,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
             });
             reset({
                 [TYPE]: equipmentType,
-                [CREATIONS_TABLE]: creations,
+                [MODIFICATIONS_TABLE]: creations,
             });
         }
     }, [editData, reset, intl]);
@@ -92,7 +82,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     const onSubmit = useCallback(
         (formData) => {
             const creationType = TABULAR_CREATION_TYPES[formData[TYPE]];
-            const creations = formData[CREATIONS_TABLE]?.map((row) => {
+            const creations = formData[MODIFICATIONS_TABLE]?.map((row) => {
                 const creation = {
                     type: creationType,
                 };
@@ -124,7 +114,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyTabularFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -138,7 +128,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     }, [editDataFetchStatus, isUpdate]);
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
