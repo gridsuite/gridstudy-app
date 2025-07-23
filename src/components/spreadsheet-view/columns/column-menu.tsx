@@ -17,10 +17,11 @@ import { UUID } from 'crypto';
 import { SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
 import ColumnCreationDialog from './column-creation-dialog';
 import { AppState } from 'redux/reducer';
-import { deleteSpreadsheetColumn } from 'services/study/study-config';
+import { deleteSpreadsheetColumn, duplicateSpreadsheetColumn } from 'services/study/study-config';
 
 const UPDATE = 'UPDATE';
 const DELETE = 'DELETE';
+const DUPLICATE = 'DUPLICATE';
 
 const CUSTOM_COLUMNS_MENU_DEFINITION = [
     {
@@ -30,6 +31,10 @@ const CUSTOM_COLUMNS_MENU_DEFINITION = [
     {
         id: DELETE,
         label: 'spreadsheet/custom_column/delete_custom_column',
+    },
+    {
+        id: DUPLICATE,
+        label: 'spreadsheet/custom_column/duplicate_custom_column',
     },
 ];
 
@@ -59,6 +64,19 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
 
+    const handleDuplicate = useCallback(() => {
+        if (studyUuid && columnDefinition?.id) {
+            duplicateSpreadsheetColumn(studyUuid, spreadsheetConfigUuid, columnDefinition.uuid)
+                .then()
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'spreadsheet/custom_column/duplicate_column_error',
+                    });
+                });
+        }
+    }, [columnDefinition, studyUuid, spreadsheetConfigUuid, snackError]);
+
     const handleMenuItemClick = useCallback(
         (option: { id: string; label: string }) => {
             onClose();
@@ -69,9 +87,12 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                 case DELETE:
                     setConfirmationDialogOpen(true);
                     break;
+                case DUPLICATE:
+                    handleDuplicate();
+                    break;
             }
         },
-        [dialogOpen, onClose]
+        [dialogOpen, onClose, handleDuplicate]
     );
 
     const handleValidate = useCallback(() => {
@@ -89,7 +110,7 @@ export const ColumnMenu: FunctionComponent<ColumnMenuProps> = ({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerTxt: 'spreadsheet/custom_column/delete_column_error',
+                        headerId: 'spreadsheet/custom_column/delete_column_error',
                     });
                 });
         }
