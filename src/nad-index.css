@@ -123,6 +123,34 @@ g.nad-disconnected > g.nad-disconnected {
         fill: #2979FF;
     }
 }
+@keyframes node-over-blink-nad-zoom-9000 {
+    50% {
+        fill: #D500F9;
+        stroke: #D500F9;
+        stroke-width: 24px;
+    }
+}
+@keyframes node-under-blink-nad-zoom-9000 {
+    50% {
+        fill: #2979FF;
+        stroke: #2979FF;
+        stroke-width: 24px;
+    }
+}
+@keyframes node-over-blink-nad-zoom-12000-15000 {
+    50% {
+        fill: #D500F9;
+        stroke: #D500F9;
+        stroke-width: 32px;
+    }
+}
+@keyframes node-under-blink-nad-zoom-12000-15000 {
+    50% {
+        fill: #2979FF;
+        stroke: #2979FF;
+        stroke-width: 32px;
+    }
+}
 .nad-branch-edges .nad-overload .nad-edge-path {
     animation: line-blink 0.75s infinite steps(1, start);
 }
@@ -173,6 +201,16 @@ g.nad-disconnected > g.nad-disconnected {
         ) {
         animation: line-blink-nad-zoom-9000 0.75s infinite steps(1, start);
     }
+    :is(
+        .nad-vl-nodes .nad-overvoltage
+        ) {
+        animation: node-over-blink-nad-zoom-9000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-undervoltage
+        ) {
+        animation: node-under-blink-nad-zoom-9000 0.75s infinite steps(1, start);
+    }
 }
 
 /* Gradually narrows the edges when zooming out, to prevent thick lines when fully zoomed out. */
@@ -188,6 +226,16 @@ g.nad-disconnected > g.nad-disconnected {
         .nad-branch-edges .nad-overload .nad-edge-path
         ) {
         animation: line-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-overvoltage
+        ) {
+        animation: node-over-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-undervoltage
+        ) {
+        animation: node-under-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
     }
 }
 

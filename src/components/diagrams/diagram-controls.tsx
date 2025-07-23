@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import {
     DirectoryItemSelector,
     ElementSaveDialog,
@@ -31,7 +32,7 @@ const styles = {
         height: theme.spacing(3),
     }),
     panel: (theme: Theme) => ({
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default,
         borderRadius: theme.spacing(1),
         padding: theme.spacing(0.5),
         display: 'block',
@@ -53,6 +54,10 @@ const styles = {
     button: {
         minWidth: 'auto',
     },
+    divider: (theme: Theme) => ({
+        borderColor: theme.palette.grey[600],
+        margin: '2px 4px',
+    }),
 };
 
 interface DiagramControlsProps {
@@ -147,7 +152,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     </Tooltip>
                     {isEditNadMode && (
                         <>
-                            <hr style={{ margin: '2px 4px' }} />
+                            <Divider orientation="vertical" flexItem sx={styles.divider} />
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <IconButton
                                     sx={styles.actionIcon}
