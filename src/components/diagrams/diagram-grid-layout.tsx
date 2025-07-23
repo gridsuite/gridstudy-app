@@ -137,14 +137,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     }, []);
 
     const removeLayoutItem = (cardUuid: UUID) => {
-        setLayouts((old_layouts) => {
-            const oldLayoutsEntries = Object.entries(old_layouts);
-            if (oldLayoutsEntries.pop()?.[1].length === 2) {
-                return initialLayouts; // Reset to initial layouts if no diagrams left
-            }
-            const newLayoutsEntries = removeInLayoutEntries(oldLayoutsEntries, cardUuid);
-            return Object.fromEntries(newLayoutsEntries);
-        });
+        setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
     };
 
     const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
@@ -320,6 +313,18 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         );
     }, []);
 
+    const handleVoltageLevelClick = useCallback(
+        (vlId: string): void => {
+            createDiagram({
+                diagramUuid: v4() as UUID,
+                type: DiagramType.VOLTAGE_LEVEL,
+                voltageLevelId: vlId,
+                name: '',
+            });
+        },
+        [createDiagram]
+    );
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -368,6 +373,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     loadingState={loadingDiagrams.includes(diagram.diagramUuid)}
                                     diagramSizeSetter={setDiagramSize}
                                     visible={visible}
+                                    onNextVoltageLevelClick={handleVoltageLevelClick}
                                 />
                             )}
                             {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -397,6 +403,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     onExpandAllVoltageLevels={() => handleExpandAllVoltageLevels(diagram.diagramUuid)}
                                     onHideVoltageLevel={(vlId) => handleHideVoltageLevelId(diagram.diagramUuid, vlId)}
                                     onMoveNode={(vlId, x, y) => handleMoveNode(diagram.diagramUuid, vlId, x, y)}
+                                    onVoltageLevelClick={handleVoltageLevelClick}
                                     customPositions={diagram.positions}
                                 />
                             )}
@@ -418,6 +425,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         handleExpandVoltageLevelId,
         handleHideVoltageLevelId,
         handleMoveNode,
+        handleVoltageLevelClick,
         onRemoveCard,
         setDiagramSize,
         showInSpreadsheet,

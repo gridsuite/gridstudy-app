@@ -29,7 +29,7 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
-import { DiagramAdditionalMetadata } from '../diagram-common';
+import { DiagramAdditionalMetadata, MAX_NUMBER_OF_NAD_DIAGRAMS } from '../diagram-common';
 import { mergePositions } from '../diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 
@@ -41,7 +41,7 @@ type UseDiagramModelProps = {
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const { snackInfo } = useSnackMessage();
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -261,8 +261,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             svg: data,
                             name: getDiagramTitle(diagram, data),
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
-                                nadConfigUuid: undefined,
-                                filterUuid: undefined,
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
                                     ...new Set([
@@ -309,7 +307,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
                     } else {
                         errorMessage = 'svgLoadingFail';
-                        snackError({
+                        snackInfo({
                             headerId: errorMessage,
                         });
                     }
@@ -326,7 +324,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [getDiagramTitle, getUrl, intl, snackError, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [getDiagramTitle, getUrl, intl, snackInfo, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
     );
 
     const findSimilarDiagram = useCallback(
@@ -357,8 +355,22 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams]
     );
 
+    const countOpenedNadDiagrams = (diagrams: Record<UUID, Diagram>) => {
+        return Object.values(diagrams).filter((diagram) => diagram?.type === DiagramType.NETWORK_AREA_DIAGRAM).length;
+    };
+
     const createDiagram = useCallback(
         (diagramParams: DiagramParams) => {
+            if (
+                diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM &&
+                countOpenedNadDiagrams(diagrams) >= MAX_NUMBER_OF_NAD_DIAGRAMS
+            ) {
+                snackInfo({
+                    messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
+                });
+                return;
+            }
+
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance don't manage this type of diagram
                 return;
@@ -381,6 +393,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             filterDiagramParams,
             findSimilarDiagram,
             onDiagramAlreadyExists,
+            diagrams,
+            intl,
+            snackInfo,
         ]
     );
 
