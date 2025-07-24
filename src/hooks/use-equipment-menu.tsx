@@ -183,7 +183,7 @@ export const useEquipmentMenu = ({
     );
 
     const renderEquipmentMenu = useCallback(() => {
-        if (disabled || equipmentMenu?.equipment === null || !equipmentMenu?.display) {
+        if (disabled || equipmentMenu?.equipment === null || !equipmentMenu?.equipmentType || !equipmentMenu?.display) {
             return <></>;
         }
 
@@ -191,7 +191,7 @@ export const useEquipmentMenu = ({
             currentNode,
             currentRootNetworkUuid,
             studyUuid,
-            equipmentType: equipmentMenu.equipmentType!,
+            equipmentType: equipmentMenu.equipmentType,
             modificationInProgress,
             setModificationInProgress,
         };
