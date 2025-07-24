@@ -191,16 +191,14 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    [class^="nad-vl0to30"], [class*=" nad-vl0to30"],
-    [class^="nad-vl30to50"], [class*=" nad-vl30to50"]
+    .nad-vl0to30, .nad-vl30to50
     ) {
     display: none;
 }
 
 /* Hides the voltage levels 50 to 120 when zoomed out. */
 .nad-zoom-15000 :is(
-    [class^="nad-vl50to70"], [class*=" nad-vl50to70"],
-    [class^="nad-vl70to120"], [class*=" nad-vl70to120"]
+    .nad-vl50to70, .nad-vl70to120
     ) {
     display: none;
 }
