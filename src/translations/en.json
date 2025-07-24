@@ -1487,5 +1487,7 @@
     "OpenMapCard": "Add the map",
     "AddNewCard": "Add a new image",
     "SaveGridLayout": "Save grid",
+    "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
+    "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one"
 }

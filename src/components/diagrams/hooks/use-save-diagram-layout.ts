@@ -14,6 +14,7 @@ import { useCallback } from 'react';
 import { DiagramGridLayoutDto, DiagramLayoutDto } from 'components/diagrams/diagram-grid-layout.types';
 import { MAX_INT32 } from 'services/utils';
 import { saveDiagramGridLayout } from 'services/study/study-config';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 interface UseSaveDiagramLayoutProps {
     layouts: Layouts;
@@ -76,6 +77,7 @@ const encodeInfinity = (value: number) => {
 
 export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayoutProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const { snackInfo } = useSnackMessage();
 
     const saveDiagramLayout = useCallback(() => {
         if (!studyUuid) {
@@ -93,8 +95,18 @@ export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayout
                 gridLayouts: layouts,
                 params: diagramParams,
             })
-        );
-    }, [diagrams, layouts, studyUuid]);
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramGridLayoutSaveSuccess',
+                });
+            })
+            .catch(() => {
+                snackInfo({
+                    headerId: 'diagramGridLayoutSaveError',
+                });
+            });
+    }, [diagrams, layouts, studyUuid, snackInfo]);
 
     return saveDiagramLayout;
 };

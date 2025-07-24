@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler } from 'react';
+import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler, useCallback } from 'react';
 import { Box, Button, IconButton, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
+import { useDebounce } from '@gridsuite/commons-ui';
 import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
@@ -66,6 +67,13 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
 
+    // Debounce the layout save function to avoid excessive calls
+    const debouncedLayoutSave = useDebounce(onLayoutSave, 300);
+
+    const handleLayoutSave = useCallback(() => {
+        debouncedLayoutSave();
+    }, [debouncedLayoutSave]);
+
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0 && selectedElements[0].type) {
             onLoad(selectedElements[0].id, selectedElements[0].type, selectedElements[0].name);
@@ -106,7 +114,7 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                         <Button
                             startIcon={<SaveOutlined />}
                             sx={{ textTransform: 'uppercase' }}
-                            onClick={() => onLayoutSave()}
+                            onClick={handleLayoutSave}
                         >
                             <FormattedMessage id="SaveGridLayout" />
                         </Button>
