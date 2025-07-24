@@ -20,10 +20,10 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#CCC93A' : '#D8D20A',
         },
         '.sld-vl0to30-3, .nad-vl0to30-3': {
-            '--vl-color': isDarkMode ? '#A156AA' : '#A156AA',
+            '--vl-color': '#A156AA',
         },
         '.sld-vl0to30-4, .nad-vl0to30-4': {
-            '--vl-color': isDarkMode ? '#CB3DDD' : '#CB3DDD',
+            '--vl-color': '#CB3DDD',
         },
         '.sld-vl0to30-5, .nad-vl0to30-5': {
             '--vl-color': isDarkMode ? '#AC8AC2' : '#A684BC',
@@ -50,25 +50,25 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#CEAAB0' : '#DAA8AD',
         },
         '.sld-vl30to50-3, .nad-vl30to50-3': {
-            '--vl-color': isDarkMode ? '#459C63' : '#459C63',
+            '--vl-color': '#459C63',
         },
         '.sld-vl30to50-4, .nad-vl30to50-4': {
-            '--vl-color': isDarkMode ? '#00E266' : '#00E266',
+            '--vl-color': '#00E266',
         },
         '.sld-vl30to50-5, .nad-vl30to50-5': {
-            '--vl-color': isDarkMode ? '#A7B368' : '#A7B368',
+            '--vl-color': '#A7B368',
         },
         '.sld-vl30to50-6, .nad-vl30to50-6': {
             '--vl-color': isDarkMode ? '#3F7340' : '#1A4D1B',
         },
         '.sld-vl30to50-7, .nad-vl30to50-7': {
-            '--vl-color': isDarkMode ? '#C2CB92' : '#C2CB92',
+            '--vl-color': '#C2CB92',
         },
         '.sld-vl30to50-8, .nad-vl30to50-8': {
-            '--vl-color': isDarkMode ? '#218B21' : '#218B21',
+            '--vl-color': '#218B21',
         },
         '.sld-vl30to50-9, .nad-vl30to50-9': {
-            '--vl-color': isDarkMode ? '#58D058' : '#58D058',
+            '--vl-color': '#58D058',
         },
         'sld-vl50to70, .nad-vl50to70-line, .sld-vl50to70-0, .nad-vl50to70-0': {
             '--vl-color': isDarkMode ? '#A246E0' : '#A020F0',
@@ -83,10 +83,10 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#1F7620' : '#ABCBAB',
         },
         '.sld-vl50to70-4, .nad-vl50to70-4': {
-            '--vl-color': isDarkMode ? '#C5ED3B' : '#C5ED3B',
+            '--vl-color': '#C5ED3B',
         },
         '.sld-vl50to70-5, .nad-vl50to70-5': {
-            '--vl-color': isDarkMode ? '#A7B368' : '#A7B368',
+            '--vl-color': '#A7B368',
         },
         '.sld-vl50to70-6, .nad-vl50to70-6': {
             '--vl-color': isDarkMode ? '#697046' : '#55591B',
@@ -110,25 +110,25 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#A88668' : '#CC5500',
         },
         '.sld-vl70to120-3, .nad-vl70to120-3': {
-            '--vl-color': isDarkMode ? '#25699D' : '#25699D',
+            '--vl-color': '#25699D',
         },
         '.sld-vl70to120-4, .nad-vl70to120-4': {
-            '--vl-color': isDarkMode ? '#0057F9' : '#0057F9',
+            '--vl-color': '#0057F9',
         },
         '.sld-vl70to120-5, .nad-vl70to120-5': {
-            '--vl-color': isDarkMode ? '#74AFEA' : '#74AFEA',
+            '--vl-color': '#74AFEA',
         },
         '.sld-vl70to120-6, .nad-vl70to120-6': {
             '--vl-color': isDarkMode ? '#44679C' : '#1B3459',
         },
         '.sld-vl70to120-7, .nad-vl70to120-7': {
-            '--vl-color': isDarkMode ? '#448BE8' : '#448BE8',
+            '--vl-color': '#448BE8',
         },
         '.sld-vl70to120-8, .nad-vl70to120-8': {
-            '--vl-color': isDarkMode ? '#2862AE' : '#2862AE',
+            '--vl-color': '#2862AE',
         },
         '.sld-vl70to120-9, .nad-vl70to120-9': {
-            '--vl-color': isDarkMode ? '#B0D4FE' : '#B0D4FE',
+            '--vl-color': '#B0D4FE',
         },
         '.sld-vl120to180, .nad-vl120to180-line, .sld-vl120to180-0, .nad-vl120to180-0': {
             '--vl-color': isDarkMode ? '#29AFB0' : '#00AFAE',
@@ -143,10 +143,10 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#97593F' : '#6B3A26',
         },
         '.sld-vl120to180-4, .nad-vl120to180-4': {
-            '--vl-color': isDarkMode ? '#C94119' : '#C94119',
+            '--vl-color': '#C94119',
         },
         '.sld-vl120to180-5, .nad-vl120to180-5': {
-            '--vl-color': isDarkMode ? '#D69A88' : '#D69A88',
+            '--vl-color': '#D69A88',
         },
         '.sld-vl120to180-6, .nad-vl120to180-6': {
             '--vl-color': isDarkMode ? '#885239' : '#7E3109',
@@ -173,10 +173,10 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#BA133C' : '#A30E32',
         },
         '.sld-vl180to300-4, .nad-vl180to300-4': {
-            '--vl-color': isDarkMode ? '#FF8290' : '#FF8290',
+            '--vl-color': '#FF8290',
         },
         '.sld-vl180to300-5, .nad-vl180to300-5': {
-            '--vl-color': isDarkMode ? '#DAA8AD' : '#DAA8AD',
+            '--vl-color': '#DAA8AD',
         },
         '.sld-vl180to300-6, .nad-vl180to300-6': {
             '--vl-color': isDarkMode ? '#97353A' : '#C30D33',
@@ -200,13 +200,13 @@ export const themedCssVars = (theme: Theme) => {
             '--vl-color': isDarkMode ? '#EA9B9E' : '#FF9494',
         },
         '.sld-vl300to500-3, .nad-vl300to500-3': {
-            '--vl-color': isDarkMode ? '#32B532' : '#32B532',
+            '--vl-color': '#32B532',
         },
         '.sld-vl300to500-4, .nad-vl300to500-4': {
-            '--vl-color': isDarkMode ? '#00FF50' : '#00FF50',
+            '--vl-color': '#00FF50',
         },
         '.sld-vl300to500-5, .nad-vl300to500-5': {
-            '--vl-color': isDarkMode ? '#A7B368' : '#A7B368',
+            '--vl-color': '#A7B368',
         },
         '.sld-vl300to500-6, .nad-vl300to500-6': {
             '--vl-color': isDarkMode ? '#3D6746' : '#1A4D1B',
