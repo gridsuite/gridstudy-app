@@ -1475,6 +1475,7 @@
     "Loadflow": "Loadflow",
     "Algorithm": "Algorithm",
     "maxNumberIterations": "Maximum number of iterations",
+    "subtractLoadFlowBalancing": "Take into account loadflow balancing when calculating mismatch",
     "thresholdNetPosition": "Net position mismatch threshold",
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
