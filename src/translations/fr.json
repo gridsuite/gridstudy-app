@@ -1468,6 +1468,7 @@
     "Loadflow": "Calcul de répartition",
     "Algorithm": "Algorithme",
     "maxNumberIterations": "Nombre maximal d'itérations",
+    "subtractLoadFlowBalancing": "Prendre en compte la compensation dans le calcul des bilans",
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée",
