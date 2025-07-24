@@ -228,10 +228,55 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         return (
             !mapDataLoading &&
             ((nodeSelectionForCopy.nodeId !== activeNode.id &&
-                !nodeSelectionForCopy.allChildrenIds?.includes(activeNode.id) &&
+                !nodeSelectionForCopy.allChildren?.map((child) => child.id)?.includes(activeNode.id) &&
                 nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
                 nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY)
         );
+    }
+
+    function isSubtreeContentPasteable(): boolean {
+        if (!nodeSelectionForCopy || !activeNode) {
+            return false;
+        }
+
+        const allChildren = nodeSelectionForCopy.allChildren;
+
+        const areAllOfType = (type: NetworkModificationNodeType) =>
+            allChildren?.every((child) => child.nodeType === type) && nodeSelectionForCopy.nodeType === type;
+
+        const isAllSecurity = areAllOfType(NetworkModificationNodeType.SECURITY);
+        const isAllConstruction = areAllOfType(NetworkModificationNodeType.CONSTRUCTION);
+        const isMixed = !isAllSecurity && !isAllConstruction;
+
+        const isActiveNodeRoot = activeNode.type === NodeType.ROOT;
+        const isActiveNodeConstruction = !isSecurityModificationNode(activeNode);
+
+        if (isAllSecurity) {
+            // Rule 1: SECURITY subtree can be inserted on new branch from any node type
+            return true;
+        }
+
+        if (isAllConstruction || isMixed) {
+            // Rule 2: CONSTRUCTION or mixed subtree can only be inserted on new branch from ROOT or CONSTRUCTION node
+            return isActiveNodeRoot || isActiveNodeConstruction;
+        }
+
+        return false;
+    }
+
+    function isNodeInsertionForbidden(insertMode?: NodeInsertModes): boolean {
+        const nodeType = nodeSelectionForCopy.nodeType;
+        // Rule 1 : CONSTRUCTION cannot be inserted into SECURITY
+        const isConstructionInsertionForbidden =
+            nodeType === NetworkModificationNodeType.CONSTRUCTION && isSecurityModificationNode(activeNode);
+        // Rule 2 : SECURITY can only be inserted in CHILD mode into CONSTRUCTION or ROOT
+        const isSecurityInsertionForbidden =
+            nodeType === NetworkModificationNodeType.SECURITY &&
+            insertMode !== NodeInsertModes.NewBranch &&
+            insertMode !== undefined &&
+            !isSecurityModificationNode(activeNode);
+
+        return isConstructionInsertionForbidden || isSecurityInsertionForbidden;
     }
 
     function isNodeRemovingAllowed() {
@@ -337,40 +382,37 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         COPY_MODIFICATION_NODE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
         },
         CUT_MODIFICATION_NODE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () =>
                 isNodeAlreadySelectedForCut() ? cancelCutNetworkModificationNode() : cutNetworkModificationNode(),
             id: isNodeAlreadySelectedForCut() ? 'cancelCutNetworkModificationNode' : 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
             id: 'pasteNetworkModificationNode',
-            disabled: !isNodePastingAllowed(),
+            disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(),
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.NewBranch),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.Before),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
-                    disabled: !isNodePastingAllowed(),
+                    disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.After),
                 },
             },
         },
@@ -389,14 +431,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         COPY_SUBTREE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => copySubtree(),
             id: 'copyNetworkModificationSubtree',
             disabled: isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
         },
         CUT_SUBTREE: {
             onRoot: false,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => (isSubtreeAlreadySelectedForCut() ? cancelCutSubtree() : cutSubtree()),
             id: isSubtreeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationSubtree'
@@ -406,10 +446,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         PASTE_SUBTREE: {
             onRoot: true,
-            hidden: isSecurityModificationNode(activeNode),
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
-            disabled: !isSubtreePastingAllowed(),
+            disabled: !isSubtreePastingAllowed() || !isSubtreeContentPasteable(),
         },
         REMOVE_SUBTREE: {
             onRoot: false,
