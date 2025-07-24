@@ -71,6 +71,12 @@ export interface NetworkModificationData {
     [key: string]: any;
 }
 
+export interface MenuSection {
+    id: string;
+    label?: string;
+    items: MenuDefinition[];
+}
+
 // Cf withDefaultParams : common props for any modification available from the menu
 export type NetworkModificationDialogProps = {
     currentNode: CurrentTreeNode;
