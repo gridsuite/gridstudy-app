@@ -81,19 +81,11 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const mapEquipments = useCallback(
-        (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return mapSpreadsheetEquipments(type, fetchedEquipments);
-        },
-        [type]
-    );
-
     const fetchNodesEquipmentData = useCallback(
-        (nodeIds: Set<string>, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, onFetchingDone?: () => void) => {
+        (nodeIds: Set<UUID>, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, onFetchingDone?: () => void) => {
             if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
-                let fetcherPromises: Promise<unknown>[] = [];
-                let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
+                const fetcherPromises: ReturnType<typeof fetchNetworkElementsInfos>[] = [];
+                const spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
                     nodesId: [],
                     equipmentsByNodeId: {},
                 };
@@ -103,10 +95,12 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                     fetcherPromises.push(promise);
                     promise
                         .then((results) => {
-                            let fetchedEquipments = results.flat();
                             spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                            fetchedEquipments = mapEquipments(fetchedEquipments);
-                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
+                            // Format the equipments data to set calculated fields so that the edition validation is consistent with the displayed data
+                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = mapSpreadsheetEquipments(
+                                type,
+                                results
+                            );
                         })
                         .catch((err) => {
                             console.error(

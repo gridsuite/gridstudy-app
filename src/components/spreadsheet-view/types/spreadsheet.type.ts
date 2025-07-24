@@ -73,8 +73,8 @@ export type ColumnStateDto = {
 };
 
 export type SpreadsheetEquipmentsByNodes = {
-    nodesId: string[];
-    equipmentsByNodeId: Record<string, Identifiable[]>;
+    nodesId: UUID[];
+    equipmentsByNodeId: Record<UUID, Identifiable[]>;
 };
 
 export type SpreadsheetConfig = {

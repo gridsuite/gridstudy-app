@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'crypto';
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button, Theme, Tooltip } from '@mui/material';
+import { Badge, Button, Menu, MenuItem, type Theme, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import BuildIcon from '@mui/icons-material/Build';
 import { ROOT_NODE_LABEL } from '../../../../../constants/node.constant';
-import { NodeAlias } from '../../../types/node-alias.type';
-import { MouseEvent, useCallback, useMemo, useState } from 'react';
+import type { NodeAlias } from '../../../types/node-alias.type';
+import { type MouseEvent, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
+import { type AppState } from '../../../../../redux/reducer';
 import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { NodeType } from '../../../../graph/tree-node.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
-import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { type SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import NodesConfigDialog from './nodes-config-dialog';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
+import { notUndefined } from '../../../../utils/ts-utils';
 
 const styles = {
     icon: {
@@ -100,7 +100,7 @@ export default function NodesConfigButton({
 
     const handleRefresh = useCallback(() => {
         if (currentNode?.id && currentRootNetworkUuid && nodesToReload?.length) {
-            const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
+            const nodesIdsToReload = new Set(nodesToReload.map((n) => n.id).filter(notUndefined));
             fetchNodesEquipmentData(nodesIdsToReload, currentNode.id, currentRootNetworkUuid);
         }
     }, [currentNode?.id, currentRootNetworkUuid, fetchNodesEquipmentData, nodesToReload]);
