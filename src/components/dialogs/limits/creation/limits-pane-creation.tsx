@@ -75,6 +75,40 @@ export function LimitsPaneCreation({
         return null;
     };
 
+    /**
+     * returns an error message id if :
+     * - there are more than 2 limit sets with the same name
+     * - there are exactly 2 limit set with this name but they have the same applicability side
+     */
+    const checkLimitSetUnicity = useCallback(
+        (editedLimitGroupName: string, newSelectedApplicability: string): string => {
+            if (indexSelectedLimitSet == null) {
+                return '';
+            }
+
+            // checks if limit sets with that name already exist
+            const sameNameInLs: OperationalLimitsGroup[] = limitsGroups
+                .filter((_ls, index: number) => index !== indexSelectedLimitSet)
+                .filter(
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.name.trim() === editedLimitGroupName.trim()
+                );
+
+            // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
+            if (sameNameInLs.length > 0) {
+                if (sameNameInLs.length > 1) {
+                    return 'LimitSetNamingError';
+                } else {
+                    // only one limit set with this name exist => their applicability has to be different
+                    if (sameNameInLs[0].applicability === newSelectedApplicability) {
+                        return 'LimitSetApplicabilityError';
+                    }
+                }
+            }
+            return '';
+        },
+        [indexSelectedLimitSet, limitsGroups]
+    );
+
     return (
         <>
             {/* active limit sets */}
@@ -107,6 +141,7 @@ export function LimitsPaneCreation({
                         limitsGroups={limitsGroups}
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
+                        checkLimitSetUnicity={checkLimitSetUnicity}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
@@ -128,6 +163,7 @@ export function LimitsPaneCreation({
                                         currentNode={currentNode}
                                         onlySelectedLimitsGroup={false}
                                         selectedLimitSetName={operationalLimitsGroup.name}
+                                        checkLimitSetUnicity={checkLimitSetUnicity}
                                     />
                                 )
                         )}

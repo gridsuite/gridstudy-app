@@ -30,7 +30,7 @@ import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/networ
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
-    [ID]: yup.string().nonNullable().required(), // TODO : unique sauf si il y en a 2 et qu'ils ont APPLICABIlITY 1 et 2
+    [ID]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
@@ -91,7 +91,7 @@ const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup
             .array(yup.object().shape(limitsGroupValidationSchema(false)))
-            .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
+            .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
                 const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
             }),

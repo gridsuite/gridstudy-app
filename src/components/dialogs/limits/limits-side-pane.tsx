@@ -14,6 +14,7 @@ import {
     DndColumn,
     FloatInput,
     SelectInput,
+    Option,
 } from '@gridsuite/commons-ui';
 import {
     APPLICABIlITY,
@@ -46,6 +47,7 @@ export interface LimitsSidePaneProps {
     currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
     selectedLimitSetName?: string;
+    checkLimitSetUnicity: (arg0: string, ar1: string) => string;
 }
 
 export function LimitsSidePane({
@@ -58,9 +60,10 @@ export function LimitsSidePane({
     currentNode,
     onlySelectedLimitsGroup,
     selectedLimitSetName,
+    checkLimitSetUnicity,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
-    const { getValues } = useFormContext();
+    const { setError, getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
     });
@@ -204,13 +207,25 @@ export function LimitsSidePane({
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />
                         </Grid>
-                        <Grid item xs={2}>
+                        <Grid item xs={4}>
                             <SelectInput
                                 options={Object.values(APPLICABILITY)}
                                 name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
                                 previousValue={applicabilityPreviousValue}
                                 sx={{ flexGrow: 1 }}
                                 size="small"
+                                onCheckNewValue={(value: Option | null) => {
+                                    if (value) {
+                                        const errorMessage: string = checkLimitSetUnicity(
+                                            selectedLimitSetName ?? '',
+                                            value?.id ?? value
+                                        );
+                                        setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
+                                            message: errorMessage,
+                                        });
+                                    }
+                                    return true;
+                                }}
                             />
                         </Grid>
                     </Grid>

@@ -56,6 +56,7 @@ export interface OperationalLimitsGroupsTabsProps {
     limitsGroups: OperationalLimitsGroup[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
+    checkLimitSetUnicity: (arg0: string, arg1: string) => string;
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
@@ -76,7 +77,7 @@ function generateUniqueId(baseName: string, names: string[]): string {
 }
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
-    ({ parentFormName, limitsGroups, setIndexSelectedLimitSet, indexSelectedLimitSet }, ref) => {
+    ({ parentFormName, limitsGroups, setIndexSelectedLimitSet, indexSelectedLimitSet, checkLimitSetUnicity }, ref) => {
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
         const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -189,30 +190,15 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     return;
                 }
 
-                // get the old name of the modified limit set in order to update it on both sides (and the selected sides if needed)
                 const oldName: string = limitsGroups[editingTabIndex].name;
 
-                // checks if a limit set with that name already exists
-                const sameNameInLs1: OperationalLimitsGroup[] = limitsGroups
-                    .filter((ls, index: number) => index !== editingTabIndex)
-                    .filter(
-                        (limitsGroup: OperationalLimitsGroup) =>
-                            limitsGroup.name.trim() === editedLimitGroupName.trim() &&
-                            limitsGroup.id !== limitsGroups[editingTabIndex].id
-                    );
-
-                // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
-                if (sameNameInLs1.length > 0) {
-                    if (sameNameInLs1.length > 1) {
-                        setEditionError('LimitSetNamingError');
-                        return;
-                    } else {
-                        // only one limit set with this name exist => their applicability has to be different
-                        if (sameNameInLs1[0].applicability === limitsGroups[editingTabIndex].applicability) {
-                            setEditionError('LimitSetApplicabilityError');
-                            return;
-                        }
-                    }
+                const errorMessage: string = checkLimitSetUnicity(
+                    editedLimitGroupName,
+                    limitsGroups[editingTabIndex].applicability ?? ''
+                );
+                if (errorMessage.length > 0) {
+                    setEditionError(errorMessage);
+                    return;
                 }
 
                 if (editingTabIndex !== undefined) {
@@ -242,6 +228,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             limitsGroups,
             setEditingTabIndex,
             setIndexSelectedLimitSet,
+            checkLimitSetUnicity,
         ]);
 
         const handleKeyDown = useCallback(
