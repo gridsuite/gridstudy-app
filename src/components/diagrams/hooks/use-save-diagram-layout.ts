@@ -77,7 +77,7 @@ const encodeInfinity = (value: number) => {
 
 export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayoutProps) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackInfo } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
 
     const saveDiagramLayout = useCallback(() => {
         if (!studyUuid) {
@@ -102,11 +102,11 @@ export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayout
                 });
             })
             .catch(() => {
-                snackInfo({
+                snackError({
                     headerId: 'diagramGridLayoutSaveError',
                 });
             });
-    }, [diagrams, layouts, studyUuid, snackInfo]);
+    }, [diagrams, layouts, studyUuid, snackInfo, snackError]);
 
     return saveDiagramLayout;
 };

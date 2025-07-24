@@ -9,7 +9,6 @@ import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler, useCal
 import { Box, Button, IconButton, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
-import { useDebounce } from '@gridsuite/commons-ui';
 import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
@@ -17,6 +16,7 @@ import {
     EquipmentInfos,
     mergeSx,
     TreeViewFinderNodeProps,
+    useDebounce,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
