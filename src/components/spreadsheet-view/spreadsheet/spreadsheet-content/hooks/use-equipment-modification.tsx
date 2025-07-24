@@ -25,6 +25,7 @@ export type UseEquipmentModificationProps = {
 
 type EditableEquipmentType = Exclude<
     SpreadsheetEquipmentType,
+    | SpreadsheetEquipmentType.BRANCH
     | SpreadsheetEquipmentType.BUS
     | SpreadsheetEquipmentType.BUSBAR_SECTION
     | SpreadsheetEquipmentType.DANGLING_LINE

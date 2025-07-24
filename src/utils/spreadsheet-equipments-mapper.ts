@@ -72,12 +72,7 @@ const mapPhaseTapChanger = (twt: any) => {
     };
 };
 
-const mapTwtDataForTable = (twt: any) => {
-    let formattedTwt = mapRatioTapChanger(twt);
-    formattedTwt = mapPhaseTapChanger(formattedTwt);
-
-    return formattedTwt;
-};
+const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
 
 const mapGeneratorDataForTable = (generator: any) => {
     const formattedGenerator = { ...generator };
@@ -105,6 +100,7 @@ const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
 const mapSpreadsheetEquipment = (equipmentType: SpreadsheetEquipmentType, equipment: Identifiable) => {
     switch (equipmentType) {
         case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
+        case SpreadsheetEquipmentType.BRANCH: // can do it because mappers test if field present before modifying
             return mapTwtDataForTable(equipment);
         case SpreadsheetEquipmentType.GENERATOR:
             return mapGeneratorDataForTable(equipment);

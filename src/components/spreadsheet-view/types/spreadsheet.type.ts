@@ -12,6 +12,7 @@ import type { GlobalFilter } from '../../results/common/global-filter/global-fil
 
 export enum SpreadsheetEquipmentType {
     BATTERY = 'BATTERY',
+    BRANCH = 'BRANCH', // LINE + TWO_WINDINGS_TRANSFORMER
     BUS = 'BUS',
     BUSBAR_SECTION = 'BUSBAR_SECTION',
     DANGLING_LINE = 'DANGLING_LINE',
@@ -28,6 +29,10 @@ export enum SpreadsheetEquipmentType {
     TWO_WINDINGS_TRANSFORMER = 'TWO_WINDINGS_TRANSFORMER',
     VOLTAGE_LEVEL = 'VOLTAGE_LEVEL',
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
+}
+
+export function isSpreadsheetEquipmentType(type: string): type is SpreadsheetEquipmentType {
+    return type in SpreadsheetEquipmentType;
 }
 
 export interface SpreadsheetTabDefinition {

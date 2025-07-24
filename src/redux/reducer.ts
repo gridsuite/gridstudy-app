@@ -259,7 +259,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import type { UUID } from 'crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import type { ValueOf } from 'type-fest';
+import type { Entries, ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
@@ -519,6 +519,7 @@ const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
 export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [SpreadsheetEquipmentType.BATTERY]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BRANCH]: emptySpreadsheetEquipmentsByNodes,
     [SpreadsheetEquipmentType.BUS]: emptySpreadsheetEquipmentsByNodes,
     [SpreadsheetEquipmentType.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
     [SpreadsheetEquipmentType.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
@@ -1252,7 +1253,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
-        Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+        (
+            Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId) as Entries<
+                LoadEquipmentsAction['spreadsheetEquipmentByNodes']['equipmentsByNodeId']
+            >
+        ).forEach(([nodeId, equipments]) => {
             state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = equipments;
         });
         //to remove duplicate

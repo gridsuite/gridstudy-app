@@ -557,6 +557,7 @@
     "Type": "Type",
     "SUBSTATION": "Substation",
     "VOLTAGE_LEVEL": "Voltage Level",
+    "BRANCH": "Branch",
     "LINE": "Line",
     "TIE_LINE": "Tie line",
     "SWITCH": "Switch",

@@ -16,9 +16,10 @@ import {
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
+    type UpdateEquipmentsAction,
 } from 'redux/actions';
 import { type AppState } from 'redux/reducer';
-import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { isSpreadsheetEquipmentType, SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
@@ -27,6 +28,7 @@ import { type DeletedEquipment, isStudyNotification, type NetworkImpactsInfos } 
 import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { fetchNetworkElementInfos } from 'services/study/network';
+import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -45,10 +47,8 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
-
+    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
     // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
@@ -61,25 +61,20 @@ export const useSpreadsheetEquipments = (
             .filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
         if (aliasedNodesIds.length > 0) {
-            treeNodes?.forEach((treeNode) => {
-                if (
-                    aliasedNodesIds.includes(treeNode.id) &&
-                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
-                ) {
-                    computedIds.push(treeNode.id);
-                }
-            });
+            computedIds =
+                treeNodes
+                    ?.filter(
+                        (treeNode) =>
+                            aliasedNodesIds.includes(treeNode.id) &&
+                            (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                    )
+                    .map((treeNode) => treeNode.id) ?? [];
         }
+        computedIds.sort((a, b) => a.localeCompare(b));
         // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
-        setBuiltAliasedNodesIds((prevState) => {
-            const currentIds = prevState;
-            currentIds?.sort((a, b) => a.localeCompare(b));
-            computedIds.sort((a, b) => a.localeCompare(b));
-            if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
-                return computedIds;
-            }
-            return prevState;
-        });
+        setBuiltAliasedNodesIds((prevState) =>
+            JSON.stringify(prevState) !== JSON.stringify(computedIds) ? computedIds : prevState
+        );
     }, [nodeAliases, treeNodes]);
 
     const nodesIdToFetch = useMemo(() => {
@@ -92,17 +87,17 @@ export const useSpreadsheetEquipments = (
             nodesIdToFetch.add(currentNode.id);
         }
         // Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        builtAliasedNodesIds.forEach((builtAliasNodeId) => {
+        for (const builtAliasNodeId of builtAliasedNodesIds) {
             if (equipments.nodesId.find((nodeId) => nodeId === builtAliasNodeId) === undefined) {
                 nodesIdToFetch.add(builtAliasNodeId);
             }
-        });
+        }
         return nodesIdToFetch;
     }, [currentNode?.id, equipments.nodesId, builtAliasedNodesIds]);
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!equipments || !builtAliasedNodesIds || !currentNode?.id) {
+        if (!equipments || !builtAliasedNodesIds.length || !currentNode?.id) {
             return;
         }
         const currentNodeId = currentNode.id;
@@ -121,7 +116,7 @@ export const useSpreadsheetEquipments = (
                 return;
             }
             // updating data related to impacted elements
-            const nodeId = currentNode?.id as UUID;
+            const nodeId = currentNode?.id as UUID; //TODO maybe do nothing if no current node?
 
             // Handle updates and resets based on impacted element types
             if (impactedElementTypes.length > 0) {
@@ -133,7 +128,9 @@ export const useSpreadsheetEquipments = (
                     Object.keys(allEquipments).includes(type)
                 );
                 if (impactedSpreadsheetEquipmentsTypes.length > 0) {
-                    dispatch(resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes as SpreadsheetEquipmentType[]));
+                    dispatch(
+                        resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes.filter(isSpreadsheetEquipmentType))
+                    );
                 }
             }
 
@@ -154,17 +151,51 @@ export const useSpreadsheetEquipments = (
                     );
                 } else {
                     // here, we can fetch only the data for the modified equipment
-                    fetchNetworkElementInfos(
-                        studyUuid,
-                        nodeId,
-                        currentRootNetworkUuid,
-                        type,
-                        'TAB',
-                        equipmentToUpdateId,
-                        false
-                    ).then((value: Identifiable) => {
-                        highlightUpdatedEquipment();
-                        dispatch(updateEquipments({ [type]: [value] }, nodeId));
+                    const promises = [
+                        fetchNetworkElementInfos(
+                            studyUuid,
+                            nodeId,
+                            currentRootNetworkUuid,
+                            type,
+                            EQUIPMENT_INFOS_TYPES.TAB.type,
+                            equipmentToUpdateId,
+                            false
+                        ),
+                    ];
+                    if (
+                        type === SpreadsheetEquipmentType.LINE ||
+                        type === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
+                    ) {
+                        promises.push(
+                            fetchNetworkElementInfos(
+                                studyUuid,
+                                nodeId,
+                                currentRootNetworkUuid,
+                                SpreadsheetEquipmentType.BRANCH,
+                                EQUIPMENT_INFOS_TYPES.TAB.type,
+                                equipmentToUpdateId,
+                                false
+                            )
+                        );
+                    }
+                    Promise.allSettled(promises).then((results) => {
+                        const updates: UpdateEquipmentsAction['equipments'] = {};
+                        if (results[0].status === 'rejected') {
+                            //TODO show snackbar error?
+                        } else {
+                            updates[type] = results[0].value;
+                        }
+                        if (results.length > 1) {
+                            if (results[1].status === 'rejected') {
+                                //TODO show snackbar error?
+                            } else {
+                                updates[SpreadsheetEquipmentType.BRANCH] = results[1].value;
+                            }
+                        }
+                        if (Object.keys(updates).length > 1) {
+                            highlightUpdatedEquipment();
+                            dispatch(updateEquipments(updates, nodeId));
+                        }
                     });
                 }
             }
@@ -183,11 +214,12 @@ export const useSpreadsheetEquipments = (
                     });
 
                 if (equipmentsToDelete.length > 0) {
-                    const equipmentsToDeleteArray: EquipmentToDelete[] = equipmentsToDelete.map((equipment) => ({
-                        equipmentType: equipment.equipmentType as SpreadsheetEquipmentType,
-                        equipmentId: equipment.equipmentId,
-                        nodeId: nodeId,
-                    }));
+                    const equipmentsToDeleteArray = equipmentsToDelete
+                        .filter((e) => isSpreadsheetEquipmentType(e.equipmentType))
+                        .map<EquipmentToDelete>((equipment) => ({
+                            equipmentType: equipment.equipmentType as unknown as SpreadsheetEquipmentType,
+                            equipmentId: equipment.equipmentId,
+                        }));
                     dispatch(deleteEquipments(equipmentsToDeleteArray, nodeId));
                 }
             }
