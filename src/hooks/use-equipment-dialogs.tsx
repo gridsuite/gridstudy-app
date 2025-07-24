@@ -204,6 +204,7 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                     onClose={closeDeletionDialog}
                     editData={undefined}
                     editDataFetchStatus={undefined}
+                    equipmentType={undefined}
                 />
             );
         } else {
