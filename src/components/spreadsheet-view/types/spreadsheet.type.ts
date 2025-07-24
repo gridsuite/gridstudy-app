@@ -10,13 +10,6 @@ import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
 
-export type EquipmentFetcher = (
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) => Promise<any>;
-
 export enum SpreadsheetEquipmentType {
     BATTERY = 'BATTERY',
     BUS = 'BUS',

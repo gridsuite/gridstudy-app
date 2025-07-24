@@ -6,77 +6,17 @@
  */
 
 import { useCallback } from 'react';
-import {
-    type EquipmentFetcher,
-    type SpreadsheetEquipmentsByNodes,
-    SpreadsheetEquipmentType,
-} from '../types/spreadsheet.type';
+import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from '../types/spreadsheet.type';
 import type { UUID } from 'crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppState } from '../../../redux/reducer';
 import { loadEquipments } from '../../../redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchBatteries,
-    fetchBusbarSections,
-    fetchBuses,
-    fetchDanglingLines,
-    fetchGenerators,
-    fetchHvdcLines,
-    fetchLccConverterStations,
-    fetchLines,
-    fetchLoads,
-    fetchShuntCompensators,
-    fetchStaticVarCompensators,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTieLines,
-    fetchTwoWindingsTransformers,
-    fetchVoltageLevels,
-    fetchVscConverterStations,
-} from '../../../services/study/network';
+import { fetchNetworkElementsInfos } from '../../../services/study/network';
 import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
+import { EQUIPMENT_INFOS_TYPES } from '../../utils/equipment-types';
 
-const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
-    switch (equipmentType) {
-        case SpreadsheetEquipmentType.SUBSTATION:
-            return fetchSubstations;
-        case SpreadsheetEquipmentType.VOLTAGE_LEVEL:
-            return fetchVoltageLevels;
-        case SpreadsheetEquipmentType.LINE:
-            return fetchLines;
-        case SpreadsheetEquipmentType.TIE_LINE:
-            return fetchTieLines;
-        case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
-            return fetchTwoWindingsTransformers;
-        case SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER:
-            return fetchThreeWindingsTransformers;
-        case SpreadsheetEquipmentType.HVDC_LINE:
-            return fetchHvdcLines;
-        case SpreadsheetEquipmentType.GENERATOR:
-            return fetchGenerators;
-        case SpreadsheetEquipmentType.BATTERY:
-            return fetchBatteries;
-        case SpreadsheetEquipmentType.LOAD:
-            return fetchLoads;
-        case SpreadsheetEquipmentType.SHUNT_COMPENSATOR:
-            return fetchShuntCompensators;
-        case SpreadsheetEquipmentType.DANGLING_LINE:
-            return fetchDanglingLines;
-        case SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR:
-            return fetchStaticVarCompensators;
-        case SpreadsheetEquipmentType.VSC_CONVERTER_STATION:
-            return fetchVscConverterStations;
-        case SpreadsheetEquipmentType.LCC_CONVERTER_STATION:
-            return fetchLccConverterStations;
-        case SpreadsheetEquipmentType.BUS:
-            return fetchBuses;
-        case SpreadsheetEquipmentType.BUSBAR_SECTION:
-            return fetchBusbarSections;
-    }
-};
-
-export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
+export function useFetchEquipment(type: SpreadsheetEquipmentType) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -91,7 +31,14 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                 };
 
                 nodeIds.forEach((nodeId) => {
-                    const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
+                    const promise = fetchNetworkElementsInfos(
+                        studyUuid,
+                        nodeId,
+                        currentRootNetworkUuid,
+                        [],
+                        type,
+                        EQUIPMENT_INFOS_TYPES.TAB.type
+                    );
                     fetcherPromises.push(promise);
                     promise
                         .then((results) => {
@@ -128,8 +75,8 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                     });
             }
         },
-        [dispatch, mapEquipments, snackError, studyUuid, type]
+        [dispatch, snackError, studyUuid, type]
     );
 
     return { fetchNodesEquipmentData };
-};
+}
