@@ -1481,7 +1481,7 @@
     "loadFlowModification": "Loadflow modification applied",
 
     "CreateVoltageLevelTopology": "Adding a bus bar",
-    "diagramLoadingFail": "An error occurred while loading {diagramName}"
+    "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
     "hide": "Hide",
