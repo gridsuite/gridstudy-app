@@ -47,7 +47,7 @@ export interface LimitsSidePaneProps {
     currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
     selectedLimitSetName?: string;
-    checkLimitSetUnicity: (arg0: string, ar1: string) => string;
+    checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
 }
 
 export function LimitsSidePane({

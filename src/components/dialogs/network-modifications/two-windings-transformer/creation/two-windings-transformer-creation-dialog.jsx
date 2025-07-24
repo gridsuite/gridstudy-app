@@ -249,7 +249,11 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups,
+                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                        ...baseData,
+                        name: id,
+                        id: id + baseData.applicability,
+                    })),
                     selectedOperationalLimitsGroup1: twt.selectedOperationalLimitsGroup1 ?? null,
                     selectedOperationalLimitsGroup2: twt.selectedOperationalLimitsGroup2 ?? null,
                 }),

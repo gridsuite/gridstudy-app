@@ -55,6 +55,9 @@ export function LimitsPane({
                         temporaryLimitsPreviousValues={getCurrentLimits1(equipmentToModify)?.temporaryLimits ?? []}
                         currentNode={currentNode}
                         onlySelectedLimitsGroup={true}
+                        checkLimitSetUnicity={(_: string, _arg2: string) => {
+                            return ''; // tmp fill function, will be set when modification uses the new ui
+                        }}
                     />
                 </Grid>
                 <Grid item xs={4} sx={tabStyles.parametersBox}>
@@ -66,6 +69,9 @@ export function LimitsPane({
                         temporaryLimitsPreviousValues={getCurrentLimits2(equipmentToModify)?.temporaryLimits ?? []}
                         currentNode={currentNode}
                         onlySelectedLimitsGroup={true}
+                        checkLimitSetUnicity={(_: string, _arg2: string) => {
+                            return ''; // tmp fill function, will be set when modification uses the new ui
+                        }}
                     />
                 </Grid>
             </Grid>

@@ -269,7 +269,6 @@ const LineCreationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            console.log('Mathieu line : ', line);
             const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];

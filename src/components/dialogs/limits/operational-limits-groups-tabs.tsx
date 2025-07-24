@@ -56,7 +56,7 @@ export interface OperationalLimitsGroupsTabsProps {
     limitsGroups: OperationalLimitsGroup[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
-    checkLimitSetUnicity: (arg0: string, arg1: string) => string;
+    checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
