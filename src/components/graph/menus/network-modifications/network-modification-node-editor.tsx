@@ -83,6 +83,7 @@ import {
 import { FetchStatus } from '../../../../services/utils';
 import {
     ExcludedNetworkModifications,
+    MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
     NetworkModificationCopyInfo,
