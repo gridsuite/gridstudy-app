@@ -234,7 +234,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         );
     }
 
-    function isSubtreePasteAllowed(): boolean {
+    function isSubtreeContentPasteable(): boolean {
         if (!nodeSelectionForCopy || !activeNode) {
             return false;
         }
@@ -448,7 +448,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: true,
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
-            disabled: !isSubtreePastingAllowed() || !isSubtreePasteAllowed(),
+            disabled: !isSubtreePastingAllowed() || !isSubtreeContentPasteable(),
         },
         REMOVE_SUBTREE: {
             onRoot: false,
