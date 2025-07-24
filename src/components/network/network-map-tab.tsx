@@ -208,7 +208,7 @@ export const NetworkMapTab = ({
     const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
-    
+
     const {
         handleOpenModificationDialog,
         handleOpenDeletionDialog,
