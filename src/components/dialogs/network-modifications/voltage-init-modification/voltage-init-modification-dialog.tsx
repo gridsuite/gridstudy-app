@@ -154,7 +154,7 @@ interface BusData {
     angle: number | undefined;
 }
 
-interface EditData {
+export interface EditData {
     generators: GeneratorData[];
     transformers: TransformerData[];
     staticVarCompensators: StaticVarCompensatorData[];
