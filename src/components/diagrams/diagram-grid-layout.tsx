@@ -24,7 +24,7 @@ import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
-import { useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -111,7 +111,6 @@ const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) =>
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
-    const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
@@ -343,9 +342,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 <Box key={diagram.diagramUuid} sx={styles.card}>
                     <CardHeader
                         title={
-                            loadingDiagrams.includes(diagram.diagramUuid)
-                                ? intl.formatMessage({ id: 'LoadingOf' }, { value: diagram.type })
-                                : diagram.name
+                            loadingDiagrams.includes(diagram.diagramUuid) ? (
+                                <FormattedMessage id="loadingOptions" />
+                            ) : (
+                                diagram.name
+                            )
                         }
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
                         onClose={() => onRemoveCard(diagram.diagramUuid)}
@@ -432,7 +433,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         showInSpreadsheet,
         studyUuid,
         visible,
-        intl,
     ]);
 
     const onLoadDiagramLayout = useCallback((savedLayouts: Layouts) => {
