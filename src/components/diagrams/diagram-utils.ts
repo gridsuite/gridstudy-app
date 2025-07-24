@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { DiagramMetadata, EQUIPMENT_TYPES } from '@powsybl/network-viewer';
+import { DiagramMetadata } from '@powsybl/network-viewer';
 import { DiagramConfigPosition } from '../../services/explore';
-import { FEEDER_TYPES } from '../utils/feederType';
 
 /**
  * Get the nodes and textNodes positions from the NAD's metadata and transform them in an array
@@ -68,12 +67,4 @@ export function mergePositions(
 
     // Convert map back to array
     return Array.from(positionsMap.values());
-}
-
-export function convertEquipmentType(equipmentType: string): string {
-    const typeMapping: Record<string, string> = {
-        [FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER]: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    };
-
-    return typeMapping[equipmentType] || equipmentType;
 }

@@ -15,7 +15,7 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
     NAD_ZOOM_LEVELS,
-    equipmentsWithPopover,
+    equipmentsWithPopover, getEquipmentTypeFromFeederType,
 } from '../diagram-common';
 import {
     NetworkAreaDiagramViewer,
@@ -26,7 +26,7 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import { buildPositionsFromNadMetadata, convertEquipmentType } from '../diagram-utils';
+import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
@@ -122,7 +122,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
                 // Only show tooltip if the equipment type is in the hoverable list
                 const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
-                const convertedEquipmentType = convertEquipmentType(equipmentType);
+                const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
 
                 setAnchorPosition(anchorPosition);
                 setHoveredEquipmentId(equipmentId);
