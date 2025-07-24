@@ -22,6 +22,7 @@ export const createRootNetwork = (
     caseFormat: string,
     rootNetworkName: string,
     rootNetworkTag: string,
+    description: string,
     studyUuid: UUID,
     importParameters: Record<string, any>
 ) => {
@@ -30,6 +31,7 @@ export const createRootNetwork = (
     urlSearchParams.append('caseFormat', caseFormat);
     urlSearchParams.append('name', rootNetworkName);
     urlSearchParams.append('tag', rootNetworkTag);
+    urlSearchParams.append('description', description);
 
     const createRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
@@ -50,13 +52,14 @@ export const updateRootNetwork = (
     rootNetworkUuid: UUID,
     name: string,
     tag: string,
+    description: string,
     caseUuid: UUID | null,
     caseFormat: string | null,
     studyUuid: UUID,
     importParameters: Record<string, any> | null
 ) => {
     // Create an object of parameters to be appended to the URL
-    const params = { caseUuid, caseFormat, name, tag };
+    const params = { caseUuid, caseFormat, name, tag, description };
 
     // Initialize URLSearchParams with only the truthy values from params
     const urlSearchParams = new URLSearchParams();

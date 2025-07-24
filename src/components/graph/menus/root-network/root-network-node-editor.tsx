@@ -269,7 +269,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
         );
     };
 
-    const doUpdateRootNetwork = async ({ name, tag, caseName, caseId }: FormData) => {
+    const doUpdateRootNetwork = async ({ name, tag, description, caseName, caseId }: FormData) => {
         if (!studyUuid || !editedRootNetwork) {
             return;
         }
@@ -285,6 +285,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 editedRootNetwork.rootNetworkUuid,
                 name,
                 tag,
+                description ?? '',
                 caseId as UUID | null,
                 caseId && params ? params.formatName : null,
                 studyUuid,
