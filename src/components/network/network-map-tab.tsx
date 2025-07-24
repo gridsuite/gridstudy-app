@@ -208,150 +208,19 @@ export const NetworkMapTab = ({
     const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
-
-    const closeModificationDialog = () => {
-        setEquipmentToModify(null);
-        setModificationDialogOpen(false);
-        setDeletionDialogOpen(false);
-    };
-
-    function renderModificationDialog() {
-        switch (equipmentToModify?.type) {
-            case EquipmentType.SUBSTATION:
-                return (
-                    <SubstationModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        isUpdate={true}
-                        defaultIdValue={equipmentToModify?.id}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
-            case EquipmentType.VOLTAGE_LEVEL:
-                return (
-                    <VoltageLevelModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        isUpdate={true}
-                        defaultIdValue={equipmentToModify?.id}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
-            case EquipmentType.LINE:
-                return (
-                    <LineModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        defaultIdValue={equipmentToModify?.id}
-                        isUpdate={true}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
-            default:
-                break;
-        }
-    }
-
-    function renderDeletionDialog() {
-        switch (equipmentToModify?.type) {
-            case EquipmentType.HVDC_LINE:
-                return (
-                    <EquipmentDeletionDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        defaultIdValue={equipmentToModify?.id}
-                        isUpdate={true}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                        equipmentType={EquipmentType.HVDC_LINE}
-                    />
-                );
-            default:
-                break;
-        }
-    }
-
-    const handleOpenModificationDialog = useCallback((id: string, type: EquipmentType | null) => {
-        if (type) {
-            setEquipmentToModify({ id, type });
-            setModificationDialogOpen(true);
-            closeEquipmentMenu();
-        }
-    }, []);
-
-    const handleOpenDeletionDialog = useCallback((id: string, type: EquipmentType) => {
-        setEquipmentToModify({ id, type });
-        setDeletionDialogOpen(true);
-        closeEquipmentMenu();
-    }, []);
-
-    type MenuProps = {
-        currentNode: CurrentTreeNode;
-        currentRootNetworkUuid: UUID;
-        studyUuid: UUID;
-        equipmentType: EquipmentType;
-    };
-
-    function withEquipment(Menu: FunctionComponent<MenuBranchProps>, props: MenuProps | null) {
-        return (
-            equipmentMenu?.equipment &&
-            equipmentMenu.position &&
-            equipmentMenu?.equipmentType && (
-                <Menu
-                    equipment={equipmentMenu?.equipment}
-                    equipmentType={equipmentMenu?.equipmentType}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenModificationDialog={handleOpenModificationDialog}
-                    {...props}
-                />
-            )
-        );
-    }
-
-    const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
-
-    const MenuSubstation = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, 'substation-menus');
-
-    const MenuVoltageLevel = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus');
-
-    function showEquipmentMenu(equipment: BaseEquipment, x: number, y: number, type: EquipmentType) {
-        setEquipmentMenu({
-            position: [x, y],
-            equipment: equipment,
-            equipmentType: type,
-            display: true,
-        });
-    }
-
-    function closeEquipmentMenu() {
-        setEquipmentMenu({ display: false });
-    }
-
-    function handleViewInSpreadsheet(equipmentType: EquipmentType, equipmentId: string) {
-        showInSpreadsheet({
-            equipmentType: equipmentType,
-            equipmentId: equipmentId,
-        });
-        closeEquipmentMenu();
-    }
+    
+    const {
+        handleOpenModificationDialog,
+        handleOpenDeletionDialog,
+        handleOpenDynamicSimulationEventDialog,
+        renderDeletionDialog,
+        renderModificationDialog,
+        renderDynamicSimulationEventDialog,
+    } = useEquipmentDialogs({
+        studyUuid: studyUuid,
+        currentNode: currentNode,
+        currentRootNetworkUuid: currentRootNetworkUuid,
+    });
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
