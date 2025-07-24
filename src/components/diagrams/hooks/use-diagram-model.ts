@@ -217,7 +217,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             let fetchOptions: RequestInit = { method: 'GET' };
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const nadRequestInfos = {
-                    nadConfigUuid: diagram.currentNadConfigUuid ?? diagram.nadConfigUuid,
+                    nadConfigUuid: diagram.initializationNadConfigUuid ?? diagram.nadConfigUuid,
                     filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
@@ -261,17 +261,17 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             svg: data,
                             name: getDiagramTitle(diagram, data),
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
+                                initializationNadConfigUuid: undefined, // reset initializationNadConfigUuid after fetching the SVG
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
                                     ...new Set([
-                                        ...((diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds ||
-                                            []),
+                                        ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
                                         ...vlIdsFromSvg,
                                     ]),
                                 ],
                                 voltageLevelToOmitIds: (
                                     diagrams[diagram.diagramUuid] as NetworkAreaDiagram
-                                ).voltageLevelToOmitIds?.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
+                                ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
                                 positions: mergePositions(
                                     (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
                                     data.metadata as DiagramMetadata

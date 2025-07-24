@@ -6,12 +6,12 @@
  */
 
 import { Layout, Layouts } from 'react-grid-layout';
-import { Diagram, DiagramParams, DiagramType } from '../diagram.type';
+import { Diagram, DiagramParams, DiagramType, NETWORK_AREA_DIAGRAM_DETAILS_TYPE } from '../diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { useCallback } from 'react';
-import { DiagramGridLayout, DiagramLayoutParam } from 'types/study-layout.types';
+import { DiagramGridLayoutDto, DiagramLayoutDto } from 'components/diagrams/diagram-grid-layout.types';
 import { MAX_INT32 } from 'services/utils';
 import { saveDiagramGridLayout } from 'services/study/study-config';
 
@@ -20,8 +20,8 @@ interface UseSaveDiagramLayoutProps {
     diagrams: Record<UUID, Diagram>;
 }
 
-const frontendToBackendDiagramGridLayout = (diagram: DiagramGridLayoutConfig): DiagramGridLayout => {
-    const diagramLayouts: DiagramLayoutParam[] = [];
+const frontendToBackendDiagramGridLayout = (diagram: DiagramGridLayoutConfig): DiagramGridLayoutDto => {
+    const diagramLayouts: DiagramLayoutDto[] = [];
 
     const gridLayoutById: Record<string, Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h'>>> = {};
 
@@ -43,11 +43,21 @@ const frontendToBackendDiagramGridLayout = (diagram: DiagramGridLayoutConfig): D
         const matchingGridLayout = gridLayoutById[param.diagramUuid];
         if (matchingGridLayout) {
             // Transform diagram type for backend serialization - cast type to handle backend polymorphism
-            const transformedParam: DiagramLayoutParam = {
-                ...param,
-                type: param.type === DiagramType.NETWORK_AREA_DIAGRAM ? 'network-area-diagram-details' : param.type,
-                diagramPositions: matchingGridLayout,
-            } as DiagramLayoutParam;
+            let transformedParam: DiagramLayoutDto;
+            if (param.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                transformedParam = {
+                    type: NETWORK_AREA_DIAGRAM_DETAILS_TYPE,
+                    diagramUuid: param.diagramUuid,
+                    originalNadConfigUuid: param.nadConfigUuid,
+                    filterUuid: param.filterUuid,
+                    name: param.name,
+                    voltageLevelIds: param.voltageLevelIds,
+                    positions: param.positions,
+                    diagramPositions: matchingGridLayout,
+                } as unknown as DiagramLayoutDto;
+            } else {
+                transformedParam = { ...param, diagramPositions: matchingGridLayout };
+            }
             diagramLayouts.push(transformedParam);
         }
     });

@@ -15,7 +15,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
-import { DiagramGridLayout } from 'types/study-layout.types';
+import { DiagramGridLayoutDto } from 'components/diagrams/diagram-grid-layout.types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -199,7 +199,7 @@ export function getDiagramGridLayout(studyUuid: UUID) {
     return backendFetchJson(fetchUrl);
 }
 
-export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: DiagramGridLayout) {
+export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: DiagramGridLayoutDto) {
     const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
     console.debug(fetchUrl);
     return backendFetchJson(fetchUrl, {

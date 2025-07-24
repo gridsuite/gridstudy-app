@@ -72,7 +72,6 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
         }
         setIsLoadSelectorOpen(false);
     };
-
     return (
         <Box sx={mergeSx(style, styles.card)} ref={ref} {...otherProps}>
             <Box sx={styles.adderContent}>

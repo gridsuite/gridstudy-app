@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { DiagramType } from 'components/diagrams/diagram.type';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +13,7 @@ import { setDiagramGridLayout } from 'redux/actions';
 import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
 import { getDiagramGridLayout } from 'services/study/study-config';
 import { MAX_INT32 } from 'services/utils';
-import { DiagramGridLayout } from 'types/study-layout.types';
+import { DiagramGridLayoutDto } from 'components/diagrams/diagram-grid-layout.types';
 
 export const useDiagramGridLayout = () => {
     const dispatch = useDispatch();
@@ -22,7 +23,7 @@ export const useDiagramGridLayout = () => {
         if (!studyUuid) {
             return;
         }
-        getDiagramGridLayout(studyUuid).then((diagramGridLayout: DiagramGridLayout | null) => {
+        getDiagramGridLayout(studyUuid).then((diagramGridLayout: DiagramGridLayoutDto | null) => {
             // if not layout is found, 204 is returned with null value
             if (diagramGridLayout) {
                 dispatch(setDiagramGridLayout(backendToFrontendGridLayout(diagramGridLayout)));
@@ -38,7 +39,7 @@ const decodeInfinity = (value: number) => {
     return value;
 };
 
-const backendToFrontendGridLayout = (diagramGridLayout: DiagramGridLayout): DiagramGridLayoutConfig => {
+const backendToFrontendGridLayout = (diagramGridLayout: DiagramGridLayoutDto): DiagramGridLayoutConfig => {
     const gridLayoutResult: Layouts = {};
 
     for (const { diagramUuid, diagramPositions } of diagramGridLayout.diagramLayouts) {
@@ -57,6 +58,22 @@ const backendToFrontendGridLayout = (diagramGridLayout: DiagramGridLayout): Diag
 
     return {
         gridLayouts: gridLayoutResult,
-        params: diagramGridLayout.diagramLayouts,
+        params: diagramGridLayout.diagramLayouts.map((layout) => {
+            if (layout.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                return {
+                    type: layout.type,
+                    diagramUuid: layout.diagramUuid,
+                    nadConfigUuid: layout.originalNadConfigUuid,
+                    initializationNadConfigUuid: layout.currentNadConfigUuid,
+                    filterUuid: layout.filterUuid,
+                    name: layout.name,
+                    voltageLevelIds: [],
+                    voltageLevelToExpandIds: [],
+                    voltageLevelToOmitIds: [],
+                    positions: [],
+                };
+            }
+            return layout;
+        }),
     };
 };

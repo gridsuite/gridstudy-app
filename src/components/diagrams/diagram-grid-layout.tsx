@@ -275,7 +275,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
-                    voltageLevelToOmitIds: [...(diagram.voltageLevelToOmitIds ?? []), voltageLevelIdToOmit],
+                    voltageLevelToOmitIds: [...diagram.voltageLevelToOmitIds, voltageLevelIdToOmit],
                     positions: diagram.positions,
                 });
             }

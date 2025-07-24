@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramParams } from 'components/diagrams/diagram.type';
+import { DiagramParams, DiagramParamsDto } from 'components/diagrams/diagram.type';
 import { Layout } from 'react-grid-layout';
 
 export type DiagramLayoutParam = DiagramParams & {
@@ -15,3 +15,11 @@ export type DiagramLayoutParam = DiagramParams & {
 export interface DiagramGridLayout {
     diagramLayouts: DiagramLayoutParam[];
 }
+
+export type DiagramLayoutDto = DiagramParamsDto & {
+    diagramPositions: Record<string, Pick<Layout, 'w' | 'h' | 'x' | 'y'>>;
+};
+
+export type DiagramGridLayoutDto = {
+    diagramLayouts: DiagramLayoutDto[];
+};
