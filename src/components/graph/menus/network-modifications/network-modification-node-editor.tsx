@@ -606,7 +606,21 @@ const NetworkModificationNodeEditor = () => {
 
     const subMenuItemsList = menuDefinition
         .flatMap((section) =>
-            section.items.flatMap((menuItem) => (!('subItems' in menuItem) ? [menuItem] : menuItem.subItems))
+            section.items.flatMap((menuItem) => {
+                if ('subItems' in menuItem) {
+                    return menuItem.subItems;
+                } else {
+                    return menuItem.action
+                        ? [
+                              {
+                                  id: menuItem.id,
+                                  label: menuItem.label,
+                                  action: menuItem.action,
+                              } as MenuDefinitionSubItem,
+                          ]
+                        : [];
+                }
+            })
         )
         .filter((item) => !('hide' in item && item.hide));
 
