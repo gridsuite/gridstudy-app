@@ -89,7 +89,7 @@ import {
     CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
-    LOAD_TYPES,
+    LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
@@ -200,7 +200,11 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     LOAD: [
         { id: EQUIPMENT_ID },
         { id: EQUIPMENT_NAME },
-        { id: LOAD_TYPE, type: ENUM, options: LOAD_TYPES.map((load) => load.id) },
+        {
+            id: LOAD_TYPE,
+            type: ENUM,
+            options: LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION.map((load) => load.id),
+        },
         { id: CONNECTED, type: BOOLEAN },
         { id: CONNECTION_NAME },
         { id: CONNECTION_DIRECTION, type: ENUM, options: CONNECTION_DIRECTIONS.map((direction) => direction.id) },
