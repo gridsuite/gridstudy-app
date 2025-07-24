@@ -24,8 +24,10 @@ const spreadsheetFr = {
         'Un ID de colonne ne doit contenir ni espace ni caractère spécial et ne doit pas commencer par un chiffre',
     'spreadsheet/custom_column/error/id_le_60': 'Un ID de colonne ne peut dépasser 60 caractères',
     'spreadsheet/custom_column/error/name_le_60': 'Un nom de colonne ne peut dépasser 60 caractères',
-    'spreadsheet/custom_column/update_custom_column': 'Modifier colonne',
-    'spreadsheet/custom_column/delete_custom_column': 'Supprimer colonne',
+    'spreadsheet/custom_column/update_custom_column': 'Modifier',
+    'spreadsheet/custom_column/delete_custom_column': 'Supprimer',
+    'spreadsheet/custom_column/duplicate_custom_column': 'Dupliquer',
+    'spreadsheet/custom_column/duplicate_column_error': 'Error lors de la duplication de la colonne',
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Êtes-vous sûr de vouloir supprimer la colonne "{columnName}" ?',
     'spreadsheet/custom_column/delete_column_error': 'Erreur lors de la suppression de la colonne',
