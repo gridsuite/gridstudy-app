@@ -219,7 +219,7 @@ export const NoSvg: Svg = {
 };
 
 export const equipmentsWithPopover = [
-    EQUIPMENT_TYPES.LINE,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.LINE,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
     FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
 ];

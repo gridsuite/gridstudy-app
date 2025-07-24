@@ -15,7 +15,8 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
     NAD_ZOOM_LEVELS,
-    equipmentsWithPopover, getEquipmentTypeFromFeederType,
+    getEquipmentTypeFromFeederType,
+    equipmentsWithPopover,
 } from '../diagram-common';
 import {
     NetworkAreaDiagramViewer,
@@ -30,8 +31,6 @@ import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FEEDER_TYPES } from 'components/utils/feederType';
 import {
     ComputingType,
     ElementType,
@@ -40,7 +39,6 @@ import {
     mergeSx,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { ComputingType, ElementType, IElementCreationDialog, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
 import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
@@ -142,7 +140,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
                 setAnchorPosition(anchorPosition);
                 setHoveredEquipmentId(equipmentId);
-                setHoveredEquipmentType(convertedEquipmentType);
+                setHoveredEquipmentType(convertedEquipmentType || '');
 
                 setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable); // Show or hide based on shouldDisplay
             } else {

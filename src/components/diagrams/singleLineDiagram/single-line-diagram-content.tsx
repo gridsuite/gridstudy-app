@@ -104,7 +104,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
-    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState<string>('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -128,7 +128,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             if (shouldDisplay && isEquipmentHoverable) {
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(convertedEquipmentType);
+                setHoveredEquipmentType(convertedEquipmentType || '');
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);
