@@ -63,6 +63,7 @@ const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
     nodeId: null,
     copyType: null,
+    nodeType: null,
     allChildrenIds: null,
 };
 
@@ -168,6 +169,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
         []
     );
+
     const resetNodeClipboard = useCallback(() => {
         dispatch(setNodeSelectionForCopy(noNodeSelectionForCopy));
         snackInfo({
