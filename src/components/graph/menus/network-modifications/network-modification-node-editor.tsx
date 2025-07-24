@@ -535,37 +535,6 @@ const NetworkModificationNodeEditor = () => {
             id: 'MultipleModifications',
             items: [
                 {
-                    id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
-                    label: 'BY_TABLE',
-                    action: () => withDefaultParams(TabularModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-                    label: 'BY_FORMULA',
-                    action: () => withDefaultParams(ByFormulaDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
-                    label: 'BY_FILTER',
-                    action: () => withDefaultParams(ModificationByAssignmentDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
-                    label: 'LimitSets',
-                    action: () => withDefaultParams(LimitSetsModificationDialog),
-                },
-            ],
-        },
-        {
-            id: 'EQUIPMENT_DELETION',
-            label: 'DeleteContingencyList',
-            subItems: [
-                {
-                    id: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
-                    label: 'SingleEquipment',
-                    action: () => withDefaultParams(EquipmentDeletionDialog),
-                },
-                {
                     id: 'MULTIPLE',
                     label: 'MultipleEquipment',
                     subItems: [
@@ -588,6 +557,11 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                             label: 'BY_FORMULA',
                             action: () => withDefaultParams(ByFormulaDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                            label: 'LimitSets',
+                            action: () => withDefaultParams(LimitSetsModificationDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
