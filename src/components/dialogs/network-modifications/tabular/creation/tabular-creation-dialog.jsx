@@ -101,7 +101,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                     }
                 });
                 Object.keys(row).forEach((key) => {
-                    if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+                    if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
                         const entry = convertCreationFieldFromFrontToBack(key, row[key]);
                         creation[entry.key] = entry.value;
                     }
