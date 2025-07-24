@@ -28,9 +28,9 @@ import {
 } from './tabular-modification-utils.js';
 import { useIntl } from 'react-intl';
 import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.ts';
-import { createPropertyModification } from '../../common/properties/property-utils.ts';
 import {
     addPropertiesFromBack,
+    createCommonProperties,
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
@@ -104,15 +104,7 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
-                let propertiesModifications = [];
-                Object.keys(row).forEach((key) => {
-                    if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
-                        // if a value is set for a "property_*" column and the current row
-                        propertiesModifications.push(
-                            createPropertyModification(key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''), row[key])
-                        );
-                    }
-                });
+                const propertiesModifications = createCommonProperties(row);
                 if (
                     modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
                     modificationType === TABULAR_MODIFICATION_TYPES.BATTERY

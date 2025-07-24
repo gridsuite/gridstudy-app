@@ -18,30 +18,29 @@ import {
     useSnackMessage,
     useStateBoolean,
 } from '@gridsuite/commons-ui';
-import { MODIFICATIONS_TABLE, EQUIPMENT_ID, TYPE, TABULAR_PROPERTIES } from 'components/utils/field-constants';
+import { MODIFICATIONS_TABLE, TYPE, TABULAR_PROPERTIES } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
 import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
-import { ColDef } from 'ag-grid-community';
 import GridItem from '../../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
-import { BOOLEAN } from '../../../../network/constants';
 import {
+    csvColumnNames,
     dialogStyles,
     generateCommentLines,
     isFieldTypeOk,
     PredefinedEquipmentProperties,
     setFieldTypeError,
-    TabularField,
+    tableColDefs,
     transformIfFrenchNumber,
 } from '../tabular-common';
-import { PropertiesFormType, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from '../properties/property-utils';
+import { PropertiesFormType, TabularProperty } from '../properties/property-utils';
 import DefinePropertiesDialog from '../properties/define-properties-dialog';
 
 export interface TabularCreationFormProps {
@@ -51,10 +50,10 @@ export interface TabularCreationFormProps {
 export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFormProps>) {
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
-    const language = useSelector((state: AppState) => state.computedLanguage);
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
     const propertiesDialogOpen = useStateBoolean(false);
+    const language = useSelector((state: AppState) => state.computedLanguage);
     const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>(
         {}
     );
@@ -167,7 +166,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         [clearErrors, setValue, getValues, equipmentType, setError, intl, snackWarning]
     );
 
-    const selectedProperties = useMemo(() => {
+    const selectedProperties = useMemo((): string[] => {
         return (
             tabularProperties
                 ?.filter((property: TabularProperty) => property.selected)
@@ -176,22 +175,17 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     }, [tabularProperties]);
 
     const csvColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[equipmentType]
-            ?.map((field: TabularField) => field.id)
-            ?.concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
+        return csvColumnNames(TABULAR_CREATION_FIELDS[equipmentType], selectedProperties);
     }, [equipmentType, selectedProperties]);
 
     const commentLines = useMemo(() => {
-        const csvTranslatedColumns = TABULAR_CREATION_FIELDS[equipmentType]
-            ?.map((field: TabularField) => intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : ''))
-            ?.concat(selectedProperties);
         return generateCommentLines({
-            csvTranslatedColumns,
+            fields: TABULAR_CREATION_FIELDS[equipmentType],
+            selectedProperties,
             intl,
             equipmentType,
             language,
             formType: 'Creation',
-            currentProperties: selectedProperties,
             predefinedEquipmentProperties,
         });
     }, [intl, equipmentType, language, selectedProperties, predefinedEquipmentProperties]);
@@ -200,7 +194,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportCreations',
         header: csvColumns,
-        disabled: !csvColumns,
+        disabled: !csvColumns?.length,
         resetTrigger: typeChangedTrigger,
         language: language,
     });
@@ -228,8 +222,8 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 comments: '#',
-                complete: handleComplete,
                 delimiter: language === LANG_FRENCH ? ';' : ',',
+                complete: handleComplete,
                 transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
@@ -241,7 +235,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         );
     }, []);
 
-    const handleChange = useCallback(() => {
+    const handleTypeChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
         clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
@@ -253,7 +247,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
             name={TYPE}
             label="Type"
             options={typesOptions}
-            onChangeCallback={handleChange}
+            onChangeCallback={handleTypeChange}
             getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}
             formProps={{ variant: 'filled' }}
@@ -273,26 +267,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[equipmentType]
-            ?.map((field) => {
-                const columnDef: ColDef = {};
-                if (field.id === EQUIPMENT_ID) {
-                    columnDef.pinned = true;
-                }
-                columnDef.field = field.id;
-                columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-                columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
-                return columnDef;
-            })
-            ?.concat(
-                selectedProperties.map((propertyName: string) => {
-                    const columnDef: ColDef = {};
-                    columnDef.field = PROPERTY_CSV_COLUMN_PREFIX + propertyName;
-                    columnDef.headerName = propertyName;
-                    columnDef.cellRenderer = DefaultCellRenderer;
-                    return columnDef;
-                })
-            );
+        return tableColDefs(TABULAR_CREATION_FIELDS[equipmentType], selectedProperties, intl);
     }, [equipmentType, selectedProperties, intl]);
 
     const onPropertiesChange = (formData: PropertiesFormType) => {
@@ -331,10 +306,10 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                         columns={csvColumns}
                         datas={commentLines}
                         filename={equipmentType + '_creation_template'}
-                        disabled={!csvColumns}
+                        disabled={!csvColumns?.length}
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
-                        <Button variant="contained" disabled={!csvColumns}>
+                        <Button variant="contained" disabled={!csvColumns?.length}>
                             <FormattedMessage id="GenerateSkeleton" />
                         </Button>
                     </CsvDownloader>

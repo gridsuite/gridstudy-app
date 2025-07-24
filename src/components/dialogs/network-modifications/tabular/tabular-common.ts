@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
-import { Property } from '../common/properties/property-utils';
+import { createPropertyModification, Property } from '../common/properties/property-utils';
 import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
 import {
+    EQUIPMENT_ID,
     MODIFICATIONS_TABLE,
     REACTIVE_CAPABILITY_CURVE,
     REACTIVE_CAPABILITY_CURVE_P_0,
@@ -32,6 +33,8 @@ import {
     PredefinedProperties,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
+import { ColDef } from 'ag-grid-community';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from '../../../custom-aggrid/cell-renderers';
 
 export const tabularFormSchema = yup
     .object()
@@ -244,26 +247,39 @@ export type PredefinedEquipmentProperties = {
     [p: string]: PredefinedProperties;
 };
 
+export const csvColumnNames = (fields: TabularField[] | null, selectedProperties: string[]) => {
+    return (
+        fields
+            ?.map((field: TabularField) => field.id)
+            ?.concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName)) ?? []
+    );
+};
+
 interface CommentLinesConfig {
-    csvTranslatedColumns?: string[];
+    fields: TabularField[] | null;
+    selectedProperties: string[];
     intl: IntlShape;
     equipmentType: string;
     language: string;
     formType: 'Creation' | 'Modification';
-    currentProperties?: string[];
     predefinedEquipmentProperties?: PredefinedEquipmentProperties;
 }
 
 export const generateCommentLines = ({
-    csvTranslatedColumns,
+    fields,
+    selectedProperties,
     intl,
     equipmentType,
     language,
     formType,
-    currentProperties,
     predefinedEquipmentProperties,
 }: CommentLinesConfig): string[][] => {
     let commentData: string[][] = [];
+
+    const csvTranslatedColumns = fields
+        ?.map((field: TabularField) => intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : ''))
+        ?.concat(selectedProperties);
+
     if (csvTranslatedColumns) {
         const separator = language === LANG_FRENCH ? ';' : ',';
         // First comment line contains header translation
@@ -275,15 +291,15 @@ export const generateCommentLines = ({
         if (!!intl.messages[commentKey]) {
             secondCommentLine = intl.formatMessage({ id: commentKey });
         }
-        if (currentProperties?.length) {
+        if (selectedProperties.length) {
             const networkEquipmentType = equipmentTypesForPredefinedPropertiesMapper(equipmentType as EquipmentType);
             if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
                 if (secondCommentLine.length === 0) {
                     // create an empty row without property columns
-                    const nbSepatator = csvTranslatedColumns.length - 1 - currentProperties.length;
+                    const nbSepatator = csvTranslatedColumns.length - 1 - selectedProperties.length;
                     secondCommentLine = separator.repeat(nbSepatator);
                 }
-                currentProperties.forEach((propertyName) => {
+                selectedProperties.forEach((propertyName) => {
                     const possibleValues =
                         predefinedEquipmentProperties[networkEquipmentType]?.[propertyName]?.toSorted((a, b) =>
                             a.localeCompare(b)
@@ -300,4 +316,40 @@ export const generateCommentLines = ({
         }
     }
     return commentData;
+};
+
+export const createCommonProperties = (row: Modification): Property[] => {
+    let propertiesModifications: Property[] = [];
+    Object.keys(row).forEach((key) => {
+        if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+            // if a value is set for a "property_*" column and the current row
+            propertiesModifications.push(
+                createPropertyModification(key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''), row[key])
+            );
+        }
+    });
+    return propertiesModifications;
+};
+
+export const tableColDefs = (fields: TabularField[] | null, selectedProperties: string[], intl: IntlShape) => {
+    return fields
+        ?.map((field) => {
+            const columnDef: ColDef = {};
+            if (field.id === EQUIPMENT_ID) {
+                columnDef.pinned = true;
+            }
+            columnDef.field = field.id;
+            columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
+            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
+            return columnDef;
+        })
+        ?.concat(
+            selectedProperties.map((propertyName: string) => {
+                const columnDef: ColDef = {};
+                columnDef.field = PROPERTY_CSV_COLUMN_PREFIX + propertyName;
+                columnDef.headerName = propertyName;
+                columnDef.cellRenderer = DefaultCellRenderer;
+                return columnDef;
+            })
+        );
 };

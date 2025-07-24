@@ -27,12 +27,12 @@ import { useIntl } from 'react-intl';
 import {
     addPropertiesFromBack,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
+    createCommonProperties,
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
 } from '../tabular-common.js';
 import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.js';
-import { createPropertyModification } from '../../common/properties/property-utils.js';
 
 /**
  * Dialog to create tabular creations based on a csv file.
@@ -91,15 +91,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 const creation = {
                     type: creationType,
                 };
-                let propertiesModifications = [];
-                Object.keys(row).forEach((key) => {
-                    if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
-                        // if a value is set for a "property_*" column and the current row
-                        propertiesModifications.push(
-                            createPropertyModification(key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''), row[key])
-                        );
-                    }
-                });
+                const propertiesModifications = createCommonProperties(row);
                 Object.keys(row).forEach((key) => {
                     if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
                         const entry = convertCreationFieldFromFrontToBack(key, row[key]);
@@ -153,8 +145,8 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 fullWidth
                 maxWidth={'lg'}
                 onClear={clear}
-                disabledSave={disableSave}
                 onSave={onSubmit}
+                disabledSave={disableSave}
                 titleId="TabularCreation"
                 open={open}
                 isDataFetching={dataFetching}
