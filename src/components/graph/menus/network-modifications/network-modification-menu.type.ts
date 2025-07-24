@@ -8,7 +8,6 @@
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
-
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     originalCaseUuid: UUID;
@@ -68,7 +67,6 @@ export type MenuDefinition = MenuDefinitionWithSubItem | MenuDefinitionWithoutSu
 export interface NetworkModificationData {
     uuid: UUID;
     type: string;
-
     [key: string]: any;
 }
 

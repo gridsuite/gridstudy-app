@@ -234,7 +234,7 @@ const NetworkModificationNodeEditor = () => {
 
     const menuDefinition: MenuSection[] = [
         {
-            id: 'substation_and_voltageLevel',
+            id: 'SubstationVoltageLevelModifications',
             items: [
                 {
                     id: 'SUBSTATION',
@@ -291,7 +291,7 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: 'Branch',
+            id: 'BranchModifications',
             items: [
                 {
                     id: 'LINE',
@@ -425,7 +425,7 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: 'Injection',
+            id: 'InjectionsModifications',
             items: [
                 {
                     id: 'GENERATOR',
@@ -531,7 +531,7 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: 'Multiple_modifications',
+            id: 'MultipleModifications',
             items: [
                 {
                     id: 'MULTIPLE',
@@ -567,7 +567,7 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: 'generation_load',
+            id: 'GenerationLoad',
             items: [
                 {
                     id: 'GENERATION_AND_LOAD',
