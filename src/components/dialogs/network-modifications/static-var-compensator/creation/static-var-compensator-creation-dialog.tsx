@@ -40,6 +40,7 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
+    VOLTAGE_REGULATION_MODES,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
@@ -201,7 +202,9 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         nominalV: staticCompensator.nominalV,
                         maxQAtNominalV: null,
                         minQAtNominalV: null,
-                        regulationMode: staticCompensator.regulationMode,
+                        regulationMode: staticCompensator.isRegulating
+                            ? staticCompensator.regulationMode
+                            : VOLTAGE_REGULATION_MODES.OFF.id,
                         voltageSetpoint: staticCompensator.voltageSetpoint,
                         reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
                         voltageRegulationType:
@@ -254,7 +257,9 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     nominalV: null,
                     maxQAtNominalV: staticCompensator.maxQAtNominalV ?? null,
                     minQAtNominalV: staticCompensator.minQAtNominalV ?? null,
-                    regulationMode: staticCompensator.regulationMode,
+                    regulationMode: staticCompensator.isRegulating
+                        ? staticCompensator.regulationMode
+                        : VOLTAGE_REGULATION_MODES.OFF.id,
                     voltageSetpoint: staticCompensator.voltageSetpoint,
                     reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
                     voltageRegulationType:
@@ -356,7 +361,9 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? maxQAtNominalV : null,
                 minQAtNominalV:
                     characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? minQAtNominalV : null,
-                regulationMode: voltageRegulationMode,
+                regulationMode:
+                    voltageRegulationMode === VOLTAGE_REGULATION_MODES.OFF.id ? null : voltageRegulationMode,
+                isRegulating: voltageRegulationMode !== VOLTAGE_REGULATION_MODES.OFF.id,
                 voltageSetpoint,
                 reactivePowerSetpoint,
                 voltageRegulationType,
