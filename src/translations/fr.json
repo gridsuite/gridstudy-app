@@ -63,7 +63,6 @@
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
-    "LoadingOf": "Chargement de {value}...",
 
     "computationInProgress": "Calcul en cours ...",
 
@@ -1432,7 +1431,7 @@
     "confirmRootNetworkCreation": "L’étude {studyName} va passer dans une visualisation adaptée à l'étude de plusieurs réseaux racines. \n\nLe changement d'interface est irréversible.",
     "RegulationSection": "Réglage",
     "TapsSection": "Prises",
-    "VOLTAGE_LEVEL_TOPOLOGY": "Modification de la topologie",
+    "VOLTAGE_LEVEL_TOPOLOGY": "Modifier la topologie",
     "ModifyVoltageLevelTopology": "Modifier la topologie d'un poste",
     "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
     "VoltageLevelTopologyModificationError": "Erreur lors de la modification de la topologie de poste",
