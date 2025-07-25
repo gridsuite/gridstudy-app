@@ -104,7 +104,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -360,7 +359,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isAnyNodeBuilding,
         showEquipmentMenu,
         showBusMenu,
-        enableDeveloperMode,
         props.diagramId,
         props.svgType,
         theme,

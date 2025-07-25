@@ -219,6 +219,50 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
+    // TODO The positions are still a work in progress : if we do not remove them when adding a config or filter, they
+    // become all over the place because the NAD already contains at least a position, meaning new ones are not retrieved in the backend.
+    const handleSetNadConfigInDiagram = useCallback(
+        (diagramId: UUID, nadConfigUuid: UUID) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                // TODO What about the diagram's name ?
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
+                    voltageLevelIds: diagram.voltageLevelIds,
+                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: [], // TODO Not the best, but this is a work in progress
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
+    const handleSetFilterInDiagram = useCallback(
+        (diagramId: UUID, filterUuid: UUID) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                // TODO What about the diagram's name ?
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: filterUuid,
+                    voltageLevelIds: diagram.voltageLevelIds,
+                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: [], // TODO Not the best, but this is a work in progress
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
     const handleExpandAllVoltageLevels = useCallback(
         (diagramId: UUID) => {
             const diagram = diagrams[diagramId];
@@ -395,7 +439,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                     visible={visible}
                                     isEditNadMode={diagramsInEditMode.includes(diagram.diagramUuid)}
                                     onToggleEditNadMode={(isEditMode) => handleToggleEditMode(diagram.diagramUuid)}
-                                    onLoadNad={handleLoadNad}
+                                    onSetNadConfigInDiagram={(nadConfigUuid) =>
+                                        handleSetNadConfigInDiagram(diagram.diagramUuid, nadConfigUuid)
+                                    }
+                                    onSetFilterInDiagram={(filterUuid) =>
+                                        handleSetFilterInDiagram(diagram.diagramUuid, filterUuid)
+                                    }
                                     onExpandVoltageLevel={(vlId) =>
                                         handleExpandVoltageLevelId(diagram.diagramUuid, vlId)
                                     }
@@ -417,7 +466,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         diagrams,
         diagramsInEditMode,
         globalError,
-        handleLoadNad,
+        handleSetNadConfigInDiagram,
+        handleSetFilterInDiagram,
         handleToggleEditMode,
         loadingDiagrams,
         handleExpandAllVoltageLevels,

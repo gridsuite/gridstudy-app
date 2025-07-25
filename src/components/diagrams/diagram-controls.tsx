@@ -16,14 +16,18 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
-import UploadIcon from '@mui/icons-material/Upload';
+import HubIcon from '@mui/icons-material/Hub';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import LoupeIcon from '@mui/icons-material/Loupe';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
+import { useParameterState } from '../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -57,7 +61,8 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
-    onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    onSetNadConfig?: (nadConfigUuid: UUID) => void;
+    onSetFilter?: (filterUuid: UUID) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onExpandAllVoltageLevels?: () => void;
@@ -66,7 +71,8 @@ interface DiagramControlsProps {
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
     onSave,
-    onLoad,
+    onSetNadConfig,
+    onSetFilter,
     isEditNadMode,
     onToggleEditNadMode,
     onExpandAllVoltageLevels,
@@ -74,8 +80,11 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
 }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
-    const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
+    const [isNadConfigSelectorOpen, setIsNadConfigSelectorOpen] = useState(false);
+    const [isFilterSelectorOpen, setIsFilterSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const handleCloseSaveDialog = () => {
         setIsSaveDialogOpen(false);
@@ -85,12 +94,20 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         setIsSaveDialogOpen(true);
     };
 
-    const handleCloseLoadSelector = () => {
-        setIsLoadSelectorOpen(false);
+    const handleCloseNadConfigSelector = () => {
+        setIsNadConfigSelectorOpen(false);
     };
 
-    const handleClickLoadIcon = () => {
-        setIsLoadSelectorOpen(true);
+    const handleClickNadConfigIcon = () => {
+        setIsNadConfigSelectorOpen(true);
+    };
+
+    const handleCloseFilterSelector = () => {
+        setIsFilterSelectorOpen(false);
+    };
+
+    const handleClickFilterIcon = () => {
+        setIsFilterSelectorOpen(true);
     };
 
     const handleClickExpandAllVoltageLevelsIcon = () => {
@@ -105,17 +122,30 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
         }
     };
 
-    const handleLoad = (elementUuid: UUID, elementType: ElementType, elementName: string) => {
-        if (onLoad) {
-            onLoad(elementUuid, elementType, elementName);
+    const handleSetNadConfig = (nadConfigUuid: UUID) => {
+        if (onSetNadConfig) {
+            onSetNadConfig(nadConfigUuid);
         }
     };
 
-    const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
-        if (selectedElements.length > 0) {
-            handleLoad(selectedElements[0].id, selectedElements[0].type!, selectedElements[0].name);
+    const handleSetFilter = (filterUuid: UUID) => {
+        if (onSetFilter) {
+            onSetFilter(filterUuid);
         }
-        handleCloseLoadSelector();
+    };
+
+    const selectNadConfig = (selectedElements: TreeViewFinderNodeProps[]) => {
+        if (selectedElements.length > 0) {
+            handleSetNadConfig(selectedElements[0].id);
+        }
+        handleCloseNadConfigSelector();
+    };
+
+    const selectFilter = (selectedElements: TreeViewFinderNodeProps[]) => {
+        if (selectedElements.length > 0) {
+            handleSetFilter(selectedElements[0].id);
+        }
+        handleCloseFilterSelector();
     };
 
     const handleToggleEditMode = () => {
@@ -140,14 +170,23 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <SaveIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
-                        <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
-                            <UploadIcon sx={styles.icon} />
-                        </IconButton>
-                    </Tooltip>
                     {isEditNadMode && (
                         <>
                             <hr style={{ margin: '2px 4px' }} />
+                            {enableDeveloperMode && (
+                                <>
+                                    <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
+                                        <IconButton sx={styles.actionIcon} onClick={handleClickNadConfigIcon}>
+                                            <HubIcon sx={styles.icon} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={<FormattedMessage id={'AddFromGridexplore'} />}>
+                                        <IconButton sx={styles.actionIcon} onClick={handleClickFilterIcon}>
+                                            <FilterAltIcon sx={styles.icon} />
+                                        </IconButton>
+                                    </Tooltip>
+                                </>
+                            )}
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
                                 <IconButton
                                     sx={styles.actionIcon}
@@ -179,9 +218,20 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                     />
                     <Box minWidth="12em">
                         <DirectoryItemSelector
-                            open={isLoadSelectorOpen}
-                            onClose={selectElement}
-                            types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
+                            open={isNadConfigSelectorOpen}
+                            onClose={selectNadConfig}
+                            types={[ElementType.DIAGRAM_CONFIG]}
+                            title={intl.formatMessage({
+                                id: 'AddFromGridexplore',
+                            })}
+                            multiSelect={false}
+                        />{' '}
+                        {/* TODO only one component instead of two ? */}
+                        <DirectoryItemSelector
+                            open={isFilterSelectorOpen}
+                            onClose={selectFilter}
+                            types={[ElementType.FILTER]}
+                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                             title={intl.formatMessage({
                                 id: 'AddFromGridexplore',
                             })}

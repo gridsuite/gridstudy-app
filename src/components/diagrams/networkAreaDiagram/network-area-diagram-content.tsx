@@ -67,7 +67,8 @@ type NetworkAreaDiagramContentProps = {
     visible: boolean;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onSetNadConfigInDiagram: (nadConfigUuid: UUID) => void;
+    readonly onSetFilterInDiagram: (filterUuid: UUID) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
@@ -82,7 +83,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         visible,
         isEditNadMode,
         onToggleEditNadMode,
-        onLoadNad,
+        onSetNadConfigInDiagram,
+        onSetFilterInDiagram,
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
@@ -353,7 +355,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
-                onLoad={onLoadNad}
+                onSetNadConfig={onSetNadConfigInDiagram}
+                onSetFilter={onSetFilterInDiagram}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
