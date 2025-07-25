@@ -608,8 +608,10 @@
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
-    "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
+    "LimitSetNamingError": "No more than 2 Limit sets may have the same name",
+    "LimitSetApplicabilityError": "2 limit sets with the same name must have different application sides.",
     "LimitSetCreationEmptyError": "Limit sets names can't be empty",
+    "LimitSets": "Limit sets",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
@@ -705,6 +707,7 @@
     "Side": "Side",
     "Side1": "Side 1",
     "Side2": "Side 2",
+    "BothSides" : "Both Sides",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
@@ -876,6 +879,8 @@
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
     "SelectedOperationalLimitGroup": "Active limit set",
+    "SelectedOperationalLimitGroups": "Active limit sets",
+    "Applicability": "Applicability",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",

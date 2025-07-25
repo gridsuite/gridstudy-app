@@ -13,11 +13,13 @@ import { OperationalLimitsGroup } from '../../../services/network-modification-t
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
     optionsFormName: string;
+    label?: string;
 }
 
 export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,
+    label,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
@@ -27,7 +29,7 @@ export const SelectedOperationalLimitGroup = ({
         () =>
             optionsValues
                 ? optionsValues
-                      .map((optionObj: OperationalLimitsGroup) => optionObj.id)
+                      .map((optionObj: OperationalLimitsGroup) => optionObj.name)
                       .filter((id: string) => id != null)
                 : [],
         [optionsValues]
@@ -38,9 +40,8 @@ export const SelectedOperationalLimitGroup = ({
             <AutocompleteInput
                 name={selectedFormName}
                 options={opLimitsGroupsNames}
-                label={'SelectedOperationalLimitGroup'}
+                label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
-                allowNewValue
             />
         </Box>
     );

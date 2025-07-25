@@ -4,10 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { DndTable, DndColumnType, ColumnNumeric, ColumnText, DndColumn, FloatInput } from '@gridsuite/commons-ui';
 import {
+    DndTable,
+    DndColumnType,
+    ColumnNumeric,
+    ColumnText,
+    DndColumn,
+    FloatInput,
+    SelectInput,
+    Option,
+} from '@gridsuite/commons-ui';
+import {
+    APPLICABIlITY,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -24,26 +34,36 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import GridSection from '../commons/grid-section';
+import { APPLICABILITY } from '../../network/constants';
 
 export interface LimitsSidePaneProps {
     limitsGroupFormName: string;
+    limitsGroupApplicabilityName?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
+    applicabilityPreviousValue?: string;
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
     onlySelectedLimitsGroup: boolean;
+    selectedLimitSetName?: string;
+    checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
 }
 
 export function LimitsSidePane({
     limitsGroupFormName,
+    limitsGroupApplicabilityName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
+    applicabilityPreviousValue,
     clearableFields,
     currentNode,
     onlySelectedLimitsGroup,
+    selectedLimitSetName,
+    checkLimitSetUnicity,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
-    const { getValues } = useFormContext();
+    const { setError, getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
     });
@@ -162,21 +182,6 @@ export function LimitsSidePane({
         [getValues, temporaryLimitHasPreviousValue]
     );
 
-    const permanentCurrentLimitField = useMemo(
-        () => (
-            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
-                <FloatInput
-                    name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
-                    label="PermanentCurrentLimitText"
-                    adornment={AmpereAdornment}
-                    previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                    clearable={clearableFields}
-                />
-            </Box>
-        ),
-        [limitsGroupFormName, clearableFields, permanentCurrentLimitPreviousValue]
-    );
-
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
             const temporaryLimits = getValues(arrayFormName);
@@ -195,10 +200,49 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
+            {!onlySelectedLimitsGroup && limitsGroupApplicabilityName && (
+                <>
+                    <GridSection title={selectedLimitSetName ?? ''} formatDisabled />
+                    <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
+                        <Grid item xs={2}>
+                            <FormattedMessage id="Applicability" />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <SelectInput
+                                options={Object.values(APPLICABILITY)}
+                                name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
+                                previousValue={applicabilityPreviousValue}
+                                sx={{ flexGrow: 1 }}
+                                size="small"
+                                onCheckNewValue={(value: Option | null) => {
+                                    if (value) {
+                                        const errorMessage: string = checkLimitSetUnicity(
+                                            selectedLimitSetName ?? '',
+                                            value?.id ?? value
+                                        );
+                                        setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
+                                            message: errorMessage,
+                                        });
+                                    }
+                                    return true;
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
+                </>
+            )}
             <Box>
                 <LimitsChart limitsGroupFormName={limitsGroupFormName} />
             </Box>
-            {permanentCurrentLimitField}
+            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
+                <FloatInput
+                    name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
+                    label="PermanentCurrentLimitText"
+                    adornment={AmpereAdornment}
+                    previousValue={permanentCurrentLimitPreviousValue ?? undefined}
+                    clearable={clearableFields}
+                />
+            </Box>
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
