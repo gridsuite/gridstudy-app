@@ -35,6 +35,16 @@ export function isSpreadsheetEquipmentType(type: string): type is SpreadsheetEqu
     return type in SpreadsheetEquipmentType;
 }
 
+export type EditableEquipmentType =
+    | SpreadsheetEquipmentType.SUBSTATION
+    | SpreadsheetEquipmentType.VOLTAGE_LEVEL
+    | SpreadsheetEquipmentType.LINE
+    | SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
+    | SpreadsheetEquipmentType.GENERATOR
+    | SpreadsheetEquipmentType.LOAD
+    | SpreadsheetEquipmentType.BATTERY
+    | SpreadsheetEquipmentType.SHUNT_COMPENSATOR;
+
 export interface SpreadsheetTabDefinition {
     uuid: UUID;
     index: number;

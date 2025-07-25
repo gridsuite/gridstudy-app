@@ -17,25 +17,11 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import { type FunctionComponent, type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { type AppState } from 'redux/reducer';
-import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { type EditableEquipmentType, SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 
 export type UseEquipmentModificationProps = {
     equipmentType: SpreadsheetEquipmentType;
 };
-
-type EditableEquipmentType = Exclude<
-    SpreadsheetEquipmentType,
-    | SpreadsheetEquipmentType.BRANCH
-    | SpreadsheetEquipmentType.BUS
-    | SpreadsheetEquipmentType.BUSBAR_SECTION
-    | SpreadsheetEquipmentType.DANGLING_LINE
-    | SpreadsheetEquipmentType.HVDC_LINE
-    | SpreadsheetEquipmentType.LCC_CONVERTER_STATION
-    | SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR
-    | SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER
-    | SpreadsheetEquipmentType.TIE_LINE
-    | SpreadsheetEquipmentType.VSC_CONVERTER_STATION
->;
 
 const EQUIPMENT_DIALOG_MAPPING: Readonly<Record<EditableEquipmentType, FunctionComponent<any>>> = {
     [SpreadsheetEquipmentType.SUBSTATION]: SubstationModificationDialog,
@@ -52,7 +38,7 @@ function isEditableEquipmentType(type: SpreadsheetEquipmentType): type is Editab
     return type in EQUIPMENT_DIALOG_MAPPING;
 }
 
-export function useEquipmentModification({ equipmentType }: UseEquipmentModificationProps) {
+export function useEquipmentModification({ equipmentType }: Readonly<UseEquipmentModificationProps>) {
     const [modificationDialog, setModificationDialog] = useState<ReactElement | null>(null);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -80,7 +66,7 @@ export function useEquipmentModification({ equipmentType }: UseEquipmentModifica
             if (!isEditableEquipmentType(equipmentType)) {
                 return null;
             }
-            return createDialogWithProps(EQUIPMENT_DIALOG_MAPPING[equipmentType as EditableEquipmentType], equipmentId);
+            return createDialogWithProps(EQUIPMENT_DIALOG_MAPPING[equipmentType], equipmentId);
         },
         [createDialogWithProps, equipmentType]
     );
