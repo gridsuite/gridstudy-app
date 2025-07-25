@@ -113,13 +113,13 @@ import {
     RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
-    RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
     ResetAllSpreadsheetGlobalFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
-    ResetEquipmentsPostLoadflowAction,
+    ResetEquipmentsPostComputationAction,
     ResetLogsFilterAction,
     ResetMapEquipmentsAction,
     SAVE_SPREADSHEET_GS_FILTER,
@@ -1409,7 +1409,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, _action: ResetEquipmentsPostLoadflowAction) => {
+    builder.addCase(RESET_EQUIPMENTS_POST_COMPUTATION, (state, _action: ResetEquipmentsPostComputationAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
             [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
