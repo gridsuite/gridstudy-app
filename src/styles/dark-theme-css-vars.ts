@@ -6,6 +6,12 @@
  */
 
 export const darkThemeCssVars = {
+    '.nad-edge-infos text': {
+        stroke: '#292e33', // Border outside of the displayed values on lines. Same color as the background.
+    },
+    '.nad-active': {
+        fill: 'white', // Text color of the values and arrows on lines.
+    },
     '.sld-vl0to30, .nad-vl0to30': {
         '--vl-color': '#AAAE50',
     },

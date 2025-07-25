@@ -6,6 +6,12 @@
  */
 
 export const lightThemeCssVars = {
+    '.nad-edge-infos text': {
+        stroke: 'white', // Border outside of the displayed values on lines. Same color as the background.
+    },
+    '.nad-active': {
+        fill: '#212121', // Text color of the values and arrows on lines.
+    },
     '.sld-vl0to30, .nad-vl0to30': {
         '--vl-color': '#ABAE28',
     },
