@@ -255,6 +255,16 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         // empty array result
         result.length === 0;
 
+    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+        switch (tabIndex) {
+            case NMK_RESULTS_TAB_INDEX:
+                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+            case N_RESULTS_TAB_INDEX:
+                return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        }
+        return [];
+    }, [tabIndex]);
+
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -270,7 +280,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         <GlobalFilterSelector
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
-                            filterableEquipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
+                            filterableEquipmentTypes={filterableEquipmentTypes}
                         />
                     </Box>
                 )}
