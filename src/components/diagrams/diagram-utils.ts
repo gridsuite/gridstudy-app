@@ -18,17 +18,17 @@ export function buildPositionsFromNadMetadata(metadata: DiagramMetadata): Diagra
     metadata.nodes.forEach((node) => {
         positionsMap.set(node.equipmentId, {
             voltageLevelId: node.equipmentId,
-            xposition: node.x,
-            yposition: node.y,
-            xlabelPosition: 0,
-            ylabelPosition: 0,
+            xPosition: node.x,
+            yPosition: node.y,
+            xLabelPosition: 0,
+            yLabelPosition: 0,
         });
     });
     // Update the map with text node positions
     metadata.textNodes.forEach((textNode) => {
         if (positionsMap.has(textNode.equipmentId)) {
-            positionsMap.get(textNode.equipmentId)!.xlabelPosition = textNode.shiftX;
-            positionsMap.get(textNode.equipmentId)!.ylabelPosition = textNode.shiftY;
+            positionsMap.get(textNode.equipmentId)!.xLabelPosition = textNode.shiftX;
+            positionsMap.get(textNode.equipmentId)!.yLabelPosition = textNode.shiftY;
         }
     });
     return Array.from(positionsMap.values());
