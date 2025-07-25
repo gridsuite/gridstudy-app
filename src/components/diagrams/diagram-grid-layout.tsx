@@ -26,6 +26,13 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 // Diagram types to manage here
 const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NETWORK_AREA_DIAGRAM];
 
+const cols_by_breakpoint: Record<string, number> = {
+    lg: 12,
+    md: 6,
+    sm: 6,
+    xs: 4,
+    xxs: 4,
+};
 const LG_COLUMN_COUNT = 12;
 const MD_SM_COLUMN_COUNT = LG_COLUMN_COUNT / 2;
 const XS_XSS_COLUMN_COUNT = LG_COLUMN_COUNT / 3;
@@ -76,14 +83,28 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const addLayoutItem = (diagram: Diagram) => {
         setLayouts((old_layouts) => {
-            const layoutItem: Layout = {
-                i: diagram.diagramUuid,
-                x: Infinity,
-                y: 0,
-                ...defaultCardSizes,
-            };
             const oldLayoutsEntries = Object.entries(old_layouts);
             const newLayoutsEntries = oldLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
+                // find next coordinates for the new layout item for each breakpoint
+                const nextCoordinates: { x: number; y: number } = breakpoint_layouts
+                    .sort((a, b) => a.x - b.x && a.y - b.y)
+                    .reduce(
+                        (coordinates, layout) => {
+                            if (layout.x + layout.w > cols_by_breakpoint[breakpoint] - DEFAULT_WIDTH) {
+                                return { x: 0, y: coordinates.y + DEFAULT_HEIGHT }; // Reset to 0 if it exceeds the column count
+                            }
+                            if (layout.x + layout.w < coordinates.x) {
+                                return coordinates; // Keep the maximum coordinate found so far
+                            }
+                            return { x: Math.max(coordinates.x, layout.x + layout.w), y: coordinates.y };
+                        },
+                        { x: 0, y: 0 }
+                    );
+                const layoutItem: Layout = {
+                    i: diagram.diagramUuid,
+                    ...nextCoordinates,
+                    ...defaultCardSizes,
+                };
                 // Ensure the new layout item is added to each breakpoint
                 const updatedLayouts = [...breakpoint_layouts];
                 updatedLayouts.push(layoutItem);
@@ -235,7 +256,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 xxs: XS_XSS_COLUMN_COUNT,
             }}
             margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
-            compactType={'horizontal'}
+            compactType={'vertical'}
             onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
             layouts={layouts}
             style={{
