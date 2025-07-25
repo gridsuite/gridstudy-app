@@ -114,6 +114,7 @@ import { LccModificationDialog } from '../../../dialogs/network-modifications/hv
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
+import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
@@ -272,6 +273,11 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(VoltageLevelModificationDialog),
                         },
                         {
+                            id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
+                            label: 'CreateVoltageLevelTopology',
+                            action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
+                        },
+                        {
                             id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                             label: 'CREATE_COUPLING_DEVICE',
                             action: () => withDefaultParams(CreateCouplingDeviceDialog),
@@ -428,7 +434,6 @@ const NetworkModificationNodeEditor = () => {
             id: 'InjectionsModifications',
             items: [
                 {
-                    id: 'GENERATOR',
                     label: 'GENERATOR',
                     subItems: [
                         {

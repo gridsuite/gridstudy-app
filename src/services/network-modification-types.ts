@@ -803,6 +803,14 @@ export interface CreateCouplingDeviceInfos {
     couplingDeviceInfos: CouplingDeviceInfos;
 }
 
+export interface CreateVoltageLevelTopologyInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    sectionCount: number;
+    switchKinds: string[];
+}
+
 export type NetworkModificationRequestInfos = {
     studyUuid: UUID;
     nodeUuid: UUID;
