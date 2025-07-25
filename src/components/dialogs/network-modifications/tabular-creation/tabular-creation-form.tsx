@@ -124,19 +124,6 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     });
                 }
                 setIsFetching(false);
-                // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
-                if (
-                    equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
-                    results.data.some(
-                        (creation) =>
-                            creation.maxSusceptance != null &&
-                            (creation.shuntCompensatorType || creation.maxQAtNominalV != null)
-                    )
-                ) {
-                    snackWarning({
-                        messageId: 'TabularCreationShuntWarning',
-                    });
-                }
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
@@ -145,6 +132,19 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     intl,
                     expectedValues
                 );
+            }
+            // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
+            if (
+                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                results.data.some(
+                    (creation) =>
+                        creation.maxSusceptance != null &&
+                        (creation.shuntCompensatorType || creation.maxQAtNominalV != null)
+                )
+            ) {
+                snackWarning({
+                    messageId: 'TabularCreationShuntWarning',
+                });
             }
             setIsFetching(false);
             setValue(CREATIONS_TABLE, results.data, { shouldDirty: true });
