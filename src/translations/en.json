@@ -1125,6 +1125,8 @@
     "lineTypes.screen": "Screen",
     "menu.create": "Create",
     "menu.createMultiple": "Create multiple equipment",
+    "menu.createByTable": "Create by table",
+    "menu.deleteByFilter": "Delete by filter",
     "menu.modifyMultiple": "Modify multiple equipment",
     "ShuntCompensator": "Shunt compensator",
     "StaticVarCompensator": "Static var compensator",
