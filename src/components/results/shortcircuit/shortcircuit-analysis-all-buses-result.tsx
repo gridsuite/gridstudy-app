@@ -16,15 +16,18 @@ import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    globalFilters?: GlobalFilters;
 }
 
 export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitAnalysisAllBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
+    globalFilters,
 }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
@@ -47,6 +50,7 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitA
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
+            globalFilters={globalFilters}
         />
     );
 };
