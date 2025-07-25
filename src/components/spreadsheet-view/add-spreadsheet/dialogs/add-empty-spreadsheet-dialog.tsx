@@ -7,13 +7,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
-import {
-    CustomFormProvider,
-    SelectInput,
-    TextInput,
-    useSnackMessage,
-    UseStateBooleanReturn,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, SelectInput, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,10 +26,9 @@ import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnDefinitionDto, SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
+import type { DialogComponentProps } from '../types';
 
-interface AddEmptySpreadsheetDialogProps {
-    open: UseStateBooleanReturn;
-}
+export type AddEmptySpreadsheetDialogProps = Pick<DialogComponentProps, 'open'>;
 
 const TABLES_OPTIONS = Object.values(SpreadsheetEquipmentType).map(
     (elementType) => ({ id: elementType, label: elementType }) as const
@@ -53,7 +46,7 @@ const DEFAULT_ID_COLUMN = {
 /**
  * Dialog for creating an empty spreadsheet
  */
-export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Readonly<AddEmptySpreadsheetDialogProps>) {
+export default function AddEmptySpreadsheetDialog({ open }: Readonly<AddEmptySpreadsheetDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -105,7 +98,6 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
                 onSave={onSubmit}
                 onClear={() => {}}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
-                {...dialogProps}
             >
                 <Grid container spacing={2} direction="column" marginTop="auto">
                     <Grid item xs>
