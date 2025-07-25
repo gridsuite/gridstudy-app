@@ -260,7 +260,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 OnLeftClickCallback,
-                true,
+                isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
