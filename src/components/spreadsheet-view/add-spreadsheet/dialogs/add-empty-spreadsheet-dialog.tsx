@@ -9,11 +9,10 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
 import {
     CustomFormProvider,
-    EquipmentType,
     SelectInput,
     TextInput,
-    UseStateBooleanReturn,
     useSnackMessage,
+    UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -22,45 +21,34 @@ import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { dialogStyles } from '../styles/styles';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { getEmptySpreadsheetFormSchema, initialEmptySpreadsheetForm, SPREADSHEET_NAME } from './add-spreadsheet-form';
+import { ModificationDialog, type ModificationDialogProps } from 'components/dialogs/commons/modificationDialog';
+import {
+    type EmptySpreadsheetForm,
+    getEmptySpreadsheetFormSchema,
+    initialEmptySpreadsheetForm,
+    SPREADSHEET_NAME,
+} from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { ColumnDefinitionDto } from '../../types/spreadsheet.type';
+import { ColumnDefinitionDto, SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 
 interface AddEmptySpreadsheetDialogProps {
     open: UseStateBooleanReturn;
 }
 
-const TABLES_TYPES = [
-    EquipmentType.SUBSTATION,
-    EquipmentType.VOLTAGE_LEVEL,
-    EquipmentType.LINE,
-    EquipmentType.TWO_WINDINGS_TRANSFORMER,
-    EquipmentType.THREE_WINDINGS_TRANSFORMER,
-    EquipmentType.GENERATOR,
-    EquipmentType.LOAD,
-    EquipmentType.SHUNT_COMPENSATOR,
-    EquipmentType.STATIC_VAR_COMPENSATOR,
-    EquipmentType.BATTERY,
-    EquipmentType.HVDC_LINE,
-    EquipmentType.LCC_CONVERTER_STATION,
-    EquipmentType.VSC_CONVERTER_STATION,
-    EquipmentType.TIE_LINE,
-    EquipmentType.DANGLING_LINE,
-    EquipmentType.BUS,
-    EquipmentType.BUSBAR_SECTION,
-];
+const TABLES_OPTIONS = Object.values(SpreadsheetEquipmentType).map(
+    (elementType) => ({ id: elementType, label: elementType }) as const
+);
 
-const DEFAULT_ID_COLUMN: ColumnDefinitionDto = {
+const DEFAULT_ID_COLUMN = {
     uuid: uuid4() as UUID,
     name: 'ID',
     id: 'id',
     type: COLUMN_TYPES.TEXT,
     formula: 'id',
     visible: true,
-};
+} as const satisfies ColumnDefinitionDto;
 
 /**
  * Dialog for creating an empty spreadsheet
@@ -88,21 +76,17 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
         reset(initialEmptySpreadsheetForm);
     }, [open.value, reset]);
 
-    const onSubmit = useCallback(
-        (formData: any) => {
+    const onSubmit = useCallback<ModificationDialogProps<EmptySpreadsheetForm>['onSave']>(
+        (formData) => {
             if (!studyUuid) {
                 return;
             }
-            const tabIndex = tablesDefinitions.length;
-            const tabName = formData[SPREADSHEET_NAME];
-            const equipmentType = formData.equipmentType;
-
             addNewSpreadsheet({
                 studyUuid,
                 columns: [DEFAULT_ID_COLUMN],
-                sheetType: equipmentType,
-                tabIndex,
-                tabName,
+                sheetType: formData.equipmentType,
+                tabIndex: tablesDefinitions.length,
+                tabName: formData[SPREADSHEET_NAME],
                 spreadsheetsCollectionUuid: spreadsheetsCollectionUuid as UUID,
                 dispatch,
                 snackError,
@@ -119,7 +103,7 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
                 open={open.value}
                 onClose={open.setFalse}
                 onSave={onSubmit}
-                onClear={() => null}
+                onClear={() => {}}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
                 {...dialogProps}
             >
@@ -133,10 +117,7 @@ export default function AddEmptySpreadsheetDialog({ open, ...dialogProps }: Read
                     </Grid>
                     <Grid item xs>
                         <SelectInput
-                            options={Object.values(TABLES_TYPES).map((elementType) => ({
-                                id: elementType,
-                                label: elementType,
-                            }))}
+                            options={TABLES_OPTIONS}
                             name={EQUIPMENT_TYPE_FIELD}
                             label="spreadsheet/create_new_spreadsheet/element_type"
                             size="small"
