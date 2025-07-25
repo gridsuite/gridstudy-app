@@ -323,11 +323,7 @@ export const convertGeneratorOrBatteryModificationFromFrontToBack = (modificatio
         }
     });
     Object.keys(formattedModification).forEach((key) => {
-        if (
-            key !== REACTIVE_CAPABILITY_CURVE_POINTS &&
-            !key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) &&
-            formattedModification[key]?.length
-        ) {
+        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS && !key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
             formattedModification[key] = convertOutputValues(key, formattedModification[key]);
         }
     });

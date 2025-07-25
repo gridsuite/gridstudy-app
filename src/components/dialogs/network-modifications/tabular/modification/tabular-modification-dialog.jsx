@@ -116,7 +116,7 @@ const TabularModificationDialog = ({
                     };
                 } else {
                     Object.keys(row).forEach((key) => {
-                        if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
+                        if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
                             modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
                         }
                     });
