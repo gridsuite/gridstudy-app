@@ -122,10 +122,10 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const handleTogglePopover = useCallback(
         (shouldDisplay: boolean, currentTarget: EventTarget | null, equipmentId: string, equipmentType: string) => {
             const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
-            const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
             setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable);
 
             if (shouldDisplay && isEquipmentHoverable) {
+                const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
                 setHoveredEquipmentType(convertedEquipmentType || '');
