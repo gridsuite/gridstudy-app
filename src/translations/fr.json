@@ -1122,6 +1122,8 @@
     "menu.create": "Créer",
     "menu.createMultiple": "Créer plusieurs ouvrages",
     "menu.modifyMultiple": "Modifier plusieurs ouvrages",
+    "menu.createByTable": "Créer par tableau",
+    "menu.deleteByFilter": "Supprimer par filtre",
     "ShuntCompensator": "Moyen de compensation statique",
     "StaticVarCompensator": "CSPR",
     "AttachingLines": "Piquage",
