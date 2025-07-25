@@ -45,8 +45,8 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import TabularCreationDialog from 'components/dialogs/network-modifications/tabular/creation/tabular-creation-dialog';
+import TabularModificationDialog from 'components/dialogs/network-modifications/tabular/modification/tabular-modification-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';

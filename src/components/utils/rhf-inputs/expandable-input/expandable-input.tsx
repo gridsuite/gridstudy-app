@@ -25,6 +25,7 @@ export interface ExpandableInputProps {
     alignItems?: string;
     watchProps?: boolean;
     disabled?: boolean;
+    disabledDeletion?: (idx: number) => boolean | null;
 }
 
 // This component is used to display Array of objects.
@@ -43,6 +44,7 @@ export const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
     alignItems = 'stretch', // default value for a flex container
     watchProps = true,
     disabled = false,
+    disabledDeletion = null,
 }) => {
     const {
         fields: values,
@@ -69,6 +71,7 @@ export const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
                             }
                         }}
                         deletionMark={getDeletionMark?.(idx)}
+                        disabledDeletion={disabledDeletion?.(idx)}
                     >
                         <Field name={name} index={idx} {...fieldProps} />
                     </DeletableRow>

@@ -12,30 +12,36 @@ import {
     AutocompleteInput,
     CustomAGGrid,
     ErrorInput,
+    fetchStudyMetadata,
     FieldErrorAlert,
     LANG_FRENCH,
     useSnackMessage,
+    useStateBoolean,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_ID, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_MODIFICATION_FIELDS, styles, TabularModificationField } from './tabular-modification-utils';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
+import { DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
-import { ColDef } from 'ag-grid-community';
-import GridItem from '../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../../redux/reducer';
+import DefinePropertiesDialog from '../properties/define-properties-dialog';
+import { PropertiesFormType, TabularProperty } from '../properties/property-utils';
 import {
+    csvColumnNames,
+    dialogStyles,
     generateCommentLines,
-    setFieldTypeError,
-    transformIfFrenchNumber,
     isFieldTypeOk,
-} from '../tabular-creation/tabular-creation-utils';
-import { BOOLEAN } from '../../../network/constants';
+    PredefinedEquipmentProperties,
+    setFieldTypeError,
+    tableColDefs,
+    transformIfFrenchNumber,
+} from '../tabular-common';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -46,13 +52,22 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
-
+    const propertiesDialogOpen = useStateBoolean(false);
     const language = useSelector((state: AppState) => state.computedLanguage);
+    const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>(
+        {}
+    );
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
     const equipmentType = useWatch({
         name: TYPE,
+    });
+    const tabularProperties = useWatch({
+        name: TABULAR_PROPERTIES,
+    });
+    const watchTable = useWatch({
+        name: MODIFICATIONS_TABLE,
     });
 
     const handleComplete = useCallback(
@@ -104,33 +119,44 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
         [clearErrors, setValue, equipmentType, getValues, setError, intl, snackWarning]
     );
 
-    const csvColumns = useMemo(
-        () => TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field: TabularModificationField) => field.id),
-        [equipmentType]
-    );
+    const selectedProperties = useMemo((): string[] => {
+        return (
+            tabularProperties
+                ?.filter((property: TabularProperty) => property.selected)
+                ?.map((property: TabularProperty) => property.name) ?? []
+        );
+    }, [tabularProperties]);
 
-    const csvTranslatedColumns = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
-            return intl.formatMessage({ id: field.id });
-        });
-    }, [intl, equipmentType]);
+    const csvColumns = useMemo(() => {
+        return csvColumnNames(TABULAR_MODIFICATION_FIELDS[equipmentType], selectedProperties);
+    }, [equipmentType, selectedProperties]);
 
     const commentLines = useMemo(() => {
-        return generateCommentLines({ csvTranslatedColumns, intl, equipmentType, language, formType: 'Modification' });
-    }, [intl, equipmentType, csvTranslatedColumns, language]);
+        return generateCommentLines({
+            fields: TABULAR_MODIFICATION_FIELDS[equipmentType],
+            selectedProperties,
+            intl,
+            equipmentType,
+            language,
+            formType: 'Modification',
+            predefinedEquipmentProperties,
+        });
+    }, [intl, equipmentType, language, selectedProperties, predefinedEquipmentProperties]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
         header: csvColumns,
-        disabled: !csvColumns,
+        disabled: !csvColumns?.length,
         resetTrigger: typeChangedTrigger,
         language: language,
     });
 
-    const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
-    });
+    useEffect(() => {
+        fetchStudyMetadata().then((studyMetadata) => {
+            setPredefinedEquipmentProperties(studyMetadata?.predefinedEquipmentProperties ?? {});
+        });
+    }, []);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -164,16 +190,16 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
     const typesOptions = useMemo(() => {
-        //only available types for tabular modification
         return Object.keys(TABULAR_MODIFICATION_FIELDS).filter(
             (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
     }, []);
 
-    const handleChange = useCallback(() => {
+    const handleTypeChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
         clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
+        setValue(TABULAR_PROPERTIES, []);
     }, [clearErrors, setValue, typeChangedTrigger]);
 
     const equipmentTypeField = (
@@ -181,7 +207,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             name={TYPE}
             label="Type"
             options={typesOptions}
-            onChangeCallback={handleChange}
+            onChangeCallback={handleTypeChange}
             getOptionLabel={(option: any) => getTypeLabel(option as string)}
             size={'small'}
             formProps={{ variant: 'filled' }}
@@ -201,17 +227,21 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     );
 
     const columnDefs = useMemo(() => {
-        return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
-            const columnDef: ColDef = {};
-            if (field.id === EQUIPMENT_ID) {
-                columnDef.pinned = true;
-            }
-            columnDef.field = field.id;
-            columnDef.headerName = intl.formatMessage({ id: field.id });
-            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
-            return columnDef;
-        });
-    }, [intl, equipmentType]);
+        return tableColDefs(TABULAR_MODIFICATION_FIELDS[equipmentType], selectedProperties, intl);
+    }, [equipmentType, selectedProperties, intl]);
+
+    const onPropertiesChange = (formData: PropertiesFormType) => {
+        const newSelectedProperties =
+            formData[TABULAR_PROPERTIES]?.filter((property: TabularProperty) => property.selected)?.map(
+                (property: TabularProperty) => property.name
+            ) ?? [];
+        if (newSelectedProperties.toString() !== selectedProperties.toString()) {
+            // new columns => reset table
+            clearErrors(MODIFICATIONS_TABLE);
+            setValue(MODIFICATIONS_TABLE, []);
+        }
+        setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
+    };
 
     return (
         <Grid container spacing={2} direction={'row'}>
@@ -221,14 +251,25 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
             </Grid>
             <Grid container item spacing={2} alignItems={'center'}>
                 <Grid item>
+                    <Button
+                        variant="contained"
+                        disabled={!equipmentType}
+                        onClick={() => {
+                            propertiesDialogOpen.setTrue();
+                        }}
+                    >
+                        <FormattedMessage id="DefinePropertiesButton" />
+                    </Button>
+                </Grid>
+                <Grid item>
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
                         filename={equipmentType + '_modification_template'}
-                        disabled={!csvColumns}
+                        disabled={!csvColumns?.length}
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
-                        <Button variant="contained" disabled={!csvColumns}>
+                        <Button variant="contained" disabled={!csvColumns?.length}>
                             <FormattedMessage id="GenerateSkeleton" />
                         </Button>
                     </CsvDownloader>
@@ -238,7 +279,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
                 </Grid>
             </Grid>
-            <Grid item xs={12} sx={styles.grid}>
+            <Grid item xs={12} sx={dialogStyles.grid}>
                 <CustomAGGrid
                     rowData={watchTable}
                     loading={isFetching}
@@ -250,6 +291,13 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                     overrideLocales={AGGRID_LOCALES}
                 />
             </Grid>
+            <DefinePropertiesDialog
+                open={propertiesDialogOpen}
+                equipmentType={equipmentType}
+                currentProperties={tabularProperties}
+                predefinedEquipmentProperties={predefinedEquipmentProperties}
+                onValidate={onPropertiesChange}
+            />
         </Grid>
     );
 }

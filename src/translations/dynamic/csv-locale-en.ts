@@ -13,7 +13,7 @@ const csv_locale_en = {
         '#,,,,true | false,,TOP | BOTTOM,,,,,,true | false,,,,,,,,,,,,true | false,',
     'TabularCreationSkeletonComment.LOAD': '#,,AUXILIARY | FICTITIOUS | UNDEFINED,,,true | false,,TOP | BOTTOM,,,',
     'TabularModificationSkeletonComment.GENERATOR':
-        '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,true | false,,TOP | BOTTOM,,,,,,,true | false,,,,,,,,,,,,true | false,,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,,,,,,,,',
+        '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,true | false,,TOP | BOTTOM,,,,,,,true | false,,,,,,,,,,,,true | false,,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,,,,,,,',
     'TabularModificationSkeletonComment.BATTERY':
         '#,,true | false,,TOP | BOTTOM,,,,,,true | false,,,,,,,,,,,,true | false,',
     'TabularModificationSkeletonComment.LOAD': '#,,AUXILIARY | FICTITIOUS | UNDEFINED,true | false,,TOP | BOTTOM,,,',

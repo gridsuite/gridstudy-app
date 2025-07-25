@@ -81,9 +81,8 @@ import {
     CONNECTION_DIRECTION2,
     CONNECTION_POSITION2,
 } from 'components/utils/field-constants';
-import { toModificationOperation } from '../../../utils/utils';
+import { toModificationOperation } from '../../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
-import { convertReactiveCapabilityCurvePointsFromBackToFront } from '../tabular-creation/tabular-creation-utils';
 import {
     BOOLEAN,
     CONNECTION_DIRECTIONS,
@@ -93,19 +92,17 @@ import {
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
-} from '../../../network/constants';
+} from '../../../../network/constants';
+import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils';
+import {
+    convertReactiveCapabilityCurvePointsFromBackToFront,
+    convertReactiveCapabilityCurvePointsFromFrontToBack,
+    Modification,
+    TabularField,
+    TabularFields,
+} from '../tabular-common';
 
-export interface TabularModificationField {
-    id: string;
-    type?: string;
-    options?: string[];
-}
-
-export interface TabularModificationFields {
-    [key: string]: TabularModificationField[];
-}
-
-const REACTIVE_CAPABILITY_CURVE_FIELDS = [
+const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE, type: BOOLEAN },
     { id: REACTIVE_CAPABILITY_CURVE_P_MIN, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, type: NUMBER },
@@ -118,7 +115,7 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS = [
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, type: NUMBER },
 ];
 
-export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
+export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     SUBSTATION: [{ id: EQUIPMENT_ID }, { id: EQUIPMENT_NAME }, { id: COUNTRY }],
     VOLTAGE_LEVEL: [
         { id: EQUIPMENT_ID },
@@ -255,22 +252,8 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     SUBSTATION: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
 };
 
-export interface Modification {
-    [key: string]: any;
-}
-
-export const formatModification = (modification: Modification) => {
-    //exclude type, date and uuid from modification object
-    const { type, date, uuid, ...rest } = modification;
-    return rest;
-};
-
 export const getEquipmentTypeFromModificationType = (type: string) => {
     return Object.keys(TABULAR_MODIFICATION_TYPES).find((key) => TABULAR_MODIFICATION_TYPES[key] === type);
-};
-
-export const styles = {
-    grid: { height: 500, width: '100%' },
 };
 
 /**
@@ -298,35 +281,6 @@ export const convertOutputValues = (key: string, value: string | number) => {
         return value;
     }
     return toModificationOperation(convertOutputValue(convertCamelToSnake(key), value));
-};
-
-export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification: Record<string, unknown>) => {
-    if (modification[REACTIVE_CAPABILITY_CURVE]) {
-        //Convert list data to matrix
-        const rccPoints = [];
-        if (modification[REACTIVE_CAPABILITY_CURVE_P_MIN] !== null) {
-            rccPoints.push({
-                p: modification[REACTIVE_CAPABILITY_CURVE_P_MIN],
-                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
-                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
-            });
-        }
-        if (modification[REACTIVE_CAPABILITY_CURVE_P_0] !== null) {
-            rccPoints.push({
-                p: modification[REACTIVE_CAPABILITY_CURVE_P_0],
-                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
-                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
-            });
-        }
-        if (modification[REACTIVE_CAPABILITY_CURVE_P_MAX] !== null) {
-            rccPoints.push({
-                p: modification[REACTIVE_CAPABILITY_CURVE_P_MAX],
-                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
-                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
-            });
-        }
-        modification[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
-    }
 };
 
 export const getFieldType = (modificationType: string, key: string) => {
@@ -369,7 +323,7 @@ export const convertGeneratorOrBatteryModificationFromFrontToBack = (modificatio
         }
     });
     Object.keys(formattedModification).forEach((key) => {
-        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS) {
+        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS && !key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
             formattedModification[key] = convertOutputValues(key, formattedModification[key]);
         }
     });
