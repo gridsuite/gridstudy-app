@@ -395,8 +395,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_VSC',
                             label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VSC_CONVERTER_STATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
                         },
                     ],
                 },
@@ -417,8 +416,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_LCC',
                             label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LCC_CONVERTER_STATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
                         },
                     ],
                 },
@@ -539,7 +537,7 @@ const NetworkModificationNodeEditor = () => {
                     subItems: [
                         {
                             id: 'TABULAR_CREATION',
-                            label: 'menu.create',
+                            label: 'menu.createByTable',
                             action: () => withDefaultParams(TabularCreationDialog),
                         },
                         {
@@ -559,7 +557,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-                            label: 'DeleteContingencyList',
+                            label: 'menu.deleteByFilter',
                             action: () => withDefaultParams(ByFilterDeletionDialog),
                         },
                     ],
