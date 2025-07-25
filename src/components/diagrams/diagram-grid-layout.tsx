@@ -10,7 +10,7 @@ import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, Theme, useTheme } from '@mui/material';
-import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { ElementType, EquipmentInfos, EquipmentType, useDebounce } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
@@ -203,6 +203,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     );
 
     const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
+
+    // Debounce the layout save function to avoid excessive calls
+    const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
 
     const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
@@ -496,7 +499,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onMap={!isMapCardAdded ? onAddMapCard : undefined}
-                onLayoutSave={handleGridLayoutSave}
+                onLayoutSave={debouncedGridLayoutSave}
                 key={'Adder'}
             />
             {renderDiagrams()}
