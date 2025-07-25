@@ -31,7 +31,7 @@ const styles = {
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: theme.spacing(2),
         border:
             theme.palette.mode === 'light'

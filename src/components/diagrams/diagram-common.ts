@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { Theme } from '@mui/material';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
@@ -93,8 +93,8 @@ export const styles = {
         '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
             animation: 'none',
         },
-        '& .nad-edge-infos': {
-            opacity: NAD_INVALID_LOADFLOW_OPACITY,
+        '& .nad-active': {
+            fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
             {
