@@ -42,6 +42,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
+import { MAX_INT32 } from 'services/utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -949,8 +950,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
-export const MAX_INT32: number = 2147483647;
 
 export const getStoreFields = (index: number): string => {
     switch (index) {

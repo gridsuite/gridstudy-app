@@ -84,8 +84,8 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
                 action: () => {
-                    // Filter out the rowIndex column before exporting to CSV
-                    const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID);
+                    // Filter out the rowIndex column and the hidden columns before exporting to CSV
+                    const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide);
 
                     const exportDataAsCsv = gridRef.current?.api.exportDataAsCsv;
                     if (!exportDataAsCsv) {
