@@ -8,7 +8,7 @@
 const csv_locale_en = {
     // Used in the tabular creation and modification
     'TabularCreationSkeletonComment.GENERATOR':
-        '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM,,,,,,,true | false,,,,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,,,,,,,,',
+        '#,,HYDRO | NUCLEAR | WIND | THERMAL | SOLAR | OTHER,,,true | false,,TOP | BOTTOM,,,,,,,true | false,,,,,,,,,,,,true | false,required if voltageRegulationOn is true,,LINE | TWO_WINDINGS_TRANSFORMER | GENERATOR | LOAD | BATTERY | SHUNT_COMPENSATOR | STATIC_VAR_COMPENSATOR | DANGLING_LINE | HVDC_CONVERTER_STATION,,,true | false,,,,,,,',
     'TabularCreationSkeletonComment.BATTERY':
         '#,,,,true | false,,TOP | BOTTOM,,,,,,true | false,,,,,,,,,,,,true | false,',
     'TabularCreationSkeletonComment.LOAD': '#,,AUXILIARY | FICTITIOUS | UNDEFINED,,,true | false,,TOP | BOTTOM,,,',
@@ -23,7 +23,7 @@ const csv_locale_en = {
     'TabularModificationSkeletonComment.SUBSTATION':
         '#,,2-letter code from ISO 3166-1 standard (FR ES PT IT CH DE BE LU NL GB ...)',
     'TabularCreationSkeletonComment.SHUNT_COMPENSATOR':
-        '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR | required if maxQAtNominalV is set,,,',
+        '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR | required if maxQAtNominalV is set,,aa',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
         '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR,,',
 };
