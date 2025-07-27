@@ -8,7 +8,6 @@ import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limit
 import { createPropertyModification, Property } from '../common/properties/property-utils';
 import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
 import {
-    EQUIPMENT_ID,
     MODIFICATIONS_TABLE,
     REACTIVE_CAPABILITY_CURVE,
     REACTIVE_CAPABILITY_CURVE_P_0,
@@ -33,8 +32,11 @@ import {
     PredefinedProperties,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
-import { ColDef } from 'ag-grid-community';
-import { BooleanNullableCellRenderer, DefaultCellRenderer } from '../../../custom-aggrid/cell-renderers';
+
+export enum TabularModificationType {
+    CREATION = 'creation',
+    MODIFICATION = 'modification',
+}
 
 export const tabularFormSchema = yup
     .object()
@@ -49,10 +51,6 @@ export const emptyTabularFormData = {
     [TYPE]: null,
     [MODIFICATIONS_TABLE]: [],
     [TABULAR_PROPERTIES]: [],
-};
-
-export const dialogStyles = {
-    grid: { height: 500, width: '100%' },
 };
 
 export interface Modification {
@@ -247,14 +245,6 @@ export type PredefinedEquipmentProperties = {
     [p: string]: PredefinedProperties;
 };
 
-export const csvColumnNames = (fields: TabularField[] | null, selectedProperties: string[]) => {
-    return (
-        fields
-            ?.map((field: TabularField) => field.id)
-            ?.concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName)) ?? []
-    );
-};
-
 interface CommentLinesConfig {
     fields: TabularField[] | null;
     selectedProperties: string[];
@@ -329,27 +319,4 @@ export const createCommonProperties = (row: Modification): Property[] => {
         }
     });
     return propertiesModifications;
-};
-
-export const tableColDefs = (fields: TabularField[] | null, selectedProperties: string[], intl: IntlShape) => {
-    return fields
-        ?.map((field) => {
-            const columnDef: ColDef = {};
-            if (field.id === EQUIPMENT_ID) {
-                columnDef.pinned = true;
-            }
-            columnDef.field = field.id;
-            columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
-            columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
-            return columnDef;
-        })
-        ?.concat(
-            selectedProperties.map((propertyName: string) => {
-                const columnDef: ColDef = {};
-                columnDef.field = PROPERTY_CSV_COLUMN_PREFIX + propertyName;
-                columnDef.headerName = propertyName;
-                columnDef.cellRenderer = DefaultCellRenderer;
-                return columnDef;
-            })
-        );
 };

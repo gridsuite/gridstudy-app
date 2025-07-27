@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -18,36 +18,43 @@ import {
     useSnackMessage,
     useStateBoolean,
 } from '@gridsuite/commons-ui';
-import { MODIFICATIONS_TABLE, TYPE, TABULAR_PROPERTIES } from 'components/utils/field-constants';
+import { EQUIPMENT_ID, MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
-import { DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
-import GridItem from '../../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import { AGGRID_LOCALES } from '../../../../../translations/not-intl/aggrid-locales';
+import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer';
+import DefinePropertiesDialog from './properties/define-properties-dialog';
+import { PropertiesFormType, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
-    csvColumnNames,
-    dialogStyles,
     generateCommentLines,
     isFieldTypeOk,
     PredefinedEquipmentProperties,
     setFieldTypeError,
-    tableColDefs,
+    TabularField,
+    TabularModificationType,
     transformIfFrenchNumber,
-} from '../tabular-common';
-import { PropertiesFormType, TabularProperty } from '../properties/property-utils';
-import DefinePropertiesDialog from '../properties/define-properties-dialog';
+} from './tabular-common';
+import { ColDef } from 'ag-grid-community';
+import { BOOLEAN } from '../../../network/constants';
+import { TABULAR_CREATION_FIELDS } from './creation/tabular-creation-utils';
+import { TABULAR_MODIFICATION_FIELDS } from './modification/tabular-modification-utils';
 
-export interface TabularCreationFormProps {
+const dialogStyles = {
+    grid: { height: 500, width: '100%' },
+};
+
+export interface TabularFormProps {
     dataFetching: boolean;
+    dialogMode: TabularModificationType;
 }
 
-export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFormProps>) {
+export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormProps>) {
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
@@ -70,9 +77,14 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         name: MODIFICATIONS_TABLE,
     });
 
-    const handleComplete = useCallback(
+    const csvFields = useMemo(() => {
+        const fields =
+            dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS;
+        return fields[equipmentType] ?? [];
+    }, [equipmentType, dialogMode]);
+
+    const handleTabularCreationParsingError = useCallback(
         (results: Papa.ParseResult<any>) => {
-            clearErrors(MODIFICATIONS_TABLE);
             let requiredFieldNameInError: string = '';
             let requiredDependantFieldNameInError: string = '';
             let dependantFieldNameInError: string = '';
@@ -85,7 +97,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 results.data
                     .flatMap((result) => Object.entries(result).map(([key, value]) => [result, key, value]))
                     .some(([result, key, value]) => {
-                        const fieldDef = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => field.id === key);
+                        const fieldDef = csvFields.find((field) => field.id === key);
                         // check required fields are defined
                         if (fieldDef !== undefined && fieldDef.required && (value === undefined || value === null)) {
                             requiredFieldNameInError = key;
@@ -137,7 +149,6 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                         ),
                     });
                 }
-                setIsFetching(false);
                 setFieldTypeError(
                     fieldTypeInError,
                     expectedTypeForFieldInError,
@@ -147,6 +158,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     expectedValues
                 );
             }
+
             // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
             if (
                 equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
@@ -160,10 +172,67 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     messageId: 'TabularCreationShuntWarning',
                 });
             }
-            setIsFetching(false);
-            setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
         },
-        [clearErrors, setValue, getValues, equipmentType, setError, intl, snackWarning]
+        [csvFields, equipmentType, intl, setError, snackWarning]
+    );
+
+    const handleTabularModificationParsingError = useCallback(
+        (results: Papa.ParseResult<any>) => {
+            let fieldTypeInError: string = '';
+            let expectedTypeForFieldInError: string = '';
+            let expectedValues: string[] | undefined;
+
+            // check if the csv contains an error
+            if (
+                results.data.flatMap(Object.entries).some(([key, value]) => {
+                    const fieldDef = csvFields.find((field) => field.id === key);
+                    // check the field types
+                    if (!isFieldTypeOk(value, fieldDef)) {
+                        fieldTypeInError = key;
+                        expectedTypeForFieldInError = fieldDef?.type ?? '';
+                        expectedValues = fieldDef?.options;
+                        return true; // “yes, we found an error here” → break some() loop
+                    }
+                    return false; // keep looking
+                })
+            ) {
+                setFieldTypeError(
+                    fieldTypeInError,
+                    expectedTypeForFieldInError,
+                    MODIFICATIONS_TABLE,
+                    setError,
+                    intl,
+                    expectedValues
+                );
+            }
+
+            // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
+            if (
+                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR &&
+                results.data.some(
+                    (modification) =>
+                        modification.maxSusceptance != null &&
+                        (modification.shuntCompensatorType || modification.maxQAtNominalV != null)
+                )
+            ) {
+                snackWarning({ messageId: 'TabularModificationShuntWarning' });
+            }
+        },
+        [equipmentType, csvFields, setError, intl, snackWarning]
+    );
+
+    const handleComplete = useCallback(
+        (results: Papa.ParseResult<any>) => {
+            clearErrors(MODIFICATIONS_TABLE);
+            if (dialogMode === TabularModificationType.CREATION) {
+                handleTabularCreationParsingError(results);
+            } else {
+                handleTabularModificationParsingError(results);
+            }
+            setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
+            setIsFetching(false);
+        },
+        [clearErrors, dialogMode, setValue, handleTabularCreationParsingError, handleTabularModificationParsingError]
     );
 
     const selectedProperties = useMemo((): string[] => {
@@ -174,25 +243,27 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
         );
     }, [tabularProperties]);
 
-    const csvColumns = useMemo(() => {
-        return csvColumnNames(TABULAR_CREATION_FIELDS[equipmentType], selectedProperties);
-    }, [equipmentType, selectedProperties]);
+    const csvColumns = useMemo((): string[] => {
+        return csvFields
+            .map((field: TabularField) => field.id)
+            .concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
+    }, [csvFields, selectedProperties]);
 
     const commentLines = useMemo(() => {
         return generateCommentLines({
-            fields: TABULAR_CREATION_FIELDS[equipmentType],
+            fields: csvFields,
             selectedProperties,
             intl,
             equipmentType,
             language,
-            formType: 'Creation',
+            formType: dialogMode === TabularModificationType.CREATION ? 'Creation' : 'Modification',
             predefinedEquipmentProperties,
         });
-    }, [intl, equipmentType, language, selectedProperties, predefinedEquipmentProperties]);
+    }, [csvFields, selectedProperties, intl, equipmentType, language, dialogMode, predefinedEquipmentProperties]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: 'ImportCreations',
+        label: dialogMode === TabularModificationType.CREATION ? 'ImportCreations' : 'ImportModifications',
         header: csvColumns,
         disabled: !csvColumns?.length,
         resetTrigger: typeChangedTrigger,
@@ -227,13 +298,13 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
 
     const typesOptions = useMemo(() => {
-        return Object.keys(TABULAR_CREATION_FIELDS).filter(
-            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
-        );
-    }, []);
+        return Object.keys(
+            dialogMode === TabularModificationType.CREATION ? TABULAR_CREATION_FIELDS : TABULAR_MODIFICATION_FIELDS
+        ).filter((type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]);
+    }, [dialogMode]);
 
     const handleTypeChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
@@ -267,8 +338,27 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     );
 
     const columnDefs = useMemo(() => {
-        return tableColDefs(TABULAR_CREATION_FIELDS[equipmentType], selectedProperties, intl);
-    }, [equipmentType, selectedProperties, intl]);
+        return csvFields
+            .map((field) => {
+                const columnDef: ColDef = {};
+                if (field.id === EQUIPMENT_ID) {
+                    columnDef.pinned = true;
+                }
+                columnDef.field = field.id;
+                columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
+                columnDef.cellRenderer = field.type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer;
+                return columnDef;
+            })
+            .concat(
+                selectedProperties.map((propertyName: string) => {
+                    const columnDef: ColDef = {};
+                    columnDef.field = PROPERTY_CSV_COLUMN_PREFIX + propertyName;
+                    columnDef.headerName = propertyName;
+                    columnDef.cellRenderer = DefaultCellRenderer;
+                    return columnDef;
+                })
+            );
+    }, [csvFields, selectedProperties, intl]);
 
     const onPropertiesChange = (formData: PropertiesFormType) => {
         const newSelectedProperties =
@@ -305,7 +395,11 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={equipmentType + '_creation_template'}
+                        filename={
+                            equipmentType +
+                            (dialogMode === TabularModificationType.CREATION ? '_creation' : '_modification') +
+                            '_template'
+                        }
                         disabled={!csvColumns?.length}
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
@@ -342,4 +436,4 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
     );
 }
 
-export default TabularCreationForm;
+export default TabularForm;

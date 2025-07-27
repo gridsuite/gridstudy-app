@@ -16,7 +16,6 @@ import { MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularCreation } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.js';
-import TabularCreationForm from './tabular-creation-form.js';
 import {
     convertCreationFieldFromBackToFront,
     convertCreationFieldFromFrontToBack,
@@ -31,8 +30,10 @@ import {
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
+    TabularModificationType,
 } from '../tabular-common.js';
 import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.js';
+import TabularForm from '../tabular-form.js';
 
 /**
  * Dialog to create tabular creations based on a csv file.
@@ -152,7 +153,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularCreationForm dataFetching={dataFetching} />
+                <TabularForm dataFetching={dataFetching} dialogMode={TabularModificationType.CREATION} />
             </ModificationDialog>
         </CustomFormProvider>
     );

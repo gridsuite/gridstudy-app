@@ -16,7 +16,6 @@ import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.js';
-import TabularModificationForm from './tabular-modification-form.js';
 import {
     convertGeneratorOrBatteryModificationFromBackToFront,
     convertGeneratorOrBatteryModificationFromFrontToBack,
@@ -34,7 +33,9 @@ import {
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
+    TabularModificationType,
 } from '../tabular-common.js';
+import TabularForm from '../tabular-form.js';
 
 /**
  * Dialog to create tabular modification based on a csv file.
@@ -171,7 +172,7 @@ const TabularModificationDialog = ({
                 isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm dataFetching={dataFetching} />
+                <TabularForm dataFetching={dataFetching} dialogMode={TabularModificationType.MODIFICATION} />
             </ModificationDialog>
         </CustomFormProvider>
     );
