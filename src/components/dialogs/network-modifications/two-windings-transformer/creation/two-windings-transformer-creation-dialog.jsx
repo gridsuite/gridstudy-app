@@ -125,7 +125,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(false),
+    ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -223,8 +223,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,

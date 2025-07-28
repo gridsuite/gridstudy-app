@@ -90,7 +90,7 @@ import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creatio
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(false),
+    ...getLimitsEmptyFormData(),
     ...emptyProperties,
 };
 

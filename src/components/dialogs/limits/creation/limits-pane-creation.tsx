@@ -49,9 +49,10 @@ export function LimitsPaneCreation({
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
+    // TODO : n'est pas forcément vrai car c'est la limite sélectionnée, on devrait comparer à celle de même id que la sélectionnée par l'utilisateur dans l'ui ?
     const getCurrentLimits = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits1) {
-            return equipmentToModify.currentLimits1.find(
+        if (equipmentToModify?.currentLimits) {
+            return equipmentToModify.currentLimits.find(
                 (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
             );
         }
@@ -156,7 +157,6 @@ export function LimitsPaneCreation({
                                             getCurrentLimits(equipmentToModify)?.temporaryLimits ?? []
                                         }
                                         currentNode={currentNode}
-                                        onlySelectedLimitsGroup={false}
                                         selectedLimitSetName={operationalLimitsGroup.name}
                                         checkLimitSetUnicity={checkLimitSetUnicity}
                                     />
