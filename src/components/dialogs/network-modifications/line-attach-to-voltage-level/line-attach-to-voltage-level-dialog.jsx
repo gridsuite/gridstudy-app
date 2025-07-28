@@ -217,14 +217,9 @@ const LineAttachToVoltageLevelDialog = ({
                     b1: lineCreationInfo.b1,
                     g2: lineCreationInfo.g2,
                     b2: lineCreationInfo.b2,
-                    currentLimits1: {
-                        permanentLimit: lineCreationInfo.permanentCurrentLimit1,
-                        temporaryLimits: lineCreationInfo.temporaryCurrentLimits1,
-                    },
-                    currentLimits2: {
-                        permanentLimit: lineCreationInfo.permanentCurrentLimit2,
-                        temporaryLimits: lineCreationInfo.temporaryCurrentLimits2,
-                    },
+                    limitsGroups: lineCreationInfo.limitsGroups,
+                    selectedLimitsGroup1: lineCreationInfo.selectedLimitsGroup1,
+                    selectedLimitsGroup2: lineCreationInfo.selectedLimitsGroup2,
                 };
                 setAttachmentLine(preparedLine);
                 setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {

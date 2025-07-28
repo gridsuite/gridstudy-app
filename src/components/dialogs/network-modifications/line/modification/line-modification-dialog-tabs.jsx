@@ -6,11 +6,11 @@
  */
 
 import { Box } from '@mui/material';
-import { LimitsPane } from '../../../limits/modification/limits-pane.tsx';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
 import { LineModificationDialogTab } from '../line-utils';
+import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation';
 
 const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetworkUuid, lineToModify, tabIndex }) => {
     return (
@@ -38,12 +38,7 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPane
-                    currentNode={currentNode}
-                    equipmentToModify={lineToModify}
-                    clearableFields={true}
-                    onlySelectedLimitsGroup
-                />
+                <LimitsPaneCreation currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>

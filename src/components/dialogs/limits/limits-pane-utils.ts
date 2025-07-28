@@ -7,9 +7,8 @@
 
 import { sanitizeString } from '../dialog-utils';
 import {
+    APPLICABIlITY,
     CURRENT_LIMITS,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     ID,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
@@ -21,12 +20,15 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-    APPLICABIlITY,
 } from 'components/utils/field-constants';
-import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
+import { addSelectedFieldToRows, areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
+import {
+    LineModificationInfo,
+    OperationalLimitsGroup,
+    TemporaryLimit,
+} from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
@@ -79,18 +81,10 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         }),
 });
 
-const limitsValidationSchema = (id: string) => {
-    const selectedCurrentLimitsSchema = {
-        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(true)),
-        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(true)),
-    };
-    return { [id]: yup.object().shape(selectedCurrentLimitsSchema) };
-};
-
-const limitsValidationSchemaCreation = (id: string) => {
+const limitsValidationSchemaCreation = (id: string, isModification: boolean) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(false)))
+            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
             .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
                 const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
                 return areArrayElementsUnique(namesArray);
@@ -102,51 +96,40 @@ const limitsValidationSchemaCreation = (id: string) => {
 };
 
 export const getLimitsValidationSchema = (isModification: boolean = false, id: string = LIMITS) => {
-    return isModification ? limitsValidationSchema(id) : limitsValidationSchemaCreation(id);
+    return limitsValidationSchemaCreation(id, isModification);
 };
 
-const limitsEmptyFormData = (id: string, onlySelectedLimits = true) => {
-    const currentLimits = {
-        [CURRENT_LIMITS_1]: {
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        },
-        [CURRENT_LIMITS_2]: {
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        },
-    };
+const limitsEmptyFormData = (id: string) => {
     const limitsGroup = {
         [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
     };
 
-    return { [id]: onlySelectedLimits ? currentLimits : limitsGroup };
+    return { [id]: limitsGroup };
 };
 
-export const getLimitsEmptyFormData = (onlySelectedLimits = true, id = LIMITS) => {
-    return limitsEmptyFormData(id, onlySelectedLimits);
+export const getLimitsEmptyFormData = (id = LIMITS) => {
+    return limitsEmptyFormData(id);
 };
 
-/**
- * used when the limit set data only contain the selected limit sets
- */
-export const getSelectedLimitsFormData = (
-    { permanentLimit1 = null, permanentLimit2 = null, temporaryLimits1 = [], temporaryLimits2 = [] },
-    id = LIMITS
-) => ({
-    [id]: {
-        [CURRENT_LIMITS_1]: {
-            [PERMANENT_LIMIT]: permanentLimit1,
-            [TEMPORARY_LIMITS]: temporaryLimits1,
-        },
-        [CURRENT_LIMITS_2]: {
-            [PERMANENT_LIMIT]: permanentLimit2,
-            [TEMPORARY_LIMITS]: temporaryLimits2,
-        },
-    },
-});
+export const formatOpLimitGroups = (limitGroups: OperationalLimitsGroup[]): OperationalLimitsGroup[] => {
+    return limitGroups.map((opLimitGroup: OperationalLimitsGroup) => {
+        return {
+            id: opLimitGroup.id + opLimitGroup.applicability,
+            name: opLimitGroup.id,
+            applicability: opLimitGroup.applicability,
+            currentLimits: {
+                id: opLimitGroup.currentLimits.id,
+                applicability: opLimitGroup.applicability,
+                permanentLimit: opLimitGroup.currentLimits.permanentLimit,
+                temporaryLimits: addSelectedFieldToRows(
+                    formatTemporaryLimits(opLimitGroup.currentLimits.temporaryLimits)
+                ),
+            },
+        };
+    });
+};
 
 /**
  * used when the limit set data contain all the limit sets data, including the not selected
@@ -167,12 +150,15 @@ export const getAllLimitsFormData = (
 /**
  * sanitizes limit names and filters out the empty temporary limits lines
  */
-export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]) =>
+export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]): OperationalLimitsGroup[] =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
         id: baseData.name,
         currentLimits: !currentLimits
-            ? null
+            ? {
+                  permanentLimit: null,
+                  temporaryLimits: [],
+              }
             : {
                   permanentLimit: currentLimits.permanentLimit,
                   temporaryLimits: !currentLimits.temporaryLimits
@@ -182,7 +168,7 @@ export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]) =>
                             .filter(({ name }) => name?.trim())
                             .map(({ name, ...temporaryLimit }) => ({
                                 ...temporaryLimit,
-                                name: sanitizeString(name),
+                                name: sanitizeString(name) ?? '',
                             })),
               },
     }));
@@ -237,7 +223,7 @@ export const addModificationTypeToTemporaryLimits = (
     temporaryLimitsToModify: TemporaryLimit[],
     currentModifiedTemporaryLimits: TemporaryLimit[],
     currentNode: CurrentTreeNode
-) => {
+): TemporaryLimit[] => {
     const formattedTemporaryLimitsToModify = formatTemporaryLimits(temporaryLimitsToModify);
     const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(currentModifiedTemporaryLimits);
     const updatedTemporaryLimits: TemporaryLimit[] = temporaryLimits.map((limit) => {
@@ -298,14 +284,42 @@ export const addModificationTypeToTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
-// temporary function to be removed once the migration from selected limits group to complete limits group is over :
-// necessary because the network map server return complete operational limits groups but the modification only uses the currently selected (for now)
-export const completeCurrentLimitsGroupsToOnlySelected = (
-    completeLimitsGroups: OperationalLimitsGroup[],
-    selectedOperationalLimitsGroup: string
+/**
+ * converts the limits groups into a modification limits group
+ * OperationalLimitsGroup are in a similar structure but readable by the back network modifications
+ */
+export const addModificationTypeToOpLimitsGroups = (
+    limitsGroups: OperationalLimitsGroup[],
+    lineToModify: LineModificationInfo,
+    editData: any,
+    currentNode: CurrentTreeNode
 ) => {
-    if (selectedOperationalLimitsGroup && completeLimitsGroups) {
-        return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.name);
-    }
-    return getLimitsEmptyFormData();
+    const modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
+
+    // calls this on all the limits groups :
+    modificationLimitsGroups.map((limitsGroup: OperationalLimitsGroup) => {
+        const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
+            sanitizeLimitNames(limitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
+            lineToModify?.operationalLimitsGroups.find(
+                (lineOpLimitGroup: OperationalLimitsGroup) => lineOpLimitGroup.id === limitsGroup.name
+            )?.currentLimits?.temporaryLimits ?? [],
+            editData?.operationalLimitsGroups.find(
+                (lineOpLimitGroup: OperationalLimitsGroup) => lineOpLimitGroup.id === limitsGroup.name
+            )?.currentLimits?.temporaryLimits ?? [],
+            currentNode
+        );
+        let currentLimits = null;
+        if (limitsGroup.currentLimits?.[PERMANENT_LIMIT] || temporaryLimits.length > 0) {
+            currentLimits = {
+                permanentLimit: limitsGroup.currentLimits?.[PERMANENT_LIMIT],
+                temporaryLimits: temporaryLimits,
+            };
+        }
+
+        return {
+            currentLimits: currentLimits,
+        };
+    });
+
+    return modificationLimitsGroups;
 };

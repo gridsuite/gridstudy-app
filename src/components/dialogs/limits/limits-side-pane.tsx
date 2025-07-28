@@ -7,7 +7,6 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    DndTable,
     DndColumnType,
     ColumnNumeric,
     ColumnText,
@@ -27,7 +26,7 @@ import {
 } from 'components/utils/field-constants';
 import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useMemo } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
@@ -45,7 +44,6 @@ export interface LimitsSidePaneProps {
     applicabilityPreviousValue?: string;
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
-    onlySelectedLimitsGroup: boolean;
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
 }
@@ -58,15 +56,14 @@ export function LimitsSidePane({
     applicabilityPreviousValue,
     clearableFields,
     currentNode,
-    onlySelectedLimitsGroup,
     selectedLimitSetName,
     checkLimitSetUnicity,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
-    const useFieldArrayOutputTemporaryLimits = useFieldArray({
+    /*const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
-    });
+    });*/
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -200,7 +197,7 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
-            {!onlySelectedLimitsGroup && limitsGroupApplicabilityName && (
+            {limitsGroupApplicabilityName && (
                 <>
                     <GridSection title={selectedLimitSetName ?? ''} formatDisabled />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
@@ -246,30 +243,17 @@ export function LimitsSidePane({
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            {onlySelectedLimitsGroup ? (
-                <DndTable
-                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
-                    createRows={createRows}
-                    columnsDefinition={columnsDefinition}
-                    tableHeight={270}
-                    withAddRowsDialog={false}
-                    previousValues={temporaryLimitsPreviousValues}
-                    disableTableCell={disableTableCell}
-                    getPreviousValue={getPreviousValue}
-                    isValueModified={isValueModified}
-                />
-            ) : (
-                <TemporaryLimitsTable
-                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                    createRow={createRows}
-                    columnsDefinition={columnsDefinition}
-                    previousValues={temporaryLimitsPreviousValues}
-                    disableTableCell={disableTableCell}
-                    getPreviousValue={getPreviousValue}
-                    isValueModified={isValueModified}
-                />
-            )}
+            <TemporaryLimitsTable
+                arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
+                /* useFieldArrayOutput={useFieldArrayOutputTemporaryLimits} TODO : should be useful
+                withAddRowsDialog={false}*/
+                createRow={createRows}
+                columnsDefinition={columnsDefinition}
+                previousValues={temporaryLimitsPreviousValues}
+                disableTableCell={disableTableCell}
+                getPreviousValue={getPreviousValue}
+                isValueModified={isValueModified}
+            />
         </Box>
     );
 }

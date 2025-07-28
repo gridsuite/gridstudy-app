@@ -233,8 +233,9 @@ export interface TwoWindingsTransformerModificationInfo {
     ratedS: AttributeModification<number> | null;
     ratedU1: AttributeModification<number> | null;
     ratedU2: AttributeModification<number> | null;
-    currentLimit1?: CurrentLimits;
-    currentLimit2?: CurrentLimits;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     voltageLevelId1?: string;
     busOrBusbarSectionId1?: string;
     voltageLevelId2?: string;
@@ -336,8 +337,7 @@ export interface AttachmentLine {
     b1: number;
     g2: number;
     b2: number;
-    currentLimits1: CurrentLimits;
-    currentLimits2: CurrentLimits;
+    currentLimits: CurrentLimits;
 }
 
 type VariationFilter = {
@@ -551,8 +551,9 @@ export interface LineModificationInfo {
     b1: number;
     g2: number;
     b2: number;
-    currentLimit1: CurrentLimits;
-    currentLimit2: CurrentLimits;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
