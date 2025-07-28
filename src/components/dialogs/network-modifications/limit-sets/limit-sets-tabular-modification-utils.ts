@@ -67,11 +67,11 @@ export type LimitSetModificationMetadata = {
 const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
     let maxLength = 0;
     for (const mod of editData.modifications) {
-        for (const limit of mod.operationalLimitsGroup1) {
+        for (const limit of mod?.operationalLimitsGroup1 ?? []) {
             const temporaryLimitsLength = limit.currentLimits?.temporaryLimits?.length ?? 0;
             maxLength = Math.max(maxLength, temporaryLimitsLength);
         }
-        for (const limit of mod.operationalLimitsGroup2) {
+        for (const limit of mod?.operationalLimitsGroup2 ?? []) {
             const temporaryLimitsLength = limit.currentLimits?.temporaryLimits?.length ?? 0;
             maxLength = Math.max(maxLength, temporaryLimitsLength);
         }
