@@ -25,7 +25,7 @@ import {
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType, { ComputingType } from '../../computing-status/computing-type';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
@@ -42,6 +42,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from '../../custom-aggrid/utils/format-values-utils';
+import { MAX_INT32 } from 'services/utils';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -830,7 +831,7 @@ export const useFetchFiltersEnums = () => {
                 studyUuid,
                 currentNode.id,
                 currentRootNetworkUuid,
-                computingType.SECURITY_ANALYSIS,
+                ComputingType.SECURITY_ANALYSIS,
                 filterType
             )
         );
@@ -949,8 +950,6 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
-
-export const MAX_INT32: number = 2147483647;
 
 export const getStoreFields = (index: number): string => {
     switch (index) {

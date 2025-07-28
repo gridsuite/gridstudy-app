@@ -10,6 +10,7 @@ import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
+    originalCaseUuid: UUID;
     name: string;
     tag: string;
     isCreating: boolean;
@@ -67,6 +68,12 @@ export interface NetworkModificationData {
     uuid: UUID;
     type: string;
     [key: string]: any;
+}
+
+export interface MenuSection {
+    id: string;
+    label?: string;
+    items: MenuDefinition[];
 }
 
 // Cf withDefaultParams : common props for any modification available from the menu

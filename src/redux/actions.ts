@@ -14,7 +14,14 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import { Action } from 'redux';
-import { GsLang, GsLangUser, GsTheme, Identifiable, NetworkVisualizationParameters } from '@gridsuite/commons-ui';
+import {
+    GsLang,
+    GsLangUser,
+    GsTheme,
+    Identifiable,
+    NetworkVisualizationParameters,
+    ComputingType,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -27,8 +34,9 @@ import type {
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
+    ComputingStatusParameters,
+    DiagramGridLayoutConfig,
 } from './reducer';
-import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
@@ -99,10 +107,8 @@ export type AppActions =
     | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
-    | ResetNetworkAreaDiagramDepthAction
-    | IncrementNetworkAreaDiagramDepthAction
-    | DecrementNetworkAreaDiagramDepthAction
     | SetComputingStatusAction
+    | SetComputingStatusParametersAction<ParameterizedComputingType>
     | SetComputationStartingAction
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
@@ -771,92 +777,6 @@ export function openNadList(ids: string[]): OpenNadListAction {
     };
 }
 
-export const RESET_NETWORK_AREA_DIAGRAM_DEPTH = 'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
-export type ResetNetworkAreaDiagramDepthAction = Readonly<Action<typeof RESET_NETWORK_AREA_DIAGRAM_DEPTH>>;
-
-export function resetNetworkAreaDiagramDepth(): ResetNetworkAreaDiagramDepthAction {
-    return {
-        type: RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-    };
-}
-
-export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
-export type IncrementNetworkAreaDiagramDepthAction = Readonly<Action<typeof INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH>>;
-
-export function incrementNetworkAreaDiagramDepth(): IncrementNetworkAreaDiagramDepthAction {
-    return {
-        type: INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    };
-}
-
-export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
-export type DecrementNetworkAreaDiagramDepthAction = Readonly<Action<typeof DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH>>;
-
-export function decrementNetworkAreaDiagramDepth(): DecrementNetworkAreaDiagramDepthAction {
-    return {
-        type: DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    };
-}
-
-export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT';
-export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
-    Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
-> & {
-    diagramId: UUID;
-    equipmentId: string;
-    x: number;
-    y: number;
-    scalingFactor: number;
-};
-
-export function storeNetworkAreaDiagramNodeMovement(
-    diagramId: UUID,
-    equipmentId: string,
-    x: number,
-    y: number,
-    scalingFactor: number
-): StoreNetworkAreaDiagramNodeMovementAction {
-    return {
-        type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        diagramId: diagramId,
-        equipmentId: equipmentId,
-        x: x,
-        y: y,
-        scalingFactor: scalingFactor,
-    };
-}
-
-export const STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT';
-export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
-    Action<typeof STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT>
-> & {
-    diagramId: UUID;
-    equipmentId: string;
-    shiftX: number;
-    shiftY: number;
-    connectionShiftX: number;
-    connectionShiftY: number;
-};
-
-export function storeNetworkAreaDiagramTextNodeMovement(
-    diagramId: UUID,
-    equipmentId: string,
-    shiftX: number,
-    shiftY: number,
-    connectionShiftX: number,
-    connectionShiftY: number
-): StoreNetworkAreaDiagramTextNodeMovementAction {
-    return {
-        type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-        diagramId: diagramId,
-        equipmentId: equipmentId,
-        shiftX: shiftX,
-        shiftY: shiftY,
-        connectionShiftX: connectionShiftX,
-        connectionShiftY: connectionShiftY,
-    };
-}
-
 export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
 export type SetComputingStatusAction = Readonly<Action<typeof SET_COMPUTING_STATUS>> & {
     computingType: ComputingType;
@@ -871,6 +791,27 @@ export function setComputingStatus(
         type: SET_COMPUTING_STATUS,
         computingType: computingType,
         runningStatus: runningStatus,
+    };
+}
+
+export type ParameterizedComputingType = ComputingType.LOAD_FLOW;
+
+export const SET_COMPUTING_STATUS_INFOS = 'SET_COMPUTING_STATUS_INFOS';
+export type SetComputingStatusParametersAction<K extends ParameterizedComputingType> = Readonly<
+    Action<typeof SET_COMPUTING_STATUS_INFOS>
+> & {
+    computingType: K;
+    computingStatusParameters: ComputingStatusParameters[K];
+};
+
+export function setComputingStatusParameters<K extends ParameterizedComputingType>(
+    computingType: K,
+    computingStatusParameters: ComputingStatusParameters[K]
+): SetComputingStatusParametersAction<K> {
+    return {
+        type: SET_COMPUTING_STATUS_INFOS,
+        computingType: computingType,
+        computingStatusParameters: computingStatusParameters,
     };
 }
 
@@ -1335,5 +1276,17 @@ export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT
 export function resetDiagramEvent(): ResetDiagramEventAction {
     return {
         type: RESET_DIAGRAM_EVENT,
+    };
+}
+
+export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
+export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
+    diagramGridLayout: DiagramGridLayoutConfig;
+};
+
+export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
+    return {
+        type: SET_DIAGRAM_GRID_LAYOUT,
+        diagramGridLayout: diagramGridLayout,
     };
 }

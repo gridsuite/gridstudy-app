@@ -22,9 +22,12 @@ import { openDiagram } from '../redux/actions.js';
 import { useDispatch } from 'react-redux';
 
 const styles = {
-    tabsContainer: {
-        flexGrow: 1,
-        height: '100%',
+    tabsContainer: (theme) => {
+        return {
+            flexGrow: 1,
+            height: '100%',
+            background: theme.palette.tabBackground,
+        };
     },
     '@global': {
         '@keyframes spin': {
@@ -43,7 +46,14 @@ const styles = {
     },
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = StudyView.MAP, onChangeTab, ...props }) => {
+const StudyPane = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    view = StudyView.TREE,
+    onChangeTab,
+    ...props
+}) => {
     const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -52,11 +62,11 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
 
     const disabled = !isNodeBuilt(currentNode);
     const openVoltageLevelDiagram = useCallback(
-        (vlId) => {
+        (equipmentId, diagramType = DiagramType.VOLTAGE_LEVEL) => {
             // TODO code factorization for displaying a VL via a hook
-            if (vlId) {
+            if (equipmentId) {
                 onChangeTab(0); // switch to map view
-                dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
+                dispatch(openDiagram(equipmentId, diagramType));
             }
         },
         [dispatch, onChangeTab]
@@ -74,7 +84,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                 <div
                     className="singlestretch-child"
                     style={{
-                        display: view === StudyView.MAP ? null : 'none',
+                        display: view === StudyView.TREE ? null : 'none',
                     }}
                 >
                     <MapViewer
@@ -96,6 +106,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetworkUuid, view = Stud
                         equipmentType={tableEquipment.type}
                         disabled={disabled}
                         onEquipmentScrolled={unsetTableEquipment}
+                        openDiagram={openVoltageLevelDiagram}
                     />
                 </TabPanelLazy>
                 <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>

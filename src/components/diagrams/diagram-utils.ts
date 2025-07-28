@@ -18,18 +18,53 @@ export function buildPositionsFromNadMetadata(metadata: DiagramMetadata): Diagra
     metadata.nodes.forEach((node) => {
         positionsMap.set(node.equipmentId, {
             voltageLevelId: node.equipmentId,
-            xposition: node.x,
-            yposition: node.y,
-            xlabelPosition: 0,
-            ylabelPosition: 0,
+            xPosition: node.x,
+            yPosition: node.y,
+            xLabelPosition: 0,
+            yLabelPosition: 0,
         });
     });
     // Update the map with text node positions
     metadata.textNodes.forEach((textNode) => {
         if (positionsMap.has(textNode.equipmentId)) {
-            positionsMap.get(textNode.equipmentId)!.xlabelPosition = textNode.shiftX;
-            positionsMap.get(textNode.equipmentId)!.ylabelPosition = textNode.shiftY;
+            positionsMap.get(textNode.equipmentId)!.xLabelPosition = textNode.shiftX;
+            positionsMap.get(textNode.equipmentId)!.yLabelPosition = textNode.shiftY;
         }
     });
+    return Array.from(positionsMap.values());
+}
+
+/**
+ * Adds to existingPositions the positions from the NAD metadata that are
+ * not already defined.
+ *
+ * @param existingPositions The existing positions array (can be empty)
+ * @param nadMetadata The network area diagram metadata containing new positions
+ * @returns A new array with merged positions
+ */
+export function mergePositions(
+    existingPositions: DiagramConfigPosition[],
+    nadMetadata: DiagramMetadata | undefined
+): DiagramConfigPosition[] {
+    if (!nadMetadata) {
+        return [...existingPositions];
+    }
+
+    const positionsMap = new Map<string, DiagramConfigPosition>();
+    // Add existing positions to the map
+    existingPositions.forEach((pos) => {
+        positionsMap.set(pos.voltageLevelId, pos);
+    });
+
+    const nadMetadataPositions = buildPositionsFromNadMetadata(nadMetadata);
+
+    // Update map with new positions
+    nadMetadataPositions.forEach((position) => {
+        if (!positionsMap.has(position.voltageLevelId)) {
+            positionsMap.set(position.voltageLevelId, position);
+        }
+    });
+
+    // Convert map back to array
     return Array.from(positionsMap.values());
 }

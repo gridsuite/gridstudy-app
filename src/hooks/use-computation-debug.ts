@@ -8,10 +8,15 @@
 import { useCallback } from 'react';
 import { UUID } from 'crypto';
 import { getDebugState, saveDebugState } from '../redux/session-storage/debug-state';
-import ComputingType, { formatComputingTypeLabel } from '../components/computing-status/computing-type';
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
-import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    formatComputingTypeLabel,
+    NotificationsUrlKeys,
+    useNotificationsListener,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { downloadDebugFileDynamicSimulation } from '../services/dynamic-simulation';
 import { useIntl } from 'react-intl';
 import { downloadDebugFileDynamicSecurityAnalysis } from '../services/dynamic-security-analysis';

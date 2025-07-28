@@ -38,13 +38,14 @@ import {
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
+    createNodeSequence,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType } from './network-modification.type';
 import { NetworkModificationTreePanePanels } from './network-modification-tree-pane-panels';
-import { NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
+import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
 // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
@@ -62,6 +63,7 @@ const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
     nodeId: null,
     copyType: null,
+    nodeType: null,
     allChildrenIds: null,
 };
 
@@ -229,6 +231,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_CREATED) {
+                if (isSubtreeImpacted([studyUpdatedForce.eventData.headers.parentNode])) {
+                    resetNodeClipboard();
+                }
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers.newNode).then(
                     (nodes) => {
                         dispatch(
@@ -258,6 +263,11 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         )
                     );
                 });
+                const movedNode = studyUpdatedForce.eventData.headers.movedNode;
+                const parentNode = studyUpdatedForce.eventData.headers.parentNode;
+                if (isSubtreeImpacted([movedNode, parentNode])) {
+                    resetNodeClipboard();
+                }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.SUBTREE_MOVED) {
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers.movedNode).then(
                     (nodes) => {
@@ -266,6 +276,12 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         );
                     }
                 );
+                const movedNode = studyUpdatedForce.eventData.headers.movedNode;
+                const parentNode = studyUpdatedForce.eventData.headers.parentNode;
+
+                if (isSubtreeImpacted([movedNode, parentNode])) {
+                    resetNodeClipboard();
+                }
             } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODES_DELETED) {
                 if (
                     studyUpdatedForce.eventData.headers.nodes.some(
@@ -331,7 +347,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     ]);
 
     const handleCreateNode = useCallback(
-        (element, type, insertMode) => {
+        (element, type, insertMode, networkModificationNodeType) => {
             getUniqueNodeName(studyUuid)
                 .then((response) =>
                     createTreeNode(studyUuid, element.id, insertMode, {
@@ -339,6 +355,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         type: type,
                         localBuildStatus: BUILD_STATUS.NOT_BUILT,
                         globalBuildStatus: BUILD_STATUS.NOT_BUILT,
+                        nodeType: networkModificationNodeType,
                     }).catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -352,6 +369,18 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                         headerId: 'NodeCreateError',
                     });
                 });
+        },
+        [studyUuid, snackError]
+    );
+
+    const handleCreateSecuritySequence = useCallback(
+        (element) => {
+            createNodeSequence(studyUuid, element.id, NodeSequenceType.SECURITY_SEQUENCE).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'SequenceCreateError',
+                });
+            });
         },
         [studyUuid, snackError]
     );
@@ -402,7 +431,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, snackError, dispatch]
+        [studyUuid, dispatch, snackError]
     );
 
     const handleRemoveNode = useCallback(
@@ -581,6 +610,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     handleBuildNode={handleBuildNode}
                     handleUnbuildNode={handleUnbuildNode}
                     handleNodeCreation={handleCreateNode}
+                    handleSecuritySequenceCreation={handleCreateSecuritySequence}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}

@@ -155,7 +155,11 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             onManualChangeCallback={() => setModifiedByUser(true)}
                         />
                     </Grid>
-                    <RootNetworkCaseSelection isModification={isModification} onSelectCase={onSelectCase} />
+                    <RootNetworkCaseSelection
+                        isModification={isModification}
+                        onSelectCase={onSelectCase}
+                        originalCaseUuid={editableRootNetwork?.originalCaseUuid}
+                    />
                     <Grid item>
                         <UniqueCheckNameInput
                             name={TAG}

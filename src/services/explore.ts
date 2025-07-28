@@ -215,10 +215,10 @@ export function createContingencyList(
 
 export interface DiagramConfigPosition {
     voltageLevelId: string;
-    xposition?: number;
-    yposition?: number;
-    xlabelPosition?: number;
-    ylabelPosition?: number;
+    xPosition?: number;
+    yPosition?: number;
+    xLabelPosition?: number;
+    yLabelPosition?: number;
 }
 
 export interface DiagramConfig {

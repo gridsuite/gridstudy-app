@@ -9,36 +9,39 @@ import Box from '@mui/material/Box';
 import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme } from '@mui/material';
+import { Theme, Typography } from '@mui/material';
 
 export const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme: Theme) => ({
-        padding: theme.spacing(0.5),
+        paddingLeft: theme.spacing(1),
         display: 'flex',
         alignItems: 'center',
-        backgroundColor: theme.palette.background.default,
-        borderBottom: 'solid 1px',
-        borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
+        backgroundColor: theme.palette.mode === 'light' ? 'white' : '#292e33',
+        border:
+            theme.palette.mode === 'light'
+                ? `1px solid ${theme.palette.grey[500]}`
+                : `1px solid ${theme.palette.grey[800]}`,
+        borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
+        cursor: 'grab',
     }),
     blink: (theme: Theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
         '@keyframes diagramHeaderBlinkAnimation': {
             // This adds a global css rule, so we keep the rule's name specific.
             '0%, 25%': {
-                backgroundColor:
-                    theme.palette.mode === 'light' ? theme.palette.action.disabled : theme.palette.action.selected,
+                backgroundColor: theme.palette.mode === 'light' ? '#292e33' : 'white',
             },
             '100%': {
-                backgroundColor: theme.palette.background.default,
+                backgroundColor: theme.palette.mode === 'light' ? 'white' : '#292e33',
             },
         },
     }),
 };
 
 interface CardHeaderProps {
-    title?: string;
+    title?: React.ReactNode;
     onClose?: () => void;
     blinking?: boolean;
 }
@@ -46,7 +49,11 @@ interface CardHeaderProps {
 const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => {
     return (
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
-            <OverflowableText className="react-grid-dragHandle" sx={{ flexGrow: '1' }} text={title} />
+            <OverflowableText
+                className="react-grid-dragHandle"
+                sx={{ flexGrow: '1', paddingBottom: '2px' }}
+                text={<Typography variant="caption">{title}</Typography>}
+            />
             <Box>
                 <Box
                     sx={{
@@ -54,7 +61,7 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => 
                         flexDirection: 'row',
                     }}
                 >
-                    <IconButton size="small" onClick={onClose}>
+                    <IconButton className="card-header-close-button" size="small" onClick={onClose}>
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 </Box>

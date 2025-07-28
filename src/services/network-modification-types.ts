@@ -200,6 +200,7 @@ export interface StaticVarCompensatorCreationInfo {
     maxQAtNominalV: number | null;
     minQAtNominalV: number | null;
     regulationMode: string;
+    isRegulating: boolean;
     voltageSetpoint: number;
     reactivePowerSetpoint: number;
     voltageRegulationType: string;
@@ -840,5 +841,8 @@ export type BalancesAdjustmentInfos = {
     countriesToBalance: string[];
     balanceType: BalanceType;
     withLoadFlow: boolean;
+    loadFlowParametersId: string | null;
+    withRatioTapChangers: boolean;
+    subtractLoadFlowBalancing: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };

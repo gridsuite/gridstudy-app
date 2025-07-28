@@ -274,7 +274,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twtModification?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
-                    regulationMode: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
+                    regulationMode: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATING]?.value
+                        ? twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value
+                        : PHASE_REGULATION_MODES.OFF.id,
                     regulationType: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_TYPE]?.value,
                     regulationSide: twtModification?.[PHASE_TAP_CHANGER]?.[REGULATION_SIDE]?.value ?? null,
                     currentLimiterRegulatingValue:
@@ -379,6 +381,87 @@ const TwoWindingsTransformerModificationDialog = ({
         }
     }, []);
 
+    const computeRatioTapForSubmit = useCallback(
+        (twt) => {
+            let ratioTap;
+            const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
+            const enableRatioTapChanger =
+                ratioTapChangerFormValues?.[ENABLED] !== !!twtToModify?.ratioTapChanger
+                    ? ratioTapChangerFormValues?.[ENABLED]
+                    : null;
+            const areRatioStepsModified =
+                isNodeBuilt(currentNode) && editData?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ? true
+                    : !compareStepsWithPreviousValues(
+                          ratioTapChangerFormValues[STEPS],
+                          twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
+                      );
+            let ratioTapChangerSteps = !areRatioStepsModified ? null : ratioTapChangerFormValues[STEPS];
+            if (ratioTapChangerFormValues?.[ENABLED]) {
+                ratioTap = {
+                    [ENABLED]: toModificationOperation(enableRatioTapChanger),
+                    [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
+                        ratioTapChangerFormValues?.[LOAD_TAP_CHANGING_CAPABILITIES]
+                    ),
+                    [TAP_POSITION]: toModificationOperation(ratioTapChangerFormValues?.[TAP_POSITION]),
+                    [LOW_TAP_POSITION]: toModificationOperation(ratioTapChangerFormValues?.[LOW_TAP_POSITION]),
+                    [STEPS]: ratioTapChangerSteps,
+                };
+                fillRatioTapChangerRegulationAttributes(ratioTap, ratioTapChangerFormValues, twtToModify);
+            } else {
+                ratioTap = {
+                    enabled: toModificationOperation(enableRatioTapChanger),
+                };
+            }
+            return ratioTap;
+        },
+        [currentNode, editData, fillRatioTapChangerRegulationAttributes, twtToModify]
+    );
+
+    const computePhaseTapForSubmit = useCallback(
+        (twt) => {
+            let phaseTap;
+            const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
+            const enablePhaseTapChanger =
+                phaseTapChangerFormValues?.[ENABLED] !== !!twtToModify?.phaseTapChanger
+                    ? phaseTapChangerFormValues?.[ENABLED]
+                    : null;
+            const arePhaseStepsModified =
+                isNodeBuilt(currentNode) && editData?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ? true
+                    : !compareStepsWithPreviousValues(
+                          phaseTapChangerFormValues[STEPS],
+                          twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                      );
+            let phaseTapChangerSteps = !arePhaseStepsModified ? null : phaseTapChangerFormValues[STEPS];
+            if (phaseTapChangerFormValues?.[ENABLED]) {
+                phaseTap = {
+                    [ENABLED]: toModificationOperation(enablePhaseTapChanger),
+                    [REGULATING]: toModificationOperation(
+                        phaseTapChangerFormValues[REGULATION_MODE]
+                            ? phaseTapChangerFormValues[REGULATION_MODE] !== PHASE_REGULATION_MODES.OFF.id
+                            : null
+                    ),
+                    [REGULATION_MODE]: toModificationOperation(
+                        phaseTapChangerFormValues[REGULATION_MODE] !== PHASE_REGULATION_MODES.OFF.id
+                            ? phaseTapChangerFormValues[REGULATION_MODE]
+                            : null
+                    ),
+                    [TAP_POSITION]: toModificationOperation(phaseTapChangerFormValues[TAP_POSITION]),
+                    [LOW_TAP_POSITION]: toModificationOperation(phaseTapChangerFormValues[LOW_TAP_POSITION]),
+                    [STEPS]: phaseTapChangerSteps,
+                };
+                fillPhaseTapChangerRegulationAttributes(phaseTap, phaseTapChangerFormValues, twtToModify);
+            } else {
+                phaseTap = {
+                    enabled: toModificationOperation(enablePhaseTapChanger),
+                };
+            }
+            return phaseTap;
+        },
+        [currentNode, editData, fillPhaseTapChangerRegulationAttributes, twtToModify]
+    );
+
     const onSubmit = useCallback(
         (twt) => {
             const connectivity1 = twt[CONNECTIVITY]?.[CONNECTIVITY_1];
@@ -425,66 +508,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            let ratioTap;
-            const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
-            const enableRatioTapChanger =
-                ratioTapChangerFormValues?.[ENABLED] !== !!twtToModify?.ratioTapChanger
-                    ? ratioTapChangerFormValues?.[ENABLED]
-                    : null;
-            const areRatioStepsModified =
-                isNodeBuilt(currentNode) && editData?.[RATIO_TAP_CHANGER]?.[STEPS]
-                    ? true
-                    : !compareStepsWithPreviousValues(
-                          ratioTapChangerFormValues[STEPS],
-                          twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
-                      );
-            let ratioTapChangerSteps = !areRatioStepsModified ? null : ratioTapChangerFormValues[STEPS];
-            if (ratioTapChangerFormValues?.[ENABLED]) {
-                ratioTap = {
-                    [ENABLED]: toModificationOperation(enableRatioTapChanger),
-                    [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
-                        ratioTapChangerFormValues?.[LOAD_TAP_CHANGING_CAPABILITIES]
-                    ),
-                    [TAP_POSITION]: toModificationOperation(ratioTapChangerFormValues?.[TAP_POSITION]),
-                    [LOW_TAP_POSITION]: toModificationOperation(ratioTapChangerFormValues?.[LOW_TAP_POSITION]),
-                    [STEPS]: ratioTapChangerSteps,
-                };
-                fillRatioTapChangerRegulationAttributes(ratioTap, ratioTapChangerFormValues, twtToModify);
-            } else {
-                ratioTap = {
-                    enabled: toModificationOperation(enableRatioTapChanger),
-                };
-            }
-
-            let phaseTap;
-            const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
-            const enablePhaseTapChanger =
-                phaseTapChangerFormValues?.[ENABLED] !== !!twtToModify?.phaseTapChanger
-                    ? phaseTapChangerFormValues?.[ENABLED]
-                    : null;
-            const arePhaseStepsModified =
-                isNodeBuilt(currentNode) && editData?.[PHASE_TAP_CHANGER]?.[STEPS]
-                    ? true
-                    : !compareStepsWithPreviousValues(
-                          phaseTapChangerFormValues[STEPS],
-                          twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
-                      );
-            let phaseTapChangerSteps = !arePhaseStepsModified ? null : phaseTapChangerFormValues[STEPS];
-            if (phaseTapChangerFormValues?.[ENABLED]) {
-                phaseTap = {
-                    [ENABLED]: toModificationOperation(enablePhaseTapChanger),
-                    [REGULATION_MODE]: toModificationOperation(phaseTapChangerFormValues[REGULATION_MODE]),
-                    [TAP_POSITION]: toModificationOperation(phaseTapChangerFormValues[TAP_POSITION]),
-                    [LOW_TAP_POSITION]: toModificationOperation(phaseTapChangerFormValues[LOW_TAP_POSITION]),
-                    [STEPS]: phaseTapChangerSteps,
-                };
-                fillPhaseTapChangerRegulationAttributes(phaseTap, phaseTapChangerFormValues, twtToModify);
-            } else {
-                phaseTap = {
-                    enabled: toModificationOperation(enablePhaseTapChanger),
-                };
-            }
-
             modifyTwoWindingsTransformer({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -500,8 +523,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
                 currentLimit1: currentLimits1,
                 currentLimit2: currentLimits2,
-                ratioTapChanger: ratioTap,
-                phaseTapChanger: phaseTap,
+                ratioTapChanger: computeRatioTapForSubmit(twt),
+                phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
@@ -539,9 +562,9 @@ const TwoWindingsTransformerModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             selectedId,
-            fillRatioTapChangerRegulationAttributes,
-            fillPhaseTapChangerRegulationAttributes,
             snackError,
+            computeRatioTapForSubmit,
+            computePhaseTapForSubmit,
         ]
     );
 
@@ -680,6 +703,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
+
                             reset((formValues) => ({
                                 ...formValues,
                                 ...getSelectedLimitsFormData({
@@ -693,7 +717,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                     hasLoadTapChangingCapabilities: getValues(
                                         `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
                                     ),
-                                    regulationMode: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
+                                    regulationMode:
+                                        getValues(`${RATIO_TAP_CHANGER}.${REGULATING}`) === false
+                                            ? PHASE_REGULATION_MODES.OFF.id
+                                            : getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
                                     regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
                                     regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
                                     targetV: getValues(`${RATIO_TAP_CHANGER}.${TARGET_V}`),
@@ -792,7 +819,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 onSave={onSubmit}
                 onValidationError={onValidationError}
                 open={open}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }

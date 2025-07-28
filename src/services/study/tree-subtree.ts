@@ -124,6 +124,22 @@ export function createTreeNode(studyUuid: UUID, parentId: UUID, insertMode: Node
     });
 }
 
+export function createNodeSequence(studyUuid: UUID, parentId: UUID, sequenceType: string) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('sequenceType', sequenceType);
+
+    const nodeCreationUrl =
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentId) + '?' + urlSearchParams.toString();
+    console.debug('%s with sequenceType : %s', nodeCreationUrl, sequenceType);
+    return backendFetch(nodeCreationUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export function stashTreeNode(studyUuid: UUID, nodeId: UUID) {
     console.info('Stash tree node : ', nodeId);
     const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId) + '/stash';

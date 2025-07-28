@@ -26,7 +26,7 @@ import {
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
@@ -34,7 +34,6 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType from '../../computing-status/computing-type';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
@@ -182,8 +181,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         const allBusesFilterTypes = ['fault-types', 'limit-violation-types'];
         const oneBusFilterTypes = ['branch-sides'];
         const currentComputingType = isOneBusShortCircuitAnalysisType
-            ? computingType.SHORT_CIRCUIT_ONE_BUS
-            : computingType.SHORT_CIRCUIT;
+            ? ComputingType.SHORT_CIRCUIT_ONE_BUS
+            : ComputingType.SHORT_CIRCUIT;
 
         const filterTypes = isOneBusShortCircuitAnalysisType ? oneBusFilterTypes : allBusesFilterTypes;
 
@@ -244,6 +243,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onFilter={memoizedSetPageCallback}
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
+                filters={filters}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

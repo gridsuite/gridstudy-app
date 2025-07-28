@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, mergeSx, parametersStyles, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    mergeSx,
+    PopupConfirmationDialog,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
@@ -27,6 +33,7 @@ import { StateEstimationQualityParameters } from './state-estimation-quality-par
 import { StateEstimationLoadboundsParameters } from './state-estimation-loadbounds-parameters';
 import { updateStateEstimationParameters } from '../../../../services/study/state-estimation';
 import { UseGetStateEstimationParametersProps } from './use-get-state-estimation-parameters';
+import { parametersStyles } from '../util/styles';
 
 export const StateEstimationParameters = ({
     useStateEstimationParameters,
@@ -37,6 +44,7 @@ export const StateEstimationParameters = ({
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [stateEstimationParams, setStateEstimationParams] = useStateEstimationParameters;
+    const [openResetConfirmation, setOpenResetConfirmation] = useState(false);
 
     const initialFormValues = useMemo(
         () =>
@@ -92,7 +100,16 @@ export const StateEstimationParameters = ({
     const clear = useCallback(() => {
         resetStateEstimationParameters();
         onValidationError();
+        setOpenResetConfirmation(false);
     }, [resetStateEstimationParameters, onValidationError]);
+
+    const handleResetClick = useCallback(() => {
+        setOpenResetConfirmation(true);
+    }, []);
+
+    const handleCancelReset = useCallback(() => {
+        setOpenResetConfirmation(false);
+    }, []);
 
     const onSubmit = useCallback(
         (newParams: StateEstimationParametersForm) => {
@@ -194,13 +211,24 @@ export const StateEstimationParameters = ({
                             paddingLeft: 0,
                         })}
                     >
-                        <Button onClick={clear}>
+                        <Button onClick={handleResetClick}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
                         <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit, onValidationError)} />
                     </DialogActions>
                 </Grid>
             </Grid>
+
+            {/* Reset Confirmation Dialog */}
+            {openResetConfirmation && (
+                <PopupConfirmationDialog
+                    message="resetParamsConfirmation"
+                    validateButtonLabel="validate"
+                    openConfirmationPopup={openResetConfirmation}
+                    setOpenConfirmationPopup={handleCancelReset}
+                    handlePopupConfirmation={clear}
+                />
+            )}
         </CustomFormProvider>
     );
 };

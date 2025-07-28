@@ -30,6 +30,10 @@ export type AbstractNode = {
     columnPosition?: number;
 };
 
+export type NetworkModificationNodeInfos = {
+    id: UUID;
+    nodeType?: NetworkModificationNodeType;
+};
 export type StashedNodeProperties = {
     first: AbstractNode;
     second: number; // children size
@@ -66,6 +70,7 @@ type NodeCommonData = {
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
+    nodeType?: NetworkModificationNodeType;
 };
 export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
 
@@ -77,3 +82,11 @@ export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
 export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
+
+export const isSecurityModificationNode = (node: CurrentTreeNode | undefined): node is ModificationNode => {
+    return (
+        !!node &&
+        node.type === NodeType.NETWORK_MODIFICATION &&
+        node.data?.nodeType === NetworkModificationNodeType.SECURITY
+    );
+};

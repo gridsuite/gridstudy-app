@@ -11,7 +11,6 @@ import {
     AuthenticationRouterErrorAction,
     AuthenticationRouterErrorState,
     CommonStoreState,
-    ElementType,
     GsLang,
     GsLangUser,
     GsTheme,
@@ -28,6 +27,7 @@ import {
     UserAction,
     UserValidationErrorAction,
     NetworkVisualizationParameters,
+    ComputingType,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -52,8 +52,6 @@ import {
     CURRENT_TREE_NODE,
     CurrentRootNetworkUuidAction,
     CurrentTreeNodeAction,
-    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
     DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
@@ -62,8 +60,6 @@ import {
     EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     FavoriteContingencyListsAction,
-    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    IncrementNetworkAreaDiagramDepthAction,
     INIT_TABLE_DEFINITIONS,
     InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
@@ -120,14 +116,12 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
-    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetAllSpreadsheetGlobalFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
     ResetLogsFilterAction,
     ResetMapEquipmentsAction,
-    ResetNetworkAreaDiagramDepthAction,
     SAVE_SPREADSHEET_GS_FILTER,
     SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -176,10 +170,6 @@ import {
     SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
-    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-    StoreNetworkAreaDiagramNodeMovementAction,
-    StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     TABLE_SORT,
@@ -204,6 +194,11 @@ import {
     SetMonoRootStudyAction,
     RESET_DIAGRAM_EVENT,
     ResetDiagramEventAction,
+    SET_COMPUTING_STATUS_INFOS,
+    SetComputingStatusParametersAction,
+    ParameterizedComputingType,
+    SET_DIAGRAM_GRID_LAYOUT,
+    SetDiagramGridLayoutAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -223,8 +218,7 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { getAllChildren } from 'components/graph/util/model-functions';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import {
@@ -265,7 +259,13 @@ import { UUID } from 'crypto';
 import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import {
+    CurrentTreeNode,
+    NetworkModificationNodeInfos,
+    NetworkModificationNodeData,
+    NetworkModificationNodeType,
+    RootNodeData,
+} from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -275,11 +275,13 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { Layouts } from 'react-grid-layout';
+import { DiagramConfigPosition } from '../services/explore';
 
 // Redux state
 export type StudyUpdated = {
@@ -302,6 +304,14 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+}
+
+export interface LoadFlowStatusParameters {
+    withRatioTapChangers: boolean;
+}
+
+export interface ComputingStatusParameters {
+    [ComputingType.LOAD_FLOW]: LoadFlowStatusParameters | null;
 }
 
 export type TableSortConfig = Record<string, SortConfig[]>;
@@ -349,22 +359,20 @@ type CreateSubstationSLDDiagramEvent = CreateDiagramEvent & {
 
 type CreateNADDiagramEvent = CreateDiagramEvent & {
     diagramType: DiagramType.NETWORK_AREA_DIAGRAM;
+    nadConfigUuid: UUID | undefined;
+    filterUuid: UUID | undefined;
+    name: string;
     voltageLevelIds: string[];
-};
-
-type CreateNADFromElementDiagramEvent = CreateDiagramEvent & {
-    diagramType: DiagramType.NAD_FROM_ELEMENT;
-    elementUuid: UUID;
-    elementType: ElementType;
-    elementName: string;
+    voltageLevelToExpandIds: string[];
+    voltageLevelToOmitIds: string[];
+    positions: DiagramConfigPosition[];
 };
 
 export type DiagramEvent =
     | RemoveDiagramEvent
     | CreateVoltageLevelSLDDiagramEvent
     | CreateSubstationSLDDiagramEvent
-    | CreateNADDiagramEvent
-    | CreateNADFromElementDiagramEvent;
+    | CreateNADDiagramEvent;
 
 export type NadNodeMovement = {
     diagramId: UUID;
@@ -389,8 +397,9 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
+    nodeType: NetworkModificationNodeType | undefined;
     copyType: ValueOf<typeof CopyType> | null;
-    allChildrenIds: string[] | null;
+    allChildren: NetworkModificationNodeInfos[] | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -404,6 +413,11 @@ export interface AppConfigState {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAMS_LOADED]: boolean;
+}
+
+export interface DiagramGridLayoutConfig {
+    gridLayouts: Layouts;
+    params: DiagramParams[];
 }
 
 export interface AppState extends CommonStoreState, AppConfigState {
@@ -420,6 +434,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     currentRootNetworkUuid: UUID | null;
     rootNetworks: RootNetworkMetadata[];
     computingStatus: ComputingStatus;
+    computingStatusParameters: ComputingStatusParameters;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
@@ -490,6 +505,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
+    diagramGridLayout: DiagramGridLayoutConfig;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -556,8 +572,9 @@ const initialState: AppState = {
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
+        nodeType: undefined,
         copyType: null,
-        allChildrenIds: null,
+        allChildren: null,
     },
     tables: initialTablesState,
     calculationSelections: {},
@@ -592,6 +609,10 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
+    diagramGridLayout: {
+        gridLayouts: {},
+        params: [],
+    },
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -603,6 +624,9 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+    },
+    computingStatusParameters: {
+        [ComputingType.LOAD_FLOW]: null,
     },
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
@@ -1116,16 +1140,23 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
         const nodeSelectionForCopy = action.nodeSelectionForCopy;
-        if (
-            nodeSelectionForCopy.sourceStudyUuid === state.studyUuid &&
-            nodeSelectionForCopy.nodeId &&
-            (nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
-                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT)
-        ) {
-            nodeSelectionForCopy.allChildrenIds = getAllChildren(
+        if (nodeSelectionForCopy.sourceStudyUuid === state.studyUuid && nodeSelectionForCopy.nodeId) {
+            if (
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT
+            ) {
+                nodeSelectionForCopy.allChildren = getAllChildren(
+                    state.networkModificationTreeModel,
+                    nodeSelectionForCopy.nodeId
+                ).map((child) => ({
+                    id: child.id,
+                    nodeType: child.data.nodeType,
+                }));
+            }
+            nodeSelectionForCopy.nodeType = getNetworkModificationNode(
                 state.networkModificationTreeModel,
                 nodeSelectionForCopy.nodeId
-            ).map((child) => child.id);
+            )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
@@ -1202,7 +1233,13 @@ export const reducer = createReducer(initialState, (builder) => {
             state.latestDiagramEvent = {
                 diagramType: action.svgType,
                 eventType: DiagramEventType.CREATE,
+                name: '',
+                nadConfigUuid: undefined,
+                filterUuid: undefined,
                 voltageLevelIds: [action.id as UUID],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
+                positions: [],
             };
         }
 
@@ -1221,7 +1258,13 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
+            name: '',
+            nadConfigUuid: undefined,
+            filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
+            voltageLevelToExpandIds: [],
+            voltageLevelToOmitIds: [],
+            positions: [],
         };
 
         // Switch to the grid layout in order to see the newly opened diagram
@@ -1232,66 +1275,6 @@ export const reducer = createReducer(initialState, (builder) => {
             state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
         }
     });
-
-    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: ResetNetworkAreaDiagramDepthAction) => {
-        state.networkAreaDiagramDepth = 0;
-    });
-
-    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: IncrementNetworkAreaDiagramDepthAction) => {
-        state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
-    });
-
-    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, _action: DecrementNetworkAreaDiagramDepthAction) => {
-        if (state.networkAreaDiagramDepth > 0) {
-            state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
-        }
-    });
-
-    builder.addCase(
-        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
-            );
-            if (correspondingMovement.length === 0) {
-                state.nadNodeMovements.push({
-                    diagramId: action.diagramId,
-                    equipmentId: action.equipmentId,
-                    x: action.x,
-                    y: action.y,
-                    scalingFactor: action.scalingFactor,
-                });
-            } else {
-                correspondingMovement[0].x = action.x;
-                correspondingMovement[0].y = action.y;
-                correspondingMovement[0].scalingFactor = action.scalingFactor;
-            }
-        }
-    );
-
-    builder.addCase(
-        STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
-        (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
-            const correspondingMovement: NadTextMovement[] = state.nadTextNodeMovements.filter(
-                (movement) => movement.diagramId === action.diagramId && movement.equipmentId === action.equipmentId
-            );
-            if (correspondingMovement.length === 0) {
-                state.nadTextNodeMovements.push({
-                    diagramId: action.diagramId,
-                    equipmentId: action.equipmentId,
-                    shiftX: action.shiftX,
-                    shiftY: action.shiftY,
-                    connectionShiftX: action.connectionShiftX,
-                    connectionShiftY: action.connectionShiftY,
-                });
-            } else {
-                correspondingMovement[0].shiftX = action.shiftX;
-                correspondingMovement[0].shiftY = action.shiftY;
-                correspondingMovement[0].connectionShiftX = action.connectionShiftX;
-                correspondingMovement[0].connectionShiftY = action.connectionShiftY;
-            }
-        }
-    );
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
         Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
@@ -1438,6 +1421,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     });
+
+    builder.addCase(
+        SET_COMPUTING_STATUS_INFOS,
+        (state, action: SetComputingStatusParametersAction<ParameterizedComputingType>) => {
+            state.computingStatusParameters[action.computingType] = action.computingStatusParameters;
+        }
+    );
 
     builder.addCase(SET_COMPUTATION_STARTING, (state, action: SetComputationStartingAction) => {
         state.computationStarting = action.computationStarting;
@@ -1605,6 +1595,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
+    });
+
+    builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
+        state.diagramGridLayout = action.diagramGridLayout;
     });
 });
 
