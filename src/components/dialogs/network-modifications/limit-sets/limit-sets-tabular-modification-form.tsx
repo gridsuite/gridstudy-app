@@ -176,6 +176,12 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         language: language,
     });
 
+    const handleChange = useCallback(() => {
+        setTypeChangedTrigger(!typeChangedTrigger);
+        clearErrors(MODIFICATIONS_TABLE);
+        setValue(MODIFICATIONS_TABLE, []);
+    }, [clearErrors, setValue, typeChangedTrigger]);
+
     const watchTable = useWatch({
         name: MODIFICATIONS_TABLE,
     });
@@ -187,6 +193,13 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     useEffect(() => {
         setIsFetching(dataFetching);
     }, [dataFetching]);
+
+    const typesOptions = useMemo(() => {
+        //only available types for tabular modification
+        return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
+            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
+        );
+    }, []);
 
     useEffect(() => {
         if (selectedFileError) {
@@ -214,19 +227,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         }
     }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
 
-    const typesOptions = useMemo(() => {
-        //only available types for tabular modification
-        return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
-            (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
-        );
-    }, []);
-
-    const handleChange = useCallback(() => {
-        setTypeChangedTrigger(!typeChangedTrigger);
-        clearErrors(MODIFICATIONS_TABLE);
-        setValue(MODIFICATIONS_TABLE, []);
-    }, [clearErrors, setValue, typeChangedTrigger]);
-
     const equipmentTypeField = (
         <AutocompleteInput
             name={TYPE}
@@ -239,18 +239,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         />
     );
 
-    const defaultColDef = useMemo(
-        () => ({
-            sortable: true,
-            resizable: false,
-            lockPinned: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            cellRenderer: DefaultCellRenderer,
-        }),
-        []
-    );
-
     const columnDefs = useMemo<ColDef[]>(
         () =>
             csvColumns.map(({ id, name, index }) => ({
@@ -260,6 +248,18 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 cellRenderer: DefaultCellRenderer,
             })),
         [csvColumns, intl]
+    );
+
+    const limitSetModificationsDefaultColDef = useMemo(
+        () => ({
+            lockPinned: true,
+            resizable: false,
+            wrapHeaderText: true,
+            sortable: true,
+            autoHeaderHeight: true,
+            cellRenderer: DefaultCellRenderer,
+        }),
+        []
     );
 
     return (
@@ -296,7 +296,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 <CustomAGGrid
                     rowData={watchTable}
                     loading={isFetching}
-                    defaultColDef={defaultColDef}
+                    defaultColDef={limitSetModificationsDefaultColDef}
                     columnDefs={columnDefs}
                     pagination
                     paginationPageSize={100}
