@@ -197,6 +197,8 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SetComputingStatusParametersAction,
     ParameterizedComputingType,
+    SET_DIAGRAM_GRID_LAYOUT,
+    SetDiagramGridLayoutAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -273,11 +275,12 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { Layouts } from 'react-grid-layout';
 import { DiagramConfigPosition } from '../services/explore';
 
 // Redux state
@@ -412,6 +415,11 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export interface DiagramGridLayoutConfig {
+    gridLayouts: Layouts;
+    params: DiagramParams[];
+}
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -497,6 +505,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
+    diagramGridLayout: DiagramGridLayoutConfig;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -600,6 +609,10 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
+    diagramGridLayout: {
+        gridLayouts: {},
+        params: [],
+    },
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1582,6 +1595,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
+    });
+
+    builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
+        state.diagramGridLayout = action.diagramGridLayout;
     });
 });
 

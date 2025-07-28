@@ -18,7 +18,7 @@ const styles = {
         paddingLeft: theme.spacing(1),
         display: 'flex',
         alignItems: 'center',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? 'white' : '#292e33',
         border:
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
@@ -31,11 +31,10 @@ const styles = {
         '@keyframes diagramHeaderBlinkAnimation': {
             // This adds a global css rule, so we keep the rule's name specific.
             '0%, 25%': {
-                backgroundColor:
-                    theme.palette.mode === 'light' ? theme.palette.action.disabled : theme.palette.action.selected,
+                backgroundColor: theme.palette.mode === 'light' ? '#292e33' : 'white',
             },
             '100%': {
-                backgroundColor: theme.palette.background.default,
+                backgroundColor: theme.palette.mode === 'light' ? 'white' : '#292e33',
             },
         },
     }),
