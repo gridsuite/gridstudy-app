@@ -120,7 +120,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     }, [intl, equipmentType, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
-    const [selectedFile, FileField, selectedFileError] = useCSVPicker({
+    const [selectedFile, FileField, fileErrors] = useCSVPicker({
         label: 'ImportModifications',
         header: csvColumns,
         disabled: !csvColumns,
@@ -137,7 +137,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
     }, [dataFetching]);
 
     useEffect(() => {
-        if (selectedFileError) {
+        if (fileErrors) {
             setValue(MODIFICATIONS_TABLE, []);
             clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
@@ -161,7 +161,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, fileErrors, setValue, language]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular modification
@@ -188,19 +188,19 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
         />
     );
 
-    const defaultColDef = useMemo(
+    const limitSetModificationsdefaultColDef = useMemo(
         () => ({
-            sortable: true,
             resizable: false,
-            lockPinned: true,
             wrapHeaderText: true,
+            lockPinned: true,
             autoHeaderHeight: true,
+            sortable: true,
             cellRenderer: DefaultCellRenderer,
         }),
         []
     );
 
-    const columnDefs = useMemo(() => {
+    const limitSetModificationsColumnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[equipmentType]?.map((field) => {
             const columnDef: ColDef = {};
             if (field.id === EQUIPMENT_ID) {
@@ -235,17 +235,17 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 </Grid>
                 <Grid item>
                     <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
-                    {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
+                    {fileErrors && <Alert severity="error">{fileErrors}</Alert>}
                 </Grid>
             </Grid>
             <Grid item xs={12} sx={styles.grid}>
                 <CustomAGGrid
-                    rowData={watchTable}
+                    defaultColDef={limitSetModificationsdefaultColDef}
                     loading={isFetching}
-                    defaultColDef={defaultColDef}
-                    columnDefs={columnDefs}
+                    columnDefs={limitSetModificationsColumnDefs}
                     pagination
                     paginationPageSize={100}
+                    rowData={watchTable}
                     suppressDragLeaveHidesColumns
                     overrideLocales={AGGRID_LOCALES}
                 />
