@@ -6,7 +6,7 @@
  */
 
 const spreadsheetEn = {
-    'spreadsheet/column/button': 'Show / hide columns',
+    'spreadsheet/column/button': 'Column display',
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/collection/save/title': 'Spreadsheets list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',
@@ -50,6 +50,7 @@ const spreadsheetEn = {
     'spreadsheet/save/options/csv': 'Export CSV',
     'spreadsheet/save/dialog_title': 'Save a spreadsheet model',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Save a spreadsheet collection',
+    'spreadsheet/collection/save/button_tooltip': 'Save collection',
     'spreadsheet/save/error_message': 'Spreadsheet model creation error',
     'spreadsheet/save/update_error_message': 'Error while updating spreadsheet model {item}',
     'spreadsheet/collection/save/error': 'Spreadsheet collection creation error',
@@ -99,6 +100,7 @@ const spreadsheetEn = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Error while resetting spreadsheet collection',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Reset spreadsheet collection',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Configure or reload nodes',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
