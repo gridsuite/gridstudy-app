@@ -437,7 +437,7 @@ export const setFieldTypeError = (
             message: intl.formatMessage(
                 { id: 'WrongEnumValue' },
                 {
-                    field: intl.formatMessage({ id: fieldTypeInError }),
+                    field: fieldTypeInError,
                     expectedValues: expectedValues?.join(', ') ?? '',
                 }
             ),
@@ -448,7 +448,7 @@ export const setFieldTypeError = (
             message: intl.formatMessage(
                 { id: 'WrongFieldType' },
                 {
-                    field: intl.formatMessage({ id: fieldTypeInError }),
+                    field: fieldTypeInError,
                     type: intl.formatMessage({ id: `fieldType.${expectedTypeForFieldInError}` }),
                 }
             ),

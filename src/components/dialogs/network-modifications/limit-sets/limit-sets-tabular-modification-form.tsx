@@ -15,7 +15,6 @@ import {
     FieldErrorAlert,
     IntegerInput,
     LANG_FRENCH,
-    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AMOUNT_TEMPORARY_LIMITS, EQUIPMENT_ID, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -29,57 +28,102 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { generateLimitSetCommentLines, transformIfFrenchNumber } from '../tabular-creation/tabular-creation-utils';
+import {
+    generateLimitSetCommentLines,
+    isFieldTypeOk,
+    setFieldTypeError,
+    transformIfFrenchNumber,
+} from '../tabular-creation/tabular-creation-utils';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
     styles,
+    TabularModificationField,
 } from '../tabular-modification/tabular-modification-utils';
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
 }
 
-type RepeatableColumn = {
-    id: string;
-    name?: string;
-    index?: number;
-};
-
 export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
-    const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const [repeatableColumns, setReapeatableColumns] = useState<RepeatableColumn[]>([]);
+    const [repeatableColumns, setReapeatableColumns] = useState<TabularModificationField[]>([]);
 
-    const { setValue, clearErrors, getValues, trigger } = useFormContext();
+    const { setValue, clearErrors, getValues, setError, trigger } = useFormContext();
 
     const language = useSelector((state: AppState) => state.computedLanguage);
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
+    const csvColumns = useMemo<TabularModificationField[]>(() => {
+        return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
+    }, [repeatableColumns]);
+
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
             clearErrors(MODIFICATIONS_TABLE);
+            let requiredFieldNameInError: string = '';
+            let fieldTypeInError: string = '';
+            let expectedTypeForFieldInError: string = '';
+            let expectedValues: string[] | undefined;
+
+            let keyLabel: string = '';
+            // check if the csv contains an error
+            if (
+                results.data
+                    .flatMap((result) => Object.entries(result))
+                    .some(([key, value]) => {
+                        //Detection of repeatable fields
+                        const fieldDef = csvColumns?.find((field) => {
+                            return (
+                                field.id === key ||
+                                (LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS.includes(field) &&
+                                    key.startsWith(field.id))
+                            );
+                        });
+                        keyLabel = `${intl.formatMessage({ id: fieldDef?.name ?? fieldDef?.id })}${fieldDef?.index ? ` ${fieldDef?.index}` : ''}`;
+
+                        // check required fields are defined
+                        if (fieldDef !== undefined && fieldDef.required && (value === undefined || value === null)) {
+                            requiredFieldNameInError = keyLabel;
+                            return true; // “yes, we found an error here” → break loop
+                        }
+
+                        // check the field types
+                        if (!isFieldTypeOk(value, fieldDef)) {
+                            fieldTypeInError = keyLabel;
+                            expectedTypeForFieldInError = fieldDef?.type ?? '';
+                            expectedValues = fieldDef?.options;
+                            return true; // “yes, we found an error here” → break loop
+                        }
+                        return false; // keep looking
+                    })
+            ) {
+                if (requiredFieldNameInError !== '') {
+                    setError(MODIFICATIONS_TABLE, {
+                        type: 'custom',
+                        message: intl.formatMessage({ id: 'FieldRequired' }, { requiredFieldNameInError: keyLabel }),
+                    });
+                }
+                setIsFetching(false);
+                setFieldTypeError(
+                    fieldTypeInError,
+                    expectedTypeForFieldInError,
+                    MODIFICATIONS_TABLE,
+                    setError,
+                    intl,
+                    expectedValues
+                );
+            }
+
             setValue(MODIFICATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
             setIsFetching(false);
-            // For shunt compensators, display a warning message if maxSusceptance is modified along with shuntCompensatorType or maxQAtNominalV
-            if (
-                results.data.some(
-                    (modification) =>
-                        modification.maxSusceptance &&
-                        (modification.shuntCompensatorType || modification.maxQAtNominalV)
-                )
-            ) {
-                snackWarning({
-                    messageId: 'TabularModificationShuntWarning',
-                });
-            }
         },
-        [clearErrors, setValue, snackWarning]
+        [clearErrors, csvColumns, intl, setError, setValue]
     );
 
     const equipmentType = useWatch({
@@ -91,14 +135,15 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     });
 
     const computeRepeatableColumns = useCallback(() => {
-        const columns: RepeatableColumn[] = [];
+        const columns: TabularModificationField[] = [];
         trigger(AMOUNT_TEMPORARY_LIMITS).then((valid) => {
             if (valid) {
                 for (let i = 1; i <= amountTemporaryLimits; i++) {
                     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS.forEach((field) =>
                         columns.push({
-                            id: field + i,
-                            name: field,
+                            ...field,
+                            id: field.id + i,
+                            name: field.id,
                             index: i,
                         })
                     );
@@ -108,13 +153,9 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         });
     }, [amountTemporaryLimits, trigger]);
 
-    const csvColumns = useMemo<RepeatableColumn[]>(() => {
-        return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.map((id) => ({ id: id })), ...repeatableColumns];
-    }, [repeatableColumns]);
-
     const csvTranslatedColumns = useMemo(() => {
         return LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.map((field) => {
-            return intl.formatMessage({ id: field });
+            return intl.formatMessage({ id: field.id });
         });
     }, [intl]);
 
@@ -164,8 +205,8 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 transformHeader: (header: string) => {
                     // transform header to modification field
                     const transformedHeader = LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.find(
-                        (field) => intl.formatMessage({ id: field }) === header
-                    );
+                        (field) => intl.formatMessage({ id: field.id }) === header
+                    )?.id;
                     return transformedHeader ?? header;
                 },
                 transform: (value) => transformIfFrenchNumber(value, language),
@@ -231,7 +272,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 <Grid item>
                     <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
                 </Grid>
-                <GridItem>
+                <Grid item>
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
@@ -243,7 +284,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                             <FormattedMessage id="GenerateSkeleton" />
                         </Button>
                     </CsvDownloader>
-                </GridItem>
+                </Grid>
             </Grid>
             <Grid container item spacing={2} alignItems={'center'}>
                 <Grid item>

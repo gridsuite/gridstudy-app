@@ -57,7 +57,13 @@ export function LimitSetsModificationDialog({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const {
+        reset,
+        getValues,
+        formState: { errors },
+    } = formMethods;
+
+    const disableSave = Object.keys(errors).length > 0;
 
     useEffect(() => {
         if (editData) {
@@ -78,8 +84,7 @@ export function LimitSetsModificationDialog({
                     modification.operationalLimitsGroup1 = [
                         formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.ONE),
                     ];
-                }
-                if (modification[SIDE] === BranchSide.TWO) {
+                } else if (modification[SIDE] === BranchSide.TWO) {
                     modification.operationalLimitsGroup2 = [
                         formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.TWO),
                     ];
@@ -131,6 +136,7 @@ export function LimitSetsModificationDialog({
                 titleId="LimitSetsTabularModification"
                 open={open}
                 isDataFetching={dataFetching}
+                disabledSave={disableSave}
                 {...dialogProps}
             >
                 <LimitSetsTabularModificationForm dataFetching={dataFetching} />
