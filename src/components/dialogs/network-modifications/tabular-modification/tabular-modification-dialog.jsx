@@ -7,7 +7,7 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
@@ -15,7 +15,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { createTabulareModification } from 'services/study/network-modifications';
+import { createTabularModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
@@ -125,13 +125,14 @@ const TabularModificationDialog = ({
                 }
                 return modification;
             });
-            createTabulareModification(
+            createTabularModification(
                 studyUuid,
                 currentNodeUuid,
                 modificationType,
                 modifications,
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                ModificationType.TABULAR_MODIFICATION
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
