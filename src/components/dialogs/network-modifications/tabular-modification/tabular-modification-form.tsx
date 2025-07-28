@@ -77,7 +77,7 @@ export function TabularModificationForm({ dataFetching }: Readonly<TabularModifi
                 })
             ) {
                 setFieldTypeError(
-                    fieldTypeInError,
+                    intl.formatMessage({ id: fieldTypeInError }),
                     expectedTypeForFieldInError,
                     MODIFICATIONS_TABLE,
                     setError,

@@ -26,6 +26,8 @@ const csv_locale_en = {
         '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR | required if maxQAtNominalV is set,,,',
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
         '#For each shunt compensator it is possible to modify either the maximum reactive power (and the type) or the maximum susceptance. In case of conflicting input the maximum susceptance will be ignored.,,true | false,,TOP | BOTTOM,,,,REACTOR | CAPACITOR,,',
+    TabularLimitSetsModificationSkeletonComment:
+        '#;ONE | TWO;;;ADDED | MODIFIED | REPLACED;ADDED | MODIFIED | DELETED | REPLACED',
 };
 
 export default csv_locale_en;
