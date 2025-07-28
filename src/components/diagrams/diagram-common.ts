@@ -91,14 +91,14 @@ export const styles = {
             opacity: INVALID_LOADFLOW_OPACITY,
         },
         '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
-            animation: 'none',
+            animation: 'none !important',
         },
         '& .nad-active': {
             fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
             {
-                animation: 'none',
+                animation: 'none !important',
             },
     },
     paperBorders: (theme: Theme) => ({
