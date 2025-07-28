@@ -130,25 +130,34 @@ export const formatBackToFront = (editData: LimitSetModificationMetadata) => {
         [MODIFICATIONS_TABLE]: operationalLimitGroups,
     };
 };
+
+const mapOperationalLimitGroupBackToFront = (
+    modification: LimitSetModification,
+    group: OperationalLimitGroup
+): ModificationRow => {
+    let row: ModificationRow = {};
+    row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
+    row[SIDE] = group[SIDE];
+    row[LIMIT_GROUP_NAME] = group.id;
+    row[MODIFICATION_TYPE] = group.modificationType;
+    row[TEMPORARY_LIMITS_MODIFICATION_TYPE] = group.temporaryLimitsModificationType;
+    row[PERMANENT_LIMIT] = group.currentLimits.permanentLimit;
+
+    const tempLimitFields = formatTemporaryLimitsBackToFront(group.currentLimits.temporaryLimits);
+    return {
+        ...row,
+        ...tempLimitFields,
+    };
+};
+
 const formatOperationalLimitGroupsBackToFront = (group: LimitSetModificationMetadata): OperationalLimitGroup[] => {
     const modifications: OperationalLimitGroup[] = [];
     for (let modification of group.modifications) {
-        for (let operationalLimitGroup of modification.operationalLimitsGroup1) {
-            let row: ModificationRow = {};
-            row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
-            row[SIDE] = operationalLimitGroup[SIDE];
-            row[LIMIT_GROUP_NAME] = operationalLimitGroup.id;
-            row[MODIFICATION_TYPE] = operationalLimitGroup.modificationType;
-            row[TEMPORARY_LIMITS_MODIFICATION_TYPE] = operationalLimitGroup.temporaryLimitsModificationType;
-            row[PERMANENT_LIMIT] = operationalLimitGroup.currentLimits.permanentLimit;
-
-            const tempLimitFields = formatTemporaryLimitsBackToFront(
-                operationalLimitGroup.currentLimits.temporaryLimits
-            );
-            modifications.push({
-                ...row,
-                ...tempLimitFields,
-            });
+        for (let operationalLimitGroup of modification?.operationalLimitsGroup1 ?? []) {
+            modifications.push(mapOperationalLimitGroupBackToFront(modification, operationalLimitGroup));
+        }
+        for (let operationalLimitGroup of modification?.operationalLimitsGroup2 ?? []) {
+            modifications.push(mapOperationalLimitGroupBackToFront(modification, operationalLimitGroup));
         }
     }
 
