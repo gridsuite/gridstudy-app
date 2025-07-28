@@ -127,11 +127,7 @@ type NetworkMapTabProps = {
     lineFlowMode: LineFlowMode;
     openVoltageLevel: (idVoltageLevel: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
-    // onDrawPolygonModeActive: (active: DRAW_MODES) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
-    // onDrawEvent: (drawEvent: number) => void;
-    // isInDrawingMode: boolean;
-    // onNominalVoltagesChange: (nominalVoltages: number[]) => void;
     onElementCreated?: () => void;
 };
 
@@ -149,8 +145,6 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     showInSpreadsheet,
     onPolygonChanged,
-    // onDrawEvent,
-    // onNominalVoltagesChange,
     onElementCreated,
 }: NetworkMapTabProps) => {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
@@ -321,7 +315,7 @@ export const NetworkMapTab = ({
     }
 
     function choiceVoltageLevel(voltageLevelId: string) {
-        openVoltageLevel(voltageLevelId);
+        handleOpenVoltageLevel(voltageLevelId);
         closeChoiceVoltageLevelMenu();
     }
 
@@ -1038,6 +1032,16 @@ export const NetworkMapTab = ({
         leaveDrawingMode();
     }, [leaveDrawingMode, onElementCreated]);
 
+    const handleOpenVoltageLevel = useCallback(
+        (vlId: string) => {
+            // don't open the sld if the drawing mode is activated
+            if (!isInDrawingMode) {
+                openVoltageLevel(vlId);
+            }
+        },
+        [isInDrawingMode, openVoltageLevel]
+    );
+
     const renderMap = () => (
         <>
             <Box
@@ -1064,7 +1068,7 @@ export const NetworkMapTab = ({
                     useName={useName}
                     visible={visible}
                     disabled={disabled}
-                    onSubstationClick={openVoltageLevel}
+                    onSubstationClick={handleOpenVoltageLevel}
                     onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
                     onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
                         showEquipmentMenu(

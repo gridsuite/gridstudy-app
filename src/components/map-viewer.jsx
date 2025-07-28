@@ -58,10 +58,7 @@ const MapViewer = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            // don't open the sld if the drawing mode is activated
-            // if (!isInDrawingMode) {
             dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
-            // }
         },
         [dispatch]
     );
