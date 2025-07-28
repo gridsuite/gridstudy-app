@@ -16,7 +16,7 @@ import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram
 import { ElementType, EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
-import { useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { cardStyles } from './card-styles';
 import { v4 } from 'uuid';
 
@@ -62,7 +62,6 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         ...reactGridLayoutCustomChildComponentProps
     } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
-    const intl = useIntl();
 
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<boolean>(false);
 
@@ -139,7 +138,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
             <CardHeader
-                title={loading ? intl.formatMessage({ id: 'LoadingOf' }, { value: diagram.type }) : diagram.name}
+                title={loading ? <FormattedMessage id="loadingOptions" /> : diagram.name}
                 blinking={blinking}
                 onClose={onClose}
             />
@@ -166,6 +165,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                     )}
                     {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
                         <NetworkAreaDiagramContent
+                            showInSpreadsheet={showInSpreadsheet}
                             diagramId={diagram.diagramUuid}
                             svg={diagram.svg?.svg ?? undefined}
                             svgType={diagram.type}

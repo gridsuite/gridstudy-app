@@ -24,7 +24,7 @@ import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from
 import { isNodeBuilt, isStatusBuilt } from 'components/graph/util/model-functions';
 import { PARAM_LANGUAGE, PARAM_USE_NAME } from 'utils/config-params';
 import { BUILD_STATUS, SLD_DISPLAY_MODE } from 'components/network/constants';
-import { useDiagramSessionStorage } from './use-diagram-session-storage';
+import { useDiagramParamsInitialization } from './use-diagram-params-initialization';
 import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -217,7 +217,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             let fetchOptions: RequestInit = { method: 'GET' };
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const nadRequestInfos = {
-                    nadConfigUuid: diagram.nadConfigUuid,
+                    nadConfigUuid: diagram.initializationNadConfigUuid ?? diagram.nadConfigUuid,
                     filterUuid: diagram.filterUuid,
                     voltageLevelIds: diagram.voltageLevelIds,
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
@@ -261,6 +261,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             svg: data,
                             name: getDiagramTitle(diagram, data),
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
+                                initializationNadConfigUuid: undefined, // reset initializationNadConfigUuid after fetching the SVG
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
                                     ...new Set([
@@ -447,7 +448,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    useDiagramSessionStorage({ diagrams, onLoadFromSessionStorage: createDiagram });
+    useDiagramParamsInitialization({ onLoadDiagramParams: createDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
