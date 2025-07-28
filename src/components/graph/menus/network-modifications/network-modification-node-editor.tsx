@@ -115,6 +115,7 @@ import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-mod
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const nonEditableModificationTypes = new Set([
@@ -554,6 +555,11 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                             label: 'BY_FORMULA',
                             action: () => withDefaultParams(ByFormulaDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                            label: 'LimitSets',
+                            action: () => withDefaultParams(LimitSetsModificationDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,

@@ -49,6 +49,16 @@ export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
+export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
+export const MODIFICATION_TYPE = 'modificationType';
+export const LIMIT_SETS_MODIFICATION_TYPE = {
+    MODIFIED: 'MODIFIED',
+    ADDED: 'ADDED',
+    REPLACED: 'REPLACED',
+} as const;
+export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
+export const SIDE = 'side';
+export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
@@ -190,6 +200,7 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFIED: 'MODIFIED',
     ADDED: 'ADDED',
     DELETED: 'DELETED',
+    REPLACED: 'REPLACED',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';

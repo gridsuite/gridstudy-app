@@ -150,7 +150,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     });
                 }
                 setFieldTypeError(
-                    fieldTypeInError,
+                    intl.formatMessage({ id: fieldTypeInError }),
                     expectedTypeForFieldInError,
                     MODIFICATIONS_TABLE,
                     setError,

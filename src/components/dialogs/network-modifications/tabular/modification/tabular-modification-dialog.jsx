@@ -6,7 +6,7 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
@@ -134,7 +134,8 @@ const TabularModificationDialog = ({
                 modifications,
                 formData[TABULAR_PROPERTIES],
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                ModificationType.TABULAR_MODIFICATION
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
