@@ -199,7 +199,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     breakpoint_layouts.some((layout) => layout.i === 'MapCard')
                 )
             ) {
-                // then set thi flag to true to render the Map card
+                // then set this flag to true to render the Map card
                 setIsMapCardAdded(true);
             }
         } else {
