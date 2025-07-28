@@ -65,11 +65,19 @@ export function LimitSetsModificationDialog({
 
     const disableSave = Object.keys(errors).length > 0;
 
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
+
     useEffect(() => {
         if (editData) {
             reset(formatBackToFront(editData));
         }
     }, [editData, reset, intl]);
+
+    const dataFetching = useMemo(() => {
+        return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
+    }, [editDataFetchStatus, isUpdate]);
 
     const onSubmit = useCallback<SubmitHandler<SchemaType>>(
         (formData) => {
@@ -112,19 +120,11 @@ export function LimitSetsModificationDialog({
         [currentNodeUuid, editData, getValues, snackError, studyUuid]
     );
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
-
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
-
-    const dataFetching = useMemo(() => {
-        return isUpdate && editDataFetchStatus === FetchStatus.RUNNING;
-    }, [editDataFetchStatus, isUpdate]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
