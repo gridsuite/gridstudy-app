@@ -226,7 +226,7 @@ export function LimitsSidePane({
                                 disableClearable
                                 size="small"
                                 onCheckNewValue={(value: Option | null) => {
-                                    if (value) {
+                                    if (value && typeof value !== 'string') {
                                         const errorMessage: string = checkLimitSetUnicity(
                                             selectedLimitSetName ?? '',
                                             typeof value === 'string' ? value : value.id

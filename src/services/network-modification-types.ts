@@ -217,7 +217,7 @@ export interface StaticVarCompensatorCreationInfo {
     q0: number | null;
     isUpdate?: boolean;
     modificationUuid: string;
-    properties?: Property[];
+    properties?: Property[] | null;
 }
 
 export interface TwoWindingsTransformerModificationInfo {
@@ -713,7 +713,7 @@ export interface LCCCreationInfo {
     activePowerSetpoint: number;
     converterStation1: LCCCreationConverterStation;
     converterStation2: LCCCreationConverterStation;
-    properties?: Property[];
+    properties?: Property[] | null;
     isUpdate: boolean;
     modificationUuid?: string;
 }
@@ -739,7 +739,7 @@ export interface LccModificationInfos {
     activePowerSetpoint: AttributeModification<number> | null;
     converterStation1: LccConverterStationModificationInfos;
     converterStation2: LccConverterStationModificationInfos;
-    properties?: Property[];
+    properties?: Property[] | null;
 }
 
 export interface VSCModificationInfo {
@@ -759,7 +759,7 @@ export interface VSCModificationInfo {
     droop: number | null;
     converterStation1: VSCModificationConverterStation;
     converterStation2: VSCModificationConverterStation;
-    properties?: Property[];
+    properties?: Property[] | null;
     isUpdate: boolean;
     modificationUuid: UUID;
 }
