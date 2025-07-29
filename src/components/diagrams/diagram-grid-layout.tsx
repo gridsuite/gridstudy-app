@@ -285,6 +285,26 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [diagrams, updateDiagram]
     );
 
+    const handleAddVoltageLevel = useCallback(
+        (diagramId: UUID, voltageLevelIdToAdd: string) => {
+            const diagram = diagrams[diagramId];
+            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    diagramUuid: diagramId,
+                    type: DiagramType.NETWORK_AREA_DIAGRAM,
+                    name: diagram.name,
+                    nadConfigUuid: diagram.nadConfigUuid,
+                    filterUuid: diagram.filterUuid,
+                    voltageLevelIds: [...diagram.voltageLevelIds, voltageLevelIdToAdd],
+                    voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
+                    positions: diagram.positions,
+                });
+            }
+        },
+        [diagrams, updateDiagram]
+    );
+
     const handleMoveNode = useCallback(
         (diagramId: UUID, vlId: string, x: number, y: number) => {
             const diagram = diagrams[diagramId];
@@ -406,6 +426,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                                         handleExpandVoltageLevelId(diagram.diagramUuid, vlId)
                                     }
                                     onExpandAllVoltageLevels={() => handleExpandAllVoltageLevels(diagram.diagramUuid)}
+                                    onAddVoltageLevel={(vlId) => handleAddVoltageLevel(diagram.diagramUuid, vlId)}
                                     onHideVoltageLevel={(vlId) => handleHideVoltageLevelId(diagram.diagramUuid, vlId)}
                                     onMoveNode={(vlId, x, y) => handleMoveNode(diagram.diagramUuid, vlId, x, y)}
                                     onVoltageLevelClick={handleVoltageLevelClick}
@@ -418,24 +439,25 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             );
         });
     }, [
-        blinkingDiagrams,
-        diagramErrors,
         diagrams,
-        diagramsInEditMode,
-        globalError,
-        handleLoadNad,
-        handleToggleEditMode,
         loadingDiagrams,
-        handleExpandAllVoltageLevels,
-        handleExpandVoltageLevelId,
-        handleHideVoltageLevelId,
-        handleMoveNode,
-        handleVoltageLevelClick,
-        onRemoveCard,
-        setDiagramSize,
+        blinkingDiagrams,
+        globalError,
+        diagramErrors,
         showInSpreadsheet,
         studyUuid,
+        setDiagramSize,
         visible,
+        handleVoltageLevelClick,
+        diagramsInEditMode,
+        handleLoadNad,
+        onRemoveCard,
+        handleToggleEditMode,
+        handleExpandVoltageLevelId,
+        handleExpandAllVoltageLevels,
+        handleAddVoltageLevel,
+        handleHideVoltageLevelId,
+        handleMoveNode,
     ]);
 
     const onLoadDiagramLayout = useCallback((savedLayouts: Layouts) => {
