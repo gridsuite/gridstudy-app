@@ -17,10 +17,8 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';
-import {
-    formatModification,
-    LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
-} from '../tabular-modification/tabular-modification-utils';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/modification/tabular-modification-utils';
+import { formatModification } from '../tabular/tabular-common';
 import { createTabularModification } from '../../../../services/study/network-modifications';
 import { BranchSide } from '../../../utils/constants';
 import {
@@ -47,7 +45,7 @@ export function LimitSetsModificationDialog({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}: LimitSetsModificationDialogProps) {
+}: Readonly<LimitSetsModificationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
 
@@ -107,7 +105,6 @@ export function LimitSetsModificationDialog({
                 currentNodeUuid,
                 modificationType,
                 modifications,
-                !!editData,
                 editData?.uuid,
                 ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
             ).catch((error) => {
