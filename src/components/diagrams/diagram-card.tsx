@@ -105,7 +105,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         (vlId: string, x: number, y: number) => {
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const updatedPositions = diagram.positions.map((position) =>
-                    position.voltageLevelId === vlId ? { ...position, xposition: x, yposition: y } : position
+                    position.voltageLevelId === vlId ? { ...position, xPosition: x, yPosition: y } : position
                 );
 
                 updateDiagramPositions({
