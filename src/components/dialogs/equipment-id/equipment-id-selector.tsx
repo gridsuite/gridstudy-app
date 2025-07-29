@@ -17,6 +17,7 @@ import { fetchEquipmentsIds } from '../../../services/study/network-map';
 import GridItem from '../commons/grid-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const styles = {
     message: (theme: Theme) => ({
@@ -33,7 +34,7 @@ const styles = {
 interface EquipmentIdSelectorProps {
     defaultValue: string | null;
     setSelectedId: (value: string) => void;
-    equipmentType: EquipmentType | ExtendedEquipmentType;
+    equipmentType: EQUIPMENT_TYPES | EquipmentType | ExtendedEquipmentType;
     readOnly?: boolean;
     fillerHeight?: number;
     fillerMessageId?: string;

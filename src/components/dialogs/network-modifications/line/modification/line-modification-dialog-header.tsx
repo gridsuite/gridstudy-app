@@ -11,15 +11,14 @@ import { filledTextField } from 'components/dialogs/dialog-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
-import { UUID } from 'crypto';
 import { LineInfos } from '../../../../../services/study/network-map.type';
 
 export interface LineModificationDialogHeaderProps {
-    lineToModify: LineInfos;
+    lineToModify: LineInfos | null;
     tabIndexesWithError: number[];
-    tabIndex: number;
+    tabIndex: number | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number | null>>;
-    equipmentId: UUID;
+    equipmentId: string;
 }
 
 const LineModificationDialogHeader = ({

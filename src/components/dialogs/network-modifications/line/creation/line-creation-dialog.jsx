@@ -181,11 +181,11 @@ const LineCreationDialog = ({
                             CONNECTIVITY_2
                         )),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(line.currentLimits),
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                ...getAllLimitsFormData(
+                    formatCompleteCurrentLimit(line.currentLimits),
+                    line.selectedOperationalLimitsGroup1 ?? null,
+                    line.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...copyEquipmentPropertiesForCreation(line),
             },
             { keepDefaultValues: true }
@@ -229,15 +229,15 @@ const LineCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                ...getAllLimitsFormData(
+                    line.operationalLimitsGroups.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                    line.selectedOperationalLimitsGroup1 ?? null,
+                    line.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...getPropertiesFromModification(line.properties),
             });
         },
