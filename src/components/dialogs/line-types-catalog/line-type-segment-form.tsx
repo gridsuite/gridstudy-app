@@ -39,8 +39,8 @@ import GridSection from '../commons/grid-section';
 
 const styles = {
     h3: {
-      marginTop: 0,
-      marginBottom: 0,
+        marginTop: 0,
+        marginBottom: 0,
     },
     header: {
         fontWeight: 'bold',
@@ -142,8 +142,8 @@ export const LineTypeSegmentForm = () => {
                 if (computedLimits.has(limit.limitSetName)) {
                     let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
                     if (limitInfo !== undefined) {
-                      limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
-                      limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
+                        limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
+                        limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
                     }
                 } else {
                     computedLimits.set(limit.limitSetName, limit);
