@@ -8,11 +8,28 @@
 import { Box } from '@mui/material';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
+import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { LineModificationDialogTab } from '../line-utils';
 import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { LineModificationInfo } from '../../../../../services/network-modification-types';
 
-const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetworkUuid, lineToModify, tabIndex }) => {
+export interface LineModificationDialogTabsProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    lineToModify: LineModificationInfo; // TODO : to be checked, may be different
+    tabIndex: number;
+}
+
+const LineModificationDialogTabs = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    lineToModify,
+    tabIndex,
+}: Readonly<LineModificationDialogTabsProps>): JSX.Element => {
     return (
         <>
             <Box hidden={tabIndex !== LineModificationDialogTab.CONNECTIVITY_TAB} p={1}>
@@ -20,7 +37,6 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    withPosition={true}
                     isModification={true}
                     previousValues={lineToModify}
                 />
