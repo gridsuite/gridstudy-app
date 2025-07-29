@@ -80,6 +80,16 @@ import {
     CONNECTION_NAME2,
     CONNECTION_DIRECTION2,
     CONNECTION_POSITION2,
+    PERMANENT_LIMIT,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_VALUE,
+    MODIFICATION_TYPE,
+    SIDE,
+    LIMIT_GROUP_NAME,
+    TEMPORARY_LIMITS_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    LIMIT_SETS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
@@ -89,14 +99,18 @@ import {
     CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
-    LOAD_TYPES,
+    LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from '../../../network/constants';
+import { BranchSide } from '../../../utils/constants';
 
 export interface TabularModificationField {
     id: string;
+    name?: string;
+    index?: number;
+    required?: boolean;
     type?: string;
     options?: string[];
 }
@@ -116,6 +130,36 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS = [
     { id: REACTIVE_CAPABILITY_CURVE_P_MAX, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, type: NUMBER },
+];
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS: { [key: string]: string } = {
+    LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+};
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularModificationField[] = [
+    { id: EQUIPMENT_ID, required: true },
+    { id: SIDE, required: true, type: ENUM, options: Object.values(BranchSide) },
+    { id: LIMIT_GROUP_NAME, required: true },
+    { id: PERMANENT_LIMIT, required: false, type: NUMBER },
+    {
+        id: MODIFICATION_TYPE,
+        required: true,
+        type: ENUM,
+        options: Object.values(LIMIT_SETS_MODIFICATION_TYPE),
+    },
+    {
+        id: TEMPORARY_LIMITS_MODIFICATION_TYPE,
+        required: false,
+        type: ENUM,
+        options: Object.values(TEMPORARY_LIMIT_MODIFICATION_TYPE),
+    },
+];
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS: TabularModificationField[] = [
+    { id: TEMPORARY_LIMIT_NAME, required: false },
+    { id: TEMPORARY_LIMIT_DURATION, required: false, type: NUMBER },
+    { id: TEMPORARY_LIMIT_VALUE, required: false, type: NUMBER },
 ];
 
 export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
@@ -200,7 +244,11 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     LOAD: [
         { id: EQUIPMENT_ID },
         { id: EQUIPMENT_NAME },
-        { id: LOAD_TYPE, type: ENUM, options: LOAD_TYPES.map((load) => load.id) },
+        {
+            id: LOAD_TYPE,
+            type: ENUM,
+            options: LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION.map((load) => load.id),
+        },
         { id: CONNECTED, type: BOOLEAN },
         { id: CONNECTION_NAME },
         { id: CONNECTION_DIRECTION, type: ENUM, options: CONNECTION_DIRECTIONS.map((direction) => direction.id) },

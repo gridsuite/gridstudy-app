@@ -63,7 +63,6 @@
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
-    "LoadingOf": "Chargement de {value}...",
 
     "computationInProgress": "Calcul en cours ...",
 
@@ -608,6 +607,16 @@
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
+    "LimitSetsTabularModification": "Modification tabulaire de sets de limites",
+    "amountTemporaryLimits": "Nombre de limites temporaires",
+    "LimitSets": "Sets de limite",
+    "permanentLimit": "IST",
+    "acceptableDuration" : "Tempo (s)",
+    "value": "Valeur (A)",
+    "side": "Côté",
+    "limitGroupName": "Nom du set de limites",
+    "modificationType": "Type de modification",
+    "temporaryLimitsModificationType": "Type de modification des limites temporaires",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -1123,6 +1132,8 @@
     "menu.create": "Créer",
     "menu.createMultiple": "Créer plusieurs ouvrages",
     "menu.modifyMultiple": "Modifier plusieurs ouvrages",
+    "menu.createByTable": "Créer par tableau",
+    "menu.deleteByFilter": "Supprimer par filtre",
     "ShuntCompensator": "Moyen de compensation statique",
     "StaticVarCompensator": "CSPR",
     "AttachingLines": "Piquage",
@@ -1485,5 +1496,8 @@
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
     "AddNewCard": "Ajouter une nouvelle image",
+    "SaveGridLayout": "Enregistrer la grille",
+    "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
+    "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
 }

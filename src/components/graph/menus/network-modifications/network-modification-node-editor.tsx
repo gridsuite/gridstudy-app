@@ -116,6 +116,7 @@ import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/c
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const nonEditableModificationTypes = new Set([
@@ -401,8 +402,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_VSC',
                             label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VSC_CONVERTER_STATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
                         },
                     ],
                 },
@@ -423,8 +423,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_LCC',
                             label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LCC_CONVERTER_STATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
                         },
                     ],
                 },
@@ -544,7 +543,7 @@ const NetworkModificationNodeEditor = () => {
                     subItems: [
                         {
                             id: 'TABULAR_CREATION',
-                            label: 'menu.create',
+                            label: 'menu.createByTable',
                             action: () => withDefaultParams(TabularCreationDialog),
                         },
                         {
@@ -563,8 +562,13 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(ByFormulaDialog),
                         },
                         {
+                            id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                            label: 'LimitSets',
+                            action: () => withDefaultParams(LimitSetsModificationDialog),
+                        },
+                        {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-                            label: 'DeleteContingencyList',
+                            label: 'menu.deleteByFilter',
                             action: () => withDefaultParams(ByFilterDeletionDialog),
                         },
                     ],

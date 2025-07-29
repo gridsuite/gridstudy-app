@@ -13,6 +13,9 @@ export const FetchStatus = {
     IDLE: 'IDLE',
     RUNNING: 'RUNNING',
 };
+
+export const MAX_INT32: number = 2147483647;
+
 type ErrorType = Error & {
     status?: number;
 };

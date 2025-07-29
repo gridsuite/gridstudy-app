@@ -64,7 +64,7 @@ import {
     CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
-    LOAD_TYPES,
+    LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
@@ -137,7 +137,12 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
     LOAD: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
-        { id: LOAD_TYPE, required: false, type: ENUM, options: LOAD_TYPES.map((load) => load.id) },
+        {
+            id: LOAD_TYPE,
+            required: true,
+            type: ENUM,
+            options: LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION.map((load) => load.id),
+        },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
         { id: CONNECTED, required: true, type: BOOLEAN },
@@ -324,30 +329,27 @@ export const styles = {
     grid: { height: 500, width: '100%' },
 };
 
-interface CommentLinesConfig {
-    csvTranslatedColumns?: string[];
-    intl: IntlShape;
-    equipmentType: string;
+interface BaseCommentLinesConfig {
+    csvTranslatedColumns: string[];
+    intl: any;
     language: string;
-    formType: 'Creation' | 'Modification';
 }
 
-export const generateCommentLines = ({
-    csvTranslatedColumns,
-    intl,
-    equipmentType,
-    language,
-    formType,
-}: CommentLinesConfig): string[][] => {
+interface ExtendedCommentLinesConfig extends BaseCommentLinesConfig {
+    equipmentType: string;
+    formType: string;
+}
+
+const generateBaseCommentLines = (
+    { csvTranslatedColumns, intl, language }: BaseCommentLinesConfig,
+    commentKey?: string
+): string[][] => {
     let commentData: string[][] = [];
+
     if (csvTranslatedColumns) {
-        // First comment line contains header translation
         commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
 
-        // Check for optional second comment line from translation file
-        const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
-
-        if (!!intl.messages[commentKey]) {
+        if (commentKey && intl.messages[commentKey]) {
             commentData.push([
                 intl.formatMessage({
                     id: commentKey,
@@ -355,7 +357,28 @@ export const generateCommentLines = ({
             ]);
         }
     }
+
     return commentData;
+};
+
+export const generateCommentLines = ({
+    csvTranslatedColumns,
+    intl,
+    equipmentType,
+    language,
+    formType,
+}: ExtendedCommentLinesConfig): string[][] => {
+    const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
+    return generateBaseCommentLines({ csvTranslatedColumns, intl, language }, commentKey);
+};
+
+export const generateLimitSetCommentLines = ({
+    csvTranslatedColumns,
+    intl,
+    language,
+}: BaseCommentLinesConfig): string[][] => {
+    const commentKey = `TabularLimitSetsModificationSkeletonComment`;
+    return generateBaseCommentLines({ csvTranslatedColumns, intl, language }, commentKey);
 };
 
 export const transformIfFrenchNumber = (value: string, language: string): string => {
@@ -414,7 +437,7 @@ export const setFieldTypeError = (
             message: intl.formatMessage(
                 { id: 'WrongEnumValue' },
                 {
-                    field: intl.formatMessage({ id: fieldTypeInError }),
+                    field: fieldTypeInError,
                     expectedValues: expectedValues?.join(', ') ?? '',
                 }
             ),
@@ -425,7 +448,7 @@ export const setFieldTypeError = (
             message: intl.formatMessage(
                 { id: 'WrongFieldType' },
                 {
-                    field: intl.formatMessage({ id: fieldTypeInError }),
+                    field: fieldTypeInError,
                     type: intl.formatMessage({ id: `fieldType.${expectedTypeForFieldInError}` }),
                 }
             ),

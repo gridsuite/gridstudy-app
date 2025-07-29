@@ -35,6 +35,7 @@ import type {
     SpreadsheetFilterState,
     TableSortKeysType,
     ComputingStatusParameters,
+    DiagramGridLayoutConfig,
 } from './reducer';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
@@ -1275,5 +1276,17 @@ export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT
 export function resetDiagramEvent(): ResetDiagramEventAction {
     return {
         type: RESET_DIAGRAM_EVENT,
+    };
+}
+
+export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
+export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
+    diagramGridLayout: DiagramGridLayoutConfig;
+};
+
+export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
+    return {
+        type: SET_DIAGRAM_GRID_LAYOUT,
+        diagramGridLayout: diagramGridLayout,
     };
 }
