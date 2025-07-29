@@ -292,7 +292,7 @@ export const addModificationTypeToTemporaryLimits = (
 export const addModificationTypeToOpLimitsGroups = (
     limitsGroups: OperationalLimitsGroup[],
     lineToModify: LineInfos | null,
-    editData: LineModificationEditData | null,
+    editData: LineModificationEditData | null | undefined,
     currentNode: CurrentTreeNode
 ) => {
     const modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);

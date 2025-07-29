@@ -107,7 +107,7 @@ import { LineInfos, LineModificationEditData } from '../../../../../services/stu
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
-    editData: LineModificationEditData | null;
+    editData: LineModificationEditData | null | undefined;
     // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     defaultIdValue: string;
     studyUuid: UUID;
@@ -115,7 +115,7 @@ export interface LineModificationDialogProps {
     currentRootNetworkUuid: UUID;
     displayConnectivity?: boolean;
     isUpdate: boolean;
-    editDataFetchStatus: any;
+    editDataFetchStatus: string | undefined;
     open?: boolean;
     onClose?: () => void;
     //...dialogProps
