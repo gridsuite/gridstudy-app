@@ -11,6 +11,7 @@ import { areArrayElementsUnique } from '../../../../utils/utils';
 export const NODE_ALIAS = 'alias';
 export const NODE_NAME = 'name';
 export const NODES_ALIASES = 'nodesAliases';
+export const NODES_ALIASES_MAX_NUMBER = 5;
 
 export const initialNodesForm: NodesForm = {
     [NODES_ALIASES]: [],
@@ -45,6 +46,9 @@ export const nodesFormSchema = yup.object().shape({
         .test('uniqueNodeNames', 'spreadsheet/parameter_aliases/unique_node_names', (array) => {
             const nodeNamesArray = array.map((l) => l[NODE_NAME]).filter((value) => value);
             return areArrayElementsUnique(nodeNamesArray);
+        })
+        .test('maxNodeNames', 'MaximumRowNumberError', (array) => {
+            return array.length <= NODES_ALIASES_MAX_NUMBER;
         }),
 });
 
