@@ -139,6 +139,8 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                 handleSwitchTab={handleSwitchTab}
                 resetNodeAliases={resetNodeAliases}
                 handleResetCollectionClick={handleResetCollectionClick}
+                nodeAliases={nodeAliases}
+                updateNodeAliases={updateNodeAliases}
             />
 
             {tablesDefinitions.length === 0 ? (
@@ -163,7 +165,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                                     tableDefinition={tabDef}
                                     disabled={disabled}
                                     nodeAliases={nodeAliases}
-                                    updateNodeAliases={updateNodeAliases}
                                     equipmentId={equipmentIdToScrollTo}
                                     onEquipmentScrolled={onEquipmentScrolled}
                                     active={isActive}
