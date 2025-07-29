@@ -38,6 +38,10 @@ import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import GridSection from '../commons/grid-section';
 
 const styles = {
+    h3: {
+      marginTop: 0,
+      marginBottom: 0,
+    },
     header: {
         fontWeight: 'bold',
     },
@@ -136,7 +140,7 @@ export const LineTypeSegmentForm = () => {
         segments.forEach((segment) => {
             segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit) => {
                 if (computedLimits.has(limit.limitSetName)) {
-                    let limitInfo: CurrentLimitsInfo = computedLimits.get(limit.limitSetName);
+                    let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
                     limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
                     limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
                 } else {
