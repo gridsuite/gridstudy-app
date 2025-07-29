@@ -90,6 +90,11 @@ import {
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     LIMIT_SETS_MODIFICATION_TYPE,
+    RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES,
+    RATIO_TAP_CHANGER_REGULATION_SIDE,
+    LOAD_TAP_CHANGING_CAPABILITIES,
+    REGULATION_SIDE,
+    RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
@@ -103,6 +108,7 @@ import {
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
+    SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
 import { BranchSide } from '../../../utils/constants';
 
@@ -209,6 +215,12 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         { id: CONNECTION_NAME2 },
         { id: CONNECTION_DIRECTION2, type: ENUM, options: CONNECTION_DIRECTIONS.map((direction) => direction.id) },
         { id: CONNECTION_POSITION2, type: NUMBER },
+        { id: RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES, type: BOOLEAN },
+        {
+            id: RATIO_TAP_CHANGER_REGULATION_SIDE,
+            type: ENUM,
+            options: Object.values(SIDE_CONSTANTS).map((side) => side.id),
+        },
     ],
     GENERATOR: [
         { id: EQUIPMENT_ID },
@@ -418,4 +430,113 @@ export const convertGeneratorOrBatteryModificationFromFrontToBack = (modificatio
         }
     });
     return formattedModification;
+};
+
+export const TWT_TAP_CHANGER_FIELDS = [
+    RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES,
+    RATIO_TAP_CHANGER_REGULATION_SIDE,
+];
+
+export const convertTWTTapChangerModificationFromFrontToBack = (modification: Modification) => {
+    if (!modification) {
+        return {};
+    }
+    let formattedModification = { ...modification };
+
+    // Check if we have tap changer fields and restructure if needed
+    if (TWT_TAP_CHANGER_FIELDS.some((field) => field in formattedModification)) {
+        formattedModification[RATIO_TAP_CHANGER] = {
+            [LOAD_TAP_CHANGING_CAPABILITIES]: formattedModification[RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES],
+            [REGULATION_SIDE]: formattedModification[RATIO_TAP_CHANGER_REGULATION_SIDE],
+        };
+
+        // Remove the flat tap changer fields
+        TWT_TAP_CHANGER_FIELDS.forEach((field) => {
+            delete formattedModification[field];
+        });
+    }
+    // Convert all fields to output format
+    Object.keys(formattedModification).forEach((key) => {
+        if (key === RATIO_TAP_CHANGER) {
+            // Convert nested tap changer fields
+            Object.keys(formattedModification[RATIO_TAP_CHANGER]).forEach((ratioKey) => {
+                formattedModification[RATIO_TAP_CHANGER][ratioKey] = convertOutputValues(
+                    ratioKey,
+                    formattedModification[RATIO_TAP_CHANGER][ratioKey]
+                );
+            });
+        } else {
+            // Convert regular fields
+            formattedModification[key] = convertOutputValues(key, formattedModification[key]);
+        }
+    });
+    return formattedModification;
+};
+
+/**
+ * Type definition for modification transformation strategies
+ */
+export type ModificationTransformationStrategy = {
+    [key: string]: (row: Record<string, any>, modificationType: string) => Record<string, any>;
+};
+
+/**
+ * Transformation strategies from front-end to back-end for different modification types
+ */
+export const MODIFICATION_TRANSFORMATION_STRATEGIES: ModificationTransformationStrategy = {
+    [TABULAR_MODIFICATION_TYPES.GENERATOR]: (row) => convertGeneratorOrBatteryModificationFromFrontToBack(row),
+
+    [TABULAR_MODIFICATION_TYPES.BATTERY]: (row) => convertGeneratorOrBatteryModificationFromFrontToBack(row),
+
+    [TABULAR_MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER]: (row) =>
+        convertTWTTapChangerModificationFromFrontToBack(row),
+
+    // Default strategy for other modification types
+    default: (row, modificationType) => {
+        const transformedRow: Record<string, any> = {};
+
+        Object.keys(row).forEach((key) => {
+            transformedRow[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+        });
+
+        return transformedRow;
+    },
+};
+
+/**
+ * Transforms a single row of form data into a modification object for the back-end
+ * @param row - The form data row to transform
+ * @param modificationType - The type of modification being performed
+ * @returns The transformed modification object
+ */
+export const transformRowToBackEndModification = (
+    row: Record<string, any>,
+    modificationType: string
+): Record<string, any> => {
+    const transformationStrategy =
+        MODIFICATION_TRANSFORMATION_STRATEGIES[modificationType] ?? MODIFICATION_TRANSFORMATION_STRATEGIES.default;
+
+    const transformedData = transformationStrategy(row, modificationType);
+
+    return {
+        type: modificationType,
+        ...transformedData,
+    };
+};
+
+/**
+ * Transforms form data modifications table into an array of back-end modification objects
+ * @param modificationsTable - Array of form data rows
+ * @param modificationType - The type of modification being performed
+ * @returns Array of transformed modification objects
+ */
+export const transformModificationsTable = (
+    modificationType: string,
+    modificationsTable: Record<string, any>[] = []
+): Record<string, any>[] => {
+    if (!modificationsTable?.length) {
+        return [];
+    }
+
+    return modificationsTable.map((row) => transformRowToBackEndModification(row, modificationType));
 };

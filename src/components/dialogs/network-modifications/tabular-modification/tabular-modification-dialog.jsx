@@ -23,10 +23,12 @@ import {
     convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
     convertOutputValues,
+    convertTWTTapChangerModificationFromFrontToBack,
     formatModification,
     getEquipmentTypeFromModificationType,
     getFieldType,
     TABULAR_MODIFICATION_TYPES,
+    transformModificationsTable,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
 
@@ -105,26 +107,11 @@ const TabularModificationDialog = ({
     const onSubmit = useCallback(
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
-            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                let modification = {
-                    type: modificationType,
-                };
-                if (
-                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
-                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
-                ) {
-                    const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
-                    modification = {
-                        ...generatorOrBatteryModification,
-                        ...modification,
-                    };
-                } else {
-                    Object.keys(row).forEach((key) => {
-                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
-                    });
-                }
-                return modification;
-            });
+            const modificationsTable = formData[MODIFICATIONS_TABLE];
+
+            // Convert modifications to the back-end format based on the type
+            const modifications = transformModificationsTable(modificationType, modificationsTable);
+
             createTabularModification(
                 studyUuid,
                 currentNodeUuid,

@@ -19,7 +19,7 @@ const csv_locale_en = {
     'TabularModificationSkeletonComment.LOAD': '#,,AUXILIARY | FICTITIOUS | UNDEFINED,true | false,,TOP | BOTTOM,,,',
     'TabularModificationSkeletonComment.LINE': '#,,,,,,,,true | false,,TOP | BOTTOM,,true | false,,TOP | BOTTOM,',
     'TabularModificationSkeletonComment.TWO_WINDINGS_TRANSFORMER':
-        '#,,,,,,,,,true | false,,TOP | BOTTOM,,true | false,,TOP | BOTTOM,',
+        '#,,,,,,,,,true | false,,TOP | BOTTOM,,true | false,,TOP | BOTTOM,,true | false,SIDE1 | SIDE2',
     'TabularModificationSkeletonComment.SUBSTATION':
         '#,,2-letter code from ISO 3166-1 standard (FR ES PT IT CH DE BE LU NL GB ...)',
     'TabularCreationSkeletonComment.SHUNT_COMPENSATOR':
