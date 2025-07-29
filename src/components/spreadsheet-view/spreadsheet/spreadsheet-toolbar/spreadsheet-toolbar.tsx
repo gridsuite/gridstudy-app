@@ -11,7 +11,6 @@ import { AgGridReact } from 'ag-grid-react';
 import { Grid, Theme } from '@mui/material';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';
-import NodesConfigButton from './nodes-config/nodes-config-button';
 import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
@@ -35,7 +34,6 @@ interface SpreadsheetToolbarProps {
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
     nodeAliases: NodeAlias[] | undefined;
-    updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     disabled: boolean;
 }
 
@@ -44,7 +42,6 @@ export const SpreadsheetToolbar = ({
     tableDefinition,
     columns,
     nodeAliases,
-    updateNodeAliases,
     disabled,
 }: SpreadsheetToolbarProps) => {
     return (
@@ -61,14 +58,6 @@ export const SpreadsheetToolbar = ({
             </Grid>
             <Grid item>
                 <ColumnCreationButton tableDefinition={tableDefinition} disabled={disabled} />
-            </Grid>
-            <Grid item>
-                <NodesConfigButton
-                    disabled={disabled}
-                    tableType={tableDefinition?.type}
-                    nodeAliases={nodeAliases}
-                    updateNodeAliases={updateNodeAliases}
-                />
             </Grid>
             <Grid item sx={{ flexGrow: 1 }}></Grid>
             <Grid item sx={styles.save}>
