@@ -20,10 +20,7 @@ import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
     convertGeneratorOrBatteryModificationFromBackToFront,
-    convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
-    convertOutputValues,
-    convertTWTTapChangerModificationFromFrontToBack,
     formatModification,
     getEquipmentTypeFromModificationType,
     getFieldType,
