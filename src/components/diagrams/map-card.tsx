@@ -13,7 +13,7 @@ import { EquipmentType, LineFlowMode, mergeSx } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
-import WolrdSvg from 'images/world.svg?react';
+import WorldSvg from 'images/world.svg?react';
 import NetworkMapTab from 'components/network/network-map-tab';
 import { cardStyles } from './card-styles';
 import { Close } from '@mui/icons-material';
@@ -94,7 +94,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
             <CardHeader title={'MapCard'} onClose={onClose} />
             {errorMessage && <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />}
             <Box sx={cardStyles.diagramContainer}>
-                <WolrdSvg
+                <WorldSvg
                     style={{
                         width: '100%',
                         height: '100%',
