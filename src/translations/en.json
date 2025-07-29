@@ -595,7 +595,7 @@
     "minActivePower": "Min P (MW)",
     "minP": "Min P (MW)",
     "voltageRegulationOn": "Voltage regulation",
-    "ModificationsRequiredTabError": "At least one modification is required",
+    "ModificationsRequiredTabError": "At least one modification must be imported",
 
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
@@ -990,6 +990,9 @@
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the template",
     "uploadMessage": " No file selected",
 
+    "DefinePropertiesButton": "Define properties",
+    "DefinePropertiesTitle": "Additional properties",
+
     "G": "Magnetizing conductance",
     "B": "Magnetizing susceptance",
     "RatedVoltage": "Rated voltage",
@@ -1308,7 +1311,6 @@
     "linearShuntCompensators": "Linear shunt compensators",
     "csvExportSensitivityResultError": "An error occurred when exporting sensitivity results",
     "substationCountry": "Country code",
-    "CreationsRequiredTabError": "At least one creation is required",
     "TabularCreation": "Tabular creation",
     "ImportCreations": "Import creations",
     "TabularCreationError": "Error while creating tabular creation",

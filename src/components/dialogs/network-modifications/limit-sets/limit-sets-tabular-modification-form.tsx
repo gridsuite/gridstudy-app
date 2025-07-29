@@ -28,19 +28,16 @@ import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import {
-    generateLimitSetCommentLines,
-    isFieldTypeOk,
-    setFieldTypeError,
-    transformIfFrenchNumber,
-} from '../tabular-creation/tabular-creation-utils';
+import { isFieldTypeOk, setFieldTypeError, transformIfFrenchNumber, TabularField } from '../tabular/tabular-common';
 import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
-    styles,
-    TabularModificationField,
-} from '../tabular-modification/tabular-modification-utils';
+} from '../tabular/modification/tabular-modification-utils';
+
+const styles = {
+    grid: { height: 500, width: '100%' },
+};
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;
@@ -49,7 +46,7 @@ export interface TabularModificationFormProps {
 export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<TabularModificationFormProps>) {
     const intl = useIntl();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const [repeatableColumns, setReapeatableColumns] = useState<TabularModificationField[]>([]);
+    const [repeatableColumns, setRepeatableColumns] = useState<TabularField[]>([]);
 
     const { setValue, clearErrors, getValues, setError, trigger } = useFormContext();
 
@@ -57,7 +54,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
-    const csvColumns = useMemo<TabularModificationField[]>(() => {
+    const csvColumns = useMemo<TabularField[]>(() => {
         return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
     }, [repeatableColumns]);
 
@@ -126,16 +123,12 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         [clearErrors, csvColumns, intl, setError, setValue]
     );
 
-    const equipmentType = useWatch({
-        name: TYPE,
-    });
-
     const amountTemporaryLimits = useWatch({
         name: AMOUNT_TEMPORARY_LIMITS,
     });
 
     const computeRepeatableColumns = useCallback(() => {
-        const columns: TabularModificationField[] = [];
+        const columns: TabularField[] = [];
         trigger(AMOUNT_TEMPORARY_LIMITS).then((valid) => {
             if (valid) {
                 for (let i = 1; i <= amountTemporaryLimits; i++) {
@@ -148,7 +141,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         })
                     );
                 }
-                setReapeatableColumns(columns);
+                setRepeatableColumns(columns);
             }
         });
     }, [amountTemporaryLimits, trigger]);
@@ -160,11 +153,19 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [intl]);
 
     const commentLines = useMemo(() => {
-        return generateLimitSetCommentLines({
-            csvTranslatedColumns,
-            intl,
-            language,
-        });
+        const commentKey = `TabularLimitSetsModificationSkeletonComment`;
+        let commentData: string[][] = [];
+        if (csvTranslatedColumns) {
+            commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
+            if (commentKey && intl.messages[commentKey]) {
+                commentData.push([
+                    intl.formatMessage({
+                        id: commentKey,
+                    }),
+                ]);
+            }
+        }
+        return commentData;
     }, [intl, csvTranslatedColumns, language]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
@@ -276,7 +277,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                     <CsvDownloader
                         columns={csvColumns}
                         datas={commentLines}
-                        filename={equipmentType + '_modification_template'}
+                        filename={'limitset_modification_template'}
                         disabled={!csvColumns}
                         separator={language === LANG_FRENCH ? ';' : ','}
                     >
