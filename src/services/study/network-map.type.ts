@@ -9,3 +9,7 @@ export type SwitchInfos = {
     id: string;
     open: boolean;
 };
+
+export type LineInfos = {
+    name: string;
+};

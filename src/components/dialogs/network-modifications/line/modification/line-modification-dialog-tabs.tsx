@@ -13,13 +13,13 @@ import { LineModificationDialogTab } from '../line-utils';
 import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { LineModificationInfo } from '../../../../../services/network-modification-types';
+import { LineInfos } from '../../../../../services/study/network-map.type';
 
 export interface LineModificationDialogTabsProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    lineToModify: LineModificationInfo; // TODO : to be checked, may be different
+    lineToModify: LineInfos;
     tabIndex: number;
 }
 

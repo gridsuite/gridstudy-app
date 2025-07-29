@@ -11,8 +11,24 @@ import { filledTextField } from 'components/dialogs/dialog-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
+import { UUID } from 'crypto';
+import { LineInfos } from '../../../../../services/study/network-map.type';
 
-const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIndex, setTabIndex, equipmentId }) => {
+export interface LineModificationDialogHeaderProps {
+    lineToModify: LineInfos;
+    tabIndexesWithError: number[];
+    tabIndex: number;
+    setTabIndex: React.Dispatch<React.SetStateAction<number | null>>;
+    equipmentId: UUID;
+}
+
+const LineModificationDialogHeader = ({
+    lineToModify,
+    tabIndexesWithError,
+    tabIndex,
+    setTabIndex,
+    equipmentId,
+}: Readonly<LineModificationDialogHeaderProps>) => {
     const lineIdField = (
         <TextField
             size="small"
