@@ -123,9 +123,10 @@ export interface LineModificationDialogProps {
 
 /**
  * Dialog to modify a line in the network
- * @param studyUuid the study we are currently working on
+ * @param studyUuid
  * @param defaultIdValue the default line id, Used to pre-select an equipmentId when calling this dialog from the SLD or network map
- * @param currentNode The node we are currently working on
+ * @param currentNode
+ * @param currentRootNetworkUuid
  * @param editData the data to edit, contains data when we try to edit an existing hypothesis from the current node's list
  * @param displayConnectivity to display connectivity section or not
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -296,8 +297,8 @@ const LineModificationDialog = ({
         (line: LineInfos): OperationalLimitsGroup[] => {
             return line.currentLimits.map((currentLimit: CurrentLimits, index: number): OperationalLimitsGroup => {
                 return {
-                    id: currentLimit.id ?? '' + currentLimit.applicability,
-                    name: currentLimit.id ?? '',
+                    id: currentLimit.id + currentLimit.applicability,
+                    name: currentLimit.id,
                     applicability: currentLimit.applicability,
                     currentLimits: {
                         id: currentLimit.id,

@@ -155,10 +155,12 @@ export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]): Op
         id: baseData.name,
         currentLimits: !currentLimits
             ? {
+                  id: '',
                   permanentLimit: null,
                   temporaryLimits: [],
               }
             : {
+                  id: currentLimits.id,
                   permanentLimit: currentLimits.permanentLimit,
                   temporaryLimits: !currentLimits.temporaryLimits
                       ? []
