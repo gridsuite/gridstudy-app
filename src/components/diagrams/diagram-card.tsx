@@ -174,11 +174,11 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                                 (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.scalingFactor ??
                                 undefined
                             }
-                            svgVoltageLevels={
-                                (diagram.svg?.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels
-                                    .map((vl) => vl.id)
-                                    .filter((vlId) => vlId !== undefined) as string[]
-                            }
+                            svgVoltageLevels={(
+                                diagram.svg?.additionalMetadata as DiagramAdditionalMetadata
+                            )?.voltageLevels
+                                .map((vl) => vl.id)
+                                .filter((vlId) => vlId !== undefined)}
                             loadingState={loading}
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
