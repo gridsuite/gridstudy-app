@@ -273,7 +273,7 @@ export const NetworkMapTab = ({
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
                         editData={null}
-                        editDataFetchStatus={null}
+                        editDataFetchStatus={undefined}
                     />
                 );
             default:

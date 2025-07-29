@@ -115,7 +115,7 @@ export interface LineModificationDialogProps {
     currentRootNetworkUuid: UUID;
     displayConnectivity?: boolean;
     isUpdate: boolean;
-    editDataFetchStatus: string | undefined;
+    editDataFetchStatus?: string;
     open?: boolean;
     onClose?: () => void;
     //...dialogProps

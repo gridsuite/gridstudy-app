@@ -97,7 +97,7 @@ export interface LoadCreationInfo {
     connectionName?: string | null;
     connectionPosition?: number | null;
     terminalConnected?: boolean;
-    properties?: Property[];
+    properties?: Property[] | null;
 }
 
 export interface LoadModificationInfo {
