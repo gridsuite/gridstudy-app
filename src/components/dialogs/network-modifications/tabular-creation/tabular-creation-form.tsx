@@ -125,7 +125,7 @@ export function TabularCreationForm({ dataFetching }: Readonly<TabularCreationFo
                 }
                 setIsFetching(false);
                 setFieldTypeError(
-                    fieldTypeInError,
+                    intl.formatMessage({ id: fieldTypeInError }),
                     expectedTypeForFieldInError,
                     CREATIONS_TABLE,
                     setError,
