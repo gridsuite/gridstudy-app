@@ -212,7 +212,7 @@ export function LimitsSidePane({
                                 sx={{ flexGrow: 1 }}
                                 size="small"
                                 onCheckNewValue={(value: Option | null) => {
-                                    if (value) {
+                                    if (value && typeof value !== 'string') {
                                         const errorMessage: string = checkLimitSetUnicity(
                                             selectedLimitSetName ?? '',
                                             value?.id ?? value
