@@ -6,7 +6,7 @@
  */
 
 const spreadsheetFr = {
-    'spreadsheet/column/button': 'Afficher / masquer colonnes',
+    'spreadsheet/column/button': 'Affichage colonnes',
     'spreadsheet/column/dialog/title': 'Liste des colonnes',
     'spreadsheet/collection/save/title': 'Liste des tableurs',
     'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
@@ -55,6 +55,7 @@ const spreadsheetFr = {
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
     'spreadsheet/save/update_error_message':
         'Une erreur est survenue lors de la mise à jour du modèle de tableur {item}',
+    'spreadsheet/collection/save/button_tooltip': 'Enregistrer collection',
     'spreadsheet/collection/save/error': 'Une erreur est survenue lors de la création de la collection de tableurs',
     'spreadsheet/save/confirmation_message': "Création d'un modèle de tableur dans {folderName}",
     'spreadsheet/save/update_confirmation_message': 'Modèle de tableur {item} mis à jour',
@@ -104,6 +105,7 @@ const spreadsheetFr = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Erreur lors de la réinitialisation de la collection de tableurs',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Réinitialiser la collection de tableurs',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Paramétrer ou recharger nœuds',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',

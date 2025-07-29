@@ -17,7 +17,7 @@ import {
     renameTableDefinition,
     reorderTableDefinitions,
 } from 'redux/actions';
-import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
@@ -33,6 +33,10 @@ import {
     renameSpreadsheetModel,
     reorderSpreadsheetConfigs,
 } from 'services/study/study-config';
+import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
+import { NodeAlias } from '../types/node-alias.type';
+import SaveIcon from '@mui/icons-material/Save';
+import { SaveSpreadsheetCollectionDialog } from '../spreadsheet/spreadsheet-toolbar/save/save-spreadsheet-collection-dialog';
 
 const draggableTabStyles = {
     container: {
@@ -53,6 +57,11 @@ const draggableTabStyles = {
 const styles = {
     resetButton: (theme: Theme) => ({
         color: theme.palette.primary.main,
+        minWidth: '100%',
+    }),
+    saveButton: (theme: Theme) => ({
+        color: theme.palette.primary.main,
+        minWidth: '100%',
     }),
 };
 
@@ -62,6 +71,8 @@ interface SpreadsheetTabsProps {
     disabled: boolean;
     resetNodeAliases: ResetNodeAliasCallback;
     handleResetCollectionClick?: () => void;
+    nodeAliases: NodeAlias[] | undefined;
+    updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
 }
 
 export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
@@ -70,6 +81,8 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     disabled,
     resetNodeAliases,
     handleResetCollectionClick,
+    nodeAliases,
+    updateNodeAliases,
 }) => {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -80,6 +93,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
     const [tabToBeRemovedOrRenamedUuid, setTabToBeRemovedOrRenamedUuid] = useState<UUID | null>(null);
+    const saveCollectionDialogOpen = useStateBoolean(false);
 
     const selectedTabIndex = useMemo(() => {
         if (!selectedTabUuid) {
@@ -246,6 +260,30 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                     />
                 </Grid>
                 <Grid item padding={1}>
+                    <NodesConfigButton
+                        disabled={disabled}
+                        tableType={tablesDefinitions[selectedTabIndex]?.type}
+                        nodeAliases={nodeAliases}
+                        updateNodeAliases={updateNodeAliases}
+                    />
+                </Grid>
+                <Grid item padding={1}>
+                    <Tooltip title={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}>
+                        <span>
+                            <Button
+                                sx={styles.saveButton}
+                                size={'small'}
+                                onClick={() => {
+                                    saveCollectionDialogOpen.setTrue();
+                                }}
+                                disabled={disabled}
+                            >
+                                <SaveIcon />
+                            </Button>
+                        </span>
+                    </Tooltip>
+                </Grid>
+                <Grid item padding={1}>
                     <Tooltip title={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}>
                         <span>
                             <Button
@@ -281,6 +319,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                 tabUuid={tabToBeRemovedOrRenamedUuid}
                 tablesDefinitions={tablesDefinitions}
             />
+            <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
         </>
     );
 };
