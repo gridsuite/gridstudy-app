@@ -244,11 +244,11 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedS: twtModification.ratedS?.value,
                 }),
                 ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
-                ...getAllLimitsFormData({
-                    operationalLimitsGroups: formatOpLimitGroups(twtModification.operationalLimitsGroups),
-                    selectedOperationalLimitsGroup1: twtModification.selectedLimitsGroup1,
-                    selectedOperationalLimitsGroup2: twtModification.selectedLimitsGroup2,
-                }),
+                ...getAllLimitsFormData(
+                    formatOpLimitGroups(twtModification.operationalLimitsGroups),
+                    twtModification.selectedLimitsGroup1,
+                    twtModification.selectedLimitsGroup2
+                ),
                 ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
                     hasLoadTapChangingCapabilities:
@@ -679,11 +679,11 @@ const TwoWindingsTransformerModificationDialog = ({
 
                             reset((formValues) => ({
                                 ...formValues,
-                                ...getAllLimitsFormData({
-                                    operationalLimitsGroups: updateOpLimitsGroups(twt),
-                                    selectedOperationalLimitsGroup1: twt?.selectedOperationalLimitsGroup1,
-                                    selectedOperationalLimitsGroup2: twt?.selectedOperationalLimitsGroup2,
-                                }),
+                                ...getAllLimitsFormData(
+                                    updateOpLimitsGroups(twt),
+                                    twt?.selectedOperationalLimitsGroup1,
+                                    twt?.selectedOperationalLimitsGroup2
+                                ),
                                 ...getRatioTapChangerFormData({
                                     enabled: isRatioTapChangerEnabled(twt),
                                     hasLoadTapChangingCapabilities: getValues(

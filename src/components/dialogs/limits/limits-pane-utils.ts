@@ -24,12 +24,9 @@ import {
 import { addSelectedFieldToRows, areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import {
-    LineModificationInfo,
-    OperationalLimitsGroup,
-    TemporaryLimit,
-} from '../../../services/network-modification-types';
+import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import { LineInfos, LineModificationEditData } from '../../../services/study/network-map.type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
@@ -135,7 +132,9 @@ export const formatOpLimitGroups = (limitGroups: OperationalLimitsGroup[]): Oper
  * used when the limit set data contain all the limit sets data, including the not selected
  */
 export const getAllLimitsFormData = (
-    { operationalLimitsGroups = [], selectedOperationalLimitsGroup1 = null, selectedOperationalLimitsGroup2 = null },
+    operationalLimitsGroups: OperationalLimitsGroup[] = [],
+    selectedOperationalLimitsGroup1: string | null = null,
+    selectedOperationalLimitsGroup2: string | null = null,
     id = LIMITS
 ) => {
     return {
@@ -290,8 +289,8 @@ export const addModificationTypeToTemporaryLimits = (
  */
 export const addModificationTypeToOpLimitsGroups = (
     limitsGroups: OperationalLimitsGroup[],
-    lineToModify: LineModificationInfo,
-    editData: any,
+    lineToModify: LineInfos | null,
+    editData: LineModificationEditData | null,
     currentNode: CurrentTreeNode
 ) => {
     const modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
@@ -300,9 +299,9 @@ export const addModificationTypeToOpLimitsGroups = (
     modificationLimitsGroups.map((limitsGroup: OperationalLimitsGroup) => {
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(limitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
-            lineToModify?.operationalLimitsGroups.find(
-                (lineOpLimitGroup: OperationalLimitsGroup) => lineOpLimitGroup.id === limitsGroup.name
-            )?.currentLimits?.temporaryLimits ?? [],
+            lineToModify?.currentLimits.find(
+                (lineOpLimitGroup: CurrentLimits) => lineOpLimitGroup.id === limitsGroup.name
+            )?.temporaryLimits ?? [],
             editData?.operationalLimitsGroups.find(
                 (lineOpLimitGroup: OperationalLimitsGroup) => lineOpLimitGroup.id === limitsGroup.name
             )?.currentLimits?.temporaryLimits ?? [],

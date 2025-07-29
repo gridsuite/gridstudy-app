@@ -19,8 +19,8 @@ export interface LineModificationDialogTabsProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
-    lineToModify: LineInfos;
-    tabIndex: number;
+    lineToModify: LineInfos | null;
+    tabIndex: number | null;
 }
 
 const LineModificationDialogTabs = ({

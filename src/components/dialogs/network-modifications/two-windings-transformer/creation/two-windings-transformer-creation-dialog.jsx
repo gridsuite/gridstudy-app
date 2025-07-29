@@ -246,15 +246,15 @@ const TwoWindingsTransformerCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                ...getAllLimitsFormData(
+                    twt.operationalLimitsGroups.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    selectedOperationalLimitsGroup1: twt.selectedOperationalLimitsGroup1 ?? null,
-                    selectedOperationalLimitsGroup2: twt.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                    twt.selectedOperationalLimitsGroup1 ?? null,
+                    twt.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                     regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
@@ -336,11 +336,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             CONNECTIVITY_2
                         ),
                     }),
-                    ...getAllLimitsFormData({
-                        [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(twt.currentLimits),
-                        [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroup1 ?? null,
-                        [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroup2 ?? null,
-                    }),
+                    ...getAllLimitsFormData(
+                        formatCompleteCurrentLimit(twt.currentLimits),
+                        twt.selectedOperationalLimitsGroup1 ?? null,
+                        twt.selectedOperationalLimitsGroup2 ?? null
+                    ),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                         hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],
