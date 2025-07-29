@@ -75,6 +75,7 @@ const NodeConfigTable = () => {
             withAddRowsDialog={false}
             disableDragAndDrop={true}
             showMoveArrow={false}
+            maxRows={5}
         />
     );
 };
