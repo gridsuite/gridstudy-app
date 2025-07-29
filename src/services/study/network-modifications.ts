@@ -1097,13 +1097,12 @@ export function createTabularModification(
     nodeUuid: UUID,
     modificationType: string,
     modifications: any,
-    properties: TabularProperty[],
-    isUpdate: boolean,
     modificationUuid: UUID,
-    type: ModificationType
+    type: ModificationType,
+    properties?: TabularProperty[]
 ) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
+    const isUpdate = !!modificationUuid;
     if (isUpdate) {
         createTabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating tabular modification');

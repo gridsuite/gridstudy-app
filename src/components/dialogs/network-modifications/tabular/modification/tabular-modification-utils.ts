@@ -103,7 +103,7 @@ import {
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
 } from '../../../../network/constants';
-import { BranchSide } from '../../../utils/constants';
+import { BranchSide } from '../../../../utils/constants';
 import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,

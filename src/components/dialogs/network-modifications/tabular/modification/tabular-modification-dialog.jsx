@@ -132,10 +132,9 @@ const TabularModificationDialog = ({
                 currentNodeUuid,
                 modificationType,
                 modifications,
-                formData[TABULAR_PROPERTIES],
-                !!editData,
                 editData?.uuid,
-                ModificationType.TABULAR_MODIFICATION
+                ModificationType.TABULAR_MODIFICATION,
+                formData[TABULAR_PROPERTIES]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
