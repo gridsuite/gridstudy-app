@@ -1076,6 +1076,10 @@ export const NetworkMapTab = ({
                     position: 'absolute',
                     width: shouldOpenSelectionCreationPanel ? '80%' : '100%',
                     height: '100%',
+                    '& .mapbox-gl-draw_polygon': {
+                        // To override the bg-color of the draw button when we enter in draw mode
+                        backgroundColor: isInDrawingMode ? 'lightblue !important' : 'inherit',
+                    },
                 }}
             >
                 <NetworkMap
