@@ -6,40 +6,34 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { CREATIONS_TABLE, TYPE } from 'components/utils/field-constants';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { createTabularCreation } from 'services/study/network-modifications';
-import { FetchStatus } from 'services/utils';
-import TabularCreationForm from './tabular-creation-form';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from 'components/network/constants.js';
+import { MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
+import { createTabularCreation } from 'services/study/network-modifications.js';
+import { FetchStatus } from 'services/utils.js';
 import {
     convertCreationFieldFromBackToFront,
     convertCreationFieldFromFrontToBack,
-    convertReactiveCapabilityCurvePointsFromFrontToBack,
     getEquipmentTypeFromCreationType,
     TABULAR_CREATION_TYPES,
-} from './tabular-creation-utils';
+} from './tabular-creation-utils.js';
 import { useIntl } from 'react-intl';
-import { formatModification } from '../tabular-modification/tabular-modification-utils';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.string().nullable().required(),
-        [CREATIONS_TABLE]: yup.array().min(1, 'CreationsRequiredTabError').required(),
-    })
-    .required();
-
-const emptyFormData = {
-    [TYPE]: null,
-    [CREATIONS_TABLE]: [],
-};
+import {
+    addPropertiesFromBack,
+    convertReactiveCapabilityCurvePointsFromFrontToBack,
+    createCommonProperties,
+    emptyTabularFormData,
+    formatModification,
+    tabularFormSchema,
+    TabularModificationType,
+} from '../tabular-common.js';
+import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.js';
+import TabularForm from '../tabular-form.js';
 
 /**
  * Dialog to create tabular creations based on a csv file.
@@ -58,8 +52,8 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: emptyTabularFormData,
+        resolver: yupResolver(tabularFormSchema),
     });
 
     const {
@@ -73,18 +67,20 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
         if (editData) {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.creationType);
             const creations = editData?.creations.map((creat) => {
-                const creation = {};
+                let creation = {};
                 Object.keys(formatModification(creat)).forEach((key) => {
                     const entry = convertCreationFieldFromBackToFront(key, creat[key]);
                     (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
                         creation[item.key] = item.value;
                     });
                 });
+                creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
                 return creation;
             });
             reset({
                 [TYPE]: equipmentType,
-                [CREATIONS_TABLE]: creations,
+                [MODIFICATIONS_TABLE]: creations,
+                [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
             });
         }
     }, [editData, reset, intl]);
@@ -92,17 +88,23 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     const onSubmit = useCallback(
         (formData) => {
             const creationType = TABULAR_CREATION_TYPES[formData[TYPE]];
-            const creations = formData[CREATIONS_TABLE]?.map((row) => {
+            const creations = formData[MODIFICATIONS_TABLE]?.map((row) => {
                 const creation = {
                     type: creationType,
                 };
+                const propertiesModifications = createCommonProperties(row);
                 Object.keys(row).forEach((key) => {
-                    const entry = convertCreationFieldFromFrontToBack(key, row[key]);
-                    creation[entry.key] = entry.value;
+                    if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+                        const entry = convertCreationFieldFromFrontToBack(key, row[key]);
+                        creation[entry.key] = entry.value;
+                    }
                 });
                 // For now, we do not manage reactive limits by diagram
                 if (creationType === 'GENERATOR_CREATION' || creationType === 'BATTERY_CREATION') {
                     convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
+                }
+                if (propertiesModifications.length > 0) {
+                    creation[TABULAR_PROPERTIES] = propertiesModifications;
                 }
                 return creation;
             });
@@ -111,6 +113,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 currentNodeUuid,
                 creationType,
                 creations,
+                formData[TABULAR_PROPERTIES],
                 !!editData,
                 editData?.uuid
             ).catch((error) => {
@@ -124,7 +127,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyTabularFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -138,19 +141,19 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
     }, [editDataFetchStatus, isUpdate]);
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
                 onClear={clear}
-                disabledSave={disableSave}
                 onSave={onSubmit}
+                disabledSave={disableSave}
                 titleId="TabularCreation"
                 open={open}
                 isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularCreationForm dataFetching={dataFetching} />
+                <TabularForm dataFetching={dataFetching} dialogMode={TabularModificationType.CREATION} />
             </ModificationDialog>
         </CustomFormProvider>
     );
