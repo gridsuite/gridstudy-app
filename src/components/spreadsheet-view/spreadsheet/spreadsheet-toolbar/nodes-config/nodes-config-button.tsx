@@ -35,6 +35,7 @@ const styles = {
             fontSize: theme.typography.caption.fontSize,
             padding: theme.spacing(0, 0.5),
             marginRight: theme.spacing(1.2),
+            right: 10,
         },
     }),
     nodesConfigButton: (theme: Theme) => ({

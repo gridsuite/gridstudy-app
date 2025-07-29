@@ -6,7 +6,7 @@
  */
 
 const spreadsheetEn = {
-    'spreadsheet/column/button': 'Column display',
+    'spreadsheet/column/button': 'Columns display',
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/collection/save/title': 'Spreadsheets list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',

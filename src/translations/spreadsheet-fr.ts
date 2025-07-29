@@ -6,7 +6,7 @@
  */
 
 const spreadsheetFr = {
-    'spreadsheet/column/button': 'Affichage colonne',
+    'spreadsheet/column/button': 'Affichage colonnes',
     'spreadsheet/column/dialog/title': 'Liste des colonnes',
     'spreadsheet/collection/save/title': 'Liste des tableurs',
     'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
