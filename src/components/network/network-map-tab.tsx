@@ -10,11 +10,13 @@ import {
     type Coordinate,
     DRAW_EVENT,
     DRAW_MODES,
+    EQUIPMENT_TYPES as NV_EQUIPMENT_TYPES,
     GeoData,
     type GeoDataEquipment,
     type GeoDataLine,
     type GeoDataSubstation,
     LineFlowMode,
+    MapAnyLineWithType,
     type MapHvdcLine,
     type MapLine,
     type MapSubstation,
@@ -238,9 +240,34 @@ export const NetworkMapTab = ({
         if (!networkMapRef.current) {
             return [];
         }
-        return equipmentType === EquipmentType.LINE
-            ? networkMapRef.current?.getSelectedLines()
-            : networkMapRef.current?.getSelectedSubstations();
+        switch (equipmentType) {
+            case EquipmentType.LINE:
+                return (networkMapRef.current.getSelectedLines() as MapAnyLineWithType[])
+                    .filter((line) => line.equipmentType === NV_EQUIPMENT_TYPES.LINE)
+                    .map((line) => ({
+                        ...line,
+                        type: EquipmentType.LINE,
+                    }));
+            case EquipmentType.TIE_LINE:
+                return (networkMapRef.current.getSelectedLines() as MapAnyLineWithType[])
+                    .filter((line) => line.equipmentType === NV_EQUIPMENT_TYPES.TIE_LINE)
+                    .map((tieLine) => ({
+                        ...tieLine,
+                        type: EquipmentType.TIE_LINE,
+                    }));
+            case EquipmentType.HVDC_LINE:
+                return (networkMapRef.current.getSelectedLines() as MapAnyLineWithType[])
+                    .filter((line) => line.equipmentType === NV_EQUIPMENT_TYPES.HVDC_LINE)
+                    .map((hvdcLine) => ({
+                        ...hvdcLine,
+                        type: EquipmentType.HVDC_LINE,
+                    }));
+            default: // return Substations for all other inputs EquipmentTypes
+                return networkMapRef.current.getSelectedSubstations().map((substation) => ({
+                    ...substation,
+                    type: EquipmentType.SUBSTATION,
+                }));
+        }
     };
 
     // When the user enter the drawing mode, we need to switch the study display mode to map
