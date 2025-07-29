@@ -138,6 +138,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]
                     [NAME]: elt.id,
                     [APPLICABIlITY]: elt.applicability,
                     [CURRENT_LIMITS]: {
+                        [ID]: elt.id,
                         permanentLimit: elt.permanentLimit,
                         temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
                     },

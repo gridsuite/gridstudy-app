@@ -166,6 +166,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     [NAME]: name,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [CURRENT_LIMITS]: {
+                        [ID]: name,
                         [TEMPORARY_LIMITS]: [
                             emptyTemporaryLimit,
                             emptyTemporaryLimit,
