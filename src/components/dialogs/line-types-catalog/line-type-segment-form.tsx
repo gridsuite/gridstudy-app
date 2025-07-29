@@ -141,8 +141,10 @@ export const LineTypeSegmentForm = () => {
             segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit) => {
                 if (computedLimits.has(limit.limitSetName)) {
                     let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
-                    limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
-                    limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
+                    if (limitInfo !== undefined) {
+                      limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
+                      limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
+                    }
                 } else {
                     computedLimits.set(limit.limitSetName, limit);
                 }
