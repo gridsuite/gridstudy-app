@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Grid } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
+    SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,
     SEGMENT_RESISTANCE,
@@ -27,11 +28,14 @@ import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import GridItem from '../commons/grid-item';
-import { LineTypeInfo } from './line-catalog.type';
+import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import { emptyLineSegment, SegmentFormData } from './segment-utils';
+import { ColDef } from 'ag-grid-community';
+import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
+import GridSection from '../commons/grid-section';
 
 const styles = {
     header: {
@@ -49,6 +53,8 @@ export const LineTypeSegmentForm = () => {
     const [lineTypesCatalog, setLineTypesCatalog] = useState<LineTypeInfo[]>([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState<number | null>(null);
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
+    const [currentLimitResult, setCurrentLimitResult] = useState<CurrentLimitsInfo[]>([]);
 
     // Fetches the lineTypes catalog on startup
     useEffect(() => {
@@ -88,6 +94,15 @@ export const LineTypeSegmentForm = () => {
         [getValues, setValue, lineTypesCatalog]
     );
 
+    const updateSegmentLimitsValues = useCallback(
+        (index: number) => {
+            const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
+            const entryFromCatalog = lineTypesCatalog?.find((entry) => entry.id === typeId);
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, entryFromCatalog?.limitsForLineType);
+        },
+        [getValues, setValue, lineTypesCatalog]
+    );
+
     const updateTotals = useCallback(() => {
         const segments: SegmentFormData[] = getValues(SEGMENTS);
         const totalResistance = segments.reduce(
@@ -115,6 +130,23 @@ export const LineTypeSegmentForm = () => {
         setOpenCatalogDialogIndex(index);
     };
 
+    const updateTotalLimits = useCallback(() => {
+        const segments: SegmentFormData[] = getValues(SEGMENTS);
+        const computedLimits = new Map<string, CurrentLimitsInfo>();
+        segments.forEach((segment) => {
+            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit) => {
+                if (computedLimits.has(limit.limitSetName)) {
+                    let limitInfo: CurrentLimitsInfo = computedLimits.get(limit.limitSetName);
+                    limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
+                    limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
+                } else {
+                    computedLimits.set(limit.limitSetName, limit);
+                }
+            });
+        });
+        setCurrentLimitResult(Array.from(computedLimits.values()));
+    }, [getValues]);
+
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo) => {
             if (selectedLine && openCatalogDialogIndex !== null) {
@@ -124,10 +156,20 @@ export const LineTypeSegmentForm = () => {
                 setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`, selectedTypeId);
                 clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
                 updateSegmentValues(openCatalogDialogIndex);
+                updateSegmentLimitsValues(openCatalogDialogIndex);
                 updateTotals();
+                updateTotalLimits();
             }
         },
-        [updateSegmentValues, updateTotals, setValue, clearErrors, openCatalogDialogIndex]
+        [
+            updateSegmentValues,
+            updateTotals,
+            setValue,
+            clearErrors,
+            openCatalogDialogIndex,
+            updateSegmentLimitsValues,
+            updateTotalLimits,
+        ]
     );
 
     const handleSegmentDistantChange = useCallback(
@@ -146,7 +188,9 @@ export const LineTypeSegmentForm = () => {
             setValue(`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`, 0);
             setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, 0);
             setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, 0);
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, []);
             updateTotals();
+            setCurrentLimitResult([]);
             return true; // Needed to remove the line in ExpandableInput
         },
         [setValue, updateTotals]
@@ -189,6 +233,42 @@ export const LineTypeSegmentForm = () => {
 
     const totalSusceptanceField = <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />;
 
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: false,
+            resizable: false,
+            wrapHeaderText: true,
+            editable: false,
+            headerClass: 'centered-header',
+            suppressMovable: true,
+            autoHeaderHeight: true,
+            lockPinned: true,
+            flex: 1,
+        }),
+        []
+    );
+
+    const limitsColumnDefs = useMemo((): ColDef[] => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.limitSet' }),
+                field: 'limitSetName',
+                pinned: 'left',
+                cellRenderer: DefaultCellRenderer,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.Permanent' }),
+                field: 'permanentLimit',
+                cellRenderer: DefaultCellRenderer,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.Temporary' }),
+                field: 'temporaryLimit',
+                cellRenderer: DefaultCellRenderer,
+            },
+        ];
+    }, [intl]);
+
     return (
         <>
             <Grid container spacing={2}>
@@ -218,6 +298,15 @@ export const LineTypeSegmentForm = () => {
                 <GridItem size={2}>{totalReactanceField}</GridItem>
                 <GridItem size={2}>{totalSusceptanceField}</GridItem>
                 <GridItem size={1}>{<div />}</GridItem>
+            </Grid>
+            <GridSection title="lineTypes.currentLimits.limitSets" customStyle={styles.h3} />
+            <Grid container sx={{ height: '100%' }} direction="column">
+                <CustomAGGrid
+                    rowData={currentLimitResult}
+                    defaultColDef={defaultColDef}
+                    columnDefs={limitsColumnDefs}
+                    domLayout="autoHeight"
+                />
             </Grid>
 
             {openCatalogDialogIndex !== null && (

@@ -25,6 +25,7 @@ export type LineTypeInfo = {
     linearResistance: number;
     linearReactance: number;
     linearCapacity: number;
+    limitsForLineType: CurrentLimitsInfo[];
 } & (AerialLineTypeInfo | UndergroundLineTypeInfo);
 
 // Interface with Line creation/modification
@@ -32,4 +33,10 @@ export type ComputedLineCharacteristics = {
     totalResistance: number;
     totalReactance: number;
     totalSusceptance: number;
+};
+
+export type CurrentLimitsInfo = {
+    limitSetName: string;
+    permanentLimit: number;
+    temporaryLimit: number;
 };
