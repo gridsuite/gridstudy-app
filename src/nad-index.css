@@ -18,6 +18,7 @@
 }
 .nad-vl-nodes .nad-busnode {
     fill: var(--vl-color, lightgrey);
+    cursor: pointer;
 }
 .nad-vl-nodes circle.nad-unknown-busnode {
     stroke: var(--vl-color, #808080);
@@ -67,6 +68,7 @@ foreignObject.nad-text-nodes {
     width: max-content;
     padding: 10px;
     border-radius: 10px;
+    cursor: grab;
 }
 .nad-legend-square {
     display: inline-block;
@@ -267,4 +269,9 @@ g.nad-disconnected > g.nad-disconnected {
     .nad-vl50to70, .nad-vl70to120
     ) {
     display: none;
+}
+
+.nad-highlight {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+    transform: scale(1.1);
 }
