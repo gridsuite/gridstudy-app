@@ -18,7 +18,13 @@ import {
     useSnackMessage,
     useStateBoolean,
 } from '@gridsuite/commons-ui';
-import { EQUIPMENT_ID, MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants';
+import {
+    EQUIPMENT_ID,
+    MODIFICATIONS_TABLE,
+    CSV_FILENAME,
+    TABULAR_PROPERTIES,
+    TYPE,
+} from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
@@ -176,6 +182,29 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         [csvFields, equipmentType, intl, setError, snackWarning]
     );
 
+    const selectedProperties = useMemo((): string[] => {
+        return (
+            tabularProperties
+                ?.filter((property: TabularProperty) => property.selected)
+                ?.map((property: TabularProperty) => property.name) ?? []
+        );
+    }, [tabularProperties]);
+
+    const csvColumns = useMemo((): string[] => {
+        return csvFields
+            .map((field: TabularField) => field.id)
+            .concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
+    }, [csvFields, selectedProperties]);
+
+    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
+    const [selectedFile, FileField, selectedFileError, setAcceptedFile] = useCSVPicker({
+        label: dialogMode === TabularModificationType.CREATION ? 'ImportCreations' : 'ImportModifications',
+        header: csvColumns,
+        disabled: !csvColumns?.length,
+        resetTrigger: typeChangedTrigger,
+        language: language,
+    });
+
     const handleTabularModificationParsingError = useCallback(
         (results: Papa.ParseResult<any>) => {
             let fieldTypeInError: string = '';
@@ -230,24 +259,18 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 handleTabularModificationParsingError(results);
             }
             setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
+            setValue(CSV_FILENAME, selectedFile?.name);
             setIsFetching(false);
         },
-        [clearErrors, dialogMode, setValue, handleTabularCreationParsingError, handleTabularModificationParsingError]
+        [
+            clearErrors,
+            dialogMode,
+            setValue,
+            handleTabularCreationParsingError,
+            handleTabularModificationParsingError,
+            selectedFile,
+        ]
     );
-
-    const selectedProperties = useMemo((): string[] => {
-        return (
-            tabularProperties
-                ?.filter((property: TabularProperty) => property.selected)
-                ?.map((property: TabularProperty) => property.name) ?? []
-        );
-    }, [tabularProperties]);
-
-    const csvColumns = useMemo((): string[] => {
-        return csvFields
-            .map((field: TabularField) => field.id)
-            .concat(selectedProperties.map((propertyName: string) => PROPERTY_CSV_COLUMN_PREFIX + propertyName));
-    }, [csvFields, selectedProperties]);
 
     const commentLines = useMemo(() => {
         return generateCommentLines({
@@ -261,20 +284,15 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         });
     }, [csvFields, selectedProperties, intl, equipmentType, language, dialogMode, predefinedEquipmentProperties]);
 
-    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
-    const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: dialogMode === TabularModificationType.CREATION ? 'ImportCreations' : 'ImportModifications',
-        header: csvColumns,
-        disabled: !csvColumns?.length,
-        resetTrigger: typeChangedTrigger,
-        language: language,
-    });
-
     useEffect(() => {
         fetchStudyMetadata().then((studyMetadata) => {
             setPredefinedEquipmentProperties(studyMetadata?.predefinedEquipmentProperties ?? {});
         });
     }, []);
+
+    useEffect(() => {
+        setAcceptedFile(getValues(CSV_FILENAME) ? new File([], getValues(CSV_FILENAME)) : undefined);
+    }, [setAcceptedFile, getValues]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -283,9 +301,10 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
+            setValue(CSV_FILENAME, undefined);
             clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
-        } else if (selectedFile) {
+        } else if (selectedFile && selectedFile.size > 0) {
             setIsFetching(true);
             // @ts-ignore
             Papa.parse(selectedFile as unknown as File, {
@@ -310,6 +329,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         setTypeChangedTrigger(!typeChangedTrigger);
         clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
+        setValue(CSV_FILENAME, undefined);
         setValue(TABULAR_PROPERTIES, []);
     }, [clearErrors, setValue, typeChangedTrigger]);
 
@@ -369,6 +389,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             // new columns => reset table
             clearErrors(MODIFICATIONS_TABLE);
             setValue(MODIFICATIONS_TABLE, []);
+            setValue(CSV_FILENAME, undefined);
         }
         setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
     };
