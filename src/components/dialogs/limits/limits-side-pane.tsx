@@ -218,7 +218,7 @@ export function LimitsSidePane({
                                     if (value) {
                                         const errorMessage: string = checkLimitSetUnicity(
                                             selectedLimitSetName ?? '',
-                                            value?.id ?? value
+                                            typeof value === 'string' ? value : value.id
                                         );
                                         setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
                                             message: errorMessage,
