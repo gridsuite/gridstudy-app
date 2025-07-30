@@ -16,7 +16,7 @@ import {
     loadNetworkModificationTreeSuccess,
     openStudy,
     resetEquipments,
-    resetEquipmentsPostLoadflow,
+    resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
     setMonoRootStudy,
@@ -42,6 +42,7 @@ import { NodeType } from './graph/tree-node.type';
 import {
     isIndexationStatusNotification,
     isLoadflowResultNotification,
+    isStateEstimationResultNotification,
     isStudyNetworkRecreationNotification,
     NotificationType,
     RootNetworkIndexationStatus,
@@ -486,10 +487,13 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUpdatedForce, checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]);
 
     useEffect(() => {
-        if (isLoadflowResultNotification(studyUpdatedForce.eventData)) {
+        if (
+            isLoadflowResultNotification(studyUpdatedForce.eventData) ||
+            isStateEstimationResultNotification(studyUpdatedForce.eventData)
+        ) {
             const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
             if (rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current) {
-                dispatch(resetEquipmentsPostLoadflow());
+                dispatch(resetEquipmentsPostComputation());
             }
         }
     }, [studyUpdatedForce, dispatch]);
