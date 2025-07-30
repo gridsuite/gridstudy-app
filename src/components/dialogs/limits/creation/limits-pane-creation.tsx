@@ -113,11 +113,13 @@ export function LimitsPaneCreation({
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={4.9}>
-                <GridSection
-                    title="LimitSets"
-                    children={<Button sx={styles.button} startIcon={<AddIcon onClick={onAddClick} />} />}
-                />
+            <Grid container item xs={4.9} display="flex" flexDirection="row">
+                <Grid container item xs={3}>
+                    <GridSection title="LimitSets" />
+                </Grid>
+                <Grid container item xs={0.5}>
+                    <Button sx={styles.button} startIcon={<AddIcon onClick={onAddClick} />} />
+                </Grid>
             </Grid>
             <Grid container item xs={12} columns={10.25}>
                 <Grid item xs={4}>
