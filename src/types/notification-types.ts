@@ -862,6 +862,10 @@ export function isLoadflowResultNotification(notif: unknown): notif is LoadflowR
     return (notif as LoadflowResultEventData).headers?.updateType === NotificationType.LOADFLOW_RESULT;
 }
 
+export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
+    return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
+}
+
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
     return (
         (notif as RootNetworkDeletionStartedEventData).headers?.updateType ===
