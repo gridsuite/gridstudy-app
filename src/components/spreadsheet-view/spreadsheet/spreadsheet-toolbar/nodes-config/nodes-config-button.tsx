@@ -24,22 +24,17 @@ import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
 
 const styles = {
-    icon: {
-        height: '24px',
-        width: '24px',
-    },
     badgeStyle: (theme: Theme) => ({
         '& .MuiBadge-badge': {
             minWidth: theme.spacing(2),
             height: theme.spacing(2),
             fontSize: theme.typography.caption.fontSize,
             padding: theme.spacing(0, 0.5),
-            marginRight: theme.spacing(1.2),
-            right: 10,
         },
     }),
     nodesConfigButton: (theme: Theme) => ({
         color: theme.palette.primary.main,
+        minWidth: '100%',
     }),
 };
 
@@ -109,26 +104,28 @@ export default function NodesConfigButton({
         }
     }, [currentNode?.id, currentRootNetworkUuid, fetchNodesEquipmentData, nodesToReload]);
 
+    const badgeText = useMemo(() => {
+        if (nodeAliases?.length && !showWarning) {
+            return nodeAliases.length;
+        } else if (showWarning) {
+            return '!';
+        } else {
+            return undefined;
+        }
+    }, [nodeAliases, showWarning]);
+
     return (
         <>
             <Badge
                 sx={styles.badgeStyle}
                 max={99}
-                color="secondary"
-                badgeContent={nodeAliases?.length && !showWarning ? nodeAliases.length : undefined}
+                color={showWarning ? 'secondary' : 'warning'}
+                badgeContent={badgeText}
             >
                 <Tooltip title={<FormattedMessage id="spreadsheet/parameter_aliases/button_tooltip" />}>
                     <span>
                         <Button sx={styles.nodesConfigButton} size={'small'} onClick={handleClick} disabled={disabled}>
-                            <PolylineOutlined sx={styles.icon} />
-                            {showWarning && (
-                                <Badge
-                                    badgeContent="!"
-                                    color="warning"
-                                    overlap="circular"
-                                    style={{ transform: 'translate(10px, -15px)' }}
-                                ></Badge>
-                            )}
+                            <PolylineOutlined />
                         </Button>
                     </span>
                 </Tooltip>
