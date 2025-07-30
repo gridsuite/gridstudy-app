@@ -317,8 +317,6 @@ const TwoWindingsTransformerCreationDialog = ({
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
-                        permanentLimit1: twt.permanentLimit1,
-                        permanentLimit2: twt.permanentLimit2,
                         ...getConnectivityFormData(
                             {
                                 busbarSectionId: twt.busOrBusbarSectionId1,
