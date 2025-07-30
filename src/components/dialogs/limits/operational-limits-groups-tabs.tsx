@@ -35,6 +35,7 @@ import { NAME } from '@gridsuite/commons-ui';
 const limitsStyles = {
     limitsBackground: {
         p: 1,
+        minHeight: 60,
     },
     copyLimitsToRightBackground: {
         height: 200,

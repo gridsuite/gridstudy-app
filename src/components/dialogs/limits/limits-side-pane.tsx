@@ -198,6 +198,19 @@ export function LimitsSidePane({
         [currentNode, getValues]
     );
 
+    const PermanentLimitBox = useMemo(
+        () => (
+            <FloatInput
+                name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
+                label="PermanentCurrentLimitText"
+                adornment={AmpereAdornment}
+                previousValue={permanentCurrentLimitPreviousValue ?? undefined}
+                clearable={clearableFields}
+            />
+        ),
+        [clearableFields, limitsGroupFormName, permanentCurrentLimitPreviousValue]
+    );
+
     return (
         <Box sx={{ p: 2 }}>
             {!onlySelectedLimitsGroup && limitsGroupApplicabilityName && (
@@ -235,15 +248,7 @@ export function LimitsSidePane({
             <Box>
                 <LimitsChart limitsGroupFormName={limitsGroupFormName} />
             </Box>
-            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>
-                <FloatInput
-                    name={`${limitsGroupFormName}.${PERMANENT_LIMIT}`}
-                    label="PermanentCurrentLimitText"
-                    adornment={AmpereAdornment}
-                    previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                    clearable={clearableFields}
-                />
-            </Box>
+            <Box sx={{ maxWidth: 300, paddingTop: 2 }}>{PermanentLimitBox}</Box>
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>

@@ -8,6 +8,7 @@
 import { Button, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
+    EQUIPMENT,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
@@ -24,6 +25,7 @@ import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import GridSection from '../../commons/grid-section';
 import { styles } from '../../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
+import { APPLICABILITY } from '../../../network/constants';
 
 export interface LimitsPaneCreationProps {
     id?: string;
@@ -81,7 +83,11 @@ export function LimitsPaneCreation({
                     return 'LimitSetNamingError';
                 }
 
-                if (sameNameInLs[0].applicability === newSelectedApplicability) {
+                if (
+                    sameNameInLs[0].applicability === newSelectedApplicability ||
+                    sameNameInLs[0].applicability === APPLICABILITY.EQUIPMENT.id ||
+                    newSelectedApplicability === APPLICABILITY.EQUIPMENT.id
+                ) {
                     // only one limit set with this name exist => their applicability has to be different
                     return 'LimitSetApplicabilityError';
                 }
