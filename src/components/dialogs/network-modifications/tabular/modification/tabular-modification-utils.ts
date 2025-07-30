@@ -111,11 +111,10 @@ import {
     SIDE as SIDE_CONSTANTS,
 } from '../../../../network/constants';
 import { BranchSide } from '../../../../utils/constants';
-import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
-    createCommonProperties,
+    transformProperties,
     Modification,
     TabularField,
     TabularFields,
@@ -378,7 +377,7 @@ export const convertGeneratorOrBatteryModificationFromFrontToBack = (modificatio
         }
     });
     Object.keys(formattedModification).forEach((key) => {
-        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS && !key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS) {
             formattedModification[key] = convertOutputValues(key, formattedModification[key]);
         }
     });
@@ -449,9 +448,7 @@ export const MODIFICATION_TRANSFORMATION_STRATEGIES: ModificationTransformationS
         const transformedRow: Record<string, any> = {};
 
         Object.keys(row).forEach((key) => {
-            if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
-                transformedRow[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
-            }
+            transformedRow[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
         });
 
         return transformedRow;
@@ -468,11 +465,14 @@ export const transformRowToBackEndModification = (
     row: Record<string, any>,
     modificationType: string
 ): Record<string, any> => {
+    // first transform and clean "property_*" fields
+    const propertiesModifications = transformProperties(row);
+
+    // then transform all fields according to the type
     const transformationStrategy =
         MODIFICATION_TRANSFORMATION_STRATEGIES[modificationType] ?? MODIFICATION_TRANSFORMATION_STRATEGIES.default;
-
     const transformedData = transformationStrategy(row, modificationType);
-    const propertiesModifications = createCommonProperties(row);
+
     if (propertiesModifications.length > 0) {
         transformedData[TABULAR_PROPERTIES] = propertiesModifications;
     }
