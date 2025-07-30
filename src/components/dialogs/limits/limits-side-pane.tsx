@@ -213,6 +213,7 @@ export function LimitsSidePane({
                                 name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
                                 previousValue={applicabilityPreviousValue}
                                 sx={{ flexGrow: 1 }}
+                                disableClearable
                                 size="small"
                                 onCheckNewValue={(value: Option | null) => {
                                     if (value) {
