@@ -19,6 +19,8 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const PREDEFINED = 'predefined';
+export const TABULAR_PROPERTIES = 'properties';
 export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
@@ -58,7 +60,6 @@ export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationTy
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
-export const CREATIONS_TABLE = 'creationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';
