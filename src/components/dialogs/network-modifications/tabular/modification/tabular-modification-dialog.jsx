@@ -18,21 +18,15 @@ import { createTabularModification } from 'services/study/network-modifications.
 import { FetchStatus } from 'services/utils.js';
 import {
     convertGeneratorOrBatteryModificationFromBackToFront,
-    convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
-    convertOutputValues,
-    formatModification,
     getEquipmentTypeFromModificationType,
     getFieldType,
     TABULAR_MODIFICATION_TYPES,
-} from './tabular-modification-utils.js';
     transformModificationsTable,
-} from './tabular-modification-utils';
+} from './tabular-modification-utils.js';
 import { useIntl } from 'react-intl';
-import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.ts';
 import {
     addPropertiesFromBack,
-    createCommonProperties,
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
@@ -104,32 +98,6 @@ const TabularModificationDialog = ({
     const onSubmit = useCallback(
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
-            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                let modification = {
-                    type: modificationType,
-                };
-                const propertiesModifications = createCommonProperties(row);
-                if (
-                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
-                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
-                ) {
-                    const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
-                    modification = {
-                        ...generatorOrBatteryModification,
-                        ...modification,
-                    };
-                } else {
-                    Object.keys(row).forEach((key) => {
-                        if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
-                            modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
-                        }
-                    });
-                }
-                if (propertiesModifications.length > 0) {
-                    modification[TABULAR_PROPERTIES] = propertiesModifications;
-                }
-                return modification;
-            });
             const modificationsTable = formData[MODIFICATIONS_TABLE];
 
             // Convert modifications to the back-end format based on the type

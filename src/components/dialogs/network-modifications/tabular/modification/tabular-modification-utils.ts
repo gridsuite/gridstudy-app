@@ -95,6 +95,7 @@ import {
     LOAD_TAP_CHANGING_CAPABILITIES,
     REGULATION_SIDE,
     RATIO_TAP_CHANGER,
+    TABULAR_PROPERTIES,
 } from 'components/utils/field-constants';
 import { toModificationOperation } from '../../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
@@ -114,6 +115,7 @@ import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
+    createCommonProperties,
     Modification,
     TabularField,
     TabularFields,
@@ -447,7 +449,9 @@ export const MODIFICATION_TRANSFORMATION_STRATEGIES: ModificationTransformationS
         const transformedRow: Record<string, any> = {};
 
         Object.keys(row).forEach((key) => {
-            transformedRow[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+            if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
+                transformedRow[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
+            }
         });
 
         return transformedRow;
@@ -468,6 +472,10 @@ export const transformRowToBackEndModification = (
         MODIFICATION_TRANSFORMATION_STRATEGIES[modificationType] ?? MODIFICATION_TRANSFORMATION_STRATEGIES.default;
 
     const transformedData = transformationStrategy(row, modificationType);
+    const propertiesModifications = createCommonProperties(row);
+    if (propertiesModifications.length > 0) {
+        transformedData[TABULAR_PROPERTIES] = propertiesModifications;
+    }
 
     return {
         type: modificationType,
