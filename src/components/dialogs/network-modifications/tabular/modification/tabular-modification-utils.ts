@@ -80,32 +80,40 @@ import {
     CONNECTION_NAME2,
     CONNECTION_DIRECTION2,
     CONNECTION_POSITION2,
+    PERMANENT_LIMIT,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_VALUE,
+    MODIFICATION_TYPE,
+    SIDE,
+    LIMIT_GROUP_NAME,
+    TEMPORARY_LIMITS_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    LIMIT_SETS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import { toModificationOperation } from '../../../utils/utils';
+import { toModificationOperation } from '../../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
-import { convertReactiveCapabilityCurvePointsFromBackToFront } from '../tabular-creation/tabular-creation-utils';
 import {
     BOOLEAN,
     CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
-    LOAD_TYPES,
+    LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
-} from '../../../network/constants';
+} from '../../../../network/constants';
+import { BranchSide } from '../../../../utils/constants';
+import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils';
+import {
+    convertReactiveCapabilityCurvePointsFromBackToFront,
+    convertReactiveCapabilityCurvePointsFromFrontToBack,
+    Modification,
+    TabularField,
+    TabularFields,
+} from '../tabular-common';
 
-export interface TabularModificationField {
-    id: string;
-    type?: string;
-    options?: string[];
-}
-
-export interface TabularModificationFields {
-    [key: string]: TabularModificationField[];
-}
-
-const REACTIVE_CAPABILITY_CURVE_FIELDS = [
+const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE, type: BOOLEAN },
     { id: REACTIVE_CAPABILITY_CURVE_P_MIN, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, type: NUMBER },
@@ -118,7 +126,37 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS = [
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, type: NUMBER },
 ];
 
-export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
+export const LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS: { [key: string]: string } = {
+    LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+};
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularField[] = [
+    { id: EQUIPMENT_ID, required: true },
+    { id: SIDE, required: true, type: ENUM, options: Object.values(BranchSide) },
+    { id: LIMIT_GROUP_NAME, required: true },
+    { id: PERMANENT_LIMIT, required: false, type: NUMBER },
+    {
+        id: MODIFICATION_TYPE,
+        required: true,
+        type: ENUM,
+        options: Object.values(LIMIT_SETS_MODIFICATION_TYPE),
+    },
+    {
+        id: TEMPORARY_LIMITS_MODIFICATION_TYPE,
+        required: false,
+        type: ENUM,
+        options: Object.values(TEMPORARY_LIMIT_MODIFICATION_TYPE),
+    },
+];
+
+export const LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS: TabularField[] = [
+    { id: TEMPORARY_LIMIT_NAME, required: false },
+    { id: TEMPORARY_LIMIT_DURATION, required: false, type: NUMBER },
+    { id: TEMPORARY_LIMIT_VALUE, required: false, type: NUMBER },
+];
+
+export const TABULAR_MODIFICATION_FIELDS: TabularFields = {
     SUBSTATION: [{ id: EQUIPMENT_ID }, { id: EQUIPMENT_NAME }, { id: COUNTRY }],
     VOLTAGE_LEVEL: [
         { id: EQUIPMENT_ID },
@@ -200,7 +238,11 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     LOAD: [
         { id: EQUIPMENT_ID },
         { id: EQUIPMENT_NAME },
-        { id: LOAD_TYPE, type: ENUM, options: LOAD_TYPES.map((load) => load.id) },
+        {
+            id: LOAD_TYPE,
+            type: ENUM,
+            options: LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION.map((load) => load.id),
+        },
         { id: CONNECTED, type: BOOLEAN },
         { id: CONNECTION_NAME },
         { id: CONNECTION_DIRECTION, type: ENUM, options: CONNECTION_DIRECTIONS.map((direction) => direction.id) },
@@ -251,22 +293,8 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     SUBSTATION: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
 };
 
-export interface Modification {
-    [key: string]: any;
-}
-
-export const formatModification = (modification: Modification) => {
-    //exclude type, date and uuid from modification object
-    const { type, date, uuid, ...rest } = modification;
-    return rest;
-};
-
 export const getEquipmentTypeFromModificationType = (type: string) => {
     return Object.keys(TABULAR_MODIFICATION_TYPES).find((key) => TABULAR_MODIFICATION_TYPES[key] === type);
-};
-
-export const styles = {
-    grid: { height: 500, width: '100%' },
 };
 
 /**
@@ -294,35 +322,6 @@ export const convertOutputValues = (key: string, value: string | number) => {
         return value;
     }
     return toModificationOperation(convertOutputValue(convertCamelToSnake(key), value));
-};
-
-export const convertReactiveCapabilityCurvePointsFromFrontToBack = (modification: Record<string, unknown>) => {
-    if (modification[REACTIVE_CAPABILITY_CURVE]) {
-        //Convert list data to matrix
-        const rccPoints = [];
-        if (modification[REACTIVE_CAPABILITY_CURVE_P_MIN] !== null) {
-            rccPoints.push({
-                p: modification[REACTIVE_CAPABILITY_CURVE_P_MIN],
-                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
-                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
-            });
-        }
-        if (modification[REACTIVE_CAPABILITY_CURVE_P_0] !== null) {
-            rccPoints.push({
-                p: modification[REACTIVE_CAPABILITY_CURVE_P_0],
-                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
-                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
-            });
-        }
-        if (modification[REACTIVE_CAPABILITY_CURVE_P_MAX] !== null) {
-            rccPoints.push({
-                p: modification[REACTIVE_CAPABILITY_CURVE_P_MAX],
-                maxQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
-                minQ: modification[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
-            });
-        }
-        modification[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
-    }
 };
 
 export const getFieldType = (modificationType: string, key: string) => {
@@ -365,7 +364,7 @@ export const convertGeneratorOrBatteryModificationFromFrontToBack = (modificatio
         }
     });
     Object.keys(formattedModification).forEach((key) => {
-        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS) {
+        if (key !== REACTIVE_CAPABILITY_CURVE_POINTS && !key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
             formattedModification[key] = convertOutputValues(key, formattedModification[key]);
         }
     });

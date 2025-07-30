@@ -45,8 +45,8 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import TabularCreationDialog from 'components/dialogs/network-modifications/tabular/creation/tabular-creation-dialog';
+import TabularModificationDialog from 'components/dialogs/network-modifications/tabular/modification/tabular-modification-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
@@ -76,16 +76,16 @@ import { fetchNetworkModification } from '../../../../services/network-modificat
 import { copyOrMoveModifications } from '../../../../services/study';
 import {
     changeNetworkModificationOrder,
-    fetchNetworkModifications,
     fetchExcludedNetworkModifications,
+    fetchNetworkModifications,
     stashModifications,
 } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
 import {
     ExcludedNetworkModifications,
-    MenuDefinition,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
+    MenuSection,
     NetworkModificationCopyInfo,
     NetworkModificationCopyType,
     NetworkModificationData,
@@ -115,6 +115,8 @@ import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-mod
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -214,248 +216,418 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
-    const menuDefinition: MenuDefinition[] = [
+    function equipmentDeletionDialogWithDefaultParams(equipmentType: EQUIPMENT_TYPES) {
+        return (
+            <EquipmentDeletionDialog
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
+                equipmentType={equipmentType}
+                defaultIdValue={null}
+            />
+        );
+    }
+
+    const menuDefinition: MenuSection[] = [
         {
-            id: 'CREATE',
-            label: 'menu.create',
-            subItems: [
+            id: 'SubstationVoltageLevelModifications',
+            items: [
                 {
-                    id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
+                    id: 'SUBSTATION',
                     label: 'SUBSTATION',
-                    action: () => withDefaultParams(SubstationCreationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(SubstationCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(SubstationModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_SUBSTATION',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SUBSTATION),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
+                    id: 'VOLTAGE_LEVEL',
                     label: 'VOLTAGE_LEVEL',
-                    action: () => withDefaultParams(VoltageLevelCreationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(VoltageLevelCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+                            label: 'ModifyCharacteristics',
+                            action: () => withDefaultParams(VoltageLevelModificationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
+                            label: 'CREATE_COUPLING_DEVICE',
+                            action: () => withDefaultParams(CreateCouplingDeviceDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
+                            label: 'VOLTAGE_LEVEL_TOPOLOGY',
+                            action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_VOLTAGE_LEVEL',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
+                        },
+                    ],
                 },
+            ],
+        },
+        {
+            id: 'BranchModifications',
+            items: [
                 {
-                    id: MODIFICATION_TYPES.LINE_CREATION.type,
+                    id: 'LINE',
                     label: 'LINE',
-                    action: () => withDefaultParams(LineCreationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.LINE_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(LineCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(LineModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_LINE',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LINE),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
+                    id: 'ATTACHING_LINES',
+                    label: 'AttachingLines',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(LineAttachToVoltageLevelDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
+                            label: 'LinesAttachToSplitLines',
+                            action: () => withDefaultParams(LinesAttachToSplitLinesDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
+                            label: 'DeleteContingencyList',
+                            action: () => withDefaultParams(DeleteAttachingLineDialog),
+                        },
+                    ],
+                },
+                {
+                    id: 'SPLITTING_LINES',
+                    label: 'SplittingLines',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(LineSplitWithVoltageLevelDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
+                            label: 'LinesAttachToSplitLines',
+                            action: () => withDefaultParams(LinesAttachToSplitLinesDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
+                            label: 'DeleteContingencyList',
+                            action: () => withDefaultParams(DeleteVoltageLevelOnLineDialog),
+                        },
+                    ],
+                },
+                {
+                    id: 'TWO_WINDINGS_TRANSFORMER',
                     label: 'TWO_WINDINGS_TRANSFORMER',
-                    action: () => withDefaultParams(TwoWindingsTransformerCreationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(TwoWindingsTransformerCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_TWO_WINDINGS_TRANSFORMER',
+                            label: 'DeleteContingencyList',
+                            action: () =>
+                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
+                        },
+                    ],
                 },
                 {
-                    id: 'GENERATOR_CREATION',
-                    label: 'GENERATOR',
-                    action: () => withDefaultParams(GeneratorCreationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.LOAD_CREATION.type,
-                    label: 'LOAD',
-                    action: () => withDefaultParams(LoadCreationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BATTERY_CREATION.type,
-                    label: 'BATTERY',
-                    action: () => withDefaultParams(BatteryCreationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
-                    label: 'ShuntCompensator',
-                    action: () => withDefaultParams(ShuntCompensatorCreationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
-                    label: 'StaticVarCompensator',
-                    action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.VSC_CREATION.type,
+                    id: 'VSC',
                     label: 'VSC',
-                    action: () => withDefaultParams(VscCreationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.VSC_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(VscCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(VscModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_VSC',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.LCC_CREATION.type,
+                    id: 'LCC',
                     label: 'LCC',
-                    action: () => withDefaultParams(LccCreationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.LCC_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(LccCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(LccModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_LCC',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
+                        },
+                    ],
                 },
             ],
         },
         {
-            id: 'TABULAR_CREATION',
-            label: 'menu.createMultiple',
-            action: () => withDefaultParams(TabularCreationDialog),
-        },
-        {
-            id: 'EDIT',
-            label: 'ModifyFromMenu',
-            subItems: [
+            id: 'InjectionsModifications',
+            items: [
                 {
-                    id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
-                    label: 'SUBSTATION',
-                    action: () => withDefaultParams(SubstationModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-                    label: 'VOLTAGE_LEVEL',
-                    action: () => withDefaultParams(VoltageLevelModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
-                    label: 'CREATE_COUPLING_DEVICE',
-                    action: () => withDefaultParams(CreateCouplingDeviceDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
-                    label: 'VOLTAGE_LEVEL_TOPOLOGY',
-                    action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
-                    label: 'LINE',
-                    action: () => withDefaultParams(LineModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
-                    label: 'TWO_WINDINGS_TRANSFORMER',
-                    action: () => withDefaultParams(TwoWindingsTransformerModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                    id: 'GENERATOR',
                     label: 'GENERATOR',
-                    action: () => withDefaultParams(GeneratorModificationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.GENERATOR_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(GeneratorCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(GeneratorModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_GENERATOR',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.GENERATOR),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
-                    label: 'LOAD',
-                    action: () => withDefaultParams(LoadModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+                    id: 'BATTERY',
                     label: 'BATTERY',
-                    action: () => withDefaultParams(BatteryModificationDialog),
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.BATTERY_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(BatteryCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(BatteryModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_BATTERY',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.BATTERY),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-                    label: 'ShuntCompensator',
-                    action: () => withDefaultParams(ShuntCompensatorModificationDialog),
+                    id: 'LOAD',
+                    label: 'LOAD',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.LOAD_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(LoadCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(LoadModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_LOAD',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LOAD),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.VSC_MODIFICATION.type,
-                    label: 'VSC',
-                    action: () => withDefaultParams(VscModificationDialog),
+                    id: 'SHUNT_COMPENSATOR',
+                    label: 'SHUNT_COMPENSATOR',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(ShuntCompensatorCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
+                            label: 'ModifyFromMenu',
+                            action: () => withDefaultParams(ShuntCompensatorModificationDialog),
+                        },
+                        {
+                            id: 'DELETE_SHUNT_COMPENSATOR',
+                            label: 'DeleteContingencyList',
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.LCC_MODIFICATION.type,
-                    label: 'LCC',
-                    action: () => withDefaultParams(LccModificationDialog),
+                    id: 'STATIC_VAR_COMPENSATOR',
+                    label: 'STATIC_VAR_COMPENSATOR',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
+                            label: 'menu.create',
+                            action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
+                        },
+                        {
+                            id: 'DELETE_STATIC_VAR_COMPENSATOR',
+                            label: 'DeleteContingencyList',
+                            action: () =>
+                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
+                        },
+                    ],
                 },
             ],
         },
         {
-            id: 'EDIT_MULTIPLE',
-            label: 'menu.modifyMultiple',
-            subItems: [
+            id: 'MultipleModifications',
+            items: [
                 {
-                    id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
-                    label: 'BY_TABLE',
-                    action: () => withDefaultParams(TabularModificationDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
-                    label: 'BY_FORMULA',
-                    action: () => withDefaultParams(ByFormulaDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
-                    label: 'BY_FILTER',
-                    action: () => withDefaultParams(ModificationByAssignmentDialog),
-                },
-            ],
-        },
-        {
-            id: 'EQUIPMENT_DELETION',
-            label: 'DeleteContingencyList',
-            subItems: [
-                {
-                    id: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
-                    label: 'SingleEquipment',
-                    action: () => withDefaultParams(EquipmentDeletionDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
+                    id: 'MULTIPLE',
                     label: 'MultipleEquipment',
-                    action: () => withDefaultParams(ByFilterDeletionDialog),
+                    subItems: [
+                        {
+                            id: 'TABULAR_CREATION',
+                            label: 'menu.createByTable',
+                            action: () => withDefaultParams(TabularCreationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+                            label: 'BY_TABLE',
+                            action: () => withDefaultParams(TabularModificationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
+                            label: 'BY_FILTER',
+                            action: () => withDefaultParams(ModificationByAssignmentDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
+                            label: 'BY_FORMULA',
+                            action: () => withDefaultParams(ByFormulaDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                            label: 'LimitSets',
+                            action: () => withDefaultParams(LimitSetsModificationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
+                            label: 'menu.deleteByFilter',
+                            action: () => withDefaultParams(ByFilterDeletionDialog),
+                        },
+                    ],
                 },
             ],
         },
         {
-            id: 'ATTACHING_SPLITTING_LINES',
-            label: 'AttachingAndSplittingLines',
-            subItems: [
+            id: 'GenerationLoad',
+            items: [
                 {
-                    id: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
-                    label: 'LineSplitWithVoltageLevel',
-                    action: () => withDefaultParams(LineSplitWithVoltageLevelDialog),
+                    id: 'GENERATION_AND_LOAD',
+                    label: 'GenerationAndLoad',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.GENERATOR_SCALING.type,
+                            label: 'GeneratorScaling',
+                            action: () => withDefaultParams(GeneratorScalingDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LOAD_SCALING.type,
+                            label: 'LoadScaling',
+                            action: () => withDefaultParams(LoadScalingDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+                            label: 'GenerationDispatch',
+                            action: () => withDefaultParams(GenerationDispatchDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+                            label: 'BalancesAdjustment',
+                            action: () => withDefaultParams(BalancesAdjustmentDialog),
+                        },
+                    ],
                 },
                 {
-                    id: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
-                    label: 'LineAttachToVoltageLevel',
-                    action: () => withDefaultParams(LineAttachToVoltageLevelDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
-                    label: 'LinesAttachToSplitLines',
-                    action: () => withDefaultParams(LinesAttachToSplitLinesDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
-                    label: 'DeleteVoltageLevelOnLine',
-                    action: () => withDefaultParams(DeleteVoltageLevelOnLineDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
-                    label: 'DeleteAttachingLine',
-                    action: () => withDefaultParams(DeleteAttachingLineDialog),
-                },
-            ],
-        },
-        {
-            id: 'GENERATION_AND_LOAD',
-            label: 'GenerationAndLoad',
-            subItems: [
-                {
-                    id: MODIFICATION_TYPES.GENERATOR_SCALING.type,
-                    label: 'GeneratorScaling',
-                    action: () => withDefaultParams(GeneratorScalingDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.LOAD_SCALING.type,
-                    label: 'LoadScaling',
-                    action: () => withDefaultParams(LoadScalingDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-                    label: 'GenerationDispatch',
-                    action: () => withDefaultParams(GenerationDispatchDialog),
-                },
-                {
-                    id: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
-                    label: 'BalancesAdjustment',
-                    action: () => withDefaultParams(BalancesAdjustmentDialog),
+                    id: 'VOLTAGE_INIT_MODIFICATION',
+                    label: 'VoltageInitModification',
+                    hide: true,
+                    action: () => withDefaultParams(VoltageInitModificationDialog),
                 },
             ],
-        },
-        {
-            id: 'VOLTAGE_INIT_MODIFICATION',
-            label: 'VoltageInitModification',
-            hide: true, // this modification is not visible in the menu
-            action: () => withDefaultParams(VoltageInitModificationDialog),
         },
     ];
 
-    const subMenuItemsList = menuDefinition.reduce<(MenuDefinitionWithoutSubItem | MenuDefinitionSubItem)[]>(
-        (actions, currentMenuItem) =>
-            !('subItems' in currentMenuItem)
-                ? [...actions, currentMenuItem]
-                : [...actions, ...currentMenuItem.subItems],
-        []
-    );
+    const subMenuItemsList = menuDefinition
+        .flatMap((section) =>
+            section.items.flatMap((menuItem) => {
+                if ('subItems' in menuItem) {
+                    return menuItem.subItems;
+                } else {
+                    return menuItem.action
+                        ? [
+                              {
+                                  id: menuItem.id,
+                                  label: menuItem.label,
+                                  action: menuItem.action,
+                              } as MenuDefinitionSubItem,
+                          ]
+                        : [];
+                }
+            })
+        )
+        .filter((item) => !('hide' in item && item.hide));
 
     const fillNotification = useCallback(
         (
@@ -898,7 +1070,10 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderDialog = () => {
-        return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen)?.action?.();
+        const menuItem = subMenuItemsList.find(
+            (item: MenuDefinitionWithoutSubItem) => 'id' in item && item.id === editDialogOpen
+        );
+        return menuItem && 'action' in menuItem ? menuItem.action?.() : undefined;
     };
 
     const isImpactedByNotification = useCallback(() => {
@@ -1146,7 +1321,7 @@ const NetworkModificationNodeEditor = () => {
                 onClose={closeNetworkModificationConfiguration}
                 onItemClick={onItemClick}
                 anchorEl={buttonAddRef.current}
-                menuDefinition={menuDefinition}
+                menuSections={menuDefinition}
             />
             {editDialogOpen && renderDialog()}
         </>

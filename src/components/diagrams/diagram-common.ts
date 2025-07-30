@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
@@ -88,18 +87,18 @@ export const styles = {
         },
     },
     divDiagramInvalid: {
-        '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
+        '& .sld-active-power, & .sld-reactive-power, & .sld-voltage, & .sld-angle': {
             opacity: INVALID_LOADFLOW_OPACITY,
         },
-        '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
-            animation: 'none',
+        '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
+            animation: 'none !important',
         },
-        '& .nad-edge-infos': {
-            opacity: NAD_INVALID_LOADFLOW_OPACITY,
+        '& .nad-active': {
+            fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
         },
-        '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
+        '& .nad-branch-edges .nad-overload .nad-edge-path, & .nad-vl-nodes .nad-overvoltage, & .nad-vl-nodes .nad-undervoltage':
             {
-                animation: 'none',
+                animation: 'none !important',
             },
     },
     paperBorders: (theme: Theme) => ({
@@ -110,36 +109,36 @@ export const styles = {
 };
 
 // be careful when using this method because there are treatments made on purpose
-export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EQUIPMENT_TYPES | null {
+export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EquipmentType | null {
     switch (feederType) {
         case FEEDER_TYPES.LINE:
-            return EQUIPMENT_TYPES.LINE;
+            return EquipmentType.LINE;
         case FEEDER_TYPES.LOAD:
-            return EQUIPMENT_TYPES.LOAD;
+            return EquipmentType.LOAD;
         case FEEDER_TYPES.BATTERY:
-            return EQUIPMENT_TYPES.BATTERY;
+            return EquipmentType.BATTERY;
         case FEEDER_TYPES.TIE_LINE:
-            return EQUIPMENT_TYPES.TIE_LINE;
+            return EquipmentType.TIE_LINE;
         case FEEDER_TYPES.DANGLING_LINE:
-            return EQUIPMENT_TYPES.DANGLING_LINE;
+            return EquipmentType.DANGLING_LINE;
         case FEEDER_TYPES.GENERATOR:
-            return EQUIPMENT_TYPES.GENERATOR;
-        case FEEDER_TYPES.LCC_CONVERTER_STATION: // return EQUIPMENT_TYPES.LCC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
-        case FEEDER_TYPES.VSC_CONVERTER_STATION: // return EQUIPMENT_TYPES.VSC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
+            return EquipmentType.GENERATOR;
+        case FEEDER_TYPES.LCC_CONVERTER_STATION: // return EquipmentType.LCC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
+        case FEEDER_TYPES.VSC_CONVERTER_STATION: // return EquipmentType.VSC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
         case FEEDER_TYPES.HVDC_LINE:
-            return EQUIPMENT_TYPES.HVDC_LINE;
+            return EquipmentType.HVDC_LINE;
         case FEEDER_TYPES.CAPACITOR:
         case FEEDER_TYPES.INDUCTOR:
-            return EQUIPMENT_TYPES.SHUNT_COMPENSATOR;
+            return EquipmentType.SHUNT_COMPENSATOR;
         case FEEDER_TYPES.STATIC_VAR_COMPENSATOR:
-            return EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR;
+            return EquipmentType.STATIC_VAR_COMPENSATOR;
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG:
         case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER:
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
+            return EquipmentType.TWO_WINDINGS_TRANSFORMER;
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG:
-            return EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER;
+            return EquipmentType.THREE_WINDINGS_TRANSFORMER;
         default: {
             console.log('bad feeder type ', feederType);
             return null;

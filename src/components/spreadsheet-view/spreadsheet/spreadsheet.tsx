@@ -22,7 +22,6 @@ interface SpreadsheetProps {
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
     nodeAliases: NodeAlias[] | undefined;
-    updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
@@ -35,7 +34,6 @@ export const Spreadsheet = React.memo(
         tableDefinition,
         disabled,
         nodeAliases,
-        updateNodeAliases,
         equipmentId,
         onEquipmentScrolled,
         openDiagram,
@@ -69,7 +67,6 @@ export const Spreadsheet = React.memo(
                     tableDefinition={tableDefinition}
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
-                    updateNodeAliases={updateNodeAliases}
                     disabled={disabled}
                 />
 

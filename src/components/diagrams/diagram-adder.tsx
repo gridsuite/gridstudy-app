@@ -6,10 +6,10 @@
  */
 
 import { forwardRef, useState, Ref, MouseEventHandler, TouchEventHandler } from 'react';
-import { Box, IconButton, Theme, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
-import { Search, Public, Upload } from '@mui/icons-material';
+import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
@@ -31,7 +31,7 @@ const styles = {
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey[900],
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : '#292e33',
         borderRadius: theme.spacing(2),
         border:
             theme.palette.mode === 'light'
@@ -52,12 +52,13 @@ interface ReactGridLayoutCustomChildComponentProps {
 interface DiagramAdderProps extends ReactGridLayoutCustomChildComponentProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     onSearch: (element: EquipmentInfos) => void;
+    onLayoutSave: () => void;
     onMap?: () => void;
     key: string;
 }
 
 export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLDivElement>) => {
-    const { onLoad, onSearch, onMap, ...reactGridLayoutCustomChildComponentProps } = props;
+    const { onLoad, onSearch, onMap, onLayoutSave, ...reactGridLayoutCustomChildComponentProps } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
 
     const intl = useIntl();
@@ -98,6 +99,13 @@ export const DiagramAdder = forwardRef((props: DiagramAdderProps, ref: Ref<HTMLD
                                 <Public />
                             </IconButton>
                         </span>
+                    </Tooltip>
+                </Box>
+                <Box>
+                    <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
+                        <Button startIcon={<SaveOutlined />} sx={{ textTransform: 'uppercase' }} onClick={onLayoutSave}>
+                            <FormattedMessage id="SaveGridLayout" />
+                        </Button>
                     </Tooltip>
                 </Box>
             </Box>

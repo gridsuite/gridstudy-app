@@ -16,6 +16,12 @@ export const LOAD_TYPES = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
+// For load tabular creations/modifications, we allow the UNDEFINED value
+export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
+    ...LOAD_TYPES,
+    { id: UNDEFINED_LOAD_TYPE, label: 'Undefined' },
+] as const;
+
 // Relevant EnergySource Powsybl enum values
 export const ENERGY_SOURCES = [
     { id: 'HYDRO', label: 'Hydro' },

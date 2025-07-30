@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LANG_FRENCH, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     BUS_OR_BUSBAR_SECTION_ID,
     CONNECTED,
@@ -57,32 +57,20 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
-import { IntlShape } from 'react-intl';
-import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
+import { ReactiveCapabilityCurvePoints } from '../../../reactive-limits/reactive-limits.type';
 import {
     BOOLEAN,
     CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
     ENUM,
-    LOAD_TYPES,
+    LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION,
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
-} from '../../../network/constants';
+} from '../../../../network/constants';
+import { convertReactiveCapabilityCurvePointsFromBackToFront, TabularField, TabularFields } from '../tabular-common';
 
-export interface TabularCreationField {
-    id: string;
-    required?: boolean;
-    requiredIf?: { id: string };
-    type?: string;
-    options?: string[];
-}
-
-export interface TabularCreationFields {
-    [key: string]: TabularCreationField[];
-}
-
-const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularCreationField[] = [
+const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE, required: true, type: BOOLEAN },
     { id: REACTIVE_CAPABILITY_CURVE_P_MIN, required: false, type: NUMBER },
     { id: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN, required: false, type: NUMBER },
@@ -95,7 +83,7 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularCreationField[] = [
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false, type: NUMBER },
 ];
 
-export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
+export const TABULAR_CREATION_FIELDS: TabularFields = {
     GENERATOR: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
@@ -137,7 +125,12 @@ export const TABULAR_CREATION_FIELDS: TabularCreationFields = {
     LOAD: [
         { id: EQUIPMENT_ID, required: true },
         { id: EQUIPMENT_NAME, required: false },
-        { id: LOAD_TYPE, required: false, type: ENUM, options: LOAD_TYPES.map((load) => load.id) },
+        {
+            id: LOAD_TYPE,
+            required: true,
+            type: ENUM,
+            options: LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION.map((load) => load.id),
+        },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
         { id: CONNECTED, required: true, type: BOOLEAN },
@@ -210,89 +203,6 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
-export const convertReactiveCapabilityCurvePointsFromBackToFront = (value: ReactiveCapabilityCurvePoints[]) => {
-    const curvePoint1 = value[0];
-    const curvePoint2 = value[1];
-    const curvePoint3 = value[2];
-
-    if (!curvePoint1) {
-        return [];
-    }
-
-    const result = [
-        {
-            key: REACTIVE_CAPABILITY_CURVE_P_MIN,
-            value: curvePoint1.p,
-        },
-        {
-            key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN,
-            value: curvePoint1.maxQ,
-        },
-        {
-            key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN,
-            value: curvePoint1.minQ,
-        },
-    ];
-
-    if (curvePoint2) {
-        const isLastPoint = !curvePoint3;
-
-        result.push(
-            {
-                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_P_MAX : REACTIVE_CAPABILITY_CURVE_P_0,
-                value: curvePoint2.p,
-            },
-            {
-                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0,
-                value: curvePoint2.maxQ,
-            },
-            {
-                key: isLastPoint ? REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX : REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0,
-                value: curvePoint2.minQ,
-            }
-        );
-    }
-
-    if (curvePoint3) {
-        result.push(
-            { key: REACTIVE_CAPABILITY_CURVE_P_MAX, value: curvePoint3.p },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, value: curvePoint3.maxQ },
-            { key: REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX, value: curvePoint3.minQ }
-        );
-    }
-
-    return result;
-};
-
-export const convertReactiveCapabilityCurvePointsFromFrontToBack = (creation: Record<string, unknown>) => {
-    if (creation[REACTIVE_CAPABILITY_CURVE]) {
-        //Convert list data to matrix
-        const rccPoints = [];
-        if (creation[REACTIVE_CAPABILITY_CURVE_P_MIN] !== null) {
-            rccPoints.push({
-                p: creation[REACTIVE_CAPABILITY_CURVE_P_MIN],
-                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MIN],
-                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MIN],
-            });
-        }
-        if (creation[REACTIVE_CAPABILITY_CURVE_P_0] !== null) {
-            rccPoints.push({
-                p: creation[REACTIVE_CAPABILITY_CURVE_P_0],
-                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_0],
-                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_0],
-            });
-        }
-        if (creation[REACTIVE_CAPABILITY_CURVE_P_MAX] !== null) {
-            rccPoints.push({
-                p: creation[REACTIVE_CAPABILITY_CURVE_P_MAX],
-                maxQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX],
-                minQ: creation[REACTIVE_CAPABILITY_CURVE_Q_MIN_P_MAX],
-            });
-        }
-        creation[REACTIVE_CAPABILITY_CURVE_POINTS] = rccPoints;
-    }
-};
-
 export const convertCreationFieldFromBackToFront = (
     key: string,
     value:
@@ -318,117 +228,4 @@ export const convertCreationFieldFromFrontToBack = (key: string, value: string |
 
 export const getEquipmentTypeFromCreationType = (type: string) => {
     return Object.keys(TABULAR_CREATION_TYPES).find((key) => TABULAR_CREATION_TYPES[key] === type);
-};
-
-export const styles = {
-    grid: { height: 500, width: '100%' },
-};
-
-interface CommentLinesConfig {
-    csvTranslatedColumns?: string[];
-    intl: IntlShape;
-    equipmentType: string;
-    language: string;
-    formType: 'Creation' | 'Modification';
-}
-
-export const generateCommentLines = ({
-    csvTranslatedColumns,
-    intl,
-    equipmentType,
-    language,
-    formType,
-}: CommentLinesConfig): string[][] => {
-    let commentData: string[][] = [];
-    if (csvTranslatedColumns) {
-        // First comment line contains header translation
-        commentData.push(['#' + csvTranslatedColumns.join(language === LANG_FRENCH ? ';' : ',')]);
-
-        // Check for optional second comment line from translation file
-        const commentKey = `Tabular${formType}SkeletonComment.${equipmentType}`;
-
-        if (!!intl.messages[commentKey]) {
-            commentData.push([
-                intl.formatMessage({
-                    id: commentKey,
-                }),
-            ]);
-        }
-    }
-    return commentData;
-};
-
-export const transformIfFrenchNumber = (value: string, language: string): string => {
-    value = value.trim();
-    // Only transform if we're in French mode and the value is a number that has a comma
-    if (language === LANG_FRENCH && value.includes(',') && !isNaN(Number(value.replace(',', '.')))) {
-        return value.replace(',', '.');
-    }
-    return value;
-};
-
-export const isFieldTypeOk = (value: any, fieldDefinition: { type?: string; options?: any[] } | undefined): boolean => {
-    if (!fieldDefinition?.type || value === null || value === undefined) {
-        return true;
-    }
-
-    switch (fieldDefinition.type) {
-        case BOOLEAN:
-            if (typeof value !== 'boolean') {
-                return false;
-            }
-            break;
-
-        case NUMBER: {
-            const parsedNumber = parseFloat(value);
-            if (isNaN(parsedNumber)) {
-                return false;
-            }
-            break;
-        }
-
-        case ENUM:
-            if (!fieldDefinition?.options?.includes(value)) {
-                return false;
-            }
-            break;
-
-        default:
-            console.warn(`Unknown type "${fieldDefinition.type}" for value "${value}". Value will be returned as-is.`);
-            break;
-    }
-    return true;
-};
-
-export const setFieldTypeError = (
-    fieldTypeInError: string,
-    expectedTypeForFieldInError: string,
-    tableName: string,
-    setError: (tableName: string, error: { type: string; message?: string }) => void,
-    intl: IntlShape,
-    expectedValues?: string[]
-) => {
-    if (expectedTypeForFieldInError === ENUM) {
-        setError(tableName, {
-            type: 'custom',
-            message: intl.formatMessage(
-                { id: 'WrongEnumValue' },
-                {
-                    field: intl.formatMessage({ id: fieldTypeInError }),
-                    expectedValues: expectedValues?.join(', ') ?? '',
-                }
-            ),
-        });
-    } else {
-        setError(tableName, {
-            type: 'custom',
-            message: intl.formatMessage(
-                { id: 'WrongFieldType' },
-                {
-                    field: intl.formatMessage({ id: fieldTypeInError }),
-                    type: intl.formatMessage({ id: `fieldType.${expectedTypeForFieldInError}` }),
-                }
-            ),
-        });
-    }
 };

@@ -19,6 +19,8 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const PREDEFINED = 'predefined';
+export const TABULAR_PROPERTIES = 'properties';
 export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
@@ -47,8 +49,17 @@ export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
+export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
+export const MODIFICATION_TYPE = 'modificationType';
+export const LIMIT_SETS_MODIFICATION_TYPE = {
+    MODIFIED: 'MODIFIED',
+    ADDED: 'ADDED',
+    REPLACED: 'REPLACED',
+} as const;
+export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
+export const SIDE = 'side';
+export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
-export const CREATIONS_TABLE = 'creationsTable';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';
@@ -188,6 +199,7 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFIED: 'MODIFIED',
     ADDED: 'ADDED',
     DELETED: 'DELETED',
+    REPLACED: 'REPLACED',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
@@ -484,3 +496,4 @@ export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCount
 export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
 export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
+export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';

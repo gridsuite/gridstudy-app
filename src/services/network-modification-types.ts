@@ -842,5 +842,6 @@ export type BalancesAdjustmentInfos = {
     withLoadFlow: boolean;
     loadFlowParametersId: string | null;
     withRatioTapChangers: boolean;
+    subtractLoadFlowBalancing: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };
