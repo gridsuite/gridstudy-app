@@ -119,7 +119,7 @@ export default function NodesConfigButton({
             <Badge
                 sx={styles.badgeStyle}
                 max={99}
-                color={showWarning ? 'secondary' : 'warning'}
+                color={showWarning ? 'warning' : 'secondary'}
                 badgeContent={badgeText}
             >
                 <Tooltip title={<FormattedMessage id="spreadsheet/parameter_aliases/button_tooltip" />}>
