@@ -66,7 +66,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<boolean>(false);
 
     const handleExpandAllVoltageLevels = useCallback(() => {
-        if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+        if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
             updateDiagram({
                 ...diagram,
                 voltageLevelIds: [],
@@ -77,7 +77,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
 
     const handleExpandVoltageLevelId = useCallback(
         (voltageLevelIdToExpand: string) => {
-            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     ...diagram,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToExpand),
@@ -90,7 +90,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
 
     const handleHideVoltageLevelId = useCallback(
         (voltageLevelIdToOmit: string) => {
-            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 updateDiagram({
                     ...diagram,
                     voltageLevelIds: diagram.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
@@ -103,7 +103,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
 
     const handleMoveNode = useCallback(
         (vlId: string, x: number, y: number) => {
-            if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const updatedPositions = diagram.positions.map((position) =>
                     position.voltageLevelId === vlId ? { ...position, xPosition: x, yPosition: y } : position
                 );
