@@ -611,7 +611,7 @@
     "amountTemporaryLimits": "Nombre de limites temporaires",
     "LimitSets": "Sets de limite",
     "permanentLimit": "IST",
-    "acceptableDuration" : "Tempo (s)",
+    "acceptableDuration": "Tempo (s)",
     "value": "Valeur (A)",
     "side": "Côté",
     "limitGroupName": "Nom du set de limites",
@@ -1032,6 +1032,8 @@
     "RegulatingPhase": "Déphaseur en réglage",
     "RegulatingValue": "Consigne du courant (A) ou de transit (MW)",
     "HasLoadTapChangingCapabilities": "Régleur en charge",
+    "ratioTapChangerLoadTapChangingCapabilities": "Régleur en charge",
+    "ratioTapChangerRegulationSide": "Côté réglé régleur",
     "RegulatingRatio": "Régleur en réglage",
     "TargetVPoint": "Consigne tension (kV)",
 
