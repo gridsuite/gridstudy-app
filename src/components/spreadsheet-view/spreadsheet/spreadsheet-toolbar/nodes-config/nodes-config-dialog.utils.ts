@@ -47,7 +47,8 @@ export const nodesFormSchema = yup.object().shape({
             const nodeNamesArray = array.map((l) => l[NODE_NAME]).filter((value) => value);
             return areArrayElementsUnique(nodeNamesArray);
         })
-        .test('maxNodeNames', 'MaximumRowNumberError', (array) => {
+        // error message must be in-sync with NODES_ALIASES_MAX_NUMBER and MaximumRowNumberError from commons-ui
+        .test('maxNodeNames', 'spreadsheet/parameter_aliases/maximum_row_number_error', (array) => {
             return array.length <= NODES_ALIASES_MAX_NUMBER;
         }),
 });
