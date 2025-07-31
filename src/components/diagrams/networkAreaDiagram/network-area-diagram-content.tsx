@@ -64,6 +64,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
+    readonly onAddVoltageLevel: (vlId: string) => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
@@ -80,6 +81,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
+        onAddVoltageLevel,
         onHideVoltageLevel,
         onVoltageLevelClick,
         onMoveNode,
@@ -381,6 +383,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
+                onAddVoltageLevel={onAddVoltageLevel}
                 isDiagramLoading={props.loadingState}
             />
             {renderEquipmentMenu()}

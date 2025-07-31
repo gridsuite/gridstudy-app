@@ -1503,6 +1503,7 @@
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
+    "addVoltageLevel": "Add a voltage level",
     "hide": "Hide",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
     "labeledGroupSecurity": "Security",

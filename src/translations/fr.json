@@ -1498,6 +1498,7 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "expand": "Étendre",
     "expandAllVoltageLevels": "Étendre tous les postes",
+    "addVoltageLevel": "Ajouter un poste",
     "hide": "Masquer",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
