@@ -717,21 +717,18 @@ export const NetworkMapTab = ({
             const eventData: unknown = JSON.parse(event.data);
             if (isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
-                if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
-                    dispatch(setMapDataLoading(true));
-                    reloadMapEquipments(currentNodeRef.current, undefined)
-                        .catch((e) =>
-                            snackError({
-                                messageTxt: e.message,
-                            })
-                        )
-                        .finally(() => {
-                            dispatch(setMapDataLoading(false));
-                        });
+                const nodeUuidFromNotification = eventData.headers.node;
+                if (
+                    rootNetworkUuidFromNotification === currentRootNetworkUuid &&
+                    nodeUuidFromNotification === currentNode?.id
+                ) {
+                    // The following line will proc a map update in auto mode
+                    // or show the button to refresh the map in manual mode
+                    dispatch(setReloadMapNeeded(true));
                 }
             }
         },
-        [currentRootNetworkUuid, dispatch, isInitialized, reloadMapEquipments, snackError]
+        [currentRootNetworkUuid, currentNode?.id, dispatch, isInitialized]
     );
 
     const rootNetworkModifiedNotification = useCallback(
@@ -837,7 +834,6 @@ export const NetworkMapTab = ({
         isNetworkModificationTreeUpToDate,
         isRootNodeGeoDataLoaded,
         isMapEquipmentsInitialized,
-        isInitialized,
         reloadMapNeeded,
         freezeMapUpdates,
     ]);
