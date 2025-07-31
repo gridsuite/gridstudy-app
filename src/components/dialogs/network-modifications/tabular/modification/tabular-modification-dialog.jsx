@@ -6,42 +6,33 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
-import { createTabularModification } from 'services/study/network-modifications';
-import { FetchStatus } from 'services/utils';
-import TabularModificationForm from './tabular-modification-form';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from 'components/network/constants.js';
+import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants.js';
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
+import { createTabularModification } from 'services/study/network-modifications.js';
+import { FetchStatus } from 'services/utils.js';
 import {
     convertGeneratorOrBatteryModificationFromBackToFront,
-    convertGeneratorOrBatteryModificationFromFrontToBack,
     convertInputValues,
-    convertOutputValues,
-    formatModification,
     getEquipmentTypeFromModificationType,
     getFieldType,
     TABULAR_MODIFICATION_TYPES,
-} from './tabular-modification-utils';
+    transformModificationsTable,
+} from './tabular-modification-utils.js';
 import { useIntl } from 'react-intl';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [TYPE]: yup.string().nullable().required(),
-        [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
-    })
-    .required();
-
-const emptyFormData = {
-    [TYPE]: null,
-    [MODIFICATIONS_TABLE]: [],
-};
+import {
+    addPropertiesFromBack,
+    emptyTabularFormData,
+    formatModification,
+    tabularFormSchema,
+    TabularModificationType,
+} from '../tabular-common.js';
+import TabularForm from '../tabular-form.js';
 
 /**
  * Dialog to create tabular modification based on a csv file.
@@ -67,8 +58,8 @@ const TabularModificationDialog = ({
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        defaultValues: emptyTabularFormData,
+        resolver: yupResolver(tabularFormSchema),
     });
 
     const {
@@ -93,11 +84,13 @@ const TabularModificationDialog = ({
                         modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
                     });
                 }
+                modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
                 return modification;
             });
             reset({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
+                [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
             });
         }
     }, [editData, reset, intl]);
@@ -105,34 +98,19 @@ const TabularModificationDialog = ({
     const onSubmit = useCallback(
         (formData) => {
             const modificationType = TABULAR_MODIFICATION_TYPES[formData[TYPE]];
-            const modifications = formData[MODIFICATIONS_TABLE]?.map((row) => {
-                let modification = {
-                    type: modificationType,
-                };
-                if (
-                    modificationType === TABULAR_MODIFICATION_TYPES.GENERATOR ||
-                    modificationType === TABULAR_MODIFICATION_TYPES.BATTERY
-                ) {
-                    const generatorOrBatteryModification = convertGeneratorOrBatteryModificationFromFrontToBack(row);
-                    modification = {
-                        ...generatorOrBatteryModification,
-                        ...modification,
-                    };
-                } else {
-                    Object.keys(row).forEach((key) => {
-                        modification[key] = convertOutputValues(getFieldType(modificationType, key), row[key]);
-                    });
-                }
-                return modification;
-            });
+            const modificationsTable = formData[MODIFICATIONS_TABLE];
+
+            // Convert modifications to the back-end format based on the type
+            const modifications = transformModificationsTable(modificationType, modificationsTable);
+
             createTabularModification(
                 studyUuid,
                 currentNodeUuid,
                 modificationType,
                 modifications,
-                !!editData,
                 editData?.uuid,
-                ModificationType.TABULAR_MODIFICATION
+                ModificationType.TABULAR_MODIFICATION,
+                formData[TABULAR_PROPERTIES]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -144,7 +122,7 @@ const TabularModificationDialog = ({
     );
 
     const clear = useCallback(() => {
-        reset(emptyFormData);
+        reset(emptyTabularFormData);
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
@@ -158,7 +136,7 @@ const TabularModificationDialog = ({
     }, [editDataFetchStatus, isUpdate]);
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+        <CustomFormProvider validationSchema={tabularFormSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth={'lg'}
@@ -170,7 +148,7 @@ const TabularModificationDialog = ({
                 isDataFetching={dataFetching}
                 {...dialogProps}
             >
-                <TabularModificationForm dataFetching={dataFetching} />
+                <TabularForm dataFetching={dataFetching} dialogMode={TabularModificationType.MODIFICATION} />
             </ModificationDialog>
         </CustomFormProvider>
     );
