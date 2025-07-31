@@ -116,6 +116,7 @@ import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/c
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -270,6 +271,11 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
                             label: 'ModifyCharacteristics',
                             action: () => withDefaultParams(VoltageLevelModificationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
+                            label: 'CreateVoltageLevelSection',
+                            action: () => withDefaultParams(CreateVoltageLevelSectionDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,

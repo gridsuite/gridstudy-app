@@ -806,6 +806,7 @@
     "CreateLink": "Ajouter lien",
     "BusBarSection": "SJB",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
+    "VoltageLevelSectionCreationError": "Erreur lors de la création d'une section",
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
     "BREAKER": "Disjoncteur",
@@ -1451,7 +1452,7 @@
     "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
 
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
-    "CreateCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
+    "CreateVoltageLevelSection": "Ajouter un tronçon ou une section",
     "CreateCouplingDeviceDiagramButton": "Voir le poste",
     "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre 1 et 2 doivent être différentes",
     "builtNodeTooltipForDiagram": "Diagramme courant prenant en compte toutes les modifications réalisées",
@@ -1488,5 +1489,13 @@
     "SaveGridLayout": "Enregistrer la grille",
     "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
     "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
-    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
+    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
+    "SectionPosition": "Position du tronçon / section",
+    "Switch": "Organes de coupure",
+    "newSection": "Nouvelle section",
+    "switchesAfterSections": "OC avant",
+    "switchesBeforeSections": "OC après",
+    "Busbar": "Jeu de barres",
+    "AllBusbars": "Tous les jeux de barres",
+    "BusbarNumber": "{number}"
 }

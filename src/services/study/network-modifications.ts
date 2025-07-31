@@ -19,6 +19,7 @@ import {
     BatteryCreationInfos,
     BatteryModificationInfos,
     CreateCouplingDeviceInfos,
+    CreateVoltageLevelSectionInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -1465,6 +1466,36 @@ export function attachLine({
             'Content-Type': 'application/json',
         },
         body,
+    });
+}
+
+export function createVoltageLevelSection({
+    voltageLevelSectionInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    voltageLevelSectionInfos: CreateVoltageLevelSectionInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology modification');
+    } else {
+        console.info('Creating voltage level topology modification');
+    }
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(voltageLevelSectionInfos),
     });
 }
 

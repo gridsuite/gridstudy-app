@@ -813,6 +813,7 @@
     "CreateLink": "Add link",
     "BusBarSection": "Bus bar section",
     "VoltageLevelCreationError": "Voltage level creation error",
+    "VoltageLevelSectionCreationError": "Error while creating a section",
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
     "BREAKER": "Breaker",
@@ -1456,7 +1457,7 @@
     "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
 
     "CREATE_COUPLING_DEVICE": "Add a coupling device",
-    "CreateCouplingDeviceEditor": "Add a coupling device",
+    "CreateVoltageLevelSection": "Add busbar section",
     "CreateCouplingDeviceDiagramButton": "Show voltage level",
     "CreateCouplingDeviceIdenticalBusBar": "Busbar section 1 and 2 must be different",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
@@ -1493,5 +1494,13 @@
     "SaveGridLayout": "Save grid",
     "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
-    "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one"
+    "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
+    "SectionPosition": "Section position",
+    "Switch": "Switch",
+    "newSection": "New section",
+    "switchesAfterSections": "Switch after",
+    "switchesBeforeSections": "Switch before",
+    "AllBusbars": "All busbars",
+    "Busbar": "Busbar",
+    "BusbarNumber": "{number}"
 }
