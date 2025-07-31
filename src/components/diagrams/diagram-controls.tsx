@@ -17,6 +17,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -69,6 +70,7 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
+    onUpdate?: (data: IElementUpdateDialog) => void;
     onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
@@ -79,6 +81,7 @@ interface DiagramControlsProps {
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
     onSave,
+    onUpdate,
     onLoad,
     isEditNadMode,
     onToggleEditNadMode,
@@ -121,6 +124,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
+        }
+    };
+
+    const handleUpdate = (data: IElementUpdateDialog) => {
+        if (onUpdate) {
+            onUpdate(data);
         }
     };
 
@@ -243,15 +252,20 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             </Box>
             {studyUuid && (
                 <>
-                    <ElementSaveDialog
-                        studyUuid={studyUuid}
-                        onClose={handleCloseSaveDialog}
-                        onSave={handleSave}
-                        open={isSaveDialogOpen}
-                        type={ElementType.DIAGRAM_CONFIG}
-                        titleId={'SaveToGridexplore'}
-                        createOnlyMode
-                    />
+                    {isSaveDialogOpen && (
+                        <ElementSaveDialog
+                            studyUuid={studyUuid}
+                            onClose={handleCloseSaveDialog}
+                            onSave={handleSave}
+                            OnUpdate={handleUpdate}
+                            open={isSaveDialogOpen}
+                            type={ElementType.DIAGRAM_CONFIG}
+                            selectorTitleId={'NetworkAreaDiagram'}
+                            createLabelId={'diagramConfigSave'}
+                            updateLabelId={'diagramConfigUpdate'}
+                            titleId={'SaveToGridexplore'}
+                        />
+                    )}
                     <Box minWidth="12em">
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}

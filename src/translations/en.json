@@ -1160,6 +1160,8 @@
     "diagramConfigUpdateMsg": "Network area diagram {item} updated",
     "diagramConfigCreationError": "Network area diagram creation error",
     "diagramConfigUpdateError": "Error while updating network area diagram {item}",
+    "diagramConfigSave": "Create a new network area diagram",
+    "diagramConfigUpdate": "Replace an existing network area diagram",
     "EditNad": "Edit",
     "apply": "Apply",
     "ModificationsSelection": "Modification selection",
