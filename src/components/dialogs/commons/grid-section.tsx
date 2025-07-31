@@ -18,7 +18,6 @@ export interface GridSectionProps {
     tooltipMessage?: string;
     formatDisabled?: boolean;
 }
-// comment
 export default function GridSection({
     title,
     heading = 3,
