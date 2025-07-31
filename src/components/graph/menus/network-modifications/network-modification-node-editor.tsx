@@ -433,6 +433,7 @@ const NetworkModificationNodeEditor = () => {
             id: 'InjectionsModifications',
             items: [
                 {
+                    id: 'GENERATOR',
                     label: 'GENERATOR',
                     subItems: [
                         {

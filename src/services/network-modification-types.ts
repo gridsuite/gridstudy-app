@@ -807,8 +807,8 @@ export interface CreateVoltageLevelTopologyInfos {
     type: ModificationType;
     uuid?: string;
     voltageLevelId: string;
-    sectionCount: number;
-    switchKinds: string[];
+    sectionCount?: number | null;
+    switchKinds?: string[] | null;
 }
 
 export type NetworkModificationRequestInfos = {

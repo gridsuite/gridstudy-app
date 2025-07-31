@@ -26,7 +26,7 @@ import { FetchStatus } from '../../../../services/utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {
-    [SECTION_COUNT]: null,
+    [SECTION_COUNT]: 1,
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [SWITCH_KINDS]: [],
 };
@@ -79,7 +79,7 @@ export default function CreateVoltageLevelTopologyDialog({
                 editData.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
 
             reset({
-                [SECTION_COUNT]: editData?.sectionCount ?? '',
+                [SECTION_COUNT]: editData?.sectionCount ?? null,
                 [SWITCHES_BETWEEN_SECTIONS]: switchesBetweenSections,
                 [SWITCH_KINDS]: switchKinds,
             });
@@ -102,7 +102,7 @@ export default function CreateVoltageLevelTopologyDialog({
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
                 voltageLevelId: selectedId,
                 sectionCount: voltageLevelTopology[SECTION_COUNT],
-                switchKinds: voltageLevelTopology[SWITCH_KINDS].map((e) => {
+                switchKinds: voltageLevelTopology[SWITCH_KINDS]?.map((e) => {
                     return e.switchKind;
                 }),
             } satisfies CreateVoltageLevelTopologyInfos;
@@ -138,7 +138,6 @@ export default function CreateVoltageLevelTopologyDialog({
                 open={open}
                 titleId={'CreateVoltageLevelTopology'}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
