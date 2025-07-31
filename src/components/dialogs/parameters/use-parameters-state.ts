@@ -8,8 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { updateConfigParameter } from 'services/config';
+import { useSnackMessage, updateConfigParameter } from '@gridsuite/commons-ui';
 import { AppConfigState } from 'redux/reducer';
 
 import { simpleConverterToString } from '../../../utils/types-utils';
