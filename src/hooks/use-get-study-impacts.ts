@@ -4,11 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { UUID } from 'crypto';
 import { DeletedEquipment, isStudyNotification, NetworkImpactsInfos } from 'types/notification-types';
+import { setReloadMapNeeded } from 'redux/actions';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
     resetImpactedSubstationsIds: () => void;
@@ -20,7 +22,7 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  * Custom hook that consume the update notification 'study' and return the impacts of the study
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const dispatch = useDispatch();
 
@@ -40,32 +42,45 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
         setImpactedElementTypes([]);
     }, []);
 
-    useEffect(() => {
-        if (isStudyNotification(studyUpdatedForce?.eventData)) {
-            const rootNetworkUuid = studyUpdatedForce.eventData.headers.rootNetworkUuid;
-            if (rootNetworkUuid && rootNetworkUuid !== currentRootNetworkUuid) {
-                return;
-            }
-            const {
-                impactedSubstationsIds: substationsIds,
-                deletedEquipments,
-                impactedElementTypes,
-            } = JSON.parse(
-                // @ts-ignore
-                studyUpdatedForce.eventData.payload
-            ) as NetworkImpactsInfos;
+    const handleStudyNotification = useCallback(
+        (event: MessageEvent) => {
+            const eventData = JSON.parse(event.data);
 
-            if (impactedElementTypes?.length > 0) {
-                setImpactedElementTypes(impactedElementTypes);
+            if (isStudyNotification(eventData)) {
+                const nodeUuidFromNotif = eventData.headers.node;
+                const rootNetworkUuidFromNotif = eventData.headers.rootNetworkUuid;
+                if (rootNetworkUuidFromNotif !== currentRootNetworkUuid || nodeUuidFromNotif !== currentNode?.id) {
+                    return;
+                }
+                const {
+                    impactedSubstationsIds: substationsIds,
+                    deletedEquipments,
+                    impactedElementTypes,
+                } = JSON.parse(
+                    // @ts-ignore
+                    eventData.payload
+                ) as NetworkImpactsInfos;
+
+                if (impactedElementTypes?.length > 0) {
+                    setImpactedElementTypes(impactedElementTypes);
+                }
+                if (deletedEquipments?.length > 0) {
+                    setDeletedEquipments(deletedEquipments);
+                }
+                if (substationsIds?.length > 0) {
+                    setImpactedSubstationsIds(substationsIds);
+                }
+                if (impactedElementTypes?.length > 0 || substationsIds?.length > 0 || deletedEquipments?.length > 0) {
+                    // The following line will proc a map update in auto mode
+                    // or show the button to refresh the map in manual mode
+                    dispatch(setReloadMapNeeded(true));
+                }
             }
-            if (deletedEquipments?.length > 0) {
-                setDeletedEquipments(deletedEquipments);
-            }
-            if (substationsIds?.length > 0) {
-                setImpactedSubstationsIds(substationsIds);
-            }
-        }
-    }, [dispatch, studyUpdatedForce, currentRootNetworkUuid]);
+        },
+        [currentRootNetworkUuid, currentNode?.id, dispatch]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyNotification });
 
     return {
         impactedSubstationsIds,
