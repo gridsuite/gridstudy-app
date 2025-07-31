@@ -36,11 +36,12 @@ import {
     ElementType,
     EquipmentType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     mergeSx,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
-import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
+import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
@@ -63,6 +64,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
+    readonly onAddVoltageLevel: (vlId: string) => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
@@ -79,6 +81,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
+        onAddVoltageLevel,
         onHideVoltageLevel,
         onVoltageLevelClick,
         onMoveNode,
@@ -189,6 +192,33 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'diagramConfigCreationError',
+                })
+            );
+    };
+
+    const handleUpdateNadConfig = (data: IElementUpdateDialog) => {
+        updateDiagramConfig(
+            data.id,
+            {
+                scalingFactor: props.svgScalingFactor,
+                voltageLevelIds: props.svgVoltageLevels ?? [],
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+            },
+            data.name,
+            data.description
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramConfigUpdateMsg',
+                    headerValues: {
+                        item: data.name,
+                    },
+                });
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'diagramConfigUpdateError',
                 })
             );
     };
@@ -348,10 +378,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
+                onUpdate={handleUpdateNadConfig}
                 onLoad={onLoadNad}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
+                onAddVoltageLevel={onAddVoltageLevel}
                 isDiagramLoading={props.loadingState}
             />
             {renderEquipmentMenu()}
