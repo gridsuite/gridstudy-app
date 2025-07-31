@@ -217,3 +217,9 @@ export const NoSvg: Svg = {
     error: undefined,
     svgUrl: undefined,
 };
+
+export const equipmentsWithPopover = [
+    FEEDER_TYPES.LINE,
+    FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER,
+    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
+];
