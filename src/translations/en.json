@@ -1,4 +1,8 @@
 {
+    "debug.message.downloadFile": "Computation data will be downloaded upon its completion.",
+    "debug.header.fileNotFound": "Computation data not found",
+    "debug.header.fileError": "Computation data download failed",
+
     "button.delete": "Delete",
     "button.continue": "Continue",
     "filter": "Filter",
@@ -63,7 +67,6 @@
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
-    "LoadingOf": "Loading of {value}...",
 
     "computationInProgress": "Computation in progress ...",
 
@@ -596,7 +599,7 @@
     "minActivePower": "Min P (MW)",
     "minP": "Min P (MW)",
     "voltageRegulationOn": "Voltage regulation",
-    "ModificationsRequiredTabError": "At least one modification is required",
+    "ModificationsRequiredTabError": "At least one modification must be imported",
 
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
@@ -611,6 +614,16 @@
     "LccCreationError": "Error while creating HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Limit sets names have to be unique",
     "LimitSetCreationEmptyError": "Limit sets names can't be empty",
+    "LimitSetsTabularModification": "Tabular modification of limits sets",
+    "amountTemporaryLimits": "Number of temporary limits",
+    "LimitSets": "Limit sets",
+    "permanentLimit": "Permanent current limit",
+    "acceptableDuration" : "Duration (s)",
+    "value": "Value (A)",
+    "side": "Side",
+    "limitGroupName": "Limits set name",
+    "modificationType": "Modification type",
+    "temporaryLimitsModificationType": "Temporary limits modification type",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
@@ -981,6 +994,9 @@
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the template",
     "uploadMessage": " No file selected",
 
+    "DefinePropertiesButton": "Define properties",
+    "DefinePropertiesTitle": "Additional properties",
+
     "G": "Magnetizing conductance",
     "B": "Magnetizing susceptance",
     "RatedVoltage": "Rated voltage",
@@ -1025,6 +1041,8 @@
     "RegulatingPhase": "Phase regulating",
     "RegulatingValue": "Current (A) or flow set point (MW)",
     "HasLoadTapChangingCapabilities": "Ratio on-load",
+    "ratioTapChangerLoadTapChangingCapabilities": "Ratio tap changer on-load",
+    "ratioTapChangerRegulationSide": "Ratio tap changer regulated side",
     "RegulatingRatio": "Ratio regulating",
     "TargetVPoint": "Voltage set point (kV)",
 
@@ -1126,6 +1144,8 @@
     "lineTypes.screen": "Screen",
     "menu.create": "Create",
     "menu.createMultiple": "Create multiple equipment",
+    "menu.createByTable": "Create by table",
+    "menu.deleteByFilter": "Delete by filter",
     "menu.modifyMultiple": "Modify multiple equipment",
     "ShuntCompensator": "Shunt compensator",
     "StaticVarCompensator": "Static var compensator",
@@ -1297,7 +1317,6 @@
     "linearShuntCompensators": "Linear shunt compensators",
     "csvExportSensitivityResultError": "An error occurred when exporting sensitivity results",
     "substationCountry": "Country code",
-    "CreationsRequiredTabError": "At least one creation is required",
     "TabularCreation": "Tabular creation",
     "ImportCreations": "Import creations",
     "TabularCreationError": "Error while creating tabular creation",
@@ -1489,5 +1508,8 @@
     "selectedOperationalLimitsGroup2": "Active limit set on side 2",
     "OpenMapCard": "Add the map",
     "AddNewCard": "Add a new image",
+    "SaveGridLayout": "Save grid",
+    "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
+    "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one"
 }

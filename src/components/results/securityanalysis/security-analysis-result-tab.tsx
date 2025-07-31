@@ -41,6 +41,10 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
+import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -113,6 +117,13 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
 
     const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
+    );
 
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
@@ -147,10 +158,25 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
+            if (globalFilters !== undefined && getGlobalFilterParameter(globalFilters) !== undefined) {
+                queryParams['globalFilters'] = globalFilters;
+            }
+
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
 
-        [page, tabIndex, rowsPerPage, sortConfig, currentRootNetworkUuid, filters, resultType, intl]
+        [
+            tabIndex,
+            resultType,
+            sortConfig,
+            filters,
+            getGlobalFilterParameter,
+            globalFilters,
+            currentRootNetworkUuid,
+            page,
+            rowsPerPage,
+            intl,
+        ]
     );
 
     const {
@@ -229,6 +255,16 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         // empty array result
         result.length === 0;
 
+    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+        switch (tabIndex) {
+            case NMK_RESULTS_TAB_INDEX:
+                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+            case N_RESULTS_TAB_INDEX:
+                return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        }
+        return [];
+    }, [tabIndex]);
+
     return (
         <>
             <Box sx={styles.tabsAndToolboxContainer}>
@@ -239,7 +275,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} value={LOGS_TAB_INDEX} />
                     </Tabs>
                 </Box>
-
+                {(tabIndex === NMK_RESULTS_TAB_INDEX || (tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode)) && (
+                    <Box sx={{ display: 'flex', flexGrow: 0 }}>
+                        <GlobalFilterSelector
+                            onChange={handleGlobalFilterChange}
+                            filters={globalFilterOptions}
+                            filterableEquipmentTypes={filterableEquipmentTypes}
+                        />
+                    </Box>
+                )}
                 <Box sx={styles.toolboxContainer}>
                     {tabIndex === NMK_RESULTS_TAB_INDEX && (
                         <Select

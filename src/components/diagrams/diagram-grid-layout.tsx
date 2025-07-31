@@ -10,20 +10,21 @@ import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, Theme, useTheme } from '@mui/material';
-import { ElementType, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { ElementType, EquipmentInfos, EquipmentType, useDebounce } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
-import { useDiagramsGridLayoutSessionStorage } from './hooks/use-diagrams-grid-layout-session-storage';
+import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
 import CardHeader, { BLINK_LENGTH_MS } from './card-header';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { DiagramAdder } from './diagram-adder';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import CustomResizeHandle from './custom-resize-handle';
-import { useIntl } from 'react-intl';
+import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
+import { FormattedMessage } from 'react-intl';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -110,13 +111,12 @@ const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) =>
 
 function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
-    const intl = useIntl();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<UUID[]>([]);
     const [isMapCardAdded, setIsMapCardAdded] = useState(false);
 
-    const addLayoutItem = (diagram: Diagram) => {
+    const addLayoutItem = useCallback((diagram: Diagram) => {
         setLayouts((old_layouts) => {
             const layoutItem: Layout = {
                 i: diagram.diagramUuid,
@@ -133,7 +133,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             });
             return Object.fromEntries(newLayoutsEntries);
         });
-    };
+    }, []);
 
     const removeLayoutItem = (cardUuid: UUID) => {
         setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
@@ -201,6 +201,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         },
         [createDiagram]
     );
+
+    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
+
+    // Debounce the layout save function to avoid excessive calls
+    const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
 
     const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
@@ -285,7 +290,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             const diagram = diagrams[diagramId];
             if (diagram && diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const updatedPositions = diagram.positions.map((position) =>
-                    position.voltageLevelId === vlId ? { ...position, xposition: x, yposition: y } : position
+                    position.voltageLevelId === vlId ? { ...position, xPosition: x, yPosition: y } : position
                 );
 
                 updateDiagramPositions({
@@ -340,9 +345,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 <Box key={diagram.diagramUuid} sx={styles.card}>
                     <CardHeader
                         title={
-                            loadingDiagrams.includes(diagram.diagramUuid)
-                                ? intl.formatMessage({ id: 'LoadingOf' }, { value: diagram.type })
-                                : diagram.name
+                            loadingDiagrams.includes(diagram.diagramUuid) ? (
+                                <FormattedMessage id="loadingOptions" />
+                            ) : (
+                                diagram.name
+                            )
                         }
                         blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
                         onClose={() => onRemoveCard(diagram.diagramUuid)}
@@ -429,11 +436,10 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         showInSpreadsheet,
         studyUuid,
         visible,
-        intl,
     ]);
 
-    const onLoadFromSessionStorage = useCallback((savedLayouts: Layouts | undefined) => {
-        if (savedLayouts) {
+    const onLoadDiagramLayout = useCallback((savedLayouts: Layouts) => {
+        if (Object.keys(savedLayouts).length > 0) {
             const savedLayoutsEntries = Object.entries(savedLayouts);
             const newLayoutsEntries = savedLayoutsEntries.map(([breakpoint, breakpoint_layouts]) => {
                 const updatedLayouts = [...breakpoint_layouts];
@@ -451,7 +457,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         setIsMapCardAdded(true);
     }, []);
 
-    useDiagramsGridLayoutSessionStorage({ layouts, onLoadFromSessionStorage });
+    useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
     return (
         <ResponsiveGridLayout
@@ -493,6 +499,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                onLayoutSave={debouncedGridLayoutSave}
                 key={'Adder'}
             />
             {renderDiagrams()}

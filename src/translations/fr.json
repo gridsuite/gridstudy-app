@@ -1,4 +1,8 @@
 {
+    "debug.message.downloadFile": "À la fin du calcul ses données seront téléchargées.",
+    "debug.header.fileNotFound": "Données de calcul non trouvées",
+    "debug.header.fileError": "Échec du téléchargement des données de calcul",
+
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
     "filter": "Filtre",
@@ -63,7 +67,6 @@
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
-    "LoadingOf": "Chargement de {value}...",
 
     "computationInProgress": "Calcul en cours ...",
 
@@ -593,7 +596,7 @@
     "minActivePower": "P min (MW)",
     "minP": "P min (MW)",
     "voltageRegulationOn": "Réglage de tension",
-    "ModificationsRequiredTabError": "Au moins une modification est requise",
+    "ModificationsRequiredTabError": "Au moins une modification doit être importée",
 
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
@@ -608,6 +611,16 @@
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
     "LimitSetCreationDuplicateError": "Les noms de limit sets doivent être uniques.",
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
+    "LimitSetsTabularModification": "Modification tabulaire de sets de limites",
+    "amountTemporaryLimits": "Nombre de limites temporaires",
+    "LimitSets": "Sets de limite",
+    "permanentLimit": "IST",
+    "acceptableDuration": "Tempo (s)",
+    "value": "Valeur (A)",
+    "side": "Côté",
+    "limitGroupName": "Nom du set de limites",
+    "modificationType": "Type de modification",
+    "temporaryLimitsModificationType": "Type de modification des limites temporaires",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -976,6 +989,9 @@
     "InvalidRuleHeader": "Le fichier n'a pas le bon en-tête, veuillez vous référer au modèle",
     "uploadMessage": " Aucun fichier sélectionné",
 
+    "DefinePropertiesButton": "Définir propriétés",
+    "DefinePropertiesTitle": "Propriétés complémentaires",
+
     "G": "Conductance magnétisante",
     "B": "Susceptance magnétisante",
     "RatedVoltage": "Tension d'enroulement",
@@ -1020,6 +1036,8 @@
     "RegulatingPhase": "Déphaseur en réglage",
     "RegulatingValue": "Consigne du courant (A) ou de transit (MW)",
     "HasLoadTapChangingCapabilities": "Régleur en charge",
+    "ratioTapChangerLoadTapChangingCapabilities": "Régleur en charge",
+    "ratioTapChangerRegulationSide": "Côté réglé régleur",
     "RegulatingRatio": "Régleur en réglage",
     "TargetVPoint": "Consigne tension (kV)",
 
@@ -1123,6 +1141,8 @@
     "menu.create": "Créer",
     "menu.createMultiple": "Créer plusieurs ouvrages",
     "menu.modifyMultiple": "Modifier plusieurs ouvrages",
+    "menu.createByTable": "Créer par tableau",
+    "menu.deleteByFilter": "Supprimer par filtre",
     "ShuntCompensator": "Moyen de compensation statique",
     "StaticVarCompensator": "CSPR",
     "AttachingLines": "Piquage",
@@ -1293,7 +1313,6 @@
     "linearShuntCompensators": "MCS linéaires",
     "csvExportSensitivityResultError": "Une erreur est survenue lors de l'export des résultats de l'analyse de sensibilité",
     "substationCountry": "Code pays",
-    "CreationsRequiredTabError": "Au moins une création est requise",
     "TabularCreation": "Création tabulaire",
     "ImportCreations": "Importer des créations",
     "TabularCreationError": "Erreur lors de la création tabulaire",
@@ -1484,5 +1503,8 @@
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
     "AddNewCard": "Ajouter une nouvelle image",
+    "SaveGridLayout": "Enregistrer la grille",
+    "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
+    "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
 }
