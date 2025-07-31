@@ -24,6 +24,9 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const mapManualRefresh = useSelector(
+        (state: AppState) => state.networkVisualizationsParameters.mapParameters.mapManualRefresh
+    );
     const dispatch = useDispatch();
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
@@ -70,14 +73,21 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                 if (substationsIds?.length > 0) {
                     setImpactedSubstationsIds(substationsIds);
                 }
-                if (impactedElementTypes?.length > 0 || substationsIds?.length > 0 || deletedEquipments?.length > 0) {
+                if (impactedElementTypes?.length > 0 || substationsIds?.length > 0) {
                     // The following line will proc a map update in auto mode
                     // or show the button to refresh the map in manual mode
                     dispatch(setReloadMapNeeded(true));
+                } else if (deletedEquipments?.length > 0) {
+                    // for deletedEquipments do nothing in auto mode, it will be simply removed from the map without
+                    // consequent update
+                    // but in manual mode, we need to show the button to refresh the map at demand
+                    if (mapManualRefresh) {
+                        dispatch(setReloadMapNeeded(true));
+                    }
                 }
             }
         },
-        [currentRootNetworkUuid, currentNode?.id, dispatch]
+        [currentRootNetworkUuid, currentNode?.id, dispatch, mapManualRefresh]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyNotification });
