@@ -1,4 +1,8 @@
 {
+    "debug.message.downloadFile": "Computation data will be downloaded upon its completion.",
+    "debug.header.fileNotFound": "Computation data not found",
+    "debug.header.fileError": "Computation data download failed",
+
     "button.delete": "Delete",
     "button.continue": "Continue",
     "filter": "Filter",
@@ -1042,6 +1046,8 @@
     "RegulatingPhase": "Phase regulating",
     "RegulatingValue": "Current (A) or flow set point (MW)",
     "HasLoadTapChangingCapabilities": "Ratio on-load",
+    "ratioTapChangerLoadTapChangingCapabilities": "Ratio tap changer on-load",
+    "ratioTapChangerRegulationSide": "Ratio tap changer regulated side",
     "RegulatingRatio": "Ratio regulating",
     "TargetVPoint": "Voltage set point (kV)",
 
