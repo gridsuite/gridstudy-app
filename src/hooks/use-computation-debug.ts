@@ -51,7 +51,7 @@ export function setDebug(identifier: string) {
 
 export function isDebug(identifier: string) {
     const debugState = getDebugState();
-    return debugState && debugState.has(identifier);
+    return debugState?.has(identifier);
 }
 
 export function unsetDebug(identifier: string) {
