@@ -313,7 +313,7 @@ export const generateCommentLines = ({
     return commentData;
 };
 
-export const createCommonProperties = (row: Modification): Property[] => {
+export const transformProperties = (row: Modification): Property[] => {
     let propertiesModifications: Property[] = [];
     Object.keys(row).forEach((key) => {
         if (key.startsWith(PROPERTY_CSV_COLUMN_PREFIX) && row[key]?.length) {
@@ -321,6 +321,7 @@ export const createCommonProperties = (row: Modification): Property[] => {
             propertiesModifications.push(
                 createPropertyModification(key.replace(PROPERTY_CSV_COLUMN_PREFIX, ''), row[key])
             );
+            delete row[key];
         }
     });
     return propertiesModifications;

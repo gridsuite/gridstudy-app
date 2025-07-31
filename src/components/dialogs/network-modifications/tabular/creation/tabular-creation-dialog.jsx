@@ -26,13 +26,12 @@ import { useIntl } from 'react-intl';
 import {
     addPropertiesFromBack,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
-    createCommonProperties,
+    transformProperties,
     emptyTabularFormData,
     formatModification,
     tabularFormSchema,
     TabularModificationType,
 } from '../tabular-common.js';
-import { PROPERTY_CSV_COLUMN_PREFIX } from '../properties/property-utils.js';
 import TabularForm from '../tabular-form.js';
 
 /**
@@ -93,17 +92,19 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 const creation = {
                     type: creationType,
                 };
-                const propertiesModifications = createCommonProperties(row);
+                // first transform and clean "property_*" fields
+                const propertiesModifications = transformProperties(row);
+
+                // then transform all other fields
                 Object.keys(row).forEach((key) => {
-                    if (!key.startsWith(PROPERTY_CSV_COLUMN_PREFIX)) {
-                        const entry = convertCreationFieldFromFrontToBack(key, row[key]);
-                        creation[entry.key] = entry.value;
-                    }
+                    const entry = convertCreationFieldFromFrontToBack(key, row[key]);
+                    creation[entry.key] = entry.value;
                 });
                 // For now, we do not manage reactive limits by diagram
                 if (creationType === 'GENERATOR_CREATION' || creationType === 'BATTERY_CREATION') {
                     convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
                 }
+
                 if (propertiesModifications.length > 0) {
                     creation[TABULAR_PROPERTIES] = propertiesModifications;
                 }
