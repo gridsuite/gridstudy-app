@@ -8,7 +8,6 @@
 import { Button, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
-    EQUIPMENT,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,

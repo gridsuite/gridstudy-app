@@ -111,10 +111,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             [setIndexSelectedLimitSet]
         );
 
-        const handleLimitsGroupNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-            setEditedLimitGroupName(event.target.value);
-        }, []);
-
         const handleOpenMenu = useCallback(
             (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
                 event.stopPropagation();
@@ -274,7 +270,9 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                 editingTabIndex === index ? (
                                     <TextField
                                         value={editedLimitGroupName}
-                                        onChange={handleLimitsGroupNameChange}
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                            setEditedLimitGroupName(event.target.value);
+                                        }}
                                         onKeyDown={handleKeyDown}
                                         inputRef={onRefSet}
                                         onBlur={() => finishEditingLimitsGroup()}
