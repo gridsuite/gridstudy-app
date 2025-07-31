@@ -26,7 +26,7 @@ import { FetchStatus } from '../../../../services/utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {
-    [SECTION_COUNT]: 1,
+    [SECTION_COUNT]: null,
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [SWITCH_KINDS]: [],
 };
@@ -55,6 +55,7 @@ export default function CreateVoltageLevelTopologyDialog({
     ...dialogProps
 }: Readonly<CreateVoltageLevelTopologyDialogProps>) {
     const currentNodeUuid = currentNode?.id;
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
 
@@ -64,7 +65,6 @@ export default function CreateVoltageLevelTopologyDialog({
     });
 
     const { reset } = formMethods;
-    const intl = useIntl();
 
     useEffect(() => {
         if (editData) {
