@@ -182,18 +182,20 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             </Box>
             {studyUuid && (
                 <>
-                    <ElementSaveDialog
-                        studyUuid={studyUuid}
-                        onClose={handleCloseSaveDialog}
-                        onSave={handleSave}
-                        OnUpdate={handleUpdate}
-                        open={isSaveDialogOpen}
-                        type={ElementType.DIAGRAM_CONFIG}
-                        selectorTitleId={'NetworkAreaDiagram'}
-                        createLabelId={'diagramConfigSave'}
-                        updateLabelId={'diagramConfigUpdate'}
-                        titleId={'SaveToGridexplore'}
-                    />
+                    {isSaveDialogOpen && (
+                        <ElementSaveDialog
+                            studyUuid={studyUuid}
+                            onClose={handleCloseSaveDialog}
+                            onSave={handleSave}
+                            OnUpdate={handleUpdate}
+                            open={isSaveDialogOpen}
+                            type={ElementType.DIAGRAM_CONFIG}
+                            selectorTitleId={'NetworkAreaDiagram'}
+                            createLabelId={'diagramConfigSave'}
+                            updateLabelId={'diagramConfigUpdate'}
+                            titleId={'SaveToGridexplore'}
+                        />
+                    )}
                     <Box minWidth="12em">
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}
