@@ -21,11 +21,3 @@ export function fetchConfigParameter(name: string) {
     const fetchParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) => (response.status === 204 ? null : response.json()));
 }
-
-export function updateConfigParameter(name: string, value: string) {
-    const appName = getAppName(name);
-    console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
-    const updateParams =
-        PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters/${name}?value=` + encodeURIComponent(value);
-    return backendFetch(updateParams, { method: 'put' });
-}

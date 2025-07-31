@@ -9,6 +9,7 @@ import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
+    equipmentsWithPopover,
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
@@ -85,7 +86,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
-    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState<string>('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -102,11 +103,14 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
      */
     const handleTogglePopover = useCallback(
         (shouldDisplay: boolean, currentTarget: EventTarget | null, equipmentId: string, equipmentType: string) => {
-            setShouldDisplayTooltip(shouldDisplay);
-            if (shouldDisplay) {
+            const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+            setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable);
+
+            if (shouldDisplay && isEquipmentHoverable) {
+                const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(equipmentType);
+                setHoveredEquipmentType(convertedEquipmentType || '');
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);
