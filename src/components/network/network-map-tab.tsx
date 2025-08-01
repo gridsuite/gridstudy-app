@@ -833,8 +833,10 @@ export const NetworkMapTab = ({
             }
             const eventData: unknown = JSON.parse(event.data);
             if (isRootNetworksUpdatedNotification(eventData)) {
-                const rootNetworkUuidsFromNotification = eventData.headers.rootNetworkUuids;
-                if (rootNetworkUuidsFromNotification.includes(currentRootNetworkUuid)) {
+                if (
+                    eventData.headers.rootNetworkUuids &&
+                    eventData.headers.rootNetworkUuids.includes(currentRootNetworkUuid)
+                ) {
                     setInitialized(false);
                     setIsRootNodeGeoDataLoaded(false);
                     dispatch(resetMapEquipment());
