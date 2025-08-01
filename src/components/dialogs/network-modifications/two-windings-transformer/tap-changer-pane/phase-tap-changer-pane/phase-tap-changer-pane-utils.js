@@ -125,7 +125,7 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: true,
+                is: (enabled) => enabled && !isModification,
                 then: (schema) =>
                     schema
                         .required()
