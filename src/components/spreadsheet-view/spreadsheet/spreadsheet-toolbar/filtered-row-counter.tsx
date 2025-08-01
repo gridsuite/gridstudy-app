@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
@@ -48,7 +48,7 @@ export type SpreadsheetFilteredRowCountProps = {
     tableDefinition: SpreadsheetTabDefinition;
 };
 
-export function FilteredRowCount({ gridRef, tableDefinition }: Readonly<SpreadsheetFilteredRowCountProps>) {
+export function FilteredRowCounter({ gridRef, tableDefinition }: Readonly<SpreadsheetFilteredRowCountProps>) {
     const intl = useIntl();
 
     const [displayedRows, setDisplayedRows] = useState<number | null>(null);
@@ -164,23 +164,21 @@ export function FilteredRowCount({ gridRef, tableDefinition }: Readonly<Spreadsh
             {isLoading ? (
                 <CircularProgress size="1rem" />
             ) : (
-                <>
-                    <Fade in timeout={600} key={content}>
-                        <Box sx={styles.innerContainer}>
-                            {isAnyFilterPresent && <RestoreIcon sx={styles.restoreButton} />}
-                            {content}
-                            {isAnyFilterPresent && (
-                                <Tooltip
-                                    title={<div style={{ whiteSpace: 'pre-line' }}>{activeFiltersList}</div>}
-                                    placement="right-start"
-                                    sx={{ marginLeft: 1 }}
-                                >
-                                    <InfoIcon />
-                                </Tooltip>
-                            )}
-                        </Box>
-                    </Fade>
-                </>
+                <Fade in timeout={600} key={content}>
+                    <Box sx={styles.innerContainer}>
+                        {isAnyFilterPresent && <RestoreIcon sx={styles.restoreButton} />}
+                        {content}
+                        {isAnyFilterPresent && (
+                            <Tooltip
+                                title={<div style={{ whiteSpace: 'pre-line' }}>{activeFiltersList}</div>}
+                                placement="right-start"
+                                sx={{ marginLeft: 1 }}
+                            >
+                                <InfoIcon />
+                            </Tooltip>
+                        )}
+                    </Box>
+                </Fade>
             )}
         </Box>
     );

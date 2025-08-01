@@ -14,7 +14,7 @@ import ColumnCreationButton from './column-creation-button';
 import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
-import { FilteredRowCount } from './filtered-row-count';
+import { FilteredRowCounter } from './filtered-row-counter';
 
 const styles = {
     toolbar: (theme: Theme) => ({
@@ -51,7 +51,7 @@ export const SpreadsheetToolbar = ({
                 <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
-                <FilteredRowCount gridRef={gridRef} tableDefinition={tableDefinition} />
+                <FilteredRowCounter gridRef={gridRef} tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
                 <ColumnsConfig
