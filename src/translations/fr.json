@@ -1,4 +1,8 @@
 {
+    "debug.message.downloadFile": "À la fin du calcul ses données seront téléchargées.",
+    "debug.header.fileNotFound": "Données de calcul non trouvées",
+    "debug.header.fileError": "Échec du téléchargement des données de calcul",
+
     "button.delete": "Supprimer",
     "button.continue": "Continuer",
     "filter": "Filtre",
@@ -611,7 +615,7 @@
     "amountTemporaryLimits": "Nombre de limites temporaires",
     "LimitSets": "Sets de limite",
     "permanentLimit": "IST",
-    "acceptableDuration" : "Tempo (s)",
+    "acceptableDuration": "Tempo (s)",
     "value": "Valeur (A)",
     "side": "Côté",
     "limitGroupName": "Nom du set de limites",
@@ -1032,6 +1036,8 @@
     "RegulatingPhase": "Déphaseur en réglage",
     "RegulatingValue": "Consigne du courant (A) ou de transit (MW)",
     "HasLoadTapChangingCapabilities": "Régleur en charge",
+    "ratioTapChangerLoadTapChangingCapabilities": "Régleur en charge",
+    "ratioTapChangerRegulationSide": "Côté réglé régleur",
     "RegulatingRatio": "Régleur en réglage",
     "TargetVPoint": "Consigne tension (kV)",
 
@@ -1154,6 +1160,8 @@
     "diagramConfigUpdateMsg": "Mise à jour de l'image nodale de zone {item}",
     "diagramConfigCreationError": "Une erreur est survenue lors de la création de l'image nodale de zone",
     "diagramConfigUpdateError": "Une erreur est survenue lors de la mise à jour de l'image nodale de zone {item}",
+    "diagramConfigSave": "Créer une image nodale de zone",
+    "diagramConfigUpdate": "Remplacer une image nodale de zone",
     "EditNad": "Éditer",
     "apply": "Appliquer",
     "ModificationsSelection": "Sélection des modifications",
@@ -1494,6 +1502,7 @@
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "expand": "Étendre",
     "expandAllVoltageLevels": "Étendre tous les postes",
+    "addVoltageLevel": "Ajouter un poste",
     "hide": "Masquer",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
