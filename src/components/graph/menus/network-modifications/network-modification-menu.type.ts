@@ -14,6 +14,7 @@ export interface RootNetworkMetadata {
     name: string;
     tag: string;
     isCreating: boolean;
+    description?: string;
 }
 
 export interface ExcludedNetworkModifications {
