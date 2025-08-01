@@ -25,6 +25,7 @@ interface AddSpreadsheetButtonProps {
 const styles = {
     addButton: (theme: Theme) => ({
         color: theme.palette.primary.main,
+        minWidth: '100%',
     }),
 };
 
@@ -89,7 +90,7 @@ const AddSpreadsheetButton: React.FC<AddSpreadsheetButtonProps> = ({ disabled, r
         <>
             <Tooltip title={<FormattedMessage id="spreadsheet/create_new_spreadsheet/add_button_tooltip" />}>
                 <span>
-                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton}>
+                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton} size={'small'}>
                         <AddIcon />
                     </Button>
                 </span>
