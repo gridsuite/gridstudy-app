@@ -56,12 +56,11 @@ export const createPropertyModification = (name: string, value: string | null): 
     };
 };
 
-//export const getPropertiesFromModification = (properties: Property[] | undefined | null): Properties => {
 export const initializedProperty = (): Property => {
     return createPropertyModification('', null);
 };
 
-export const getPropertiesFromModification = (properties: Property[] | undefined): Properties => {
+export const getPropertiesFromModification = (properties: Property[] | undefined | null): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: properties
             ? properties.map((p) => {
