@@ -13,7 +13,7 @@ import { useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { AppState } from '../../../../../redux/reducer';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { NODE_ALIAS, NODE_NAME, NODES_ALIASES } from './nodes-config-dialog.utils';
+import { NODE_ALIAS, NODE_NAME, NODES_ALIASES, NODES_ALIASES_MAX_NUMBER } from './nodes-config-dialog.utils';
 
 const NodeConfigTable = () => {
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
@@ -75,6 +75,7 @@ const NodeConfigTable = () => {
             withAddRowsDialog={false}
             disableDragAndDrop={true}
             showMoveArrow={false}
+            maxRows={NODES_ALIASES_MAX_NUMBER}
         />
     );
 };

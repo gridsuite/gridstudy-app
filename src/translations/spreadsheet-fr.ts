@@ -113,6 +113,7 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
     'spreadsheet/parameter_aliases/unique_node_names': 'Chaque nœud ne peut avoir qu’un seul alias',
+    'spreadsheet/parameter_aliases/maximum_row_number_error': 'Le nombre de lignes ne doit pas dépasser la valeur 5',
     'spreadsheet/filter/config': 'Filtres Gridsuite',
     'spreadsheet/remove_spreadsheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
