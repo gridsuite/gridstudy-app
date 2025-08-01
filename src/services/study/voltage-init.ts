@@ -11,14 +11,22 @@ import { UUID } from 'crypto';
 import { VoltageInitStudyParameters } from '@gridsuite/commons-ui';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 
-export function startVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> {
+export function startVoltageInit(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    debug: boolean
+): Promise<void> {
     console.info(
         `Running voltage init on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
 
-    const startVoltageInitUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/voltage-init/run';
+    const urlParams = new URLSearchParams();
+    if (debug) {
+        urlParams.append('debug', `${debug}`);
+    }
+
+    const startVoltageInitUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/voltage-init/run?${urlParams}`;
     console.debug(startVoltageInitUrl);
     return backendFetch(startVoltageInitUrl, { method: 'put' });
 }

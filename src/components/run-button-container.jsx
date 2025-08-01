@@ -371,12 +371,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
             [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
-                startComputation() {
+                startComputation(debug) {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INITIALIZATION,
                         null,
-                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid),
-                        () => {},
+                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => debug && subscribeDebug(ComputingType.VOLTAGE_INITIALIZATION),
                         null,
                         'startVoltageInitError'
                     );
