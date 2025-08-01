@@ -182,6 +182,11 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 }}
                 sx={isSelectedNode() ? styles.networkModificationSelected : styles.networkModification}
             >
+                <Box
+                    sx={{backgroundColor: props.data?.nodeType === 'SECURITY' ? 'darkred' : 'darkblue', color:'white',top:0, left:0,display:'block',position:'absolute', zIndex:99999,fontSize:"30px"}}
+                >
+                    {props.id.substring(0, 5)}
+                </Box>
                 <Box sx={getStyleForBanner(props.data.localBuildStatus)}>
                     {props.data.localBuildStatus === BUILD_STATUS.BUILDING && (
                         <CircularProgress size={20} color="primary" style={{ margin: 'auto' }} />

@@ -134,7 +134,8 @@ function getColumnsByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
     nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
-    getMax: boolean
+    getMax: boolean,
+    ignoreSecu: boolean
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
 
@@ -168,7 +169,7 @@ function getColumnsByRows(
         // group of nodes, we consider that every row of this security group has the extreme value
         // of the whole group, and when we assign a new extreme, we do so to all the rows of the group.
 
-        if (isSecurityModificationNode(node)) {
+        if (ignoreSecu && isSecurityModificationNode(node)) {
             // This test determines if we changed from a security group to another. If this is the case,
             // we reset the currentExtremeValue to only update rows for the new group and not the old one.
             if (!isSecurityModificationNode(nodeMap.get(node.parentId)?.node)) {
@@ -204,17 +205,19 @@ function getColumnsByRows(
 function getMinimumColumnByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    ignoreSecu: boolean
 ): Map<number, number> {
-    return getColumnsByRows(nodes, placements, nodeMap, false);
+    return getColumnsByRows(nodes, placements, nodeMap, false, ignoreSecu);
 }
 
 function getMaximumColumnByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    ignoreSecu: boolean
 ): Map<number, number> {
-    return getColumnsByRows(nodes, placements, nodeMap, true);
+    return getColumnsByRows(nodes, placements, nodeMap, true, ignoreSecu);
 }
 
 /**
@@ -317,9 +320,13 @@ function compressTreePlacements(
         // cases other branches could go under the left neighbor and make edges cross.
         const leftNodes = nodes.slice(0, currentNodeIndex);
 
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
+        let ignoreSecu = true;
+        if (isSecurityModificationNode(nodeMap.get(currentNodeId)!.node)) {
+            ignoreSecu = false;
+        }
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap, ignoreSecu);
 
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap, ignoreSecu);
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
