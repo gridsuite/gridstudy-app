@@ -223,9 +223,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                     positions: diagram.positions,
-                    nadGenerationMode: networkVisuParams.networkAreaDiagramParameters.nadGenerationMode,
-                    // used to get the vl positions if the CUSTOM_COORDINATES mode is selected
-                    customNadConfigUuid: networkVisuParams.networkAreaDiagramParameters.nadConfigUuid,
+                    nadPositionsGenerationMode:
+                        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 };
                 fetchOptions = {
                     method: 'POST',
@@ -328,8 +327,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         },
         [
             getUrl,
-            networkVisuParams.networkAreaDiagramParameters.nadGenerationMode,
-            networkVisuParams.networkAreaDiagramParameters.nadConfigUuid,
+            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
             getDiagramTitle,
             intl,
             snackInfo,
