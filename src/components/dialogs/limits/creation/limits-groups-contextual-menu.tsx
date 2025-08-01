@@ -45,15 +45,15 @@ export function LimitsGroupsContextualMenu({
     selectedLimitsGroups2,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
+    const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
     const { append: appendToLimitsGroups, remove: removeLimitsGroups } = useFieldArray({
-        name: `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`,
+        name: operationalLimitsGroupsFormName,
     });
     const { getValues, setValue } = useFormContext();
 
     const handleDeleteTab = () => {
         if (indexSelectedLimitSet !== null) {
-            const tabId: string = getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`)?.[indexSelectedLimitSet]
-                ?.id;
+            const tabId: string = getValues(operationalLimitsGroupsFormName)?.[indexSelectedLimitSet]?.id;
             // if this operational limit was selected, deselect it
             if (selectedLimitsGroups1 === tabId) {
                 setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, '');
@@ -71,7 +71,7 @@ export function LimitsGroupsContextualMenu({
         let newName: string = '';
         if (indexSelectedLimitSet !== null) {
             const duplicatedLimits1: OperationalLimitsGroup = getValues(
-                `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${indexSelectedLimitSet}]`
+                `${operationalLimitsGroupsFormName}[${indexSelectedLimitSet}]`
             );
             newName = duplicatedLimits1.name + '_COPY';
             const newLimitsGroup1: OperationalLimitsGroup = {
@@ -80,7 +80,7 @@ export function LimitsGroupsContextualMenu({
             };
             appendToLimitsGroups(newLimitsGroup1);
         }
-        startEditingLimitsGroup(getValues(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`).length - 1, newName);
+        startEditingLimitsGroup(getValues(operationalLimitsGroupsFormName).length - 1, newName);
     };
 
     return (

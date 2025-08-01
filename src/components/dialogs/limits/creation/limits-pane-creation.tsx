@@ -24,24 +24,7 @@ import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import GridSection from '../../commons/grid-section';
 import { styles } from '../../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
-
-const OperationalLimitGroupSelect = ({
-    selectedFormName,
-    optionsFormName,
-    label,
-}: {
-    selectedFormName: string;
-    optionsFormName: string;
-    label: string;
-}) => (
-    <Grid item xs={3}>
-        <SelectedOperationalLimitGroup
-            selectedFormName={selectedFormName}
-            optionsFormName={optionsFormName}
-            label={label}
-        />
-    </Grid>
-);
+import { APPLICABILITY } from '../../../network/constants';
 
 export interface LimitsPaneCreationProps {
     id?: string;
@@ -98,11 +81,15 @@ export function LimitsPaneCreation({
             if (sameNameInLs.length > 0) {
                 if (sameNameInLs.length > 1) {
                     return 'LimitSetNamingError';
-                } else {
+                }
+
+                if (
+                    sameNameInLs[0].applicability === newSelectedApplicability ||
+                    sameNameInLs[0].applicability === APPLICABILITY.EQUIPMENT.id ||
+                    newSelectedApplicability === APPLICABILITY.EQUIPMENT.id
+                ) {
                     // only one limit set with this name exist => their applicability has to be different
-                    if (sameNameInLs[0].applicability === newSelectedApplicability) {
-                        return 'LimitSetApplicabilityError';
-                    }
+                    return 'LimitSetApplicabilityError';
                 }
             }
             return '';
@@ -115,24 +102,30 @@ export function LimitsPaneCreation({
             {/* active limit sets */}
             <GridSection title="SelectedOperationalLimitGroups" />
             <Grid container item xs={8} columns={10.25} spacing={0}>
-                <OperationalLimitGroupSelect
-                    selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
-                    optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
-                    label="Side1"
-                />
-                <OperationalLimitGroupSelect
-                    selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
-                    optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
-                    label="Side2"
-                />
+                <Grid item xs={3}>
+                    <SelectedOperationalLimitGroup
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
+                        label="Side1"
+                    />
+                </Grid>
+                <Grid item xs={3}>
+                    <SelectedOperationalLimitGroup
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
+                        label="Side2"
+                    />
+                </Grid>
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={4.9}>
-                <GridSection
-                    title="LimitSets"
-                    children={<Button sx={styles.button} startIcon={<AddIcon onClick={onAddClick} />} />}
-                />
+            <Grid container item xs={4.9} display="flex" flexDirection="row">
+                <Grid container item xs={3}>
+                    <GridSection title="LimitSets" />
+                </Grid>
+                <Grid container item xs={0.5}>
+                    <Button sx={styles.button} startIcon={<AddIcon onClick={onAddClick} />} />
+                </Grid>
             </Grid>
             <Grid container item xs={12} columns={10.25}>
                 <Grid item xs={4}>

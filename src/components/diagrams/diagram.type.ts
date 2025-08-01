@@ -33,6 +33,7 @@ type SubstationDiagramParams = DiagramBaseParams & {
 type NetworkAreaDiagramParams = DiagramBaseParams & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
+    initializationNadConfigUuid?: UUID; // used for initialization, not saved
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
@@ -61,6 +62,7 @@ export type SubstationDiagram = DiagramBase & {
 export type NetworkAreaDiagram = DiagramBase & {
     type: DiagramType.NETWORK_AREA_DIAGRAM;
     nadConfigUuid: UUID | undefined;
+    initializationNadConfigUuid?: UUID; // used for initialization, not saved
     filterUuid: UUID | undefined;
     voltageLevelIds: string[];
     voltageLevelToExpandIds: string[];
@@ -69,3 +71,14 @@ export type NetworkAreaDiagram = DiagramBase & {
 };
 
 export type Diagram = VoltageLevelDiagram | SubstationDiagram | NetworkAreaDiagram;
+
+export const NETWORK_AREA_DIAGRAM_DETAILS_TYPE = 'network-area-diagram-details' as const;
+type NetworkAreaDiagramDto = Omit<
+    NetworkAreaDiagramParams,
+    'nadConfigUuid' | 'initializationNadConfigUuid' | 'voltageLevelToExpandIds' | 'voltageLevelToOmitIds'
+> & {
+    originalNadConfigUuid?: UUID;
+    currentNadConfigUuid?: UUID;
+};
+
+export type DiagramParamsDto = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramDto;

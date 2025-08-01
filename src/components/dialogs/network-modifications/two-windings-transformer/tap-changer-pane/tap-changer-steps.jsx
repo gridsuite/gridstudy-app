@@ -25,7 +25,7 @@ import {
 import PropTypes from 'prop-types';
 import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { transformIfFrenchNumber } from '../../tabular-creation/tabular-creation-utils.js';
+import { transformIfFrenchNumber } from '../../tabular/tabular-common.js';
 
 const TapChangerSteps = ({
     tapChanger,

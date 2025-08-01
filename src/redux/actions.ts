@@ -35,6 +35,7 @@ import type {
     SpreadsheetFilterState,
     TableSortKeysType,
     ComputingStatusParameters,
+    DiagramGridLayoutConfig,
 } from './reducer';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
@@ -74,7 +75,7 @@ export type AppActions =
     | DeleteEquipmentsAction
     | ResetEquipmentsAction
     | ResetEquipmentsByTypesAction
-    | ResetEquipmentsPostLoadflowAction
+    | ResetEquipmentsPostComputationAction
     | MapEquipmentsCreatedAction
     | LoadNetworkModificationTreeSuccessAction
     | NetworkModificationTreeNodeAddedAction
@@ -278,12 +279,12 @@ export function resetEquipmentsByTypes(equipmentTypes: SpreadsheetEquipmentType[
     };
 }
 
-export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
-export type ResetEquipmentsPostLoadflowAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_LOADFLOW>>;
+export const RESET_EQUIPMENTS_POST_COMPUTATION = 'RESET_EQUIPMENTS_POST_COMPUTATION';
+export type ResetEquipmentsPostComputationAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_COMPUTATION>>;
 
-export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction {
+export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputationAction {
     return {
-        type: RESET_EQUIPMENTS_POST_LOADFLOW,
+        type: RESET_EQUIPMENTS_POST_COMPUTATION,
     };
 }
 
@@ -1275,5 +1276,17 @@ export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT
 export function resetDiagramEvent(): ResetDiagramEventAction {
     return {
         type: RESET_DIAGRAM_EVENT,
+    };
+}
+
+export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
+export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
+    diagramGridLayout: DiagramGridLayoutConfig;
+};
+
+export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
+    return {
+        type: SET_DIAGRAM_GRID_LAYOUT,
+        diagramGridLayout: diagramGridLayout,
     };
 }

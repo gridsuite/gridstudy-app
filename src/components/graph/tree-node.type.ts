@@ -30,6 +30,10 @@ export type AbstractNode = {
     columnPosition?: number;
 };
 
+export type NetworkModificationNodeInfos = {
+    id: UUID;
+    nodeType?: NetworkModificationNodeType;
+};
 export type StashedNodeProperties = {
     first: AbstractNode;
     second: number; // children size

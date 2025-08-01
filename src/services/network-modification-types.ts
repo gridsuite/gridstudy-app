@@ -521,8 +521,6 @@ export interface LineCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    permanentCurrentLimit1: number;
-    permanentCurrentLimit2: number;
     limitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
@@ -845,5 +843,6 @@ export type BalancesAdjustmentInfos = {
     withLoadFlow: boolean;
     loadFlowParametersId: string | null;
     withRatioTapChangers: boolean;
+    subtractLoadFlowBalancing: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };
