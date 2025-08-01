@@ -42,6 +42,13 @@ const styles = {
 
 const RootNode = (props: NodeProps<RootNodeType>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+
+    const currentRootNetwork = rootNetworks.find(
+        (rootNetwork) => rootNetwork.rootNetworkUuid === currentRootNetworkUuid
+    );
+
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
     };
@@ -57,7 +64,7 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
                 }}
                 isConnectable={false}
             />
-            <Tooltip title={props.data.caseName} placement="top" disableHoverListener={!props.data.caseName}>
+            <Tooltip title={currentRootNetwork?.name} placement="top" disableHoverListener={!currentRootNetwork?.name}>
                 <IconButton sx={isSelectedNode() ? styles.rootSelected : styles.root}>
                     {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (
                         <PhotoIcon />
