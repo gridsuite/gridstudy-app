@@ -609,7 +609,7 @@
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
     "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
-    "LimitSetNamingError": "Pas plus de 2 limit sets ne peuvent avoir le même nom.",
+    "LimitSetNamingError": "Deux jeux de limites ne peuvent pas avoir le même nom et s'appliquer d'un même côté.",
     "LimitSetApplicabilityError": "2 limit sets de même nom doivent s'appliquer sur des côtés différents.",
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
     "LimitSets": "Jeux de limites",

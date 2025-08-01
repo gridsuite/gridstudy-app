@@ -16,7 +16,7 @@ export interface GridSectionProps {
     customStyle?: SxProps<Theme>;
     tooltipEnabled?: boolean;
     tooltipMessage?: string;
-    formatDisabled?: boolean;
+    isLiteralText?: boolean;
 }
 export default function GridSection({
     title,
@@ -25,7 +25,7 @@ export default function GridSection({
     customStyle,
     tooltipEnabled = false,
     tooltipMessage,
-    formatDisabled,
+    isLiteralText,
 }: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
@@ -39,7 +39,7 @@ export default function GridSection({
                     })}
                     component={`h${heading}`}
                 >
-                    {formatDisabled ? title : <FormattedMessage id={title} />}
+                    {isLiteralText ? title : <FormattedMessage id={title} />}
                     {tooltipEnabled && (
                         <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
                             <InfoOutlined color="info" fontSize="medium" />

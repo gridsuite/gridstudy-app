@@ -612,7 +612,7 @@
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
     "LccCreationError": "Error while creating HVDC (LCC)",
-    "LimitSetNamingError": "No more than 2 Limit sets may have the same name",
+    "LimitSetNamingError": "Two limits sets can't have the same name and be applicable on a same side.",
     "LimitSetApplicabilityError": "2 limit sets with the same name must have different application sides.",
     "LimitSetCreationEmptyError": "Limit sets names can't be empty",
     "LimitSets": "Limit sets",
