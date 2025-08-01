@@ -247,3 +247,18 @@ export function createDiagramConfig(
         headers: { 'Content-Type': 'application/json' },
     });
 }
+
+export function updateDiagramConfig(id: UUID, diagramConfig: DiagramConfig, name: string, description: string) {
+    console.info('Updating diagram config ' + name);
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+
+    const createDiagramConfigUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/diagram-config/' + id + '?' + urlSearchParams.toString();
+    return backendFetch(createDiagramConfigUrl, {
+        method: 'put',
+        body: JSON.stringify(diagramConfig),
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
