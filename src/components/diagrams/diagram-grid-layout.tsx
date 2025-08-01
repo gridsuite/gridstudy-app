@@ -62,7 +62,7 @@ interface DiagramGridLayoutProps {
     visible: boolean;
 }
 
-const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) => {
+const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID | string) => {
     return entries.map(([breakpoint, breakpoint_layouts]) => {
         const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
         return [breakpoint, updatedLayouts];
@@ -73,7 +73,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
-    const [isMapCardAdded, setIsMapCardAdded] = useState(false);
+
+    const isMapCardAdded = () => {
+        return Object.values(layouts).some((breakpointLayouts) =>
+            breakpointLayouts.some((layout) => layout.i === 'MapCard')
+        );
+    };
 
     const addLayoutItem = useCallback((diagram: Diagram) => {
         setLayouts((old_layouts) => {
@@ -94,7 +99,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     }, []);
 
-    const removeLayoutItem = (cardUuid: UUID) => {
+    const removeLayoutItem = (cardUuid: UUID | string) => {
         setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
     };
 
@@ -193,15 +198,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 return [breakpoint, updatedLayouts];
             });
             setLayouts(Object.fromEntries(newLayoutsEntries));
-            // Check if MapCard is already in the saved layouts
-            if (
-                savedLayoutsEntries.some(([_breakpoint, breakpoint_layouts]) =>
-                    breakpoint_layouts.some((layout) => layout.i === 'MapCard')
-                )
-            ) {
-                // then set this flag to true to render the Map card
-                setIsMapCardAdded(true);
-            }
         } else {
             setLayouts(initialLayouts);
         }
@@ -224,7 +220,10 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             });
             return Object.fromEntries(newLayoutsEntries);
         });
-        setIsMapCardAdded(true);
+    }, []);
+
+    const handleRemoveMapCard = useCallback(() => {
+        removeLayoutItem('MapCard');
     }, []);
 
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
@@ -269,7 +268,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 key={'Adder'}
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
-                onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                onMap={!isMapCardAdded() ? onAddMapCard : undefined}
                 onLayoutSave={debouncedGridLayoutSave}
             />
             {Object.values(diagrams).map((diagram) => {
@@ -291,11 +290,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     />
                 );
             })}
-            {isMapCardAdded && (
+            {isMapCardAdded() && (
                 <MapCard
                     key={'MapCard'}
                     studyUuid={studyUuid}
-                    onClose={() => setIsMapCardAdded(false)}
+                    onClose={handleRemoveMapCard}
                     errorMessage={globalError}
                     showInSpreadsheet={showInSpreadsheet}
                 />
