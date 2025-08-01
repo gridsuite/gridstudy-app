@@ -25,15 +25,15 @@ export const SelectedOperationalLimitGroup = ({
         name: optionsFormName,
     });
 
-    const opLimitsGroupsNames: string[] = useMemo(
-        () =>
-            optionsValues
-                ? optionsValues
-                      .map((optionObj: OperationalLimitsGroup) => optionObj.name)
-                      .filter((id: string) => id != null)
-                : [],
-        [optionsValues]
-    );
+    const opLimitsGroupsNames: string[] = useMemo(() => {
+        const listWithDuplicates: string[] = optionsValues
+            ? optionsValues
+                  .map((optionObj: OperationalLimitsGroup) => optionObj.name)
+                  .filter((id: string) => id != null)
+            : [];
+        const listWithoutDuplicates: Set<string> = new Set(listWithDuplicates);
+        return [...listWithoutDuplicates];
+    }, [optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
