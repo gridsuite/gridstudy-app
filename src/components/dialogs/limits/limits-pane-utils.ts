@@ -295,10 +295,10 @@ export const addModificationTypeToOpLimitsGroups = (
     editData: LineModificationEditData | null | undefined,
     currentNode: CurrentTreeNode
 ) => {
-    const modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
+    let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
 
     // calls this on all the limits groups :
-    modificationLimitsGroups.map((limitsGroup: OperationalLimitsGroup) => {
+    modificationLimitsGroups = modificationLimitsGroups.map((limitsGroup: OperationalLimitsGroup) => {
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(limitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
             lineToModify?.currentLimits.find(
@@ -309,15 +309,16 @@ export const addModificationTypeToOpLimitsGroups = (
             )?.currentLimits?.temporaryLimits ?? [],
             currentNode
         );
-        let currentLimits = null;
+        let currentLimits = limitsGroup.currentLimits;
         if (limitsGroup.currentLimits?.[PERMANENT_LIMIT] || temporaryLimits.length > 0) {
-            currentLimits = {
-                permanentLimit: limitsGroup.currentLimits?.[PERMANENT_LIMIT],
-                temporaryLimits: temporaryLimits,
-            };
+            currentLimits.permanentLimit = limitsGroup.currentLimits?.[PERMANENT_LIMIT];
+            currentLimits.temporaryLimits = temporaryLimits;
         }
 
         return {
+            id: limitsGroup.id,
+            name: limitsGroup.name,
+            applicability: limitsGroup.applicability,
             currentLimits: currentLimits,
         };
     });

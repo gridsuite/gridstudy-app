@@ -53,26 +53,24 @@ const LineModificationDialogHeader = ({
     );
 
     return (
-        <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '15px',
-                }}
-            >
-                <Grid container spacing={2}>
-                    <GridItem size={4}>{lineIdField}</GridItem>
-                    <GridItem size={4}>{lineNameField}</GridItem>
-                </Grid>
-                <LineDialogTabs
-                    tabIndex={tabIndex}
-                    tabIndexesWithError={tabIndexesWithError}
-                    setTabIndex={setTabIndex}
-                    isModification={true}
-                />
-            </Box>
-        </>
+        <Box
+            sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '15px',
+            }}
+        >
+            <Grid container spacing={2}>
+                <GridItem size={4}>{lineIdField}</GridItem>
+                <GridItem size={4}>{lineNameField}</GridItem>
+            </Grid>
+            <LineDialogTabs
+                tabIndex={tabIndex}
+                tabIndexesWithError={tabIndexesWithError}
+                setTabIndex={setTabIndex}
+                isModification={true}
+            />
+        </Box>
     );
 };
 

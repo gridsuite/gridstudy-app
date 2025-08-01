@@ -10,7 +10,7 @@ import { filledTextField } from '../dialog-utils';
 import { UUID } from 'crypto';
 import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { EquipmentType, ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
+import { ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
@@ -34,7 +34,7 @@ const styles = {
 interface EquipmentIdSelectorProps {
     defaultValue: string | null;
     setSelectedId: (value: string) => void;
-    equipmentType: EQUIPMENT_TYPES | EquipmentType | ExtendedEquipmentType;
+    equipmentType: EQUIPMENT_TYPES | ExtendedEquipmentType;
     readOnly?: boolean;
     fillerHeight?: number;
     fillerMessageId?: string;
