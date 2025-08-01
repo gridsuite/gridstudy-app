@@ -101,6 +101,22 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         [diagram, updateDiagram]
     );
 
+    const handleAddVoltageLevel = useCallback(
+        (voltageLevelIdToAdd: string) => {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                if (diagram.voltageLevelIds.includes(voltageLevelIdToAdd)) {
+                    return;
+                }
+                updateDiagram({
+                    ...diagram,
+                    voltageLevelIds: [...diagram.voltageLevelIds, voltageLevelIdToAdd],
+                    voltageLevelToOmitIds: diagram.voltageLevelToOmitIds.filter((id) => id !== voltageLevelIdToAdd),
+                });
+            }
+        },
+        [diagram, updateDiagram]
+    );
+
     const handleMoveNode = useCallback(
         (vlId: string, x: number, y: number) => {
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -186,6 +202,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             onToggleEditNadMode={(isEditMode) => setDiagramsInEditMode(isEditMode)}
                             onLoadNad={onLoad}
                             onExpandVoltageLevel={handleExpandVoltageLevelId}
+                            onAddVoltageLevel={handleAddVoltageLevel}
                             onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                             onHideVoltageLevel={handleHideVoltageLevelId}
                             onMoveNode={handleMoveNode}
