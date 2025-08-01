@@ -13,34 +13,35 @@ import { OperationalLimitsGroup } from '../../../services/network-modification-t
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
     optionsFormName: string;
+    label?: string;
 }
 
 export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,
+    label,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
     });
 
-    const opLimitsGroupsNames: string[] = useMemo(
-        () =>
-            optionsValues
-                ? optionsValues
-                      .map((optionObj: OperationalLimitsGroup) => optionObj.id)
-                      .filter((id: string) => id != null)
-                : [],
-        [optionsValues]
-    );
+    const opLimitsGroupsNames: string[] = useMemo(() => {
+        const listWithDuplicates: string[] = optionsValues
+            ? optionsValues
+                  .map((optionObj: OperationalLimitsGroup) => optionObj.name)
+                  .filter((id: string) => id != null)
+            : [];
+        const listWithoutDuplicates: Set<string> = new Set(listWithDuplicates);
+        return [...listWithoutDuplicates];
+    }, [optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
             <AutocompleteInput
                 name={selectedFormName}
                 options={opLimitsGroupsNames}
-                label={'SelectedOperationalLimitGroup'}
+                label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
-                allowNewValue
             />
         </Box>
     );

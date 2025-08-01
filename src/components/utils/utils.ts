@@ -16,7 +16,7 @@ import {
 } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
-import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
+import { APPLICABIlITY, CURRENT_LIMITS, ID, NAME, SELECTED } from './field-constants';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -134,7 +134,9 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]
         completeLimitsGroups.forEach((elt) => {
             if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
-                    [ID]: elt.id,
+                    [ID]: elt.id + elt.applicability,
+                    [NAME]: elt.id,
+                    [APPLICABIlITY]: elt.applicability,
                     [CURRENT_LIMITS]: {
                         permanentLimit: elt.permanentLimit,
                         temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
