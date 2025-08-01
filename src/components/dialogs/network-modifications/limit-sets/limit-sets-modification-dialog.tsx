@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AMOUNT_TEMPORARY_LIMITS, MODIFICATIONS_TABLE, SIDE, TYPE } from '../../../utils/field-constants';
+import { AMOUNT_TEMPORARY_LIMITS, CSV_FILENAME, MODIFICATIONS_TABLE, SIDE, TYPE } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -106,7 +106,8 @@ export function LimitSetsModificationDialog({
                 modificationType,
                 modifications,
                 editData?.uuid,
-                ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
+                ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
+                formData[CSV_FILENAME]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
