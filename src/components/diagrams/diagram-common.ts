@@ -87,14 +87,21 @@ export const styles = {
         },
     },
     divDiagramInvalid: {
-        '& .sld-active-power, & .sld-reactive-power, & .sld-voltage, & .sld-angle': {
+        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon': {
             opacity: INVALID_LOADFLOW_OPACITY,
         },
+        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
+            {
+                fill: '#787F81',
+            },
         '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
             animation: 'none !important',
         },
         '& .nad-active': {
             fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
+        },
+        '& .nad-bus-descr': {
+            color: '#787F81',
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, & .nad-vl-nodes .nad-overvoltage, & .nad-vl-nodes .nad-undervoltage':
             {
@@ -217,3 +224,9 @@ export const NoSvg: Svg = {
     error: undefined,
     svgUrl: undefined,
 };
+
+export const equipmentsWithPopover = [
+    FEEDER_TYPES.LINE,
+    FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER,
+    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
+];

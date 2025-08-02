@@ -140,6 +140,10 @@ export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
 export const REGULATION_SIDE = 'regulationSide';
 
+// Tabular modifications twt ratio tap changer values
+export const RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES = 'ratioTapChangerLoadTapChangingCapabilities';
+export const RATIO_TAP_CHANGER_REGULATION_SIDE = 'ratioTapChangerRegulationSide';
+
 //tap-changer-pane-taps
 export const STEPS = 'steps';
 export const STEPS_TAP = 'index';
