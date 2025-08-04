@@ -14,7 +14,7 @@ import ColumnCreationButton from './column-creation-button';
 import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
-import { FilteredRowCounter } from './filtered-row-counter';
+import { FilteredRowCounter } from './row-counter/filtered-row-counter';
 
 const styles = {
     toolbar: (theme: Theme) => ({

@@ -1516,5 +1516,10 @@
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
     "NoMatch": "No match",
-    "Rows": "row"
+    "Rows": "row",
+    "ExternalFilters": "External filters",
+    "ColumnsFilters": "Columns filters",
+    "genericFilter": "Generic",
+    "voltageLevel": "Voltage level",
+    "ClickToReset": "Click to reset filters"
 }

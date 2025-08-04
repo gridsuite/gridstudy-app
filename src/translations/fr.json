@@ -1511,5 +1511,10 @@
     "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
     "NoMatch": "Pas de correspondance",
-    "Rows": "ligne"
+    "Rows": "ligne",
+    "ExternalFilters": "Filtres externes",
+    "ColumnsFilters": "Filtres de colonnes",
+    "genericFilter": "Générique",
+    "voltageLevel": "Niveaux de tension",
+    "ClickToReset": "Cliquez pour réinitialiser les filtres"
 }
