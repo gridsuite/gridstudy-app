@@ -127,6 +127,14 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         name: AMOUNT_TEMPORARY_LIMITS,
     });
 
+    const equipmentType = useWatch({
+        name: TYPE,
+    });
+
+    const watchTable = useWatch({
+        name: MODIFICATIONS_TABLE,
+    });
+
     const computeRepeatableColumns = useCallback(() => {
         const columns: TabularField[] = [];
         trigger(AMOUNT_TEMPORARY_LIMITS).then((valid) => {
@@ -172,7 +180,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'ImportModifications',
         header: csvColumns.map((column) => column.id),
-        disabled: !csvColumns,
+        disabled: !csvColumns || !equipmentType,
         resetTrigger: typeChangedTrigger,
         language: language,
     });
@@ -183,10 +191,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         setValue(MODIFICATIONS_TABLE, []);
     }, [clearErrors, setValue, typeChangedTrigger]);
 
-    const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
-    });
-
     useEffect(() => {
         computeRepeatableColumns();
     }, [computeRepeatableColumns]);
@@ -196,7 +200,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [dataFetching]);
 
     const typesOptions = useMemo(() => {
-        //only available types for tabular modification
         return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
             (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );
