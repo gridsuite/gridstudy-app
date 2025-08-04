@@ -8,30 +8,14 @@
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { useEffect, useMemo, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { IntlShape, useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { FilterConfig } from '../../../../../types/custom-aggrid-types';
 
-const getFilterValueFormattedLabel = (filterModel: FilterConfig) => {
-    if (filterModel.dataType === 'number') {
-        let symbol = '';
-        if (filterModel.type === 'greaterThan') {
-            symbol = '>';
-        } else if (filterModel.type === 'lessThan') {
-            symbol = '<';
-        } else if (filterModel.type === 'lessThanOrEqual') {
-            symbol = '≤';
-        } else if (filterModel.type === 'greaterThanOrEqual') {
-            symbol = '≥';
-        } else if (filterModel.type === 'notEqual') {
-            symbol = '≠';
-        }
-        return `${symbol}${filterModel.value}`;
-    } else {
-        return filterModel.value;
-    }
+const getFilterValueFormattedLabel = (intl: IntlShape, filterModel: FilterConfig) => {
+    return `${intl.formatMessage({ id: 'filter.' + filterModel.type })} "${filterModel.value}"`;
 };
 
 type UseFilteredRowCounterInfoParams = {
@@ -130,7 +114,7 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition }: UseFilte
                 const headerName =
                     gridRef.current?.api.getColumn(filterModel.column)?.getColDef()?.headerName ?? filterModel.column;
                 console.log(filterModel);
-                lines.push(`- ${headerName} : "${getFilterValueFormattedLabel(filterModel)}"`.replace(',', ', '));
+                lines.push(`- ${headerName} : ${getFilterValueFormattedLabel(intl, filterModel)}`.replace(',', ', '));
             });
         }
         return lines.join('\n');
