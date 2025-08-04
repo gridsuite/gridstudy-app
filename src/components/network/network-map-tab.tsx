@@ -8,12 +8,15 @@
 import type { Writable } from 'type-fest';
 import {
     type Coordinate,
+    DRAW_EVENT,
     DRAW_MODES,
+    EQUIPMENT_TYPES as NV_EQUIPMENT_TYPES,
     GeoData,
     type GeoDataEquipment,
     type GeoDataLine,
     type GeoDataSubstation,
     LineFlowMode,
+    MapAnyLineWithType,
     type MapHvdcLine,
     type MapLine,
     type MapSubstation,
@@ -23,16 +26,13 @@ import {
     type NetworkMapProps,
     type NetworkMapRef,
 } from '@powsybl/network-viewer';
-import { type FunctionComponent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import withOperatingStatusMenu, { MenuBranchProps } from '../menus/operating-status-menu';
-import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
-import withEquipmentMenu from '../menus/equipment-menu';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import {
-    type Equipment,
     EquipmentType,
     useNotificationsListener,
     useSnackMessage,
@@ -41,15 +41,17 @@ import {
     ComputingType,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import {
+    openDiagram,
+    resetMapEquipment,
+    setMapDataLoading,
+    setReloadMapNeeded,
+    setStudyDisplayMode,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
-import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import LineModificationDialog from '../dialogs/network-modifications/line/modification/line-modification-dialog';
 import { deleteEquipment } from '../../services/study/network-modifications';
-import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
@@ -65,6 +67,11 @@ import { FormattedMessage } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
+import GuidancePopup from './guidance-popup';
+import { StudyDisplayMode } from 'components/network-modification.type';
+import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
+import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
+import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -113,7 +120,6 @@ const styles = {
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 
 type NetworkMapTabProps = {
-    networkMapRef: RefObject<NetworkMapRef>;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -123,15 +129,11 @@ type NetworkMapTabProps = {
     lineFlowMode: LineFlowMode;
     openVoltageLevel: (idVoltageLevel: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
-    onDrawPolygonModeActive: (active: DRAW_MODES) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
-    onDrawEvent: (drawEvent: number) => void;
-    isInDrawingMode: boolean;
-    onNominalVoltagesChange: (nominalVoltages: number[]) => void;
+    onElementCreated?: () => void;
 };
 
 export const NetworkMapTab = ({
-    networkMapRef,
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -144,12 +146,11 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     showInSpreadsheet,
-    onDrawPolygonModeActive,
     onPolygonChanged,
-    onDrawEvent,
-    isInDrawingMode,
-    onNominalVoltagesChange,
+    onElementCreated,
 }: NetworkMapTabProps) => {
+    const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
+
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
@@ -161,7 +162,6 @@ export const NetworkMapTab = ({
     const isNetworkModificationTreeUpToDate = useSelector(
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
     );
-
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
@@ -203,15 +203,7 @@ export const NetworkMapTab = ({
     const isMapEquipmentsInitialized = useSelector((state: AppState) => state.isMapEquipmentsInitialized);
     const refIsMapManualRefreshEnabled = useRef<boolean>();
     refIsMapManualRefreshEnabled.current = networkVisuParams.mapParameters.mapManualRefresh;
-
-    type EquipmentMenuProps = {
-        position?: [number, number] | null;
-        equipment?: BaseEquipment;
-        equipmentType?: EquipmentType;
-        display: boolean;
-    };
-
-    const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuProps>();
+    const [firstRendering, setFirstRendering] = useState<boolean>(true);
 
     const [choiceVoltageLevelsSubstationId, setChoiceVoltageLevelsSubstationId] = useState<string | null>(null);
 
@@ -222,152 +214,108 @@ export const NetworkMapTab = ({
     const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
-    const [equipmentToModify, setEquipmentToModify] = useState<Equipment | null>();
-    const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
-    const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
 
-    const closeModificationDialog = () => {
-        setEquipmentToModify(null);
-        setModificationDialogOpen(false);
-        setDeletionDialogOpen(false);
-    };
+    const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
+    const [isInDrawingMode, setIsInDrawingMode] = useState(false);
+    const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
+    const previousStudyDisplayMode = useRef<StudyDisplayMode | undefined>();
+    const [nominalVoltages, setNominalVoltages] = useState<number[]>([]);
 
-    function renderModificationDialog() {
-        switch (equipmentToModify?.type) {
-            case EquipmentType.SUBSTATION:
-                return (
-                    <SubstationModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        isUpdate={true}
-                        defaultIdValue={equipmentToModify?.id}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
-            case EquipmentType.VOLTAGE_LEVEL:
-                return (
-                    <VoltageLevelModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        isUpdate={true}
-                        defaultIdValue={equipmentToModify?.id}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
+    const onDrawEvent = useCallback((event: DRAW_EVENT) => {
+        switch (event) {
+            case DRAW_EVENT.DELETE:
+                setShouldOpenSelectionCreationPanel(false);
+                break;
+            case DRAW_EVENT.CREATE:
+                setShouldOpenSelectionCreationPanel(true);
+                break;
+            case DRAW_EVENT.UPDATE:
+                break;
+            default:
+                break;
+        }
+    }, []);
+
+    const getEquipments = (equipmentType: EquipmentType) => {
+        if (!networkMapRef.current) {
+            return [];
+        }
+        switch (equipmentType) {
             case EquipmentType.LINE:
-                return (
-                    <LineModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        defaultIdValue={equipmentToModify?.id}
-                        isUpdate={true}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
-            default:
-                break;
-        }
-    }
-
-    function renderDeletionDialog() {
-        switch (equipmentToModify?.type) {
+                return (networkMapRef.current.getSelectedLines() as MapAnyLineWithType[])
+                    .filter((line) => line.equipmentType === NV_EQUIPMENT_TYPES.LINE)
+                    .map((line) => ({
+                        ...line,
+                        type: EquipmentType.LINE,
+                    }));
+            case EquipmentType.TIE_LINE:
+                return (networkMapRef.current.getSelectedLines() as MapAnyLineWithType[])
+                    .filter((line) => line.equipmentType === NV_EQUIPMENT_TYPES.TIE_LINE)
+                    .map((tieLine) => ({
+                        ...tieLine,
+                        type: EquipmentType.TIE_LINE,
+                    }));
             case EquipmentType.HVDC_LINE:
-                return (
-                    <EquipmentDeletionDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        defaultIdValue={equipmentToModify?.id}
-                        isUpdate={true}
-                        onClose={() => closeModificationDialog()}
-                        editData={null}
-                        editDataFetchStatus={null}
-                    />
-                );
-            default:
-                break;
+                return (networkMapRef.current.getSelectedLines() as MapAnyLineWithType[])
+                    .filter((line) => line.equipmentType === NV_EQUIPMENT_TYPES.HVDC_LINE)
+                    .map((hvdcLine) => ({
+                        ...hvdcLine,
+                        type: EquipmentType.HVDC_LINE,
+                    }));
+            default: // return Substations for all other inputs EquipmentTypes
+                return networkMapRef.current.getSelectedSubstations().map((substation) => ({
+                    ...substation,
+                    type: EquipmentType.SUBSTATION,
+                }));
         }
-    }
-
-    const handleOpenModificationDialog = useCallback((id: string, type: EquipmentType | null) => {
-        if (type) {
-            setEquipmentToModify({ id, type });
-            setModificationDialogOpen(true);
-            closeEquipmentMenu();
-        }
-    }, []);
-
-    const handleOpenDeletionDialog = useCallback((id: string, type: EquipmentType) => {
-        setEquipmentToModify({ id, type });
-        setDeletionDialogOpen(true);
-        closeEquipmentMenu();
-    }, []);
-
-    type MenuProps = {
-        currentNode: CurrentTreeNode;
-        currentRootNetworkUuid: UUID;
-        studyUuid: UUID;
-        equipmentType: EquipmentType;
     };
 
-    function withEquipment(Menu: FunctionComponent<MenuBranchProps>, props: MenuProps | null) {
-        return (
-            equipmentMenu?.equipment &&
-            equipmentMenu.position &&
-            equipmentMenu?.equipmentType && (
-                <Menu
-                    equipment={equipmentMenu?.equipment}
-                    equipmentType={equipmentMenu?.equipmentType}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenModificationDialog={handleOpenModificationDialog}
-                    {...props}
-                />
-            )
-        );
-    }
+    // When the user enter the drawing mode, we need to switch the study display mode to map
+    // and save the previous mode, so we can restore it when the user cancel the drawing
+    useEffect(() => {
+        const all = networkMapRef.current?.getMapDrawer()?.getAll();
+        if (all === undefined) {
+            return;
+        } // map is not initialized yet
 
-    const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
+        const features = all?.features?.[0];
+        const coordinates = features?.geometry?.coordinates;
+        const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
-    const MenuSubstation = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, 'substation-menus');
+        // first click on draw button, the polygon is not drawn yet, and the user want to draw
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
+            if (!isInDrawingMode) {
+                // save the previous display mode, so we can restore it when the user cancel the drawing
+                if (!previousStudyDisplayMode.current) {
+                    previousStudyDisplayMode.current = studyDisplayMode;
+                }
+                setIsInDrawingMode(true);
+                //go to map full screen mode
+                dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
+            }
+        }
+        // the user has a polygon, and want to draw another
+        else if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
+            if (networkMapRef.current?.getMapDrawer()?.getAll().features?.length > 1) {
+                setShouldOpenSelectionCreationPanel(false);
+                const idFirstPolygon = networkMapRef.current?.getMapDrawer().getAll().features[0].id;
+                networkMapRef.current?.getMapDrawer().delete(String(idFirstPolygon));
+            }
+        }
+    }, [dispatch, drawingMode, studyDisplayMode, isInDrawingMode, networkMapRef]);
 
-    const MenuVoltageLevel = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus');
-
-    function showEquipmentMenu(equipment: BaseEquipment, x: number, y: number, type: EquipmentType) {
-        setEquipmentMenu({
-            position: [x, y],
-            equipment: equipment,
-            equipmentType: type,
-            display: true,
-        });
-    }
-
-    function closeEquipmentMenu() {
-        setEquipmentMenu({ display: false });
-    }
-
-    function handleViewInSpreadsheet(equipmentType: EquipmentType, equipmentId: string) {
-        showInSpreadsheet({
-            equipmentType: equipmentType,
-            equipmentId: equipmentId,
-        });
-        closeEquipmentMenu();
-    }
+    const {
+        handleOpenModificationDialog,
+        handleOpenDeletionDialog,
+        handleOpenDynamicSimulationEventDialog,
+        renderDeletionDialog,
+        renderModificationDialog,
+        renderDynamicSimulationEventDialog,
+    } = useEquipmentDialogs({
+        studyUuid: studyUuid,
+        currentNode: currentNode,
+        currentRootNetworkUuid: currentRootNetworkUuid,
+    });
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
@@ -376,7 +324,7 @@ export const NetworkMapTab = ({
                 mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
             ) {
                 // only hvdc line with LCC requires a Dialog (to select MCS)
-                handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
+                handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
             } else {
                 deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
                     snackError({
@@ -384,7 +332,6 @@ export const NetworkMapTab = ({
                         headerId: 'UnableToDeleteEquipment',
                     });
                 });
-                closeEquipmentMenu();
             }
         },
         [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, mapEquipments?.hvdcLinesById]
@@ -395,14 +342,30 @@ export const NetworkMapTab = ({
     }
 
     function choiceVoltageLevel(voltageLevelId: string) {
-        openVoltageLevel(voltageLevelId);
+        handleOpenVoltageLevel(voltageLevelId);
         closeChoiceVoltageLevelMenu();
     }
+
+    const { openEquipmentMenu, renderEquipmentMenu } = useEquipmentMenu({
+        currentNode,
+        currentRootNetworkUuid,
+        studyUuid,
+        disabled,
+        onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
+            showInSpreadsheet({
+                equipmentType: equipmentType,
+                equipmentId: equipmentId,
+            });
+        },
+        onDeleteEquipment: handleDeleteEquipment,
+        onOpenModificationDialog: handleOpenModificationDialog,
+        onOpenDynamicSimulationEventDialog: handleOpenDynamicSimulationEventDialog,
+    });
 
     const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
-            showEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
+            openEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
         }
     };
 
@@ -613,13 +576,10 @@ export const NetworkMapTab = ({
         updateSubstationsTemporaryGeoData,
         updateLinesTemporaryGeoData,
     ]);
-    const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>(
-        (newValues) => {
-            setFilteredNominalVoltages(newValues);
-            onNominalVoltagesChange(newValues);
-        },
-        [onNominalVoltagesChange]
-    );
+    const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>((newValues) => {
+        setFilteredNominalVoltages(newValues);
+        setNominalVoltages(newValues);
+    }, []);
     // loads all root node geo-data then saves them in redux
     // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
     const loadRootNodeGeoData = useCallback(() => {
@@ -849,21 +809,18 @@ export const NetworkMapTab = ({
             const eventData: unknown = JSON.parse(event.data);
             if (isLoadflowResultNotification(eventData)) {
                 const rootNetworkUuidFromNotification = eventData.headers.rootNetworkUuid;
-                if (rootNetworkUuidFromNotification === currentRootNetworkUuid) {
-                    dispatch(setMapDataLoading(true));
-                    reloadMapEquipments(currentNodeRef.current, undefined)
-                        .catch((e) =>
-                            snackError({
-                                messageTxt: e.message,
-                            })
-                        )
-                        .finally(() => {
-                            dispatch(setMapDataLoading(false));
-                        });
+                const nodeUuidFromNotification = eventData.headers.node;
+                if (
+                    rootNetworkUuidFromNotification === currentRootNetworkUuid &&
+                    nodeUuidFromNotification === currentNode?.id
+                ) {
+                    // The following line will proc a map update in auto mode
+                    // or show the button to refresh the map in manual mode
+                    dispatch(setReloadMapNeeded(true));
                 }
             }
         },
-        [currentRootNetworkUuid, dispatch, isInitialized, reloadMapEquipments, snackError]
+        [currentRootNetworkUuid, currentNode?.id, dispatch, isInitialized]
     );
 
     const rootNetworkModifiedNotification = useCallback(
@@ -940,9 +897,10 @@ export const NetworkMapTab = ({
         if (!reloadMapNeeded) {
             return;
         }
-        if (refIsMapManualRefreshEnabled.current) {
+        if (refIsMapManualRefreshEnabled.current && !firstRendering) {
             return; // everything will be done when clicking on the refresh button
         }
+        setFirstRendering(false);
         if (!isMapEquipmentsInitialized) {
             // load default node map equipments
             loadMapEquipments();
@@ -969,9 +927,9 @@ export const NetworkMapTab = ({
         isNetworkModificationTreeUpToDate,
         isRootNodeGeoDataLoaded,
         isMapEquipmentsInitialized,
-        isInitialized,
         reloadMapNeeded,
         freezeMapUpdates,
+        firstRendering,
     ]);
 
     useEffect(() => {
@@ -1013,7 +971,7 @@ export const NetworkMapTab = ({
         ? mapEquipments?.getSubstation(choiceVoltageLevelsSubstationId)
         : null;
 
-    const displayEquipmentMenu = (
+    const showEquipmentMenu = (
         equipment: BaseEquipment,
         x: number,
         y: number,
@@ -1022,27 +980,8 @@ export const NetworkMapTab = ({
     ) => {
         // don't display the equipment menu in drawing mode.
         if (!isInDrawingMode) {
-            showEquipmentMenu(equipment, x, y, equipmentType);
+            openEquipmentMenu(equipment, x, y, equipmentType);
         }
-    };
-    const renderEquipmentMenu = () => {
-        if (disabled || equipmentMenu?.equipment === null || !equipmentMenu?.display) {
-            return <></>;
-        }
-        return (
-            <>
-                {(equipmentMenu.equipmentType === EquipmentType.LINE ||
-                    equipmentMenu.equipmentType === EquipmentType.HVDC_LINE) &&
-                    withEquipment(MenuBranch, {
-                        currentNode,
-                        currentRootNetworkUuid,
-                        studyUuid,
-                        equipmentType: equipmentMenu.equipmentType,
-                    })}
-                {equipmentMenu.equipmentType === EquipmentType.SUBSTATION && withEquipment(MenuSubstation, null)}
-                {equipmentMenu.equipmentType === EquipmentType.VOLTAGE_LEVEL && withEquipment(MenuVoltageLevel, null)}
-            </>
-        );
     };
 
     function renderVoltageLevelChoice() {
@@ -1092,91 +1031,176 @@ export const NetworkMapTab = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
+    const onDrawingModeEnter = useCallback((active: DRAW_MODES) => {
+        setDrawingMode(active);
+    }, []);
+
+    const leaveDrawingMode = useCallback(() => {
+        // clear the user drawing and go back to simple select.
+        networkMapRef.current?.getMapDrawer()?.trash();
+        setDrawingMode(DRAW_MODES.SIMPLE_SELECT);
+        // leave drawing mode and go back to the previous study display mode and close the creation panel if it's open
+        if (previousStudyDisplayMode.current !== undefined) {
+            dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
+        }
+        setIsInDrawingMode(false);
+        previousStudyDisplayMode.current = undefined;
+        if (shouldOpenSelectionCreationPanel) {
+            setShouldOpenSelectionCreationPanel(false);
+        }
+    }, [dispatch, shouldOpenSelectionCreationPanel]);
+
+    const handleElementCreated = useCallback(() => {
+        onElementCreated?.();
+        leaveDrawingMode();
+    }, [leaveDrawingMode, onElementCreated]);
+
+    const handleOpenVoltageLevel = useCallback(
+        (vlId: string) => {
+            // don't open the sld if the drawing mode is activated
+            if (!isInDrawingMode) {
+                openVoltageLevel(vlId);
+            }
+        },
+        [isInDrawingMode, openVoltageLevel]
+    );
+
     const renderMap = () => (
-        <NetworkMap
-            ref={networkMapRef}
-            mapEquipments={mapEquipments}
-            geoData={geoData}
-            updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
-            displayOverlayLoader={!basicDataReady && mapDataLoading}
-            filteredNominalVoltages={filteredNominalVoltages}
-            labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
-            arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-            initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
-            initialZoom={INITIAL_ZOOM}
-            lineFullPath={lineFullPath}
-            lineParallelPath={lineParallelPath}
-            lineFlowMode={lineFlowMode}
-            useName={useName}
-            visible={visible}
-            disabled={disabled}
-            onSubstationClick={openVoltageLevel}
-            onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
-            onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
-                displayEquipmentMenu(
-                    equipment as unknown as BaseEquipment,
-                    x,
-                    y,
-                    EquipmentType.SUBSTATION,
-                    isInDrawingMode
-                )
-            }
-            onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
-                displayEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
-            }
-            onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
-                displayEquipmentMenu(
-                    equipment as unknown as BaseEquipment,
-                    x,
-                    y,
-                    EquipmentType.HVDC_LINE,
-                    isInDrawingMode
-                )
-            }
-            onVoltageLevelMenuClick={voltageLevelMenuClick}
-            mapBoxToken={mapBoxToken}
-            centerOnSubstation={centerOnSubstation}
-            isManualRefreshBackdropDisplayed={
-                networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
-            }
-            // only 2 things need this to ensure the map keeps the correct size:
-            // - changing study display mode because it changes the map container size
-            //   programmatically
-            // - changing visible when the map provider is changed in the settings because
-            //   it causes a render with the map container having display:none
-            onManualRefreshClick={loadMapManually}
-            triggerMapResizeOnChange={[studyDisplayMode, visible]}
-            renderPopover={renderLinePopover}
-            mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
-            mapTheme={theme?.palette.mode}
-            areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
-            onDrawPolygonModeActive={(active: DRAW_MODES) => {
-                onDrawPolygonModeActive(active);
-            }}
-            onPolygonChanged={(features) => {
-                onPolygonChanged(features);
-            }}
-            onDrawEvent={(event) => {
-                onDrawEvent(event);
-            }}
-            shouldDisableToolTip={!visible || isInDrawingMode}
-        />
+        <>
+            <Box
+                sx={{
+                    position: 'absolute',
+                    width: shouldOpenSelectionCreationPanel ? '80%' : '100%',
+                    height: '100%',
+                    '& .mapbox-gl-draw_polygon': {
+                        // To override the bg-color of the draw button when we enter in draw mode
+                        backgroundColor: isInDrawingMode ? 'lightblue !important' : 'inherit',
+                    },
+                }}
+            >
+                <NetworkMap
+                    ref={networkMapRef}
+                    mapEquipments={mapEquipments}
+                    geoData={geoData}
+                    updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
+                    displayOverlayLoader={!basicDataReady && mapDataLoading}
+                    filteredNominalVoltages={filteredNominalVoltages}
+                    labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
+                    arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
+                    initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
+                    initialZoom={INITIAL_ZOOM}
+                    lineFullPath={lineFullPath}
+                    lineParallelPath={lineParallelPath}
+                    lineFlowMode={lineFlowMode}
+                    useName={useName}
+                    visible={visible}
+                    disabled={disabled}
+                    onSubstationClick={handleOpenVoltageLevel}
+                    onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
+                    onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
+                        showEquipmentMenu(
+                            equipment as unknown as BaseEquipment,
+                            x,
+                            y,
+                            EquipmentType.SUBSTATION,
+                            isInDrawingMode
+                        )
+                    }
+                    onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
+                        showEquipmentMenu(
+                            equipment as unknown as BaseEquipment,
+                            x,
+                            y,
+                            EquipmentType.LINE,
+                            isInDrawingMode
+                        )
+                    }
+                    onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
+                        showEquipmentMenu(
+                            equipment as unknown as BaseEquipment,
+                            x,
+                            y,
+                            EquipmentType.HVDC_LINE,
+                            isInDrawingMode
+                        )
+                    }
+                    onVoltageLevelMenuClick={voltageLevelMenuClick}
+                    mapBoxToken={mapBoxToken}
+                    centerOnSubstation={centerOnSubstation}
+                    isManualRefreshBackdropDisplayed={
+                        networkVisuParams.mapParameters.mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)
+                    }
+                    // only 2 things need this to ensure the map keeps the correct size:
+                    // - changing study display mode because it changes the map container size
+                    //   programmatically
+                    // - changing visible when the map provider is changed in the settings because
+                    //   it causes a render with the map container having display:none
+                    onManualRefreshClick={loadMapManually}
+                    triggerMapResizeOnChange={[studyDisplayMode, visible]}
+                    renderPopover={renderLinePopover}
+                    mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
+                    mapTheme={theme?.palette.mode}
+                    areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
+                    onDrawPolygonModeActive={(active: DRAW_MODES) => {
+                        onDrawingModeEnter(active);
+                    }}
+                    onPolygonChanged={(features) => {
+                        onPolygonChanged(features);
+                    }}
+                    onDrawEvent={(event) => {
+                        onDrawEvent(event);
+                    }}
+                    shouldDisableToolTip={!visible || isInDrawingMode}
+                />
+                {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
+                {renderSearchEquipment()}
+            </Box>
+            {isInDrawingMode &&
+                (studyDisplayMode === StudyDisplayMode.MAP ||
+                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
+                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE) && (
+                    <GuidancePopup onActionClick={leaveDrawingMode} />
+                )}
+            {shouldOpenSelectionCreationPanel && (
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        width: '20%',
+                        height: '100%',
+                        right: 0,
+                    }}
+                >
+                    <SelectionCreationPanel
+                        getEquipments={getEquipments}
+                        onCancel={() => {
+                            setShouldOpenSelectionCreationPanel(false);
+                        }}
+                        leaveDrawingMode={handleElementCreated}
+                        nominalVoltages={nominalVoltages}
+                    />
+                </Box>
+            )}
+        </>
     );
 
     // Set up filteredNominalVoltages once at map initialization
     // TODO: how do we must manage case where voltages change (like when changing node), as filters are already initialized?
-    const nominalVoltages = mapEquipments?.getNominalVoltages();
+    const nominalVoltagesFromMapEquipments = mapEquipments?.getNominalVoltages();
     useEffect(() => {
-        if (nominalVoltages !== undefined && nominalVoltages.length > 0 && filteredNominalVoltages === undefined) {
-            handleFilteredNominalVoltagesChange(nominalVoltages);
+        if (
+            nominalVoltagesFromMapEquipments !== undefined &&
+            nominalVoltagesFromMapEquipments.length > 0 &&
+            filteredNominalVoltages === undefined
+        ) {
+            handleFilteredNominalVoltagesChange(nominalVoltagesFromMapEquipments);
         }
-    }, [filteredNominalVoltages, handleFilteredNominalVoltagesChange, nominalVoltages]);
+    }, [filteredNominalVoltages, handleFilteredNominalVoltagesChange, nominalVoltagesFromMapEquipments]);
 
     function renderNominalVoltageFilter() {
         return (
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
-                    nominalVoltages={nominalVoltages ?? EMPTY_ARRAY}
+                    nominalVoltages={nominalVoltagesFromMapEquipments ?? EMPTY_ARRAY}
                     filteredNominalVoltages={filteredNominalVoltages ?? EMPTY_ARRAY}
                     onChange={handleFilteredNominalVoltagesChange}
                 />
@@ -1220,13 +1244,12 @@ export const NetworkMapTab = ({
             {!isInDrawingMode && (
                 <>
                     {renderEquipmentMenu()}
-                    {modificationDialogOpen && renderModificationDialog()}
-                    {deletionDialogOpen && renderDeletionDialog()}
+                    {renderModificationDialog()}
+                    {renderDeletionDialog()}
+                    {renderDynamicSimulationEventDialog()}
                     {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
                 </>
             )}
-            {renderSearchEquipment()}
-            {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
             {studyUuid && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={showVoltageLevelDiagram}

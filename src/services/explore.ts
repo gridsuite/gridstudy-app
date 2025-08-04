@@ -215,10 +215,10 @@ export function createContingencyList(
 
 export interface DiagramConfigPosition {
     voltageLevelId: string;
-    xposition?: number;
-    yposition?: number;
-    xlabelPosition?: number;
-    ylabelPosition?: number;
+    xPosition?: number;
+    yPosition?: number;
+    xLabelPosition?: number;
+    yLabelPosition?: number;
 }
 
 export interface DiagramConfig {
@@ -244,6 +244,21 @@ export function createDiagramConfig(
     return backendFetch(createDiagramConfigUrl, {
         method: 'post',
         body: JSON.stringify(newDiagramConfig),
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
+export function updateDiagramConfig(id: UUID, diagramConfig: DiagramConfig, name: string, description: string) {
+    console.info('Updating diagram config ' + name);
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description);
+
+    const createDiagramConfigUrl =
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/diagram-config/' + id + '?' + urlSearchParams.toString();
+    return backendFetch(createDiagramConfigUrl, {
+        method: 'put',
+        body: JSON.stringify(diagramConfig),
         headers: { 'Content-Type': 'application/json' },
     });
 }

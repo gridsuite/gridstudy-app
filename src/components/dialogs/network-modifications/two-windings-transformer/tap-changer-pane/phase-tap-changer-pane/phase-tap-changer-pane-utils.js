@@ -86,7 +86,7 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .string()
             .nullable()
             .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) => enabled && regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
+                is: (enabled, regulationMode) => enabled && regulationMode !== PHASE_REGULATION_MODES.OFF.id,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_SIDE]: yup
@@ -125,7 +125,7 @@ const phaseTapChangerValidationSchema = (isModification, id) => ({
             .number()
             .nullable()
             .when(ENABLED, {
-                is: true,
+                is: (enabled) => enabled && !isModification,
                 then: (schema) =>
                     schema
                         .required()
@@ -223,10 +223,10 @@ export const getPhaseTapChangerFormData = (
 
 export const getComputedPhaseTapChangerRegulationMode = (phaseTapChangerFormValues) => {
     if (
-        phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.FIXED_TAP.id ||
+        phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id ||
         phaseTapChangerFormValues?.[REGULATING] === false
     ) {
-        return PHASE_REGULATION_MODES.FIXED_TAP;
+        return PHASE_REGULATION_MODES.OFF;
     } else if (
         phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
         phaseTapChangerFormValues?.[REGULATING] === true
