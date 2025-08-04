@@ -36,11 +36,16 @@ const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
-            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'SUBSTATION', true).then(
-                (values) => {
-                    setSubstations(values.sort((a, b) => a.localeCompare(b)));
-                }
-            );
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                undefined,
+                EQUIPMENT_TYPES.SUBSTATION,
+                true
+            ).then((values) => {
+                setSubstations(values.sort((a, b) => a.localeCompare(b)));
+            });
         }
     }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
