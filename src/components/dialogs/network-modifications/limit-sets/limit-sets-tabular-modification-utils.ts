@@ -23,6 +23,7 @@ import { BranchSide } from '../../../utils/constants';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import { UUID } from 'crypto';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/modification/tabular-modification-utils';
 
 type TemporaryLimit = {
     name: string;
@@ -123,11 +124,17 @@ const formatTemporaryLimitsBackToFront = (temporaryLimits: TemporaryLimit[]) => 
     }
     return modification;
 };
+
+const getEquipmentTypeFromLimitSetModificationType = (type: string) => {
+    return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).find(
+        (key) => LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS[key] === type
+    );
+};
+
 export const formatBackToFront = (editData: LimitSetModificationMetadata) => {
     const operationalLimitGroups = formatOperationalLimitGroupsBackToFront(editData);
-    const type = operationalLimitGroups.find((operationalLimitGroup) => operationalLimitGroup.type !== undefined)?.type;
     return {
-        [TYPE]: type,
+        [TYPE]: getEquipmentTypeFromLimitSetModificationType(editData.modificationType),
         [AMOUNT_TEMPORARY_LIMITS]: getAmountTemporaryLimits(editData),
         [MODIFICATIONS_TABLE]: operationalLimitGroups,
         [CSV_FILENAME]: editData.csvFilename,

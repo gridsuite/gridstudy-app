@@ -210,7 +210,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [dataFetching]);
 
     const typesOptions = useMemo(() => {
-        //only available types for tabular modification
         return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).filter(
             (type) => EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES]
         );

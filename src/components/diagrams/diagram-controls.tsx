@@ -5,26 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import {
+    ArrowsOutputIcon,
     DirectoryItemSelector,
     ElementSaveDialog,
     ElementType,
+    EquipmentInfos,
+    EquipmentType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
-import LoupeIcon from '@mui/icons-material/Loupe';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
+import { AddLocationOutlined } from '@mui/icons-material';
+import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
+import { fetchNetworkElementInfos } from 'services/study/network';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -62,25 +70,31 @@ const styles = {
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;
+    onUpdate?: (data: IElementUpdateDialog) => void;
     onLoad?: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     isEditNadMode: boolean;
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onExpandAllVoltageLevels?: () => void;
+    onAddVoltageLevel: (vlId: string) => void;
     isDiagramLoading?: boolean;
 }
 
 const DiagramControls: React.FC<DiagramControlsProps> = ({
     onSave,
+    onUpdate,
     onLoad,
     isEditNadMode,
     onToggleEditNadMode,
     onExpandAllVoltageLevels,
+    onAddVoltageLevel,
     isDiagramLoading,
 }) => {
     const intl = useIntl();
     const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id ?? null);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const handleCloseSaveDialog = () => {
         setIsSaveDialogOpen(false);
@@ -103,10 +117,19 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             onExpandAllVoltageLevels();
         }
     };
-
+    const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const handleClickAddVoltageLevelIcon = () => {
+        setIsDialogSearchOpen(true);
+    };
     const handleSave = (data: IElementCreationDialog) => {
         if (onSave) {
             onSave(data);
+        }
+    };
+
+    const handleUpdate = (data: IElementUpdateDialog) => {
+        if (onUpdate) {
+            onUpdate(data);
         }
     };
 
@@ -126,6 +149,53 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     const handleToggleEditMode = () => {
         onToggleEditNadMode?.(!isEditNadMode);
     };
+    const handleCloseSearchDialog = useCallback(() => {
+        setIsDialogSearchOpen(false);
+    }, []);
+    const { snackWarning } = useSnackMessage();
+
+    const onSelectionChange = useCallback(
+        (equipment: EquipmentInfos) => {
+            handleCloseSearchDialog();
+            if (!currentNodeUuid || !currentRootNetworkUuid) {
+                return;
+            }
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                equipment.type,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
+                equipment.id,
+                false
+            )
+                .then(() => {
+                    onAddVoltageLevel(equipment.id);
+                })
+                .catch(() => {
+                    snackWarning({
+                        messageId: 'NetworkEquipmentNotFound',
+                        messageValues: { equipmentId: equipment.id },
+                    });
+                });
+        },
+        [handleCloseSearchDialog, currentNodeUuid, currentRootNetworkUuid, studyUuid, onAddVoltageLevel, snackWarning]
+    );
+    function renderSearchEquipment() {
+        if (!currentRootNetworkUuid || !currentNodeUuid) {
+            return;
+        }
+        return (
+            <EquipmentSearchDialog
+                open={isDialogSearchOpen}
+                onClose={handleCloseSearchDialog}
+                equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                onSelectionChange={onSelectionChange}
+                currentNodeUuid={currentNodeUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+            />
+        );
+    }
 
     /**
      * RENDER
@@ -159,7 +229,16 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                                     onClick={handleClickExpandAllVoltageLevelsIcon}
                                     disabled={isDiagramLoading}
                                 >
-                                    <LoupeIcon sx={styles.icon} />
+                                    <ArrowsOutputIcon sx={styles.icon} />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={<FormattedMessage id={'addVoltageLevel'} />}>
+                                <IconButton
+                                    sx={styles.actionIcon}
+                                    onClick={handleClickAddVoltageLevelIcon}
+                                    disabled={isDiagramLoading}
+                                >
+                                    <AddLocationOutlined sx={styles.icon} />
                                 </IconButton>
                             </Tooltip>
                         </>
@@ -173,15 +252,20 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
             </Box>
             {studyUuid && (
                 <>
-                    <ElementSaveDialog
-                        studyUuid={studyUuid}
-                        onClose={handleCloseSaveDialog}
-                        onSave={handleSave}
-                        open={isSaveDialogOpen}
-                        type={ElementType.DIAGRAM_CONFIG}
-                        titleId={'SaveToGridexplore'}
-                        createOnlyMode
-                    />
+                    {isSaveDialogOpen && (
+                        <ElementSaveDialog
+                            studyUuid={studyUuid}
+                            onClose={handleCloseSaveDialog}
+                            onSave={handleSave}
+                            OnUpdate={handleUpdate}
+                            open={isSaveDialogOpen}
+                            type={ElementType.DIAGRAM_CONFIG}
+                            selectorTitleId={'NetworkAreaDiagram'}
+                            createLabelId={'diagramConfigSave'}
+                            updateLabelId={'diagramConfigUpdate'}
+                            titleId={'SaveToGridexplore'}
+                        />
+                    )}
                     <Box minWidth="12em">
                         <DirectoryItemSelector
                             open={isLoadSelectorOpen}
@@ -193,6 +277,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             multiSelect={false}
                         />
                     </Box>
+                    {renderSearchEquipment()}
                 </>
             )}
         </>
