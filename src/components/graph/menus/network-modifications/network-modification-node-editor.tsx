@@ -45,8 +45,8 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import TabularCreationDialog from 'components/dialogs/network-modifications/tabular/creation/tabular-creation-dialog';
+import TabularModificationDialog from 'components/dialogs/network-modifications/tabular/modification/tabular-modification-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
@@ -115,6 +115,7 @@ import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-mod
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 
@@ -560,6 +561,11 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                             label: 'BY_FORMULA',
                             action: () => withDefaultParams(ByFormulaDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                            label: 'LimitSets',
+                            action: () => withDefaultParams(LimitSetsModificationDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,

@@ -9,6 +9,7 @@ import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
+    equipmentsWithPopover,
     getEquipmentTypeFromFeederType,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
@@ -36,7 +37,6 @@ import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
 import { useEquipmentMenu } from '../../../hooks/use-equipment-menu';
@@ -69,23 +69,6 @@ const defaultBusMenuState: BusMenuState = {
     display: false,
 };
 
-// Function to apply invalid styles for sld
-function applyInvalidStyles(svgContainer: HTMLElement) {
-    // Add invalid loadflow opacity for specific classes
-    const invalidElements = svgContainer.querySelectorAll(
-        '.sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle'
-    );
-    invalidElements.forEach((element) => {
-        (element as HTMLElement).style.opacity = String(INVALID_LOADFLOW_OPACITY);
-    });
-
-    // Remove animation for specific classes
-    const animatedElements = svgContainer.querySelectorAll('.sld-overload, .sld-vl-overvoltage, .sld-vl-undervoltage');
-    animatedElements.forEach((element) => {
-        (element as HTMLElement).style.animation = 'none';
-    });
-}
-
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { diagramSizeSetter, studyUuid, visible, onNextVoltageLevelClick } = props;
     const theme = useTheme();
@@ -103,7 +86,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
-    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState<string>('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
@@ -120,11 +103,14 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
      */
     const handleTogglePopover = useCallback(
         (shouldDisplay: boolean, currentTarget: EventTarget | null, equipmentId: string, equipmentType: string) => {
-            setShouldDisplayTooltip(shouldDisplay);
-            if (shouldDisplay) {
+            const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+            setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable);
+
+            if (shouldDisplay && isEquipmentHoverable) {
+                const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(equipmentType);
+                setHoveredEquipmentType(convertedEquipmentType || '');
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);
@@ -347,11 +333,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             }
 
             diagramViewerRef.current = diagramViewer;
-
-            // Reapply invalid styles directly on the SVG
-            if (loadFlowStatus !== RunningStatus.SUCCEED && svgRef.current) {
-                applyInvalidStyles(svgRef.current);
-            }
         }
     }, [
         props.svg,
@@ -372,7 +353,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         diagramSizeSetter,
         handleTogglePopover,
         computationStarting,
-        loadFlowStatus,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -400,7 +380,15 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-            <Box ref={svgRef} sx={mergeSx(styles.divDiagram, styles.divSingleLineDiagram)} style={{ height: '100%' }} />
+            <Box
+                ref={svgRef}
+                sx={mergeSx(
+                    styles.divDiagram,
+                    styles.divSingleLineDiagram,
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
+                )}
+                style={{ height: '100%' }}
+            />
             {visible && shouldDisplayTooltip && displayTooltip()}
             {renderEquipmentMenu()}
             {displayBusMenu()}

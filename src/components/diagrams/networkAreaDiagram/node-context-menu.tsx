@@ -8,9 +8,9 @@
 import React from 'react';
 import { Menu, Typography, ListItemIcon, ListItemText } from '@mui/material';
 import { CustomMenuItem } from '@gridsuite/commons-ui';
-import LoupeIcon from '@mui/icons-material/Loupe';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useIntl } from 'react-intl';
+import { AddLocationOutlined } from '@mui/icons-material';
 
 const styles = {
     menu: {
@@ -73,7 +73,7 @@ const NodeContextMenu: React.FC<ContextMenuProps> = ({
         >
             <CustomMenuItem sx={styles.customMenuItem} onClick={handleExpandClick}>
                 <ListItemIcon>
-                    <LoupeIcon />
+                    <AddLocationOutlined />
                 </ListItemIcon>
                 <ListItemText primary={<Typography noWrap>{intl.formatMessage({ id: 'expand' })}</Typography>} />
             </CustomMenuItem>
