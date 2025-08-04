@@ -515,7 +515,6 @@
     "exportCaseOnNode": "Exporter la situation",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
-    "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a rencontré un problème et a été recréée à partir des données initiales",
     "StudyUnrecoverableState": "Impossible de récupérer le réseau de l'étude. Veuillez sélectionner une nouvelle situation initiale",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",

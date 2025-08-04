@@ -1,0 +1,129 @@
+diff --git a/src/components/graph/network-modification-tree-model.ts b/src/components/graph/network-modification-tree-model.ts
+index 17f53d73..d5249cb6 100644
+--- a/src/components/graph/network-modification-tree-model.ts
++++ b/src/components/graph/network-modification-tree-model.ts
+@@ -274,20 +274,4 @@ export default class NetworkModificationTreeModel {
+         this.isAnyNodeBuilding =
+             this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
+     }
+-
+-    setCaseName(newCaseName: string) {
+-        if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
+-            const nodeWithOldName = this.treeNodes[0];
+-            //check if the node we are modifying is a ROOT node
+-            if (isReactFlowRootNodeData(nodeWithOldName)) {
+-                this.treeNodes[0] = {
+-                    ...nodeWithOldName,
+-                    data: {
+-                        ...nodeWithOldName.data,
+-                        caseName: newCaseName,
+-                    },
+-                };
+-            }
+-        }
+-    }
+ }
+diff --git a/src/components/graph/tree-node.type.ts b/src/components/graph/tree-node.type.ts
+index c581b621..df6292c0 100644
+--- a/src/components/graph/tree-node.type.ts
++++ b/src/components/graph/tree-node.type.ts
+@@ -78,7 +78,7 @@ export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETW
+     id: UUID;
+ };
+ 
+-export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
++export type ReactFlowRootNodeData = NodeCommonData;
+ export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
+ 
+ export type CurrentTreeNode = ModificationNode | RootNode;
+diff --git a/src/components/study-container.jsx b/src/components/study-container.jsx
+index ac79f600..3b6e2b7b 100644
+--- a/src/components/study-container.jsx
++++ b/src/components/study-container.jsx
+@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
+ import { PARAMS_LOADED } from '../utils/config-params';
+ import {
+     closeStudy,
+-    loadNetworkModificationTreeSuccess,
+     openStudy,
+     resetEquipments,
+     resetEquipmentsPostComputation,
+@@ -32,7 +31,6 @@ import NetworkModificationTreeModel from './graph/network-modification-tree-mode
+ import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
+ import { BUILD_STATUS } from './network/constants';
+ import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+-import { fetchCaseName } from '../services/study/index';
+ import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+ import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
+ import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
+@@ -294,18 +292,6 @@ export function StudyContainer({ view, onChangeTab }) {
+                     const networkModificationTreeModel = new NetworkModificationTreeModel();
+                     networkModificationTreeModel.setTreeElements(tree);
+ 
+-                    fetchCaseName(studyUuid, currentRootNetworkUuid)
+-                        .then((res) => {
+-                            if (res) {
+-                                networkModificationTreeModel.setCaseName(res);
+-                                dispatch(loadNetworkModificationTreeSuccess(networkModificationTreeModel));
+-                            }
+-                        })
+-                        .catch((err) => {
+-                            snackWarning({
+-                                headerId: 'CaseNameLoadError',
+-                            });
+-                        });
+                     // If a current node is already defined then override it cause it could have diferent status in different root networks
+                     if (currentNodeRef.current) {
+                         // Find the updated current node in the tree model
+@@ -348,7 +334,7 @@ export function StudyContainer({ view, onChangeTab }) {
+                 .finally(() => console.debug('Network modification tree loading finished'));
+             // Note: studyUuid and dispatch don't change
+         },
+-        [studyUuid, currentRootNetworkUuid, dispatch, snackError, snackWarning]
++        [studyUuid, currentRootNetworkUuid, dispatch, snackError]
+     );
+ 
+     const checkRootNetworkIndexation = useCallback(() => {
+diff --git a/src/services/study/index.ts b/src/services/study/index.ts
+index 76c5f2f8..11558d00 100644
+--- a/src/services/study/index.ts
++++ b/src/services/study/index.ts
+@@ -295,14 +295,6 @@ export function buildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNet
+     return backendFetchText(url, { method: 'post' });
+ }
+ 
+-export function fetchCaseName(studyUuid: UUID, rootNetworkUuid: UUID) {
+-    console.info('Fetching case name');
+-    const url = getStudyUrl(studyUuid) + '/root-networks/' + encodeURIComponent(rootNetworkUuid) + '/case/name';
+-    console.debug(url);
+-
+-    return backendFetchText(url);
+-}
+-
+ export function isNodeExists(studyUuid: UUID, nodeName: string) {
+     const existsNodeUrl =
+         getStudyUrl(studyUuid) +
+diff --git a/src/translations/en.json b/src/translations/en.json
+index 8f97fa19..c0ce3b9a 100644
+--- a/src/translations/en.json
++++ b/src/translations/en.json
+@@ -515,7 +515,6 @@
+     "exportCaseOnNode": "Export case",
+     "NetworkModificationTreeLoadError": "An error occurred while loading network modification tree",
+     "MapEquipmentsLoadError": "An error occurred while loading network map",
+-    "CaseNameLoadError": "An error occurred while loading case name",
+     "StudyUnrecoverableStateRecreate": "Your study had a problem and has been recreated from initial data",
+     "StudyUnrecoverableState": "Your study had a problem and can not be recreated",
+     "NodeCreateError": "An error occurred while creating node",
+diff --git a/src/translations/fr.json b/src/translations/fr.json
+index c1b70e5c..2a7c79c5 100644
+--- a/src/translations/fr.json
++++ b/src/translations/fr.json
+@@ -515,7 +515,6 @@
+     "exportCaseOnNode": "Exporter la situation",
+     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+     "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
+-    "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
+     "StudyUnrecoverableStateRecreate": "Votre étude a rencontré un problème et a été recréée à partir des données initiales",
+     "StudyUnrecoverableState": "Impossible de récupérer le réseau de l'étude. Veuillez sélectionner une nouvelle situation initiale",
+     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",

@@ -78,7 +78,7 @@ export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETW
     id: UUID;
 };
 
-export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
+export type ReactFlowRootNodeData = NodeCommonData;
 export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
