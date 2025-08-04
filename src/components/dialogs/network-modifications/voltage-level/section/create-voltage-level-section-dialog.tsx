@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
-import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import {
+    EquipmentModificationDialogProps,
+} from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -58,15 +60,15 @@ export type VoltageLevelSectionCreationDialogProps = EquipmentModificationDialog
 };
 
 export default function CreateVoltageLevelSectionDialog({
-    studyUuid,
-    currentNode,
-    currentRootNetworkUuid,
-    editData,
-    defaultIdValue,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}: Readonly<VoltageLevelSectionCreationDialogProps>) {
+                                                            studyUuid,
+                                                            currentNode,
+                                                            currentRootNetworkUuid,
+                                                            editData,
+                                                            defaultIdValue,
+                                                            isUpdate,
+                                                            editDataFetchStatus,
+                                                            ...dialogProps
+                                                        }: Readonly<VoltageLevelSectionCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSectionInfos[]>();
@@ -96,7 +98,7 @@ export default function CreateVoltageLevelSectionDialog({
                     EquipmentType.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     voltageLevelId,
-                    true
+                    true,
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
@@ -114,7 +116,7 @@ export default function CreateVoltageLevelSectionDialog({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, setDataFetchStatus, snackWarning]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, setDataFetchStatus, snackWarning],
     );
 
     useEffect(() => {
@@ -137,7 +139,7 @@ export default function CreateVoltageLevelSectionDialog({
                 [BUSBAR_SECTION_ID]: editData?.busbarSectionId ?? null,
             });
         },
-        [reset]
+        [reset],
     );
 
     useEffect(() => {
@@ -188,7 +190,7 @@ export default function CreateVoltageLevelSectionDialog({
                 });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
+        [selectedId, studyUuid, currentNodeUuid, editData, snackError],
     );
 
     return (
@@ -217,6 +219,15 @@ export default function CreateVoltageLevelSectionDialog({
                 }
                 {...dialogProps}
             >
+                {selectedId != null && (
+                    <CreateVoltageLevelSectionForm
+                        busBarSectionInfos={busBarSectionInfos}
+                        voltageLevelId={selectedId}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                    />
+                )}
                 {selectedId == null && (
                     <EquipmentIdSelector
                         defaultValue={selectedId}
@@ -226,15 +237,6 @@ export default function CreateVoltageLevelSectionDialog({
                         freeInputAllowed={false}
                         autoSelectEnabled={true}
                         autoHighlightEnabled={true}
-                    />
-                )}
-                {selectedId != null && (
-                    <CreateVoltageLevelSectionForm
-                        busBarSectionInfos={busBarSectionInfos}
-                        voltageLevelId={selectedId}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 )}
             </ModificationDialog>
