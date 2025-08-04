@@ -14,26 +14,30 @@ export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
     optionsFormName: string;
     label?: string;
+    filteredApplicability?: string;
 }
 
 export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,
     label,
+    filteredApplicability,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
     });
 
     const opLimitsGroupsNames: string[] = useMemo(() => {
-        const listWithDuplicates: string[] = optionsValues
+        return optionsValues
             ? optionsValues
-                  .map((optionObj: OperationalLimitsGroup) => optionObj.name)
+                  .filter((optionObj: OperationalLimitsGroup) => {
+                      console.log('----------optionObj : ', optionObj);
+                      return optionObj.applicability && optionObj.applicability === filteredApplicability;
+                  })
+                  .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
                   .filter((id: string) => id != null)
             : [];
-        const listWithoutDuplicates: Set<string> = new Set(listWithDuplicates);
-        return [...listWithoutDuplicates];
-    }, [optionsValues]);
+    }, [filteredApplicability, optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>

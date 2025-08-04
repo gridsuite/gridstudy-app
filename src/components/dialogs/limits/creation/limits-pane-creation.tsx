@@ -106,6 +106,7 @@ export function LimitsPaneCreation({
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
                         label="Side1"
+                        filteredApplicability={APPLICABILITY.SIDE1.id}
                     />
                 </Grid>
                 <Grid item xs={3}>
@@ -113,6 +114,7 @@ export function LimitsPaneCreation({
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
                         label="Side2"
+                        filteredApplicability={APPLICABILITY.SIDE2.id}
                     />
                 </Grid>
             </Grid>

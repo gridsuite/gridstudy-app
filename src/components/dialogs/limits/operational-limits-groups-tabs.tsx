@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Tab, Tabs, TextField } from '@mui/material';
+import { Box, Tab, Tabs, TextField, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
@@ -31,6 +31,7 @@ import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { NAME } from '@gridsuite/commons-ui';
+import { grey } from '@mui/material/colors';
 
 const limitsStyles = {
     limitsBackground: {
@@ -291,6 +292,24 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                         }}
                                     >
                                         {opLg.name}
+                                        {opLg?.applicability ? (
+                                            <Typography
+                                                noWrap
+                                                align="right"
+                                                color={grey[500] /*TODO : ask designer for exact color for 2 themes*/}
+                                            >
+                                                <FormattedMessage
+                                                    id={
+                                                        Object.values(APPLICABILITY).find(
+                                                            (item) => item.id === opLg.applicability
+                                                        )?.label
+                                                    }
+                                                />
+                                            </Typography>
+                                        ) : (
+                                            ''
+                                        )}
+
                                         {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                             <IconButton
                                                 size="small"
