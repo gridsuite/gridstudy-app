@@ -7,6 +7,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     BUS_BAR_COUNT,
+    BUSBAR_SECTION_ID,
+    NEW_SWITCH_STATES,
     SECTION_COUNT,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
@@ -15,7 +17,7 @@ import { Box, Button, Grid, Slider, TextField, Tooltip } from '@mui/material';
 import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, SelectInput, SliderInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CheckboxInput, SelectInput, SliderInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
@@ -23,7 +25,8 @@ import PositionDiagramPane from 'components/diagrams/singleLineDiagram/position-
 import { UUID } from 'crypto';
 import { SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BusBarSectionInfos } from './voltage-level-section.type';
+import { BusBarSectionInfos, SectionsInfos } from './voltage-level-section.type';
+import { getIdOrValue } from '../../../commons/utils';
 
 interface VoltageLevelSectionsCreationFormProps {
     busBarSectionInfos?: BusBarSectionInfos[] | any;
@@ -43,8 +46,9 @@ export function CreateVoltageLevelSectionForm({
     const intl = useIntl();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const [maxVertPos, setMaxVertPos] = useState<number>(0);
+    const [vertPositions, setVertPositions] = useState<SectionsInfos[]>();
     const [sliderValue, setSliderValue] = useState(0.5);
-    const { setValue } = useFormContext();
+    const { setValue, getValues } = useFormContext();
     const sectionCount = useWatch({ name: BUS_BAR_COUNT });
 
     const adjustToNearestPermittedPosition = (value: number | number[]) => {
@@ -65,11 +69,16 @@ export function CreateVoltageLevelSectionForm({
 
     const onSliderChange = useCallback(
         (newValue: number | number[]) => {
-            const adjustedValue = adjustToNearestPermittedPosition(newValue);
-            setSliderValue(adjustedValue as number);
-            setValue(SECTION_COUNT, sliderValue);
+            const adjustedValue = adjustToNearestPermittedPosition(newValue) ?? 0.5;
+            if (adjustedValue !== newValue) {
+                setSliderValue(Number(adjustedValue));
+                setValue(SECTION_COUNT, adjustedValue);
+                const numericValue = typeof newValue === 'number' ? newValue : Number(newValue);
+                const vertPos = numericValue === 0 ? 1 : numericValue - 1;
+                setValue(BUSBAR_SECTION_ID, vertPositions?.find((pos) => pos.vertPos === vertPos)?.id);
+            }
         },
-        [setValue, sliderValue]
+        [setValue, vertPositions]
     );
 
     const voltageLevelIdField = (
@@ -100,7 +109,7 @@ export function CreateVoltageLevelSectionForm({
             .map((key) => {
                 const busbarNumber = key.split(':')[1];
                 return {
-                    id: key.split(':')[1].toString(),
+                    id: key.split(':')[1],
                     label: intl.formatMessage({ id: 'BusbarNumber' }, { number: busbarNumber }),
                 };
             });
@@ -115,7 +124,14 @@ export function CreateVoltageLevelSectionForm({
     }, [busBarSectionInfos, intl]);
 
     const busbarCountField = (
-        <AutocompleteInput name={BUS_BAR_COUNT} label="BusBarBus" options={busBarOptions ?? []} size={'small'} />
+        <AutocompleteInput
+            name={BUS_BAR_COUNT}
+            label="BusBarBus"
+            options={busBarOptions ?? []}
+            inputTransform={(value: any) => busBarOptions?.find((option) => option?.id === value) || value}
+            outputTransform={(option: any) => getIdOrValue(option) ?? null}
+            size={'small'}
+        />
     );
 
     useEffect(() => {
@@ -132,12 +148,11 @@ export function CreateVoltageLevelSectionForm({
                 if (key.startsWith('horizPos:')) {
                     const sectionsInGroup = busBarSectionInfos[key];
                     if (Array.isArray(sectionsInGroup) && sectionsInGroup.length > 0) {
-                        const vertPositions = sectionsInGroup
-                            .map((section) => section?.vertPos || 0)
-                            .filter((pos) => pos > 0);
-
-                        if (vertPositions.length > 0) {
-                            results[key] = Math.max(...vertPositions);
+                        const validSections = sectionsInGroup.filter((section) => section?.vertPos > 0);
+                        const vertPosValues = validSections.map((section) => section.vertPos);
+                        setVertPositions(validSections);
+                        if (vertPosValues.length > 0) {
+                            results[key] = Math.max(...vertPosValues);
                         } else {
                             results[key] = 1;
                         }
@@ -147,17 +162,6 @@ export function CreateVoltageLevelSectionForm({
                 }
             });
             newMaxVertPos = Math.max(...Object.values(results));
-        } else if (fullId === '1' || fullId === '2') {
-            const targetKey = `horizPos:${fullId}`;
-            const sectionsInGroup = busBarSectionInfos[targetKey];
-
-            if (Array.isArray(sectionsInGroup) && sectionsInGroup.length > 0) {
-                const vertPositions = sectionsInGroup.map((section) => section?.vertPos || 0).filter((pos) => pos > 0);
-
-                if (vertPositions.length > 0) {
-                    newMaxVertPos = Math.max(...vertPositions);
-                }
-            }
         } else {
             let sectionsInGroup = busBarSectionInfos[fullId];
             if (!sectionsInGroup) {
@@ -166,14 +170,16 @@ export function CreateVoltageLevelSectionForm({
                 sectionsInGroup = busBarSectionInfos[reconstructedKey];
             }
             if (Array.isArray(sectionsInGroup) && sectionsInGroup.length > 0) {
-                const vertPositions = sectionsInGroup.map((section) => section?.vertPos || 0).filter((pos) => pos > 0);
-                if (vertPositions.length > 0) {
-                    newMaxVertPos = Math.max(...vertPositions);
+                const validSections = sectionsInGroup.filter((section) => section?.vertPos > 0);
+                const vertPosValues = validSections.map((section) => section.vertPos);
+                if (vertPosValues.length > 0) {
+                    setVertPositions(validSections);
+                    newMaxVertPos = Math.max(...vertPosValues);
                 }
             }
         }
         setMaxVertPos(newMaxVertPos);
-    }, [sectionCount, busBarSectionInfos]);
+    }, [sectionCount, busBarSectionInfos, getValues, setVertPositions]);
 
     const insertionMarks = useMemo(() => {
         const marks = [{ value: 0, label: '' }];
@@ -188,10 +194,11 @@ export function CreateVoltageLevelSectionForm({
         <SliderInput
             name={SECTION_COUNT}
             valueLabelFormat={intl.formatMessage({ id: 'newSection' })}
+            value={sliderValue}
             onValueChanged={onSliderChange}
             min={0}
             max={maxVertPos + 1}
-            step={0.5}
+            step={1}
             marks={insertionMarks}
             valueLabelDisplay="on"
             track={false}
@@ -231,6 +238,9 @@ export function CreateVoltageLevelSectionForm({
             disabled={!sectionCount}
         />
     );
+    const newSwitchStatesField = (
+        <CheckboxInput name={NEW_SWITCH_STATES} label={'newSwitchStates'} formProps={{ disabled: !sectionCount }} />
+    );
     const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
     }, []);
@@ -268,9 +278,10 @@ export function CreateVoltageLevelSectionForm({
                 <Grid item xs={12}>
                     <GridSection title="SectionPosition" />
                 </Grid>
-
-                <Grid item xs={12}>
-                    {busBarSectionCountField}
+                <Grid container justifyContent="center" marginTop={4}>
+                    <Grid item xs={12} sm={10}>
+                        {busBarSectionCountField}
+                    </Grid>
                 </Grid>
 
                 <Grid item xs={12}>
@@ -286,8 +297,10 @@ export function CreateVoltageLevelSectionForm({
                 <Grid item xs={12} sm={4}>
                     {switchAfterField}
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                    {newSwitchStatesField}
+                </Grid>
             </Grid>
-
             <PositionDiagramPane
                 studyUuid={studyUuid}
                 open={isDiagramPaneOpen}

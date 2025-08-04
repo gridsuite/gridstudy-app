@@ -212,6 +212,7 @@ export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const SWITCHES_BEFORE_SECTIONS = 'switchesBeforeSections';
 export const SWITCHES_AFTER_SECTIONS = 'switchesAfterSections';
+export const NEW_SWITCH_STATES = 'newSwitchStates';
 export const BUSBAR_SECTION_ID = 'busbarSectionId';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';

@@ -1502,5 +1502,6 @@
     "switchesBeforeSections": "Switch before",
     "AllBusbars": "All busbars",
     "Busbar": "Busbar",
-    "BusbarNumber": "{number}"
+    "BusbarNumber": "{number}",
+    "newSwitchStates": "New switches closed "
 }

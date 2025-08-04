@@ -17,6 +17,7 @@ import {
     BUS_BAR_COUNT,
     BUS_BAR_SECTIONS,
     BUSBAR_SECTION_ID,
+    NEW_SWITCH_STATES,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
@@ -30,23 +31,24 @@ import { createVoltageLevelSection } from '../../../../../services/study/network
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { useIntl } from 'react-intl';
 
 const emptyFormData = {
-    [BUS_BAR_COUNT]: '',
+    [BUS_BAR_COUNT]: null,
     [BUS_BAR_SECTIONS]: 0,
     [SWITCHES_BEFORE_SECTIONS]: null,
     [SWITCHES_AFTER_SECTIONS]: null,
+    [NEW_SWITCH_STATES]: false,
     [BUSBAR_SECTION_ID]: null,
 };
 
 const formSchema = yup
     .object()
     .shape({
-        [BUS_BAR_COUNT]: yup.string().required(),
+        [BUS_BAR_COUNT]: yup.string().nullable().required(),
         [BUS_BAR_SECTIONS]: yup.number().required(),
         [SWITCHES_BEFORE_SECTIONS]: yup.string().nullable().required(),
         [SWITCHES_AFTER_SECTIONS]: yup.string().nullable().required(),
+        [NEW_SWITCH_STATES]: yup.boolean(),
         [BUSBAR_SECTION_ID]: yup.string().nullable().required(),
     })
     .required();
@@ -66,7 +68,6 @@ export default function CreateVoltageLevelSectionDialog({
     ...dialogProps
 }: Readonly<VoltageLevelSectionCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
-    const intl = useIntl();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSectionInfos[]>();
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
@@ -130,12 +131,13 @@ export default function CreateVoltageLevelSectionDialog({
             reset({
                 [BUS_BAR_COUNT]: editData?.busbarCount?.toString() ?? null,
                 [BUS_BAR_SECTIONS]: editData?.sectionCount ?? null,
-                [SWITCHES_BEFORE_SECTIONS]: intl.formatMessage({ id: editData?.rightSwitchKind }),
-                [SWITCHES_AFTER_SECTIONS]: intl.formatMessage({ id: editData?.leftSwitchKind }),
+                [SWITCHES_BEFORE_SECTIONS]: editData?.rightSwitchKind,
+                [SWITCHES_AFTER_SECTIONS]: editData?.leftSwitchKind,
+                [NEW_SWITCH_STATES]: editData?.newSwitchStates ?? false,
                 [BUSBAR_SECTION_ID]: editData?.busbarSectionId ?? null,
             });
         },
-        [intl, reset]
+        [reset]
     );
 
     useEffect(() => {
@@ -144,18 +146,34 @@ export default function CreateVoltageLevelSectionDialog({
         }
     }, [fromEditDataToFormValues, editData]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
+    });
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
+
     const onSubmit = useCallback(
         (voltageLevelSection: CreateVoltageLevelSectionDialogSchemaForm) => {
             const voltageLevelSectionInfos = {
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                 voltageLevelId: selectedId,
                 busbarSectionId: voltageLevelSection?.busbarSectionId || '',
-                isAllBusbars: voltageLevelSection?.busbarCount === 'All',
-                isAfterBusbarSectionId: Math.floor(voltageLevelSection?.busbarSections || 0) >= 1,
+                allBusbars: voltageLevelSection?.busbarCount === 'all',
+                afterBusbarSectionId: Math.floor(voltageLevelSection?.busbarSections || 0) > 1,
                 rightSwitchKind: voltageLevelSection?.switchesBeforeSections || '',
                 leftSwitchKind: voltageLevelSection?.switchesAfterSections || '',
+                newSwitchStates: voltageLevelSection?.newSwitchStates || false,
                 busbarCount: Number(voltageLevelSection?.busbarCount) || 0,
-                sectionCount: voltageLevelSection?.busbarSections || 0,
+                sectionCount:
+                    Math.floor(voltageLevelSection?.busbarSections || 0) < 1
+                        ? 1
+                        : Math.floor(voltageLevelSection?.busbarSections || 0) + 0.5 || 0,
             } satisfies CreateVoltageLevelSectionInfos;
             createVoltageLevelSection({
                 voltageLevelSectionInfos: voltageLevelSectionInfos,
@@ -172,18 +190,6 @@ export default function CreateVoltageLevelSectionDialog({
         },
         [selectedId, studyUuid, currentNodeUuid, editData, snackError]
     );
-
-    const open = useOpenShortWaitFetching({
-        isDataFetched:
-            !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
-        delay: FORM_LOADING_DELAY,
-    });
-
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
 
     return (
         <CustomFormProvider

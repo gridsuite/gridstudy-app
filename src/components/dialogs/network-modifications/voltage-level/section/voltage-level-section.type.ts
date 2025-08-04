@@ -10,14 +10,17 @@ export type CreateVoltageLevelSectionDialogSchemaForm = {
     busbarSectionId: string | null;
     switchesBeforeSections: string | null;
     switchesAfterSections: string | null;
+    newSwitchStates?: boolean;
     busbarSections: number | null;
 };
 
+export type SectionsInfos = {
+    id: string;
+    vertPos: number;
+};
+
 export type BusBarSectionInfos = {
-    [key: `horizPos:${string}`]: Array<{
-        id: string;
-        vertPos: number;
-    }>;
+    [key: `horizPos:${string}`]: Array<SectionsInfos>;
 } & {
     [key: string]: any;
 };

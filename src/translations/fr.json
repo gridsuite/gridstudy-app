@@ -1497,5 +1497,6 @@
     "switchesBeforeSections": "OC après",
     "Busbar": "Jeu de barres",
     "AllBusbars": "Tous les jeux de barres",
-    "BusbarNumber": "{number}"
+    "BusbarNumber": "{number}",
+    "newSwitchStates": "Nouveaux organes de coupure fermés"
 }

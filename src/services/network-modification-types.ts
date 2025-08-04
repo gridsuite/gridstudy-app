@@ -808,10 +808,11 @@ export interface CreateVoltageLevelSectionInfos {
     uuid?: string;
     voltageLevelId: string;
     busbarSectionId: string;
-    isAfterBusbarSectionId: boolean;
-    isAllBusbars: boolean;
-    rightSwitchKind: string;
+    afterBusbarSectionId: boolean;
+    allBusbars: boolean;
     leftSwitchKind: string;
+    rightSwitchKind: string;
+    newSwitchStates: boolean;
     busbarCount: number;
     sectionCount: number;
 }
