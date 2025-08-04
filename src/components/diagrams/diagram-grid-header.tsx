@@ -22,7 +22,8 @@ import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 
 const styles = {
     container: {
-        padding: '10px',
+        padding: 1,
+        marginLeft: 1,
     },
     content: {
         display: 'flex',
@@ -57,24 +58,21 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
             <Box sx={styles.content}>
                 <Box display="flex" alignItems="center" gap={1}>
                     <OverflowableText text={intl.formatMessage({ id: 'AddNewCard' })} />
-
-                    <ToggleButtonGroup
-                        value={null} // avoid internal selection handling
-                    >
+                    <ToggleButtonGroup size="small">
                         <Tooltip title={<FormattedMessage id="AddFromGridexplore" />}>
                             <ToggleButton value="upload" onClick={() => setIsLoadSelectorOpen(true)}>
-                                <Upload fontSize="inherit" />
+                                <Upload fontSize="small" />
                             </ToggleButton>
                         </Tooltip>
                         <Tooltip title={<FormattedMessage id="equipment_search/label" />}>
                             <ToggleButton value="search" onClick={() => setIsDialogSearchOpen(true)}>
-                                <Search fontSize="inherit" />
+                                <Search fontSize="small" />
                             </ToggleButton>
                         </Tooltip>
                         <Tooltip title={<FormattedMessage id="OpenMapCard" />}>
                             <span>
                                 <ToggleButton value="map" disabled={!onMap} onClick={onMap}>
-                                    <Public fontSize="inherit" />
+                                    <Public fontSize="small" />
                                 </ToggleButton>
                             </span>
                         </Tooltip>

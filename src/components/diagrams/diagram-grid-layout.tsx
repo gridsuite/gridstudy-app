@@ -236,7 +236,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
     return (
-        <Box sx={styles.container} key={'Adder'}>
+        <Box sx={styles.container}>
             <DiagramGridHeader
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
