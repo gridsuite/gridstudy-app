@@ -22,6 +22,7 @@ import {
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
+    LAST_SELECTED_DIRECTORY,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -119,6 +120,9 @@ const App = () => {
                         break;
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
+                        break;
+                    case LAST_SELECTED_DIRECTORY:
+                        localStorage.setItem(LAST_SELECTED_DIRECTORY, param.value);
                         break;
                     default:
                         console.error('unsupported UI parameters : ', param.name);

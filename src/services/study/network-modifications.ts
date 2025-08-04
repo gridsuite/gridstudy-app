@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EquipmentInfos, EquipmentType, MODIFICATION_TYPES, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import {
+    EquipmentInfos,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    ModificationType,
+    NetworkModificationMetadata,
+} from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
@@ -49,6 +55,7 @@ import {
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1086,33 +1093,35 @@ export function modifyTwoWindingsTransformer({
     });
 }
 
-export function createTabulareModification(
+export function createTabularModification(
     studyUuid: string,
     nodeUuid: UUID,
     modificationType: string,
     modifications: any,
-    isUpdate: boolean,
-    modificationUuid: UUID
+    modificationUuid: UUID,
+    type: ModificationType,
+    properties?: TabularProperty[]
 ) {
-    let createTabulareModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-
+    let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    const isUpdate = !!modificationUuid;
     if (isUpdate) {
-        createTabulareModificationUrl += '/' + encodeURIComponent(modificationUuid);
+        createTabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating tabular modification');
     } else {
         console.info('Creating tabular modification');
     }
 
-    return backendFetchText(createTabulareModificationUrl, {
+    return backendFetchText(createTabularModificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
+            type: type,
             modificationType: modificationType,
             modifications: modifications,
+            properties: properties,
         }),
     });
 }
@@ -2025,6 +2034,7 @@ export function createTabularCreation(
     nodeUuid: UUID,
     creationType: string,
     creations: any,
+    properties: TabularProperty[],
     isUpdate: boolean,
     modificationUuid: UUID
 ) {
@@ -2047,6 +2057,7 @@ export function createTabularCreation(
             type: MODIFICATION_TYPES.TABULAR_CREATION.type,
             creationType: creationType,
             creations: creations,
+            properties: properties,
         }),
     });
 }
