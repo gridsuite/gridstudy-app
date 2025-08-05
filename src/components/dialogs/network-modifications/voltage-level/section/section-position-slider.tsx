@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box } from '@mui/material';
-import { BUSBAR_SECTION_ID, IS_AFTER_BUSBAR_SECTION_ID, SECTION_COUNT } from 'components/utils/field-constants';
+import {
+    BUS_BAR_SECTION_INDEX,
+    BUSBAR_SECTION_ID,
+    IS_AFTER_BUSBAR_SECTION_ID,
+    SECTION_COUNT,
+} from 'components/utils/field-constants';
 import { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -85,6 +90,7 @@ export function SectionPositionSlider({ busbarSectionOptions, disabled }: Sectio
 
             if (nearestSection) {
                 setValue(BUSBAR_SECTION_ID, nearestSection.id);
+                setValue(BUS_BAR_SECTION_INDEX, nearestSection.vertPos);
                 setValue(IS_AFTER_BUSBAR_SECTION_ID, value > nearestSection.vertPos);
             }
         },
@@ -108,11 +114,13 @@ export function SectionPositionSlider({ busbarSectionOptions, disabled }: Sectio
                 return nearestSection.id;
             } else if (value > nearestSection.vertPos) {
                 setValue(BUSBAR_SECTION_ID, nearestSection.id);
+                setValue(BUS_BAR_SECTION_INDEX, nearestSection.vertPos);
                 setValue(IS_AFTER_BUSBAR_SECTION_ID, true);
                 return intl.formatMessage({ id: 'After' }) + ' : ' + nearestSection.id;
             } else {
                 setValue(BUSBAR_SECTION_ID, nearestSection.id);
-                setValue(BUSBAR_SECTION_ID, false);
+                setValue(BUS_BAR_SECTION_INDEX, nearestSection.vertPos);
+                setValue(IS_AFTER_BUSBAR_SECTION_ID, false);
                 return intl.formatMessage({ id: 'Before' }) + ' : ' + nearestSection.id;
             }
         },
