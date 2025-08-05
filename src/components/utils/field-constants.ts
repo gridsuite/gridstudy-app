@@ -230,6 +230,7 @@ export const SWITCHES_BEFORE_SECTIONS = 'switchesBeforeSections';
 export const SWITCHES_AFTER_SECTIONS = 'switchesAfterSections';
 export const NEW_SWITCH_STATES = 'newSwitchStates';
 export const BUSBAR_SECTION_ID = 'busbarSectionId';
+export const IS_AFTER_BUSBAR_SECTION_ID = 'isAfterBusBarSectionId';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
