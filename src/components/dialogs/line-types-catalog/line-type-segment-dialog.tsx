@@ -16,6 +16,7 @@ import { ComputedLineCharacteristics } from './line-catalog.type';
 import { emptyLineSegment, SegmentSchema } from './segment-utils';
 import {
     AERIAL_AREA,
+    AERIAL_AREA_LIST,
     AERIAL_TEMPERATURE,
     SEGMENTS,
     TOTAL_REACTANCE,
@@ -24,11 +25,16 @@ import {
     UNDERGROUND_AREA,
     UNDERGROUND_SHAPE_FACTOR,
 } from '../../utils/field-constants';
+import { array } from 'yup';
 
 const LineTypeSegmentSchema = yup
     .object()
     .shape({
-        [AERIAL_AREA]: yup.string().required(),
+        [AERIAL_AREA]: yup.string().when([AERIAL_AREA_LIST], {
+            is: (aerialAreaList: array) => aerialAreaList?.length > 0,
+            then: (schema) => schema.required(),
+        }),
+        [AERIAL_AREA_LIST]: yup.array(),
         [AERIAL_TEMPERATURE]: yup.string().required(),
         [UNDERGROUND_AREA]: yup.string().required(),
         [UNDERGROUND_SHAPE_FACTOR]: yup.string().required(),
@@ -43,6 +49,7 @@ export type LineTypeSegmentFormData = yup.InferType<typeof LineTypeSegmentSchema
 
 const emptyFormData: LineTypeSegmentFormData = {
     [AERIAL_AREA]: '',
+    [AERIAL_AREA_LIST]: [],
     [AERIAL_TEMPERATURE]: '',
     [UNDERGROUND_AREA]: '',
     [UNDERGROUND_SHAPE_FACTOR]: '',

@@ -221,6 +221,7 @@ export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
 export const LINE_CATALOG = 'lineCatalog';
 export const AERIAL_AREA = 'aerialArea';
+export const AERIAL_AREA_LIST = 'aerialAreaList';
 export const AERIAL_TEMPERATURE = 'aerialTemperature';
 export const UNDERGROUND_AREA = 'aerialArea';
 export const UNDERGROUND_SHAPE_FACTOR = 'aerialTemperature';

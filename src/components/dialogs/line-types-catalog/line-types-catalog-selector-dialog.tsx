@@ -18,6 +18,7 @@ import { LineTypeInfo } from './line-catalog.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import {
     AERIAL_AREA,
+    AERIAL_AREA_LIST,
     AERIAL_TEMPERATURE,
     UNDERGROUND_AREA,
     UNDERGROUND_SHAPE_FACTOR,
@@ -57,7 +58,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 }) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
-    const { getValues } = useFormContext();
+    const { setValue, getValues } = useFormContext();
     const [tabIndex, setTabIndex] = useState<number>(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
     const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
     const [aerialAreas, setAerialAreas] = useState<Option[]>([]);
@@ -87,31 +88,45 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const handleSubmit = useCallback(() => {
         if (selectedRow?.category === 'AERIAL') {
-            console.log(selectedRow);
             const selectedArea = getValues(AERIAL_AREA);
-            console.log('selectedArea', selectedArea);
             const selectedTemperature = getValues(AERIAL_TEMPERATURE);
-            console.log('selectedTemperature', selectedTemperature);
-            console.log(
-                'test',
-                selectedRow?.limitsForLineType.filter(
-                    (limit) => limit.area === selectedArea && limit.temperature === selectedTemperature
-                )
-            );
-            //selectedRow.limitsForLineType = selectedRow?.limitsForLineType.filter(
-            //    (limit) => limit.area == selectedArea && limit.temperature == selectedTemperature
-            //);
-            // console.log('limitsForLineType', selectedRow.limitsForLineType);
+            if (aerialAreas.length > 0 && aerialTemperature.length > 0) {
+                const filteredLimits = selectedRow?.limitsForLineType.filter(
+                    (limit) => limit.area === selectedArea.id && limit.temperature === selectedTemperature.id
+                );
+                if (filteredLimits !== undefined) {
+                    selectedRow.limitsForLineType = filteredLimits;
+                }
+            }
         } else if (selectedRow?.category === 'UNDERGROUND') {
+            const selectedArea = getValues(UNDERGROUND_AREA);
+            console.log('selectedArea', selectedArea);
+            const selectedShapeFactor = parseFloat(getValues(UNDERGROUND_SHAPE_FACTOR)?.id);
+            console.log('selectedShapeFactor', selectedShapeFactor);
+            if (undergroundArea.length > 0) {
+                const filteredLimits = selectedRow?.limitsForLineType.filter((limit) => limit.area === selectedArea.id);
+                if (filteredLimits) {
+                    filteredLimits.forEach(
+                        (limit) => (limit.permanentLimit = limit.permanentLimit / selectedShapeFactor)
+                    );
+                    console.log(filteredLimits);
+                    selectedRow.limitsForLineType = filteredLimits;
+                }
+            }
         }
         onSelectLine && selectedRow && onSelectLine(selectedRow);
-    }, [onSelectLine, selectedRow, getValues]);
+    }, [onSelectLine, selectedRow, getValues, aerialAreas, aerialTemperature, undergroundArea]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
     }, []);
 
     const onSelectionChanged = useCallback(() => {
+        // reset values
+        setValue(AERIAL_AREA, null);
+        setValue(AERIAL_TEMPERATURE, null);
+        setValue(UNDERGROUND_AREA, null);
+        setValue(UNDERGROUND_SHAPE_FACTOR, null);
         // We extract the selected row from AGGrid
         const selectedRow = gridRef.current?.api?.getSelectedRows();
         if (selectedRow?.length) {
@@ -119,38 +134,43 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             setSelectedRow(selectedData ?? null);
             if (selectedData !== null) {
                 if (selectedData.category === 'AERIAL') {
-                    let aerialAreas = new Set<string>(
-                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
-                    );
-                    setAerialAreas(
-                        Array.from(aerialAreas.values()).map((value) => ({
-                            id: value,
-                            label: value,
-                        }))
-                    );
-                    let aerialTemperature = new Set<string>(
-                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
-                    );
-                    setAerialTemperature(
-                        Array.from(aerialTemperature.values()).map((value) => ({
-                            id: value,
-                            label: value,
-                        }))
-                    );
+                    if (selectedData.limitsForLineType != null) {
+                        let aerialAreas = new Set<string>(
+                            selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                        );
+                        setAerialAreas(
+                            Array.from(aerialAreas.values()).map((value) => ({
+                                id: value,
+                                label: value,
+                            }))
+                        );
+                        setValue(AERIAL_AREA_LIST, aerialAreas);
+                        let aerialTemperature = new Set<string>(
+                            selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
+                        );
+                        setAerialTemperature(
+                            Array.from(aerialTemperature.values()).map((value) => ({
+                                id: value,
+                                label: value,
+                            }))
+                        );
+                    }
                 } else if (selectedData.category === 'UNDERGROUND') {
-                    let undergroundAreas = new Set<string>(
-                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
-                    );
-                    setUndergroundArea(
-                        Array.from(undergroundAreas.values()).map((value) => ({
-                            id: value,
-                            label: value,
-                        }))
-                    );
+                    if (selectedData.limitsForLineType != null) {
+                        let undergroundAreas = new Set<string>(
+                            selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                        );
+                        setUndergroundArea(
+                            Array.from(undergroundAreas.values()).map((value) => ({
+                                id: value,
+                                label: value,
+                            }))
+                        );
+                    }
                 }
             }
         }
-    }, []);
+    }, [setValue]);
 
     const aerialColumnDefs = useMemo((): ColDef[] => {
         return [
@@ -362,13 +382,9 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         ]
     );
 
-    const onValidationError = useCallback((errors: any) => {
-        console.log('errors', errors);
-    }, []);
-
     const aerialAreaComponent = (
         <AutocompleteInput
-            name={`${AERIAL_AREA}`}
+            name={AERIAL_AREA}
             label="lineTypes.currentLimits.aerial.Area"
             options={aerialAreas}
             disabled={false}
@@ -378,7 +394,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const aerialTemperatureComponent = (
         <AutocompleteInput
-            name={`${AERIAL_TEMPERATURE}`}
+            name={AERIAL_TEMPERATURE}
             label="lineTypes.currentLimits.aerial.Temperature"
             options={aerialTemperature}
             disabled={false}
@@ -388,7 +404,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const undergroundAreaComponent = (
         <AutocompleteInput
-            name={`${UNDERGROUND_AREA}`}
+            name={UNDERGROUND_AREA}
             label="lineTypes.currentLimits.underground.Area"
             options={undergroundArea}
             disabled={false}
@@ -398,7 +414,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const undergroundFormShape = (
         <AutocompleteInput
-            name={`${UNDERGROUND_SHAPE_FACTOR}`}
+            name={UNDERGROUND_SHAPE_FACTOR}
             label="lineTypes.currentLimits.underground.ShapeFactor"
             options={undergroundShapeFactor}
             disabled={false}
@@ -409,7 +425,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     const limitsParametersSelectection =
         selectedRow && selectedRow.category === 'AERIAL' ? (
             <>
-                <GridSection title={'Parameters'} />
+                <GridSection title={'parameters'} />
                 <Grid container spacing={2}>
                     <GridItem size={4}>{aerialAreaComponent}</GridItem>
                     <GridItem size={4}>{aerialTemperatureComponent}</GridItem>
@@ -417,7 +433,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             </>
         ) : (
             <>
-                <GridSection title={'Parameters'} />
+                <GridSection title={'parameters'} />
                 <Grid container spacing={2}>
                     <GridItem size={4}>{undergroundAreaComponent}</GridItem>
                     <GridItem size={4}>{undergroundFormShape}</GridItem>
@@ -434,7 +450,6 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             onClose={onClose}
             onSave={handleSubmit}
             open={true}
-            onValidationError={onValidationError}
             PaperProps={{
                 sx: {
                     height: '95vh', // we want the dialog height to be fixed even when switching tabs

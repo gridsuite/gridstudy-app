@@ -142,11 +142,17 @@ export const LineTypeSegmentForm = () => {
                 if (computedLimits.has(limit.limitSetName)) {
                     let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
                     if (limitInfo !== undefined) {
-                        limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
+                        if (limit.temporaryLimit != null) {
+                            if (limitInfo.temporaryLimit == null) {
+                                limitInfo.temporaryLimit = limit.temporaryLimit;
+                            } else {
+                                limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
+                            }
+                        }
                         limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
                     }
                 } else {
-                    computedLimits.set(limit.limitSetName, limit);
+                    computedLimits.set(limit.limitSetName, limit as CurrentLimitsInfo);
                 }
             });
         });
@@ -196,10 +202,10 @@ export const LineTypeSegmentForm = () => {
             setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, 0);
             setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, []);
             updateTotals();
-            setCurrentLimitResult([]);
+            updateTotalLimits();
             return true; // Needed to remove the line in ExpandableInput
         },
-        [setValue, updateTotals]
+        [setValue, updateTotals, updateTotalLimits]
     );
 
     const getPreselectedRowIdForCatalog = useCallback(
