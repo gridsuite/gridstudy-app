@@ -60,14 +60,55 @@ export function CreateVoltageLevelSectionForm({
         />
     );
 
+    const getHorizPosWithMaxSections = useCallback(() => {
+        if (!busBarSectionInfos) {
+            return [];
+        }
+        let maxSections = 0;
+        let horizPosWithMax = null;
+        const sortedEntries = Object.entries(busBarSectionInfos)
+            .filter(([key]) => key.startsWith('horizPos:'))
+            .sort(([keyA], [keyB]) => {
+                const numA = parseInt(keyA.split(':')[1]);
+                const numB = parseInt(keyB.split(':')[1]);
+                return numA - numB;
+            });
+        sortedEntries.forEach(([key, sections]) => {
+            if (Array.isArray(sections)) {
+                if (sections.length > maxSections) {
+                    maxSections = sections.length;
+                    horizPosWithMax = key.split(':')[1];
+                }
+            }
+        });
+        return horizPosWithMax;
+    }, [busBarSectionInfos]);
+
     const busbarSectionOptions = useMemo(() => {
         if (!busBarSectionInfos) {
             return [];
         }
 
+        let sectionsToUse = {};
+
+        if (sectionCount === 'all') {
+            const horizPosWithMax = getHorizPosWithMaxSections();
+            if (horizPosWithMax) {
+                const keyWithMax = `horizPos:${horizPosWithMax}`;
+                sectionsToUse = { [keyWithMax]: busBarSectionInfos[keyWithMax] };
+            }
+        } else if (sectionCount) {
+            const selectedKey = `horizPos:${sectionCount}`;
+            if (busBarSectionInfos[selectedKey]) {
+                sectionsToUse = { [selectedKey]: busBarSectionInfos[selectedKey] };
+            }
+        } else {
+            sectionsToUse = {};
+        }
+
         const options: { id: string; label: string; vertPos: number }[] = [];
 
-        Object.entries(busBarSectionInfos).forEach(([key, sections]) => {
+        Object.entries(sectionsToUse).forEach(([key, sections]) => {
             if (key.startsWith('horizPos:') && Array.isArray(sections)) {
                 sections.forEach((section) => {
                     options.push({
@@ -80,13 +121,12 @@ export function CreateVoltageLevelSectionForm({
         });
 
         return options.sort((a, b) => a.id.localeCompare(b.id));
-    }, [busBarSectionInfos]);
+    }, [busBarSectionInfos, sectionCount, getHorizPosWithMaxSections]);
 
     const busBarOptions = useMemo(() => {
         if (!busBarSectionInfos) {
             return [];
         }
-
         const options = Object.keys(busBarSectionInfos)
             .sort((a, b) => {
                 const aNum = parseInt(a.split(':')[1]);
@@ -156,7 +196,7 @@ export function CreateVoltageLevelSectionForm({
     );
     return (
         <Box sx={{ p: 2 }}>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} md={6}>
@@ -182,7 +222,7 @@ export function CreateVoltageLevelSectionForm({
                 </Grid>
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
-                        <SectionPositionSlider busbarSectionOptions={busbarSectionOptions} />
+                        <SectionPositionSlider busbarSectionOptions={busbarSectionOptions} disabled={!sectionCount} />
                     </Grid>
                 </Grid>
 

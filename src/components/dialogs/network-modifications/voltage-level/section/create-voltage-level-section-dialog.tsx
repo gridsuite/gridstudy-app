@@ -133,7 +133,6 @@ export default function CreateVoltageLevelSectionDialog({
             }
             reset({
                 [BUS_BAR_COUNT]: editData?.busbarCount?.toString() ?? null,
-                [BUS_BAR_SECTIONS]: editData?.sectionCount ?? null,
                 [SWITCHES_BEFORE_SECTIONS]: editData?.rightSwitchKind,
                 [SWITCHES_AFTER_SECTIONS]: editData?.leftSwitchKind,
                 [NEW_SWITCH_STATES]: editData?.newSwitchStates ?? false,
@@ -204,7 +203,6 @@ export default function CreateVoltageLevelSectionDialog({
         >
             <ModificationDialog
                 onClear={clear}
-                fullWidth
                 onSave={onSubmit}
                 maxWidth={'md'}
                 titleId="CreateVoltageLevelSection"
@@ -213,6 +211,7 @@ export default function CreateVoltageLevelSectionDialog({
                 PaperProps={{
                     sx: {
                         height: '75vh',
+                        maxWidth: '75%',
                     },
                 }}
                 isDataFetching={

@@ -13,9 +13,10 @@ import { SliderInput } from '@gridsuite/commons-ui';
 
 interface SectionPositionSliderProps {
     busbarSectionOptions: Array<{ id: string; label: string; vertPos: number }>;
+    disabled: boolean;
 }
 
-export function SectionPositionSlider({ busbarSectionOptions }: SectionPositionSliderProps) {
+export function SectionPositionSlider({ busbarSectionOptions, disabled }: SectionPositionSliderProps) {
     const intl = useIntl();
     const { setValue } = useFormContext();
     const selectedBusbar = useWatch({ name: BUSBAR_SECTION_ID });
@@ -106,12 +107,16 @@ export function SectionPositionSlider({ busbarSectionOptions }: SectionPositionS
             if (Math.abs(nearestSection.vertPos - value) < 0.3) {
                 return nearestSection.id;
             } else if (value > nearestSection.vertPos) {
-                return `After ${nearestSection.id}`;
+                setValue(BUSBAR_SECTION_ID, nearestSection.id);
+                setValue(IS_AFTER_BUSBAR_SECTION_ID, true);
+                return intl.formatMessage({ id: 'After' }) + ' : ' + nearestSection.id;
             } else {
-                return `Before ${nearestSection.id}`;
+                setValue(BUSBAR_SECTION_ID, nearestSection.id);
+                setValue(BUSBAR_SECTION_ID, false);
+                return intl.formatMessage({ id: 'Before' }) + ' : ' + nearestSection.id;
             }
         },
-        [busbarSectionOptions]
+        [busbarSectionOptions, intl, setValue]
     );
 
     return (
@@ -130,6 +135,7 @@ export function SectionPositionSlider({ busbarSectionOptions }: SectionPositionS
                     aria-labelledby="track-false-slider"
                     size="medium"
                     valueLabelFormat={getPositionDescription}
+                    disabled={disabled}
                     sx={{
                         '& .MuiSlider-mark': {
                             backgroundColor: '#666',

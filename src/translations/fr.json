@@ -1517,6 +1517,7 @@
     "switchesAfterSections": "OC avant",
     "switchesBeforeSections": "OC après",
     "Busbar": "Jeu de barres",
+    "Before": "Before",
     "AllBusbars": "Tous les jeux de barres",
     "BusbarNumber": "{number}",
     "newSwitchStates": "Nouveaux organes de coupure fermés"

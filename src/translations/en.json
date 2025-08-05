@@ -1523,6 +1523,7 @@
     "switchesBeforeSections": "Switch before",
     "AllBusbars": "All busbars",
     "Busbar": "Busbar",
+    "After": "After",
     "BusbarNumber": "{number}",
     "newSwitchStates": "New switches closed "
 }
