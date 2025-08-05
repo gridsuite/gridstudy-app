@@ -6,7 +6,6 @@
  */
 
 import { FunctionComponent, useCallback } from 'react';
-import { SEGMENTS, TOTAL_REACTANCE, TOTAL_RESISTANCE, TOTAL_SUSCEPTANCE } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../commons/modificationDialog';
@@ -15,10 +14,24 @@ import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
 import { emptyLineSegment, SegmentSchema } from './segment-utils';
+import {
+    AERIAL_AREA,
+    AERIAL_TEMPERATURE,
+    SEGMENTS,
+    TOTAL_REACTANCE,
+    TOTAL_RESISTANCE,
+    TOTAL_SUSCEPTANCE,
+    UNDERGROUND_AREA,
+    UNDERGROUND_SHAPE_FACTOR,
+} from '../../utils/field-constants';
 
 const LineTypeSegmentSchema = yup
     .object()
     .shape({
+        [AERIAL_AREA]: yup.string().required(),
+        [AERIAL_TEMPERATURE]: yup.string().required(),
+        [UNDERGROUND_AREA]: yup.string().required(),
+        [UNDERGROUND_SHAPE_FACTOR]: yup.string().required(),
         [TOTAL_RESISTANCE]: yup.number().required(),
         [TOTAL_REACTANCE]: yup.number().required(),
         [TOTAL_SUSCEPTANCE]: yup.number().required(),
@@ -29,6 +42,10 @@ const LineTypeSegmentSchema = yup
 export type LineTypeSegmentFormData = yup.InferType<typeof LineTypeSegmentSchema>;
 
 const emptyFormData: LineTypeSegmentFormData = {
+    [AERIAL_AREA]: '',
+    [AERIAL_TEMPERATURE]: '',
+    [UNDERGROUND_AREA]: '',
+    [UNDERGROUND_SHAPE_FACTOR]: '',
     [TOTAL_RESISTANCE]: 0.0,
     [TOTAL_REACTANCE]: 0.0,
     [TOTAL_SUSCEPTANCE]: 0.0,

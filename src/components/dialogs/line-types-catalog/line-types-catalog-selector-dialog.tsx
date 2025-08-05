@@ -5,17 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useRef, useMemo, useEffect, useState, FunctionComponent } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, Option } from '@gridsuite/commons-ui';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
 import { LineTypeInfo } from './line-catalog.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import {
+    AERIAL_AREA,
+    AERIAL_TEMPERATURE,
+    UNDERGROUND_AREA,
+    UNDERGROUND_SHAPE_FACTOR,
+} from '../../utils/field-constants';
+import GridItem from '../commons/grid-item';
+import GridSection from '../commons/grid-section';
+import { useFormContext } from 'react-hook-form';
 
 const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -48,8 +57,17 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 }) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
+    const { getValues } = useFormContext();
     const [tabIndex, setTabIndex] = useState<number>(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
     const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
+    const [aerialAreas, setAerialAreas] = useState<Option[]>([]);
+    const [aerialTemperature, setAerialTemperature] = useState<Option[]>([]);
+    const [undergroundArea, setUndergroundArea] = useState<Option[]>([]);
+    const undergroundShapeFactor: Option[] = [
+        { id: '1', label: '1' },
+        { id: '0.95', label: '0.95' },
+        { id: '0.9', label: '0.9' },
+    ];
 
     const rowDataAerialTab = useMemo(() => {
         if (rowData) {
@@ -68,8 +86,26 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
 
     const handleSubmit = useCallback(() => {
+        if (selectedRow?.category === 'AERIAL') {
+            console.log(selectedRow);
+            const selectedArea = getValues(AERIAL_AREA);
+            console.log('selectedArea', selectedArea);
+            const selectedTemperature = getValues(AERIAL_TEMPERATURE);
+            console.log('selectedTemperature', selectedTemperature);
+            console.log(
+                'test',
+                selectedRow?.limitsForLineType.filter(
+                    (limit) => limit.area === selectedArea && limit.temperature === selectedTemperature
+                )
+            );
+            //selectedRow.limitsForLineType = selectedRow?.limitsForLineType.filter(
+            //    (limit) => limit.area == selectedArea && limit.temperature == selectedTemperature
+            //);
+            // console.log('limitsForLineType', selectedRow.limitsForLineType);
+        } else if (selectedRow?.category === 'UNDERGROUND') {
+        }
         onSelectLine && selectedRow && onSelectLine(selectedRow);
-    }, [onSelectLine, selectedRow]);
+    }, [onSelectLine, selectedRow, getValues]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
@@ -79,7 +115,40 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         // We extract the selected row from AGGrid
         const selectedRow = gridRef.current?.api?.getSelectedRows();
         if (selectedRow?.length) {
-            setSelectedRow(selectedRow[0] ?? null);
+            const selectedData = selectedRow[0];
+            setSelectedRow(selectedData ?? null);
+            if (selectedData !== null) {
+                if (selectedData.category === 'AERIAL') {
+                    let aerialAreas = new Set<string>(
+                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                    );
+                    setAerialAreas(
+                        Array.from(aerialAreas.values()).map((value) => ({
+                            id: value,
+                            label: value,
+                        }))
+                    );
+                    let aerialTemperature = new Set<string>(
+                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
+                    );
+                    setAerialTemperature(
+                        Array.from(aerialTemperature.values()).map((value) => ({
+                            id: value,
+                            label: value,
+                        }))
+                    );
+                } else if (selectedData.category === 'UNDERGROUND') {
+                    let undergroundAreas = new Set<string>(
+                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                    );
+                    setUndergroundArea(
+                        Array.from(undergroundAreas.values()).map((value) => ({
+                            id: value,
+                            label: value,
+                        }))
+                    );
+                }
+            }
         }
     }, []);
 
@@ -293,6 +362,69 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         ]
     );
 
+    const onValidationError = useCallback((errors: any) => {
+        console.log('errors', errors);
+    }, []);
+
+    const aerialAreaComponent = (
+        <AutocompleteInput
+            name={`${AERIAL_AREA}`}
+            label="lineTypes.currentLimits.aerial.Area"
+            options={aerialAreas}
+            disabled={false}
+            size={'small'}
+        />
+    );
+
+    const aerialTemperatureComponent = (
+        <AutocompleteInput
+            name={`${AERIAL_TEMPERATURE}`}
+            label="lineTypes.currentLimits.aerial.Temperature"
+            options={aerialTemperature}
+            disabled={false}
+            size={'small'}
+        />
+    );
+
+    const undergroundAreaComponent = (
+        <AutocompleteInput
+            name={`${UNDERGROUND_AREA}`}
+            label="lineTypes.currentLimits.underground.Area"
+            options={undergroundArea}
+            disabled={false}
+            size={'small'}
+        />
+    );
+
+    const undergroundFormShape = (
+        <AutocompleteInput
+            name={`${UNDERGROUND_SHAPE_FACTOR}`}
+            label="lineTypes.currentLimits.underground.ShapeFactor"
+            options={undergroundShapeFactor}
+            disabled={false}
+            size={'small'}
+        />
+    );
+
+    const limitsParametersSelectection =
+        selectedRow && selectedRow.category === 'AERIAL' ? (
+            <>
+                <GridSection title={'Parameters'} />
+                <Grid container spacing={2}>
+                    <GridItem size={4}>{aerialAreaComponent}</GridItem>
+                    <GridItem size={4}>{aerialTemperatureComponent}</GridItem>
+                </Grid>
+            </>
+        ) : (
+            <>
+                <GridSection title={'Parameters'} />
+                <Grid container spacing={2}>
+                    <GridItem size={4}>{undergroundAreaComponent}</GridItem>
+                    <GridItem size={4}>{undergroundFormShape}</GridItem>
+                </Grid>
+            </>
+        );
+
     return (
         <BasicModificationDialog
             disabledSave={!selectedRow}
@@ -302,6 +434,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             onClose={onClose}
             onSave={handleSubmit}
             open={true}
+            onValidationError={onValidationError}
             PaperProps={{
                 sx: {
                     height: '95vh', // we want the dialog height to be fixed even when switching tabs
@@ -311,7 +444,8 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             titleId={'SelectType'}
             {...dialogProps}
         >
-            <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
+            <div style={{ height: '85%' }}>{displayTable(tabIndex)}</div>
+            {selectedRow && limitsParametersSelectection}
         </BasicModificationDialog>
     );
 };

@@ -39,4 +39,6 @@ export type CurrentLimitsInfo = {
     limitSetName: string;
     permanentLimit: number;
     temporaryLimit: number;
+    area: string;
+    temperature: string;
 };

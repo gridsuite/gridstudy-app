@@ -219,6 +219,11 @@ export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
+export const LINE_CATALOG = 'lineCatalog';
+export const AERIAL_AREA = 'aerialArea';
+export const AERIAL_TEMPERATURE = 'aerialTemperature';
+export const UNDERGROUND_AREA = 'aerialArea';
+export const UNDERGROUND_SHAPE_FACTOR = 'aerialTemperature';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
