@@ -65,7 +65,7 @@ export type NetworkModificationNodeData = AbstractNode & {
     nodeType?: NetworkModificationNodeType;
 };
 
-type NodeCommonData = {
+export type NodeCommonData = {
     label: string;
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
@@ -78,8 +78,7 @@ export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETW
     id: UUID;
 };
 
-export type ReactFlowRootNodeData = NodeCommonData;
-export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
+export type RootNode = Node<NodeCommonData, NodeType.ROOT> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 
