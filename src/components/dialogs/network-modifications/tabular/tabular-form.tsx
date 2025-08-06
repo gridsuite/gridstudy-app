@@ -226,20 +226,6 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         [equipmentType, csvFields, setError, intl, snackWarning]
     );
 
-    const handleComplete = useCallback(
-        (results: Papa.ParseResult<any>) => {
-            clearErrors(MODIFICATIONS_TABLE);
-            if (dialogMode === TabularModificationType.CREATION) {
-                handleTabularCreationParsingError(results);
-            } else {
-                handleTabularModificationParsingError(results);
-            }
-            setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
-            setIsFetching(false);
-        },
-        [clearErrors, dialogMode, setValue, handleTabularCreationParsingError, handleTabularModificationParsingError]
-    );
-
     const selectedProperties = useMemo((): string[] => {
         return (
             tabularProperties
@@ -267,13 +253,40 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, [csvFields, selectedProperties, intl, equipmentType, language, dialogMode, predefinedEquipmentProperties]);
 
     const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
-    const [selectedFile, FileField, selectedFileError] = useCSVPicker({
+    const [selectedFile, FileField, selectedFileError, resetFile] = useCSVPicker({
         label: dialogMode === TabularModificationType.CREATION ? 'ImportCreations' : 'ImportModifications',
         header: csvColumns,
         disabled: !csvColumns?.length,
         resetTrigger: typeChangedTrigger,
         language: language,
     });
+
+    const handleComplete = useCallback(
+        (results: Papa.ParseResult<any>) => {
+            // Only update modifications table if a valid file upload exists
+            if (selectedFile !== undefined) {
+                clearErrors(MODIFICATIONS_TABLE);
+                if (dialogMode === TabularModificationType.CREATION) {
+                    handleTabularCreationParsingError(results);
+                } else {
+                    handleTabularModificationParsingError(results);
+                }
+                setValue(MODIFICATIONS_TABLE, results.data, { shouldDirty: true });
+            } else {
+                // If the file is undefined we don't update the values because it's outdated
+                setValue(MODIFICATIONS_TABLE, []);
+            }
+            setIsFetching(false);
+        },
+        [
+            clearErrors,
+            dialogMode,
+            setValue,
+            handleTabularCreationParsingError,
+            handleTabularModificationParsingError,
+            selectedFile,
+        ]
+    );
 
     useEffect(() => {
         fetchStudyMetadata().then((studyMetadata) => {
@@ -316,7 +329,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
         setValue(TABULAR_PROPERTIES, []);
-    }, [clearErrors, setValue, typeChangedTrigger]);
+        resetFile();
+    }, [clearErrors, setValue, typeChangedTrigger, resetFile]);
 
     const equipmentTypeField = (
         <AutocompleteInput
