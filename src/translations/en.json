@@ -991,6 +991,8 @@
     "ImportDephasingRule": "Import dephasing rule",
 
     "GenerateSkeleton": "Generate CSV template",
+    "GenerateTemplateFromFilter": "Generate from filter",
+    "GenerateFromFilterError": "Error while generating template from filter",
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the template",
     "uploadMessage": " No file selected",
 
