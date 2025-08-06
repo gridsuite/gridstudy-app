@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, type FunctionComponent, MouseEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button, type ButtonProps, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useStateBoolean, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
