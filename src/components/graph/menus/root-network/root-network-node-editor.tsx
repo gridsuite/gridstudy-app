@@ -32,7 +32,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
-import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
+import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
@@ -280,17 +280,25 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             const customizedParams = formattedParams
                 ? customizeCurrentParameters(formattedParams as Parameter[])
                 : null;
-
-            updateRootNetwork(
-                editedRootNetwork.rootNetworkUuid,
+            const rootNetworkInfos: RootNetworkInfos = {
+                id: editedRootNetwork.rootNetworkUuid,
                 name,
                 tag,
-                description ?? '',
-                caseId as UUID | null,
-                caseId && params ? params.formatName : null,
-                studyUuid,
-                caseId ? customizedParams : null
-            );
+                description: description ?? '',
+                importParametersRaw: caseId ? customizedParams : null,
+                caseInfos:
+                    caseId && params
+                        ? {
+                              originalCaseUuid: caseId as UUID,
+                              caseFormat: params.formatName,
+                          }
+                        : {
+                              originalCaseUuid: null,
+                              caseFormat: null,
+                          },
+            };
+
+            updateRootNetwork(studyUuid, editedRootNetwork.rootNetworkUuid, rootNetworkInfos);
         } catch (error) {
             snackError({
                 headerId: 'updateRootNetworksError',
