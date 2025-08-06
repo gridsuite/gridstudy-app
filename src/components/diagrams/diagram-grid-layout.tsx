@@ -9,12 +9,12 @@ import { useCallback, useState } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
-import { useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType, useDebounce } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
-import { DiagramAdder } from './diagram-adder';
+import { DiagramGridHeader } from './diagram-grid-header';
 import './diagram-grid-layout.css'; // Import the CSS file for styling
 import { DiagramCard } from './diagram-card';
 import MapCard from './map-card';
@@ -22,6 +22,13 @@ import { BLINK_LENGTH_MS } from './card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
 
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+    },
+};
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -62,7 +69,7 @@ interface DiagramGridLayoutProps {
     visible: boolean;
 }
 
-const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID) => {
+const removeInLayoutEntries = (entries: [string, Layout[]][], cardUuid: UUID | string) => {
     return entries.map(([breakpoint, breakpoint_layouts]) => {
         const updatedLayouts = breakpoint_layouts.filter((layout) => layout.i !== cardUuid);
         return [breakpoint, updatedLayouts];
@@ -73,7 +80,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
-    const [isMapCardAdded, setIsMapCardAdded] = useState(false);
+
+    const isMapCardAdded = () => {
+        return Object.values(layouts).some((breakpointLayouts) =>
+            breakpointLayouts.some((layout) => layout.i === 'MapCard')
+        );
+    };
 
     const addLayoutItem = useCallback((diagram: Diagram) => {
         setLayouts((old_layouts) => {
@@ -94,7 +106,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     }, []);
 
-    const removeLayoutItem = (cardUuid: UUID) => {
+    const removeLayoutItem = (cardUuid: UUID | string) => {
         setLayouts((old_layouts) => Object.fromEntries(removeInLayoutEntries(Object.entries(old_layouts), cardUuid)));
     };
 
@@ -193,15 +205,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                 return [breakpoint, updatedLayouts];
             });
             setLayouts(Object.fromEntries(newLayoutsEntries));
-            // Check if MapCard is already in the saved layouts
-            if (
-                savedLayoutsEntries.some(([_breakpoint, breakpoint_layouts]) =>
-                    breakpoint_layouts.some((layout) => layout.i === 'MapCard')
-                )
-            ) {
-                // then set this flag to true to render the Map card
-                setIsMapCardAdded(true);
-            }
         } else {
             setLayouts(initialLayouts);
         }
@@ -224,83 +227,87 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             });
             return Object.fromEntries(newLayoutsEntries);
         });
-        setIsMapCardAdded(true);
+    }, []);
+
+    const handleRemoveMapCard = useCallback(() => {
+        removeLayoutItem('MapCard');
     }, []);
 
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
     return (
-        <ResponsiveGridLayout
-            className="layout"
-            breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-            cols={{
-                lg: LG_COLUMN_COUNT,
-                md: MD_SM_COLUMN_COUNT,
-                sm: MD_SM_COLUMN_COUNT,
-                xs: XS_XSS_COLUMN_COUNT,
-                xxs: XS_XSS_COLUMN_COUNT,
-            }}
-            margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
-            compactType={'horizontal'}
-            onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
-            layouts={layouts}
-            style={{
-                backgroundColor:
-                    theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
-                flexGrow: 1,
-                paddingRight: theme.spacing(1),
-                overflow: 'auto',
-            }}
-            draggableHandle=".react-grid-dragHandle"
-            onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
-                if (e.target) {
-                    (e.target as HTMLElement).style.cursor = 'grabbing';
-                }
-            }}
-            onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
-                if (e.target) {
-                    (e.target as HTMLElement).style.cursor = 'grab';
-                }
-            }}
-            autoSize={false} // otherwise the grid has strange behavior
-            resizeHandle={<CustomResizeHandle />}
-        >
-            <DiagramAdder
-                key={'Adder'}
+        <Box sx={styles.container}>
+            <DiagramGridHeader
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
-                onMap={!isMapCardAdded ? onAddMapCard : undefined}
+                onMap={!isMapCardAdded() ? onAddMapCard : undefined}
                 onLayoutSave={debouncedGridLayoutSave}
             />
-            {Object.values(diagrams).map((diagram) => {
-                return (
-                    <DiagramCard
-                        key={diagram.diagramUuid}
+            <ResponsiveGridLayout
+                className="layout"
+                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                cols={{
+                    lg: LG_COLUMN_COUNT,
+                    md: MD_SM_COLUMN_COUNT,
+                    sm: MD_SM_COLUMN_COUNT,
+                    xs: XS_XSS_COLUMN_COUNT,
+                    xxs: XS_XSS_COLUMN_COUNT,
+                }}
+                margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
+                compactType={'horizontal'}
+                onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
+                layouts={layouts}
+                style={{
+                    backgroundColor:
+                        theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
+                    flexGrow: 1,
+                    paddingRight: theme.spacing(1),
+                    overflow: 'auto',
+                }}
+                draggableHandle=".react-grid-dragHandle"
+                onDragStart={(layout, oldItem, newItem, placeholder, e, element) => {
+                    if (e.target) {
+                        (e.target as HTMLElement).style.cursor = 'grabbing';
+                    }
+                }}
+                onDragStop={(layout, oldItem, newItem, placeholder, e, element) => {
+                    if (e.target) {
+                        (e.target as HTMLElement).style.cursor = 'grab';
+                    }
+                }}
+                autoSize={false} // otherwise the grid has strange behavior
+                resizeHandle={<CustomResizeHandle />}
+            >
+                {Object.values(diagrams).map((diagram) => {
+                    return (
+                        <DiagramCard
+                            key={diagram.diagramUuid}
+                            studyUuid={studyUuid}
+                            visible={visible}
+                            diagram={diagram}
+                            blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
+                            loading={loadingDiagrams.includes(diagram.diagramUuid)}
+                            errorMessage={globalError || diagramErrors[diagram.diagramUuid]}
+                            onClose={() => onRemoveCard(diagram.diagramUuid)}
+                            showInSpreadsheet={showInSpreadsheet}
+                            createDiagram={createDiagram}
+                            updateDiagram={updateDiagram}
+                            updateDiagramPositions={updateDiagramPositions}
+                            onLoad={handleLoadNad}
+                        />
+                    );
+                })}
+                {isMapCardAdded() && (
+                    <MapCard
+                        key={'MapCard'}
                         studyUuid={studyUuid}
-                        visible={visible}
-                        diagram={diagram}
-                        blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
-                        loading={loadingDiagrams.includes(diagram.diagramUuid)}
-                        errorMessage={globalError || diagramErrors[diagram.diagramUuid]}
-                        onClose={() => onRemoveCard(diagram.diagramUuid)}
+                        onClose={handleRemoveMapCard}
+                        errorMessage={globalError}
                         showInSpreadsheet={showInSpreadsheet}
-                        createDiagram={createDiagram}
-                        updateDiagram={updateDiagram}
-                        updateDiagramPositions={updateDiagramPositions}
-                        onLoad={handleLoadNad}
                     />
-                );
-            })}
-            {isMapCardAdded && (
-                <MapCard
-                    key={'MapCard'}
-                    studyUuid={studyUuid}
-                    onClose={() => setIsMapCardAdded(false)}
-                    errorMessage={globalError}
-                    showInSpreadsheet={showInSpreadsheet}
-                />
-            )}
-        </ResponsiveGridLayout>
+                )}
+            </ResponsiveGridLayout>
+        </Box>
     );
 }
 
