@@ -88,6 +88,7 @@ export const SpreadsheetContent = memo(
                     rowNodes: [rowNode],
                     flashDuration: 1000,
                 });
+                api.setNodesSelected({ nodes: [rowNode], newValue: false });
             }
 
             setEquipmentToUpdateId(null);

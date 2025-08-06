@@ -15,7 +15,7 @@ export function startSecurityAnalysis(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     contingencyListUuids: UUID[]
-) {
+): Promise<void> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
@@ -55,7 +55,7 @@ export function fetchSecurityAnalysisResult(
         currentRootNetworkUuid
     )}/security-analysis/result`;
 
-    const { resultType, page, size, sort, filters } = queryParams || {};
+    const { resultType, page, size, sort, filters, globalFilters } = queryParams || {};
 
     const params = new URLSearchParams({ resultType });
 
@@ -63,6 +63,9 @@ export function fetchSecurityAnalysisResult(
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     if (typeof page === 'number') {

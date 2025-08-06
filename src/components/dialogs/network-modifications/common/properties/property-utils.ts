@@ -46,14 +46,18 @@ export const emptyProperties: Properties = {
     [ADDITIONAL_PROPERTIES]: [] as Property[],
 };
 
-export const initializedProperty = (): Property => {
+export const createPropertyModification = (name: string, value: string | null): Property => {
     return {
-        [NAME]: '',
-        [VALUE]: null,
-        [PREVIOUS_VALUE]: null,
+        [NAME]: name,
+        [VALUE]: value,
+        [PREVIOUS_VALUE]: value,
         [DELETION_MARK]: false,
         [ADDED]: true,
     };
+};
+
+export const initializedProperty = (): Property => {
+    return createPropertyModification('', null);
 };
 
 export const getPropertiesFromModification = (properties: Property[] | undefined): Properties => {

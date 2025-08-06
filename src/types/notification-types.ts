@@ -14,6 +14,7 @@ export enum NotificationType {
     STUDY_NETWORK_RECREATION_DONE = 'study_network_recreation_done',
     METADATA_UPDATED = 'metadata_updated',
     STUDY_ALERT = 'STUDY_ALERT',
+    COMPUTATION_DEBUG_FILE_STATUS = 'computationDebugFileStatus',
     // Build
     STUDY = 'study',
     NODE_BUILD_COMPLETED = 'buildCompleted',
@@ -862,6 +863,10 @@ export function isStudyNotification(notif: unknown): notif is StudyEventData {
 
 export function isLoadflowResultNotification(notif: unknown): notif is LoadflowResultEventData {
     return (notif as LoadflowResultEventData).headers?.updateType === NotificationType.LOADFLOW_RESULT;
+}
+
+export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
+    return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
 }
 
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {

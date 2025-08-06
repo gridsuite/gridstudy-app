@@ -119,14 +119,14 @@ import {
     RESET_DIAGRAM_EVENT,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
-    RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
     type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetDiagramEventAction,
     type ResetEquipmentsAction,
     type ResetEquipmentsByTypesAction,
-    type ResetEquipmentsPostLoadflowAction,
+    type ResetEquipmentsPostComputationAction,
     type ResetLogsFilterAction,
     type ResetMapEquipmentsAction,
     SAVE_SPREADSHEET_GS_FILTER,
@@ -146,6 +146,7 @@ import {
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_COMPUTING_STATUS_INFOS,
+    SET_DIAGRAM_GRID_LAYOUT,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
@@ -163,6 +164,7 @@ import {
     type SetComputationStartingAction,
     type SetComputingStatusAction,
     type SetComputingStatusParametersAction,
+    type SetDiagramGridLayoutAction,
     type SetEventScenarioDrawerOpenAction,
     type SetLastCompletedComputationAction,
     type SetModificationsDrawerOpenAction,
@@ -216,7 +218,7 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { getAllChildren } from 'components/graph/util/model-functions';
+import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
 import {
     type IOptionalService,
@@ -261,7 +263,13 @@ import type { UUID } from 'crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { Entries, ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
-import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import {
+    CurrentTreeNode,
+    NetworkModificationNodeInfos,
+    NetworkModificationNodeData,
+    NetworkModificationNodeType,
+    RootNodeData,
+} from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
@@ -271,11 +279,12 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
 
 // Redux state
@@ -392,8 +401,9 @@ export type NadTextMovement = {
 export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
+    nodeType: NetworkModificationNodeType | undefined;
     copyType: ValueOf<typeof CopyType> | null;
-    allChildrenIds: string[] | null;
+    allChildren: NetworkModificationNodeInfos[] | null;
 };
 
 export type Actions = AppActions | AuthenticationActions;
@@ -407,6 +417,11 @@ export interface AppConfigState {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UUID[];
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAMS_LOADED]: boolean;
+}
+
+export interface DiagramGridLayoutConfig {
+    gridLayouts: Layouts;
+    params: DiagramParams[];
 }
 
 export interface AppState extends CommonStoreState, AppConfigState {
@@ -494,6 +509,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
+    diagramGridLayout: DiagramGridLayoutConfig;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -560,8 +576,9 @@ const initialState: AppState = {
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
+        nodeType: undefined,
         copyType: null,
-        allChildrenIds: null,
+        allChildren: null,
     },
     tables: initialTablesState,
     calculationSelections: {},
@@ -596,6 +613,10 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: {},
+    diagramGridLayout: {
+        gridLayouts: {},
+        params: [],
+    },
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1123,16 +1144,23 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
         const nodeSelectionForCopy = action.nodeSelectionForCopy;
-        if (
-            nodeSelectionForCopy.sourceStudyUuid === state.studyUuid &&
-            nodeSelectionForCopy.nodeId &&
-            (nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
-                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT)
-        ) {
-            nodeSelectionForCopy.allChildrenIds = getAllChildren(
+        if (nodeSelectionForCopy.sourceStudyUuid === state.studyUuid && nodeSelectionForCopy.nodeId) {
+            if (
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT
+            ) {
+                nodeSelectionForCopy.allChildren = getAllChildren(
+                    state.networkModificationTreeModel,
+                    nodeSelectionForCopy.nodeId
+                ).map((child) => ({
+                    id: child.id,
+                    nodeType: child.data.nodeType,
+                }));
+            }
+            nodeSelectionForCopy.nodeType = getNetworkModificationNode(
                 state.networkModificationTreeModel,
                 nodeSelectionForCopy.nodeId
-            ).map((child) => child.id);
+            )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
@@ -1380,7 +1408,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, _action: ResetEquipmentsPostLoadflowAction) => {
+    builder.addCase(RESET_EQUIPMENTS_POST_COMPUTATION, (state, _action: ResetEquipmentsPostComputationAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
             [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
@@ -1566,6 +1594,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
+    });
+
+    builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
+        state.diagramGridLayout = action.diagramGridLayout;
     });
 });
 

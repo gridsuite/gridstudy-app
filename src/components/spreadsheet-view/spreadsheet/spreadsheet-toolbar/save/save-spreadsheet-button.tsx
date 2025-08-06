@@ -11,7 +11,6 @@ import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
 import { EquipmentType, FILTER_EQUIPMENTS, useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
-import { SaveSpreadsheetCollectionDialog } from './save-spreadsheet-collection-dialog';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
@@ -24,7 +23,6 @@ import SaveNamingFilterDialog from './save-naming-filter-dialog';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
-    SAVE_COLLECTION = 'SAVE_COLLECTION',
     EXPORT_CSV = 'EXPORT_CSV',
     SAVE_FILTER = 'SAVE_FILTER',
 }
@@ -55,7 +53,6 @@ export default function SaveSpreadsheetButton({
 }: Readonly<SaveSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
-    const saveCollectionDialogOpen = useStateBoolean(false);
     const saveFilterDialogOpen = useStateBoolean(false);
     const { downloadCSVData } = useCsvExport();
     const language = useSelector((state: AppState) => state.computedLanguage);
@@ -70,11 +67,6 @@ export default function SaveSpreadsheetButton({
                 label: 'spreadsheet/save/options/model',
                 action: customSaveDialogOpen.setTrue,
             },
-            [SpreadsheetSaveOptionId.SAVE_COLLECTION]: {
-                id: SpreadsheetSaveOptionId.SAVE_COLLECTION,
-                label: 'spreadsheet/save/options/collection',
-                action: saveCollectionDialogOpen.setTrue,
-            },
             [SpreadsheetSaveOptionId.EXPORT_CSV]: {
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
@@ -85,8 +77,8 @@ export default function SaveSpreadsheetButton({
                         return;
                     }
                     downloadCSVData({
-                        // Filter out the rowIndex column before exporting to CSV
-                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID),
+                        // Filter out the rowIndex column and the hidden columns before exporting to CSV
+                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
                         tableName: tableDefinition.name,
                         language: language,
                         exportDataAsCsv,
@@ -108,7 +100,6 @@ export default function SaveSpreadsheetButton({
         }),
         [
             customSaveDialogOpen.setTrue,
-            saveCollectionDialogOpen.setTrue,
             saveFilterDialogOpen.setTrue,
             dataSize,
             columns,
@@ -150,7 +141,6 @@ export default function SaveSpreadsheetButton({
                 open={customSaveDialogOpen}
                 nodeAliases={nodeAliases}
             />
-            <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
             <SaveNamingFilterDialog open={saveFilterDialogOpen} gridRef={gridRef} tableDefinition={tableDefinition} />
         </>
     );
