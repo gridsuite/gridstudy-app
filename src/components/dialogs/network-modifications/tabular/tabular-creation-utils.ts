@@ -57,7 +57,7 @@ import {
     VOLTAGE_LEVEL_ID,
     VOLTAGE_REGULATION_ON,
 } from 'components/utils/field-constants';
-import { ReactiveCapabilityCurvePoints } from '../../../reactive-limits/reactive-limits.type';
+import { ReactiveCapabilityCurvePoints } from '../../reactive-limits/reactive-limits.type';
 import {
     BOOLEAN,
     CONNECTION_DIRECTIONS,
@@ -67,8 +67,8 @@ import {
     NUMBER,
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
-} from '../../../../network/constants';
-import { convertReactiveCapabilityCurvePointsFromBackToFront, TabularField, TabularFields } from '../tabular-common';
+} from '../../../network/constants';
+import { convertReactiveCapabilityCurvePointsFromBackToFront, TabularField, TabularFields } from './tabular-common';
 
 const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE, required: true, type: BOOLEAN },

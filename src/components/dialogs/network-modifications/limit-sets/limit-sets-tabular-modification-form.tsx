@@ -33,7 +33,7 @@ import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
-} from '../tabular/modification/tabular-modification-utils';
+} from '../tabular/tabular-modification-utils';
 
 const styles = {
     grid: { height: 500, width: '100%' },

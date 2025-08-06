@@ -6,7 +6,7 @@
  */
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { createPropertyModification, Property } from '../common/properties/property-utils';
-import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
+import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
     MODIFICATIONS_TABLE,
     REACTIVE_CAPABILITY_CURVE,
@@ -29,9 +29,28 @@ import {
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
     LANG_FRENCH,
+    ModificationType,
     PredefinedProperties,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { UUID } from 'crypto';
+
+type TabularModificationModificationType = {
+    uuid: UUID;
+    type: 'TABULAR_MODIFICATION';
+    modificationType: ModificationType;
+    modifications: Modification[];
+    properties: TabularProperty[];
+};
+type TabularModificationCreationType = {
+    uuid: UUID;
+    type: 'TABULAR_CREATION';
+    creationType: ModificationType;
+    creations: Modification[];
+    properties: TabularProperty[];
+};
+export type TabularModificationEditDataType = TabularModificationModificationType | TabularModificationCreationType;
 
 export enum TabularModificationType {
     CREATION = 'creation',
@@ -47,8 +66,10 @@ export const tabularFormSchema = yup
     .concat(propertiesSchema)
     .required();
 
-export const emptyTabularFormData = {
-    [TYPE]: null,
+export type TabularFormType = yup.InferType<typeof tabularFormSchema>;
+
+export const emptyTabularFormData: TabularFormType = {
+    [TYPE]: EQUIPMENT_TYPES.GENERATOR,
     [MODIFICATIONS_TABLE]: [],
     [TABULAR_PROPERTIES]: [],
 };

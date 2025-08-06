@@ -97,7 +97,7 @@ import {
     RATIO_TAP_CHANGER,
     TABULAR_PROPERTIES,
 } from 'components/utils/field-constants';
-import { toModificationOperation } from '../../../../utils/utils';
+import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import {
     BOOLEAN,
@@ -109,8 +109,8 @@ import {
     REGULATING_TERMINAL_TYPES,
     SHUNT_COMPENSATOR_TYPES,
     SIDE as SIDE_CONSTANTS,
-} from '../../../../network/constants';
-import { BranchSide } from '../../../../utils/constants';
+} from '../../../network/constants';
+import { BranchSide } from '../../../utils/constants';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
@@ -118,7 +118,7 @@ import {
     Modification,
     TabularField,
     TabularFields,
-} from '../tabular-common';
+} from './tabular-common';
 
 const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE, type: BOOLEAN },
