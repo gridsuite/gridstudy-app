@@ -189,7 +189,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 }
 
                 const oldName: string = limitsGroups[editingTabIndex].name;
-
+                const applicability = limitsGroups[editingTabIndex].applicability;
                 const errorMessage: string = checkLimitSetUnicity(
                     editedLimitGroupName,
                     limitsGroups[editingTabIndex].applicability ?? ''
@@ -206,10 +206,16 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     );
                     const finalId: string = editedLimitGroupName + limitsGroups[editingTabIndex].applicability;
                     setValue(`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${editingTabIndex}].${ID}`, finalId);
-                    if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName) {
+                    if (
+                        getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`) === oldName &&
+                        (applicability === APPLICABILITY.SIDE1.id || applicability === APPLICABILITY.EQUIPMENT.id)
+                    ) {
                         setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, editedLimitGroupName);
                     }
-                    if (getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`) === oldName) {
+                    if (
+                        getValues(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`) === oldName &&
+                        (applicability === APPLICABILITY.SIDE2.id || applicability === APPLICABILITY.EQUIPMENT.id)
+                    ) {
                         setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, editedLimitGroupName);
                     }
                 }

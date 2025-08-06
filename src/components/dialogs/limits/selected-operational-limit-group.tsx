@@ -30,10 +30,10 @@ export const SelectedOperationalLimitGroup = ({
     const opLimitsGroupsNames: string[] = useMemo(() => {
         return optionsValues
             ? optionsValues
-                  .filter((optionObj: OperationalLimitsGroup) => {
-                      console.log('----------optionObj : ', optionObj);
-                      return optionObj.applicability && optionObj.applicability === filteredApplicability;
-                  })
+                  .filter(
+                      (optionObj: OperationalLimitsGroup) =>
+                          optionObj.applicability && optionObj.applicability === filteredApplicability
+                  )
                   .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
                   .filter((id: string) => id != null)
             : [];
