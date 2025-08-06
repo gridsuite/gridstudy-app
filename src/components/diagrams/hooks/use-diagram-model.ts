@@ -225,6 +225,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     positions: diagram.positions,
                     nadPositionsGenerationMode:
                         networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                    positionsConfigUuid: networkVisuParams.networkAreaDiagramParameters.positionsConfigUuid,
                 };
                 fetchOptions = {
                     method: 'POST',
@@ -328,6 +329,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [
             getUrl,
             networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+            networkVisuParams.networkAreaDiagramParameters.positionsConfigUuid,
             getDiagramTitle,
             intl,
             snackInfo,
