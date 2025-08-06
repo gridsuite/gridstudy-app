@@ -57,6 +57,7 @@ interface RootNetworkPanelHeaderProps {
     setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
     closeSearchPanel: () => void;
 }
+const MAX_ROOT_NETWORKS_NUMBER = 4;
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     isRootNetworksProcessing,
@@ -208,7 +209,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                                 onClick={openRootNetworkCreationDialog}
                                 size={'small'}
                                 sx={styles.uploadButton}
-                                disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
+                                disabled={rootNetworks.length >= MAX_ROOT_NETWORKS_NUMBER || isRootNetworksProcessing}
                             >
                                 <FileUpload />
                             </IconButton>
