@@ -44,6 +44,8 @@ export function BranchConnectivityForm({
             isEquipmentModification={isModification}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition1,
+                voltageLevelId: previousValues?.voltageLevelId1,
+                busOrBusbarSectionId: previousValues?.busOrBusbarSectionId1,
                 terminalConnected: previousValues?.terminal1Connected,
             }}
         />
@@ -60,6 +62,8 @@ export function BranchConnectivityForm({
             isEquipmentModification={isModification}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition2,
+                voltageLevelId: previousValues?.voltageLevelId2,
+                busOrBusbarSectionId: previousValues?.busOrBusbarSectionId2,
                 terminalConnected: previousValues?.terminal2Connected,
             }}
         />
