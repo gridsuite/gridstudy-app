@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -13,7 +14,6 @@ import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
 import { MODIFICATIONS_TABLE, CSV_FILENAME, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularCreation } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.js';
 import {
