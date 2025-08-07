@@ -515,7 +515,6 @@
     "exportCaseOnNode": "Export case",
     "NetworkModificationTreeLoadError": "An error occurred while loading network modification tree",
     "MapEquipmentsLoadError": "An error occurred while loading network map",
-    "CaseNameLoadError": "An error occurred while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study had a problem and has been recreated from initial data",
     "StudyUnrecoverableState": "Your study had a problem and can not be recreated",
     "NodeCreateError": "An error occurred while creating node",
@@ -1518,8 +1517,8 @@
     "selectedOperationalLimitsGroup1": "Active limit set on side 1",
     "selectedOperationalLimitsGroup2": "Active limit set on side 2",
     "OpenMapCard": "Add the map",
-    "AddNewCard": "Add a new image",
-    "SaveGridLayout": "Save grid",
+    "AddNewCard": "Images",
+    "SaveGridLayout": "Save",
     "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one"
