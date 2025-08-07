@@ -274,20 +274,4 @@ export default class NetworkModificationTreeModel {
         this.isAnyNodeBuilding =
             this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
     }
-
-    setCaseName(newCaseName: string) {
-        if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
-            const nodeWithOldName = this.treeNodes[0];
-            //check if the node we are modifying is a ROOT node
-            if (isReactFlowRootNodeData(nodeWithOldName)) {
-                this.treeNodes[0] = {
-                    ...nodeWithOldName,
-                    data: {
-                        ...nodeWithOldName.data,
-                        caseName: newCaseName,
-                    },
-                };
-            }
-        }
-    }
 }
