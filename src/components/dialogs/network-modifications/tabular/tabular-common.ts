@@ -303,7 +303,7 @@ export const generateCommentLines = ({
                 });
             }
         }
-        if (secondCommentLine.length > 0) {
+        if (secondCommentLine.length > 0 && secondCommentLine.replaceAll(separator, '').length > 0) {
             commentData.push([secondCommentLine]);
         }
     }
