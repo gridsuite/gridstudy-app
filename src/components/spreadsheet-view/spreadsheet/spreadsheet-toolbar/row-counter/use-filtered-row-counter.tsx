@@ -73,7 +73,7 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition, disabled }
             api.removeEventListener('filterChanged', onFilterChanged);
             api.removeEventListener('modelUpdated', onModelUpdated);
         };
-    }, [gridRef, currentNode, debouncedUpdateRowCount]);
+    }, [gridRef, currentNode, debouncedUpdateRowCount, disabled]);
 
     const rowCountLabel = useMemo(() => {
         if (isLoading || displayedRows === null || totalRows === null) {
