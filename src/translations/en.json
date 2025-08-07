@@ -515,7 +515,6 @@
     "exportCaseOnNode": "Export case",
     "NetworkModificationTreeLoadError": "An error occurred while loading network modification tree",
     "MapEquipmentsLoadError": "An error occurred while loading network map",
-    "CaseNameLoadError": "An error occurred while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study had a problem and has been recreated from initial data",
     "StudyUnrecoverableState": "Your study had a problem and can not be recreated",
     "NodeCreateError": "An error occurred while creating node",
