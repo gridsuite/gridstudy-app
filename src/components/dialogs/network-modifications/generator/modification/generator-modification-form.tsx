@@ -245,6 +245,8 @@ export default function GeneratorModificationForm({
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: generatorToModify?.connectablePosition,
+                voltageLevelId: generatorToModify?.voltageLevelId,
+                busOrBusbarSectionId: generatorToModify?.busOrBusbarSectionId,
                 terminalConnected: generatorToModify?.terminalConnected,
             }}
         />

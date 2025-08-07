@@ -121,6 +121,8 @@ export default function BatteryModificationForm({
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: batteryToModify?.connectablePosition,
+                voltageLevelId: batteryToModify?.voltageLevelId,
+                busOrBusbarSectionId: batteryToModify?.busOrBusbarSectionId,
                 terminalConnected: batteryToModify?.terminalConnected,
             }}
         />
