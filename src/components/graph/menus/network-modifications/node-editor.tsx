@@ -10,13 +10,14 @@ import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
-import { setModificationsDrawerOpen } from '../../../../redux/actions';
+import { setModificationsDrawerOpen, setToggleOptions } from '../../../../redux/actions';
 import { updateTreeNode } from '../../../../services/study/tree-subtree';
 import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
+import { StudyDisplayMode } from '../../../network-modification.type';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -46,9 +47,11 @@ const NodeEditor = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
+        dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS)));
     };
 
     const changeNodeName = (newName: string) => {

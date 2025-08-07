@@ -199,6 +199,8 @@ import {
     ParameterizedComputingType,
     SET_DIAGRAM_GRID_LAYOUT,
     SetDiagramGridLayoutAction,
+    SET_TOGGLE_OPTIONS,
+    setToggleOptionsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -506,6 +508,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
+    toggleOptions: string[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -598,7 +601,7 @@ const initialState: AppState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     isMonoRootStudy: true,
-    studyDisplayMode: StudyDisplayMode.HYBRID,
+    studyDisplayMode: StudyDisplayMode.TREE,
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -613,6 +616,7 @@ const initialState: AppState = {
         gridLayouts: {},
         params: [],
     },
+    toggleOptions: [StudyDisplayMode.TREE],
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1168,6 +1172,10 @@ export const reducer = createReducer(initialState, (builder) => {
         if (action.isModificationsDrawerOpen && state.isEventScenarioDrawerOpen) {
             state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
         }
+    });
+
+    builder.addCase(SET_TOGGLE_OPTIONS, (state, action: setToggleOptionsAction) => {
+        state.toggleOptions = action.toggleOptions;
     });
 
     builder.addCase(SET_EVENT_SCENARIO_DRAWER_OPEN, (state, action: SetEventScenarioDrawerOpenAction) => {

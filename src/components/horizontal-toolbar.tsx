@@ -6,17 +6,11 @@
  */
 
 import List from '@mui/material/List';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import PublicIcon from '@mui/icons-material/Public';
 import IconButton from '@mui/material/IconButton';
-import ListIcon from '@mui/icons-material/List';
 import Tooltip from '@mui/material/Tooltip';
-import DashboardCustomizeOutlinedIcon from '@mui/icons-material/DashboardCustomizeOutlined';
-import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import Divider from '@mui/material/Divider';
-import { setEventScenarioDrawerOpen, setModificationsDrawerOpen, setStudyDisplayMode } from '../redux/actions';
+import { setEventScenarioDrawerOpen, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
@@ -27,7 +21,9 @@ import { darken, Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-
+import { ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon } from '@gridsuite/commons-ui';
 const styles = {
     horizontalToolbar: (theme: Theme) => ({
         backgroundColor: darken(theme.palette.background.paper, 0.2),
@@ -55,8 +51,30 @@ export function HorizontalToolbar() {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
+    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
+    const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
+    const [viewModes, setViewModes] = useState((): string[] => toggleOptions);
+
+    const handleViewMode = (event: any, newModes: string[]) => {
+        // Prevent empty selection: Keep at least one selection
+        if (newModes.length === 0) {
+            return;
+        }
+        //todo: check PO for this: if the tree is not visible you need to hide the modif panel
+        if (!newModes.includes(StudyDisplayMode.TREE) && newModes.includes(StudyDisplayMode.MODIFICATIONS)) {
+            return;
+        }
+        //show the modifi panel
+        dispatch(setModificationsDrawerOpen(newModes.includes(StudyDisplayMode.MODIFICATIONS)));
+
+        dispatch(setToggleOptions(newModes));
+        setViewModes(newModes);
+    };
+
+    useEffect(() => {
+        setViewModes(toggleOptions);
+    }, [toggleOptions]);
     const isModificationsDrawerOpen = useSelector((state: AppState) => state.isModificationsDrawerOpen);
 
     const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
@@ -68,25 +86,6 @@ export function HorizontalToolbar() {
     const toggleEventScenarioDrawer = () => {
         dispatch(setEventScenarioDrawerOpen(!isEventScenarioDrawerOpen));
     };
-
-    function setMapDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
-    }
-
-    function setTreeDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.TREE));
-    }
-
-    function setHybridDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.HYBRID));
-    }
-
-    function setDiagramGridLayoutDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT));
-    }
-    function setDiagramGridLayoutAndTreeDisplay() {
-        dispatch(setStudyDisplayMode(StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE));
-    }
 
     return (
         <Grid container alignItems="center" sx={styles.horizontalToolbar}>
@@ -142,184 +141,37 @@ export function HorizontalToolbar() {
                             </span>
                         </Tooltip>
                     )}
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'NetworkModifications' })}
-                        placement="right"
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                        slotProps={{
-                            popper: {
-                                sx: {
-                                    '& .MuiTooltip-tooltip': styles.tooltip,
-                                },
-                            },
-                        }}
+                    <div
                         style={{
-                            marginRight: '20px',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginRight: '10px',
                         }}
                     >
-                        <span>
-                            <IconButton
-                                size={'small'}
-                                sx={isModificationsDrawerOpen ? styles.selected : styles.notSelected}
-                                disabled={
-                                    studyDisplayMode === StudyDisplayMode.MAP ||
-                                    currentNode === null ||
-                                    currentNode?.type !== 'NETWORK_MODIFICATION'
-                                }
-                                onClick={toggleModificationsDrawer}
-                            >
-                                <ListIcon />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
-                    <Divider orientation="vertical" flexItem />
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'NetworkModificationTree' })}
-                        placement="right"
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                        slotProps={{
-                            popper: {
-                                sx: {
-                                    '& .MuiTooltip-tooltip': styles.tooltip,
-                                },
-                            },
-                        }}
-                        style={{
-                            marginLeft: '20px',
-                            marginRight: '8px',
-                        }}
-                    >
-                        <IconButton
-                            size={'small'}
-                            sx={studyDisplayMode === StudyDisplayMode.TREE ? styles.selected : styles.notSelected}
-                            onClick={setTreeDisplay}
-                        >
-                            <AccountTreeIcon />
-                        </IconButton>
-                    </Tooltip>
+                        <span style={{ color: 'white', marginRight: '10px' }}>Affichage</span>
 
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'HybridDisplay' })}
-                        placement="right"
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                        slotProps={{
-                            popper: {
-                                sx: {
-                                    '& .MuiTooltip-tooltip': styles.tooltip,
-                                },
-                            },
-                        }}
-                        style={{
-                            marginRight: '8px',
-                        }}
-                    >
-                        <IconButton
-                            size={'small'}
-                            sx={studyDisplayMode === StudyDisplayMode.HYBRID ? styles.selected : styles.notSelected}
-                            onClick={setHybridDisplay}
+                        <ToggleButtonGroup
+                            value={viewModes}
+                            onChange={handleViewMode}
+                            aria-label="view modes"
+                            size="small"
                         >
-                            <AccountTreeIcon />
-                            <PublicIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'Map' })}
-                        placement="right"
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                        slotProps={{
-                            popper: {
-                                sx: {
-                                    '& .MuiTooltip-tooltip': styles.tooltip,
-                                },
-                            },
-                        }}
-                        style={{
-                            marginRight: '8px',
-                        }}
-                    >
-                        <IconButton
-                            size={'small'}
-                            sx={studyDisplayMode === StudyDisplayMode.MAP ? styles.selected : styles.notSelected}
-                            onClick={setMapDisplay}
-                        >
-                            <PublicIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={intl.formatMessage({
-                            id: 'DiagramGridLayout',
-                        })}
-                        placement="right"
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                        slotProps={{
-                            popper: {
-                                sx: {
-                                    '& .MuiTooltip-tooltip': styles.tooltip,
-                                },
-                            },
-                        }}
-                        style={{
-                            marginRight: '8px',
-                        }}
-                    >
-                        <span>
-                            <IconButton
-                                size={'small'}
-                                sx={
-                                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT
-                                        ? styles.selected
-                                        : styles.notSelected
-                                }
-                                onClick={setDiagramGridLayoutDisplay}
+                            <ToggleButton
+                                value={StudyDisplayMode.TREE}
+                                sx={studyDisplayMode === StudyDisplayMode.TREE ? styles.selected : styles.notSelected}
                             >
-                                <DashboardCustomizeOutlinedIcon />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
-                    <Tooltip
-                        title={intl.formatMessage({
-                            id: 'DiagramGridLayoutAndTree',
-                        })}
-                        placement="right"
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                        slotProps={{
-                            popper: {
-                                sx: {
-                                    '& .MuiTooltip-tooltip': styles.tooltip,
-                                },
-                            },
-                        }}
-                        style={{
-                            marginRight: '8px',
-                        }}
-                    >
-                        <span>
-                            <IconButton
-                                size={'small'}
-                                sx={
-                                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                                        ? styles.selected
-                                        : styles.notSelected
-                                }
-                                onClick={setDiagramGridLayoutAndTreeDisplay}
-                            >
-                                <AutoAwesomeMosaicOutlinedIcon />
-                            </IconButton>
-                        </span>
-                    </Tooltip>
+                                <DeviceHubIcon />
+                            </ToggleButton>
+                            <ToggleButton value={StudyDisplayMode.MODIFICATIONS}>
+                                <TuneIcon />
+                            </ToggleButton>
+                            <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
+                                <PhotoLibraryIcon />
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </div>
                 </List>
             </Grid>
         </Grid>

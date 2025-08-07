@@ -667,6 +667,18 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): 
     };
 }
 
+export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
+export type setToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
+    toggleOptions: string[];
+};
+
+export function setToggleOptions(toggleOptions: string[]): setToggleOptionsAction {
+    return {
+        type: SET_TOGGLE_OPTIONS,
+        toggleOptions: toggleOptions,
+    };
+}
+
 export const SET_MONO_ROOT_STUDY = 'SET_MONO_ROOT_STUDY';
 export type SetMonoRootStudyAction = Readonly<Action<typeof SET_MONO_ROOT_STUDY>> & {
     isMonoRootStudy: boolean;
