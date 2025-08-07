@@ -60,30 +60,6 @@ export function CreateVoltageLevelSectionForm({
         />
     );
 
-    const getHorizPosWithMaxSections = useCallback(() => {
-        if (!busBarSectionInfos) {
-            return [];
-        }
-        let maxSections = 0;
-        let horizPosWithMax = null;
-        const sortedEntries = Object.entries(busBarSectionInfos)
-            .filter(([key]) => key.startsWith('horizPos:'))
-            .sort(([keyA], [keyB]) => {
-                const numA = parseInt(keyA.split(':')[1]);
-                const numB = parseInt(keyB.split(':')[1]);
-                return numA - numB;
-            });
-        sortedEntries.forEach(([key, sections]) => {
-            if (Array.isArray(sections)) {
-                if (sections.length > maxSections) {
-                    maxSections = sections.length;
-                    horizPosWithMax = key.split(':')[1];
-                }
-            }
-        });
-        return horizPosWithMax;
-    }, [busBarSectionInfos]);
-
     const busbarSectionOptions = useMemo(() => {
         if (!busBarSectionInfos) {
             return [];
@@ -91,13 +67,7 @@ export function CreateVoltageLevelSectionForm({
 
         let sectionsToUse = {};
 
-        if (sectionCount === 'all') {
-            const horizPosWithMax = getHorizPosWithMaxSections();
-            if (horizPosWithMax) {
-                const keyWithMax = `horizPos:${horizPosWithMax}`;
-                sectionsToUse = { [keyWithMax]: busBarSectionInfos[keyWithMax] };
-            }
-        } else if (sectionCount) {
+        if (sectionCount) {
             const selectedKey = `horizPos:${sectionCount}`;
             if (busBarSectionInfos[selectedKey]) {
                 sectionsToUse = { [selectedKey]: busBarSectionInfos[selectedKey] };
@@ -121,13 +91,13 @@ export function CreateVoltageLevelSectionForm({
         });
 
         return options.sort((a, b) => a.id.localeCompare(b.id));
-    }, [busBarSectionInfos, sectionCount, getHorizPosWithMaxSections]);
+    }, [busBarSectionInfos, sectionCount]);
 
     const busBarOptions = useMemo(() => {
         if (!busBarSectionInfos) {
             return [];
         }
-        const options = Object.keys(busBarSectionInfos)
+        return Object.keys(busBarSectionInfos)
             .sort((a, b) => {
                 const aNum = parseInt(a.split(':')[1]);
                 const bNum = parseInt(b.split(':')[1]);
@@ -140,14 +110,6 @@ export function CreateVoltageLevelSectionForm({
                     label: intl.formatMessage({ id: 'BusbarNumber' }, { number: busbarNumber }),
                 };
             });
-
-        return [
-            ...options,
-            {
-                id: 'all',
-                label: intl.formatMessage({ id: 'AllBusbars' }),
-            },
-        ];
     }, [busBarSectionInfos, intl]);
 
     const busbarCountField = (
@@ -179,7 +141,35 @@ export function CreateVoltageLevelSectionForm({
             disabled={!sectionCount}
         />
     );
-    const newSectionField = <Slider min={0} max={3} step={0.1} value={1.5} track={false} size="small" disabled />;
+    const getLabelDescription = useCallback(() => {
+        return intl.formatMessage({ id: 'newSection' });
+    }, [intl]);
+    const newSectionField = (
+        <Slider
+            min={0}
+            max={3}
+            step={0.1}
+            value={1.5}
+            track={false}
+            valueLabelFormat={getLabelDescription}
+            valueLabelDisplay="on"
+            size="medium"
+            disabled
+            sx={{
+                '& .MuiSlider-thumb': {
+                    backgroundColor: '#1976d2',
+                    color: '#1976d2',
+                    '&:hover': {
+                        backgroundColor: '#1976d2',
+                    },
+                    '&.Mui-disabled': {
+                        backgroundColor: '#1976d2',
+                        color: '#1976d2',
+                    },
+                },
+            }}
+        />
+    );
     const newSwitchStatesField = (
         <CheckboxInput name={NEW_SWITCH_STATES} label={'newSwitchStates'} formProps={{ disabled: !sectionCount }} />
     );

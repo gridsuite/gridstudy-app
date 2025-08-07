@@ -139,6 +139,7 @@ export function SectionPositionSlider({ busbarSectionOptions, disabled }: Sectio
                     step={1}
                     marks={sliderMarks}
                     valueLabelDisplay="on"
+                    track={false}
                     aria-label="Custom marks"
                     aria-labelledby="track-false-slider"
                     size="medium"

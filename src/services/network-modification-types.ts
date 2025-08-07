@@ -809,7 +809,6 @@ export interface CreateVoltageLevelSectionInfos {
     voltageLevelId: string;
     busbarSectionId: string;
     afterBusbarSectionId: boolean;
-    allBusbars: boolean;
     leftSwitchKind: string;
     rightSwitchKind: string;
     switchOpen: boolean;

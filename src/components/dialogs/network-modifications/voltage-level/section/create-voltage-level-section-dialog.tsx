@@ -161,17 +161,10 @@ export default function CreateVoltageLevelSectionDialog({
 
     const onSubmit = useCallback(
         (voltageLevelSection: CreateVoltageLevelSectionDialogSchemaForm) => {
-            console.log(
-                '=======Number(voltageLevelSection?.busbarSections)',
-                Number(voltageLevelSection?.busbarSections)
-            );
-            console.log('=======Number(voltageLevelSection?.busbarCount)', Number(voltageLevelSection?.busbarCount));
-
             const voltageLevelSectionInfos = {
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                 voltageLevelId: selectedId,
                 busbarSectionId: voltageLevelSection?.busbarSectionId || '',
-                allBusbars: voltageLevelSection?.busbarCount === 'all',
                 afterBusbarSectionId: voltageLevelSection?.isAfterBusBarSectionId ?? false,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || '',
                 rightSwitchKind: voltageLevelSection?.switchesAfterSections || '',
