@@ -65,6 +65,7 @@ import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
 import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -108,6 +109,7 @@ export default function LoadModificationDialog({
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
@@ -307,6 +309,7 @@ export default function LoadModificationDialog({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         loadToModify={loadToModify}
                         tabIndex={tabIndex}
+                        voltageLevelOptions={voltageLevelOptions}
                         isModification={true}
                     />
                 )}

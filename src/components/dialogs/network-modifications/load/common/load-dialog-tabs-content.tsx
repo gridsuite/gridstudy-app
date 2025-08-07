@@ -24,7 +24,7 @@ interface LoadDialogTabsContentProps {
     currentRootNetworkUuid: UUID;
     loadToModify?: LoadFormInfos | null;
     tabIndex: number;
-    voltageLevelOptions?: Identifiable[];
+    voltageLevelOptions: Identifiable[];
     isModification?: boolean;
 }
 
