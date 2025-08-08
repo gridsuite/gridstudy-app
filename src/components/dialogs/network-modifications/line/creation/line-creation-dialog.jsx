@@ -31,8 +31,7 @@ import {
     G1,
     G2,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
+    OPERATIONAL_LIMITS_GROUPS,
     R,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
@@ -64,7 +63,6 @@ import {
     getHeaderValidationSchema,
     LineCreationDialogTab,
 } from './line-creation-dialog-utils';
-import { LimitsPane } from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getAllLimitsFormData,
@@ -87,6 +85,7 @@ import {
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
+import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation.tsx';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -183,8 +182,7 @@ const LineCreationDialog = ({
                         )),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS_1]: formatCompleteCurrentLimit(line.currentLimits1),
-                    [OPERATIONAL_LIMITS_GROUPS_2]: formatCompleteCurrentLimit(line.currentLimits2),
+                    [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(line.currentLimits),
                     [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
                     [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
@@ -232,8 +230,11 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS_1]: line.operationalLimitsGroups1,
-                    [OPERATIONAL_LIMITS_GROUPS_2]: line.operationalLimitsGroups2,
+                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                        ...baseData,
+                        name: id,
+                        id: id + baseData.applicability,
+                    })),
                     [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
                     [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
                 }),
@@ -286,8 +287,7 @@ const LineCreationDialog = ({
                 busOrBusbarSectionId1: characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId2: characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                limitsGroups1: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_1]),
-                limitsGroups2: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_2]),
+                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
                 selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
                 isUpdate: !!editData,
@@ -399,7 +399,7 @@ const LineCreationDialog = ({
                 </Box>
 
                 <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
-                    <LimitsPane />
+                    <LimitsPaneCreation />
                 </Box>
 
                 <EquipmentSearchDialog
