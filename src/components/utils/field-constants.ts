@@ -71,8 +71,7 @@ export const RATED_S = 'ratedS';
 
 export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
-export const OPERATIONAL_LIMITS_GROUPS_1 = 'operationalLimitsGroups1';
-export const OPERATIONAL_LIMITS_GROUPS_2 = 'operationalLimitsGroups2';
+export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
@@ -217,6 +216,7 @@ export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
+export const APPLICABIlITY = 'applicability';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
