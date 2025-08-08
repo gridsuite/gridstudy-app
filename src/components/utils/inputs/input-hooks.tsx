@@ -162,5 +162,5 @@ export const useCSVPicker = ({
         );
     }, [_acceptedFile, disabled, header, intl, label, maxTapNumber, CSVReader, language]);
 
-    return [_acceptedFile, field, fileError, resetFile] as const;
+    return [_acceptedFile, field, fileError, setAcceptedFile, resetFile] as const;
 };

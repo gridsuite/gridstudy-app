@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants.js';
+import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, CSV_FILENAME, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.js';
@@ -91,6 +91,7 @@ const TabularModificationDialog = ({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
                 [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
+                [CSV_FILENAME]: editData.csvFilename,
             });
         }
     }, [editData, reset, intl]);
@@ -110,6 +111,7 @@ const TabularModificationDialog = ({
                 modifications,
                 editData?.uuid,
                 ModificationType.TABULAR_MODIFICATION,
+                formData[CSV_FILENAME],
                 formData[TABULAR_PROPERTIES]
             ).catch((error) => {
                 snackError({
