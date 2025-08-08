@@ -20,6 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
 import { OperationalLimitsGroup } from '../../../../services/network-modification-types';
 import { PopoverProps } from '@mui/material/Popover';
+import { APPLICABILITY } from '../../../network/constants';
 
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
@@ -53,13 +54,21 @@ export function LimitsGroupsContextualMenu({
 
     const handleDeleteTab = () => {
         if (indexSelectedLimitSet !== null) {
-            const tabId: string = getValues(operationalLimitsGroupsFormName)?.[indexSelectedLimitSet]?.id;
+            const tabName: string = getValues(operationalLimitsGroupsFormName)?.[indexSelectedLimitSet]?.name;
+            const applicability: string = getValues(operationalLimitsGroupsFormName)?.[indexSelectedLimitSet]
+                ?.applicability;
             // if this operational limit was selected, deselect it
-            if (selectedLimitsGroups1 === tabId) {
-                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, '');
+            if (
+                selectedLimitsGroups1 === tabName &&
+                (applicability === APPLICABILITY.SIDE1.id || applicability === APPLICABILITY.EQUIPMENT.id)
+            ) {
+                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_1}`, null);
             }
-            if (selectedLimitsGroups2 === tabId) {
-                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, '');
+            if (
+                selectedLimitsGroups2 === tabName &&
+                (applicability === APPLICABILITY.SIDE2.id || applicability === APPLICABILITY.EQUIPMENT.id)
+            ) {
+                setValue(`${parentFormName}.${SELECTED_LIMITS_GROUP_2}`, null);
             }
             removeLimitsGroups(indexSelectedLimitSet);
             setIndexSelectedLimitSet(null);

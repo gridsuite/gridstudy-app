@@ -1099,6 +1099,7 @@ export function createTabularModification(
     modifications: any,
     modificationUuid: UUID,
     type: ModificationType,
+    csvFilename: string,
     properties?: TabularProperty[]
 ) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -1121,6 +1122,7 @@ export function createTabularModification(
             modificationType: modificationType,
             modifications: modifications,
             properties: properties,
+            csvFilename: csvFilename,
         }),
     });
 }
@@ -2005,7 +2007,8 @@ export function createTabularCreation(
     creations: any,
     properties: TabularProperty[],
     isUpdate: boolean,
-    modificationUuid: UUID
+    modificationUuid: UUID,
+    csvFilename: string
 ) {
     let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -2027,6 +2030,7 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
             properties: properties,
+            csvFilename: csvFilename,
         }),
     });
 }

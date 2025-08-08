@@ -60,6 +60,7 @@ export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationTy
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
+export const CSV_FILENAME = 'csvFilename';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';

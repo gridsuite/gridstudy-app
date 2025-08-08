@@ -50,9 +50,9 @@ export function LimitsPaneCreation({
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
     const getCurrentLimits = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits && indexSelectedLimitSet != null) {
-            return equipmentToModify.currentLimits.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === limitsGroups[indexSelectedLimitSet].id
+        if (equipmentToModify?.currentLimits1) {
+            return equipmentToModify.currentLimits1.find(
+                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
             );
         }
         return null;
