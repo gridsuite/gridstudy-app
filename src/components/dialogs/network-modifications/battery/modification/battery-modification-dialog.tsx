@@ -230,8 +230,6 @@ export default function BatteryModificationDialog({
                                 `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
                             );
-                            setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
-                            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
                             setBatteryToModify({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,

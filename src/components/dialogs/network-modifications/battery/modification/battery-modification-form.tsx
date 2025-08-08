@@ -26,6 +26,7 @@ import { UUID } from 'crypto';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 export interface BatteryModificationFormProps {
     studyUuid: UUID;
@@ -45,6 +46,7 @@ export default function BatteryModificationForm({
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
 }: Readonly<BatteryModificationFormProps>) {
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const batteryIdField = (
         <TextField
             size="small"
@@ -111,6 +113,7 @@ export default function BatteryModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
@@ -118,6 +121,8 @@ export default function BatteryModificationForm({
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: batteryToModify?.connectablePosition,
+                voltageLevelId: batteryToModify?.voltageLevelId,
+                busOrBusbarSectionId: batteryToModify?.busOrBusbarSectionId,
                 terminalConnected: batteryToModify?.terminalConnected,
             }}
         />

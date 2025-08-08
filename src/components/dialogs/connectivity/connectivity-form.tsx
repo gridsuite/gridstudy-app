@@ -73,8 +73,14 @@ interface ConnectivityFormProps {
     currentRootNetworkUuid: UUID;
     onVoltageLevelChangeCallback?: () => void;
     isEquipmentModification?: boolean;
-    previousValues?: { connectablePosition?: ConnectablePositionFormInfos; terminalConnected?: boolean | null };
+    previousValues?: {
+        connectablePosition?: ConnectablePositionFormInfos;
+        voltageLevelId?: string;
+        busOrBusbarSectionId?: string;
+        terminalConnected?: boolean | null;
+    };
 }
+
 export function ConnectivityForm({
     id = CONNECTIVITY,
     voltageLevelSelectLabel = 'VOLTAGE_LEVEL',
@@ -113,9 +119,6 @@ export function ConnectivityForm({
     );
 
     useEffect(() => {
-        if (isEquipmentModification) {
-            return;
-        }
         if (watchVoltageLevelId) {
             const existingVoltageLevelOption = voltageLevelOptions.find((option) => option.id === watchVoltageLevelId);
             if (existingVoltageLevelOption) {
@@ -136,24 +139,13 @@ export function ConnectivityForm({
                 setBusOrBusbarSectionOptions([]);
             }
         }
-    }, [
-        watchVoltageLevelId,
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        voltageLevelOptions,
-        id,
-        isEquipmentModification,
-    ]);
+    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelOptions, id]);
 
     useEffect(() => {
-        if (isEquipmentModification) {
-            return;
-        }
         if (newBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
         }
-    }, [newBusOrBusbarSectionOptions, isEquipmentModification]);
+    }, [newBusOrBusbarSectionOptions]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
@@ -162,24 +154,13 @@ export function ConnectivityForm({
     }, [id, onVoltageLevelChangeCallback, setValue]);
 
     useEffect(() => {
-        if (isEquipmentModification) {
-            return;
-        }
         const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}`);
         if (busOrBusbarSectionOptions?.length > 0 && currentBusOrBusbarSection?.id !== null) {
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, currentBusOrBusbarSection);
         }
-    }, [busOrBusbarSectionOptions, setValue, id, getValues, isEquipmentModification]);
+    }, [busOrBusbarSectionOptions, setValue, id, getValues]);
 
-    const newVoltageLevelField = isEquipmentModification ? (
-        <AutocompleteInput
-            name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
-            label={voltageLevelSelectLabel}
-            options={vlOptions}
-            disabled={isEquipmentModification}
-            size={'small'}
-        />
-    ) : (
+    const newVoltageLevelField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
             outputTransform={(value) => {
@@ -189,6 +170,7 @@ export function ConnectivityForm({
                 }
                 return value;
             }}
+            previousValue={isEquipmentModification ? previousValues?.voltageLevelId : undefined}
             onChangeCallback={handleChange}
             allowNewValue
             forcePopupIcon
@@ -230,15 +212,7 @@ export function ConnectivityForm({
         <SwitchInput name={`${id}.${CONNECTED}`} label="connected" />
     );
 
-    const newBusOrBusbarSectionField = isEquipmentModification ? (
-        <AutocompleteInput
-            name={`${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`}
-            label="BusBarBus"
-            options={busOrBusbarSectionOptions}
-            disabled={isEquipmentModification}
-            size={'small'}
-        />
-    ) : (
+    const newBusOrBusbarSectionField = (
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
@@ -247,6 +221,7 @@ export function ConnectivityForm({
             name={`${id}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
             options={busOrBusbarSectionOptions}
+            previousValue={isEquipmentModification ? previousValues?.busOrBusbarSectionId : undefined}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             inputTransform={(value) => value ?? ''}
