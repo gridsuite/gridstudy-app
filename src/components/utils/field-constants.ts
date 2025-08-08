@@ -60,6 +60,7 @@ export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationTy
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
+export const CSV_FILENAME = 'csvFilename';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';
@@ -70,8 +71,7 @@ export const RATED_S = 'ratedS';
 
 export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
-export const OPERATIONAL_LIMITS_GROUPS_1 = 'operationalLimitsGroups1';
-export const OPERATIONAL_LIMITS_GROUPS_2 = 'operationalLimitsGroups2';
+export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
@@ -225,6 +225,7 @@ export const AERIAL_AREA_LIST = 'aerialAreaList';
 export const AERIAL_TEMPERATURE = 'aerialTemperature';
 export const UNDERGROUND_AREA = 'aerialArea';
 export const UNDERGROUND_SHAPE_FACTOR = 'aerialTemperature';
+export const APPLICABIlITY = 'applicability';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
