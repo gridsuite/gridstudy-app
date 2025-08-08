@@ -83,6 +83,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const watchTable = useWatch({
         name: MODIFICATIONS_TABLE,
     });
+    const watchFileName = useWatch({
+        name: CSV_FILENAME,
+    });
 
     const csvFields = useMemo(() => {
         const fields =
@@ -299,8 +302,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, []);
 
     useEffect(() => {
-        setAcceptedFile(getValues(CSV_FILENAME) ? new File([], getValues(CSV_FILENAME)) : undefined);
-    }, [setAcceptedFile, getValues]);
+        setAcceptedFile(watchFileName ? new File([], watchFileName) : undefined);
+    }, [setAcceptedFile, watchFileName]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
