@@ -177,7 +177,7 @@ export const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [AMOUNT_TEMPORARY_LIMITS]: yup.number().positive().max(50).required(),
+        [AMOUNT_TEMPORARY_LIMITS]: yup.number().min(1, 'amountTemporaryLimitsError').max(50, 'amountTemporaryLimitsError').required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
         [CSV_FILENAME]: yup.string().nullable().required(),
     })

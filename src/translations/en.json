@@ -617,7 +617,7 @@
     "LimitSets": "Limit sets",
     "LimitSetsTabularModification": "Tabular modification of limits sets",
     "amountTemporaryLimits": "Number of temporary limits",
-    "LimitSets": "Limit sets",
+    "amountTemporaryLimitsError": "Limits number between 1 and 50",
     "permanentLimit": "Permanent current limit",
     "acceptableDuration" : "Duration (s)",
     "value": "Value (A)",
