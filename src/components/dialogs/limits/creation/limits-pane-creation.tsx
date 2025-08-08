@@ -108,6 +108,7 @@ export function LimitsPaneCreation({
                         label="Side1"
                         filteredApplicability={APPLICABILITY.SIDE1.id}
                         previousValue={equipmentToModify?.selectedOperationalLimitsGroup1}
+                        isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
                 <Grid item xs={3}>
@@ -117,6 +118,7 @@ export function LimitsPaneCreation({
                         label="Side2"
                         filteredApplicability={APPLICABILITY.SIDE2.id}
                         previousValue={equipmentToModify?.selectedOperationalLimitsGroup2}
+                        isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
             </Grid>
