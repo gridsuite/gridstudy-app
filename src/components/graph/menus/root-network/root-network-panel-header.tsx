@@ -154,7 +154,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {
+    const doCreateRootNetwork = ({ name, tag, description, caseName, caseId }: FormData) => {
         if (!studyUuid) {
             return;
         }
@@ -165,7 +165,17 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-                createRootNetwork(caseId as UUID, params.formatName, name, tag, studyUuid, customizedCurrentParameters);
+                createRootNetwork(studyUuid, {
+                    name,
+                    tag,
+                    description,
+                    importParametersRaw: customizedCurrentParameters,
+                    caseInfos: {
+                        originalCaseUuid: caseId as UUID,
+                        caseFormat: params.formatName,
+                    },
+                });
+
                 if (isMonoRootStudy && rootNetworks.length === 1) {
                     dispatch(setMonoRootStudy(false));
                 }
