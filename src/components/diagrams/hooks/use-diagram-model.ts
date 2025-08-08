@@ -223,7 +223,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                     positions: diagram.positions,
-                    withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+                    nadPositionsGenerationMode:
+                        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                    positionsConfigUuid: networkVisuParams.networkAreaDiagramParameters.positionsConfigUuid,
                 };
                 fetchOptions = {
                     method: 'POST',
@@ -324,7 +326,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [getDiagramTitle, getUrl, intl, snackInfo, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [
+            getUrl,
+            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+            networkVisuParams.networkAreaDiagramParameters.positionsConfigUuid,
+            getDiagramTitle,
+            intl,
+            snackInfo,
+        ]
     );
 
     const findSimilarDiagram = useCallback(
