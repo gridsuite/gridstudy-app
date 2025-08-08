@@ -802,6 +802,19 @@ export interface CreateCouplingDeviceInfos {
     couplingDeviceInfos: CouplingDeviceInfos;
 }
 
+export interface CreateVoltageLevelSectionInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    busbarSectionId: string;
+    afterBusbarSectionId: boolean;
+    leftSwitchKind: string;
+    rightSwitchKind: string;
+    switchOpen: boolean;
+    busbarCount: number;
+    sectionCount: number;
+}
+
 export type NetworkModificationRequestInfos = {
     studyUuid: UUID;
     nodeUuid: UUID;
