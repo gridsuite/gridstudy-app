@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,9 +10,11 @@ import { useIntl } from 'react-intl';
 import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { DndTable, DndColumnType } from '@gridsuite/commons-ui';
+import SubstationsAutocomplete from './substations-autocomplete.js';
 
-const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERING }) => {
+const SubstationsGeneratorsOrderingPane = ({ substations }) => {
     const intl = useIntl();
+    const id = SUBSTATIONS_GENERATORS_ORDERING;
 
     const columnsDefinition = useMemo(() => {
         return [
@@ -21,7 +23,12 @@ const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERIN
                 dataKey: SUBSTATION_IDS,
                 initialValue: [],
                 editable: true,
-                type: DndColumnType.CHIP_ITEMS,
+                type: DndColumnType.CUSTOM,
+                component: (rowIndex) =>
+                    SubstationsAutocomplete({
+                        name: `${id}[${rowIndex}].${SUBSTATION_IDS}`,
+                        substations: substations,
+                    }),
             },
         ].map((column) => ({
             ...column,
@@ -30,7 +37,7 @@ const SubstationsGeneratorsOrderingPane = ({ id = SUBSTATIONS_GENERATORS_ORDERIN
                 .toLowerCase()
                 .replace(/^\w/, (c) => c.toUpperCase()),
         }));
-    }, [intl]);
+    }, [intl, substations, id]);
 
     const useFieldArraySubstationsGeneratorsOrdering = useFieldArray({
         name: `${id}`,
