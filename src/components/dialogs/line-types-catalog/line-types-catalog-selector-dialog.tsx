@@ -10,7 +10,7 @@ import { BasicModificationDialog } from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { AutocompleteInput, CustomAGGrid, Option } from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, Option, useSnackMessage } from '@gridsuite/commons-ui';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
@@ -26,6 +26,7 @@ import {
 import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
 import { useFormContext } from 'react-hook-form';
+import { getLineTypeWithLimits } from '../../../services/network-modification';
 
 const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -64,6 +65,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     const [aerialAreas, setAerialAreas] = useState<Option[]>([]);
     const [aerialTemperature, setAerialTemperature] = useState<Option[]>([]);
     const [undergroundArea, setUndergroundArea] = useState<Option[]>([]);
+    const { snackError } = useSnackMessage();
     const undergroundShapeFactor: Option[] = [
         { id: '1', label: '1' },
         { id: '0.95', label: '0.95' },
@@ -84,7 +86,13 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         return [];
     }, [rowData]);
 
-    const handleClear = useCallback(() => onClose && onClose(), [onClose]);
+    const handleClear = useCallback(() => {
+        setValue(AERIAL_AREA, null);
+        setValue(AERIAL_TEMPERATURE, null);
+        setValue(UNDERGROUND_AREA, null);
+        setValue(UNDERGROUND_SHAPE_FACTOR, null);
+        onClose && onClose();
+    }, [onClose]);
 
     const handleSubmit = useCallback(() => {
         if (selectedRow?.category === 'AERIAL') {
@@ -100,16 +108,13 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             }
         } else if (selectedRow?.category === 'UNDERGROUND') {
             const selectedArea = getValues(UNDERGROUND_AREA);
-            console.log('selectedArea', selectedArea);
             const selectedShapeFactor = parseFloat(getValues(UNDERGROUND_SHAPE_FACTOR)?.id);
-            console.log('selectedShapeFactor', selectedShapeFactor);
             if (undergroundArea.length > 0) {
                 const filteredLimits = selectedRow?.limitsForLineType.filter((limit) => limit.area === selectedArea.id);
                 if (filteredLimits) {
                     filteredLimits.forEach(
                         (limit) => (limit.permanentLimit = limit.permanentLimit / selectedShapeFactor)
                     );
-                    console.log(filteredLimits);
                     selectedRow.limitsForLineType = filteredLimits;
                 }
             }
@@ -131,46 +136,52 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         const selectedRow = gridRef.current?.api?.getSelectedRows();
         if (selectedRow?.length) {
             const selectedData = selectedRow[0];
-            setSelectedRow(selectedData ?? null);
-            if (selectedData !== null) {
+            getLineTypeWithLimits(selectedData.id)
+                .then((lineTypeWithLimits: LineTypeInfo) => {
+                    selectedData.limitsForLineType = lineTypeWithLimits.limitsForLineType;
+                })
+                .catch((error) =>
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'LineTypesCatalogFetchingError',
+                    })
+                );
+            setSelectedRow(selectedData);
+            if (selectedData.limitsForLineType != null) {
                 if (selectedData.category === 'AERIAL') {
-                    if (selectedData.limitsForLineType != null) {
-                        let aerialAreas = new Set<string>(
-                            selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
-                        );
-                        setAerialAreas(
-                            Array.from(aerialAreas.values()).map((value) => ({
-                                id: value,
-                                label: value,
-                            }))
-                        );
-                        setValue(AERIAL_AREA_LIST, aerialAreas);
-                        let aerialTemperature = new Set<string>(
-                            selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
-                        );
-                        setAerialTemperature(
-                            Array.from(aerialTemperature.values()).map((value) => ({
-                                id: value,
-                                label: value,
-                            }))
-                        );
-                    }
+                    let aerialAreas = new Set<string>(
+                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                    );
+                    setAerialAreas(
+                        Array.from(aerialAreas.values()).map((value) => ({
+                            id: value,
+                            label: value,
+                        }))
+                    );
+                    // setValue(AERIAL_AREA_LIST, aerialAreas);
+                    let aerialTemperature = new Set<string>(
+                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
+                    );
+                    setAerialTemperature(
+                        Array.from(aerialTemperature.values()).map((value) => ({
+                            id: value,
+                            label: value,
+                        }))
+                    );
                 } else if (selectedData.category === 'UNDERGROUND') {
-                    if (selectedData.limitsForLineType != null) {
-                        let undergroundAreas = new Set<string>(
-                            selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
-                        );
-                        setUndergroundArea(
-                            Array.from(undergroundAreas.values()).map((value) => ({
-                                id: value,
-                                label: value,
-                            }))
-                        );
-                    }
+                    let undergroundAreas = new Set<string>(
+                        selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                    );
+                    setUndergroundArea(
+                        Array.from(undergroundAreas.values()).map((value) => ({
+                            id: value,
+                            label: value,
+                        }))
+                    );
                 }
             }
         }
-    }, [setValue]);
+    }, [setValue, snackError, setAerialTemperature, setUndergroundArea, setAerialAreas]);
 
     const aerialColumnDefs = useMemo((): ColDef[] => {
         return [

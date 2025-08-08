@@ -200,12 +200,12 @@ export const LineTypeSegmentForm = () => {
             setValue(`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`, 0);
             setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, 0);
             setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, 0);
-            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, []);
             updateTotals();
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, []);
             updateTotalLimits();
             return true; // Needed to remove the line in ExpandableInput
         },
-        [setValue, updateTotals, updateTotalLimits]
+        [setValue, updateTotals, updateTotalLimits, getValues]
     );
 
     const getPreselectedRowIdForCatalog = useCallback(
