@@ -15,7 +15,7 @@ import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-level
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
-import { LimitsPaneCreation } from '../../../../limits/creation/limits-pane-creation.tsx';
+import { LimitsPane } from '../../../../limits/limits-pane.tsx';
 
 const styles = {
     h3: {
@@ -78,7 +78,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <TwoWindingsTransformerCharacteristicsPane />
             </Box>
             <Box hidden={tabIndex !== TwoWindingsTransformerCreationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPaneCreation />
+                <LimitsPane />
             </Box>
             <Box hidden={tabIndex !== TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB} p={1}>
                 <RatioTapChangerPane

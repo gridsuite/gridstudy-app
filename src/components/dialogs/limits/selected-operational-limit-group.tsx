@@ -15,6 +15,8 @@ export interface SelectedOperationalLimitGroupProps {
     optionsFormName: string;
     label?: string;
     filteredApplicability?: string;
+    previousValue?: string;
+    isABranchModif: boolean; // is false, this is a branch creation
 }
 
 export const SelectedOperationalLimitGroup = ({
@@ -22,6 +24,8 @@ export const SelectedOperationalLimitGroup = ({
     optionsFormName,
     label,
     filteredApplicability,
+    previousValue,
+    isABranchModif,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
@@ -46,6 +50,8 @@ export const SelectedOperationalLimitGroup = ({
                 options={opLimitsGroupsNames}
                 label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
+                previousValue={previousValue}
+                allowNewValue={isABranchModif}
             />
         </Box>
     );
