@@ -33,8 +33,7 @@ import {
     G,
     ID,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
+    OPERATIONAL_LIMITS_GROUPS,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
     PHASE_TAP_CHANGER,
@@ -250,8 +249,11 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS_1]: twt.operationalLimitsGroups1,
-                    [OPERATIONAL_LIMITS_GROUPS_2]: twt.operationalLimitsGroups2,
+                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                        ...baseData,
+                        name: id,
+                        id: id + baseData.applicability,
+                    })),
                     selectedOperationalLimitsGroup1: twt.selectedOperationalLimitsGroup1 ?? null,
                     selectedOperationalLimitsGroup2: twt.selectedOperationalLimitsGroup2 ?? null,
                 }),
@@ -315,8 +317,6 @@ const TwoWindingsTransformerCreationDialog = ({
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
-                        permanentLimit1: twt.permanentLimit1,
-                        permanentLimit2: twt.permanentLimit2,
                         ...getConnectivityFormData(
                             {
                                 busbarSectionId: twt.busOrBusbarSectionId1,
@@ -337,8 +337,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         ),
                     }),
                     ...getAllLimitsFormData({
-                        [OPERATIONAL_LIMITS_GROUPS_1]: formatCompleteCurrentLimit(twt.currentLimits1),
-                        [OPERATIONAL_LIMITS_GROUPS_2]: formatCompleteCurrentLimit(twt.currentLimits2),
+                        [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(twt.currentLimits),
                         [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroup1 ?? null,
                         [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroup2 ?? null,
                     }),
@@ -554,8 +553,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratedS: characteristics[RATED_S] ?? '',
                 ratedU1: characteristics[RATED_U1],
                 ratedU2: characteristics[RATED_U2],
-                limitsGroups1: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_1]),
-                limitsGroups2: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_2]),
+                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
                 selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
                 voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
