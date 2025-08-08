@@ -152,7 +152,7 @@ export function TabularDialog({
                 modificationUuid: editData?.uuid,
                 type: ModificationType.TABULAR_MODIFICATION,
                 csvFilename: formData[CSV_FILENAME],
-                properties: formData[TABULAR_PROPERTIES]
+                properties: formData[TABULAR_PROPERTIES],
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,

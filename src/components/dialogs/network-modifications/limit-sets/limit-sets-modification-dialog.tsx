@@ -107,7 +107,7 @@ export function LimitSetsModificationDialog({
                 modifications,
                 modificationUuid: editData?.uuid,
                 type: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
-                csvFilename: formData[CSV_FILENAME]
+                csvFilename: formData[CSV_FILENAME],
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
