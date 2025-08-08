@@ -25,7 +25,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { EquipmentType, mergeSx, useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import EquipmentPopover from '../../tooltips/equipment-popover';
@@ -41,6 +41,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
 import { DiagramType } from '../diagram.type';
 import { useEquipmentMenu } from '../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
+import useComputationDebug from '../../../hooks/use-computation-debug';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -160,12 +161,22 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         });
     }, []);
 
+    // --- for running in debug mode --- //
+    const subscribeDebug = useComputationDebug({
+        studyUuid: studyUuid,
+        nodeUuid: currentNode?.id!,
+        rootNetworkUuid: currentRootNetworkUuid!,
+    });
+
     const handleRunShortcircuitAnalysis = useCallback(
-        (busId: string) => {
+        (busId: string, debug: boolean) => {
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
-            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId)
+            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId, debug)
+                .then(() => {
+                    debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
+                })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -188,6 +199,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             currentRootNetworkUuid,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
+            subscribeDebug,
         ]
     );
 
