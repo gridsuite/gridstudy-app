@@ -8,7 +8,7 @@
 import { UUID } from 'crypto';
 import { backendFetch } from './utils';
 
-const PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/short-circuit-analysis';
+const PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
 
 function getShotCircuitAnalysisUrl() {
     return `${PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES}/v1/`;
