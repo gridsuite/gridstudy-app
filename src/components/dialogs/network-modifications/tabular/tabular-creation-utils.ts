@@ -83,6 +83,18 @@ const REACTIVE_CAPABILITY_CURVE_FIELDS: TabularField[] = [
     { id: REACTIVE_CAPABILITY_CURVE_Q_MAX_P_MAX, required: false, type: NUMBER },
 ];
 
+const CONNECTION_FIELDS: TabularField[] = [
+    { id: CONNECTED, required: true, type: BOOLEAN },
+    { id: CONNECTION_NAME, required: false },
+    {
+        id: CONNECTION_DIRECTION,
+        required: false,
+        type: ENUM,
+        options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
+    },
+    { id: CONNECTION_POSITION, required: false, type: NUMBER },
+];
+
 export const TABULAR_CREATION_FIELDS: TabularFields = {
     GENERATOR: [
         { id: EQUIPMENT_ID, required: true },
@@ -90,15 +102,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: ENERGY_SOURCE, required: true, type: ENUM, options: ENERGY_SOURCES.map((energy) => energy.id) },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true, type: BOOLEAN },
-        { id: CONNECTION_NAME, required: false },
-        {
-            id: CONNECTION_DIRECTION,
-            required: false,
-            type: ENUM,
-            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
-        },
-        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        ...CONNECTION_FIELDS,
         { id: MIN_P, required: true, type: NUMBER },
         { id: MAX_P, required: true, type: NUMBER },
         { id: RATED_S, required: false, type: NUMBER },
@@ -133,15 +137,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true, type: BOOLEAN },
-        { id: CONNECTION_NAME, required: false },
-        {
-            id: CONNECTION_DIRECTION,
-            required: false,
-            type: ENUM,
-            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
-        },
-        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        ...CONNECTION_FIELDS,
         { id: P0, required: true, type: NUMBER },
         { id: Q0, required: true, type: NUMBER },
     ],
@@ -150,15 +146,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: EQUIPMENT_NAME, required: false },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true, type: BOOLEAN },
-        { id: CONNECTION_NAME, required: false },
-        {
-            id: CONNECTION_DIRECTION,
-            required: false,
-            type: ENUM,
-            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
-        },
-        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        ...CONNECTION_FIELDS,
         { id: MIN_P, required: true, type: NUMBER },
         { id: MAX_P, required: true, type: NUMBER },
         { id: MIN_Q, required: false, type: NUMBER },
@@ -174,15 +162,7 @@ export const TABULAR_CREATION_FIELDS: TabularFields = {
         { id: EQUIPMENT_NAME, required: false },
         { id: VOLTAGE_LEVEL_ID, required: true },
         { id: BUS_OR_BUSBAR_SECTION_ID, required: true },
-        { id: CONNECTED, required: true, type: BOOLEAN },
-        { id: CONNECTION_NAME, required: false },
-        {
-            id: CONNECTION_DIRECTION,
-            required: false,
-            type: ENUM,
-            options: CONNECTION_DIRECTIONS.map((direction) => direction.id),
-        },
-        { id: CONNECTION_POSITION, required: false, type: NUMBER },
+        ...CONNECTION_FIELDS,
         { id: MAXIMUM_SECTION_COUNT, required: true, type: NUMBER },
         { id: SECTION_COUNT, required: true, type: NUMBER },
         {
@@ -203,14 +183,7 @@ export const TABULAR_CREATION_TYPES: { [key: string]: string } = {
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
 };
 
-export const convertCreationFieldFromBackToFront = (
-    key: string,
-    value:
-        | {
-              value: string | number | boolean;
-          }
-        | unknown
-) => {
+export const convertCreationFieldFromBackToFront = (key: string, value: any) => {
     if (key === REACTIVE_CAPABILITY_CURVE_POINTS) {
         return convertReactiveCapabilityCurvePointsFromBackToFront(value as ReactiveCapabilityCurvePoints[]);
     } else {
