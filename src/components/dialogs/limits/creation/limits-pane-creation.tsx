@@ -49,11 +49,10 @@ export function LimitsPaneCreation({
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
-    // TODO : n'est pas forcément vrai car c'est la limite sélectionnée, on devrait comparer à celle de même id que la sélectionnée par l'utilisateur dans l'ui ?
     const getCurrentLimits = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits) {
+        if (equipmentToModify?.currentLimits && indexSelectedLimitSet != null) {
             return equipmentToModify.currentLimits.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
+                (currentLimit: CurrentLimits) => currentLimit.id === limitsGroups[indexSelectedLimitSet].id
             );
         }
         return null;
@@ -108,6 +107,7 @@ export function LimitsPaneCreation({
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
                         label="Side1"
                         filteredApplicability={APPLICABILITY.SIDE1.id}
+                        previousValue={equipmentToModify?.selectedOperationalLimitsGroup1}
                     />
                 </Grid>
                 <Grid item xs={3}>
@@ -116,6 +116,7 @@ export function LimitsPaneCreation({
                         optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
                         label="Side2"
                         filteredApplicability={APPLICABILITY.SIDE2.id}
+                        previousValue={equipmentToModify?.selectedOperationalLimitsGroup2}
                     />
                 </Grid>
             </Grid>

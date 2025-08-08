@@ -56,6 +56,8 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     STATE_ESTIMATION,
     STEPS,
     TAP_POSITION,
@@ -246,8 +248,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
                 ...getAllLimitsFormData(
                     formatOpLimitGroups(twtModification.operationalLimitsGroups),
-                    twtModification.selectedLimitsGroup1,
-                    twtModification.selectedLimitsGroup2
+                    twtModification.selectedOperationalLimitsGroup1?.value ?? null,
+                    twtModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),
                 ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
@@ -483,6 +485,8 @@ const TwoWindingsTransformerModificationDialog = ({
                     editData,
                     currentNode
                 ),
+                selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
+                selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
                 ratioTapChanger: computeRatioTapForSubmit(twt),
                 phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
@@ -679,11 +683,11 @@ const TwoWindingsTransformerModificationDialog = ({
 
                             reset((formValues) => ({
                                 ...formValues,
-                                ...getAllLimitsFormData(
-                                    updateOpLimitsGroups(twt),
-                                    twt?.selectedOperationalLimitsGroup1,
-                                    twt?.selectedOperationalLimitsGroup2
-                                ),
+                                ...{
+                                    [LIMITS]: {
+                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(twt),
+                                    },
+                                },
                                 ...getRatioTapChangerFormData({
                                     enabled: isRatioTapChangerEnabled(twt),
                                     hasLoadTapChangingCapabilities: getValues(

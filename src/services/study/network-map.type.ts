@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CurrentLimits, OperationalLimitsGroup } from '../network-modification-types';
+import { AttributeModification, CurrentLimits, OperationalLimitsGroup } from '../network-modification-types';
 import { UUID } from 'crypto';
 import { Equipment, Property } from '../../components/dialogs/network-modifications/common/properties/property-utils';
 
@@ -35,15 +35,15 @@ export interface LineModificationEditData {
     modificationUuid: string;
     lineId: string;
     lineName: string | null;
-    r: { value: number } | null;
-    x: { value: number };
-    g1: { value: number };
-    b1: { value: number };
-    g2: { value: number };
-    b2: { value: number };
+    r: AttributeModification<number> | null;
+    x: AttributeModification<number>;
+    g1: AttributeModification<number>;
+    b1: AttributeModification<number>;
+    g2: AttributeModification<number>;
+    b2: AttributeModification<number>;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
+    selectedOperationalLimitsGroup1: AttributeModification<string>;
+    selectedOperationalLimitsGroup2: AttributeModification<string>;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;

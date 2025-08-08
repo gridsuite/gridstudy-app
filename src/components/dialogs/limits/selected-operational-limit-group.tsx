@@ -15,6 +15,7 @@ export interface SelectedOperationalLimitGroupProps {
     optionsFormName: string;
     label?: string;
     filteredApplicability?: string;
+    previousValue?: string;
 }
 
 export const SelectedOperationalLimitGroup = ({
@@ -22,6 +23,7 @@ export const SelectedOperationalLimitGroup = ({
     optionsFormName,
     label,
     filteredApplicability,
+    previousValue,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
@@ -46,6 +48,7 @@ export const SelectedOperationalLimitGroup = ({
                 options={opLimitsGroupsNames}
                 label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
+                previousValue={previousValue}
             />
         </Box>
     );

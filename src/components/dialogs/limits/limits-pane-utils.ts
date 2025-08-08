@@ -128,9 +128,6 @@ export const formatOpLimitGroups = (limitGroups: OperationalLimitsGroup[]): Oper
     });
 };
 
-/**
- * used when the limit set data contain all the limit sets data, including the not selected
- */
 export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroup[] = [],
     selectedOperationalLimitsGroup1: string | null = null,

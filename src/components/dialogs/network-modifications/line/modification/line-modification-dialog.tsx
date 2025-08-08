@@ -205,8 +205,8 @@ const LineModificationDialog = ({
                 }),
                 ...getAllLimitsFormData(
                     formatOpLimitGroups(lineModification.operationalLimitsGroups),
-                    lineModification.selectedLimitsGroup1,
-                    lineModification.selectedLimitsGroup2
+                    lineModification.selectedOperationalLimitsGroup1?.value ?? null,
+                    lineModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
             });
@@ -341,11 +341,11 @@ const LineModificationDialog = ({
                             setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             reset((formValues: LineModificationEditData) => ({
                                 ...formValues,
-                                ...getAllLimitsFormData(
-                                    updateOpLimitsGroups(line),
-                                    line?.selectedOperationalLimitsGroup1,
-                                    line?.selectedOperationalLimitsGroup2
-                                ),
+                                ...{
+                                    [LIMITS]: {
+                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(line),
+                                    },
+                                },
                                 [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                             }));
                         }
