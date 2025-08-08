@@ -13,32 +13,32 @@ import {
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from 'components/utils/field-constants';
-import { LimitsSidePane } from '../limits-side-pane';
-import { SelectedOperationalLimitGroup } from '../selected-operational-limit-group.js';
+import { LimitsSidePane } from './limits-side-pane';
+import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
 import { useCallback, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { CurrentLimits, OperationalLimitsGroup } from '../../../../services/network-modification-types';
-import { OperationalLimitsGroupsTabs } from '../operational-limits-groups-tabs';
+import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
-import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import GridSection from '../../commons/grid-section';
-import { styles } from '../../dialog-utils';
+import { CurrentTreeNode } from '../../graph/tree-node.type';
+import GridSection from '../commons/grid-section';
+import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
-import { APPLICABILITY } from '../../../network/constants';
+import { APPLICABILITY } from '../../network/constants';
 
-export interface LimitsPaneCreationProps {
+export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
     equipmentToModify?: any;
     clearableFields?: boolean;
 }
 
-export function LimitsPaneCreation({
+export function LimitsPane({
     id = LIMITS,
     currentNode,
     equipmentToModify,
     clearableFields,
-}: Readonly<LimitsPaneCreationProps>) {
+}: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
 
     const myRef: any = useRef<any>(null);

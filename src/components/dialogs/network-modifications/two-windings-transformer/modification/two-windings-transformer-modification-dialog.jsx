@@ -151,7 +151,7 @@ import {
     getStateEstimationEmptyFormData,
     getStateEstimationValidationSchema,
 } from './state-estimation-form-utils';
-import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation';
+import { LimitsPane } from '../../../limits/limits-pane';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -837,11 +837,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <TwoWindingsTransformerCharacteristicsPane twtToModify={twtToModify} isModification />
                         </Box>
                         <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.LIMITS_TAB} p={1}>
-                            <LimitsPaneCreation
-                                currentNode={currentNode}
-                                equipmentToModify={twtToModify}
-                                clearableFields
-                            />
+                            <LimitsPane currentNode={currentNode} equipmentToModify={twtToModify} clearableFields />
                         </Box>
                         <Box
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.STATE_ESTIMATION_TAB}

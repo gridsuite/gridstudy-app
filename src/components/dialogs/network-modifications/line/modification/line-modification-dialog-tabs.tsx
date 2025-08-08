@@ -10,7 +10,7 @@ import LineCharacteristicsPane from '../characteristics-pane/line-characteristic
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { LineModificationDialogTab } from '../line-utils';
-import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation';
+import { LimitsPane } from '../../../limits/limits-pane';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LineInfos } from '../../../../../services/study/network-map.type';
@@ -54,7 +54,7 @@ const LineModificationDialogTabs = ({
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPaneCreation currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
+                <LimitsPane currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>

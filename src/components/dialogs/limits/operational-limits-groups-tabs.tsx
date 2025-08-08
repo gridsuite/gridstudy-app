@@ -25,7 +25,7 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
-import { LimitsGroupsContextualMenu } from './creation/limits-groups-contextual-menu';
+import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';

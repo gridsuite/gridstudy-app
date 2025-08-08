@@ -85,7 +85,7 @@ import {
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
-import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation.tsx';
+import { LimitsPane } from '../../../limits/limits-pane.tsx';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -399,7 +399,7 @@ const LineCreationDialog = ({
                 </Box>
 
                 <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
-                    <LimitsPaneCreation />
+                    <LimitsPane />
                 </Box>
 
                 <EquipmentSearchDialog
