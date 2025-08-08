@@ -6,12 +6,16 @@
  */
 
 import {
+    LIMIT_SET_NAME,
+    PERMANENT_LIMIT,
+    SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,
     SEGMENT_RESISTANCE,
     SEGMENT_SUSCEPTANCE,
     SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
+    TEMPORARY_LIMIT,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
@@ -28,6 +32,13 @@ export const SegmentSchema = yup.object().shape({
     [SEGMENT_RESISTANCE]: yup.number().required(),
     [SEGMENT_REACTANCE]: yup.number().required(),
     [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+    [SEGMENT_CURRENT_LIMITS]: yup.array().of(
+        yup.object().shape({
+            [LIMIT_SET_NAME]: yup.string().required(),
+            [PERMANENT_LIMIT]: yup.number().required(),
+            [TEMPORARY_LIMIT]: yup.number().required(),
+        })
+    ),
 });
 
 export type SegmentFormData = yup.InferType<typeof SegmentSchema>;
@@ -39,4 +50,5 @@ export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_RESISTANCE]: 0.0,
     [SEGMENT_REACTANCE]: 0.0,
     [SEGMENT_SUSCEPTANCE]: 0.0,
+    [SEGMENT_CURRENT_LIMITS]: [],
 };
