@@ -171,6 +171,7 @@ const lightTheme = createTheme({
         overlay: {
             background: '#e6e6e6',
         },
+        filterCounter: '#1976d2',
     },
     networkModificationPanel: {
         backgroundColor: 'white',
@@ -251,6 +252,7 @@ const darkTheme = createTheme({
         overlay: {
             background: '#121212',
         },
+        filterCounter: '#1976d2',
     },
     networkModificationPanel: {
         backgroundColor: '#252525',
