@@ -37,19 +37,20 @@ import yup from 'components/utils/yup-config';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { UUID } from 'crypto';
 
-type TabularModificationModificationType = {
+type TabularModificationCommonType = {
     uuid: UUID;
+    properties: TabularProperty[];
+    csvFilename: string;
+};
+export type TabularModificationModificationType = TabularModificationCommonType & {
     type: 'TABULAR_MODIFICATION';
     modificationType: ModificationType;
     modifications: Modification[];
-    properties: TabularProperty[];
 };
-type TabularModificationCreationType = {
-    uuid: UUID;
+export type TabularModificationCreationType = TabularModificationCommonType & {
     type: 'TABULAR_CREATION';
     creationType: ModificationType;
     creations: Modification[];
-    properties: TabularProperty[];
 };
 export type TabularModificationEditDataType = TabularModificationModificationType | TabularModificationCreationType;
 
@@ -63,7 +64,7 @@ export const tabularFormSchema = yup
     .shape({
         [TYPE]: yup.string().nullable().required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
-        [CSV_FILENAME]: yup.string().nullable().required(),
+        [CSV_FILENAME]: yup.string(),
     })
     .concat(propertiesSchema)
     .required();
@@ -312,8 +313,8 @@ export const generateCommentLines = ({
             if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
                 if (secondCommentLine.length === 0) {
                     // create an empty row without property columns
-                    const nbSepatator = csvTranslatedColumns.length - 1 - selectedProperties.length;
-                    secondCommentLine = separator.repeat(nbSepatator);
+                    const nbSeparator = csvTranslatedColumns.length - 1 - selectedProperties.length;
+                    secondCommentLine = separator.repeat(nbSeparator);
                 }
                 selectedProperties.forEach((propertyName) => {
                     const possibleValues =

@@ -1096,7 +1096,7 @@ export function createTabularModification(
     modifications: Modification[],
     modificationUuid: UUID,
     type: ModificationType,
-    csvFilename: string,
+    csvFilename: string | undefined,
     properties?: TabularProperty[]
 ) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -2003,7 +2003,7 @@ export function createTabularCreation(
     creationType: string,
     creations: Modification[],
     modificationUuid: UUID,
-    csvFilename: string,
+    csvFilename: string | undefined,
     properties?: TabularProperty[]
 ) {
     let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);

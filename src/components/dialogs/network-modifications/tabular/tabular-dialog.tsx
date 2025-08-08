@@ -31,7 +31,9 @@ import {
     Modification,
     tabularFormSchema,
     TabularFormType,
+    TabularModificationCreationType,
     TabularModificationEditDataType,
+    TabularModificationModificationType,
     TabularModificationType,
     transformProperties,
 } from './tabular-common.js';
@@ -74,7 +76,7 @@ export function TabularDialog({
     const disableSave = Object.keys(errors).length > 0;
 
     const initTabularModificationData = useCallback(
-        (editData: any) => {
+        (editData: TabularModificationModificationType) => {
             const modificationType = editData.modificationType;
             const modifications = editData.modifications.map((modif: Modification) => {
                 let modification = formatModification(modif);
@@ -94,7 +96,7 @@ export function TabularDialog({
             reset({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
-                [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
+                [TABULAR_PROPERTIES]: editData.properties,
                 [CSV_FILENAME]: editData.csvFilename,
             });
         },
@@ -102,7 +104,7 @@ export function TabularDialog({
     );
 
     const initTabularCreationData = useCallback(
-        (editData: any) => {
+        (editData: TabularModificationCreationType) => {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.creationType);
             const creations = editData?.creations.map((creat: Modification) => {
                 let creation: Modification = {};
@@ -118,7 +120,8 @@ export function TabularDialog({
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,
-                [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
+                [TABULAR_PROPERTIES]: editData.properties,
+                [CSV_FILENAME]: editData.csvFilename,
             });
         },
         [reset]
@@ -127,9 +130,9 @@ export function TabularDialog({
     useEffect(() => {
         if (editData) {
             if (dialogMode === TabularModificationType.CREATION) {
-                initTabularCreationData(editData);
+                initTabularCreationData(editData as TabularModificationCreationType);
             } else {
-                initTabularModificationData(editData);
+                initTabularModificationData(editData as TabularModificationModificationType);
             }
         }
     }, [editData, dialogMode, initTabularCreationData, initTabularModificationData]);
@@ -191,6 +194,7 @@ export function TabularDialog({
                 creationType,
                 creations,
                 editData?.uuid,
+                formData[CSV_FILENAME],
                 formData[TABULAR_PROPERTIES]
             ).catch((error) => {
                 snackError({
