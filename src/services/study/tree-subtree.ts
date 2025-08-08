@@ -165,6 +165,7 @@ export function updateTreeNode(
         id: UUID | undefined;
         type: NodeType | undefined;
         name: string;
+        description?: string;
     }
 ) {
     const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes';

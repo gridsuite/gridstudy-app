@@ -1513,5 +1513,7 @@
     "SaveGridLayout": "Save",
     "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
-    "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one"
+    "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
+    "nodeName": "Node name",
+    "editNode": "Edit node"
 }
