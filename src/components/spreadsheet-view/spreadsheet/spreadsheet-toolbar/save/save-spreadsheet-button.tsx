@@ -5,20 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, MouseEvent, useCallback, useMemo, RefObject } from 'react';
+import { type MouseEvent, type RefObject, useCallback, useMemo, useState } from 'react';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
-import { useCsvExport, useStateBoolean, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
-import { NodeAlias } from '../../../types/node-alias.type';
+import { EquipmentType, FILTER_EQUIPMENTS, useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
+import type { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { AgGridReact } from 'ag-grid-react';
-import { ColDef } from 'ag-grid-community';
+import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
+import type { AgGridReact } from 'ag-grid-react';
+import type { ColDef } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import type { AppState } from '../../../../../redux/reducer';
 import SaveNamingFilterDialog from './save-naming-filter-dialog';
 
 enum SpreadsheetSaveOptionId {
@@ -57,15 +57,10 @@ export default function SaveSpreadsheetButton({
     const { downloadCSVData } = useCsvExport();
     const language = useSelector((state: AppState) => state.computedLanguage);
 
-    const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    }, []);
+    const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget), []);
+    const handleClose = useCallback(() => setAnchorEl(null), []);
 
-    const handleClose = useCallback(() => {
-        setAnchorEl(null);
-    }, []);
-
-    const spreadsheetOptions = useMemo(
+    const spreadsheetOptions = useMemo<Record<SpreadsheetSaveOptionId, SpreadsheetSaveOption>>(
         () => ({
             [SpreadsheetSaveOptionId.SAVE_MODEL]: {
                 id: SpreadsheetSaveOptionId.SAVE_MODEL,
@@ -76,16 +71,14 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.EXPORT_CSV,
                 label: 'spreadsheet/save/options/csv',
                 action: () => {
-                    // Filter out the rowIndex column and the hidden columns before exporting to CSV
-                    const columnsForExport = columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide);
-
                     const exportDataAsCsv = gridRef.current?.api.exportDataAsCsv;
                     if (!exportDataAsCsv) {
                         console.error('Export API is not available.');
                         return;
                     }
                     downloadCSVData({
-                        columns: columnsForExport,
+                        // Filter out the rowIndex column and the hidden columns before exporting to CSV
+                        columns: columns.filter((col) => col.colId !== ROW_INDEX_COLUMN_ID && !col.hide),
                         tableName: tableDefinition.name,
                         language: language,
                         exportDataAsCsv,
@@ -97,7 +90,12 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.SAVE_FILTER,
                 label: 'spreadsheet/save/options/filter',
                 action: saveFilterDialogOpen.setTrue,
-                disabled: dataSize === 0 || !FILTER_EQUIPMENTS[tableDefinition.type],
+                disabled:
+                    dataSize === 0 ||
+                    (tableDefinition.type === SpreadsheetEquipmentType.BRANCH
+                        ? !FILTER_EQUIPMENTS[EquipmentType.LINE] ||
+                          !FILTER_EQUIPMENTS[EquipmentType.TWO_WINDINGS_TRANSFORMER]
+                        : !FILTER_EQUIPMENTS[tableDefinition.type as unknown as EquipmentType]),
             },
         }),
         [
@@ -121,17 +119,6 @@ export default function SaveSpreadsheetButton({
         [spreadsheetOptions, handleClose]
     );
 
-    const renderMenuItem = useCallback(
-        (option: SpreadsheetSaveOption) => {
-            return (
-                <MenuItem key={option.id} onClick={() => handleMenuItemClick(option.id)} disabled={option?.disabled}>
-                    <FormattedMessage id={option.label} />
-                </MenuItem>
-            );
-        },
-        [handleMenuItemClick]
-    );
-
     return (
         <>
             <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick} disabled={disabled}>
@@ -139,7 +126,15 @@ export default function SaveSpreadsheetButton({
                 <FormattedMessage id="spreadsheet/save/button" />
             </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                {Object.values(spreadsheetOptions).map(renderMenuItem)}
+                {Object.values(spreadsheetOptions).map((option) => (
+                    <MenuItem
+                        key={option.id}
+                        onClick={() => handleMenuItemClick(option.id)}
+                        disabled={option?.disabled}
+                    >
+                        <FormattedMessage id={option.label} />
+                    </MenuItem>
+                ))}
             </Menu>
             <SaveSpreadsheetDialog
                 tableDefinition={tableDefinition}

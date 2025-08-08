@@ -13,7 +13,6 @@ import {
     ElementType,
     PopupConfirmationDialog,
     RadioInput,
-    UseStateBooleanReturn,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -26,8 +25,7 @@ import { initTableDefinitions } from 'redux/actions';
 import { UUID } from 'crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
-import { SpreadsheetCollectionDto, SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { ResetNodeAliasCallback } from 'components/spreadsheet-view/hooks/use-node-aliases';
+import { SpreadsheetCollectionDto } from 'components/spreadsheet-view/types/spreadsheet.type';
 import {
     getSpreadsheetCollectionFormSchema,
     initialSpreadsheetCollectionForm,
@@ -37,12 +35,7 @@ import {
     SpreadsheetCollectionImportMode,
 } from './add-spreadsheet-form';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet-utils';
-
-interface AddSpreadsheetsFromCollectionDialogProps {
-    open: UseStateBooleanReturn;
-    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
-    resetNodeAliases: ResetNodeAliasCallback;
-}
+import type { DialogComponentProps } from '../types';
 
 /**
  * Dialog for importing a spreadsheet collection
@@ -51,8 +44,7 @@ export default function AddSpreadsheetsFromCollectionDialog({
     open,
     resetTabIndex,
     resetNodeAliases,
-    ...dialogProps
-}: Readonly<AddSpreadsheetsFromCollectionDialogProps>) {
+}: Readonly<DialogComponentProps>) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -153,7 +145,6 @@ export default function AddSpreadsheetsFromCollectionDialog({
                     onSave={onSubmit}
                     onClear={() => null}
                     PaperProps={{ sx: dialogStyles.dialogContent }}
-                    {...dialogProps}
                 >
                     <Grid container spacing={2} direction="column">
                         <Grid item>{updateModeSelectionField}</Grid>
