@@ -1089,16 +1089,27 @@ export function modifyTwoWindingsTransformer({
     });
 }
 
-export function createTabularModification(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationType: string,
-    modifications: Modification[],
-    modificationUuid: UUID,
-    type: ModificationType,
-    csvFilename: string | undefined,
-    properties?: TabularProperty[]
-) {
+export interface CreateTabularModificationProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationType: string;
+    modifications: Modification[];
+    modificationUuid: UUID;
+    type: ModificationType;
+    csvFilename?: string;
+    properties?: TabularProperty[];
+}
+
+export function createTabularModification({
+    studyUuid,
+    nodeUuid,
+    modificationType,
+    modifications,
+    modificationUuid,
+    type,
+    csvFilename,
+    properties,
+}: CreateTabularModificationProps) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
@@ -1997,15 +2008,25 @@ export function modifyByAssignment(
     });
 }
 
-export function createTabularCreation(
-    studyUuid: string,
-    nodeUuid: UUID,
-    creationType: string,
-    creations: Modification[],
-    modificationUuid: UUID,
-    csvFilename: string | undefined,
-    properties?: TabularProperty[]
-) {
+export interface CreateTabularCreationProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    creationType: string;
+    creations: Modification[];
+    modificationUuid: UUID;
+    csvFilename?: string;
+    properties?: TabularProperty[];
+}
+
+export function createTabularCreation({
+    studyUuid,
+    nodeUuid,
+    creationType,
+    creations,
+    modificationUuid,
+    csvFilename,
+    properties,
+}: CreateTabularCreationProps) {
     let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {

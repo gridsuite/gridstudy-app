@@ -144,16 +144,16 @@ export function TabularDialog({
             // Convert modifications to the back-end format based on the type
             const modifications = transformModificationsTable(modificationType, modificationsTable);
 
-            createTabularModification(
+            createTabularModification({
                 studyUuid,
-                currentNodeUuid,
+                nodeUuid: currentNodeUuid,
                 modificationType,
                 modifications,
-                editData?.uuid,
-                ModificationType.TABULAR_MODIFICATION,
-                formData[CSV_FILENAME],
-                formData[TABULAR_PROPERTIES]
-            ).catch((error) => {
+                modificationUuid: editData?.uuid,
+                type: ModificationType.TABULAR_MODIFICATION,
+                csvFilename: formData[CSV_FILENAME],
+                properties: formData[TABULAR_PROPERTIES]
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TabularModificationError',
@@ -188,15 +188,15 @@ export function TabularDialog({
                 }
                 return creation;
             });
-            createTabularCreation(
+            createTabularCreation({
                 studyUuid,
-                currentNodeUuid,
+                nodeUuid: currentNodeUuid,
                 creationType,
                 creations,
-                editData?.uuid,
-                formData[CSV_FILENAME],
-                formData[TABULAR_PROPERTIES]
-            ).catch((error) => {
+                modificationUuid: editData?.uuid,
+                csvFilename: formData[CSV_FILENAME],
+                properties: formData[TABULAR_PROPERTIES],
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TabularCreationError',

@@ -100,15 +100,15 @@ export function LimitSetsModificationDialog({
                 return modification;
             });
 
-            createTabularModification(
+            createTabularModification({
                 studyUuid,
-                currentNodeUuid,
+                nodeUuid: currentNodeUuid,
                 modificationType,
                 modifications,
-                editData?.uuid,
-                ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
-                formData[CSV_FILENAME]
-            ).catch((error) => {
+                modificationUuid: editData?.uuid,
+                type: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
+                csvFilename: formData[CSV_FILENAME]
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TabularModificationError',
