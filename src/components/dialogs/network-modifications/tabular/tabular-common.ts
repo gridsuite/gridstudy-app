@@ -8,6 +8,7 @@ import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limit
 import { createPropertyModification, Property } from '../common/properties/property-utils';
 import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
+    CSV_FILENAME,
     MODIFICATIONS_TABLE,
     REACTIVE_CAPABILITY_CURVE,
     REACTIVE_CAPABILITY_CURVE_P_0,
@@ -62,6 +63,7 @@ export const tabularFormSchema = yup
     .shape({
         [TYPE]: yup.string().nullable().required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [CSV_FILENAME]: yup.string().nullable().required(),
     })
     .concat(propertiesSchema)
     .required();
@@ -72,6 +74,7 @@ export const emptyTabularFormData: TabularFormType = {
     [TYPE]: EQUIPMENT_TYPES.GENERATOR,
     [MODIFICATIONS_TABLE]: [],
     [TABULAR_PROPERTIES]: [],
+    [CSV_FILENAME]: undefined,
 };
 
 export interface Modification {

@@ -6,7 +6,7 @@
  */
 
 import { Box } from '@mui/material';
-import { LimitsPane } from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/modification/limits-pane.tsx';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';

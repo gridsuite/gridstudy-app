@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants.js';
+import { TABULAR_PROPERTIES, MODIFICATIONS_TABLE, CSV_FILENAME, TYPE } from 'components/utils/field-constants.js';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { createTabularCreation, createTabularModification } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.type';
@@ -95,6 +95,7 @@ export function TabularDialog({
                 [TYPE]: getEquipmentTypeFromModificationType(modificationType),
                 [MODIFICATIONS_TABLE]: modifications,
                 [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
+                [CSV_FILENAME]: editData.csvFilename,
             });
         },
         [reset]
@@ -147,6 +148,7 @@ export function TabularDialog({
                 modifications,
                 editData?.uuid,
                 ModificationType.TABULAR_MODIFICATION,
+                formData[CSV_FILENAME],
                 formData[TABULAR_PROPERTIES]
             ).catch((error) => {
                 snackError({
