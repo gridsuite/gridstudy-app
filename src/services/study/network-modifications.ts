@@ -760,8 +760,7 @@ export function createLine({
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    limitsGroups1,
-    limitsGroups2,
+    limitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
     isUpdate = false,
@@ -805,8 +804,7 @@ export function createLine({
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            operationalLimitsGroups1: limitsGroups1,
-            operationalLimitsGroups2: limitsGroups2,
+            operationalLimitsGroups: limitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             connectionName1: connectionName1,
@@ -922,8 +920,7 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    limitsGroups1,
-    limitsGroups2,
+    limitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
     voltageLevelId1,
@@ -970,8 +967,7 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            operationalLimitsGroups1: limitsGroups1,
-            operationalLimitsGroups2: limitsGroups2,
+            operationalLimitsGroups: limitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             voltageLevelId1: voltageLevelId1,
@@ -1099,6 +1095,7 @@ export function createTabularModification(
     modifications: any,
     modificationUuid: UUID,
     type: ModificationType,
+    csvFilename: string,
     properties?: TabularProperty[]
 ) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
@@ -1121,6 +1118,7 @@ export function createTabularModification(
             modificationType: modificationType,
             modifications: modifications,
             properties: properties,
+            csvFilename: csvFilename,
         }),
     });
 }
@@ -2005,7 +2003,8 @@ export function createTabularCreation(
     creations: any,
     properties: TabularProperty[],
     isUpdate: boolean,
-    modificationUuid: UUID
+    modificationUuid: UUID,
+    csvFilename: string
 ) {
     let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -2027,6 +2026,7 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
             properties: properties,
+            csvFilename: csvFilename,
         }),
     });
 }
