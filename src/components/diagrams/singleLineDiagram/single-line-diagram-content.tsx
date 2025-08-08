@@ -25,7 +25,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { ComputingType, EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, mergeSx, useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import EquipmentPopover from '../../tooltips/equipment-popover';
