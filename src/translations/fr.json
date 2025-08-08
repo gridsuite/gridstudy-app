@@ -614,7 +614,7 @@
     "LimitSets": "Jeux de limites",
     "LimitSetsTabularModification": "Modification tabulaire de sets de limites",
     "amountTemporaryLimits": "Nombre de limites temporaires",
-    "LimitSets": "Sets de limite",
+    "amountTemporaryLimitsError": "Nombre de limites entre 1 et 50",
     "permanentLimit": "IST",
     "acceptableDuration": "Tempo (s)",
     "value": "Valeur (A)",

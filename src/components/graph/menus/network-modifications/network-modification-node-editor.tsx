@@ -45,8 +45,8 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import TabularCreationDialog from 'components/dialogs/network-modifications/tabular/creation/tabular-creation-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular/modification/tabular-modification-dialog';
+import { TabularModificationType } from 'components/dialogs/network-modifications/tabular/tabular-common';
+import { TabularDialog } from 'components/dialogs/network-modifications/tabular/tabular-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
@@ -212,6 +212,22 @@ const NetworkModificationNodeEditor = () => {
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
+            />
+        );
+    }
+
+    function tabularDialogWithDefaultParams(Dialog: React.FC<any>, dialogMode: TabularModificationType) {
+        return (
+            <Dialog
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
+                dialogMode={dialogMode}
             />
         );
     }
@@ -537,14 +553,16 @@ const NetworkModificationNodeEditor = () => {
                     label: 'MultipleEquipment',
                     subItems: [
                         {
-                            id: 'TABULAR_CREATION',
+                            id: MODIFICATION_TYPES.TABULAR_CREATION.type,
                             label: 'menu.createByTable',
-                            action: () => withDefaultParams(TabularCreationDialog),
+                            action: () =>
+                                tabularDialogWithDefaultParams(TabularDialog, TabularModificationType.CREATION),
                         },
                         {
                             id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
                             label: 'BY_TABLE',
-                            action: () => withDefaultParams(TabularModificationDialog),
+                            action: () =>
+                                tabularDialogWithDefaultParams(TabularDialog, TabularModificationType.MODIFICATION),
                         },
                         {
                             id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,

@@ -48,8 +48,9 @@ import {
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
 import { BOOLEAN } from '../../../network/constants';
-import { TABULAR_CREATION_FIELDS } from './creation/tabular-creation-utils';
-import { TABULAR_MODIFICATION_FIELDS } from './modification/tabular-modification-utils';
+import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
+import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
+import { getObjectId } from '../../../utils/utils';
 
 const dialogStyles = {
     grid: { height: 500, width: '100%' },
@@ -81,6 +82,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     });
     const watchTable = useWatch({
         name: MODIFICATIONS_TABLE,
+    });
+    const watchFileName = useWatch({
+        name: CSV_FILENAME,
     });
 
     const csvFields = useMemo(() => {
@@ -298,8 +302,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, []);
 
     useEffect(() => {
-        setAcceptedFile(getValues(CSV_FILENAME) ? new File([], getValues(CSV_FILENAME)) : undefined);
-    }, [setAcceptedFile, getValues]);
+        setAcceptedFile(watchFileName ? new File([], watchFileName) : undefined);
+    }, [setAcceptedFile, watchFileName]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -347,7 +351,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             label="Type"
             options={typesOptions}
             onChangeCallback={handleTypeChange}
-            getOptionLabel={(option: any) => getTypeLabel(option as string)}
+            getOptionLabel={(option) => getTypeLabel(getObjectId(option))}
             size={'small'}
             formProps={{ variant: 'filled' }}
         />
