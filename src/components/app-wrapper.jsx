@@ -65,6 +65,7 @@ import {
     MAP_BASEMAP_MAPBOX,
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
+    MAP_BASEMAP_ETALAB,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -166,6 +167,7 @@ const lightTheme = createTheme({
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO)]: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_ETALAB)]: 'https://openmaptiles.geo.data.gouv.fr/styles/positron/style.json',
     aggrid: {
         theme: 'ag-theme-alpine',
         overlay: {
@@ -246,6 +248,8 @@ const darkTheme = createTheme({
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO)]: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_ETALAB)]:
+        'https://openmaptiles.geo.data.gouv.fr/styles/dark-matter/style.json',
     aggrid: {
         theme: 'ag-theme-alpine-dark',
         overlay: {
