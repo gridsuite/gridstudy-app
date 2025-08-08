@@ -163,10 +163,10 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [amountTemporaryLimits, trigger]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.map((field) => {
-            return intl.formatMessage({ id: field.id });
+        return csvColumns.map(({ id, name, index }) => {
+            return `${intl.formatMessage({ id: name ?? id })} ${index ?? ''}`;
         });
-    }, [intl]);
+    }, [csvColumns, intl]);
 
     const commentLines = useMemo(() => {
         const commentKey = `TabularLimitSetsModificationSkeletonComment`;
