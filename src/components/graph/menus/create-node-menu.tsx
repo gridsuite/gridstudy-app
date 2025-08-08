@@ -128,7 +128,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const isModificationsInProgress = useSelector((state: AppState) => state.isModificationsInProgress);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -315,8 +314,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             id: 'buildNode',
             disabled:
                 activeNode?.data?.globalBuildStatus?.startsWith('BUILT') ||
-                activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING ||
-                isModificationsInProgress,
+                activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING,
         },
         CREATE_MODIFICATION_NODE_CONSTRUCTION: {
             onRoot: true,
