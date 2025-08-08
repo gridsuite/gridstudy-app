@@ -86,6 +86,7 @@ export function LimitSetsModificationDialog({
                 Object.keys(modification).forEach((key) => {
                     modification[key] = row[key];
                 });
+
                 if (modification[SIDE] === BranchSide.ONE) {
                     modification.operationalLimitsGroup1 = [
                         formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.ONE),
@@ -100,6 +101,7 @@ export function LimitSetsModificationDialog({
                 return modification;
             });
 
+            console.log(modifications);
             createTabularModification(
                 studyUuid,
                 currentNodeUuid,
