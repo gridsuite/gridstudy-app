@@ -48,13 +48,6 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
     const delimiter = useMemo(() => (language === LANG_FRENCH ? ';' : ','), [language]);
 
     /**
-     * Validates required parameters for filter operations
-     */
-    const isParamsValid = useMemo((): boolean => {
-        return !!(studyUuid && currentNode?.id && currentRootNetworkUuid);
-    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
-
-    /**
      * Extracts equipment IDs from explicit naming filter
      */
     const extractFromExplicitFilter = useCallback((filterMetadata: any): string[] => {
@@ -72,17 +65,11 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
      */
     const extractFromExpertFilter = useCallback(
         async (filterId: UUID): Promise<string[]> => {
-            if (!isParamsValid) {
+            if (!(studyUuid && currentNode?.id && currentRootNetworkUuid)) {
                 return [];
             }
 
-            const results = await evaluateFilters(
-                studyUuid!,
-                currentNode!.id,
-                currentRootNetworkUuid!,
-                [filterId],
-                true
-            );
+            const results = await evaluateFilters(studyUuid, currentNode.id, currentRootNetworkUuid, [filterId], true);
 
             if (!results?.length || !results[0].identifiableAttributes) {
                 return [];
@@ -90,7 +77,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
 
             return results[0].identifiableAttributes.map((attr) => attr.id).filter(Boolean);
         },
-        [studyUuid, currentNode, currentRootNetworkUuid, isParamsValid]
+        [studyUuid, currentNode, currentRootNetworkUuid]
     );
 
     /**
@@ -173,7 +160,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
     const handleGenerateFromFilter = useCallback(
         async (selectedFilters?: TreeViewFinderNodeProps[]): Promise<void> => {
             // Early returns for invalid input
-            if (!selectedFilters?.length || !isParamsValid) {
+            if (!selectedFilters?.length) {
                 return;
             }
 
@@ -189,10 +176,6 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
 
                 const equipmentIds = await extractEquipmentIds(filterId, filterElements[0]);
 
-                if (!equipmentIds.length) {
-                    return;
-                }
-
                 const csvContent = generateCsvContent(equipmentIds);
 
                 const filename = generateFilename();
@@ -205,7 +188,7 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
                 });
             }
         },
-        [isParamsValid, extractEquipmentIds, generateCsvContent, generateFilename, downloadCsvFile, snackError]
+        [extractEquipmentIds, generateCsvContent, generateFilename, downloadCsvFile, snackError]
     );
 
     return {
