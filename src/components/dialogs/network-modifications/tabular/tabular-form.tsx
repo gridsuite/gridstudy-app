@@ -17,6 +17,9 @@ import {
     LANG_FRENCH,
     useSnackMessage,
     useStateBoolean,
+    DirectoryItemSelector,
+    ElementType,
+    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
@@ -50,6 +53,7 @@ import { ColDef } from 'ag-grid-community';
 import { BOOLEAN } from '../../../network/constants';
 import { TABULAR_CREATION_FIELDS } from './creation/tabular-creation-utils';
 import { TABULAR_MODIFICATION_FIELDS } from './modification/tabular-modification-utils';
+import { useFilterCsvGenerator } from './use-filter-csv-generator';
 
 const dialogStyles = {
     grid: { height: 500, width: '100%' },
@@ -66,6 +70,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
     const { setValue, clearErrors, setError, getValues } = useFormContext();
     const propertiesDialogOpen = useStateBoolean(false);
+    const generateFromFilterOpen = useStateBoolean(false);
     const language = useSelector((state: AppState) => state.computedLanguage);
     const [predefinedEquipmentProperties, setPredefinedEquipmentProperties] = useState<PredefinedEquipmentProperties>(
         {}
@@ -402,6 +407,23 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
         setValue(TABULAR_PROPERTIES, formData[TABULAR_PROPERTIES], { shouldDirty: true });
     };
 
+    const { handleGenerateFromFilter } = useFilterCsvGenerator({
+        dialogMode,
+        equipmentType,
+        csvColumns,
+        commentLines,
+    });
+
+    const handleFilterSelectorClose = useCallback(
+        (selected?: TreeViewFinderNodeProps[]) => {
+            generateFromFilterOpen.setFalse();
+            if (selected?.length) {
+                handleGenerateFromFilter(selected);
+            }
+        },
+        [handleGenerateFromFilter, generateFromFilterOpen]
+    );
+
     return (
         <Grid container spacing={2} direction={'row'}>
             <Grid container item spacing={2} alignItems={'center'}>
@@ -438,6 +460,15 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                     </CsvDownloader>
                 </Grid>
                 <Grid item>
+                    <Button
+                        variant="contained"
+                        disabled={!equipmentType}
+                        onClick={() => generateFromFilterOpen.setTrue()}
+                    >
+                        <FormattedMessage id="GenerateTemplateFromFilter" />
+                    </Button>
+                </Grid>
+                <Grid item>
                     <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
                 </Grid>
@@ -460,6 +491,14 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 currentProperties={tabularProperties}
                 predefinedEquipmentProperties={predefinedEquipmentProperties}
                 onValidate={onPropertiesChange}
+            />
+            <DirectoryItemSelector
+                open={generateFromFilterOpen.value}
+                onClose={handleFilterSelectorClose}
+                types={[ElementType.FILTER]}
+                equipmentTypes={[equipmentType]}
+                title={intl.formatMessage({ id: 'Filters' })}
+                multiSelect={false}
             />
         </Grid>
     );
