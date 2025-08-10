@@ -309,7 +309,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 ) {
                     resetNodeClipboard();
                 }
-            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_RENAMED) {
+            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_EDITED) {
                 updateNodes([studyUpdatedForce.eventData.headers.node]);
             } else if (
                 studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED &&
