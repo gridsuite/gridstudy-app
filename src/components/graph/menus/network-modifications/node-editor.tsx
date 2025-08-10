@@ -15,7 +15,7 @@ import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
-import { NodeEditorHeader } from './editable-title copy';
+import { NodeEditorHeader } from './node-editor-header';
 
 const styles = {
     paper: (theme: Theme) => ({
