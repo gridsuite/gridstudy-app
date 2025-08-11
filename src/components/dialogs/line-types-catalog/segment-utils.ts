@@ -41,7 +41,15 @@ export const SegmentSchema = yup.object().shape({
     ),
 });
 
-export type SegmentFormData = yup.InferType<typeof SegmentSchema>;
+export type SegmentFormData = {
+  [SEGMENT_DISTANCE_VALUE]: number,
+  [SEGMENT_TYPE_VALUE]: string,
+  [SEGMENT_TYPE_ID]: string,
+  [SEGMENT_RESISTANCE]: number,
+  [SEGMENT_REACTANCE]: number,
+  [SEGMENT_SUSCEPTANCE]: number,
+  [SEGMENT_CURRENT_LIMITS]: [],
+}
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,

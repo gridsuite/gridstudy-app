@@ -220,12 +220,12 @@ export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
 export const LINE_CATALOG = 'lineCatalog';
-export const AERIAL_AREA = 'aerialArea';
+export const AERIAL_AREAS = 'aerialAreas';
 export const AERIAL_AREA_LIST = 'aerialAreaList';
-export const AERIAL_TEMPERATURE = 'aerialTemperature';
-export const UNDERGROUND_AREA = 'aerialArea';
-export const UNDERGROUND_SHAPE_FACTOR = 'aerialTemperature';
-export const FINAL_CURRENT_LIMITS = 'aerialTemperature';
+export const AERIAL_TEMPERATURES = 'aerialTemperatures';
+export const UNDERGROUND_AREAS = 'undergroundAreas';
+export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
+export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
 export const APPLICABIlITY = 'applicability';
 
 // Voltage level

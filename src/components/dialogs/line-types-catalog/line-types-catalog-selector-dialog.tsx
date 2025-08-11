@@ -17,16 +17,18 @@ import { ColDef } from 'ag-grid-community';
 import { LineTypeInfo } from './line-catalog.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import {
-    AERIAL_AREA,
-    AERIAL_TEMPERATURE,
-    UNDERGROUND_AREA,
-    UNDERGROUND_SHAPE_FACTOR,
+    AERIAL_AREAS,
+    AERIAL_TEMPERATURES,
+    UNDERGROUND_AREAS,
+    UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
 import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
 import { useFormContext } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
 import { getObjectId } from '../../utils/utils';
+import { getOptionLabel } from "../../results/common/global-filter/global-filter-utils";
+import { getConnectivityBusBarSectionData } from "../connectivity/connectivity-form-utils";
 
 const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -63,7 +65,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     const [tabIndex, setTabIndex] = useState<number>(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
     const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
     const [aerialAreas, setAerialAreas] = useState<Option[]>([]);
-    const [aerialTemperature, setAerialTemperature] = useState<Option[]>([]);
+    const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
     const [undergroundArea, setUndergroundArea] = useState<Option[]>([]);
     const { snackError } = useSnackMessage();
     const undergroundShapeFactor: Option[] = [
@@ -92,9 +94,9 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const handleSubmit = useCallback(() => {
         if (selectedRow?.category === 'AERIAL') {
-            const selectedArea = getValues(AERIAL_AREA);
-            const selectedTemperature = getValues(AERIAL_TEMPERATURE);
-            if (aerialAreas.length > 0 && aerialTemperature.length > 0) {
+            const selectedArea = getValues(AERIAL_AREAS);
+            const selectedTemperature = getValues(AERIAL_TEMPERATURES);
+            if (aerialAreas.length > 0 && aerialTemperatures.length > 0) {
                 const filteredLimits = selectedRow?.limitsForLineType.filter(
                     (limit) => limit.area === selectedArea.id && limit.temperature === selectedTemperature.id
                 );
@@ -103,8 +105,8 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                 }
             }
         } else if (selectedRow?.category === 'UNDERGROUND') {
-            const selectedArea = getValues(UNDERGROUND_AREA);
-            const selectedShapeFactor = parseFloat(getValues(UNDERGROUND_SHAPE_FACTOR)?.id);
+            const selectedArea = getValues(UNDERGROUND_AREAS);
+            const selectedShapeFactor = parseFloat(getValues(UNDERGROUND_SHAPE_FACTORS)?.id);
             if (undergroundArea.length > 0) {
                 const filteredLimits = selectedRow?.limitsForLineType.filter((limit) => limit.area === selectedArea.id);
                 if (filteredLimits) {
@@ -116,15 +118,15 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             }
         }
         return onSelectLine && selectedRow && onSelectLine(selectedRow);
-    }, [onSelectLine, selectedRow, getValues, aerialAreas, aerialTemperature, undergroundArea]);
+    }, [onSelectLine, selectedRow, getValues, aerialAreas, aerialTemperatures, undergroundArea]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
         // reset values
-        setValue(AERIAL_AREA, null);
-        setValue(AERIAL_TEMPERATURE, null);
-        setValue(UNDERGROUND_AREA, null);
-        setValue(UNDERGROUND_SHAPE_FACTOR, null);
+        setValue(AERIAL_AREAS, null);
+        setValue(AERIAL_TEMPERATURES, null);
+        setValue(UNDERGROUND_AREAS, null);
+        setValue(UNDERGROUND_SHAPE_FACTORS, null);
     }, []);
 
     const onSelectionChanged = useCallback(() => {
@@ -138,26 +140,26 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                     setSelectedRow(selectedData);
                     if (selectedData.limitsForLineType != null) {
                         if (selectedData.category === 'AERIAL') {
-                            const selectedTemperature = getValues(AERIAL_TEMPERATURE);
-                            console.log('onSelectionChanged', 'selectedTemperature', selectedTemperature)
-                            let aerialAreas = new Set<string>(
+                            let selectedAerialAreas = new Set<string>(
                                 selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
                             );
                             setAerialAreas(
-                                Array.from(aerialAreas.values()).map((value) => ({
+                                Array.from(selectedAerialAreas.values()).map((value) => ({
                                     id: value,
                                     label: value,
                                 }))
                             );
-                            let aerialTemperature = new Set<string>(
+                            console.log("=======selectedAerialAreas", selectedAerialAreas);
+                            let selectedAerialTemperature = new Set<string>(
                                 selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
                             );
-                            setAerialTemperature(
-                                Array.from(aerialTemperature.values()).map((value) => ({
+                            setAerialTemperatures(
+                                Array.from(selectedAerialTemperature.values()).map((value) => ({
                                     id: value,
                                     label: value,
                                 }))
                             );
+                          console.log("=====selectedAerialTemperature", selectedAerialTemperature);
                         } else if (selectedData.category === 'UNDERGROUND') {
                             let undergroundAreas = new Set<string>(
                                 selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
@@ -178,7 +180,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                     })
                 );
         }
-    }, [snackError, setAerialTemperature, setUndergroundArea, setAerialAreas, setValue, getValues]);
+    }, [snackError, setAerialTemperatures, setUndergroundArea, setAerialAreas, setValue, getValues]);
 
     const aerialColumnDefs = useMemo((): ColDef[] => {
         return [
@@ -392,27 +394,42 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const aerialAreaComponent = (
         <AutocompleteInput
-            name={AERIAL_AREA}
-            label="lineTypes.currentLimits.aerial.Area"
+            name={AERIAL_AREAS}
+            label="aerialAreas"
             options={aerialAreas}
             disabled={false}
             size={'small'}
         />
     );
-
+  const getObjectIdTest = (object: string | { id: string, label: string }) => {
+    console.log("======getObjectIdTest", object)
+    return typeof object === 'string' ? object : ((object?.label)?.toString() ?? null);
+  };
+    
     const aerialTemperatureComponent = (
-        <AutocompleteInput
-            name={AERIAL_TEMPERATURE}
-            label="lineTypes.currentLimits.aerial.Temperature"
-            options={aerialTemperature}
-            disabled={false}
-            size={'small'}
-        />
+      <AutocompleteInput
+        name={AERIAL_TEMPERATURES}
+        label="aerialTemperatures"
+        options={Object.values(aerialTemperatures)}
+        getOptionLabel={getObjectIdTest}
+        inputTransform={(value) => value ?? ''}
+        outputTransform={(value) => {
+          if (typeof value === 'string') {
+            console.log("======value", value)
+            return { id: value?.id ?? '', label: value?.label || '' };
+          }
+          console.log("======value", value)
+          
+          return value;
+        }}
+        disabled={false}
+        size={"small"}
+      />
     );
 
     const undergroundAreaComponent = (
         <AutocompleteInput
-            name={UNDERGROUND_AREA}
+            name={UNDERGROUND_AREAS}
             label="lineTypes.currentLimits.underground.Area"
             options={undergroundArea}
             isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -423,7 +440,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
 
     const undergroundFormShape = (
         <AutocompleteInput
-            name={UNDERGROUND_SHAPE_FACTOR}
+            name={UNDERGROUND_SHAPE_FACTORS}
             label="lineTypes.currentLimits.underground.ShapeFactor"
             options={undergroundShapeFactor}
             disabled={false}
