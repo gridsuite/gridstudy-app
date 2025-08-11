@@ -1515,6 +1515,7 @@
     "selectedOperationalLimitsGroup2": "Active limit set on side 2",
     "OpenMapCard": "Add the map",
     "AddNewCard": "Images",
+    "Display": "Display",
     "SaveGridLayout": "Save",
     "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",

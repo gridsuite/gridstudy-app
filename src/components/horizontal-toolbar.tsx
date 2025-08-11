@@ -10,20 +10,20 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventScenarioDrawerOpen, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
+import { setEventScenarioDrawerOpen } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
-import { darken, Grid, Theme } from '@mui/material';
+import { Box, darken, Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon } from '@gridsuite/commons-ui';
+import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
+import { useDisplayModes } from '../hooks/use-display-modes';
 const styles = {
     horizontalToolbar: (theme: Theme) => ({
         backgroundColor: darken(theme.palette.background.paper, 0.2),
@@ -40,6 +40,13 @@ const styles = {
         display: 'flex',
         flexDirection: 'row',
     },
+    toggle: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: '10px',
+    },
 };
 
 export function HorizontalToolbar() {
@@ -49,40 +56,19 @@ export function HorizontalToolbar() {
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
-    const [viewModes, setViewModes] = useState((): string[] => toggleOptions);
-
-    const handleViewMode = (event: any, newModes: string[]) => {
-        // Prevent empty selection: Keep at least one selection
-        if (newModes.length === 0) {
-            return;
-        }
-        if (!newModes.includes(StudyDisplayMode.TREE) && newModes.includes(StudyDisplayMode.MODIFICATIONS)) {
-            return;
-        }
-        //show the modifi panel
-        dispatch(setModificationsDrawerOpen(newModes.includes(StudyDisplayMode.MODIFICATIONS)));
-
-        dispatch(setToggleOptions(newModes));
-        setViewModes(newModes);
-    };
-
-    useEffect(() => {
-        setViewModes(toggleOptions);
-    }, [toggleOptions]);
-    const isModificationsDrawerOpen = useSelector((state: AppState) => state.isModificationsDrawerOpen);
-
     const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
-
-    const toggleModificationsDrawer = () => {
-        dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
-    };
+    const { displayModes, onViewModeChange, applyModes } = useDisplayModes();
 
     const toggleEventScenarioDrawer = () => {
+        //if the Dynamic SimulationEvent Scenario is clicked we need to hide the modifications
+        if (toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
+            const options = toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS);
+            applyModes(options);
+        }
         dispatch(setEventScenarioDrawerOpen(!isEventScenarioDrawerOpen));
     };
 
@@ -128,11 +114,7 @@ export function HorizontalToolbar() {
                                 <IconButton
                                     size={'small'}
                                     sx={isEventScenarioDrawerOpen ? styles.selected : styles.notSelected}
-                                    disabled={
-                                        studyDisplayMode === StudyDisplayMode.MAP ||
-                                        currentNode === null ||
-                                        currentNode?.type !== 'NETWORK_MODIFICATION'
-                                    }
+                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
                                     onClick={toggleEventScenarioDrawer}
                                 >
                                     <OfflineBoltOutlinedIcon />
@@ -140,27 +122,16 @@ export function HorizontalToolbar() {
                             </span>
                         </Tooltip>
                     )}
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginRight: '10px',
-                        }}
-                    >
-                        <span style={{ color: 'white', marginRight: '10px' }}>Affichage</span>
+                    <Box sx={styles.toggle} gap={1}>
+                        <OverflowableText text={intl.formatMessage({ id: 'Display' })} />
 
                         <ToggleButtonGroup
-                            value={viewModes}
-                            onChange={handleViewMode}
+                            value={displayModes}
+                            onChange={onViewModeChange}
                             aria-label="view modes"
                             size="small"
                         >
-                            <ToggleButton
-                                value={StudyDisplayMode.TREE}
-                                sx={studyDisplayMode === StudyDisplayMode.TREE ? styles.selected : styles.notSelected}
-                            >
+                            <ToggleButton value={StudyDisplayMode.TREE}>
                                 <DeviceHubIcon />
                             </ToggleButton>
                             <ToggleButton value={StudyDisplayMode.MODIFICATIONS}>
@@ -170,7 +141,7 @@ export function HorizontalToolbar() {
                                 <PhotoLibraryIcon />
                             </ToggleButton>
                         </ToggleButtonGroup>
-                    </div>
+                    </Box>
                 </List>
             </Grid>
         </Grid>

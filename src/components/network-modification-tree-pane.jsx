@@ -145,7 +145,6 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
 
-    console.log(' prev: ', prevTreeDisplay);
     const updateNodes = useCallback(
         (updatedNodesIds) => {
             Promise.all(

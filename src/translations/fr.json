@@ -1511,6 +1511,7 @@
     "selectedOperationalLimitsGroup2": "Jeu de limites actif côté 2",
     "OpenMapCard": "Ajouter la carte géographique",
     "AddNewCard": "Images",
+    "Display": "Affichage",
     "SaveGridLayout": "Enregistrer",
     "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
     "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
