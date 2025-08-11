@@ -1503,6 +1503,7 @@
     "thresholdNetPosition": "Seuil d'acceptabilité de la position nette cible",
     "balancesAdjustment.emptyCountries": "Au moins un pays doit être sélectionné",
     "loadFlowModification": "Modification par calcul de répartition appliquée",
+    "CreateVoltageLevelTopology": "Ajouter un jeu de barre",
     "diagramLoadingFail": "Erreur lors du chargement de {diagramName}",
     "expand": "Étendre",
     "expandAllVoltageLevels": "Étendre tous les postes",
