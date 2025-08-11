@@ -613,6 +613,7 @@
     "LimitSetCreationEmptyError": "Les noms de limits sets ne peuvent pas être vides.",
     "LimitSets": "Jeux de limites",
     "LimitSetsTabularModification": "Modification tabulaire de sets de limites",
+    "TabularLimitSets": "Sets de limite",
     "amountTemporaryLimits": "Nombre de limites temporaires",
     "amountTemporaryLimitsError": "Nombre de limites entre 1 et 50",
     "permanentLimit": "IST",

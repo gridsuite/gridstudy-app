@@ -576,7 +576,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
-                            label: 'LimitSets',
+                            label: 'TabularLimitSets',
                             action: () => withDefaultParams(LimitSetsModificationDialog),
                         },
                         {
