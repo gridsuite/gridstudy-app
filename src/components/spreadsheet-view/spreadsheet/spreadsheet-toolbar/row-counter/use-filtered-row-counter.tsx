@@ -115,7 +115,7 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition, disabled }
                     gridRef.current?.api.getColumn(filterModel.column)?.getColDef()?.headerName ?? filterModel.column;
                 console.log(filterModel);
                 lines.push(
-                    `- ${headerName} : ${intl.formatMessage({ id: 'filter.' + filterModel.type })} "${filterModel.value}"`.replace(
+                    `- ${headerName} : ${intl.formatMessage({ id: 'filter.' + filterModel.type })} "${filterModel.value}"`.replaceAll(
                         ',',
                         ', '
                     )
