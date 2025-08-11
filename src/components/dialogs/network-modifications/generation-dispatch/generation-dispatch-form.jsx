@@ -22,11 +22,32 @@ import { FormattedMessage } from 'react-intl';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 import GridItem from '../../commons/grid-item';
 import GridSection from '../../commons/grid-section';
+import { useEffect, useState } from 'react';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
-const GenerationDispatchForm = () => {
+const GenerationDispatchForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
+    const currentNodeUuid = currentNode?.id;
+
+    const [substations, setSubstations] = useState([]);
+
     const handleCoefficientValueChange = (id, value) => {
         return formatPercentageValue(value);
     };
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                undefined,
+                EQUIPMENT_TYPES.SUBSTATION,
+                true
+            ).then((values) => {
+                setSubstations(values.sort((a, b) => a.localeCompare(b)));
+            });
+        }
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const lossCoefficientField = (
         <FloatInput
@@ -112,7 +133,7 @@ const GenerationDispatchForm = () => {
             </Grid>
             <GridSection title="GeneratorsOrdering" />
             <Grid container direction="column" spacing={2} alignItems="start">
-                <SubstationsGeneratorsOrderingPane />
+                <SubstationsGeneratorsOrderingPane substations={substations} />
             </Grid>
         </Box>
     );

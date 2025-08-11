@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -12,8 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form.js';
 import { FORM_LOADING_DELAY } from 'components/network/constants.js';
-import { MODIFICATIONS_TABLE, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
-import { ModificationDialog } from 'components/dialogs/commons/modificationDialog.js';
+import { MODIFICATIONS_TABLE, CSV_FILENAME, TABULAR_PROPERTIES, TYPE } from 'components/utils/field-constants.js';
 import { createTabularCreation } from 'services/study/network-modifications.js';
 import { FetchStatus } from 'services/utils.js';
 import {
@@ -80,6 +80,7 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,
                 [TABULAR_PROPERTIES]: editData[TABULAR_PROPERTIES],
+                [CSV_FILENAME]: editData.csvFilename,
             });
         }
     }, [editData, reset, intl]);
@@ -116,7 +117,8 @@ const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, edi
                 creations,
                 formData[TABULAR_PROPERTIES],
                 !!editData,
-                editData?.uuid
+                editData?.uuid,
+                formData[CSV_FILENAME]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

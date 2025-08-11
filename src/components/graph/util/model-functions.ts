@@ -11,9 +11,9 @@ import type NetworkModificationTreeModel from '../network-modification-tree-mode
 import {
     CurrentTreeNode,
     NetworkModificationNodeData,
+    NodeCommonData,
     NodeType,
     ReactFlowModificationNodeData,
-    ReactFlowRootNodeData,
     RootNodeData,
 } from '../tree-node.type';
 
@@ -35,7 +35,7 @@ export function isRootNode(node: NetworkModificationNodeData | RootNodeData): no
     return node.type === NodeType.ROOT;
 }
 
-function convertRootNodeToReactFlowModelNode(node: NetworkModificationNodeData | RootNodeData): ReactFlowRootNodeData {
+function convertRootNodeToReactFlowModelNode(node: NetworkModificationNodeData | RootNodeData): NodeCommonData {
     return {
         label: node.name,
         description: node.description ?? undefined,

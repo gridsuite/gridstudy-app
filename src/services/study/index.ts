@@ -295,14 +295,6 @@ export function buildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNet
     return backendFetchText(url, { method: 'post' });
 }
 
-export function fetchCaseName(studyUuid: UUID, rootNetworkUuid: UUID) {
-    console.info('Fetching case name');
-    const url = getStudyUrl(studyUuid) + '/root-networks/' + encodeURIComponent(rootNetworkUuid) + '/case/name';
-    console.debug(url);
-
-    return backendFetchText(url);
-}
-
 export function isNodeExists(studyUuid: UUID, nodeName: string) {
     const existsNodeUrl =
         getStudyUrl(studyUuid) +
