@@ -19,6 +19,7 @@ import { UUID } from 'crypto';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { SwitchesBetweenSections } from '../voltage-level/switches-between-sections/switches-between-sections';
+import { useMemo } from 'react';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;
@@ -43,26 +44,32 @@ export default function CreateVoltageLevelTopologyForm({
         setIsDiagramPaneOpen(true);
     }, []);
 
-    const voltageLevelIdField = (
-        <TextField
-            size="small"
-            fullWidth
-            label={intl.formatMessage({ id: 'VoltageLevelId' })}
-            value={voltageLevelId}
-            InputProps={{
-                readOnly: true,
-            }}
-            disabled
-            {...filledTextField}
-        />
+    const voltageLevelIdField = useMemo(
+        () => (
+            <TextField
+                size="small"
+                fullWidth
+                label={intl.formatMessage({ id: 'VoltageLevelId' })}
+                value={voltageLevelId}
+                InputProps={{
+                    readOnly: true,
+                }}
+                disabled
+                {...filledTextField}
+            />
+        ),
+        [intl, voltageLevelId]
     );
 
     const sectionCountField = <FloatInput name={`${SECTION_COUNT}`} label={'SectionCount'} />;
 
-    const diagramToolTip = (
-        <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
-            <InfoOutlined color="info" fontSize="medium" />
-        </Tooltip>
+    const diagramToolTip = useMemo(
+        () => (
+            <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
+                <InfoOutlined color="info" fontSize="medium" />
+            </Tooltip>
+        ),
+        [intl]
     );
 
     return (
