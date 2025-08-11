@@ -69,7 +69,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const { setValue, clearErrors, setError, getValues } = useFormContext();
+    const { setValue, clearErrors, setError } = useFormContext();
     const propertiesDialogOpen = useStateBoolean(false);
     const generateFromFilterOpen = useStateBoolean(false);
     const language = useSelector((state: AppState) => state.computedLanguage);
@@ -333,7 +333,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
+    }, [clearErrors, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
 
     const typesOptions = useMemo(() => {
         return Object.keys(
