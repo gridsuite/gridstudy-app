@@ -51,7 +51,7 @@ export const SpreadsheetToolbar = ({
                 <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
-                <FilteredRowCounter gridRef={gridRef} tableDefinition={tableDefinition} />
+                <FilteredRowCounter gridRef={gridRef} tableDefinition={tableDefinition} disabled={disabled} />
             </Grid>
             <Grid item>
                 <ColumnsConfig

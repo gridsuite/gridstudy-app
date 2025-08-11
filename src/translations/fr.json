@@ -1521,5 +1521,6 @@
     "ColumnsFilters": "Filtres de colonnes",
     "genericFilter": "Générique",
     "voltageLevel": "Niveaux de tension",
-    "ClickToReset": "Cliquez pour réinitialiser les filtres"
+    "ClickToReset": "Cliquez pour réinitialiser les filtres",
+    "RowCounterInfo": "Affiche le nombre de lignes de la feuille de calcul actuelle. Si des filtres sont appliqués, le nombre de lignes filtrées s'affiche. Vous pouvez supprimer tous les filtres en cliquant sur ce bouton."
 }
