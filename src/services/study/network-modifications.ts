@@ -25,6 +25,7 @@ import {
     BatteryCreationInfos,
     BatteryModificationInfos,
     CreateCouplingDeviceInfos,
+    CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -2110,5 +2111,37 @@ export function balancesAdjustment({
             'Content-Type': 'application/json',
         },
         body,
+    });
+}
+
+export function createVoltageLevelTopology({
+    createVoltageLevelTopologyInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    createVoltageLevelTopologyInfos: CreateVoltageLevelTopologyInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology');
+    } else {
+        console.info('Creating voltage level topology');
+    }
+    console.log('test', createVoltageLevelTopologyInfos);
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createVoltageLevelTopologyInfos),
     });
 }
