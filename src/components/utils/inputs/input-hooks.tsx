@@ -102,9 +102,17 @@ export const useCSVPicker = ({
     const [fileError, setFileError] = useState<string | undefined>();
 
     const equals = (a: string[], b: string[]) => b.every((item) => a.includes(item));
+
     useEffect(() => {
         setAcceptedFile(undefined);
+        setFileError(undefined);
     }, [resetTrigger]);
+
+    // Expose a reset function to allow clearing the file manually
+    const resetFile = useCallback(() => {
+        setAcceptedFile(undefined);
+        setFileError(undefined);
+    }, []);
 
     const field = useMemo(() => {
         return (
@@ -154,5 +162,5 @@ export const useCSVPicker = ({
         );
     }, [_acceptedFile, disabled, header, intl, label, maxTapNumber, CSVReader, language]);
 
-    return [_acceptedFile, field, fileError] as const;
+    return [_acceptedFile, field, fileError, setAcceptedFile, resetFile] as const;
 };
