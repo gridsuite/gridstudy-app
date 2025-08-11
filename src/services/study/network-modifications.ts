@@ -55,6 +55,7 @@ import {
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
+import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -1088,16 +1089,27 @@ export function modifyTwoWindingsTransformer({
     });
 }
 
-export function createTabularModification(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationType: string,
-    modifications: any,
-    modificationUuid: UUID,
-    type: ModificationType,
-    csvFilename: string,
-    properties?: TabularProperty[]
-) {
+export interface CreateTabularModificationProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationType: string;
+    modifications: Modification[];
+    modificationUuid: UUID;
+    type: ModificationType;
+    csvFilename?: string;
+    properties?: TabularProperty[];
+}
+
+export function createTabularModification({
+    studyUuid,
+    nodeUuid,
+    modificationType,
+    modifications,
+    modificationUuid,
+    type,
+    csvFilename,
+    properties,
+}: CreateTabularModificationProps) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
@@ -1996,18 +2008,27 @@ export function modifyByAssignment(
     });
 }
 
-export function createTabularCreation(
-    studyUuid: string,
-    nodeUuid: UUID,
-    creationType: string,
-    creations: any,
-    properties: TabularProperty[],
-    isUpdate: boolean,
-    modificationUuid: UUID,
-    csvFilename: string
-) {
-    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+export interface CreateTabularCreationProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    creationType: string;
+    creations: Modification[];
+    modificationUuid: UUID;
+    csvFilename?: string;
+    properties?: TabularProperty[];
+}
 
+export function createTabularCreation({
+    studyUuid,
+    nodeUuid,
+    creationType,
+    creations,
+    modificationUuid,
+    csvFilename,
+    properties,
+}: CreateTabularCreationProps) {
+    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    const isUpdate = !!modificationUuid;
     if (isUpdate) {
         createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating tabular creation');
