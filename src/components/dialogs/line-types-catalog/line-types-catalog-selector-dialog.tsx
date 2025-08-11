@@ -26,9 +26,6 @@ import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
 import { useFormContext } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
-import { getObjectId } from '../../utils/utils';
-import { getOptionLabel } from "../../results/common/global-filter/global-filter-utils";
-import { getConnectivityBusBarSectionData } from "../connectivity/connectivity-form-utils";
 
 const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -67,6 +64,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
     const [aerialAreas, setAerialAreas] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
     const [undergroundArea, setUndergroundArea] = useState<Option[]>([]);
+    const [isAerialTab, setAerialTab] = useState<boolean>(true);
     const { snackError } = useSnackMessage();
     const undergroundShapeFactor: Option[] = [
         { id: '1', label: '1' },
@@ -120,14 +118,18 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         return onSelectLine && selectedRow && onSelectLine(selectedRow);
     }, [onSelectLine, selectedRow, getValues, aerialAreas, aerialTemperatures, undergroundArea]);
 
-    const handleTabChange = useCallback((newValue: number) => {
-        setTabIndex(newValue);
-        // reset values
-        setValue(AERIAL_AREAS, null);
-        setValue(AERIAL_TEMPERATURES, null);
-        setValue(UNDERGROUND_AREAS, null);
-        setValue(UNDERGROUND_SHAPE_FACTORS, null);
-    }, []);
+    const handleTabChange = useCallback(
+        (newValue: number) => {
+            setTabIndex(newValue);
+            setAerialTab(!isAerialTab);
+            setSelectedRow(null);
+            setValue(AERIAL_AREAS, null);
+            setValue(AERIAL_TEMPERATURES, null);
+            setValue(UNDERGROUND_AREAS, null);
+            setValue(UNDERGROUND_SHAPE_FACTORS, null);
+        },
+        [setAerialTab, isAerialTab, setValue]
+    );
 
     const onSelectionChanged = useCallback(() => {
         // We extract the selected row from AGGrid
@@ -149,7 +151,6 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                                     label: value,
                                 }))
                             );
-                            console.log("=======selectedAerialAreas", selectedAerialAreas);
                             let selectedAerialTemperature = new Set<string>(
                                 selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
                             );
@@ -159,7 +160,6 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                                     label: value,
                                 }))
                             );
-                          console.log("=====selectedAerialTemperature", selectedAerialTemperature);
                         } else if (selectedData.category === 'UNDERGROUND') {
                             let undergroundAreas = new Set<string>(
                                 selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
@@ -180,7 +180,7 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                     })
                 );
         }
-    }, [snackError, setAerialTemperatures, setUndergroundArea, setAerialAreas, setValue, getValues]);
+    }, [snackError, setAerialTemperatures, setUndergroundArea, setAerialAreas]);
 
     const aerialColumnDefs = useMemo((): ColDef[] => {
         return [
@@ -399,32 +399,23 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             options={aerialAreas}
             disabled={false}
             size={'small'}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
         />
     );
-  const getObjectIdTest = (object: string | { id: string, label: string }) => {
-    console.log("======getObjectIdTest", object)
-    return typeof object === 'string' ? object : ((object?.label)?.toString() ?? null);
-  };
-    
+    const getObjectIdTest = (object: string | { id: string; label: string }) => {
+        return typeof object === 'string' ? object : (object?.label?.toString() ?? null);
+    };
+
     const aerialTemperatureComponent = (
-      <AutocompleteInput
-        name={AERIAL_TEMPERATURES}
-        label="aerialTemperatures"
-        options={Object.values(aerialTemperatures)}
-        getOptionLabel={getObjectIdTest}
-        inputTransform={(value) => value ?? ''}
-        outputTransform={(value) => {
-          if (typeof value === 'string') {
-            console.log("======value", value)
-            return { id: value?.id ?? '', label: value?.label || '' };
-          }
-          console.log("======value", value)
-          
-          return value;
-        }}
-        disabled={false}
-        size={"small"}
-      />
+        <AutocompleteInput
+            name={AERIAL_TEMPERATURES}
+            label="aerialTemperatures"
+            options={Object.values(aerialTemperatures)}
+            getOptionLabel={getObjectIdTest}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            disabled={false}
+            size={'small'}
+        />
     );
 
     const undergroundAreaComponent = (
@@ -443,21 +434,25 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             name={UNDERGROUND_SHAPE_FACTORS}
             label="lineTypes.currentLimits.underground.ShapeFactor"
             options={undergroundShapeFactor}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
             disabled={false}
             size={'small'}
         />
     );
 
-    const limitsParametersSelectection =
-        selectedRow && selectedRow.category === 'AERIAL' ? (
-            <>
-                <GridSection title={'parameters'} />
-                <Grid container spacing={2}>
-                    <GridItem size={4}>{aerialAreaComponent}</GridItem>
-                    <GridItem size={4}>{aerialTemperatureComponent}</GridItem>
-                </Grid>
-            </>
-        ) : (
+    const aerialLimitsParametersSelection = selectedRow && selectedRow.category === 'AERIAL' && isAerialTab && (
+        <>
+            <GridSection title={'parameters'} />
+            <Grid container spacing={2}>
+                <GridItem size={4}>{aerialAreaComponent}</GridItem>
+                <GridItem size={4}>{aerialTemperatureComponent}</GridItem>
+            </Grid>
+        </>
+    );
+
+    const undergroundLimitsParametersSelection = selectedRow &&
+        selectedRow.category === 'UNDERGROUND' &&
+        !isAerialTab && (
             <>
                 <GridSection title={'parameters'} />
                 <Grid container spacing={2}>
@@ -486,7 +481,8 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             {...dialogProps}
         >
             <div style={{ height: '85%' }}>{displayTable(tabIndex)}</div>
-            {selectedRow && limitsParametersSelectection}
+            {aerialLimitsParametersSelection}
+            {undergroundLimitsParametersSelection}
         </BasicModificationDialog>
     );
 };

@@ -143,13 +143,13 @@ export const LineTypeSegmentForm = () => {
                 if (computedLimits.has(limit.limitSetName)) {
                     let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
                     if (limitInfo !== undefined) {
-                        if (limit.temporaryLimit != null) {
+                        if (limit?.temporaryLimitValue != null) {
                             if (limitInfo.temporaryLimitValue == null) {
-                                limitInfo.temporaryLimitValue = limit.temporaryLimit;
+                                limitInfo.temporaryLimitValue = limit.temporaryLimitValue;
                             } else {
                                 limitInfo.temporaryLimitValue = Math.min(
                                     limitInfo.temporaryLimitValue,
-                                    limit.temporaryLimit
+                                    limit.temporaryLimitValue
                                 );
                             }
                         }

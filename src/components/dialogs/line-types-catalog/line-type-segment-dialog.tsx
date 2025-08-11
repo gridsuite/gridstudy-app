@@ -9,16 +9,15 @@ import { FunctionComponent, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../commons/modificationDialog';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { emptyLineSegment, SegmentFormData, SegmentSchema } from './segment-utils';
+import { SegmentFormData, SegmentSchema } from './segment-utils';
 import {
     AERIAL_AREAS,
-    AERIAL_TEMPERATURES, BALANCES_ADJUSTMENT, BALANCES_ADJUSTMENT_ADVANCED, BALANCES_ADJUSTMENT_ZONES,
-  CONVERTER_STATION_1, CONVERTER_STATION_2,
-    FINAL_CURRENT_LIMITS, HVDC_LINE_TAB,
+    AERIAL_TEMPERATURES,
+    FINAL_CURRENT_LIMITS,
     SEGMENTS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -26,14 +25,12 @@ import {
     UNDERGROUND_AREAS,
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
-import { BalancesAdjustmentTab } from "../network-modifications/balances-adjustment/balances-adjustment.constants";
-import { LccDialogTab } from "../network-modifications/hvdc-line/lcc/common/lcc-type";
 
 const LineTypeSegmentSchema = yup
     .object()
     .shape({
-        [AERIAL_AREAS]: yup.string().nullable(),
-        [AERIAL_TEMPERATURES]: yup.string().nullable(),
+        [AERIAL_AREAS]: yup.string().nullable().required(),
+        [AERIAL_TEMPERATURES]: yup.string().nullable().required(),
         [UNDERGROUND_AREAS]: yup.string().nullable(),
         [UNDERGROUND_SHAPE_FACTORS]: yup.number().nullable(),
         [TOTAL_RESISTANCE]: yup.number().required(),
@@ -45,22 +42,22 @@ const LineTypeSegmentSchema = yup
     .required();
 
 export type LineTypeSegmentFormData = {
-  [AERIAL_AREAS]: string,
-  [AERIAL_TEMPERATURES]: string,
-  [UNDERGROUND_AREAS]: string,
-  [UNDERGROUND_SHAPE_FACTORS]:number,
-  [TOTAL_RESISTANCE]: number,
-  [TOTAL_REACTANCE]: number,
-  [TOTAL_SUSCEPTANCE]: number,
-  [FINAL_CURRENT_LIMITS]: [],
-  [SEGMENTS]: SegmentFormData[],
-}
+    [AERIAL_AREAS]: string;
+    [AERIAL_TEMPERATURES]: string;
+    [UNDERGROUND_AREAS]: string;
+    [UNDERGROUND_SHAPE_FACTORS]: number;
+    [TOTAL_RESISTANCE]: number;
+    [TOTAL_REACTANCE]: number;
+    [TOTAL_SUSCEPTANCE]: number;
+    [FINAL_CURRENT_LIMITS]: [];
+    [SEGMENTS]: SegmentFormData[];
+};
 
 const emptyFormData = {
-    [AERIAL_AREAS]: '',
-    [AERIAL_TEMPERATURES]: '',
+    [AERIAL_AREAS]: null,
+    [AERIAL_TEMPERATURES]: null,
     [UNDERGROUND_AREAS]: null,
-    [UNDERGROUND_SHAPE_FACTORS]:null,
+    [UNDERGROUND_SHAPE_FACTORS]: null,
     [TOTAL_RESISTANCE]: 0.0,
     [TOTAL_REACTANCE]: 0.0,
     [TOTAL_SUSCEPTANCE]: 0.0,
@@ -89,14 +86,11 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
     /**
      * RENDER
      */
-    
-    const onValidationError = useCallback(
-      (errors: any) => {
-        console.log("====================errors", errors)
-      },
-      []
-    );
-    
+
+    const onValidationError = useCallback((errors: any) => {
+        console.log('====================errors', errors);
+    }, []);
+
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
             <ModificationDialog

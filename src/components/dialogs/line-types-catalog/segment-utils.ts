@@ -36,20 +36,20 @@ export const SegmentSchema = yup.object().shape({
         yup.object().shape({
             [LIMIT_SET_NAME]: yup.string().required(),
             [PERMANENT_LIMIT]: yup.number().required(),
-            [TEMPORARY_LIMIT]: yup.number().required(),
+            [TEMPORARY_LIMIT]: yup.number().nullable(),
         })
     ),
 });
 
 export type SegmentFormData = {
-  [SEGMENT_DISTANCE_VALUE]: number,
-  [SEGMENT_TYPE_VALUE]: string,
-  [SEGMENT_TYPE_ID]: string,
-  [SEGMENT_RESISTANCE]: number,
-  [SEGMENT_REACTANCE]: number,
-  [SEGMENT_SUSCEPTANCE]: number,
-  [SEGMENT_CURRENT_LIMITS]: [],
-}
+    [SEGMENT_DISTANCE_VALUE]: number;
+    [SEGMENT_TYPE_VALUE]: string;
+    [SEGMENT_TYPE_ID]: string;
+    [SEGMENT_RESISTANCE]: number;
+    [SEGMENT_REACTANCE]: number;
+    [SEGMENT_SUSCEPTANCE]: number;
+    [SEGMENT_CURRENT_LIMITS]: [];
+};
 
 export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_DISTANCE_VALUE]: 0.0,
