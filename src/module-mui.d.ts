@@ -24,7 +24,6 @@ declare module '@mui/material/styles' {
             overlay: {
                 background: string;
             };
-            filterCounter: string;
         };
         networkModificationPanel: {
             backgroundColor: string;
