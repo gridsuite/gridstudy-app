@@ -108,6 +108,7 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
     'spreadsheet/parameter_aliases/unique_node_names': 'Each node can only have one alias',
+    'spreadsheet/parameter_aliases/maximum_row_number_error': 'The number of rows must not exceed the value 5',
     'spreadsheet/filter/config': 'Gridsuite filters',
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
