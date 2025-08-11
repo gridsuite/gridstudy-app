@@ -61,7 +61,6 @@ export function HorizontalToolbar() {
         if (newModes.length === 0) {
             return;
         }
-        //todo: check PO for this: if the tree is not visible you need to hide the modif panel
         if (!newModes.includes(StudyDisplayMode.TREE) && newModes.includes(StudyDisplayMode.MODIFICATIONS)) {
             return;
         }
