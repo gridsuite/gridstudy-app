@@ -16,8 +16,8 @@ import { ComputedLineCharacteristics } from './line-catalog.type';
 import { emptyLineSegment, SegmentSchema } from './segment-utils';
 import {
     AERIAL_AREA,
-    AERIAL_AREA_LIST,
     AERIAL_TEMPERATURE,
+    FINAL_CURRENT_LIMITS,
     SEGMENTS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -25,22 +25,18 @@ import {
     UNDERGROUND_AREA,
     UNDERGROUND_SHAPE_FACTOR,
 } from '../../utils/field-constants';
-import { array } from 'yup';
 
 const LineTypeSegmentSchema = yup
     .object()
     .shape({
-        [AERIAL_AREA]: yup.string().when([AERIAL_AREA_LIST], {
-            is: (aerialAreaList: array) => aerialAreaList?.length > 0,
-            then: (schema) => schema.required(),
-        }),
-        [AERIAL_AREA_LIST]: yup.array(),
-        [AERIAL_TEMPERATURE]: yup.string().required(),
-        [UNDERGROUND_AREA]: yup.string().required(),
-        [UNDERGROUND_SHAPE_FACTOR]: yup.string().required(),
+        [AERIAL_AREA]: yup.object(),
+        [AERIAL_TEMPERATURE]: yup.object(),
+        [UNDERGROUND_AREA]: yup.object(),
+        [UNDERGROUND_SHAPE_FACTOR]: yup.object(),
         [TOTAL_RESISTANCE]: yup.number().required(),
         [TOTAL_REACTANCE]: yup.number().required(),
         [TOTAL_SUSCEPTANCE]: yup.number().required(),
+        [FINAL_CURRENT_LIMITS]: yup.array(),
         [SEGMENTS]: yup.array().of(SegmentSchema).required().min(1, 'AtLeastOneSegmentNeeded'),
     })
     .required();
@@ -48,14 +44,14 @@ const LineTypeSegmentSchema = yup
 export type LineTypeSegmentFormData = yup.InferType<typeof LineTypeSegmentSchema>;
 
 const emptyFormData: LineTypeSegmentFormData = {
-    [AERIAL_AREA]: '',
-    [AERIAL_AREA_LIST]: [],
-    [AERIAL_TEMPERATURE]: '',
-    [UNDERGROUND_AREA]: '',
-    [UNDERGROUND_SHAPE_FACTOR]: '',
+    [AERIAL_AREA]: { id: '', label: '' },
+    [AERIAL_TEMPERATURE]: { id: '', label: '' },
+    [UNDERGROUND_AREA]: { id: '', label: '' },
+    [UNDERGROUND_SHAPE_FACTOR]: { id: '', label: '' },
     [TOTAL_RESISTANCE]: 0.0,
     [TOTAL_REACTANCE]: 0.0,
     [TOTAL_SUSCEPTANCE]: 0.0,
+    [FINAL_CURRENT_LIMITS]: [],
     [SEGMENTS]: [emptyLineSegment],
 };
 

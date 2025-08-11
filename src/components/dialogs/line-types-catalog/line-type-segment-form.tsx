@@ -12,6 +12,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
+    FINAL_CURRENT_LIMITS,
     SEGMENT_CURRENT_LIMITS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,
@@ -143,10 +144,13 @@ export const LineTypeSegmentForm = () => {
                     let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
                     if (limitInfo !== undefined) {
                         if (limit.temporaryLimit != null) {
-                            if (limitInfo.temporaryLimit == null) {
-                                limitInfo.temporaryLimit = limit.temporaryLimit;
+                            if (limitInfo.temporaryLimitValue == null) {
+                                limitInfo.temporaryLimitValue = limit.temporaryLimit;
                             } else {
-                                limitInfo.temporaryLimit = Math.min(limitInfo.temporaryLimit, limit.temporaryLimit);
+                                limitInfo.temporaryLimitValue = Math.min(
+                                    limitInfo.temporaryLimitValue,
+                                    limit.temporaryLimit
+                                );
                             }
                         }
                         limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
@@ -157,7 +161,8 @@ export const LineTypeSegmentForm = () => {
             });
         });
         setCurrentLimitResult(Array.from(computedLimits.values()));
-    }, [getValues]);
+        setValue(FINAL_CURRENT_LIMITS, Array.from(computedLimits.values()));
+    }, [getValues, setValue, setCurrentLimitResult]);
 
     const onSelectCatalogLine = useCallback(
         (selectedLine: LineTypeInfo) => {
@@ -205,7 +210,7 @@ export const LineTypeSegmentForm = () => {
             updateTotalLimits();
             return true; // Needed to remove the line in ExpandableInput
         },
-        [setValue, updateTotals, updateTotalLimits, getValues]
+        [setValue, updateTotals, updateTotalLimits]
     );
 
     const getPreselectedRowIdForCatalog = useCallback(
@@ -275,7 +280,7 @@ export const LineTypeSegmentForm = () => {
             },
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.currentLimits.Temporary' }),
-                field: 'temporaryLimit',
+                field: 'temporaryLimitValue',
                 cellRenderer: DefaultCellRenderer,
             },
         ];

@@ -28,6 +28,7 @@ import {
     CONNECTIVITY_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FINAL_CURRENT_LIMITS,
     G1,
     G2,
     LIMITS,
@@ -265,6 +266,28 @@ const LineCreationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
+        const finalLimits = [];
+        data[FINAL_CURRENT_LIMITS].forEach((item) => {
+            const temporaryLimitsList = [];
+            if (item.temporaryLimitValue) {
+                temporaryLimitsList.push({
+                    name: item.temporaryLimitName,
+                    acceptableDuration: item.temporaryLimitAcceptableDuration,
+                    value: item.temporaryLimitValue,
+                });
+            }
+            finalLimits.push({
+                id: item.limitSetName,
+                name: item.limitSetName,
+                applicability: 'EQUIPMENT',
+                currentLimits: {
+                    id: item.limitSetName,
+                    permanentLimit: item.permanentLimit,
+                    temporaryLimits: temporaryLimitsList,
+                },
+            });
+        });
+        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
     };
 
     const onSubmit = useCallback(

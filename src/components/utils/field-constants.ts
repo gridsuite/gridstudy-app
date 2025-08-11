@@ -225,6 +225,7 @@ export const AERIAL_AREA_LIST = 'aerialAreaList';
 export const AERIAL_TEMPERATURE = 'aerialTemperature';
 export const UNDERGROUND_AREA = 'aerialArea';
 export const UNDERGROUND_SHAPE_FACTOR = 'aerialTemperature';
+export const FINAL_CURRENT_LIMITS = 'aerialTemperature';
 export const APPLICABIlITY = 'applicability';
 
 // Voltage level

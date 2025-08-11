@@ -38,7 +38,9 @@ export type ComputedLineCharacteristics = {
 export type CurrentLimitsInfo = {
     limitSetName: string;
     permanentLimit: number;
-    temporaryLimit: number;
+    temporaryLimitValue: number;
+    temporaryLimitAcceptableDuration: number;
+    temporaryLimitName: string;
     area: string;
     temperature: string;
 };
