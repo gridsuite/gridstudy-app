@@ -806,13 +806,12 @@ export interface CreateVoltageLevelSectionInfos {
     type: ModificationType;
     uuid?: string;
     voltageLevelId: string;
-    busbarSectionId: string;
+    busbarIndex: string | null;
+    busbarSectionId: string | null;
     afterBusbarSectionId: boolean;
-    leftSwitchKind: string;
-    rightSwitchKind: string;
+    leftSwitchKind: string | null;
+    rightSwitchKind: string | null;
     switchOpen: boolean;
-    busbarCount: number;
-    sectionCount: number;
 }
 
 export type NetworkModificationRequestInfos = {

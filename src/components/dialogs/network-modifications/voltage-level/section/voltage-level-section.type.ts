@@ -6,14 +6,12 @@
  */
 
 export type CreateVoltageLevelSectionDialogSchemaForm = {
-    busbarCount: string | null;
+    busbarIndex: string;
     busbarSectionId: string | null;
-    switchesBeforeSections: string | null;
-    switchesAfterSections: string | null;
+    isAfterBusBarSectionId: string | null;
+    switchesBeforeSections?: string | null;
+    switchesAfterSections?: string | null;
     newSwitchStates?: boolean;
-    isAfterBusBarSectionId?: boolean;
-    busbarSections: number | null;
-    busbarSectionIndex: number | null;
 };
 
 export type SectionInfo = {

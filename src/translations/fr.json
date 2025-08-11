@@ -1516,6 +1516,7 @@
     "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
     "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
+    "isAfterBusBarSectionId": "côté de la nouvelle section",
     "SectionPosition": "Position du tronçon / section",
     "Switch": "Organes de coupure",
     "newSection": "Nouvelle section",
@@ -1525,6 +1526,6 @@
     "Before": "Avant",
     "After": "Après",
     "AllBusbars": "Tous les jeux de barres",
-    "BusbarNumber": "{number}",
+    "BusbarNumber": "number",
     "newSwitchStates": "Nouveaux organes de coupure fermés"
 }

@@ -1520,6 +1520,7 @@
     "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
+    "isAfterBusBarSectionId": "New Section side",
     "SectionPosition": "Section position",
     "Switch": "Switch",
     "newSection": "New section",
@@ -1529,6 +1530,6 @@
     "Busbar": "Busbar",
     "Before": "Before",
     "After": "After",
-    "BusbarNumber": "{number}",
+    "BusbarNumber": "number",
     "newSwitchStates": "New switches closed "
 }

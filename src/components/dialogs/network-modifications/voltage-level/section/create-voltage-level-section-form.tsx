@@ -4,9 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    BUS_BAR_COUNT,
+    BUS_BAR_INDEX,
+    BUSBAR_SECTION_ID,
+    IS_AFTER_BUSBAR_SECTION_ID,
     NEW_SWITCH_STATES,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
@@ -15,20 +17,19 @@ import { Box, Button, Grid, Slider, TextField, Tooltip } from '@mui/material';
 import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, CheckboxInput, SelectInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from 'components/diagrams/singleLineDiagram/position-diagram-pane';
 import { UUID } from 'crypto';
-import { SWITCH_TYPE } from '../../../../network/constants';
-import { useWatch } from 'react-hook-form';
-import { BusBarSectionInfos } from './voltage-level-section.type';
-import { SectionPositionSlider } from './section-position-slider';
-import { getIdOrValue } from '../../../commons/utils';
+import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { BusBarSectionInfos, SectionInfo } from './voltage-level-section.type';
+import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 
 interface VoltageLevelSectionsCreationFormProps {
-    busBarSectionInfos?: BusBarSectionInfos[] | any;
+    busBarSectionInfos?: BusBarSectionInfos[];
     voltageLevelId: string;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
@@ -44,7 +45,9 @@ export function CreateVoltageLevelSectionForm({
 }: Readonly<VoltageLevelSectionsCreationFormProps>) {
     const intl = useIntl();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
-    const sectionCount = useWatch({ name: BUS_BAR_COUNT });
+    const [busBarSectionsIdOptions, setBusBarSectionsIdOptions] = useState<Option[]>([]);
+    const { setValue } = useFormContext();
+    const sectionCount = useWatch({ name: BUS_BAR_INDEX });
 
     const voltageLevelIdField = (
         <TextField
@@ -60,66 +63,73 @@ export function CreateVoltageLevelSectionForm({
         />
     );
 
-    const busbarSectionOptions = useMemo(() => {
-        if (!busBarSectionInfos) {
-            return [];
-        }
-
-        let sectionsToUse = {};
-
-        if (sectionCount) {
-            const selectedKey = `horizPos:${sectionCount}`;
-            if (busBarSectionInfos[selectedKey]) {
-                sectionsToUse = { [selectedKey]: busBarSectionInfos[selectedKey] };
+    useEffect(() => {
+        if (busBarSectionInfos && sectionCount) {
+            const selectedKey: `horizPos:${string}` = `horizPos:${sectionCount?.id}`;
+            const sections = (busBarSectionInfos as any)[selectedKey] as SectionInfo[] | undefined;
+            if (!sections || !Array.isArray(sections)) {
+                setBusBarSectionsIdOptions([]);
+                return;
             }
+            const options = sections
+                .filter((section): section is SectionInfo => Boolean(section?.id))
+                .map((section) => ({
+                    id: section.id,
+                    label: section.id,
+                }))
+                .sort((a, b) => a.id.localeCompare(b.id));
+            setBusBarSectionsIdOptions(options);
         } else {
-            sectionsToUse = {};
+            setBusBarSectionsIdOptions([]);
         }
-
-        const options: { id: string; label: string; vertPos: number }[] = [];
-
-        Object.entries(sectionsToUse).forEach(([key, sections]) => {
-            if (key.startsWith('horizPos:') && Array.isArray(sections)) {
-                sections.forEach((section) => {
-                    options.push({
-                        id: `${section?.id}`,
-                        label: `${section?.id}`,
-                        vertPos: section.vertPos,
-                    });
-                });
-            }
-        });
-
-        return options.sort((a, b) => a.id.localeCompare(b.id));
     }, [busBarSectionInfos, sectionCount]);
 
-    const busBarOptions = useMemo(() => {
-        if (!busBarSectionInfos) {
-            return [];
+    const busBarIndexOptions = useMemo(() => {
+        if (busBarSectionInfos) {
+            return Object.keys(busBarSectionInfos || {})
+                .sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]))
+                .map((key) => {
+                    const id = key.split(':')[1];
+                    return { id, label: id };
+                });
         }
-        return Object.keys(busBarSectionInfos)
-            .sort((a, b) => {
-                const aNum = parseInt(a.split(':')[1]);
-                const bNum = parseInt(b.split(':')[1]);
-                return aNum - bNum;
-            })
-            .map((key) => {
-                const busbarNumber = key.split(':')[1];
-                return {
-                    id: key.split(':')[1],
-                    label: intl.formatMessage({ id: 'BusbarNumber' }, { number: busbarNumber }),
-                };
-            });
-    }, [busBarSectionInfos, intl]);
+        return [];
+    }, [busBarSectionInfos]);
+    const handleChange = useCallback(() => {
+        setValue(BUSBAR_SECTION_ID, null);
+    }, [setValue]);
 
     const busbarCountField = (
         <AutocompleteInput
-            name={BUS_BAR_COUNT}
-            label="BusBarBus"
-            options={busBarOptions ?? []}
-            inputTransform={(value: any) => busBarOptions?.find((option) => option?.id === value) || value}
-            outputTransform={(option: any) => getIdOrValue(option) ?? null}
+            name={BUS_BAR_INDEX}
+            label="Busbar"
+            onChangeCallback={handleChange}
+            options={Object.values(busBarIndexOptions)}
+            getOptionLabel={getObjectId}
+            isOptionEqualToValue={areIdsEqual}
             size={'small'}
+        />
+    );
+
+    const busbarSectionsField = (
+        <AutocompleteInput
+            name={BUSBAR_SECTION_ID}
+            label="BusBarSections"
+            options={Object.values(busBarSectionsIdOptions)}
+            getOptionLabel={getObjectId}
+            isOptionEqualToValue={areIdsEqual}
+            size={'small'}
+            disabled={!sectionCount}
+        />
+    );
+
+    const positionSideNewSectionField = (
+        <SelectInput
+            name={IS_AFTER_BUSBAR_SECTION_ID}
+            label="isAfterBusBarSectionId"
+            options={Object.values(POSITION_NEW_SECTION_SIDE)}
+            size={'small'}
+            disabled={!sectionCount}
         />
     );
 
@@ -171,7 +181,7 @@ export function CreateVoltageLevelSectionForm({
         />
     );
     const newSwitchStatesField = (
-        <CheckboxInput name={NEW_SWITCH_STATES} label={'newSwitchStates'} formProps={{ disabled: !sectionCount }} />
+        <SwitchInput name={NEW_SWITCH_STATES} label={'newSwitchStates'} formProps={{ disabled: !sectionCount }} />
     );
     const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
@@ -203,17 +213,18 @@ export function CreateVoltageLevelSectionForm({
                     </Grid>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
-                    {busbarCountField}
-                </Grid>
-
                 <Grid item xs={12}>
                     <GridSection title="SectionPosition" />
                 </Grid>
-                <Grid container justifyContent="center">
-                    <Grid item xs={12}>
-                        <SectionPositionSlider busbarSectionOptions={busbarSectionOptions} disabled={!sectionCount} />
-                    </Grid>
+
+                <Grid item xs={4}>
+                    {busbarCountField}
+                </Grid>
+                <Grid item xs={4}>
+                    {busbarSectionsField}
+                </Grid>
+                <Grid item xs={4}>
+                    {positionSideNewSectionField}
                 </Grid>
 
                 <Grid item xs={12}>
