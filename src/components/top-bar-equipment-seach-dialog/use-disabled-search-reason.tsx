@@ -13,11 +13,11 @@ import { RootNetworkIndexationStatus } from 'types/notification-types';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();
-    const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
+    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
     const rootNetworkIndexationStatus = useSelector((state: AppState) => state.rootNetworkIndexationStatus);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    if (studyDisplayMode === StudyDisplayMode.TREE) {
+    if (!toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)) {
         return intl.formatMessage({
             id: 'UnsupportedView',
         });
