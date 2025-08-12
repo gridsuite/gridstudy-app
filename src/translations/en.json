@@ -1540,10 +1540,8 @@
     "newSection": "New section",
     "switchesAfterSections": "Switch after",
     "switchesBeforeSections": "Switch before",
-    "AllBusbars": "All busbars",
     "Busbar": "Busbar",
     "Before": "Before",
     "After": "After",
-    "BusbarNumber": "number",
     "newSwitchStates": "New switches closed "
 }
