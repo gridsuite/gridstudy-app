@@ -17,7 +17,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';
-import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/modification/tabular-modification-utils';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { formatModification } from '../tabular/tabular-common';
 import { createTabularModification } from '../../../../services/study/network-modifications';
 import { BranchSide } from '../../../utils/constants';
@@ -101,16 +101,15 @@ export function LimitSetsModificationDialog({
                 return modification;
             });
 
-            console.log(modifications);
-            createTabularModification(
+            createTabularModification({
                 studyUuid,
-                currentNodeUuid,
+                nodeUuid: currentNodeUuid,
                 modificationType,
                 modifications,
-                editData?.uuid,
-                ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
-                formData[CSV_FILENAME]
-            ).catch((error) => {
+                modificationUuid: editData?.uuid,
+                type: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
+                csvFilename: formData[CSV_FILENAME],
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TabularModificationError',

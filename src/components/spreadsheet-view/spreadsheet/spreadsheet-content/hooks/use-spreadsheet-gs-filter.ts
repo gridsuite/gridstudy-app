@@ -55,9 +55,11 @@ export const useSpreadsheetGlobalFilter = (
                     }, {});
                 const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
 
-                let genericFiltersIdentifiablesIds: Record<string, string[]> = {};
+                let idsByEqType: Record<string, string[]> = {};
+                let firstInitByEqType: Record<string, boolean> = {};
+
                 if (genericFilters?.length > 0) {
-                    //We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
+                    // We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
                     const filtersUuids = genericFilters
                         .flatMap((filter) => filter.uuid)
                         .filter((uuid): uuid is UUID => uuid !== undefined);
@@ -69,18 +71,18 @@ export const useSpreadsheetGlobalFilter = (
                     );
                     response.forEach((filterEq) => {
                         if (filterEq.identifiableAttributes.length > 0) {
-                            if (!genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type]) {
-                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] = [];
+                            const eqType = filterEq.identifiableAttributes[0].type;
+                            if (!idsByEqType[eqType]) {
+                                idsByEqType[eqType] = [];
+                                firstInitByEqType[eqType] = true;
                             }
                             const equipIds = filterEq.identifiableAttributes.map((identifiable) => identifiable.id);
-                            if (genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type].length === 0) {
-                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] = equipIds;
-                            } else {
+                            if (idsByEqType[eqType].length === 0 && firstInitByEqType[eqType]) {
+                                idsByEqType[eqType] = equipIds;
+                                firstInitByEqType[eqType] = false;
+                            } else if (idsByEqType[eqType].length > 0 && equipIds.length > 0) {
                                 // intersection here because it is a AND
-                                genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type] =
-                                    genericFiltersIdentifiablesIds[filterEq.identifiableAttributes[0].type].filter(
-                                        (id) => equipIds.includes(id)
-                                    );
+                                idsByEqType[eqType] = idsByEqType[eqType].filter((id) => equipIds.includes(id));
                             }
                         }
                     });
@@ -92,7 +94,7 @@ export const useSpreadsheetGlobalFilter = (
                     countries,
                     nominalVoltages,
                     substationProperties,
-                    genericFiltersIdentifiablesIds
+                    idsByEqType
                 );
 
                 if (computedFilter.rules.rules && computedFilter.rules.rules.length > 0) {

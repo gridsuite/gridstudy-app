@@ -210,3 +210,13 @@ export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: Diagra
         body: JSON.stringify(diagramGridLayout),
     });
 }
+
+export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModelUuid: UUID) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/reset-filters`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}

@@ -27,7 +27,7 @@ import { BranchSide } from '../../../utils/constants';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import { UUID } from 'crypto';
-import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/modification/tabular-modification-utils';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 
 type TemporaryLimit = {
     name: string;
@@ -188,7 +188,11 @@ export const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [AMOUNT_TEMPORARY_LIMITS]: yup.number().positive().max(50).required(),
+        [AMOUNT_TEMPORARY_LIMITS]: yup
+            .number()
+            .min(1, 'amountTemporaryLimitsError')
+            .max(50, 'amountTemporaryLimitsError')
+            .required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
         [CSV_FILENAME]: yup.string().nullable().required(),
     })

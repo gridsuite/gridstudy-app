@@ -51,8 +51,9 @@ import {
 } from './tabular-common';
 import { ColDef } from 'ag-grid-community';
 import { BOOLEAN } from '../../../network/constants';
-import { TABULAR_CREATION_FIELDS } from './creation/tabular-creation-utils';
-import { TABULAR_MODIFICATION_FIELDS } from './modification/tabular-modification-utils';
+import { TABULAR_CREATION_FIELDS } from './tabular-creation-utils';
+import { TABULAR_MODIFICATION_FIELDS } from './tabular-modification-utils';
+import { getObjectId } from '../../../utils/utils';
 import { useFilterCsvGenerator } from './use-filter-csv-generator';
 
 const dialogStyles = {
@@ -68,7 +69,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     const intl = useIntl();
     const { snackWarning } = useSnackMessage();
     const [isFetching, setIsFetching] = useState<boolean>(dataFetching);
-    const { setValue, clearErrors, setError, getValues } = useFormContext();
+    const { setValue, clearErrors, setError } = useFormContext();
     const propertiesDialogOpen = useStateBoolean(false);
     const generateFromFilterOpen = useStateBoolean(false);
     const language = useSelector((state: AppState) => state.computedLanguage);
@@ -86,6 +87,9 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     });
     const watchTable = useWatch({
         name: MODIFICATIONS_TABLE,
+    });
+    const watchFileName = useWatch({
+        name: CSV_FILENAME,
     });
 
     const csvFields = useMemo(() => {
@@ -147,8 +151,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                             { requiredFieldNameInError: intl.formatMessage({ id: requiredFieldNameInError }) }
                         ),
                     });
-                }
-                if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                } else if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
                     setError(MODIFICATIONS_TABLE, {
                         type: 'custom',
                         message: intl.formatMessage(
@@ -159,15 +162,16 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                             }
                         ),
                     });
+                } else if (fieldTypeInError !== '') {
+                    setFieldTypeError(
+                        intl.formatMessage({ id: fieldTypeInError }),
+                        expectedTypeForFieldInError,
+                        MODIFICATIONS_TABLE,
+                        setError,
+                        intl,
+                        expectedValues
+                    );
                 }
-                setFieldTypeError(
-                    intl.formatMessage({ id: fieldTypeInError }),
-                    expectedTypeForFieldInError,
-                    MODIFICATIONS_TABLE,
-                    setError,
-                    intl,
-                    expectedValues
-                );
             }
 
             // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
@@ -303,8 +307,8 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
     }, []);
 
     useEffect(() => {
-        setAcceptedFile(getValues(CSV_FILENAME) ? new File([], getValues(CSV_FILENAME)) : undefined);
-    }, [setAcceptedFile, getValues]);
+        setAcceptedFile(watchFileName ? new File([], watchFileName) : undefined);
+    }, [setAcceptedFile, watchFileName]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -329,7 +333,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                 transform: (value) => transformIfFrenchNumber(value, language),
             });
         }
-    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
+    }, [clearErrors, handleComplete, intl, selectedFile, selectedFileError, setValue, language, csvFields]);
 
     const typesOptions = useMemo(() => {
         return Object.keys(
@@ -352,7 +356,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
             label="Type"
             options={typesOptions}
             onChangeCallback={handleTypeChange}
-            getOptionLabel={(option: any) => getTypeLabel(option as string)}
+            getOptionLabel={(option) => getTypeLabel(getObjectId(option))}
             size={'small'}
             formProps={{ variant: 'filled' }}
         />
