@@ -12,9 +12,6 @@ import { SxProps, Theme } from '@mui/material';
  */
 export const dialogStyles = {
     dialogContent: {
-        width: '45%',
-        height: '30%',
-        maxWidth: 'none',
-        margin: 'auto',
+        minWidth: '45%',
     },
 } as const satisfies Record<string, SxProps<Theme>>;

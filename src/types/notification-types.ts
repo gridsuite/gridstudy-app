@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
-import { ComputingType } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
+import type { ComputingType } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 
 export enum NotificationType {
     // Study status
@@ -540,7 +540,8 @@ interface CommonStudyEventData {
 
 export interface StudyEventData {
     headers: StudyEventDataHeaders;
-    payload: NetworkImpactsInfos;
+    /** @see NetworkImpactsInfos */
+    payload: string;
 }
 
 export interface ComputationParametersUpdatedEventData {
@@ -585,7 +586,8 @@ export interface MetadataUpdatedEventData {
 
 export interface StudyAlertEventData {
     headers: StudyAlertEventDataHeaders;
-    payload: StudyAlert;
+    /** @see StudyAlert */
+    payload: string;
 }
 
 export interface NodeCreatedEventData {
@@ -640,7 +642,8 @@ export interface SubtreeCreatedEventData {
 
 export interface NodesColumnPositionsChangedEventData {
     headers: NodesColumnPositionsChangedEventDataHeaders;
-    payload: UUID[];
+    /** JSON of <code>{@link UUID}[]</code> */
+    payload: string;
 }
 
 export interface ModificationsCreationInProgressEventData extends CommonStudyEventData {
@@ -1137,6 +1140,7 @@ export interface StudyUpdatedEventDataHeader {
  */
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
+    /** @see NetworkImpactsInfos */
+    payload: string;
 }
 /******************* TO REMOVE LATER ****************/
