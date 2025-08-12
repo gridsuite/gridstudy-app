@@ -151,8 +151,7 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                             { requiredFieldNameInError: intl.formatMessage({ id: requiredFieldNameInError }) }
                         ),
                     });
-                }
-                if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
+                } else if (dependantFieldNameInError !== '' && requiredDependantFieldNameInError !== '') {
                     setError(MODIFICATIONS_TABLE, {
                         type: 'custom',
                         message: intl.formatMessage(
@@ -163,15 +162,16 @@ export function TabularForm({ dataFetching, dialogMode }: Readonly<TabularFormPr
                             }
                         ),
                     });
+                } else if (fieldTypeInError !== '') {
+                    setFieldTypeError(
+                        intl.formatMessage({ id: fieldTypeInError }),
+                        expectedTypeForFieldInError,
+                        MODIFICATIONS_TABLE,
+                        setError,
+                        intl,
+                        expectedValues
+                    );
                 }
-                setFieldTypeError(
-                    intl.formatMessage({ id: fieldTypeInError }),
-                    expectedTypeForFieldInError,
-                    MODIFICATIONS_TABLE,
-                    setError,
-                    intl,
-                    expectedValues
-                );
             }
 
             // For shunt compensators, display a warning message if maxSusceptance is set along with shuntCompensatorType or maxQAtNominalV
