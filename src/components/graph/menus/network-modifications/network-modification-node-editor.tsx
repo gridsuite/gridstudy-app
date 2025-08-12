@@ -45,8 +45,6 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import TabularCreationDialog from 'components/dialogs/network-modifications/tabular/creation/tabular-creation-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular/modification/tabular-modification-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
@@ -117,7 +115,9 @@ import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
+import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
+import { TabularModificationType } from '../../../dialogs/network-modifications/tabular/tabular-common';
+import { TabularDialog } from '../../../dialogs/network-modifications/tabular/tabular-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -217,6 +217,22 @@ const NetworkModificationNodeEditor = () => {
         );
     }
 
+    function tabularDialogWithDefaultParams(Dialog: React.FC<any>, dialogMode: TabularModificationType) {
+        return (
+            <Dialog
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
+                dialogMode={dialogMode}
+            />
+        );
+    }
+
     function equipmentDeletionDialogWithDefaultParams(equipmentType: EQUIPMENT_TYPES) {
         return (
             <EquipmentDeletionDialog
@@ -276,12 +292,17 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                             label: 'CreateVoltageLevelSection',
-                            action: () => withDefaultParams(CreateVoltageLevelSectionDialog),
+                            action: () => withDefaultParams(VoltageLevelCreationDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
                             label: 'CREATE_COUPLING_DEVICE',
                             action: () => withDefaultParams(CreateCouplingDeviceDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
+                            label: 'CreateVoltageLevelTopology',
+                            action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
@@ -543,14 +564,16 @@ const NetworkModificationNodeEditor = () => {
                     label: 'MultipleEquipment',
                     subItems: [
                         {
-                            id: 'TABULAR_CREATION',
+                            id: MODIFICATION_TYPES.TABULAR_CREATION.type,
                             label: 'menu.createByTable',
-                            action: () => withDefaultParams(TabularCreationDialog),
+                            action: () =>
+                                tabularDialogWithDefaultParams(TabularDialog, TabularModificationType.CREATION),
                         },
                         {
                             id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
                             label: 'BY_TABLE',
-                            action: () => withDefaultParams(TabularModificationDialog),
+                            action: () =>
+                                tabularDialogWithDefaultParams(TabularDialog, TabularModificationType.MODIFICATION),
                         },
                         {
                             id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
@@ -564,7 +587,7 @@ const NetworkModificationNodeEditor = () => {
                         },
                         {
                             id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
-                            label: 'LimitSets',
+                            label: 'TabularLimitSets',
                             action: () => withDefaultParams(LimitSetsModificationDialog),
                         },
                         {

@@ -25,6 +25,7 @@ export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
+export const DESCRIPTION = 'description';
 export const CASE_NAME = 'caseName';
 export const CASE_ID = 'caseId';
 export const SUBSTATION_ID = 'substationId';
