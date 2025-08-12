@@ -6,6 +6,7 @@
  */
 import {
     AMOUNT_TEMPORARY_LIMITS,
+    CSV_FILENAME,
     EQUIPMENT_ID,
     LIMIT_GROUP_NAME,
     MODIFICATION_TYPE,
@@ -22,7 +23,7 @@ import { BranchSide } from '../../../utils/constants';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import { UUID } from 'crypto';
-import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/modification/tabular-modification-utils';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 
 type TemporaryLimit = {
     name: string;
@@ -63,6 +64,7 @@ export type LimitSetModificationMetadata = {
     stashed: boolean;
     type: string;
     uuid: UUID;
+    csvFilename: string;
 };
 
 const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
@@ -135,6 +137,7 @@ export const formatBackToFront = (editData: LimitSetModificationMetadata) => {
         [TYPE]: getEquipmentTypeFromLimitSetModificationType(editData.modificationType),
         [AMOUNT_TEMPORARY_LIMITS]: getAmountTemporaryLimits(editData),
         [MODIFICATIONS_TABLE]: operationalLimitGroups,
+        [CSV_FILENAME]: editData.csvFilename,
     };
 };
 
@@ -174,8 +177,13 @@ export const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [AMOUNT_TEMPORARY_LIMITS]: yup.number().positive().max(50).required(),
+        [AMOUNT_TEMPORARY_LIMITS]: yup
+            .number()
+            .min(1, 'amountTemporaryLimitsError')
+            .max(50, 'amountTemporaryLimitsError')
+            .required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [CSV_FILENAME]: yup.string().nullable().required(),
     })
     .required();
 export type SchemaType = yup.InferType<typeof formSchema>;
@@ -185,4 +193,5 @@ export const emptyFormData: SchemaType = {
     [TYPE]: EQUIPMENT_TYPES.LINE,
     [AMOUNT_TEMPORARY_LIMITS]: 1,
     [MODIFICATIONS_TABLE]: [],
+    [CSV_FILENAME]: '',
 };
