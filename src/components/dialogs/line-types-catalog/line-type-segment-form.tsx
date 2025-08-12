@@ -139,7 +139,7 @@ export const LineTypeSegmentForm = () => {
         const segments: SegmentFormData[] = getValues(SEGMENTS);
         const computedLimits = new Map<string, CurrentLimitsInfo>();
         segments.forEach((segment) => {
-            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit) => {
+            segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit: CurrentLimitsInfo) => {
                 if (computedLimits.has(limit.limitSetName)) {
                     let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
                     if (limitInfo !== undefined) {

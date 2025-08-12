@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,7 +14,7 @@ import { AutocompleteInput, CustomAGGrid, Option, useSnackMessage } from '@grids
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
-import { LineTypeInfo } from './line-catalog.type';
+import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import {
     AERIAL_AREAS,
@@ -49,13 +49,13 @@ export interface LineTypesCatalogSelectorDialogProps {
     onClose: () => void;
 }
 
-const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelectorDialogProps> = ({
+export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
     preselectedRowId,
     rowData,
     onClose,
     ...dialogProps
-}) => {
+}: Readonly<LineTypesCatalogSelectorDialogProps>) {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact>(null);
     const { setValue, getValues } = useFormContext();
@@ -131,6 +131,24 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
         [setAerialTab, isAerialTab, setValue]
     );
 
+    const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
+        if (!limitsData?.length) {
+            return [];
+        }
+
+        const uniqueAreas = [...new Set(limitsData.map((limit) => limit.area))];
+        return uniqueAreas.map((area) => ({ id: area, label: area }));
+    };
+
+    const createOptionsFromTemperatures = (limitsData?: CurrentLimitsInfo[]) => {
+        if (!limitsData?.length) {
+            return [];
+        }
+
+        const uniqueTemperatures = [...new Set(limitsData.map((limit) => limit.temperature))];
+        return uniqueTemperatures.map((temp) => ({ id: temp, label: temp }));
+    };
+
     const onSelectionChanged = useCallback(() => {
         // We extract the selected row from AGGrid
         const selectedRow = gridRef.current?.api?.getSelectedRows();
@@ -142,27 +160,11 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
                     setSelectedRow(selectedData);
                     if (selectedData.limitsForLineType != null) {
                         if (selectedData.category === 'AERIAL') {
-                            let selectedAerialAreas = new Set<string>(
-                                selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
-                            );
-                            setAerialAreas(
-                                Array.from(selectedAerialAreas.values()).map((value) => ({
-                                    id: value,
-                                    label: value,
-                                }))
-                            );
-                            let selectedAerialTemperature = new Set<string>(
-                                selectedData?.limitsForLineType.map((limitInfo) => limitInfo.temperature)
-                            );
-                            setAerialTemperatures(
-                                Array.from(selectedAerialTemperature.values()).map((value) => ({
-                                    id: value,
-                                    label: value,
-                                }))
-                            );
+                            setAerialAreas(createOptionsFromAreas(selectedData?.limitsForLineType));
+                            setAerialTemperatures(createOptionsFromTemperatures(selectedData?.limitsForLineType));
                         } else if (selectedData.category === 'UNDERGROUND') {
                             let undergroundAreas = new Set<string>(
-                                selectedData?.limitsForLineType.map((limitInfo) => limitInfo.area)
+                                selectedData?.limitsForLineType.map((limitInfo: CurrentLimitsInfo) => limitInfo.area)
                             );
                             setUndergroundArea(
                                 Array.from(undergroundAreas.values()).map((value) => ({
@@ -399,20 +401,14 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             options={aerialAreas}
             disabled={false}
             size={'small'}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
         />
     );
-    const getObjectIdTest = (object: string | { id: string; label: string }) => {
-        return typeof object === 'string' ? object : (object?.label?.toString() ?? null);
-    };
 
     const aerialTemperatureComponent = (
         <AutocompleteInput
             name={AERIAL_TEMPERATURES}
             label="aerialTemperatures"
             options={Object.values(aerialTemperatures)}
-            getOptionLabel={getObjectIdTest}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
             disabled={false}
             size={'small'}
         />
@@ -423,7 +419,6 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             name={UNDERGROUND_AREAS}
             label="lineTypes.currentLimits.underground.Area"
             options={undergroundArea}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
             disabled={false}
             size={'small'}
         />
@@ -434,7 +429,6 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             name={UNDERGROUND_SHAPE_FACTORS}
             label="lineTypes.currentLimits.underground.ShapeFactor"
             options={undergroundShapeFactor}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
             disabled={false}
             size={'small'}
         />
@@ -485,6 +479,4 @@ const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelector
             {undergroundLimitsParametersSelection}
         </BasicModificationDialog>
     );
-};
-
-export default LineTypesCatalogSelectorDialog;
+}

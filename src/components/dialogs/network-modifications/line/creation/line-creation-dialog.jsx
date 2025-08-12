@@ -65,8 +65,8 @@ import {
     LineCreationDialogTab,
 } from './line-creation-dialog-utils';
 import {
-    getLimitsEmptyFormData,
     getAllLimitsFormData,
+    getLimitsEmptyFormData,
     getLimitsValidationSchema,
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
@@ -267,7 +267,6 @@ const LineCreationDialog = ({
             shouldDirty: true,
         });
         const finalLimits = [];
-        console.log('data[FINAL_CURRENT_LIMITS]', data[FINAL_CURRENT_LIMITS])
         data[FINAL_CURRENT_LIMITS].forEach((item) => {
             const temporaryLimitsList = [];
             if (item.temporaryLimitValue) {
@@ -288,7 +287,6 @@ const LineCreationDialog = ({
                 },
             });
         });
-        console.log(finalLimits)
         setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
     };
 
