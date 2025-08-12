@@ -20,6 +20,11 @@ export interface ExpertFilter {
     topologyKind?: string; // TODO must be TopologyKind enum
 }
 
+export type EquipmentsFilter = {
+    equipmentID: string;
+    distributionKey?: number;
+};
+
 export interface FilterEquipments {
     filterId: UUID;
     identifiableAttributes: IdentifiableAttributes[];
@@ -57,7 +62,8 @@ export async function evaluateFilters(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    filters: UUID[]
+    filters: UUID[],
+    inUpstreamBuiltParentNode: boolean = false
 ): Promise<FilterEquipments[]> {
     console.info(
         `Get matched elements of study '${studyUuid}' with a root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
@@ -65,6 +71,8 @@ export async function evaluateFilters(
 
     const filtersListsQueryParams = getRequestParamFromList(filters, 'filtersUuid');
     const urlSearchParams = new URLSearchParams(filtersListsQueryParams);
+
+    urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
 
     const evaluateFilterUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +

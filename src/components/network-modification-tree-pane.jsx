@@ -140,6 +140,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const isEventScenarioDrawerOpen = useSelector((state) => state.isEventScenarioDrawerOpen);
     const isStudyDrawerOpen = isModificationsDrawerOpen || isEventScenarioDrawerOpen;
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const toggleOptions = useSelector((state) => state.toggleOptions);
 
     const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
@@ -580,10 +581,11 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 studyUuid={studyUuid}
                 studyMapTreeDisplay={studyMapTreeDisplay}
                 isStudyDrawerOpen={isStudyDrawerOpen}
+                toggleOptions={toggleOptions}
                 prevTreeDisplay={prevTreeDisplay}
             />
         ),
-        [studyUuid, onNodeContextMenu, studyMapTreeDisplay, isStudyDrawerOpen, prevTreeDisplay]
+        [onNodeContextMenu, studyUuid, studyMapTreeDisplay, isStudyDrawerOpen, toggleOptions, prevTreeDisplay]
     );
 
     const networkModificationPanelComponent = useMemo(
