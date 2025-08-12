@@ -80,11 +80,9 @@ export const useSpreadsheetGlobalFilter = (
                             if (idsByEqType[eqType].length === 0 && firstInitByEqType[eqType]) {
                                 idsByEqType[eqType] = equipIds;
                                 firstInitByEqType[eqType] = false;
-                            } else {
+                            } else if (idsByEqType[eqType].length > 0 && equipIds.length > 0) {
                                 // intersection here because it is a AND
-                                if (idsByEqType[eqType].length > 0 && equipIds.length > 0) {
-                                    idsByEqType[eqType] = idsByEqType[eqType].filter((id) => equipIds.includes(id));
-                                }
+                                idsByEqType[eqType] = idsByEqType[eqType].filter((id) => equipIds.includes(id));
                             }
                         }
                     });
