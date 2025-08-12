@@ -17,6 +17,7 @@ import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
+import { isSecurityModificationNode } from '../../tree-node.type';
 import { StudyDisplayMode } from '../../../network-modification.type';
 
 const styles = {
@@ -83,7 +84,9 @@ const NodeEditor = () => {
                 showRootNetworkSelection={!isMonoRootStudy}
             />
             <NetworkModificationNodeEditor />
-            {loadFlowStatus === RunningStatus.SUCCEED && renderLoadFlowModificationTable()}
+            {loadFlowStatus === RunningStatus.SUCCEED &&
+                isSecurityModificationNode(currentTreeNode) &&
+                renderLoadFlowModificationTable()}
         </Box>
     );
 };
