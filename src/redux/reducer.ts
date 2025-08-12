@@ -508,7 +508,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
-    toggleOptions: string[];
+    toggleOptions: StudyDisplayMode[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;

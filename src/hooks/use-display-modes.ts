@@ -4,57 +4,55 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToggleOptions, setModificationsDrawerOpen } from '../redux/actions';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { AppState } from '../redux/reducer';
 
+function isEmptySelection(modes: StudyDisplayMode[]) {
+    return modes.length === 0;
+}
+
+function isGridOnlyToGridAndModifications(prev: StudyDisplayMode[], next: StudyDisplayMode[]) {
+    return (
+        prev.length === 1 &&
+        prev.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
+        next.includes(StudyDisplayMode.MODIFICATIONS) &&
+        next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
+        next.length === 2
+    );
+}
+
+function isAllOptionsSelectedToGridOnly(next: StudyDisplayMode[]) {
+    return (
+        !next.includes(StudyDisplayMode.TREE) &&
+        next.includes(StudyDisplayMode.MODIFICATIONS) &&
+        next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)
+    );
+}
+
+function isModificationsSelectedAlone(next: StudyDisplayMode[]) {
+    return (
+        !next.includes(StudyDisplayMode.TREE) &&
+        next.includes(StudyDisplayMode.MODIFICATIONS) &&
+        !next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)
+    );
+}
+
 export function useDisplayModes() {
     const dispatch = useDispatch();
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
-    const [displayModes, setDisplayModes] = useState<string[]>(toggleOptions);
-    const prevViewModesRef = useRef<string[]>(toggleOptions);
-
-    const isEmptySelection = useCallback((modes: string[]) => modes.length === 0, []);
-
-    const isGridOnlyToGridAndModifications = useCallback(
-        (prev: string[], next: string[]) =>
-            prev.length === 1 &&
-            prev.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
-            next.includes(StudyDisplayMode.MODIFICATIONS) &&
-            next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
-            next.length === 2,
-        []
-    );
-
-    const isAllOptionsSelectedToGridOnly = useCallback(
-        (next: string[]) =>
-            !next.includes(StudyDisplayMode.TREE) &&
-            next.includes(StudyDisplayMode.MODIFICATIONS) &&
-            next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT),
-        []
-    );
-
-    const isModificationsSelectedAlone = useCallback(
-        (next: string[]) =>
-            !next.includes(StudyDisplayMode.TREE) &&
-            next.includes(StudyDisplayMode.MODIFICATIONS) &&
-            !next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT),
-        []
-    );
 
     const applyModes = useCallback(
-        (modes: string[]) => {
+        (modes: StudyDisplayMode[]) => {
             dispatch(setToggleOptions(modes));
-            setDisplayModes(modes);
-            prevViewModesRef.current = modes;
         },
         [dispatch]
     );
 
     const openModifications = useCallback(
-        (modes: string[]) => {
+        (modes: StudyDisplayMode[]) => {
             dispatch(setModificationsDrawerOpen(modes.includes(StudyDisplayMode.MODIFICATIONS)));
         },
         [dispatch]
@@ -70,12 +68,12 @@ export function useDisplayModes() {
     }, [applyModes]);
 
     const onViewModeChange = useCallback(
-        (_event: React.MouseEvent, newModes: string[]) => {
+        (_event: React.MouseEvent, newModes: StudyDisplayMode[]) => {
             if (isEmptySelection(newModes) || isModificationsSelectedAlone(newModes)) {
                 return;
             }
 
-            if (isGridOnlyToGridAndModifications(prevViewModesRef.current, newModes)) {
+            if (isGridOnlyToGridAndModifications(toggleOptions, newModes)) {
                 handleGridOnlyToGridAndModifications();
                 openModifications(newModes);
                 return;
@@ -90,10 +88,7 @@ export function useDisplayModes() {
             applyModes(newModes);
         },
         [
-            isEmptySelection,
-            isModificationsSelectedAlone,
-            isGridOnlyToGridAndModifications,
-            isAllOptionsSelectedToGridOnly,
+            toggleOptions,
             openModifications,
             applyModes,
             handleGridOnlyToGridAndModifications,
@@ -102,7 +97,6 @@ export function useDisplayModes() {
     );
 
     return {
-        displayModes,
         onViewModeChange,
         applyModes,
     };

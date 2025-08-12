@@ -669,10 +669,10 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): 
 
 export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
 export type setToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
-    toggleOptions: string[];
+    toggleOptions: StudyDisplayMode[];
 };
 
-export function setToggleOptions(toggleOptions: string[]): setToggleOptionsAction {
+export function setToggleOptions(toggleOptions: StudyDisplayMode[]): setToggleOptionsAction {
     return {
         type: SET_TOGGLE_OPTIONS,
         toggleOptions: toggleOptions,

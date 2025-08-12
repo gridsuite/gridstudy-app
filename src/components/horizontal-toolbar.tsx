@@ -61,7 +61,7 @@ export function HorizontalToolbar() {
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
     const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
-    const { displayModes, onViewModeChange, applyModes } = useDisplayModes();
+    const { onViewModeChange, applyModes } = useDisplayModes();
 
     const toggleEventScenarioDrawer = () => {
         //if the Dynamic SimulationEvent Scenario is clicked we need to hide the modifications
@@ -126,7 +126,7 @@ export function HorizontalToolbar() {
                         <OverflowableText text={intl.formatMessage({ id: 'Display' })} />
 
                         <ToggleButtonGroup
-                            value={displayModes}
+                            value={toggleOptions}
                             onChange={onViewModeChange}
                             aria-label="view modes"
                             size="small"
