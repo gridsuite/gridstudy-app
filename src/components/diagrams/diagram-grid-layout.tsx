@@ -34,18 +34,11 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 // Diagram types to manage here
 const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, DiagramType.NETWORK_AREA_DIAGRAM];
 
-// Grid configuration - defines how many cards fit per row at each breakpoint
-const cols = {
-    lg: 8, // 8 cards per row on large screens (≥1200px)
-    md: 8, // 8 cards per row on medium screens (≥996px)
-    sm: 6, // 6 cards per row on small screens (≥768px)
-    xs: 4, // 4 cards per row on extra small screens (≥480px)
-    xxs: 2, // 2 cards per row on extra extra small screens (<480px)
+const GRID_CONFIG = {
+    breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+    cols: { lg: 8, md: 8, sm: 6, xs: 4, xxs: 2 },
+    defaultCard: { w: 2, h: 2 },
 };
-
-// Default dimensions for new cards (in grid units)
-const DEFAULT_CARD_WIDTH = 2;
-const DEFAULT_CARD_HEIGHT = 2;
 
 /**
  * Get the visual order of cards sorted by their position (top to bottom, left to right)
@@ -59,7 +52,7 @@ const getVisualOrder = (layout: Layout[]): string[] => {
  * Reflow cards to a new grid layout while maintaining their visual order
  * Used when switching breakpoints or propagating order changes
  */
-const reflowWithOrder = (sourceLayout: Layout[], targetCols: number, visualOrder: string[]): Layout[] => {
+const rearrangeLayoutByOrder = (sourceLayout: Layout[], targetCols: number, visualOrder: string[]): Layout[] => {
     if (!sourceLayout?.length || !visualOrder?.length) {
         return sourceLayout || [];
     }
@@ -93,7 +86,7 @@ const reflowWithOrder = (sourceLayout: Layout[], targetCols: number, visualOrder
 
 // Generate initial layouts for all breakpoints
 const generateInitialLayouts = (): Layouts => {
-    return Object.keys(cols).reduce((layouts, breakpoint) => {
+    return Object.keys(GRID_CONFIG.cols).reduce((layouts, breakpoint) => {
         layouts[breakpoint] = [];
         return layouts;
     }, {} as Layouts);
@@ -103,7 +96,7 @@ const generateInitialLayouts = (): Layouts => {
  * Find the next available position for a new card in the grid
  * Uses bottom-to-top, left-to-right placement strategy
  */
-const findNextPosition = (existingLayouts: Layout[], maxCols: number, cardWidth: number, cardHeight: number) => {
+const findNextPosition = (existingLayouts: Layout[], maxCols: number) => {
     if (existingLayouts.length === 0) {
         return { x: 0, y: 0 };
     }
@@ -116,7 +109,7 @@ const findNextPosition = (existingLayouts: Layout[], maxCols: number, cardWidth:
     const rightmostX = bottomRowItems.reduce((maxX, item) => Math.max(maxX, item.x + item.w), 0);
 
     // Check if the new card fits in the current row
-    if (rightmostX + cardWidth <= maxCols) {
+    if (rightmostX + GRID_CONFIG.defaultCard.w <= maxCols) {
         return { x: rightmostX, y: bottomY };
     }
 
@@ -133,13 +126,19 @@ const createLayoutItem = (id: string, layouts: Layouts): Layouts => {
     const newLayouts = { ...layouts };
 
     // Add the new card to all breakpoints with appropriate positioning
-    for (const [breakpoint, maxCols] of Object.entries(cols)) {
-        const existingLayouts = newLayouts[breakpoint] || [];
-        const { x, y } = findNextPosition(existingLayouts, maxCols, DEFAULT_CARD_WIDTH, DEFAULT_CARD_HEIGHT);
-
-        newLayouts[breakpoint] = [...existingLayouts, { i: id, x, y, w: DEFAULT_CARD_WIDTH, h: DEFAULT_CARD_HEIGHT }];
-    }
-
+    Object.entries(GRID_CONFIG.cols).forEach(([breakpoint, maxCols]) => {
+        const existing = newLayouts[breakpoint] || [];
+        const { x, y } = findNextPosition(existing, maxCols);
+        newLayouts[breakpoint] = [
+            ...existing,
+            {
+                i: id,
+                x,
+                y,
+                ...GRID_CONFIG.defaultCard,
+            },
+        ];
+    });
     return newLayouts;
 };
 
@@ -158,31 +157,25 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
 
-    /**
-     * Propagate the visual order from one breakpoint to all other breakpoints
-     * This maintains consistency when users rearrange cards in any view
-     * Only updates other breakpoints, preserves the source breakpoint layout
-     */
-    const propagateOrder = useCallback((sourceLayout: Layout[], sourceBreakpoint: string) => {
-        const visualOrder = getVisualOrder(sourceLayout);
-        if (!visualOrder.length) {
-            return;
-        }
-
-        setLayouts((prevLayouts) => {
-            const newLayouts = { ...prevLayouts, [sourceBreakpoint]: sourceLayout };
-
-            // Update all other breakpoints with the new visual order
-            for (const [breakpoint, targetCols] of Object.entries(cols)) {
-                if (breakpoint !== sourceBreakpoint && newLayouts[breakpoint]) {
-                    newLayouts[breakpoint] = reflowWithOrder(newLayouts[breakpoint], targetCols, visualOrder);
-                }
-            }
-
-            return newLayouts;
-        });
+    // Blinking diagrams management
+    const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
+        setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
     }, []);
 
+    const onDiagramAlreadyExists = useCallback(
+        (diagramUuid: UUID) => {
+            setBlinkingDiagrams((oldBlinkingDiagrams) => {
+                if (oldBlinkingDiagrams.includes(diagramUuid)) {
+                    return oldBlinkingDiagrams;
+                }
+                return [...oldBlinkingDiagrams, diagramUuid];
+            });
+            setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
+        },
+        [stopDiagramBlinking]
+    );
+
+    // Grid operations
     const isMapCardAdded = () => {
         return Object.values(layouts).some((breakpointLayouts) =>
             breakpointLayouts.some((layout) => layout.i === 'MapCard')
@@ -208,22 +201,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         });
     }, []);
 
-    const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
-        setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
+    const onAddMapCard = useCallback(() => {
+        setLayouts((currentLayouts) => createLayoutItem('MapCard', currentLayouts));
     }, []);
 
-    const onDiagramAlreadyExists = useCallback(
-        (diagramUuid: UUID) => {
-            setBlinkingDiagrams((oldBlinkingDiagrams) => {
-                if (oldBlinkingDiagrams.includes(diagramUuid)) {
-                    return oldBlinkingDiagrams;
-                }
-                return [...oldBlinkingDiagrams, diagramUuid];
-            });
-            setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
-        },
-        [stopDiagramBlinking]
-    );
+    const handleRemoveMapCard = useCallback(() => {
+        removeLayoutItem('MapCard');
+    }, [removeLayoutItem]);
 
     const {
         diagrams,
@@ -271,11 +255,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
-    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
-
-    // Debounce the layout save function to avoid excessive calls
-    const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
-
     const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             const diagram: DiagramParams = {
@@ -294,6 +273,100 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
         [createDiagram]
     );
 
+    /**
+     * Propagate the visual order from one breakpoint to all other breakpoints
+     * This maintains consistency when users rearrange cards in any view
+     * Only updates other breakpoints, preserves the source breakpoint layout
+     */
+    const propagateOrder = useCallback((sourceLayout: Layout[], sourceBreakpoint: string) => {
+        const visualOrder = getVisualOrder(sourceLayout);
+        if (!visualOrder.length) {
+            return;
+        }
+
+        setLayouts((prevLayouts) => {
+            const newLayouts = { ...prevLayouts, [sourceBreakpoint]: sourceLayout };
+
+            // Update all other breakpoints with the new visual order
+            Object.entries(GRID_CONFIG.cols).forEach(([breakpoint, targetCols]) => {
+                if (breakpoint !== sourceBreakpoint && newLayouts[breakpoint]) {
+                    newLayouts[breakpoint] = rearrangeLayoutByOrder(newLayouts[breakpoint], targetCols, visualOrder);
+                }
+            });
+
+            return newLayouts;
+        });
+    }, []);
+
+    // Event handlers for grid interactions
+    const handleLayoutChange = useCallback((currentLayout: Layout[], allLayouts: Layouts) => {
+        setLayouts((prev) => ({ ...prev, [currentBreakpointRef.current]: currentLayout }));
+    }, []);
+
+    /**
+     * Handle card resizing across all breakpoints
+     * Maintains consistent card dimensions regardless of screen size
+     */
+    const handleResizeStop = useCallback((layout: Layout[], oldItem: any, newItem: any) => {
+        if (!newItem) {
+            return;
+        }
+
+        lastModifiedBreakpointRef.current = currentBreakpointRef.current;
+        setLayouts((currentLayouts) => {
+            const newLayouts = { ...currentLayouts };
+
+            // Update the resized item in all breakpoints
+            for (const [breakpoint, layoutItems] of Object.entries(newLayouts)) {
+                const itemIndex = (layoutItems as Layout[]).findIndex((item) => item.i === newItem.i);
+                if (itemIndex !== -1) {
+                    const items = layoutItems as Layout[];
+                    newLayouts[breakpoint] = [
+                        ...items.slice(0, itemIndex),
+                        { ...items[itemIndex], w: newItem.w, h: newItem.h },
+                        ...items.slice(itemIndex + 1),
+                    ];
+                }
+            }
+
+            return newLayouts;
+        });
+    }, []);
+
+    /**
+     * Handle breakpoint changes (screen size changes)
+     * Maintains visual order consistency when switching between breakpoints
+     * Updates the current breakpoint reference for future operations
+     */
+    const handleBreakpointChange = useCallback(
+        (newBreakpoint: string) => {
+            const sourceBreakpoint = lastModifiedBreakpointRef.current;
+            currentBreakpointRef.current = newBreakpoint;
+
+            if (sourceBreakpoint !== newBreakpoint && layouts[sourceBreakpoint]?.length) {
+                const sourceLayout = layouts[sourceBreakpoint];
+                const visualOrder = getVisualOrder(sourceLayout);
+                const targetCols = GRID_CONFIG.cols[newBreakpoint as keyof typeof GRID_CONFIG.cols];
+
+                setLayouts((prev) => ({
+                    ...prev,
+                    [newBreakpoint]: rearrangeLayoutByOrder(prev[newBreakpoint] || [], targetCols, visualOrder),
+                }));
+            }
+        },
+        [layouts]
+    );
+
+    const handleDragStop = useCallback(
+        (layout: Layout[]) => {
+            lastModifiedBreakpointRef.current = currentBreakpointRef.current;
+            // Ensure final order is propagated to all breakpoints
+            propagateOrder(layout, currentBreakpointRef.current);
+        },
+        [propagateOrder]
+    );
+
+    // Save and Initialization
     const onLoadDiagramLayout = useCallback((savedLayouts: Layouts) => {
         if (Object.keys(savedLayouts).length > 0) {
             setLayouts(savedLayouts);
@@ -301,16 +374,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             setLayouts(initialLayouts);
         }
     }, []);
-
-    const onAddMapCard = useCallback(() => {
-        setLayouts((currentLayouts) => createLayoutItem('MapCard', currentLayouts));
-    }, []);
-
-    const handleRemoveMapCard = useCallback(() => {
-        removeLayoutItem('MapCard');
-    }, [removeLayoutItem]);
-
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
+
+    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
+
+    // Debounce the layout save function to avoid excessive calls
+    const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
 
     return (
         <Box sx={styles.container}>
@@ -322,61 +391,13 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             />
             <ResponsiveGridLayout
                 className="layout"
-                breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                cols={cols}
+                breakpoints={GRID_CONFIG.breakpoints}
+                cols={GRID_CONFIG.cols}
                 margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
                 compactType={'vertical'}
-                onLayoutChange={(currentLayout, allLayouts) => {
-                    setLayouts((prev) => ({ ...prev, [currentBreakpointRef.current]: currentLayout }));
-                }}
-                /**
-                 * Handle card resizing across all breakpoints
-                 * Maintains consistent card dimensions regardless of screen size
-                 */
-                onResizeStop={(layout, oldItem, newItem, placeholder, e, element) => {
-                    if (!newItem) {
-                        return;
-                    }
-                    lastModifiedBreakpointRef.current = currentBreakpointRef.current;
-                    setLayouts((currentLayouts) => {
-                        const newLayouts = { ...currentLayouts };
-
-                        // Update the resized item in all breakpoints
-                        for (const [breakpoint, layoutItems] of Object.entries(newLayouts)) {
-                            const itemIndex = layoutItems.findIndex((item) => item.i === newItem.i);
-                            if (itemIndex !== -1) {
-                                newLayouts[breakpoint] = [
-                                    ...layoutItems.slice(0, itemIndex),
-                                    { ...layoutItems[itemIndex], w: newItem.w, h: newItem.h },
-                                    ...layoutItems.slice(itemIndex + 1),
-                                ];
-                            }
-                        }
-
-                        return newLayouts;
-                    });
-                }}
-                /**
-                 * Handle breakpoint changes (screen size changes)
-                 * Maintains visual order consistency when switching between breakpoints
-                 * Updates the current breakpoint reference for future operations
-                 */
-                onBreakpointChange={(newBreakpoint, newCols) => {
-                    const sourceBreakpoint = lastModifiedBreakpointRef.current;
-                    currentBreakpointRef.current = newBreakpoint;
-
-                    // Maintain order when switching breakpoints
-                    if (sourceBreakpoint !== newBreakpoint && layouts[sourceBreakpoint]?.length) {
-                        const sourceLayout = layouts[sourceBreakpoint];
-                        const visualOrder = getVisualOrder(sourceLayout);
-                        const targetCols = cols[newBreakpoint as keyof typeof cols];
-
-                        setLayouts((prev) => ({
-                            ...prev,
-                            [newBreakpoint]: reflowWithOrder(prev[newBreakpoint] || [], targetCols, visualOrder),
-                        }));
-                    }
-                }}
+                onLayoutChange={handleLayoutChange}
+                onResizeStop={handleResizeStop}
+                onBreakpointChange={handleBreakpointChange}
                 layouts={layouts}
                 style={{
                     backgroundColor:
@@ -395,9 +416,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     if (e.target) {
                         (e.target as HTMLElement).style.cursor = 'grab';
                     }
-                    lastModifiedBreakpointRef.current = currentBreakpointRef.current;
-                    // Ensure final order is propagated to all breakpoints
-                    propagateOrder(layout, currentBreakpointRef.current);
+                    handleDragStop(layout);
                 }}
                 autoSize={false} // otherwise the grid has strange behavior
                 resizeHandle={<CustomResizeHandle />}
