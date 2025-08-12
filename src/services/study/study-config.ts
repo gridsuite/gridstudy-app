@@ -212,9 +212,9 @@ export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: Diagra
 }
 
 export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModelUuid: UUID) {
-    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/filters`;
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/reset-filters`;
     return backendFetchJson(url, {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },

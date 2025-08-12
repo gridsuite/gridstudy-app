@@ -13,6 +13,7 @@ import { Box, Fade, Theme, CircularProgress, Button, Tooltip } from '@mui/materi
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { resetSpreadsheetColumnsFilters } from '../../../../../services/study/study-config';
 import { useFilteredRowCounterInfo } from './use-filtered-row-counter';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
     getContainer: (theme: Theme) => ({
@@ -45,15 +46,16 @@ export function FilteredRowCounter({ gridRef, tableDefinition, disabled }: Reado
         tableDefinition,
         disabled,
     });
+    const { snackError } = useSnackMessage();
 
     const handleResetFilters = useCallback(() => {
         if (isAnyFilterPresent && studyUuid) {
-            resetSpreadsheetColumnsFilters(studyUuid, tableDefinition.uuid).catch((error) =>
-                console.error('Failed to update global filters:', error)
-            );
-            gridRef.current?.api?.onFilterChanged();
+            resetSpreadsheetColumnsFilters(studyUuid, tableDefinition.uuid).catch((error) => {
+                console.error('Failed to update global filters:', error);
+                snackError({ headerId: 'spreadsheet/reset_filters_error', messageTxt: error.messageTxt ?? error });
+            });
         }
-    }, [gridRef, isAnyFilterPresent, studyUuid, tableDefinition.uuid]);
+    }, [isAnyFilterPresent, snackError, studyUuid, tableDefinition.uuid]);
 
     return (
         <Tooltip title={tooltipContent} placement="bottom-start" sx={{ marginLeft: 1 }}>

@@ -23,7 +23,7 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition, disabled }
     const intl = useIntl();
     const [displayedRows, setDisplayedRows] = useState<number | null>(null);
     const [totalRows, setTotalRows] = useState<number | null>(null);
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[tableDefinition?.type]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -43,13 +43,13 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition, disabled }
                 if (!gridRef.current?.api || !currentNode || disabled) {
                     setDisplayedRows(0);
                     setTotalRows(0);
-                    setLoading(false);
+                    setIsLoading(false);
                     return;
                 }
                 const api = gridRef.current.api;
                 setDisplayedRows(api.getDisplayedRowCount());
                 setTotalRows(equipments.equipmentsByNodeId[currentNode.id]?.length ?? 0);
-                setLoading(false);
+                setIsLoading(false);
             }, 600),
         [gridRef, currentNode, disabled, equipments.equipmentsByNodeId]
     );
@@ -62,7 +62,7 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition, disabled }
             }
             return;
         }
-        const onFilterChanged = () => setLoading(true);
+        const onFilterChanged = () => setIsLoading(true);
         const onModelUpdated = () => debouncedUpdateRowCount();
         //Initial row count display
         debouncedUpdateRowCount();
@@ -108,12 +108,11 @@ export function useFilteredRowCounterInfo({ gridRef, tableDefinition, disabled }
             });
         }
 
-        if (spreadsheetColumnsFiltersState && spreadsheetColumnsFiltersState.length > 0) {
+        if (spreadsheetColumnsFiltersState?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ColumnsFilters' })} : `);
             spreadsheetColumnsFiltersState.forEach((filterModel) => {
                 const headerName =
                     gridRef.current?.api.getColumn(filterModel.column)?.getColDef()?.headerName ?? filterModel.column;
-                console.log(filterModel);
                 lines.push(
                     `- ${headerName} : ${intl.formatMessage({ id: 'filter.' + filterModel.type })} "${filterModel.value}"`.replaceAll(
                         ',',
