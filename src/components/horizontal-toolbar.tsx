@@ -17,11 +17,10 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
-import { Box, darken, Grid, Theme } from '@mui/material';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-import { ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, darken, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
 const styles = {
