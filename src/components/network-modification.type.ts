@@ -13,6 +13,7 @@ export enum StudyDisplayMode {
     DRAW = 'Draw',
     DIAGRAM_GRID_LAYOUT = 'DiagramGridLayout',
     DIAGRAM_GRID_LAYOUT_AND_TREE = 'DiagramGridLayoutAndTree',
+    MODIFICATIONS = 'Modifications',
 }
 
 export enum CopyType {
