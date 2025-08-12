@@ -36,11 +36,11 @@ const diagramTypes = [DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION, Diagram
 
 // Grid configuration - defines how many cards fit per row at each breakpoint
 const cols = {
-    lg: 12, // 12 cards per row on large screens (≥1200px)
-    md: 6, // 6 cards per row on medium screens (≥996px)
+    lg: 8, // 8 cards per row on large screens (≥1200px)
+    md: 8, // 8 cards per row on medium screens (≥996px)
     sm: 6, // 6 cards per row on small screens (≥768px)
     xs: 4, // 4 cards per row on extra small screens (≥480px)
-    xxs: 4, // 4 cards per row on extra extra small screens (<480px)
+    xxs: 2, // 2 cards per row on extra extra small screens (<480px)
 };
 
 // Default dimensions for new cards (in grid units)
@@ -156,6 +156,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const currentBreakpointRef = useRef<string>('lg');
+    const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
 
     /**
      * Propagate the visual order from one breakpoint to all other breakpoints
@@ -189,10 +190,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
     };
 
     const addLayoutItem = useCallback((diagram: Diagram) => {
+        lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
     }, []);
 
     const removeLayoutItem = useCallback((cardUuid: UUID | string) => {
+        lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => {
             const newLayouts: Layouts = {};
 
@@ -334,7 +337,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     if (!newItem) {
                         return;
                     }
-
+                    lastModifiedBreakpointRef.current = currentBreakpointRef.current;
                     setLayouts((currentLayouts) => {
                         const newLayouts = { ...currentLayouts };
 
@@ -359,12 +362,12 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                  * Updates the current breakpoint reference for future operations
                  */
                 onBreakpointChange={(newBreakpoint, newCols) => {
-                    const previousBreakpoint = currentBreakpointRef.current;
+                    const sourceBreakpoint = lastModifiedBreakpointRef.current;
                     currentBreakpointRef.current = newBreakpoint;
 
                     // Maintain order when switching breakpoints
-                    if (previousBreakpoint !== newBreakpoint && layouts[previousBreakpoint]?.length) {
-                        const sourceLayout = layouts[previousBreakpoint];
+                    if (sourceBreakpoint !== newBreakpoint && layouts[sourceBreakpoint]?.length) {
+                        const sourceLayout = layouts[sourceBreakpoint];
                         const visualOrder = getVisualOrder(sourceLayout);
                         const targetCols = cols[newBreakpoint as keyof typeof cols];
 
@@ -392,7 +395,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                     if (e.target) {
                         (e.target as HTMLElement).style.cursor = 'grab';
                     }
-
+                    lastModifiedBreakpointRef.current = currentBreakpointRef.current;
                     // Ensure final order is propagated to all breakpoints
                     propagateOrder(layout, currentBreakpointRef.current);
                 }}
