@@ -146,6 +146,20 @@ export function isNodeRenamed(node1: CurrentTreeNode | null, node2: CurrentTreeN
     return isSameNode(node1, node2) && node1?.data?.label !== node2?.data?.label;
 }
 
+export function isDescriptionNodeEdited(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
+    if (!node1 || !node2) {
+        return false;
+    }
+    return isSameNode(node1, node2) && node1?.data?.description !== node2?.data?.description;
+}
+
+export function isNodeEdited(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
+    if (!node1 || !node2) {
+        return false;
+    }
+    return isDescriptionNodeEdited(node1, node2) || isNodeRenamed(node1, node2);
+}
+
 export function isNodeInNotificationList(node: CurrentTreeNode, notificationIdList: UUID[]) {
     if (!node || !notificationIdList) {
         return false;

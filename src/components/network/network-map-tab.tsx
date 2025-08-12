@@ -40,7 +40,7 @@ import {
     NotificationsUrlKeys,
     ComputingType,
 } from '@gridsuite/commons-ui';
-import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import {
     openDiagram,
     resetMapEquipment,
@@ -881,7 +881,7 @@ export const NetworkMapTab = ({
             return;
         }
         // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        if (isNodeEdited(previousCurrentNode, currentNode)) {
             return;
         }
         // when switching of root network, networkModificationTree takes some time to load
