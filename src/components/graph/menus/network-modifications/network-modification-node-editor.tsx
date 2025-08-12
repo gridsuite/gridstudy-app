@@ -118,6 +118,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
 import { TabularModificationType } from '../../../dialogs/network-modifications/tabular/tabular-common';
 import { TabularDialog } from '../../../dialogs/network-modifications/tabular/tabular-dialog';
+import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -292,7 +293,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                             label: 'CreateVoltageLevelSection',
-                            action: () => withDefaultParams(VoltageLevelCreationDialog),
+                            action: () => withDefaultParams(CreateVoltageLevelSectionDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,

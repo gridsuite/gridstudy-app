@@ -6,8 +6,8 @@
  */
 
 export type CreateVoltageLevelSectionDialogSchemaForm = {
-    busbarIndex: string;
-    busbarSectionId: string | null;
+    busbarIndex: { id: string };
+    busbarSectionId: { id: string };
     isAfterBusBarSectionId: string | null;
     switchesBeforeSections?: string | null;
     switchesAfterSections?: string | null;

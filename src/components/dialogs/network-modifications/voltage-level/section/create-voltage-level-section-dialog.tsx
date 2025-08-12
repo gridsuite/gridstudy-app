@@ -16,6 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
+    ID,
     IS_AFTER_BUSBAR_SECTION_ID,
     NEW_SWITCH_STATES,
     SWITCHES_AFTER_SECTIONS,
@@ -32,6 +33,15 @@ import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
 
+const getBusBarIndexValue = ({ busbarIndex }: { busbarIndex: string | null }) => {
+    if (!busbarIndex) {
+        return null;
+    }
+
+    return {
+        [ID]: busbarIndex,
+    };
+};
 const emptyFormData = {
     [BUS_BAR_INDEX]: null,
     [BUSBAR_SECTION_ID]: null,
@@ -44,8 +54,20 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [BUS_BAR_INDEX]: yup.string().nullable().required(),
-        [BUSBAR_SECTION_ID]: yup.string().nullable().required(),
+        [BUS_BAR_INDEX]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [ID]: yup.string().nullable().required(),
+            }),
+        [BUSBAR_SECTION_ID]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [ID]: yup.string().nullable().required(),
+            }),
         [IS_AFTER_BUSBAR_SECTION_ID]: yup.string().nullable().required(),
         [SWITCHES_BEFORE_SECTIONS]: yup
             .string()
@@ -141,8 +163,8 @@ export default function CreateVoltageLevelSectionDialog({
                 setSelectedId(editData.voltageLevelId);
             }
             reset({
-                [BUS_BAR_INDEX]: editData?.busbarIndex ?? null,
-                [BUSBAR_SECTION_ID]: editData?.busbarSectionId ?? null,
+                [BUS_BAR_INDEX]: getBusBarIndexValue({ busbarIndex: editData?.busbarIndex }) ?? null,
+                [BUSBAR_SECTION_ID]: getBusBarIndexValue({ busbarIndex: editData?.busbarSectionId }) ?? null,
                 [IS_AFTER_BUSBAR_SECTION_ID]: editData?.afterBusbarSectionId
                     ? POSITION_NEW_SECTION_SIDE.AFTER.id
                     : POSITION_NEW_SECTION_SIDE.BEFORE.id,
@@ -177,8 +199,8 @@ export default function CreateVoltageLevelSectionDialog({
             const voltageLevelSectionInfos = {
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                 voltageLevelId: selectedId,
-                busbarIndex: voltageLevelSection?.busbarIndex || null,
-                busbarSectionId: voltageLevelSection?.busbarSectionId || null,
+                busbarIndex: voltageLevelSection?.busbarIndex?.id || null,
+                busbarSectionId: voltageLevelSection?.busbarSectionId?.id || null,
                 afterBusbarSectionId:
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
@@ -201,6 +223,10 @@ export default function CreateVoltageLevelSectionDialog({
         [selectedId, studyUuid, currentNodeUuid, editData, snackError]
     );
 
+    const onValidationError = useCallback((errors: any) => {
+        console.log(errors);
+    }, []);
+
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -216,6 +242,7 @@ export default function CreateVoltageLevelSectionDialog({
                 maxWidth={'md'}
                 titleId="CreateVoltageLevelSection"
                 open={open}
+                onValidationError={onValidationError}
                 keepMounted={true}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
