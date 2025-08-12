@@ -55,6 +55,7 @@ const MapViewer = ({
     const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
+    const toggleOptions = useSelector((state) => state.toggleOptions);
 
     const openVoltageLevel = useCallback(
         (vlId) => {
@@ -82,12 +83,7 @@ const MapViewer = ({
                 {/* Tree */}
                 <Box
                     sx={{
-                        display:
-                            studyDisplayMode === StudyDisplayMode.TREE ||
-                            studyDisplayMode === StudyDisplayMode.HYBRID ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                                ? 'flex'
-                                : 'none',
+                        display: toggleOptions.includes(StudyDisplayMode.TREE) ? 'flex' : 'none',
                         flexGrow: 1,
                     }}
                 >
@@ -102,11 +98,7 @@ const MapViewer = ({
                 {/* Diagram Grid Layout */}
                 <Box
                     sx={{
-                        display:
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                                ? 'flex'
-                                : 'none',
+                        display: toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) ? 'flex' : 'none',
                         flexGrow: 1,
                         // Hack to put a padding at bottom of the diagram grid layout,
                         paddingBottom: theme.spacing(1),
@@ -117,10 +109,7 @@ const MapViewer = ({
                 >
                     <DiagramGridLayout
                         studyUuid={studyUuid}
-                        visible={
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                            studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE
-                        }
+                        visible={toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
                         showInSpreadsheet={showInSpreadsheet}
                     />
                 </Box>
