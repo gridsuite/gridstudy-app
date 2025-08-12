@@ -26,7 +26,7 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
@@ -40,6 +40,7 @@ import {
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
 } from '../tabular/tabular-modification-utils';
+import { BOOLEAN } from '../../../network/constants';
 
 const styles = {
     grid: { height: 500, width: '100%' },
@@ -259,11 +260,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const columnDefs = useMemo<ColDef[]>(
         () =>
-            csvColumns.map(({ id, name, index }) => ({
+            csvColumns.map(({ id, name, type, index }) => ({
                 field: id,
                 pinned: id === EQUIPMENT_ID ? true : undefined,
                 headerName: `${intl.formatMessage({ id: name ?? id })} ${index ?? ''}`,
-                cellRenderer: DefaultCellRenderer,
+                cellRenderer: type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer,
             })),
         [csvColumns, intl]
     );
