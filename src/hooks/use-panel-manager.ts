@@ -97,7 +97,7 @@ export function usePanelManager(): UsePanelManagerReturn {
             return;
         }
 
-        const targetPercent = (PANEL_CONFIG.MAX_SIZE / treeAndModificationsGroupSize) * 100;
+        const targetPercent = (PANEL_CONFIG.MIN_SIZE / treeAndModificationsGroupSize) * 100;
         const finalSize = Math.min(Math.max(targetPercent, PANEL_CONFIG.MIN_SIZE), PANEL_CONFIG.MAX_SIZE);
 
         setModificationsPanelMinSize(finalSize);
@@ -106,10 +106,10 @@ export function usePanelManager(): UsePanelManagerReturn {
     // Auto-minimize root network panel
     const checkAndMinimizeRootNetworkPanel = useCallback(() => {
         const size = treeAndModificationsPanelGroupRef.current?.getSize?.();
-        if (size && size < PANEL_CONFIG.MINIMIZE_THRESHOLD) {
+        if (size && size < PANEL_CONFIG.MINIMIZE_THRESHOLD && visibility.modificationsOrEventScenario) {
             window.dispatchEvent(new CustomEvent('minimizeRootNetworkPanel'));
         }
-    }, []);
+    }, [visibility.modificationsOrEventScenario]);
 
     // Check on initial mount
     useEffect(() => {
@@ -148,6 +148,9 @@ export function usePanelManager(): UsePanelManagerReturn {
     // Panel collapse handler
     const handlePanelCollapse = useCallback(
         (mode: StudyDisplayMode) => {
+            if (!toggleOptions.includes(mode)) {
+                return;
+            }
             const filters: Partial<Record<StudyDisplayMode, StudyDisplayMode[]>> = {
                 [StudyDisplayMode.TREE]: [
                     StudyDisplayMode.TREE,
@@ -170,6 +173,9 @@ export function usePanelManager(): UsePanelManagerReturn {
     // while keeping the mouse down
     const handlePanelExpand = useCallback(
         (mode: StudyDisplayMode) => {
+            if (toggleOptions.includes(mode)) {
+                return;
+            }
             dispatch(setToggleOptions([...toggleOptions, mode]));
         },
         [dispatch, toggleOptions]
