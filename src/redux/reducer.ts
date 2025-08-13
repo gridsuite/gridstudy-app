@@ -138,7 +138,6 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -153,7 +152,6 @@ import {
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
-    SetEventScenarioDrawerOpenAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
@@ -462,7 +460,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
-    isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
@@ -596,7 +593,6 @@ const initialState: AppState = {
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     isExplorerDrawerOpen: true,
-    isEventScenarioDrawerOpen: false,
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
@@ -1178,10 +1174,6 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.studyUuid) {
             saveLocalStorageToggleOptions(state.studyUuid, state.toggleOptions);
         }
-    });
-
-    builder.addCase(SET_EVENT_SCENARIO_DRAWER_OPEN, (state, action: SetEventScenarioDrawerOpenAction) => {
-        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
     });
 
     builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {

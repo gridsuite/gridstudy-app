@@ -99,7 +99,6 @@ export type AppActions =
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
     | SetModificationsDrawerOpenAction
-    | SetEventScenarioDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
     | RemoveNotificationByNodeAction
@@ -684,18 +683,6 @@ export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyActi
     return {
         type: SET_MONO_ROOT_STUDY,
         isMonoRootStudy: isMonoRootStudy,
-    };
-}
-
-export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
-export type SetEventScenarioDrawerOpenAction = Readonly<Action<typeof SET_EVENT_SCENARIO_DRAWER_OPEN>> & {
-    isEventScenarioDrawerOpen: boolean;
-};
-
-export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): SetEventScenarioDrawerOpenAction {
-    return {
-        type: SET_EVENT_SCENARIO_DRAWER_OPEN,
-        isEventScenarioDrawerOpen: isEventScenarioDrawerOpen,
     };
 }
 
