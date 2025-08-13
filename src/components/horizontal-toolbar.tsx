@@ -6,10 +6,8 @@
  */
 
 import List from '@mui/material/List';
-import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
@@ -101,33 +99,12 @@ export function HorizontalToolbar() {
                                 <TuneIcon />
                             </ToggleButton>
                             {enableDeveloperMode && (
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DynamicSimulationEventScenario',
-                                    })}
-                                    placement="right"
-                                    arrow
-                                    enterDelay={TOOLTIP_DELAY}
-                                    enterNextDelay={TOOLTIP_DELAY}
-                                    slotProps={{
-                                        popper: {
-                                            sx: {
-                                                '& .MuiTooltip-tooltip': styles.tooltip,
-                                            },
-                                        },
-                                    }}
+                                <ToggleButton
+                                    value={StudyDisplayMode.EVENT_SCENARIO}
+                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
                                 >
-                                    <span>
-                                        <ToggleButton
-                                            value={StudyDisplayMode.EVENT_SCENARIO}
-                                            disabled={
-                                                currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'
-                                            }
-                                        >
-                                            <OfflineBoltOutlinedIcon fontSize="small" />
-                                        </ToggleButton>
-                                    </span>
-                                </Tooltip>
+                                    <OfflineBoltOutlinedIcon fontSize="small" />
+                                </ToggleButton>
                             )}
                             <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
                                 <PhotoLibraryIcon />

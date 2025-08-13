@@ -79,7 +79,7 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                                             studyUuid={studyUuid}
                                             studyMapTreeDisplay={studyDisplayMode}
                                             currentRootNetworkUuid={currentRootNetworkUuid}
-                                            onTreePanelResize={refs.treePanelResizeHandlerRef}
+                                            onTreePanelResize={refs.onTreePanelResizeHandlerRef}
                                         />
                                     </ReactFlowProvider>
                                 </Box>
