@@ -57,19 +57,12 @@ export function useDisplayModes() {
 
     const handleGridOnlyToGridAndModifications = useCallback(
         (filteredModes: StudyDisplayMode[]) => {
-            if (filteredModes.includes(StudyDisplayMode.MODIFICATIONS)) {
-                applyModes([
-                    StudyDisplayMode.TREE,
-                    StudyDisplayMode.MODIFICATIONS,
-                    StudyDisplayMode.DIAGRAM_GRID_LAYOUT,
-                ]);
-            } else {
-                applyModes([
-                    StudyDisplayMode.TREE,
-                    StudyDisplayMode.EVENT_SCENARIO,
-                    StudyDisplayMode.DIAGRAM_GRID_LAYOUT,
-                ]);
-            }
+            const { TREE, MODIFICATIONS, EVENT_SCENARIO, DIAGRAM_GRID_LAYOUT } = StudyDisplayMode;
+            applyModes([
+                TREE,
+                filteredModes.includes(MODIFICATIONS) ? MODIFICATIONS : EVENT_SCENARIO,
+                DIAGRAM_GRID_LAYOUT,
+            ]);
         },
         [applyModes]
     );
