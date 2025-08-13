@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo, FunctionComponent } from 'react';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import {EquipmentType, ExtendedEquipmentType} from '@gridsuite/commons-ui';
 import withOperatingStatusMenu, { MenuBranchProps } from '../components/menus/operating-status-menu';
 import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../components/menus/base-equipment-menu';
 import withEquipmentMenu from '../components/menus/equipment-menu';
@@ -17,6 +17,7 @@ type EquipmentMenuProps = {
     position?: [number, number] | null;
     equipment?: BaseEquipment;
     equipmentType?: EquipmentType;
+    equipmentSubtype?: ExtendedEquipmentType | null;
     display: boolean;
 };
 
@@ -36,7 +37,7 @@ interface UseEquipmentMenuProps {
     disabled: boolean;
     onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => void;
     onDeleteEquipment: (equipmentType: EquipmentType | null, equipmentId: string) => void;
-    onOpenModificationDialog: (id: string, type: EquipmentType | null) => void;
+    onOpenModificationDialog: (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => void;
     onOpenDynamicSimulationEventDialog?: (
         equipmentId: string,
         equipmentType: EquipmentType | null,
@@ -105,11 +106,12 @@ export const useEquipmentMenu = ({
         []
     );
 
-    const openEquipmentMenu = useCallback((equipment: BaseEquipment, x: number, y: number, type: EquipmentType) => {
+    const openEquipmentMenu = useCallback((equipment: BaseEquipment, x: number, y: number, type: EquipmentType, subtype: ExtendedEquipmentType | null) => {
         setEquipmentMenu({
             position: [x, y],
             equipment: equipment,
             equipmentType: type,
+            equipmentSubtype: subtype,
             display: true,
         });
     }, []);
@@ -135,8 +137,8 @@ export const useEquipmentMenu = ({
     );
 
     const handleOpenModificationDialog = useCallback(
-        (id: string, type: EquipmentType | null) => {
-            onOpenModificationDialog(id, type);
+        (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => {
+            onOpenModificationDialog(id, type, subtype);
             closeEquipmentMenu();
         },
         [onOpenModificationDialog, closeEquipmentMenu]
@@ -161,6 +163,7 @@ export const useEquipmentMenu = ({
                     <Menu
                         equipment={equipmentMenu?.equipment}
                         equipmentType={equipmentMenu?.equipmentType}
+                        equipmentSubtype={equipmentMenu?.equipmentSubtype ?? null}
                         position={equipmentMenu.position}
                         handleClose={closeEquipmentMenu}
                         handleViewInSpreadsheet={handleViewInSpreadsheet}

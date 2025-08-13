@@ -143,7 +143,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
                 setAnchorPosition(anchorPosition);
                 setHoveredEquipmentId(equipmentId);
-                setHoveredEquipmentType(convertedEquipmentType || '');
+                setHoveredEquipmentType(convertedEquipmentType?.equipmentType || '');
 
                 setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable); // Show or hide based on shouldDisplay
             } else {
@@ -256,12 +256,19 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
             // don't display the equipment menu in edit mode.
             if (!isEditNadMode) {
+                console.log(equipmentType);
                 const convertedType = getEquipmentTypeFromFeederType(equipmentType);
 
-                if (convertedType) {
+                if (convertedType?.equipmentType) {
                     // Create a minimal equipment object
                     const equipment = { id: equipmentId };
-                    openEquipmentMenu(equipment as MapEquipment, mousePosition.x, mousePosition.y, convertedType);
+                    openEquipmentMenu(
+                        equipment as MapEquipment,
+                        mousePosition.x,
+                        mousePosition.y,
+                        convertedType.equipmentType,
+                        convertedType.equipmentSubtype ?? null
+                    );
                 }
             }
         },
