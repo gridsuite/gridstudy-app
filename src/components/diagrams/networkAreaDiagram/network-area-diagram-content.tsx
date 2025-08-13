@@ -256,7 +256,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
             // don't display the equipment menu in edit mode.
             if (!isEditNadMode) {
-                console.log(equipmentType);
                 const convertedType = getEquipmentTypeFromFeederType(equipmentType);
 
                 if (convertedType?.equipmentType) {

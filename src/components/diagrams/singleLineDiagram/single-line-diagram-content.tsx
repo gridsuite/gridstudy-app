@@ -242,7 +242,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             handleTogglePopover(false, null, '', '');
 
             const convertedType = getEquipmentTypeFromFeederType(equipmentType);
-            console.log(convertedType);
             if (convertedType?.equipmentType) {
                 // Create a minimal equipment object
                 const equipment = { id: equipmentId };
