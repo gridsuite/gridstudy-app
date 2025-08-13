@@ -20,15 +20,12 @@ import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-import { Box, darken, Grid, Theme, ToggleButtonGroup, ToggleButton, lighten } from '@mui/material';
+import { Box, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
 const styles = {
     horizontalToolbar: (theme: Theme) => ({
-        backgroundColor:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.2)
-                : lighten(theme.palette.background.paper, 0.42),
+        backgroundColor: theme.palette.toolbarBackground,
     }),
     selected: (theme: Theme) => ({
         color: theme.palette.action.active,

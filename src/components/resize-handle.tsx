@@ -23,8 +23,8 @@ const ResizeHandle = ({ visible, rotated = false }: ResizeHandleProps) => {
                 display: visible ? 'flex' : 'none',
                 alignItems: 'center',
                 backgroundColor: theme.palette.background.paper,
-                borderLeft: `1px solid ${theme.palette.divider}`,
-                borderTop: `1px solid ${theme.palette.divider}`,
+                borderLeft: !rotated ? `1px solid ${theme.palette.divider}` : 'none',
+                borderTop: rotated ? `1px solid ${theme.palette.divider}` : 'none',
                 justifyContent: 'center',
             }}
         >
