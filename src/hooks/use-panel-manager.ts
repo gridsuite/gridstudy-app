@@ -149,8 +149,13 @@ export function usePanelManager(): UsePanelManagerReturn {
     const handlePanelCollapse = useCallback(
         (mode: StudyDisplayMode) => {
             const filters: Partial<Record<StudyDisplayMode, StudyDisplayMode[]>> = {
-                [StudyDisplayMode.TREE]: [StudyDisplayMode.TREE, StudyDisplayMode.MODIFICATIONS],
-                [StudyDisplayMode.MODIFICATIONS]: [StudyDisplayMode.MODIFICATIONS, StudyDisplayMode.EVENT_SCENARIO],
+                [StudyDisplayMode.TREE]: [
+                    StudyDisplayMode.TREE,
+                    StudyDisplayMode.MODIFICATIONS,
+                    StudyDisplayMode.EVENT_SCENARIO,
+                ],
+                [StudyDisplayMode.MODIFICATIONS]: [StudyDisplayMode.MODIFICATIONS],
+                [StudyDisplayMode.EVENT_SCENARIO]: [StudyDisplayMode.EVENT_SCENARIO],
                 [StudyDisplayMode.DIAGRAM_GRID_LAYOUT]: [StudyDisplayMode.DIAGRAM_GRID_LAYOUT],
             };
 
@@ -165,15 +170,9 @@ export function usePanelManager(): UsePanelManagerReturn {
     // while keeping the mouse down
     const handlePanelExpand = useCallback(
         (mode: StudyDisplayMode) => {
-            if (mode === StudyDisplayMode.MODIFICATIONS) {
-                if (!visibility.modifications && !visibility.eventScenario) {
-                    dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.MODIFICATIONS]));
-                }
-            } else if (!toggleOptions.includes(mode)) {
-                dispatch(setToggleOptions([...toggleOptions, mode]));
-            }
+            dispatch(setToggleOptions([...toggleOptions, mode]));
         },
-        [dispatch, toggleOptions, visibility.eventScenario, visibility.modifications]
+        [dispatch, toggleOptions]
     );
 
     // Panel visibility effect

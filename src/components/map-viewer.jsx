@@ -103,8 +103,20 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                                 maxSize={PANEL_CONFIG.MAX_SIZE}
                                 collapsible
                                 onResize={handlers.handleResize}
-                                onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.MODIFICATIONS)}
-                                onExpand={() => handlers.handlePanelExpand(StudyDisplayMode.MODIFICATIONS)}
+                                onCollapse={() =>
+                                    handlers.handlePanelCollapse(
+                                        state.visibility.eventScenario
+                                            ? StudyDisplayMode.EVENT_SCENARIO
+                                            : StudyDisplayMode.MODIFICATIONS
+                                    )
+                                }
+                                onExpand={() =>
+                                    handlers.handlePanelExpand(
+                                        state.visibility.eventScenario
+                                            ? StudyDisplayMode.EVENT_SCENARIO
+                                            : StudyDisplayMode.MODIFICATIONS
+                                    )
+                                }
                             >
                                 <Box sx={{ height: '100%' }}>{networkModificationComponent}</Box>
                             </Panel>

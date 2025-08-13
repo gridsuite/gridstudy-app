@@ -21,6 +21,7 @@ import { AppState } from '../redux/reducer';
 import { Box, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
+import { useEffect } from 'react';
 const styles = {
     horizontalToolbar: (theme: Theme) => ({
         backgroundColor: theme.palette.toolbarBackground,
@@ -56,7 +57,15 @@ export function HorizontalToolbar() {
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
-    const { onViewModeChange } = useDisplayModes();
+    const { onViewModeChange, applyModes } = useDisplayModes();
+
+    useEffect(() => {
+        if (!enableDeveloperMode) {
+            if (toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO)) {
+                applyModes(toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
+            }
+        }
+    }, [enableDeveloperMode, toggleOptions, applyModes]);
 
     return (
         <Grid container alignItems="center" sx={styles.horizontalToolbar}>

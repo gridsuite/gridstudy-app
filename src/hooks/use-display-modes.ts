@@ -114,5 +114,6 @@ export function useDisplayModes() {
 
     return {
         onViewModeChange,
+        applyModes,
     };
 }
