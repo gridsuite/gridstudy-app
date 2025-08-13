@@ -83,8 +83,8 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     if (!studyUuid || !currentNode || !currentRootNetworkUuid || !networkVisuParams) {
         return (
             <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-                <CardHeader title={'MapCard'} onClose={onClose} />
-                <AlertCustomMessageNode message={'MapCard not available'} noMargin style={cardStyles.alertMessage} />
+                <CardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
+                <AlertCustomMessageNode message={'MapCardNotAvailable'} noMargin style={cardStyles.alertMessage} />
                 <Box sx={cardStyles.diagramContainer} /> {/* Empty container to keep the layout */}
             </Box>
         );
