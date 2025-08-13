@@ -36,7 +36,12 @@ export const PARAM_PROVIDER_DYNAFLOW = 'DynaFlow';
 
 export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';
 
-const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE, LAST_SELECTED_DIRECTORY]);
+const COMMON_CONFIG_PARAMS_NAMES = new Set([
+    PARAM_THEME,
+    PARAM_LANGUAGE,
+    LAST_SELECTED_DIRECTORY,
+    PARAM_DEVELOPER_MODE,
+]);
 
 export function getAppName(paramName: string) {
     return COMMON_CONFIG_PARAMS_NAMES.has(paramName) ? COMMON_APP_NAME : APP_NAME;
