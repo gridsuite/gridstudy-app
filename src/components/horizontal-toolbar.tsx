@@ -20,12 +20,15 @@ import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-import { Box, darken, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, darken, Grid, Theme, ToggleButtonGroup, ToggleButton, lighten } from '@mui/material';
 import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
 const styles = {
     horizontalToolbar: (theme: Theme) => ({
-        backgroundColor: darken(theme.palette.background.paper, 0.2),
+        backgroundColor:
+            theme.palette.mode === 'light'
+                ? darken(theme.palette.background.paper, 0.2)
+                : lighten(theme.palette.background.paper, 0.42),
     }),
     selected: (theme: Theme) => ({
         color: theme.palette.action.active,
@@ -60,14 +63,9 @@ export function HorizontalToolbar() {
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
     const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
-    const { onViewModeChange, applyModes } = useDisplayModes();
+    const { onViewModeChange } = useDisplayModes();
 
     const toggleEventScenarioDrawer = () => {
-        //if the Dynamic SimulationEvent Scenario is clicked we need to hide the modifications
-        if (toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
-            const options = toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS);
-            applyModes(options);
-        }
         dispatch(setEventScenarioDrawerOpen(!isEventScenarioDrawerOpen));
     };
 

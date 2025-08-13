@@ -6,7 +6,7 @@
  */
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setToggleOptions, setModificationsDrawerOpen } from '../redux/actions';
+import { setToggleOptions } from '../redux/actions';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { AppState } from '../redux/reducer';
 
@@ -51,13 +51,6 @@ export function useDisplayModes() {
         [dispatch]
     );
 
-    const openModifications = useCallback(
-        (modes: StudyDisplayMode[]) => {
-            dispatch(setModificationsDrawerOpen(modes.includes(StudyDisplayMode.MODIFICATIONS)));
-        },
-        [dispatch]
-    );
-
     const handleAllOptionsSelectedToGridOnly = useCallback(() => {
         applyModes([StudyDisplayMode.DIAGRAM_GRID_LAYOUT]);
     }, [applyModes]);
@@ -75,7 +68,6 @@ export function useDisplayModes() {
 
             if (isGridOnlyToGridAndModifications(toggleOptions, newModes)) {
                 handleGridOnlyToGridAndModifications();
-                openModifications(newModes);
                 return;
             }
 
@@ -83,21 +75,12 @@ export function useDisplayModes() {
                 handleAllOptionsSelectedToGridOnly();
                 return;
             }
-
-            openModifications(newModes);
             applyModes(newModes);
         },
-        [
-            toggleOptions,
-            openModifications,
-            applyModes,
-            handleGridOnlyToGridAndModifications,
-            handleAllOptionsSelectedToGridOnly,
-        ]
+        [toggleOptions, applyModes, handleGridOnlyToGridAndModifications, handleAllOptionsSelectedToGridOnly]
     );
 
     return {
         onViewModeChange,
-        applyModes,
     };
 }

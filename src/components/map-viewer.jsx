@@ -5,155 +5,140 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { openDiagram } from '../redux/actions';
 import { ReactFlowProvider } from '@xyflow/react';
-import NetworkModificationTreePane from './network-modification-tree-pane';
-import NetworkMapTab from './network/network-map-tab';
-
-import { StudyDisplayMode } from './network-modification.type';
 import { Box, useTheme } from '@mui/material';
-import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type';
+import { Panel, PanelGroup } from 'react-resizable-panels';
+import { useSelector } from 'react-redux';
+import { useMemo, useCallback } from 'react';
+
+import NetworkModificationTreePane from './network-modification-tree-pane';
 import WaitingLoader from './utils/waiting-loader';
 import DiagramGridLayout from './diagrams/diagram-grid-layout';
+import NodeEditor from './graph/menus/network-modifications/node-editor';
+import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
+import ResizeHandle from './resize-handle';
+
+import { usePanelManager } from '../hooks/use-panel-manager';
+import { PANEL_CONFIG, PANEL_IDS } from '../constants/panel.constants';
+import { StudyDisplayMode } from './network-modification.type';
 
 const styles = {
-    map: {
-        display: 'flex',
-        position: 'relative',
-        flexDirection: 'row',
-        height: '100%',
-    },
-    table: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    mapAndTreeContainer: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        overflow: 'hidden',
-    },
+    table: { display: 'flex', flexDirection: 'column', height: '100%' },
+    mapAndTreeContainer: { width: '100%', height: '100%', display: 'flex', flexDirection: 'row', overflow: 'hidden' },
+    panelContent: { display: 'flex', flexGrow: 1, height: '100%' },
 };
 
-const MapViewer = ({
-    studyUuid,
-    currentNode,
-    currentRootNetworkUuid,
-    view,
-    tableEquipment,
-    onTableEquipementChanged,
-    onChangeTab,
-}) => {
+const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableEquipementChanged, onChangeTab }) => {
     const theme = useTheme();
-    const dispatch = useDispatch();
-
-    const networkVisuParams = useSelector((state) => state.networkVisualizationsParameters);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
-    const toggleOptions = useSelector((state) => state.toggleOptions);
+    const isEventScenarioDrawerOpen = useSelector((state) => state.isEventScenarioDrawerOpen);
 
-    const openVoltageLevel = useCallback(
-        (vlId) => {
-            dispatch(openDiagram(vlId, DiagramType.VOLTAGE_LEVEL));
+    const { refs, state, handlers } = usePanelManager();
+
+    const showInSpreadsheet = useCallback(
+        (equipment) => {
+            onTableEquipementChanged({
+                id: equipment.equipmentId,
+                type: equipment.equipmentType,
+                changed: !tableEquipment.changed,
+            });
+            onChangeTab(1);
         },
-        [dispatch]
+        [tableEquipment.changed, onTableEquipementChanged, onChangeTab]
     );
 
-    function showInSpreadsheet(equipment) {
-        let newTableEquipment = {
-            id: equipment.equipmentId,
-            type: equipment.equipmentType,
-            changed: !tableEquipment.changed,
-        };
-        onTableEquipementChanged(newTableEquipment);
-        onChangeTab(1); // switch to spreadsheet view
-    }
+    const networkModificationComponent = useMemo(
+        () => (isEventScenarioDrawerOpen ? <ScenarioEditor /> : <NodeEditor />),
+        [isEventScenarioDrawerOpen]
+    );
 
     return (
         <Box sx={styles.table}>
             <Box sx={styles.mapAndTreeContainer}>
-                {/* Waiting for map geodata is unnecessary. The map has is proper loader implementation */}
-                {/* This WaitingLoader is placed here to block functionnalities, hiding under components with some opacity*/}
-                <WaitingLoader message={'LoadingRemoteData'} loading={!isNetworkModificationTreeModelUpToDate} />
-                {/* Tree */}
-                <Box
-                    sx={{
-                        display: toggleOptions.includes(StudyDisplayMode.TREE) ? 'flex' : 'none',
-                        flexGrow: 1,
-                    }}
-                >
-                    <ReactFlowProvider>
-                        <NetworkModificationTreePane
-                            studyUuid={studyUuid}
-                            studyMapTreeDisplay={studyDisplayMode}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                        />
-                    </ReactFlowProvider>
-                </Box>
-                {/* Diagram Grid Layout */}
-                <Box
-                    sx={{
-                        display: toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) ? 'flex' : 'none',
-                        flexGrow: 1,
-                        // Hack to put a padding at bottom of the diagram grid layout,
-                        paddingBottom: theme.spacing(1),
-                        backgroundColor:
-                            theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.background.paper,
-                        // end of hack
-                    }}
-                >
-                    <DiagramGridLayout
-                        studyUuid={studyUuid}
-                        visible={toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
-                        showInSpreadsheet={showInSpreadsheet}
-                    />
-                </Box>
-                {/* Map */}
-                <Box
-                    sx={{
-                        display:
-                            studyDisplayMode === StudyDisplayMode.MAP || studyDisplayMode === StudyDisplayMode.HYBRID
-                                ? 'flex'
-                                : 'none',
-                        flexGrow: 1,
-                    }}
-                >
-                    <Box
-                        sx={{
-                            width: '100%',
-                        }}
+                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
+                <PanelGroup autoSaveId={`study-panels-${studyUuid}`} direction="horizontal">
+                    {/* Left Panel Group */}
+                    <Panel
+                        ref={refs.leftPanelGroupRef}
+                        id={PANEL_IDS.LEFT_GROUP}
+                        minSize={PANEL_CONFIG.MIN_SIZE}
+                        collapsible
+                        onResize={handlers.handleResize}
+                        onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.TREE)}
                     >
-                        {/* TODO make filter panel take only 20% */}
-                        <Box sx={styles.map}>
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    width: '100%',
-                                    height: '100%',
-                                }}
+                        <PanelGroup
+                            autoSaveId={`study-left-panel-group-${studyUuid}`}
+                            direction={state.leftGroupDirection}
+                        >
+                            {/* Tree Panel */}
+                            <Panel ref={refs.treePanelRef} id={PANEL_IDS.TREE} minSize={PANEL_CONFIG.MIN_SIZE}>
+                                <Box sx={styles.panelContent}>
+                                    <ReactFlowProvider>
+                                        <NetworkModificationTreePane
+                                            studyUuid={studyUuid}
+                                            studyMapTreeDisplay={studyDisplayMode}
+                                            currentRootNetworkUuid={currentRootNetworkUuid}
+                                            onTreePanelResize={refs.treePanelResizeHandlerRef}
+                                        />
+                                    </ReactFlowProvider>
+                                </Box>
+                            </Panel>
+
+                            {/* Tree-Modifications Resize Handle */}
+                            <ResizeHandle
+                                visible={state.visibility.modificationsHandle}
+                                rotated={state.leftGroupDirection === 'vertical'}
+                            />
+
+                            {/* Modifications Panel */}
+                            <Panel
+                                ref={refs.modificationsPanelRef}
+                                id={PANEL_IDS.MODIFICATIONS}
+                                minSize={
+                                    state.leftGroupDirection === 'horizontal'
+                                        ? state.modificationsPanelMinSize
+                                        : PANEL_CONFIG.MIN_SIZE
+                                }
+                                maxSize={PANEL_CONFIG.MAX_SIZE}
+                                collapsible
+                                onResize={handlers.handleResize}
+                                onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.MODIFICATIONS)}
                             >
-                                <NetworkMapTab
-                                    studyUuid={studyUuid}
-                                    visible={view === StudyView.TREE && studyDisplayMode !== StudyDisplayMode.TREE}
-                                    lineFullPath={networkVisuParams.mapParameters.lineFullPath}
-                                    lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
-                                    lineFlowMode={networkVisuParams.mapParameters.lineFlowMode}
-                                    openVoltageLevel={openVoltageLevel}
-                                    currentNode={currentNode}
-                                    currentRootNetworkUuid={currentRootNetworkUuid}
-                                    onChangeTab={onChangeTab}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    onPolygonChanged={() => {}}
-                                ></NetworkMapTab>
-                            </Box>
+                                <Box sx={{ height: '100%' }}>{networkModificationComponent}</Box>
+                            </Panel>
+                        </PanelGroup>
+                    </Panel>
+
+                    {/* Left-Grid Resize Handle */}
+                    <ResizeHandle visible={state.visibility.gridHandle} />
+
+                    {/* Grid Panel */}
+                    <Panel
+                        ref={refs.gridPanelRef}
+                        id={PANEL_IDS.GRID}
+                        minSize={PANEL_CONFIG.MIN_SIZE}
+                        collapsible
+                        onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
+                    >
+                        <Box
+                            sx={{
+                                ...styles.panelContent,
+                                paddingBottom: theme.spacing(1),
+                                backgroundColor:
+                                    theme.palette.mode === 'light'
+                                        ? theme.palette.grey[300]
+                                        : theme.palette.background.paper,
+                            }}
+                        >
+                            <DiagramGridLayout
+                                studyUuid={studyUuid}
+                                visible={state.visibility.grid}
+                                showInSpreadsheet={showInSpreadsheet}
+                            />
                         </Box>
-                    </Box>
-                </Box>
+                    </Panel>
+                </PanelGroup>
             </Box>
         </Box>
     );
