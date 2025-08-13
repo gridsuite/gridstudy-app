@@ -166,16 +166,11 @@ export function usePanelManager(): UsePanelManagerReturn {
     const handlePanelExpand = useCallback(
         (mode: StudyDisplayMode) => {
             if (mode === StudyDisplayMode.MODIFICATIONS) {
-                // When expanding modifications panel, add MODIFICATIONS if neither is present
-
                 if (!visibility.modifications && !visibility.eventScenario) {
                     dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.MODIFICATIONS]));
                 }
-            } else {
-                // For other modes, use the original logic
-                if (!toggleOptions.includes(mode)) {
-                    dispatch(setToggleOptions([...toggleOptions, mode]));
-                }
+            } else if (!toggleOptions.includes(mode)) {
+                dispatch(setToggleOptions([...toggleOptions, mode]));
             }
         },
         [dispatch, toggleOptions, visibility.eventScenario, visibility.modifications]
