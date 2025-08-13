@@ -49,7 +49,6 @@ export default function LimitParametersSelection({
                                 name={AERIAL_AREAS}
                                 label="aerialAreas"
                                 options={aerialAreas}
-                                disabled={false}
                                 size="small"
                             />
                         </GridItem>
@@ -58,7 +57,6 @@ export default function LimitParametersSelection({
                                 name={AERIAL_TEMPERATURES}
                                 label="aerialTemperatures"
                                 options={aerialTemperatures}
-                                disabled={false}
                                 size="small"
                             />
                         </GridItem>
@@ -74,7 +72,6 @@ export default function LimitParametersSelection({
                                 name={UNDERGROUND_AREAS}
                                 label="lineTypes.currentLimits.underground.Area"
                                 options={undergroundAreas}
-                                disabled={false}
                                 size="small"
                             />
                         </GridItem>
@@ -83,7 +80,6 @@ export default function LimitParametersSelection({
                                 name={UNDERGROUND_SHAPE_FACTORS}
                                 label="lineTypes.currentLimits.underground.ShapeFactor"
                                 options={undergroundShapeFactor}
-                                disabled={false}
                                 size={'small'}
                             />
                         </GridItem>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BasicModificationDialog } from '../commons/basicModificationDialog';
 import { FormattedMessage } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
@@ -18,20 +18,21 @@ import {
     UNDERGROUND_AREAS,
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
 import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
 import { CATEGORIES, TABS } from './segment-utils';
 import LimitCustomAgGrid from './limit-custom-aggrid';
 import LimitParametersSelection from './limit-parameters-selection';
+import { NetworkModificationDialogProps } from '../../graph/menus/network-modifications/network-modification-menu.type';
 
-export interface LineTypesCatalogSelectorDialogProps {
+export type LineTypesCatalogSelectorDialogProps = NetworkModificationDialogProps & {
     onSelectLine: (selectedLine: LineTypeInfo) => void;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
-}
+};
 
 export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
@@ -51,6 +52,10 @@ export default function LineTypesCatalogSelectorDialog({
     const [undergroundAreas, setUndergroundAreas] = useState<Option[]>([]);
     const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
     const { aerialRowData, undergroundRowData } = useRowData(rowData);
+    const selectedAerialArea = useWatch({ name: AERIAL_AREAS });
+    const selectedAerialTemperature = useWatch({ name: AERIAL_TEMPERATURES });
+    const selectedUndergroundArea = useWatch({ name: UNDERGROUND_AREAS });
+    const selectedUndergroundShapeFactor = useWatch({ name: UNDERGROUND_SHAPE_FACTORS });
 
     const undergroundShapeFactor: Option[] = [
         { id: '1', label: '1' },
@@ -67,9 +72,9 @@ export default function LineTypesCatalogSelectorDialog({
             const selectedArea = getValues(AERIAL_AREAS);
             const selectedTemperature = getValues(AERIAL_TEMPERATURES);
 
-            if (aerialAreas.length > 0 && aerialTemperatures.length > 0) {
-                const filteredLimits = selectedRow.limitsForLineType.filter(
-                    (limit) => limit.area === selectedArea.id && limit.temperature === selectedTemperature.id
+            if (aerialAreas?.length > 0 && aerialTemperatures?.length > 0) {
+                const filteredLimits = selectedRow?.limitsForLineType?.filter(
+                    (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
                 );
                 if (filteredLimits) {
                     selectedRow.limitsForLineType = filteredLimits;
@@ -85,7 +90,9 @@ export default function LineTypesCatalogSelectorDialog({
             const selectedShapeFactor = parseFloat(getValues(UNDERGROUND_SHAPE_FACTORS)?.id);
 
             if (undergroundAreas.length > 0) {
-                const filteredLimits = selectedRow.limitsForLineType.filter((limit) => limit.area === selectedArea.id);
+                const filteredLimits = selectedRow?.limitsForLineType?.filter(
+                    (limit) => limit?.area === selectedArea?.id
+                );
                 if (filteredLimits) {
                     filteredLimits.forEach((limit) => {
                         limit.permanentLimit = limit.permanentLimit / selectedShapeFactor;
@@ -107,21 +114,9 @@ export default function LineTypesCatalogSelectorDialog({
         selectedRow && onSelectLine?.(selectedRow);
     }, [selectedRow, handleSelectedAerial, handleSelectedUnderground, onSelectLine]);
 
-    const clearFormValues = useCallback(() => {
-        setValue(AERIAL_AREAS, null);
-        setValue(AERIAL_TEMPERATURES, null);
-        setValue(UNDERGROUND_AREAS, null);
-        setValue(UNDERGROUND_SHAPE_FACTORS, null);
-    }, [setValue]);
-
-    const handleTabChange = useCallback(
-        (newValue: number) => {
-            setTabIndex(newValue);
-            setSelectedRow(null);
-            clearFormValues();
-        },
-        [clearFormValues]
-    );
+    const handleTabChange = useCallback((newValue: number) => {
+        setTabIndex(newValue);
+    }, []);
 
     const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
         if (!limitsData?.length) {
@@ -173,10 +168,15 @@ export default function LineTypesCatalogSelectorDialog({
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
+        console.log('selectedRows', selectedRows);
         if (selectedRows?.length) {
+            setValue(AERIAL_AREAS, null);
+            setValue(AERIAL_TEMPERATURES, null);
+            setValue(UNDERGROUND_AREAS, null);
+            setValue(UNDERGROUND_SHAPE_FACTORS, null);
             handleSelectedRowData(selectedRows[0]).then();
         }
-    }, [handleSelectedRowData]);
+    }, [handleSelectedRowData, setValue]);
 
     // Tries to find the selected row to highlight it
     const highlightSelectedRow = useCallback(() => {
@@ -208,6 +208,31 @@ export default function LineTypesCatalogSelectorDialog({
         highlightSelectedRow();
     }, [highlightSelectedRow, tabIndex]);
 
+    const isValidationBlocked = useMemo(() => {
+        if (!selectedRow) {
+            return true;
+        } else if (selectedRow.category === CATEGORIES.AERIAL && aerialAreas.length > 0) {
+            console.log('selectedArea', selectedAerialArea, selectedAerialTemperature);
+            if (!selectedAerialArea && !selectedAerialTemperature) {
+                return true;
+            }
+        } else if (selectedRow.category === CATEGORIES.UNDERGROUND && undergroundAreas.length > 0) {
+            console.log('selectedUndergroundArea', selectedUndergroundArea, selectedUndergroundShapeFactor);
+            if (!selectedUndergroundArea && !selectedUndergroundShapeFactor) {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }, [
+        selectedRow,
+        aerialAreas.length,
+        undergroundAreas.length,
+        selectedAerialArea,
+        selectedAerialTemperature,
+        selectedUndergroundArea,
+        selectedUndergroundShapeFactor,
+    ]);
     const headerAndTabs = (
         <Box
             sx={{
@@ -226,7 +251,7 @@ export default function LineTypesCatalogSelectorDialog({
     );
     return (
         <BasicModificationDialog
-            disabledSave={!selectedRow}
+            disabledSave={isValidationBlocked}
             fullWidth
             maxWidth="xl"
             onClear={handleClear}

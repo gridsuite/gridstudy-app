@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback } from 'react';
+import { useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../commons/modificationDialog';
@@ -35,24 +35,28 @@ const LineTypeSegmentSchema = yup
         [AERIAL_AREAS]: yup
             .object()
             .nullable()
+            .required()
             .shape({
                 [ID]: yup.string().required(),
             }),
         [AERIAL_TEMPERATURES]: yup
             .object()
             .nullable()
+            .required()
             .shape({
                 [ID]: yup.string().required(),
             }),
         [UNDERGROUND_AREAS]: yup
             .object()
             .nullable()
+            .required()
             .shape({
                 [ID]: yup.string().required(),
             }),
         [UNDERGROUND_SHAPE_FACTORS]: yup
             .object()
             .nullable()
+            .required()
             .shape({
                 [ID]: yup.string().required(),
             }),
@@ -84,7 +88,7 @@ export interface LineTypeSegmentDialogProps {
 
 export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
 
-const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ open, onSave, onClose }) => {
+export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonly<LineTypeSegmentDialogProps>) {
     const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
@@ -95,10 +99,6 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
     const handleClear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
-
-    /**
-     * RENDER
-     */
 
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
@@ -115,6 +115,4 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-export default LineTypeSegmentDialog;
+}
