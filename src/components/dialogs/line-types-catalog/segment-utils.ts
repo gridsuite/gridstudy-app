@@ -60,3 +60,13 @@ export const emptyLineSegment: SegmentFormData = {
     [SEGMENT_SUSCEPTANCE]: 0.0,
     [SEGMENT_CURRENT_LIMITS]: [],
 };
+
+export const TABS = {
+    AERIAL: 0,
+    UNDERGROUND: 1,
+} as const;
+
+export const CATEGORIES = {
+    AERIAL: 'AERIAL',
+    UNDERGROUND: 'UNDERGROUND',
+} as const;
