@@ -17,7 +17,7 @@ import WorldSvg from 'images/world.svg?react';
 import NetworkMapTab from 'components/network/network-map-tab';
 import { cardStyles } from './card-styles';
 import { Close } from '@mui/icons-material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const styles = {
     closeButton: (theme: Theme) => ({
@@ -48,6 +48,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     const { studyUuid, onClose, errorMessage, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
     const [isHover, setIsHover] = useState(false);
+    const intl = useIntl();
 
     const handleMouseEnter = () => {
         setIsHover(true);
@@ -91,7 +92,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
 
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CardHeader title={'MapCard'} onClose={onClose} />
+            <CardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
             {errorMessage && <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />}
             <Box sx={cardStyles.diagramContainer}>
                 <WorldSvg
