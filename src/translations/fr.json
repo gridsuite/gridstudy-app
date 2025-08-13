@@ -1519,5 +1519,13 @@
     "SaveGridLayout": "Enregistrer",
     "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
     "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
-    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle"
+    "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
+    "NoMatch": "Pas de correspondance",
+    "Rows": "ligne",
+    "ExternalFilters": "Filtres externes",
+    "ColumnsFilters": "Filtres de colonnes",
+    "genericFilter": "Générique",
+    "voltageLevel": "Niveaux de tension",
+    "ClickToReset": "Cliquez pour réinitialiser les filtres",
+    "RowCounterInfo": "Affiche le nombre de lignes de la feuille de calcul actuelle. Si des filtres sont appliqués, le nombre de lignes filtrées s'affiche. Vous pouvez supprimer tous les filtres en cliquant sur ce bouton."
 }
