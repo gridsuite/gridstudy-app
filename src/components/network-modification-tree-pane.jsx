@@ -126,7 +126,6 @@ export const NetworkModificationTreePane = ({
     nodeSelectionForCopyRef.current = selectionForCopy;
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const toggleOptions = useSelector((state) => state.toggleOptions);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -563,7 +562,6 @@ export const NetworkModificationTreePane = ({
                 onNodeContextMenu={onNodeContextMenu}
                 studyUuid={studyUuid}
                 studyMapTreeDisplay={studyMapTreeDisplay}
-                toggleOptions={toggleOptions}
                 onTreePanelResize={onTreePanelResize}
             />
             {createNodeMenu.display && (

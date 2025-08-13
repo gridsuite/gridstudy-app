@@ -24,7 +24,7 @@ import { StudyDisplayMode } from './network-modification.type';
 
 const styles = {
     table: { display: 'flex', flexDirection: 'column', height: '100%' },
-    mapAndTreeContainer: { width: '100%', height: '100%', display: 'flex', flexDirection: 'row', overflow: 'hidden' },
+    gridAndTreeContainer: { width: '100%', height: '100%', display: 'flex', flexDirection: 'row', overflow: 'hidden' },
     panelContent: { display: 'flex', flexGrow: 1, height: '100%' },
 };
 
@@ -32,7 +32,6 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
     const theme = useTheme();
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
-    const isEventScenarioDrawerOpen = useSelector((state) => state.isEventScenarioDrawerOpen);
 
     const { refs, state, handlers } = usePanelManager();
 
@@ -49,27 +48,28 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
     );
 
     const networkModificationComponent = useMemo(
-        () => (isEventScenarioDrawerOpen ? <ScenarioEditor /> : <NodeEditor />),
-        [isEventScenarioDrawerOpen]
+        () => (state.visibility.eventScenario ? <ScenarioEditor /> : <NodeEditor />),
+        [state.visibility.eventScenario]
     );
 
     return (
         <Box sx={styles.table}>
-            <Box sx={styles.mapAndTreeContainer}>
+            <Box sx={styles.gridAndTreeContainer}>
                 <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
                 <PanelGroup autoSaveId={`study-panels-${studyUuid}`} direction="horizontal">
                     {/* Left Panel Group */}
                     <Panel
-                        ref={refs.leftPanelGroupRef}
-                        id={PANEL_IDS.LEFT_GROUP}
+                        ref={refs.treeAndModificationsPanelGroupRef}
+                        id={PANEL_IDS.TREE_AND_MODIFICATIONS_GROUP}
                         minSize={PANEL_CONFIG.MIN_SIZE}
                         collapsible
                         onResize={handlers.handleResize}
                         onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.TREE)}
+                        onExpand={() => handlers.handlePanelExpand(StudyDisplayMode.TREE)}
                     >
                         <PanelGroup
                             autoSaveId={`study-left-panel-group-${studyUuid}`}
-                            direction={state.leftGroupDirection}
+                            direction={state.treeAndModificationsGroupDirection}
                         >
                             {/* Tree Panel */}
                             <Panel ref={refs.treePanelRef} id={PANEL_IDS.TREE} minSize={PANEL_CONFIG.MIN_SIZE}>
@@ -87,8 +87,8 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
 
                             {/* Tree-Modifications Resize Handle */}
                             <ResizeHandle
-                                visible={state.visibility.modificationsHandle}
-                                rotated={state.leftGroupDirection === 'vertical'}
+                                visible={state.visibility.modificationsResizeHandle}
+                                rotated={state.treeAndModificationsGroupDirection === 'vertical'}
                             />
 
                             {/* Modifications Panel */}
@@ -96,7 +96,7 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                                 ref={refs.modificationsPanelRef}
                                 id={PANEL_IDS.MODIFICATIONS}
                                 minSize={
-                                    state.leftGroupDirection === 'horizontal'
+                                    state.treeAndModificationsGroupDirection === 'horizontal'
                                         ? state.modificationsPanelMinSize
                                         : PANEL_CONFIG.MIN_SIZE
                                 }
@@ -104,6 +104,7 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                                 collapsible
                                 onResize={handlers.handleResize}
                                 onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.MODIFICATIONS)}
+                                onExpand={() => handlers.handlePanelExpand(StudyDisplayMode.MODIFICATIONS)}
                             >
                                 <Box sx={{ height: '100%' }}>{networkModificationComponent}</Box>
                             </Panel>
@@ -111,7 +112,7 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                     </Panel>
 
                     {/* Left-Grid Resize Handle */}
-                    <ResizeHandle visible={state.visibility.gridHandle} />
+                    <ResizeHandle visible={state.visibility.gridResizeHandle} />
 
                     {/* Grid Panel */}
                     <Panel
@@ -120,6 +121,7 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                         minSize={PANEL_CONFIG.MIN_SIZE}
                         collapsible
                         onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
+                        onExpand={() => handlers.handlePanelExpand(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
                     >
                         <Box
                             sx={{

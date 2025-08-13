@@ -21,22 +21,24 @@ interface PanelRef {
 interface PanelVisibility {
     tree: boolean;
     modifications: boolean;
+    eventScenario: boolean;
     grid: boolean;
-    leftGroup: boolean;
-    modificationsHandle: boolean;
-    gridHandle: boolean;
+    modificationsOrEventScenario: boolean;
+    treeAndModificationsGroup: boolean;
+    modificationsResizeHandle: boolean;
+    gridResizeHandle: boolean;
 }
 
 interface PanelRefs {
-    leftPanelGroupRef: RefObject<PanelRef>;
+    treeAndModificationsPanelGroupRef: RefObject<PanelRef>;
     treePanelRef: RefObject<PanelRef>;
     modificationsPanelRef: RefObject<PanelRef>;
     gridPanelRef: RefObject<PanelRef>;
-    treePanelResizeHandlerRef: RefObject<(() => void) | null>;
+    onTreePanelResizeHandlerRef: RefObject<(() => void) | null>;
 }
 
 interface PanelState {
-    leftGroupDirection: 'vertical' | 'horizontal';
+    treeAndModificationsGroupDirection: 'vertical' | 'horizontal';
     modificationsPanelMinSize: number;
     visibility: PanelVisibility;
 }
@@ -44,6 +46,7 @@ interface PanelState {
 interface PanelHandlers {
     handleResize: () => void;
     handlePanelCollapse: (mode: StudyDisplayMode) => void;
+    handlePanelExpand: (mode: StudyDisplayMode) => void;
 }
 
 interface UsePanelManagerReturn {
@@ -57,46 +60,52 @@ export function usePanelManager(): UsePanelManagerReturn {
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     // Refs
-    const leftPanelGroupRef = useRef<PanelRef>(null);
+    const treeAndModificationsPanelGroupRef = useRef<PanelRef>(null);
     const treePanelRef = useRef<PanelRef>(null);
     const modificationsPanelRef = useRef<PanelRef>(null);
     const gridPanelRef = useRef<PanelRef>(null);
-    const treePanelResizeHandlerRef = useRef<(() => void) | null>(null);
+    const onTreePanelResizeHandlerRef = useRef<(() => void) | null>(null);
 
     // State
-    const [leftGroupDirection, setLeftGroupDirection] = useState<'vertical' | 'horizontal'>('vertical');
+    const [treeAndModificationsGroupDirection, setTreeAndModificationsGroupDirection] = useState<
+        'vertical' | 'horizontal'
+    >('vertical');
     const [modificationsPanelMinSize, setModificationsPanelMinSize] = useState<number>(PANEL_CONFIG.MIN_SIZE);
 
     // Visibility calculations
     const visibility: PanelVisibility = {
         tree: toggleOptions.includes(StudyDisplayMode.TREE),
         modifications: toggleOptions.includes(StudyDisplayMode.MODIFICATIONS),
+        eventScenario: toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO),
+        modificationsOrEventScenario:
+            toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
+            toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO),
         grid: toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT),
-        leftGroup: false,
-        modificationsHandle: false,
-        gridHandle: false,
+        treeAndModificationsGroup: false,
+        modificationsResizeHandle: false,
+        gridResizeHandle: false,
     };
 
-    visibility.leftGroup = visibility.tree || visibility.modifications;
-    visibility.modificationsHandle = visibility.modifications;
-    visibility.gridHandle = visibility.tree && visibility.grid;
+    visibility.treeAndModificationsGroup = visibility.tree || visibility.modificationsOrEventScenario;
+    visibility.modificationsResizeHandle = visibility.modificationsOrEventScenario;
+    visibility.gridResizeHandle = visibility.tree && visibility.grid;
 
     // Panel size calculation
     const calculateModificationsPanelMinSize = useCallback(() => {
-        const leftGroupSize = leftPanelGroupRef.current?.getSize?.();
-        if (!leftGroupSize) {
+        const treeAndModificationsGroupSize = treeAndModificationsPanelGroupRef.current?.getSize?.();
+        if (!treeAndModificationsGroupSize) {
             return;
         }
 
-        const targetPercent = (PANEL_CONFIG.TARGET_SCREEN_PERCENT / leftGroupSize) * 100;
-        const finalSize = Math.max(targetPercent, PANEL_CONFIG.TARGET_SCREEN_PERCENT);
+        const targetPercent = (PANEL_CONFIG.MAX_SIZE / treeAndModificationsGroupSize) * 100;
+        const finalSize = Math.min(Math.max(targetPercent, PANEL_CONFIG.MIN_SIZE), PANEL_CONFIG.MAX_SIZE);
 
         setModificationsPanelMinSize(finalSize);
     }, []);
 
     // Auto-minimize root network panel
     const checkAndMinimizeRootNetworkPanel = useCallback(() => {
-        const size = leftPanelGroupRef.current?.getSize?.();
+        const size = treeAndModificationsPanelGroupRef.current?.getSize?.();
         if (size && size < PANEL_CONFIG.MINIMIZE_THRESHOLD) {
             window.dispatchEvent(new CustomEvent('minimizeRootNetworkPanel'));
         }
@@ -109,7 +118,7 @@ export function usePanelManager(): UsePanelManagerReturn {
 
     // Resize handler
     const handleResize = useCallback(() => {
-        const size = leftPanelGroupRef.current?.getSize?.();
+        const size = treeAndModificationsPanelGroupRef.current?.getSize?.();
         if (!size) {
             return;
         }
@@ -117,7 +126,7 @@ export function usePanelManager(): UsePanelManagerReturn {
         checkAndMinimizeRootNetworkPanel();
 
         // Update direction
-        setLeftGroupDirection((prev) => {
+        setTreeAndModificationsGroupDirection((prev) => {
             if (size < PANEL_CONFIG.DIRECTION_THRESHOLD && prev === 'horizontal') {
                 return 'vertical';
             }
@@ -131,8 +140,8 @@ export function usePanelManager(): UsePanelManagerReturn {
         calculateModificationsPanelMinSize();
 
         // Trigger tree resize
-        if (treePanelResizeHandlerRef.current) {
-            setTimeout(treePanelResizeHandlerRef.current, 100);
+        if (onTreePanelResizeHandlerRef.current) {
+            setTimeout(onTreePanelResizeHandlerRef.current, 100);
         }
     }, [calculateModificationsPanelMinSize, checkAndMinimizeRootNetworkPanel]);
 
@@ -141,7 +150,7 @@ export function usePanelManager(): UsePanelManagerReturn {
         (mode: StudyDisplayMode) => {
             const filters: Partial<Record<StudyDisplayMode, StudyDisplayMode[]>> = {
                 [StudyDisplayMode.TREE]: [StudyDisplayMode.TREE, StudyDisplayMode.MODIFICATIONS],
-                [StudyDisplayMode.MODIFICATIONS]: [StudyDisplayMode.MODIFICATIONS],
+                [StudyDisplayMode.MODIFICATIONS]: [StudyDisplayMode.MODIFICATIONS, StudyDisplayMode.EVENT_SCENARIO],
                 [StudyDisplayMode.DIAGRAM_GRID_LAYOUT]: [StudyDisplayMode.DIAGRAM_GRID_LAYOUT],
             };
 
@@ -151,11 +160,32 @@ export function usePanelManager(): UsePanelManagerReturn {
         [dispatch, toggleOptions]
     );
 
+    // Panel expand handler
+    // used to solve the issue when user collapses the panel and then tries to expand it again
+    // while keeping the mouse down
+    const handlePanelExpand = useCallback(
+        (mode: StudyDisplayMode) => {
+            if (mode === StudyDisplayMode.MODIFICATIONS) {
+                // When expanding modifications panel, add MODIFICATIONS if neither is present
+
+                if (!visibility.modifications && !visibility.eventScenario) {
+                    dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.MODIFICATIONS]));
+                }
+            } else {
+                // For other modes, use the original logic
+                if (!toggleOptions.includes(mode)) {
+                    dispatch(setToggleOptions([...toggleOptions, mode]));
+                }
+            }
+        },
+        [dispatch, toggleOptions, visibility.eventScenario, visibility.modifications]
+    );
+
     // Panel visibility effect
     useEffect(() => {
         const panels = [
-            { ref: leftPanelGroupRef, visible: visibility.leftGroup },
-            { ref: modificationsPanelRef, visible: visibility.modifications },
+            { ref: treeAndModificationsPanelGroupRef, visible: visibility.treeAndModificationsGroup },
+            { ref: modificationsPanelRef, visible: visibility.modificationsOrEventScenario },
             { ref: gridPanelRef, visible: visibility.grid },
         ];
 
@@ -164,24 +194,25 @@ export function usePanelManager(): UsePanelManagerReturn {
                 visible ? ref.current.expand() : ref.current.collapse();
             }
         });
-    }, [visibility.leftGroup, visibility.modifications, visibility.grid]);
+    }, [visibility.treeAndModificationsGroup, visibility.modificationsOrEventScenario, visibility.grid]);
 
     return {
         refs: {
-            leftPanelGroupRef,
+            treeAndModificationsPanelGroupRef,
             treePanelRef,
             modificationsPanelRef,
             gridPanelRef,
-            treePanelResizeHandlerRef,
+            onTreePanelResizeHandlerRef,
         },
         state: {
-            leftGroupDirection,
+            treeAndModificationsGroupDirection,
             modificationsPanelMinSize,
             visibility,
         },
         handlers: {
             handleResize,
             handlePanelCollapse,
+            handlePanelExpand,
         },
     };
 }

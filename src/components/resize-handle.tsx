@@ -7,28 +7,37 @@
 
 import { PanelResizeHandle } from 'react-resizable-panels';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useTheme } from '@mui/material';
+import { Theme, useTheme } from '@mui/material';
 
 interface ResizeHandleProps {
     visible: boolean;
     rotated?: boolean;
 }
 
+const getStyles = (theme: Theme, visible: boolean, rotated: boolean) => ({
+    handle: {
+        display: visible ? 'flex' : 'none',
+        alignItems: 'center',
+        backgroundColor: theme.palette.background.paper,
+        borderLeft: !rotated ? `1px solid ${theme.palette.divider}` : 'none',
+        borderTop: rotated ? `1px solid ${theme.palette.divider}` : 'none',
+        justifyContent: 'center',
+    },
+    icon: {
+        transform: rotated ? 'rotate(90deg)' : 'none',
+        transition: 'transform 0.2s',
+        color: 'inherit',
+        cursor: 'ns-resize',
+    },
+});
+
 const ResizeHandle = ({ visible, rotated = false }: ResizeHandleProps) => {
     const theme = useTheme();
+    const styles = getStyles(theme, visible, rotated);
 
     return (
-        <PanelResizeHandle
-            style={{
-                display: visible ? 'flex' : 'none',
-                alignItems: 'center',
-                backgroundColor: theme.palette.background.paper,
-                borderLeft: !rotated ? `1px solid ${theme.palette.divider}` : 'none',
-                borderTop: rotated ? `1px solid ${theme.palette.divider}` : 'none',
-                justifyContent: 'center',
-            }}
-        >
-            <DragIndicatorIcon fontSize="small" style={{ transform: rotated ? 'rotate(90deg)' : 'none' }} />
+        <PanelResizeHandle style={styles.handle}>
+            <DragIndicatorIcon fontSize="small" style={styles.icon} />
         </PanelResizeHandle>
     );
 };

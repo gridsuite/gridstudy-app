@@ -370,6 +370,4 @@ NetworkModificationTree.propTypes = {
     prevTreeDisplay: PropTypes.object,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,
-    isStudyDrawerOpen: PropTypes.bool.isRequired,
-    onTreePanelResize: PropTypes.func,
 };

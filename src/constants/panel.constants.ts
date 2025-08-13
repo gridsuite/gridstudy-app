@@ -10,11 +10,10 @@ export const PANEL_CONFIG = {
     MAX_SIZE: 50,
     DIRECTION_THRESHOLD: 33,
     MINIMIZE_THRESHOLD: 40,
-    TARGET_SCREEN_PERCENT: 20,
 };
 
 export const PANEL_IDS = {
-    LEFT_GROUP: 'left-panel-group',
+    TREE_AND_MODIFICATIONS_GROUP: 'tree-and-modifications-panel-group',
     TREE: 'tree-panel',
     MODIFICATIONS: 'modifications-panel',
     GRID: 'grid-panel',

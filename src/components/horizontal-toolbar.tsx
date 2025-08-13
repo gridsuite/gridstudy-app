@@ -6,11 +6,9 @@
  */
 
 import List from '@mui/material/List';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
-import { setEventScenarioDrawerOpen } from '../redux/actions';
+import { useSelector } from 'react-redux';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
@@ -50,7 +48,6 @@ const styles = {
 
 export function HorizontalToolbar() {
     const intl = useIntl();
-    const dispatch = useDispatch();
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -59,12 +56,7 @@ export function HorizontalToolbar() {
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
-    const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
     const { onViewModeChange } = useDisplayModes();
-
-    const toggleEventScenarioDrawer = () => {
-        dispatch(setEventScenarioDrawerOpen(!isEventScenarioDrawerOpen));
-    };
 
     return (
         <Grid container alignItems="center" sx={styles.horizontalToolbar}>
@@ -84,38 +76,6 @@ export function HorizontalToolbar() {
                         flexDirection: 'row',
                     }}
                 >
-                    {enableDeveloperMode && (
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'DynamicSimulationEventScenario',
-                            })}
-                            placement="right"
-                            arrow
-                            enterDelay={TOOLTIP_DELAY}
-                            enterNextDelay={TOOLTIP_DELAY}
-                            slotProps={{
-                                popper: {
-                                    sx: {
-                                        '& .MuiTooltip-tooltip': styles.tooltip,
-                                    },
-                                },
-                            }}
-                            style={{
-                                marginRight: '8px',
-                            }}
-                        >
-                            <span>
-                                <IconButton
-                                    size={'small'}
-                                    sx={isEventScenarioDrawerOpen ? styles.selected : styles.notSelected}
-                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
-                                    onClick={toggleEventScenarioDrawer}
-                                >
-                                    <OfflineBoltOutlinedIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    )}
                     <Box sx={styles.toggle} gap={1}>
                         <OverflowableText text={intl.formatMessage({ id: 'Display' })} />
 
@@ -131,6 +91,35 @@ export function HorizontalToolbar() {
                             <ToggleButton value={StudyDisplayMode.MODIFICATIONS}>
                                 <TuneIcon />
                             </ToggleButton>
+                            {enableDeveloperMode && (
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DynamicSimulationEventScenario',
+                                    })}
+                                    placement="right"
+                                    arrow
+                                    enterDelay={TOOLTIP_DELAY}
+                                    enterNextDelay={TOOLTIP_DELAY}
+                                    slotProps={{
+                                        popper: {
+                                            sx: {
+                                                '& .MuiTooltip-tooltip': styles.tooltip,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <span>
+                                        <ToggleButton
+                                            value={StudyDisplayMode.EVENT_SCENARIO}
+                                            disabled={
+                                                currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'
+                                            }
+                                        >
+                                            <OfflineBoltOutlinedIcon fontSize="small" />
+                                        </ToggleButton>
+                                    </span>
+                                </Tooltip>
+                            )}
                             <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
                                 <PhotoLibraryIcon />
                             </ToggleButton>

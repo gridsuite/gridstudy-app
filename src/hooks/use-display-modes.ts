@@ -18,7 +18,7 @@ function isGridOnlyToGridAndModifications(prev: StudyDisplayMode[], next: StudyD
     return (
         prev.length === 1 &&
         prev.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
-        next.includes(StudyDisplayMode.MODIFICATIONS) &&
+        (next.includes(StudyDisplayMode.MODIFICATIONS) || next.includes(StudyDisplayMode.EVENT_SCENARIO)) &&
         next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
         next.length === 2
     );
@@ -27,7 +27,7 @@ function isGridOnlyToGridAndModifications(prev: StudyDisplayMode[], next: StudyD
 function isAllOptionsSelectedToGridOnly(next: StudyDisplayMode[]) {
     return (
         !next.includes(StudyDisplayMode.TREE) &&
-        next.includes(StudyDisplayMode.MODIFICATIONS) &&
+        (next.includes(StudyDisplayMode.MODIFICATIONS) || next.includes(StudyDisplayMode.EVENT_SCENARIO)) &&
         next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)
     );
 }
@@ -35,7 +35,7 @@ function isAllOptionsSelectedToGridOnly(next: StudyDisplayMode[]) {
 function isModificationsSelectedAlone(next: StudyDisplayMode[]) {
     return (
         !next.includes(StudyDisplayMode.TREE) &&
-        next.includes(StudyDisplayMode.MODIFICATIONS) &&
+        (next.includes(StudyDisplayMode.MODIFICATIONS) || next.includes(StudyDisplayMode.EVENT_SCENARIO)) &&
         !next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)
     );
 }
@@ -55,27 +55,66 @@ export function useDisplayModes() {
         applyModes([StudyDisplayMode.DIAGRAM_GRID_LAYOUT]);
     }, [applyModes]);
 
-    const handleGridOnlyToGridAndModifications = useCallback(() => {
-        const modes = [StudyDisplayMode.TREE, StudyDisplayMode.MODIFICATIONS, StudyDisplayMode.DIAGRAM_GRID_LAYOUT];
-        applyModes(modes);
-    }, [applyModes]);
+    const handleGridOnlyToGridAndModifications = useCallback(
+        (filteredModes: StudyDisplayMode[]) => {
+            if (filteredModes.includes(StudyDisplayMode.MODIFICATIONS)) {
+                applyModes([
+                    StudyDisplayMode.TREE,
+                    StudyDisplayMode.MODIFICATIONS,
+                    StudyDisplayMode.DIAGRAM_GRID_LAYOUT,
+                ]);
+            } else {
+                applyModes([
+                    StudyDisplayMode.TREE,
+                    StudyDisplayMode.EVENT_SCENARIO,
+                    StudyDisplayMode.DIAGRAM_GRID_LAYOUT,
+                ]);
+            }
+        },
+        [applyModes]
+    );
+
+    function ensureMutualExclusion(modes: StudyDisplayMode[], previousModes: StudyDisplayMode[]): StudyDisplayMode[] {
+        const hasModifications = modes.includes(StudyDisplayMode.MODIFICATIONS);
+        const hasEventScenario = modes.includes(StudyDisplayMode.EVENT_SCENARIO);
+
+        // If both are selected, determine which one was just clicked
+        if (hasModifications && hasEventScenario) {
+            const hadModifications = previousModes.includes(StudyDisplayMode.MODIFICATIONS);
+            const hadEventScenario = previousModes.includes(StudyDisplayMode.EVENT_SCENARIO);
+
+            // If MODIFICATIONS was just clicked (wasn't there before), remove EVENT_SCENARIO
+            if (!hadModifications && hadEventScenario) {
+                return modes.filter((mode) => mode !== StudyDisplayMode.EVENT_SCENARIO);
+            }
+
+            // If EVENT_SCENARIO was just clicked (wasn't there before), remove MODIFICATIONS
+            if (!hadEventScenario && hadModifications) {
+                return modes.filter((mode) => mode !== StudyDisplayMode.MODIFICATIONS);
+            }
+        }
+
+        return modes;
+    }
 
     const onViewModeChange = useCallback(
         (_event: React.MouseEvent, newModes: StudyDisplayMode[]) => {
-            if (isEmptySelection(newModes) || isModificationsSelectedAlone(newModes)) {
+            const filteredModes = ensureMutualExclusion(newModes, toggleOptions);
+
+            if (isEmptySelection(filteredModes) || isModificationsSelectedAlone(filteredModes)) {
                 return;
             }
 
-            if (isGridOnlyToGridAndModifications(toggleOptions, newModes)) {
-                handleGridOnlyToGridAndModifications();
+            if (isGridOnlyToGridAndModifications(toggleOptions, filteredModes)) {
+                handleGridOnlyToGridAndModifications(filteredModes);
                 return;
             }
 
-            if (isAllOptionsSelectedToGridOnly(newModes)) {
+            if (isAllOptionsSelectedToGridOnly(filteredModes)) {
                 handleAllOptionsSelectedToGridOnly();
                 return;
             }
-            applyModes(newModes);
+            applyModes(filteredModes);
         },
         [toggleOptions, applyModes, handleGridOnlyToGridAndModifications, handleAllOptionsSelectedToGridOnly]
     );
