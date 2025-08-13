@@ -73,14 +73,14 @@ const formSchema = yup
             .string()
             .nullable()
             .when([IS_AFTER_BUSBAR_SECTION_ID], {
-                is: (isAfterBusBarSectionId: boolean) => isAfterBusBarSectionId,
+                is: (isAfterBusBarSectionId: boolean) => !isAfterBusBarSectionId,
                 then: (schema) => schema.required(),
             }),
         [SWITCHES_AFTER_SECTIONS]: yup
             .string()
             .nullable()
             .when([IS_AFTER_BUSBAR_SECTION_ID], {
-                is: (isAfterBusBarSectionId: boolean) => !isAfterBusBarSectionId,
+                is: (isAfterBusBarSectionId: boolean) => isAfterBusBarSectionId,
                 then: (schema) => schema.required(),
             }),
         [NEW_SWITCH_STATES]: yup.boolean(),
@@ -223,10 +223,6 @@ export default function CreateVoltageLevelSectionDialog({
         [selectedId, studyUuid, currentNodeUuid, editData, snackError]
     );
 
-    const onValidationError = useCallback((errors: any) => {
-        console.log(errors);
-    }, []);
-
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -242,7 +238,6 @@ export default function CreateVoltageLevelSectionDialog({
                 maxWidth={'md'}
                 titleId="CreateVoltageLevelSection"
                 open={open}
-                onValidationError={onValidationError}
                 keepMounted={true}
                 isDataFetching={
                     isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)

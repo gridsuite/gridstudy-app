@@ -9,7 +9,6 @@ import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
-    NEW_SWITCH_STATES,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
@@ -17,7 +16,7 @@ import { Box, Button, Grid, Slider, TextField, Tooltip } from '@mui/material';
 import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Option, SelectInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
@@ -104,9 +103,14 @@ export function CreateVoltageLevelSectionForm({
             name={BUS_BAR_INDEX}
             label="Busbar"
             onChangeCallback={handleChange}
-            options={Object.values(busBarIndexOptions)}
-            getOptionLabel={getObjectId}
-            isOptionEqualToValue={areIdsEqual}
+            options={busBarIndexOptions}
+            getOptionLabel={(option) => {
+                if (typeof option === 'string') {
+                    return option;
+                }
+                return String(option?.id ?? option?.label ?? '');
+            }}
+            isOptionEqualToValue={(option, value) => option === value}
             size={'small'}
         />
     );
@@ -180,9 +184,6 @@ export function CreateVoltageLevelSectionForm({
             }}
         />
     );
-    const newSwitchStatesField = (
-        <SwitchInput name={NEW_SWITCH_STATES} label={'newSwitchStates'} formProps={{ disabled: !sectionCount }} />
-    );
     const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
     }, []);
@@ -239,9 +240,6 @@ export function CreateVoltageLevelSectionForm({
                 </Grid>
                 <Grid item xs={12} sm={4}>
                     {switchAfterField}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    {newSwitchStatesField}
                 </Grid>
             </Grid>
             <PositionDiagramPane
