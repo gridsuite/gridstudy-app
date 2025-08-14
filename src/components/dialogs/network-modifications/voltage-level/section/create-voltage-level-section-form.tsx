@@ -9,6 +9,8 @@ import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
+    SWITCH_AFTER_NOT_REQUIRED,
+    SWITCH_BEFORE_NOT_REQUIRED,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
@@ -47,6 +49,7 @@ export function CreateVoltageLevelSectionForm({
     const [busBarSectionsIdOptions, setBusBarSectionsIdOptions] = useState<Option[]>([]);
     const { setValue } = useFormContext();
     const sectionCount = useWatch({ name: BUS_BAR_INDEX });
+    const selectedOption = useWatch({ name: BUSBAR_SECTION_ID });
 
     const voltageLevelIdField = (
         <TextField
@@ -83,6 +86,20 @@ export function CreateVoltageLevelSectionForm({
         }
     }, [busBarSectionInfos, sectionCount]);
 
+    useEffect(() => {
+        if (selectedOption) {
+            const selectedSectionIndex = busBarSectionsIdOptions.findIndex((option: Option) =>
+                areIdsEqual(option, selectedOption)
+            );
+            busBarSectionsIdOptions?.length === 1
+                ? setValue(SWITCH_BEFORE_NOT_REQUIRED, true)
+                : setValue(SWITCH_BEFORE_NOT_REQUIRED, false);
+            busBarSectionsIdOptions?.length - 1 === selectedSectionIndex
+                ? setValue(SWITCH_AFTER_NOT_REQUIRED, true)
+                : setValue(SWITCH_AFTER_NOT_REQUIRED, false);
+        }
+    }, [selectedOption, busBarSectionsIdOptions, setValue]);
+
     const busBarIndexOptions = useMemo(() => {
         if (busBarSectionInfos) {
             return Object.keys(busBarSectionInfos || {})
@@ -107,7 +124,7 @@ export function CreateVoltageLevelSectionForm({
         return getId(val1) === getId(val2);
     };
 
-    const handleChange = useCallback(() => {
+    const handleChangeBusbarIndex = useCallback(() => {
         setValue(BUSBAR_SECTION_ID, null);
     }, [setValue]);
 
@@ -115,7 +132,7 @@ export function CreateVoltageLevelSectionForm({
         <AutocompleteInput
             name={BUS_BAR_INDEX}
             label="Busbar"
-            onChangeCallback={handleChange}
+            onChangeCallback={handleChangeBusbarIndex}
             options={busBarIndexOptions}
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={isOptionEqualToValue}
