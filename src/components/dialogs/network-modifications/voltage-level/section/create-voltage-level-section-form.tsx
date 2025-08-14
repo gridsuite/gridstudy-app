@@ -24,7 +24,7 @@ import PositionDiagramPane from 'components/diagrams/singleLineDiagram/position-
 import { UUID } from 'crypto';
 import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BusBarSectionInfos, SectionInfo } from './voltage-level-section.type';
+import { BusBarSectionInfos } from './voltage-level-section.type';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 
 interface VoltageLevelSectionsCreationFormProps {
@@ -64,17 +64,17 @@ export function CreateVoltageLevelSectionForm({
 
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
-            const selectedKey: `horizPos:${string}` = `horizPos:${sectionCount?.id}`;
-            const sections = (busBarSectionInfos as any)[selectedKey] as SectionInfo[] | undefined;
+            const selectedKey = sectionCount?.id;
+            const sections = busBarSectionInfos[selectedKey];
             if (!sections || !Array.isArray(sections)) {
                 setBusBarSectionsIdOptions([]);
                 return;
             }
             const options = sections
-                .filter((section): section is SectionInfo => Boolean(section?.id))
-                .map((section) => ({
-                    id: section.id,
-                    label: section.id,
+                .filter((id): id is string => Boolean(id))
+                .map((id) => ({
+                    id: id,
+                    label: id,
                 }))
                 .sort((a, b) => a.id.localeCompare(b.id));
             setBusBarSectionsIdOptions(options);
@@ -86,14 +86,27 @@ export function CreateVoltageLevelSectionForm({
     const busBarIndexOptions = useMemo(() => {
         if (busBarSectionInfos) {
             return Object.keys(busBarSectionInfos || {})
-                .sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]))
-                .map((key) => {
-                    const id = key.split(':')[1];
-                    return { id, label: id };
-                });
+                .sort((a, b) => parseInt(a) - parseInt(b))
+                .map((key) => ({
+                    id: key,
+                    label: key,
+                }));
         }
         return [];
     }, [busBarSectionInfos]);
+
+    const getOptionLabel = (object: string | { id: string | number }) => {
+        return typeof object === 'string' ? object : String(object?.id ?? '');
+    };
+
+    const isOptionEqualToValue = (val1: Option, val2: Option) => {
+        const getId = (option: Option) => {
+            return typeof option === 'string' ? option : String(option?.id ?? '');
+        };
+
+        return getId(val1) === getId(val2);
+    };
+
     const handleChange = useCallback(() => {
         setValue(BUSBAR_SECTION_ID, null);
     }, [setValue]);
@@ -104,13 +117,8 @@ export function CreateVoltageLevelSectionForm({
             label="Busbar"
             onChangeCallback={handleChange}
             options={busBarIndexOptions}
-            getOptionLabel={(option) => {
-                if (typeof option === 'string') {
-                    return option;
-                }
-                return String(option?.id ?? option?.label ?? '');
-            }}
-            isOptionEqualToValue={(option, value) => option === value}
+            getOptionLabel={getOptionLabel}
+            isOptionEqualToValue={isOptionEqualToValue}
             size={'small'}
         />
     );

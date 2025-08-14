@@ -1535,7 +1535,7 @@
     "ClickToReset": "Click to remove filters",
     "RowCounterInfo": "Displays the row count for the current spreadsheet. If filters are applied it will display the current filtered row amount, you can remove all filters by then clicking on this button.",
     "isAfterBusBarSectionId": "New section side",
-    "SectionPosition": "Section position",
+    "SectionPosition": "Position",
     "Switch": "Switch",
     "newSection": "New section",
     "switchesAfterSections": "Switch after",
