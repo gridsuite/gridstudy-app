@@ -76,30 +76,44 @@ export const useEquipmentMenu = ({
     } = useMemo(
         () => ({
             MenuBranch: withOperatingStatusMenu(BaseEquipmentMenu),
-            MenuSubstation: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, 'substation-menus'),
-            MenuVoltageLevel: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus'),
-            MenuLoad: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.LOAD, 'load-menus'),
-            MenuBattery: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.BATTERY, 'battery-menus'),
-            MenuDanglingLine: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.DANGLING_LINE, 'dangling-line-menus'),
-            MenuGenerator: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.GENERATOR, 'generator-menus'),
+            MenuSubstation: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, null, 'substation-menus'),
+            MenuVoltageLevel: withEquipmentMenu(
+                BaseEquipmentMenu,
+                EquipmentType.VOLTAGE_LEVEL,
+                null,
+                'voltage-level-menus'
+            ),
+            MenuLoad: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.LOAD, null, 'load-menus'),
+            MenuBattery: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.BATTERY, null, 'battery-menus'),
+            MenuDanglingLine: withEquipmentMenu(
+                BaseEquipmentMenu,
+                EquipmentType.DANGLING_LINE,
+                null,
+                'dangling-line-menus'
+            ),
+            MenuGenerator: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.GENERATOR, null, 'generator-menus'),
             MenuStaticVarCompensator: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.STATIC_VAR_COMPENSATOR,
+                null,
                 'static-var-compensator-menus'
             ),
             MenuShuntCompensator: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.SHUNT_COMPENSATOR,
+                null,
                 'shunt-compensator-menus'
             ),
             MenuLccConverterStation: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.LCC_CONVERTER_STATION,
+                null,
                 'lcc-converter-station-menus'
             ),
             MenuVscConverterStation: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.VSC_CONVERTER_STATION,
+                null,
                 'vsc-converter-station-menus'
             ),
         }),
