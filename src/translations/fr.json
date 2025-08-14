@@ -809,7 +809,7 @@
     "CreateVoltageLevel": "Créer un poste",
     "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
-    "BusBarSections": "Sections de jeu de barre",
+    "BusBarSections": "Section de jeu de barres",
     "BusBarCount": "Nb de barres",
     "numberOfSections": "Nb de sections",
     "BusBarSectionID": "ID",
@@ -823,6 +823,7 @@
     "CreateLink": "Ajouter lien",
     "BusBarSection": "SJB",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
+    "VoltageLevelSectionCreationError": "Erreur lors de la création d'une section",
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
     "BREAKER": "Disjoncteur",
@@ -1479,7 +1480,7 @@
     "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
 
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
-    "CreateCouplingDeviceEditor": "Ajouter un couplage ou un omnibus",
+    "CreateVoltageLevelSection": "Ajouter un tronçon ou une section",
     "CreateCouplingDeviceDiagramButton": "Voir le poste",
     "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre 1 et 2 doivent être différentes",
     "builtNodeTooltipForDiagram": "Diagramme courant prenant en compte toutes les modifications réalisées",
@@ -1529,5 +1530,15 @@
     "genericFilter": "Générique",
     "voltageLevel": "Niveaux de tension",
     "ClickToReset": "Cliquez pour réinitialiser les filtres",
-    "RowCounterInfo": "Affiche le nombre de lignes de la feuille de calcul actuelle. Si des filtres sont appliqués, le nombre de lignes filtrées s'affiche. Vous pouvez supprimer tous les filtres en cliquant sur ce bouton."
+    "RowCounterInfo": "Affiche le nombre de lignes de la feuille de calcul actuelle. Si des filtres sont appliqués, le nombre de lignes filtrées s'affiche. Vous pouvez supprimer tous les filtres en cliquant sur ce bouton.",
+    "isAfterBusBarSectionId": "Côté de la nouvelle section",
+    "SectionPosition": "Position",
+    "Switch": "Organes de coupure",
+    "newSection": "Nouvelle section",
+    "switchesAfterSections": "OC après",
+    "switchesBeforeSections": "OC avant",
+    "Busbar": "Jeu de barres",
+    "Before": "Avant",
+    "After": "Après",
+    "newSwitchStates": "Nouveaux organes de coupure fermés"
 }
