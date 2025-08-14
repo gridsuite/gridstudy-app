@@ -57,12 +57,29 @@ export const addToleranceToFilter = (
                             {
                                 ...filter,
                                 type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.GREATER_THAN,
+                                originalType: filter.type,
                                 value: valueAsNumber + finalTolerance,
                             },
                             {
                                 ...filter,
                                 type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.LESS_THAN,
+                                originalType: filter.type,
                                 value: valueAsNumber - finalTolerance,
+                            },
+                        ];
+                    case FILTER_NUMBER_COMPARATORS.EQUALS:
+                        return [
+                            {
+                                ...filter,
+                                type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                originalType: filter.type,
+                                value: valueAsNumber - finalTolerance,
+                            },
+                            {
+                                ...filter,
+                                type: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                originalType: filter.type,
+                                value: valueAsNumber + finalTolerance,
                             },
                         ];
                     case FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL:

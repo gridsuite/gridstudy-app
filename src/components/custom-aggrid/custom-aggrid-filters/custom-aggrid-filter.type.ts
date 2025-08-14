@@ -26,6 +26,7 @@ export enum FILTER_TEXT_COMPARATORS {
 }
 
 export enum FILTER_NUMBER_COMPARATORS {
+    EQUALS = 'equals',
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
