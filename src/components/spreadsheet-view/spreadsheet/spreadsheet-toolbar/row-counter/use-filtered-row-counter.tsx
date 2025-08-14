@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
-import { FirstDataRenderedEvent } from 'ag-grid-community';
+import { FilterChangedEvent, FirstDataRenderedEvent, ModelUpdatedEvent } from 'ag-grid-community';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact>;
@@ -66,21 +66,29 @@ export function useFilteredRowCounterInfo({
         [gridRef, currentNode, disabled, equipments.equipmentsByNodeId]
     );
 
-    const registerRowCounterEvents = useCallback(
-        (params: FirstDataRenderedEvent) => {
-            const onFilterChanged = () => {
-                setIsAnyFilterPresent(params.api.isAnyFilterPresent());
-                setIsLoading(true);
-            };
-            const onModelUpdated = () => {
-                setIsAnyFilterPresent(params.api.isAnyFilterPresent());
-                debouncedUpdateRowCounter();
-            };
-            params.api.addEventListener('filterChanged', onFilterChanged);
-            params.api.addEventListener('modelUpdated', onModelUpdated);
+    const onFilterChanged = useCallback((event: FilterChangedEvent) => {
+        setIsAnyFilterPresent(event.api.isAnyFilterPresent());
+        setIsLoading(true);
+    }, []);
+
+    const onModelUpdated = useCallback(
+        (event: ModelUpdatedEvent) => {
+            setIsAnyFilterPresent(event.api.isAnyFilterPresent());
             debouncedUpdateRowCounter();
         },
         [debouncedUpdateRowCounter]
+    );
+
+    const registerRowCounterEvents = useCallback(
+        (params: FirstDataRenderedEvent) => {
+            params.api.addEventListener('filterChanged', onFilterChanged);
+            params.api.addEventListener('modelUpdated', onModelUpdated);
+
+            //Initial display of counter
+            debouncedUpdateRowCounter();
+            setIsAnyFilterPresent(params.api.isAnyFilterPresent());
+        },
+        [debouncedUpdateRowCounter, onFilterChanged, onModelUpdated]
     );
 
     useEffect(() => {
