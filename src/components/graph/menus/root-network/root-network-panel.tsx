@@ -66,6 +66,15 @@ const RootNetworkPanel: FunctionComponent = () => {
         setIsSearchActive(false);
     }, []);
 
+    useEffect(() => {
+        const handleMinimize = () => {
+            setIsRootNetworkPanelMinimized(true);
+        };
+
+        window.addEventListener('minimizeRootNetworkPanel', handleMinimize);
+        return () => window.removeEventListener('minimizeRootNetworkPanel', handleMinimize);
+    }, []);
+
     return (
         <Paper elevation={3} sx={panelStyle}>
             <RootNetworkPanelHeader
