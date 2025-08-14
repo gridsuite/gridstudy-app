@@ -147,10 +147,16 @@ const initialLayouts: Layouts = generateInitialLayouts();
 interface DiagramGridLayoutProps {
     studyUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    openVoltageLevelDiagram: (id: string) => void;
     visible: boolean;
 }
 
-function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
+function DiagramGridLayout({
+    studyUuid,
+    showInSpreadsheet,
+    openVoltageLevelDiagram,
+    visible,
+}: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -447,6 +453,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
                         onClose={handleRemoveMapCard}
                         errorMessage={globalError}
                         showInSpreadsheet={showInSpreadsheet}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 )}
             </ResponsiveGridLayout>
