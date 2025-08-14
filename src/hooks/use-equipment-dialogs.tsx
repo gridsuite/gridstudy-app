@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback } from 'react';
-import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES, EQUIPMENT_INFOS_TYPES } from '../components/utils/equipment-types';
+import { useCallback, useState } from 'react';
+import { EquipmentType, ExtendedEquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 import { deleteEquipment } from '../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
@@ -23,10 +23,13 @@ import EquipmentDeletionDialog from '../components/dialogs/network-modifications
 import { DynamicSimulationEventDialog } from '../components/dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import VscModificationDialog from '../components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
+import { LccModificationDialog } from '../components/dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
 
 type EquipmentToModify = {
     equipmentId: string;
     equipmentType: EQUIPMENT_TYPES;
+    equipmentSubtype?: ExtendedEquipmentType | null;
 };
 
 interface UseEquipmentDialogsProps {
@@ -46,15 +49,19 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
     const [dynamicSimulationEventDialogTitle, setDynamicSimulationEventDialogTitle] = useState('');
 
     // Handlers
-    const handleOpenModificationDialog = useCallback((id: string, type: EquipmentType | null) => {
-        if (type) {
-            const equipmentEnumType = EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES];
-            setEquipmentToModify({
-                equipmentId: id,
-                equipmentType: equipmentEnumType,
-            });
-        }
-    }, []);
+    const handleOpenModificationDialog = useCallback(
+        (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => {
+            if (type) {
+                const equipmentEnumType = EQUIPMENT_TYPES[type as keyof typeof EQUIPMENT_TYPES];
+                setEquipmentToModify({
+                    equipmentId: id,
+                    equipmentType: equipmentEnumType,
+                    equipmentSubtype: subtype,
+                });
+            }
+        },
+        []
+    );
 
     const handleOpenDeletionDialog = useCallback((equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
         setEquipmentToDelete({ equipmentId, equipmentType });
@@ -161,6 +168,15 @@ export const useEquipmentDialogs = ({ studyUuid, currentNode, currentRootNetwork
                 break;
             case EQUIPMENT_TYPES.LINE:
                 CurrentModificationDialog = LineModificationDialog;
+                break;
+            case EQUIPMENT_TYPES.HVDC_LINE:
+                if (equipmentToModify?.equipmentSubtype === ExtendedEquipmentType.HVDC_LINE_LCC) {
+                    CurrentModificationDialog = LccModificationDialog;
+                } else if (equipmentToModify.equipmentSubtype === ExtendedEquipmentType.HVDC_LINE_VSC) {
+                    CurrentModificationDialog = VscModificationDialog;
+                } else {
+                    return null;
+                }
                 break;
             case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
                 CurrentModificationDialog = ShuntCompensatorModificationDialog;

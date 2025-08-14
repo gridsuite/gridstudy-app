@@ -25,7 +25,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { EquipmentType, mergeSx, useSnackMessage, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import EquipmentPopover from '../../tooltips/equipment-popover';
@@ -110,7 +110,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(convertedEquipmentType || '');
+                setHoveredEquipmentType(convertedEquipmentType?.equipmentType || '');
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);
@@ -242,11 +242,16 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             handleTogglePopover(false, null, '', '');
 
             const convertedType = getEquipmentTypeFromFeederType(equipmentType);
-
-            if (convertedType) {
+            if (convertedType?.equipmentType) {
                 // Create a minimal equipment object
                 const equipment = { id: equipmentId };
-                openEquipmentMenu(equipment as MapEquipment, x, y, convertedType);
+                openEquipmentMenu(
+                    equipment as MapEquipment,
+                    x,
+                    y,
+                    convertedType.equipmentType,
+                    convertedType.equipmentSubtype ?? null
+                );
             }
         },
         [handleTogglePopover, openEquipmentMenu]
