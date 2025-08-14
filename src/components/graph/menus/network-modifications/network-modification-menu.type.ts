@@ -60,6 +60,7 @@ export interface NetworkModificationCopyInfo {
 export interface MenuDefinitionSubItem {
     id: string;
     label: string;
+    hide?: boolean;
     action: () => JSX.Element;
 }
 
