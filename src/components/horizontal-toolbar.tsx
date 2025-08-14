@@ -6,12 +6,8 @@
  */
 
 import List from '@mui/material/List';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
-import { setEventScenarioDrawerOpen } from '../redux/actions';
-import { TOOLTIP_DELAY } from '../utils/UIconstants';
+import { useSelector } from 'react-redux';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
@@ -20,12 +16,13 @@ import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-import { Box, darken, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
+import { useEffect } from 'react';
 const styles = {
     horizontalToolbar: (theme: Theme) => ({
-        backgroundColor: darken(theme.palette.background.paper, 0.2),
+        backgroundColor: theme.palette.toolbarBackground,
     }),
     selected: (theme: Theme) => ({
         color: theme.palette.action.active,
@@ -50,7 +47,6 @@ const styles = {
 
 export function HorizontalToolbar() {
     const intl = useIntl();
-    const dispatch = useDispatch();
     const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -59,17 +55,15 @@ export function HorizontalToolbar() {
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const { studyName, parentDirectoriesNames } = useStudyPath(studyUuid);
-    const isEventScenarioDrawerOpen = useSelector((state: AppState) => state.isEventScenarioDrawerOpen);
     const { onViewModeChange, applyModes } = useDisplayModes();
 
-    const toggleEventScenarioDrawer = () => {
-        //if the Dynamic SimulationEvent Scenario is clicked we need to hide the modifications
-        if (toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
-            const options = toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS);
-            applyModes(options);
+    useEffect(() => {
+        if (!enableDeveloperMode) {
+            if (toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO)) {
+                applyModes(toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
+            }
         }
-        dispatch(setEventScenarioDrawerOpen(!isEventScenarioDrawerOpen));
-    };
+    }, [enableDeveloperMode, toggleOptions, applyModes]);
 
     return (
         <Grid container alignItems="center" sx={styles.horizontalToolbar}>
@@ -89,38 +83,6 @@ export function HorizontalToolbar() {
                         flexDirection: 'row',
                     }}
                 >
-                    {enableDeveloperMode && (
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'DynamicSimulationEventScenario',
-                            })}
-                            placement="right"
-                            arrow
-                            enterDelay={TOOLTIP_DELAY}
-                            enterNextDelay={TOOLTIP_DELAY}
-                            slotProps={{
-                                popper: {
-                                    sx: {
-                                        '& .MuiTooltip-tooltip': styles.tooltip,
-                                    },
-                                },
-                            }}
-                            style={{
-                                marginRight: '8px',
-                            }}
-                        >
-                            <span>
-                                <IconButton
-                                    size={'small'}
-                                    sx={isEventScenarioDrawerOpen ? styles.selected : styles.notSelected}
-                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
-                                    onClick={toggleEventScenarioDrawer}
-                                >
-                                    <OfflineBoltOutlinedIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    )}
                     <Box sx={styles.toggle} gap={1}>
                         <OverflowableText text={intl.formatMessage({ id: 'Display' })} />
 
@@ -136,6 +98,14 @@ export function HorizontalToolbar() {
                             <ToggleButton value={StudyDisplayMode.MODIFICATIONS}>
                                 <TuneIcon />
                             </ToggleButton>
+                            {enableDeveloperMode && (
+                                <ToggleButton
+                                    value={StudyDisplayMode.EVENT_SCENARIO}
+                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
+                                >
+                                    <OfflineBoltOutlinedIcon fontSize="small" />
+                                </ToggleButton>
+                            )}
                             <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
                                 <PhotoLibraryIcon />
                             </ToggleButton>

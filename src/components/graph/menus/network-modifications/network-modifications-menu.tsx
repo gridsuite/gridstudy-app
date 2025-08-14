@@ -40,16 +40,18 @@ const NetworkModificationsMenu = ({
         if ('subItems' in menuItem) {
             return (
                 <CustomNestedMenuItem key={menuItem.id} label={intl.formatMessage({ id: menuItem.label })}>
-                    {menuItem.subItems.map((subItem) => (
-                        <ChildMenuItem
-                            key={subItem.id}
-                            item={{
-                                id: subItem.label,
-                                action: () => onItemClick(subItem.id),
-                                disabled: false,
-                            }}
-                        />
-                    ))}
+                    {menuItem.subItems
+                        .filter((subItem) => !subItem.hide)
+                        .map((subItem) => (
+                            <ChildMenuItem
+                                key={subItem.id}
+                                item={{
+                                    id: subItem.label,
+                                    action: () => onItemClick(subItem.id),
+                                    disabled: false,
+                                }}
+                            />
+                        ))}
                 </CustomNestedMenuItem>
             );
         } else {
