@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, Typography, Alert, Theme } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TreeViewFinderNodeProps, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
@@ -14,11 +14,11 @@ import { UUID } from 'crypto';
 import ImportCaseDialog from '../import-case-dialog';
 
 const styles = {
-    missingCaseAlert: (theme: Theme) => ({
-        borderColor: theme.palette.error.main,
-        color: theme.palette.error.main,
-        display: 'inline-flex',
-    }),
+    helperText: {
+        marginLeft: 3.3,
+        marginTop: 0,
+        display: 'block',
+    },
 };
 
 interface RootNetworkCaseSelectionProps {
@@ -85,11 +85,9 @@ export const RootNetworkCaseSelection = ({
                 </Grid>
             </Grid>
             {showMissingCase && (
-                <Grid item>
-                    <Alert icon={false} severity="error" variant="outlined" sx={styles.missingCaseAlert}>
-                        <FormattedMessage id={'rootNetwork.originalNotFound'} />
-                    </Alert>
-                </Grid>
+                <Typography variant="caption" color="error" sx={styles.helperText}>
+                    <FormattedMessage id={'rootNetwork.originalNotFound'} />
+                </Typography>
             )}
 
             <ImportCaseDialog
