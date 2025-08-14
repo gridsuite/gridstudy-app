@@ -124,6 +124,7 @@ const lightTheme = createTheme({
     },
     palette: {
         mode: 'light',
+        toolbarBackground: '#EEE',
     },
     link: {
         color: 'blue',
@@ -205,6 +206,7 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         tabBackground: '#1e1e1e',
+        toolbarBackground: '#424242',
     },
     link: {
         color: 'green',

@@ -1221,7 +1221,6 @@ const NetworkModificationNodeEditor = () => {
             <Toolbar sx={styles.toolbar}>
                 <Box sx={styles.filler} />
                 <IconButton
-                    sx={styles.toolbarIcon}
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
@@ -1234,7 +1233,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={isAnyNodeBuilding || mapDataLoading}
                         >
                             <FileUpload />
@@ -1246,7 +1244,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
                         >
                             <SaveIcon />
@@ -1256,7 +1253,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={
                         selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode
                     }
@@ -1266,7 +1262,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCopyModifications}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
                 >
                     <ContentCopyIcon />
@@ -1286,7 +1281,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
                             }
@@ -1298,7 +1292,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={
                         selectedNetworkModifications.length === 0 ||
                         isAnyNodeBuilding ||
@@ -1331,7 +1324,6 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                sx={styles.toolbarIcon}
                                 disabled={modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress}
                             >
                                 <RestoreFromTrash />
