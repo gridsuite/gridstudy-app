@@ -118,6 +118,8 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -174,6 +176,7 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
@@ -292,6 +295,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
                             label: 'CreateVoltageLevelTopology',
+                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
                         },
                         {
@@ -1215,7 +1219,6 @@ const NetworkModificationNodeEditor = () => {
             <Toolbar sx={styles.toolbar}>
                 <Box sx={styles.filler} />
                 <IconButton
-                    sx={styles.toolbarIcon}
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
@@ -1228,7 +1231,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={isAnyNodeBuilding || mapDataLoading}
                         >
                             <FileUpload />
@@ -1240,7 +1242,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
                         >
                             <SaveIcon />
@@ -1250,7 +1251,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={
                         selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode
                     }
@@ -1260,7 +1260,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCopyModifications}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
                 >
                     <ContentCopyIcon />
@@ -1280,7 +1279,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
                             }
@@ -1292,7 +1290,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={
                         selectedNetworkModifications.length === 0 ||
                         isAnyNodeBuilding ||
@@ -1325,7 +1322,6 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                sx={styles.toolbarIcon}
                                 disabled={modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress}
                             >
                                 <RestoreFromTrash />

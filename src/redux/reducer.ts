@@ -138,7 +138,6 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -153,7 +152,6 @@ import {
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
-    SetEventScenarioDrawerOpenAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
@@ -199,13 +197,17 @@ import {
     ParameterizedComputingType,
     SET_DIAGRAM_GRID_LAYOUT,
     SetDiagramGridLayoutAction,
+    SET_TOGGLE_OPTIONS,
+    setToggleOptionsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
     getLocalStorageTheme,
+    getLocalStorageToggleOptions,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
+    saveLocalStorageToggleOptions,
 } from './session-storage/local-storage';
 import {
     PARAM_COMPUTED_LANGUAGE,
@@ -458,8 +460,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
-    isModificationsDrawerOpen: boolean;
-    isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
@@ -506,6 +506,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
+    toggleOptions: StudyDisplayMode[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -592,13 +593,11 @@ const initialState: AppState = {
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     isExplorerDrawerOpen: true,
-    isModificationsDrawerOpen: false,
-    isEventScenarioDrawerOpen: false,
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
     isMonoRootStudy: true,
-    studyDisplayMode: StudyDisplayMode.HYBRID,
+    studyDisplayMode: StudyDisplayMode.TREE,
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -613,6 +612,7 @@ const initialState: AppState = {
         gridLayouts: {},
         params: [],
     },
+    toggleOptions: [StudyDisplayMode.TREE],
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -776,6 +776,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
+        // Load toggleOptions for this study
+        state.toggleOptions = getLocalStorageToggleOptions(state.studyUuid);
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1161,21 +1163,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
-    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, action: SetModificationsDrawerOpenAction) => {
-        state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
-
-        // exclusively open between two components
-        if (action.isModificationsDrawerOpen && state.isEventScenarioDrawerOpen) {
-            state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
+    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
+        if (!state.toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
+            state.toggleOptions = [...state.toggleOptions, StudyDisplayMode.MODIFICATIONS];
         }
     });
 
-    builder.addCase(SET_EVENT_SCENARIO_DRAWER_OPEN, (state, action: SetEventScenarioDrawerOpenAction) => {
-        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
-
-        // exclusively open between two components
-        if (action.isEventScenarioDrawerOpen && state.isModificationsDrawerOpen) {
-            state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
+    builder.addCase(SET_TOGGLE_OPTIONS, (state, action: setToggleOptionsAction) => {
+        state.toggleOptions = action.toggleOptions;
+        if (state.studyUuid) {
+            saveLocalStorageToggleOptions(state.studyUuid, state.toggleOptions);
         }
     });
 

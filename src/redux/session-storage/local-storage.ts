@@ -8,6 +8,8 @@
 import { DARK_THEME, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { getComputedLanguage } from '../../utils/language';
 import { APP_NAME } from '../../utils/config-params';
+import { StudyDisplayMode } from 'components/network-modification.type';
+import { UUID } from 'crypto';
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
 const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
@@ -30,4 +32,24 @@ export function saveLocalStorageLanguage(language: GsLang) {
 
 export function getLocalStorageComputedLanguage() {
     return getComputedLanguage(getLocalStorageLanguage());
+}
+
+function getToggleOptionsKey(studyUuid: string) {
+    return (APP_NAME + '_TOGGLE_OPTIONS_' + studyUuid).toUpperCase();
+}
+
+export function getLocalStorageToggleOptions(studyUuid: string): StudyDisplayMode[] {
+    const saved = localStorage.getItem(getToggleOptionsKey(studyUuid));
+    if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch {
+            // fallback to default if parsing fails
+        }
+    }
+    return [StudyDisplayMode.TREE];
+}
+
+export function saveLocalStorageToggleOptions(studyUuid: UUID, toggleOptions: StudyDisplayMode[]) {
+    localStorage.setItem(getToggleOptionsKey(studyUuid), JSON.stringify(toggleOptions));
 }
