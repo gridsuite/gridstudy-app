@@ -81,8 +81,7 @@ export function CreateVoltageLevelSectionForm({
                 .map((id) => ({
                     id: id,
                     label: id,
-                }))
-                .sort((a, b) => a.id.localeCompare(b.id));
+                }));
             setBusBarSectionsIdOptions(options);
         } else {
             setBusBarSectionsIdOptions([]);
