@@ -19,8 +19,6 @@ import {
     ID,
     IS_AFTER_BUSBAR_SECTION_ID,
     NEW_SWITCH_STATES,
-    SWITCH_AFTER_NOT_REQUIRED,
-    SWITCH_BEFORE_NOT_REQUIRED,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
@@ -51,8 +49,6 @@ const emptyFormData = {
     [SWITCHES_BEFORE_SECTIONS]: null,
     [SWITCHES_AFTER_SECTIONS]: null,
     [NEW_SWITCH_STATES]: false,
-    [SWITCH_BEFORE_NOT_REQUIRED]: false,
-    [SWITCH_AFTER_NOT_REQUIRED]: false,
 };
 
 const formSchema = yup
@@ -73,27 +69,9 @@ const formSchema = yup
                 [ID]: yup.string().nullable().required(),
             }),
         [IS_AFTER_BUSBAR_SECTION_ID]: yup.string().nullable().required(),
-        [SWITCHES_BEFORE_SECTIONS]: yup
-            .string()
-            .nullable()
-            .when([IS_AFTER_BUSBAR_SECTION_ID, SWITCH_BEFORE_NOT_REQUIRED], {
-                is: (isAfterBusBarSectionId: string, switchBeforeNotRequired: boolean) =>
-                    isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.BEFORE.id && switchBeforeNotRequired,
-                then: (schema) => schema.notRequired(),
-                otherwise: (schema) => schema.required(),
-            }),
-        [SWITCHES_AFTER_SECTIONS]: yup
-            .string()
-            .nullable()
-            .when([IS_AFTER_BUSBAR_SECTION_ID, SWITCH_AFTER_NOT_REQUIRED], {
-                is: (isAfterBusBarSectionId: string, switchAfterNotRequired: boolean) =>
-                    isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id && switchAfterNotRequired,
-                then: (schema) => schema.notRequired(),
-                otherwise: (schema) => schema.required(),
-            }),
+        [SWITCHES_BEFORE_SECTIONS]: yup.string().nullable().required(),
+        [SWITCHES_AFTER_SECTIONS]: yup.string().nullable().required(),
         [NEW_SWITCH_STATES]: yup.boolean(),
-        [SWITCH_BEFORE_NOT_REQUIRED]: yup.boolean(),
-        [SWITCH_AFTER_NOT_REQUIRED]: yup.boolean(),
     })
     .required();
 

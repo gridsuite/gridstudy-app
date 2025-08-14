@@ -9,8 +9,6 @@ import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
-    SWITCH_AFTER_NOT_REQUIRED,
-    SWITCH_BEFORE_NOT_REQUIRED,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
@@ -47,9 +45,12 @@ export function CreateVoltageLevelSectionForm({
     const intl = useIntl();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const [busBarSectionsIdOptions, setBusBarSectionsIdOptions] = useState<Option[]>([]);
-    const { setValue } = useFormContext();
+    const [isNotRequiredSwitchBefore, setIsNotRequiredSwitchBefore] = useState(false);
+    const [isNotRequiredSwitchAfter, setIsNotRequiredSwitchAfter] = useState(false);
+    const { setValue, getValues } = useFormContext();
     const sectionCount = useWatch({ name: BUS_BAR_INDEX });
     const selectedOption = useWatch({ name: BUSBAR_SECTION_ID });
+    const selectedPositionOption = useWatch({ name: IS_AFTER_BUSBAR_SECTION_ID });
 
     const voltageLevelIdField = (
         <TextField
@@ -87,18 +88,26 @@ export function CreateVoltageLevelSectionForm({
     }, [busBarSectionInfos, sectionCount]);
 
     useEffect(() => {
-        if (selectedOption) {
+        if (selectedOption && selectedPositionOption) {
             const selectedSectionIndex = busBarSectionsIdOptions.findIndex((option: Option) =>
                 areIdsEqual(option, selectedOption)
             );
-            busBarSectionsIdOptions?.length === 1
-                ? setValue(SWITCH_BEFORE_NOT_REQUIRED, true)
-                : setValue(SWITCH_BEFORE_NOT_REQUIRED, false);
-            busBarSectionsIdOptions?.length - 1 === selectedSectionIndex
-                ? setValue(SWITCH_AFTER_NOT_REQUIRED, true)
-                : setValue(SWITCH_AFTER_NOT_REQUIRED, false);
+            const selectedPosition = getValues(IS_AFTER_BUSBAR_SECTION_ID);
+            const switchBeforeState =
+                selectedPosition === POSITION_NEW_SECTION_SIDE.BEFORE.id && selectedSectionIndex === 0;
+            if (switchBeforeState) {
+                setIsNotRequiredSwitchBefore(switchBeforeState);
+                setValue(SWITCHES_BEFORE_SECTIONS, SWITCH_TYPE.DISCONNECTOR);
+            }
+            const switchAfterState =
+                selectedPosition === POSITION_NEW_SECTION_SIDE.AFTER.id &&
+                busBarSectionsIdOptions?.length - 1 === selectedSectionIndex;
+            if (switchAfterState) {
+                setIsNotRequiredSwitchAfter(switchAfterState);
+                setValue(SWITCHES_AFTER_SECTIONS, SWITCH_TYPE.DISCONNECTOR);
+            }
         }
-    }, [selectedOption, busBarSectionsIdOptions, setValue]);
+    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption, getValues]);
 
     const busBarIndexOptions = useMemo(() => {
         if (busBarSectionInfos) {
@@ -168,7 +177,7 @@ export function CreateVoltageLevelSectionForm({
             label={'switchesBeforeSections'}
             options={Object.values(SWITCH_TYPE)}
             size={'small'}
-            disabled={!sectionCount}
+            disabled={!sectionCount || isNotRequiredSwitchBefore}
         />
     );
     const switchAfterField = (
@@ -177,7 +186,7 @@ export function CreateVoltageLevelSectionForm({
             label={'switchesAfterSections'}
             options={Object.values(SWITCH_TYPE)}
             size={'small'}
-            disabled={!sectionCount}
+            disabled={!sectionCount || isNotRequiredSwitchAfter}
         />
     );
     const getLabelDescription = useCallback(() => {
