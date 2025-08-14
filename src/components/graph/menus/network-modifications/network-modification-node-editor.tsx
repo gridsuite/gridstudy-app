@@ -310,11 +310,6 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(CreateCouplingDeviceDialog),
                         },
                         {
-                            id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
-                            label: 'CreateVoltageLevelTopology',
-                            action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
-                        },
-                        {
                             id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
                             label: 'VOLTAGE_LEVEL_TOPOLOGY',
                             action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
