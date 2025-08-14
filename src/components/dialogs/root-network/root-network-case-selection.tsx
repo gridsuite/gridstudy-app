@@ -5,13 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography, Alert, Theme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TreeViewFinderNodeProps, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { FolderOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import ImportCaseDialog from '../import-case-dialog';
+
+const styles = {
+    missingCaseAlert: (theme: Theme) => ({
+        borderColor: theme.palette.error.main,
+        color: theme.palette.error.main,
+        display: 'inline-flex',
+    }),
+};
 
 interface RootNetworkCaseSelectionProps {
     onSelectCase: (selectedCase: TreeViewFinderNodeProps) => void;
@@ -49,6 +57,8 @@ export const RootNetworkCaseSelection = ({
         }
     }, [originalCaseUuid, isModification, selectedItem]);
 
+    const showMissingCase = !selectedItem && isModification;
+
     return (
         <>
             <Grid container alignItems="center" item>
@@ -56,7 +66,9 @@ export const RootNetworkCaseSelection = ({
                     <FolderOutlined />
                 </Grid>
                 <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold">{selectedItem?.path}</Box>
+                    <Box fontWeight="fontWeightBold">
+                        {showMissingCase ? <FormattedMessage id={'rootNetwork.unknownPath'} /> : selectedItem?.path}
+                    </Box>
                 </Typography>
                 <Grid item>
                     <Button
@@ -71,14 +83,15 @@ export const RootNetworkCaseSelection = ({
                         )}
                     </Button>
                 </Grid>
-                <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold">
-                        {!selectedItem && isModification ? (
-                            <FormattedMessage id={'rootNetwork.originalCaseRemoved'} />
-                        ) : null}
-                    </Box>
-                </Typography>
             </Grid>
+            {showMissingCase && (
+                <Grid item>
+                    <Alert icon={false} severity="error" variant="outlined" sx={styles.missingCaseAlert}>
+                        <FormattedMessage id={'rootNetwork.originalNotFound'} />
+                    </Alert>
+                </Grid>
+            )}
+
             <ImportCaseDialog
                 open={isDialogOpen}
                 onClose={() => setIsDialogOpen(false)}
