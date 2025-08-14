@@ -76,6 +76,8 @@ const StudyPane = ({
         setTableEquipment({ id: null, type: null });
     }, []);
 
+    const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
+
     return (
         <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
@@ -89,11 +91,9 @@ const StudyPane = ({
                 >
                     <MapViewer
                         studyUuid={studyUuid}
-                        currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
-                        view={view}
                         tableEquipment={tableEquipment}
-                        onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
+                        onTableEquipementChanged={handleTableEquipmentChanged}
                         onChangeTab={onChangeTab}
                     ></MapViewer>
                 </div>

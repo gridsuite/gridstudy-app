@@ -44,10 +44,10 @@ const styles = {
             borderBottom: 'none',
             borderRight: 'none',
             marginRight: 1,
-            backgroundColor: theme.networkModificationPanel.backgroundColor,
+            backgroundColor: theme.palette.background.paper,
         },
         '& .ag-row-even, & .ag-row-odd, & .ag-header-row': {
-            backgroundColor: theme.networkModificationPanel.backgroundColor,
+            backgroundColor: theme.palette.background.paper,
         },
     }),
 };

@@ -14,6 +14,7 @@ declare module '@mui/material/styles' {
     interface PaletteExtension {
         cancelButtonColor: { main: string };
         tabBackground: string;
+        toolbarBackground: string;
     }
     export interface Palette extends MuiPalette, Required<PaletteExtension> {}
     export interface PaletteOptions extends MuiPaletteOptions, Partial<PaletteExtension> {}
