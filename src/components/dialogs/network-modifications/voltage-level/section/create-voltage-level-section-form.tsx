@@ -9,6 +9,8 @@ import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
+    SWITCH_AFTER_NOT_REQUIRED,
+    SWITCH_BEFORE_NOT_REQUIRED,
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
@@ -47,7 +49,7 @@ export function CreateVoltageLevelSectionForm({
     const [busBarSectionsIdOptions, setBusBarSectionsIdOptions] = useState<Option[]>([]);
     const [isNotRequiredSwitchBefore, setIsNotRequiredSwitchBefore] = useState(false);
     const [isNotRequiredSwitchAfter, setIsNotRequiredSwitchAfter] = useState(false);
-    const { setValue, getValues } = useFormContext();
+    const { setValue } = useFormContext();
     const sectionCount = useWatch({ name: BUS_BAR_INDEX });
     const selectedOption = useWatch({ name: BUSBAR_SECTION_ID });
     const selectedPositionOption = useWatch({ name: IS_AFTER_BUSBAR_SECTION_ID });
@@ -92,22 +94,25 @@ export function CreateVoltageLevelSectionForm({
             const selectedSectionIndex = busBarSectionsIdOptions.findIndex((option: Option) =>
                 areIdsEqual(option, selectedOption)
             );
-            const selectedPosition = getValues(IS_AFTER_BUSBAR_SECTION_ID);
-            const switchBeforeState =
-                selectedPosition === POSITION_NEW_SECTION_SIDE.BEFORE.id && selectedSectionIndex === 0;
-            if (switchBeforeState) {
-                setIsNotRequiredSwitchBefore(switchBeforeState);
-                setValue(SWITCHES_BEFORE_SECTIONS, SWITCH_TYPE.DISCONNECTOR);
+            if (selectedSectionIndex === 0 && selectedPositionOption === POSITION_NEW_SECTION_SIDE.BEFORE.id) {
+                setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
+                setIsNotRequiredSwitchBefore(true);
+            } else {
+                setValue(SWITCH_BEFORE_NOT_REQUIRED, false);
+                setIsNotRequiredSwitchBefore(false);
             }
-            const switchAfterState =
-                selectedPosition === POSITION_NEW_SECTION_SIDE.AFTER.id &&
-                busBarSectionsIdOptions?.length - 1 === selectedSectionIndex;
-            if (switchAfterState) {
-                setIsNotRequiredSwitchAfter(switchAfterState);
-                setValue(SWITCHES_AFTER_SECTIONS, SWITCH_TYPE.DISCONNECTOR);
+            if (
+                busBarSectionsIdOptions?.length - 1 === selectedSectionIndex &&
+                selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
+            ) {
+                setValue(SWITCH_AFTER_NOT_REQUIRED, true);
+                setIsNotRequiredSwitchAfter(true);
+            } else {
+                setValue(SWITCH_AFTER_NOT_REQUIRED, false);
+                setIsNotRequiredSwitchAfter(false);
             }
         }
-    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption, getValues]);
+    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption]);
 
     const busBarIndexOptions = useMemo(() => {
         if (busBarSectionInfos) {
