@@ -24,7 +24,7 @@ interface LoadDialogTabsContentProps {
     currentRootNetworkUuid: UUID;
     loadToModify?: LoadFormInfos | null;
     tabIndex: number;
-    voltageLevelOptions?: Identifiable[];
+    voltageLevelOptions: Identifiable[];
     isModification?: boolean;
 }
 
@@ -49,6 +49,8 @@ const LoadDialogTabsContent: React.FC<LoadDialogTabsContentProps> = ({
                     isEquipmentModification={isModification}
                     previousValues={{
                         connectablePosition: loadToModify?.connectablePosition,
+                        voltageLevelId: loadToModify?.voltageLevelId,
+                        busOrBusbarSectionId: loadToModify?.busOrBusbarSectionId,
                         terminalConnected: loadToModify?.terminalConnected,
                     }}
                 />
