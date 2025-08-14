@@ -6,7 +6,6 @@
  */
 
 import { FunctionComponent, useCallback } from 'react';
-import { SEGMENTS, TOTAL_REACTANCE, TOTAL_RESISTANCE, TOTAL_SUSCEPTANCE } from '../../utils/field-constants';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../commons/modificationDialog';
@@ -14,25 +13,67 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { emptyLineSegment, SegmentSchema } from './segment-utils';
+import { SegmentSchema } from './segment-utils';
+import {
+    AERIAL_AREAS,
+    AERIAL_TEMPERATURES,
+    FINAL_CURRENT_LIMITS,
+    ID,
+    SEGMENTS,
+    TOTAL_REACTANCE,
+    TOTAL_RESISTANCE,
+    TOTAL_SUSCEPTANCE,
+    UNDERGROUND_AREAS,
+    UNDERGROUND_SHAPE_FACTORS,
+} from '../../utils/field-constants';
+import { InferType } from 'yup';
+import { DeepNullable } from '../../utils/ts-utils';
 
 const LineTypeSegmentSchema = yup
     .object()
     .shape({
+        [AERIAL_AREAS]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+        [AERIAL_TEMPERATURES]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+        [UNDERGROUND_AREAS]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+        [UNDERGROUND_SHAPE_FACTORS]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
         [TOTAL_RESISTANCE]: yup.number().required(),
         [TOTAL_REACTANCE]: yup.number().required(),
         [TOTAL_SUSCEPTANCE]: yup.number().required(),
+        [FINAL_CURRENT_LIMITS]: yup.array(),
         [SEGMENTS]: yup.array().of(SegmentSchema).required().min(1, 'AtLeastOneSegmentNeeded'),
     })
     .required();
 
-export type LineTypeSegmentFormData = yup.InferType<typeof LineTypeSegmentSchema>;
-
-const emptyFormData: LineTypeSegmentFormData = {
+const emptyFormData = {
+    [AERIAL_AREAS]: null,
+    [AERIAL_TEMPERATURES]: null,
+    [UNDERGROUND_AREAS]: null,
+    [UNDERGROUND_SHAPE_FACTORS]: null,
     [TOTAL_RESISTANCE]: 0.0,
     [TOTAL_REACTANCE]: 0.0,
     [TOTAL_SUSCEPTANCE]: 0.0,
-    [SEGMENTS]: [emptyLineSegment],
+    [FINAL_CURRENT_LIMITS]: [],
+    [SEGMENTS]: [],
 };
 
 export interface LineTypeSegmentDialogProps {
@@ -41,10 +82,12 @@ export interface LineTypeSegmentDialogProps {
     onSave: (data: ComputedLineCharacteristics) => void;
 }
 
+export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
+
 const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ open, onSave, onClose }) => {
-    const formMethods = useForm<LineTypeSegmentFormData>({
+    const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<LineTypeSegmentFormData>(LineTypeSegmentSchema),
+        resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
 
     const { reset } = formMethods;
@@ -56,6 +99,7 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
     /**
      * RENDER
      */
+
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
             <ModificationDialog
