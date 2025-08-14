@@ -32,7 +32,7 @@ export type PredefinedProperties = {
     [propertyName: string]: string[];
 };
 
-type Equipment = {
+export type Equipment = {
     properties?: Record<string, string>;
 };
 
@@ -60,7 +60,7 @@ export const initializedProperty = (): Property => {
     return createPropertyModification('', null);
 };
 
-export const getPropertiesFromModification = (properties: Property[] | undefined): Properties => {
+export const getPropertiesFromModification = (properties: Property[] | undefined | null): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: properties
             ? properties.map((p) => {
@@ -147,7 +147,7 @@ export const toModificationProperties = (properties: Properties) => {
     const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
         (p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
     );
-    return filteredProperties?.length === 0 ? undefined : filteredProperties;
+    return filteredProperties === undefined || filteredProperties?.length === 0 ? null : filteredProperties;
 };
 
 export const creationPropertiesSchema = yup.object({
