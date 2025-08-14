@@ -215,10 +215,10 @@ export const updateTemporaryLimits = (
     //remove deleted temporary limits from current and previous modifications
     updatedTemporaryLimits = updatedTemporaryLimits?.filter(
         (limit: TemporaryLimit) =>
-            limit.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED &&
+            limit.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE &&
             !(
                 (limit.modificationType === null ||
-                    limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED) &&
+                    limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY) &&
                 findTemporaryLimit(temporaryLimitsToModify, limit) === undefined
             )
     );
@@ -248,9 +248,9 @@ export const addModificationTypeToTemporaryLimits = (
                 limitWithSameName
             );
             if (
-                (currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                (currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY &&
                     isNodeBuilt(currentNode)) ||
-                currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
             ) {
                 return {
                     ...limit,
@@ -264,13 +264,13 @@ export const addModificationTypeToTemporaryLimits = (
                       }
                     : {
                           ...limit,
-                          modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                          modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY,
                       };
             }
         } else {
             return {
                 ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD,
             };
         }
     });
@@ -279,7 +279,7 @@ export const addModificationTypeToTemporaryLimits = (
         if (!findTemporaryLimit(temporaryLimits, limit)) {
             updatedTemporaryLimits.push({
                 ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
             });
         }
     });
@@ -287,11 +287,11 @@ export const addModificationTypeToTemporaryLimits = (
     formattedCurrentModifiedTemporaryLimits?.forEach((limit) => {
         if (
             !findTemporaryLimit(updatedTemporaryLimits, limit) &&
-            limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED
+            limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
         ) {
             updatedTemporaryLimits.push({
                 ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
             });
         }
     });

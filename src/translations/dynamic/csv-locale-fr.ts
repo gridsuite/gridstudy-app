@@ -27,7 +27,7 @@ const csv_locale_fr = {
     'TabularModificationSkeletonComment.SHUNT_COMPENSATOR':
         '#Pour chaque MCS il est possible de modifier soit la puissance réactive installée (et le type) soit la susceptance installée. En cas de conflit la susceptance installée sera ignorée.;;true | false;;TOP | BOTTOM;;;;REACTOR | CAPACITOR;;',
     TabularLimitSetsModificationSkeletonComment:
-        '#;ONE | TWO;;;ADDED | MODIFIED | REPLACED;ADDED | MODIFIED | DELETED | REPLACED',
+        '#;ONE | TWO;;true | false;;ADD | MODIFY | REPLACE;ADD | MODIFY | DELETE | REPLACE pris en compte uniquement lorsque modificationType est défini à MODIFY',
 };
 
 export default csv_locale_fr;

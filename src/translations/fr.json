@@ -621,6 +621,7 @@
     "value": "Valeur (A)",
     "side": "Côté",
     "limitGroupName": "Nom du set de limites",
+    "isActive": "Actif",
     "modificationType": "Type de modification",
     "temporaryLimitsModificationType": "Type de modification des limites temporaires",
 
