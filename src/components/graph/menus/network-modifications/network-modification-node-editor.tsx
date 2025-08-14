@@ -118,8 +118,8 @@ import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modificat
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { useParameterState } from "../../../dialogs/parameters/use-parameters-state";
-import { PARAM_DEVELOPER_MODE } from "../../../../utils/config-params";
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
