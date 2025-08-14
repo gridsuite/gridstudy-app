@@ -9,12 +9,12 @@ import { Theme } from '@mui/material/styles';
 import { EditableTitle } from '../network-modifications/editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
+import { setToggleOptions } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
 import { AppState } from '../../../../redux/reducer';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
 import { Box } from '@mui/material';
-import { AppDispatch } from '../../../../redux/store';
+import { StudyDisplayMode } from 'components/network-modification.type';
 
 const styles = {
     paper: {
@@ -22,19 +22,20 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background: (theme: Theme) => theme.networkModificationPanel.backgroundColor,
+        background: (theme: Theme) => theme.palette.background.paper,
     },
 };
 
 export interface ScenarioEditorProps {}
 
 const ScenarioEditor = (props: ScenarioEditorProps) => {
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useDispatch();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
+    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const intl = useIntl();
     const closeEventScenarioDrawer = () => {
-        dispatch(setEventScenarioDrawerOpen(false));
+        dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO)));
     };
 
     return (
