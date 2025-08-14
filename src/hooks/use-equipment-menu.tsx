@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo, FunctionComponent } from 'react';
-import {EquipmentType, ExtendedEquipmentType} from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import withOperatingStatusMenu, { MenuBranchProps } from '../components/menus/operating-status-menu';
 import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../components/menus/base-equipment-menu';
 import withEquipmentMenu from '../components/menus/equipment-menu';
@@ -106,15 +106,24 @@ export const useEquipmentMenu = ({
         []
     );
 
-    const openEquipmentMenu = useCallback((equipment: BaseEquipment, x: number, y: number, type: EquipmentType, subtype: ExtendedEquipmentType | null) => {
-        setEquipmentMenu({
-            position: [x, y],
-            equipment: equipment,
-            equipmentType: type,
-            equipmentSubtype: subtype,
-            display: true,
-        });
-    }, []);
+    const openEquipmentMenu = useCallback(
+        (
+            equipment: BaseEquipment,
+            x: number,
+            y: number,
+            type: EquipmentType,
+            subtype: ExtendedEquipmentType | null
+        ) => {
+            setEquipmentMenu({
+                position: [x, y],
+                equipment: equipment,
+                equipmentType: type,
+                equipmentSubtype: subtype,
+                display: true,
+            });
+        },
+        []
+    );
 
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({ display: false });
