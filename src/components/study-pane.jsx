@@ -95,6 +95,7 @@ const StudyPane = ({
                         tableEquipment={tableEquipment}
                         onTableEquipementChanged={handleTableEquipmentChanged}
                         onChangeTab={onChangeTab}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     ></MapViewer>
                 </div>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}

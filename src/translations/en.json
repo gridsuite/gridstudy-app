@@ -1527,6 +1527,7 @@
     "diagramGridLayoutSaveError": "An error occurred while saving the diagram grid layout",
     "diagramGridLayoutSaveSuccess": "Diagram grid layout saved successfully",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
+    "voltageLevelDiagramOpened": "The voltage level {id} was opened in the grid",
     "NoMatch": "No match",
     "Rows": "row",
     "ExternalFilters": "External filters",

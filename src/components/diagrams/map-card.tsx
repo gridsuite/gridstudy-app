@@ -9,7 +9,7 @@ import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, use
 import CardHeader from './card-header';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
-import { EquipmentType, LineFlowMode, mergeSx } from '@gridsuite/commons-ui';
+import { EquipmentType, LineFlowMode, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
@@ -41,14 +41,23 @@ interface MapCardProps extends ReactGridLayoutCustomChildComponentProps {
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    openVoltageLevelDiagram: (id: string) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
 
 export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>) => {
-    const { studyUuid, onClose, errorMessage, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
+    const {
+        studyUuid,
+        onClose,
+        errorMessage,
+        showInSpreadsheet,
+        openVoltageLevelDiagram,
+        ...reactGridLayoutCustomChildComponentProps
+    } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
     const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
+    const { snackInfo } = useSnackMessage();
 
     const handleMouseEnter = () => {
         setIsHover(true);
@@ -79,6 +88,14 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
         dispatch(setMapDataLoading(false));
         dispatch(setReloadMapNeeded(true));
     }, [dispatch]);
+
+    const handleOpenVoltageLevel = useCallback(
+        (id: string) => {
+            openVoltageLevelDiagram(id);
+            snackInfo({ messageId: 'voltageLevelDiagramOpened', messageValues: { id } });
+        },
+        [openVoltageLevelDiagram, snackInfo]
+    );
 
     if (!studyUuid || !currentNode || !currentRootNetworkUuid || !networkVisuParams) {
         return (
@@ -131,7 +148,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                         lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                         lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
-                        openVoltageLevel={() => {}}
+                        openVoltageLevel={handleOpenVoltageLevel}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         showInSpreadsheet={(eq) => {
