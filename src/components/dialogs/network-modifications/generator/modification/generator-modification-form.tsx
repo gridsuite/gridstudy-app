@@ -237,6 +237,7 @@ export default function GeneratorModificationForm({
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
@@ -244,6 +245,8 @@ export default function GeneratorModificationForm({
             isEquipmentModification={true}
             previousValues={{
                 connectablePosition: generatorToModify?.connectablePosition,
+                voltageLevelId: generatorToModify?.voltageLevelId,
+                busOrBusbarSectionId: generatorToModify?.busOrBusbarSectionId,
                 terminalConnected: generatorToModify?.terminalConnected,
             }}
         />

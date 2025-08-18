@@ -88,6 +88,7 @@ export function LimitsGroupsContextualMenu({
                 [ID]: newName,
             };
             appendToLimitsGroups(newLimitsGroup1);
+            setIndexSelectedLimitSet(getValues(`${operationalLimitsGroupsFormName}`).length - 1);
         }
         startEditingLimitsGroup(getValues(operationalLimitsGroupsFormName).length - 1, newName);
     };

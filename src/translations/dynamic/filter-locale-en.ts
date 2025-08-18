@@ -16,8 +16,8 @@ const filter_locale_en = {
     'filter.greaterThanOrEqual': 'Greater than or equal to',
     'filter.greaterThan': 'Greater than',
     'filter.filterOoo': 'Filter...',
-    'filter.rounded': 'Rounded to',
-    'filter.roundedToOne': 'Rounded to the nearest unit.',
+    'filter.rounded': 'Filtering precision rounded to',
+    'filter.roundedToOne': 'Filtering precision rounded to the nearest unit.',
     'filter.warnRounding': 'From 13 decimal places after the comma, filters become imprecise.',
 };
 

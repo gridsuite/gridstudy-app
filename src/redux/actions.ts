@@ -99,7 +99,6 @@ export type AppActions =
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
     | SetModificationsDrawerOpenAction
-    | SetEventScenarioDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
     | RemoveNotificationByNodeAction
@@ -656,14 +655,10 @@ export function setNodeSelectionForCopy(
 }
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
-export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>> & {
-    isModificationsDrawerOpen: boolean;
-};
-
-export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): SetModificationsDrawerOpenAction {
+export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
+export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
-        isModificationsDrawerOpen: isModificationsDrawerOpen,
     };
 }
 
@@ -688,18 +683,6 @@ export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyActi
     return {
         type: SET_MONO_ROOT_STUDY,
         isMonoRootStudy: isMonoRootStudy,
-    };
-}
-
-export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
-export type SetEventScenarioDrawerOpenAction = Readonly<Action<typeof SET_EVENT_SCENARIO_DRAWER_OPEN>> & {
-    isEventScenarioDrawerOpen: boolean;
-};
-
-export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): SetEventScenarioDrawerOpenAction {
-    return {
-        type: SET_EVENT_SCENARIO_DRAWER_OPEN,
-        isEventScenarioDrawerOpen: isEventScenarioDrawerOpen,
     };
 }
 

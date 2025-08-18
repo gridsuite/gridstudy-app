@@ -14,6 +14,7 @@ export enum StudyDisplayMode {
     DIAGRAM_GRID_LAYOUT = 'DiagramGridLayout',
     DIAGRAM_GRID_LAYOUT_AND_TREE = 'DiagramGridLayoutAndTree',
     MODIFICATIONS = 'Modifications',
+    EVENT_SCENARIO = 'EventScenario',
 }
 
 export enum CopyType {

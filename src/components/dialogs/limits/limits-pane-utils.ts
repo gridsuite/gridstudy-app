@@ -305,7 +305,7 @@ export const completeCurrentLimitsGroupsToOnlySelected = (
     selectedOperationalLimitsGroup: string
 ) => {
     if (selectedOperationalLimitsGroup && completeLimitsGroups) {
-        return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.name);
+        return completeLimitsGroups.find((limitsGroup) => selectedOperationalLimitsGroup === limitsGroup.id);
     }
     return getLimitsEmptyFormData();
 };
