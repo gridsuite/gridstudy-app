@@ -1546,5 +1546,6 @@
     "Before": "Before",
     "After": "After",
     "newSwitchStates": "New switches closed ",
-    "AtLeastOneSectionAdded": "At least one busbar section must be added"
+    "AtLeastOneSectionAdded": "At least one busbar section must be added",
+    "SectionCount": "section count"
 }

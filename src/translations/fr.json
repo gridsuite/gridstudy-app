@@ -1541,5 +1541,6 @@
     "Before": "Avant",
     "After": "Après",
     "newSwitchStates": "Nouveaux organes de coupure fermés",
-    "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre"
+    "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
+    "SectionCount": "nombre de sections"
 }
