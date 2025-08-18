@@ -269,6 +269,9 @@ export default function CreateVoltageLevelSectionDialog({
                         setSelectedId={setSelectedId}
                         equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         fillerHeight={5}
+                        freeInputAllowed={false}
+                        autoSelectEnabled={true}
+                        autoHighlightEnabled={true}
                     />
                 )}
             </ModificationDialog>
