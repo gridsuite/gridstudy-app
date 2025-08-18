@@ -260,6 +260,7 @@ export default function CreateVoltageLevelSectionDialog({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
+                        isUpdate={isUpdate}
                     />
                 )}
                 {selectedId == null && (
