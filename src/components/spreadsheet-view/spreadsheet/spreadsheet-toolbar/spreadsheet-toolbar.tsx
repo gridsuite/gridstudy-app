@@ -15,6 +15,7 @@ import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 import { FilteredRowCounter } from './row-counter/filtered-row-counter';
+import { UseFilteredRowCounterInfoReturn } from './row-counter/use-filtered-row-counter';
 
 const styles = {
     toolbar: (theme: Theme) => ({
@@ -33,6 +34,7 @@ const styles = {
 interface SpreadsheetToolbarProps {
     gridRef: React.RefObject<AgGridReact>;
     tableDefinition: SpreadsheetTabDefinition;
+    rowCounterInfos: UseFilteredRowCounterInfoReturn;
     columns: CustomColDef[];
     nodeAliases: NodeAlias[] | undefined;
     disabled: boolean;
@@ -41,6 +43,7 @@ interface SpreadsheetToolbarProps {
 export const SpreadsheetToolbar = ({
     gridRef,
     tableDefinition,
+    rowCounterInfos,
     columns,
     nodeAliases,
     disabled,
@@ -51,7 +54,7 @@ export const SpreadsheetToolbar = ({
                 <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
-                <FilteredRowCounter gridRef={gridRef} tableDefinition={tableDefinition} disabled={disabled} />
+                <FilteredRowCounter rowCounterInfos={rowCounterInfos} tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
                 <ColumnsConfig
