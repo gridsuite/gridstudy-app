@@ -27,7 +27,9 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
             .object()
             .nullable()
             .when([], {
-                is: () => !isEquipmentModification,
+                is: (busOrBusbarSection: { id: string; label: string }) =>
+                    !isEquipmentModification ||
+                    (isEquipmentModification && busOrBusbarSection !== null && busOrBusbarSection?.id !== null),
                 then: (schema) => schema.required(),
             })
             .shape({
@@ -39,8 +41,13 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
             .nullable()
-            .when([], {
-                is: () => !isEquipmentModification,
+            .when([VOLTAGE_LEVEL], {
+                is: (voltageLevel: { id: string; label: string }) => {
+                    return (
+                        !isEquipmentModification ||
+                        (isEquipmentModification && voltageLevel !== null && voltageLevel?.id !== null)
+                    );
+                },
                 then: (schema) => schema.required(),
             })
             .shape({
