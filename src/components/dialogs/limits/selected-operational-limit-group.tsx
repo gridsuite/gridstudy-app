@@ -9,6 +9,7 @@ import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { APPLICABILITY } from '../../network/constants';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
@@ -32,7 +33,9 @@ export const SelectedOperationalLimitGroup = ({
             ? optionsValues
                   .filter(
                       (optionObj: OperationalLimitsGroup) =>
-                          optionObj.applicability && optionObj.applicability === filteredApplicability
+                          optionObj.applicability &&
+                          (optionObj.applicability === filteredApplicability ||
+                              optionObj.applicability === APPLICABILITY.EQUIPMENT.id)
                   )
                   .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
                   .filter((id: string) => id != null)

@@ -199,7 +199,7 @@ export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
             }
             return params.node.rowIndex + 1;
         },
-        width: 65,
+        width: 70,
         pinned: 'left',
         suppressMovable: true,
         lockPosition: true,

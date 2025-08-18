@@ -20,7 +20,6 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import { lighten, darken } from '@mui/material/styles';
-import { RootNetworkSelection } from './root-network-selection';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import NetworkModificationNodeDialog from './network-modification-node-dialog';
@@ -43,7 +42,6 @@ const styles = {
     },
     buttonTitle: {
         textTransform: 'none',
-        padding: 0,
         justifyContent: 'flex-start',
         overflow: 'hidden',
     },
@@ -66,7 +64,6 @@ interface NodeEditorHeaderProps {
 
 export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
-    const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const label = currentTreeNode?.data?.label ?? '';
     const description = currentTreeNode?.data?.description ?? '';
@@ -82,7 +79,6 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
                     </Tooltip>
                 </Box>
 
-                {!isMonoRootStudy && <RootNetworkSelection />}
                 <IconButton size="small" onClick={onClose}>
                     <CloseIcon />
                 </IconButton>

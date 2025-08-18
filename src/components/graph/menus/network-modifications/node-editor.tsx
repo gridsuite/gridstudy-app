@@ -9,13 +9,16 @@ import { Theme } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { setModificationsDrawerOpen } from '../../../../redux/actions';
+
+import { setToggleOptions } from '../../../../redux/actions';
 import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
 import { NodeEditorHeader } from './node-editor-header';
+import { isSecurityModificationNode } from '../../tree-node.type';
+import { StudyDisplayMode } from '../../../network-modification.type';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -23,7 +26,7 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background: theme.networkModificationPanel.backgroundColor,
+        background: theme.palette.background.paper,
     }),
     loadFlowModif: (theme: Theme) => ({
         display: 'flex',
@@ -40,10 +43,13 @@ const styles = {
 
 const NodeEditor = () => {
     const dispatch = useDispatch();
+
+    const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const closeModificationsDrawer = () => {
-        dispatch(setModificationsDrawerOpen(false));
+        dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS)));
     };
 
     const renderLoadFlowModificationTable = () => {
@@ -56,8 +62,11 @@ const NodeEditor = () => {
     return (
         <Box sx={styles.paper}>
             <NodeEditorHeader onClose={closeModificationsDrawer} />
+
             <NetworkModificationNodeEditor />
-            {loadFlowStatus === RunningStatus.SUCCEED && renderLoadFlowModificationTable()}
+            {loadFlowStatus === RunningStatus.SUCCEED &&
+                isSecurityModificationNode(currentTreeNode) &&
+                renderLoadFlowModificationTable()}
         </Box>
     );
 };
