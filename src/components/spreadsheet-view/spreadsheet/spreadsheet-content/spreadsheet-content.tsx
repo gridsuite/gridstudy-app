@@ -25,6 +25,7 @@ import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spr
 import { useColumnManagement } from './hooks/use-column-management';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { DiagramType } from 'components/diagrams/diagram.type';
+import { type FirstDataRenderedEvent } from 'ag-grid-community';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -56,6 +57,7 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    registerRowCounterEvents: (params: FirstDataRenderedEvent) => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
@@ -70,6 +72,7 @@ export const SpreadsheetContent = React.memo(
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        registerRowCounterEvents,
         openDiagram,
         active,
     }: SpreadsheetContentProps) => {
@@ -137,9 +140,13 @@ export const SpreadsheetContent = React.memo(
             handleEquipmentScroll();
         }, [handleEquipmentScroll, equipmentId]);
 
-        const onFirstDataRendered = useCallback(() => {
-            handleEquipmentScroll();
-        }, [handleEquipmentScroll]);
+        const onFirstDataRendered = useCallback(
+            (params: FirstDataRenderedEvent) => {
+                handleEquipmentScroll();
+                registerRowCounterEvents(params);
+            },
+            [handleEquipmentScroll, registerRowCounterEvents]
+        );
 
         const onGridReady = useCallback(() => {
             updateLockedColumnsConfig();
