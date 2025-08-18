@@ -1508,7 +1508,7 @@
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
 
-    "CreateVoltageLevelTopology": "Adding a bus bar",
+    "CreateVoltageLevelTopology": "Adding a busbar",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
@@ -1534,5 +1534,6 @@
     "genericFilter": "Generic",
     "voltageLevel": "Voltage level",
     "ClickToReset": "Click to remove filters",
-    "RowCounterInfo": "Displays the row count for the current spreadsheet. If filters are applied it will display the current filtered row amount, you can remove all filters by then clicking on this button."
+    "RowCounterInfo": "Displays the row count for the current spreadsheet. If filters are applied it will display the current filtered row amount, you can remove all filters by then clicking on this button.",
+    "AtLeastOneSectionAdded": "At least one busbar section must be added"
 }
