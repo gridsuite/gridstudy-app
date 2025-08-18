@@ -35,6 +35,7 @@ import type {
     SpreadsheetFilterState,
     TableSortKeysType,
     ComputingStatusParameters,
+    DiagramGridLayoutConfig,
 } from './reducer';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
@@ -74,7 +75,7 @@ export type AppActions =
     | DeleteEquipmentsAction
     | ResetEquipmentsAction
     | ResetEquipmentsByTypesAction
-    | ResetEquipmentsPostLoadflowAction
+    | ResetEquipmentsPostComputationAction
     | MapEquipmentsCreatedAction
     | LoadNetworkModificationTreeSuccessAction
     | NetworkModificationTreeNodeAddedAction
@@ -98,7 +99,6 @@ export type AppActions =
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
     | SetModificationsDrawerOpenAction
-    | SetEventScenarioDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
     | RemoveNotificationByNodeAction
@@ -278,12 +278,12 @@ export function resetEquipmentsByTypes(equipmentTypes: SpreadsheetEquipmentType[
     };
 }
 
-export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
-export type ResetEquipmentsPostLoadflowAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_LOADFLOW>>;
+export const RESET_EQUIPMENTS_POST_COMPUTATION = 'RESET_EQUIPMENTS_POST_COMPUTATION';
+export type ResetEquipmentsPostComputationAction = Readonly<Action<typeof RESET_EQUIPMENTS_POST_COMPUTATION>>;
 
-export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction {
+export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputationAction {
     return {
-        type: RESET_EQUIPMENTS_POST_LOADFLOW,
+        type: RESET_EQUIPMENTS_POST_COMPUTATION,
     };
 }
 
@@ -655,14 +655,22 @@ export function setNodeSelectionForCopy(
 }
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
-export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>> & {
-    isModificationsDrawerOpen: boolean;
-};
-
-export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): SetModificationsDrawerOpenAction {
+export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
+export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
-        isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
+export type setToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
+    toggleOptions: StudyDisplayMode[];
+};
+
+export function setToggleOptions(toggleOptions: StudyDisplayMode[]): setToggleOptionsAction {
+    return {
+        type: SET_TOGGLE_OPTIONS,
+        toggleOptions: toggleOptions,
     };
 }
 
@@ -675,18 +683,6 @@ export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyActi
     return {
         type: SET_MONO_ROOT_STUDY,
         isMonoRootStudy: isMonoRootStudy,
-    };
-}
-
-export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
-export type SetEventScenarioDrawerOpenAction = Readonly<Action<typeof SET_EVENT_SCENARIO_DRAWER_OPEN>> & {
-    isEventScenarioDrawerOpen: boolean;
-};
-
-export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): SetEventScenarioDrawerOpenAction {
-    return {
-        type: SET_EVENT_SCENARIO_DRAWER_OPEN,
-        isEventScenarioDrawerOpen: isEventScenarioDrawerOpen,
     };
 }
 
@@ -1275,5 +1271,17 @@ export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT
 export function resetDiagramEvent(): ResetDiagramEventAction {
     return {
         type: RESET_DIAGRAM_EVENT,
+    };
+}
+
+export const SET_DIAGRAM_GRID_LAYOUT = 'SET_DIAGRAM_GRID_LAYOUT';
+export type SetDiagramGridLayoutAction = Readonly<Action<typeof SET_DIAGRAM_GRID_LAYOUT>> & {
+    diagramGridLayout: DiagramGridLayoutConfig;
+};
+
+export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig): SetDiagramGridLayoutAction {
+    return {
+        type: SET_DIAGRAM_GRID_LAYOUT,
+        diagramGridLayout: diagramGridLayout,
     };
 }

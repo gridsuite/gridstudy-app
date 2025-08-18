@@ -113,13 +113,13 @@ import {
     RESET_ALL_SPREADSHEET_GS_FILTERS,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
-    RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
     ResetAllSpreadsheetGlobalFiltersAction,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
-    ResetEquipmentsPostLoadflowAction,
+    ResetEquipmentsPostComputationAction,
     ResetLogsFilterAction,
     ResetMapEquipmentsAction,
     SAVE_SPREADSHEET_GS_FILTER,
@@ -138,7 +138,6 @@ import {
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EVENT_SCENARIO_DRAWER_OPEN,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -153,7 +152,6 @@ import {
     SetCalculationSelectionsAction,
     SetComputationStartingAction,
     SetComputingStatusAction,
-    SetEventScenarioDrawerOpenAction,
     SetLastCompletedComputationAction,
     SetModificationsDrawerOpenAction,
     SetModificationsInProgressAction,
@@ -197,13 +195,19 @@ import {
     SET_COMPUTING_STATUS_INFOS,
     SetComputingStatusParametersAction,
     ParameterizedComputingType,
+    SET_DIAGRAM_GRID_LAYOUT,
+    SetDiagramGridLayoutAction,
+    SET_TOGGLE_OPTIONS,
+    setToggleOptionsAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
     getLocalStorageTheme,
+    getLocalStorageToggleOptions,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
+    saveLocalStorageToggleOptions,
 } from './session-storage/local-storage';
 import {
     PARAM_COMPUTED_LANGUAGE,
@@ -273,11 +277,12 @@ import {
     SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
+import { Layouts } from 'react-grid-layout';
 import { DiagramConfigPosition } from '../services/explore';
 
 // Redux state
@@ -412,6 +417,11 @@ export interface AppConfigState {
     [PARAMS_LOADED]: boolean;
 }
 
+export interface DiagramGridLayoutConfig {
+    gridLayouts: Layouts;
+    params: DiagramParams[];
+}
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -450,8 +460,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
-    isModificationsDrawerOpen: boolean;
-    isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
@@ -497,6 +505,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
+    diagramGridLayout: DiagramGridLayoutConfig;
+    toggleOptions: StudyDisplayMode[];
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -583,13 +593,11 @@ const initialState: AppState = {
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     isExplorerDrawerOpen: true,
-    isModificationsDrawerOpen: false,
-    isEventScenarioDrawerOpen: false,
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
     isMonoRootStudy: true,
-    studyDisplayMode: StudyDisplayMode.HYBRID,
+    studyDisplayMode: StudyDisplayMode.TREE,
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -600,6 +608,11 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
+    diagramGridLayout: {
+        gridLayouts: {},
+        params: [],
+    },
+    toggleOptions: [StudyDisplayMode.TREE],
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -763,6 +776,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
+        // Load toggleOptions for this study
+        state.toggleOptions = getLocalStorageToggleOptions(state.studyUuid);
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1148,21 +1163,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
-    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, action: SetModificationsDrawerOpenAction) => {
-        state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
-
-        // exclusively open between two components
-        if (action.isModificationsDrawerOpen && state.isEventScenarioDrawerOpen) {
-            state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
+    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
+        if (!state.toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
+            state.toggleOptions = [...state.toggleOptions, StudyDisplayMode.MODIFICATIONS];
         }
     });
 
-    builder.addCase(SET_EVENT_SCENARIO_DRAWER_OPEN, (state, action: SetEventScenarioDrawerOpenAction) => {
-        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
-
-        // exclusively open between two components
-        if (action.isEventScenarioDrawerOpen && state.isModificationsDrawerOpen) {
-            state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
+    builder.addCase(SET_TOGGLE_OPTIONS, (state, action: setToggleOptionsAction) => {
+        state.toggleOptions = action.toggleOptions;
+        if (state.studyUuid) {
+            saveLocalStorageToggleOptions(state.studyUuid, state.toggleOptions);
         }
     });
 
@@ -1396,7 +1406,7 @@ export const reducer = createReducer(initialState, (builder) => {
         });
     });
 
-    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, _action: ResetEquipmentsPostLoadflowAction) => {
+    builder.addCase(RESET_EQUIPMENTS_POST_COMPUTATION, (state, _action: ResetEquipmentsPostComputationAction) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
             [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
@@ -1582,6 +1592,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
+    });
+
+    builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
+        state.diagramGridLayout = action.diagramGridLayout;
     });
 });
 

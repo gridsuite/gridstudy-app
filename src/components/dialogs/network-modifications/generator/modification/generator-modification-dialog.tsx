@@ -289,8 +289,6 @@ export default function GeneratorModificationDialog({
                                     setValue
                                 );
                             }
-                            setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
-                            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,

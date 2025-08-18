@@ -6,12 +6,8 @@
  */
 import { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import { CustomAggridBooleanFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
-import {
-    BooleanCellRenderer,
-    DefaultCellRenderer,
-    NumericCellRenderer,
-    RowIndexCellRenderer,
-} from '../../custom-aggrid/cell-renderers';
+import { BooleanCellRenderer, DefaultCellRenderer, NumericCellRenderer } from '../../custom-aggrid/cell-renderers';
+import { RowIndexCellRenderer } from 'components/custom-aggrid/rowindex-cell-renderer';
 import type { ColDef, IFilterOptionDef, GridApi } from 'ag-grid-community';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -203,7 +199,7 @@ export const rowIndexColumnDefinition = (tabUuid: UUID): CustomColDef => {
             }
             return params.node.rowIndex + 1;
         },
-        width: 65,
+        width: 70,
         pinned: 'left',
         suppressMovable: true,
         lockPosition: true,

@@ -16,6 +16,7 @@ import {
     styles,
     NAD_ZOOM_LEVELS,
     getEquipmentTypeFromFeederType,
+    equipmentsWithPopover,
 } from '../diagram-common';
 import {
     NetworkAreaDiagramViewer,
@@ -30,29 +31,22 @@ import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FEEDER_TYPES } from 'components/utils/feederType';
 import {
     ComputingType,
     ElementType,
     EquipmentType,
     IElementCreationDialog,
+    IElementUpdateDialog,
     mergeSx,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from '../diagram-controls';
-import { createDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
+import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
 import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
-
-const equipmentsWithPopover = [
-    EQUIPMENT_TYPES.LINE,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
-];
 
 type NetworkAreaDiagramContentProps = {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -70,6 +64,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
+    readonly onAddVoltageLevel: (vlId: string) => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
@@ -86,6 +81,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
+        onAddVoltageLevel,
         onHideVoltageLevel,
         onVoltageLevelClick,
         onMoveNode,
@@ -141,12 +137,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     left: mousePosition.x + 10,
                 };
 
-                setAnchorPosition(anchorPosition);
-                setHoveredEquipmentId(equipmentId);
-                setHoveredEquipmentType(equipmentType);
-
                 // Only show tooltip if the equipment type is in the hoverable list
                 const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+                const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
+
+                setAnchorPosition(anchorPosition);
+                setHoveredEquipmentId(equipmentId);
+                setHoveredEquipmentType(convertedEquipmentType || '');
+
                 setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable); // Show or hide based on shouldDisplay
             } else {
                 setShouldDisplayTooltip(false);
@@ -194,6 +192,33 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'diagramConfigCreationError',
+                })
+            );
+    };
+
+    const handleUpdateNadConfig = (data: IElementUpdateDialog) => {
+        updateDiagramConfig(
+            data.id,
+            {
+                scalingFactor: props.svgScalingFactor,
+                voltageLevelIds: props.svgVoltageLevels ?? [],
+                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+            },
+            data.name,
+            data.description
+        )
+            .then(() => {
+                snackInfo({
+                    headerId: 'diagramConfigUpdateMsg',
+                    headerValues: {
+                        item: data.name,
+                    },
+                });
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'diagramConfigUpdateError',
                 })
             );
     };
@@ -260,7 +285,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onMoveNodeCallback,
                 onMoveTextNodeCallback,
                 OnLeftClickCallback,
-                true,
+                isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
                 isEditNadMode ? null : OnToggleHoverCallback,
@@ -287,11 +312,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             // Repositioning the nodes with specified positions
             if (props.customPositions.length > 0) {
                 props.customPositions.forEach((position) => {
-                    if (position.xposition !== undefined && position.yposition !== undefined) {
+                    if (position.xPosition !== undefined && position.yPosition !== undefined) {
                         diagramViewer.moveNodeToCoordinates(
                             position.voltageLevelId,
-                            position.xposition,
-                            position.yposition
+                            position.xPosition,
+                            position.yPosition
                         );
                     }
                 });
@@ -353,10 +378,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             />
             <DiagramControls
                 onSave={handleSaveNadConfig}
+                onUpdate={handleUpdateNadConfig}
                 onLoad={onLoadNad}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
+                onAddVoltageLevel={onAddVoltageLevel}
                 isDiagramLoading={props.loadingState}
             />
             {renderEquipmentMenu()}

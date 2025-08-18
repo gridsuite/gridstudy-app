@@ -5,10 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, isObjectEmpty, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    DescriptionField,
+    isObjectEmpty,
+    MAX_CHAR_DESCRIPTION,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CASE_NAME, CASE_ID, NAME, TAG } from '../../utils/field-constants';
+import { CASE_NAME, CASE_ID, NAME, TAG, DESCRIPTION } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
@@ -25,6 +31,7 @@ export interface FormData {
     [TAG]: string;
     [CASE_NAME]: string;
     [CASE_ID]: string;
+    [DESCRIPTION]?: string;
 }
 
 interface RootNetworkDialogProps {
@@ -51,6 +58,7 @@ const getSchema = (isModification = false) => {
                 then: (schema) => schema.optional(),
                 otherwise: (schema) => schema.required(),
             }),
+            [DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
         })
         .required();
 };
@@ -60,6 +68,7 @@ const emptyFormData: FormData = {
     [TAG]: '',
     [CASE_NAME]: '',
     [CASE_ID]: '',
+    [DESCRIPTION]: '',
 };
 
 const MAX_TAG_LENGTH = 4;
@@ -95,6 +104,7 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
             reset({
                 [NAME]: editableRootNetwork?.name,
                 [TAG]: editableRootNetwork?.tag,
+                [DESCRIPTION]: editableRootNetwork?.description || '',
             });
         }
     }, [editableRootNetwork, open, reset]);
@@ -154,6 +164,9 @@ const RootNetworkDialog: React.FC<RootNetworkDialogProps> = ({
                             formProps={{ fullWidth: true }}
                             onManualChangeCallback={() => setModifiedByUser(true)}
                         />
+                    </Grid>
+                    <Grid item>
+                        <DescriptionField />
                     </Grid>
                     <RootNetworkCaseSelection
                         isModification={isModification}

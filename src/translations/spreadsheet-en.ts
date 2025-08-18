@@ -6,7 +6,7 @@
  */
 
 const spreadsheetEn = {
-    'spreadsheet/column/button': 'Show / hide columns',
+    'spreadsheet/column/button': 'Columns display',
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/collection/save/title': 'Spreadsheets list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',
@@ -50,6 +50,7 @@ const spreadsheetEn = {
     'spreadsheet/save/options/csv': 'Export CSV',
     'spreadsheet/save/dialog_title': 'Save a spreadsheet model',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Save a spreadsheet collection',
+    'spreadsheet/collection/save/button_tooltip': 'Save collection',
     'spreadsheet/save/error_message': 'Spreadsheet model creation error',
     'spreadsheet/save/update_error_message': 'Error while updating spreadsheet model {item}',
     'spreadsheet/collection/save/error': 'Spreadsheet collection creation error',
@@ -99,6 +100,7 @@ const spreadsheetEn = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Error while resetting spreadsheet collection',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Reset spreadsheet collection',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Configure or reload nodes',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
@@ -106,12 +108,14 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
     'spreadsheet/parameter_aliases/unique_node_names': 'Each node can only have one alias',
+    'spreadsheet/parameter_aliases/maximum_row_number_error': 'The number of rows must not exceed the value 5',
     'spreadsheet/filter/config': 'Gridsuite filters',
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
     'spreadsheet/reorder_tabs_error': 'Error while reordering tabs',
+    'spreadsheet/reset_filters_error': 'Error while resetting spreadsheet filters',
     'spreadsheet/rename/label': 'Rename',
     'spreadsheet/delete/label': 'Delete',
     'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',

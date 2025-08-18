@@ -45,8 +45,8 @@ import ShuntCompensatorCreationDialog from 'components/dialogs/network-modificat
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import { TabularModificationType } from 'components/dialogs/network-modifications/tabular/tabular-common';
+import { TabularDialog } from 'components/dialogs/network-modifications/tabular/tabular-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
@@ -114,8 +114,12 @@ import { LccModificationDialog } from '../../../dialogs/network-modifications/hv
 import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
+import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
+import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -172,6 +176,7 @@ const NetworkModificationNodeEditor = () => {
     const [isFetchingModifications, setIsFetchingModifications] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
@@ -211,6 +216,22 @@ const NetworkModificationNodeEditor = () => {
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}
+            />
+        );
+    }
+
+    function tabularDialogWithDefaultParams(Dialog: React.FC<any>, dialogMode: TabularModificationType) {
+        return (
+            <Dialog
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
+                dialogMode={dialogMode}
             />
         );
     }
@@ -270,6 +291,12 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
                             label: 'ModifyCharacteristics',
                             action: () => withDefaultParams(VoltageLevelModificationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_TOPOLOGY.type,
+                            label: 'CreateVoltageLevelTopology',
+                            hide: !enableDeveloperMode,
+                            action: () => withDefaultParams(CreateVoltageLevelTopologyDialog),
                         },
                         {
                             id: MODIFICATION_TYPES.CREATE_COUPLING_DEVICE.type,
@@ -395,8 +422,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_VSC',
                             label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.VSC_CONVERTER_STATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
                         },
                     ],
                 },
@@ -417,8 +443,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: 'DELETE_LCC',
                             label: 'DeleteContingencyList',
-                            action: () =>
-                                equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.LCC_CONVERTER_STATION),
+                            action: () => equipmentDeletionDialogWithDefaultParams(EQUIPMENT_TYPES.HVDC_LINE),
                         },
                     ],
                 },
@@ -538,14 +563,16 @@ const NetworkModificationNodeEditor = () => {
                     label: 'MultipleEquipment',
                     subItems: [
                         {
-                            id: 'TABULAR_CREATION',
-                            label: 'menu.create',
-                            action: () => withDefaultParams(TabularCreationDialog),
+                            id: MODIFICATION_TYPES.TABULAR_CREATION.type,
+                            label: 'menu.createByTable',
+                            action: () =>
+                                tabularDialogWithDefaultParams(TabularDialog, TabularModificationType.CREATION),
                         },
                         {
                             id: MODIFICATION_TYPES.TABULAR_MODIFICATION.type,
                             label: 'BY_TABLE',
-                            action: () => withDefaultParams(TabularModificationDialog),
+                            action: () =>
+                                tabularDialogWithDefaultParams(TabularDialog, TabularModificationType.MODIFICATION),
                         },
                         {
                             id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
@@ -558,8 +585,13 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(ByFormulaDialog),
                         },
                         {
+                            id: MODIFICATION_TYPES.LIMIT_SETS_TABULAR_MODIFICATION.type,
+                            label: 'TabularLimitSets',
+                            action: () => withDefaultParams(LimitSetsModificationDialog),
+                        },
+                        {
                             id: MODIFICATION_TYPES.BY_FILTER_DELETION.type,
-                            label: 'DeleteContingencyList',
+                            label: 'menu.deleteByFilter',
                             action: () => withDefaultParams(ByFilterDeletionDialog),
                         },
                     ],
@@ -1187,7 +1219,6 @@ const NetworkModificationNodeEditor = () => {
             <Toolbar sx={styles.toolbar}>
                 <Box sx={styles.filler} />
                 <IconButton
-                    sx={styles.toolbarIcon}
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
@@ -1200,7 +1231,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openImportModificationsDialog}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={isAnyNodeBuilding || mapDataLoading}
                         >
                             <FileUpload />
@@ -1212,7 +1242,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={openCreateCompositeModificationDialog}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={!(selectedNetworkModifications?.length > 0) || saveInProgress === true}
                         >
                             <SaveIcon />
@@ -1222,7 +1251,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={
                         selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode
                     }
@@ -1232,7 +1260,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCopyModifications}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
                 >
                     <ContentCopyIcon />
@@ -1252,7 +1279,6 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            sx={styles.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
                             }
@@ -1264,7 +1290,6 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={
                         selectedNetworkModifications.length === 0 ||
                         isAnyNodeBuilding ||
@@ -1297,7 +1322,6 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                sx={styles.toolbarIcon}
                                 disabled={modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress}
                             >
                                 <RestoreFromTrash />

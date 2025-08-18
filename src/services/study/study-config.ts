@@ -15,6 +15,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
+import { DiagramGridLayoutDto } from 'components/diagrams/diagram-grid-layout.types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -189,5 +190,33 @@ export function reorderSpreadsheetConfigs(studyUuid: UUID, collectionUuid: UUID,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newOrder),
+    });
+}
+
+export function getDiagramGridLayout(studyUuid: UUID) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
+    console.debug(fetchUrl);
+    return backendFetchJson(fetchUrl);
+}
+
+export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: DiagramGridLayoutDto) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
+    console.debug(fetchUrl);
+    return backendFetchJson(fetchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(diagramGridLayout),
+    });
+}
+
+export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModelUuid: UUID) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/reset-filters`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 }

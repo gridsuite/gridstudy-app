@@ -19,6 +19,8 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const PREDEFINED = 'predefined';
+export const TABULAR_PROPERTIES = 'properties';
 export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
@@ -47,8 +49,18 @@ export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
+export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
+export const MODIFICATION_TYPE = 'modificationType';
+export const LIMIT_SETS_MODIFICATION_TYPE = {
+    MODIFIED: 'MODIFIED',
+    ADDED: 'ADDED',
+    REPLACED: 'REPLACED',
+} as const;
+export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
+export const SIDE = 'side';
+export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
-export const CREATIONS_TABLE = 'creationsTable';
+export const CSV_FILENAME = 'csvFilename';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';
@@ -59,8 +71,7 @@ export const RATED_S = 'ratedS';
 
 export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
-export const OPERATIONAL_LIMITS_GROUPS_1 = 'operationalLimitsGroups1';
-export const OPERATIONAL_LIMITS_GROUPS_2 = 'operationalLimitsGroups2';
+export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
@@ -129,6 +140,10 @@ export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
 export const REGULATION_SIDE = 'regulationSide';
 
+// Tabular modifications twt ratio tap changer values
+export const RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES = 'ratioTapChangerLoadTapChangingCapabilities';
+export const RATIO_TAP_CHANGER_REGULATION_SIDE = 'ratioTapChangerRegulationSide';
+
 //tap-changer-pane-taps
 export const STEPS = 'steps';
 export const STEPS_TAP = 'index';
@@ -189,6 +204,7 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFIED: 'MODIFIED',
     ADDED: 'ADDED',
     DELETED: 'DELETED',
+    REPLACED: 'REPLACED',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
@@ -200,6 +216,7 @@ export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
+export const APPLICABIlITY = 'applicability';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';

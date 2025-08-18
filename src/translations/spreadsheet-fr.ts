@@ -6,7 +6,7 @@
  */
 
 const spreadsheetFr = {
-    'spreadsheet/column/button': 'Afficher / masquer colonnes',
+    'spreadsheet/column/button': 'Affichage colonnes',
     'spreadsheet/column/dialog/title': 'Liste des colonnes',
     'spreadsheet/collection/save/title': 'Liste des tableurs',
     'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
@@ -55,6 +55,7 @@ const spreadsheetFr = {
     'spreadsheet/save/error_message': 'Une erreur est survenue lors de la création du modèle de tableur',
     'spreadsheet/save/update_error_message':
         'Une erreur est survenue lors de la mise à jour du modèle de tableur {item}',
+    'spreadsheet/collection/save/button_tooltip': 'Enregistrer collection',
     'spreadsheet/collection/save/error': 'Une erreur est survenue lors de la création de la collection de tableurs',
     'spreadsheet/save/confirmation_message': "Création d'un modèle de tableur dans {folderName}",
     'spreadsheet/save/update_confirmation_message': 'Modèle de tableur {item} mis à jour',
@@ -104,6 +105,7 @@ const spreadsheetFr = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Erreur lors de la réinitialisation de la collection de tableurs',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Réinitialiser la collection de tableurs',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Paramétrer ou recharger nœuds',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
@@ -111,11 +113,13 @@ const spreadsheetFr = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'Aucun nœud avec ce nom',
     'spreadsheet/parameter_aliases/unique_aliases': 'Les alias doivent être unique',
     'spreadsheet/parameter_aliases/unique_node_names': 'Chaque nœud ne peut avoir qu’un seul alias',
+    'spreadsheet/parameter_aliases/maximum_row_number_error': 'Le nombre de lignes ne doit pas dépasser la valeur 5',
     'spreadsheet/filter/config': 'Filtres Gridsuite',
     'spreadsheet/remove_spreadsheet_confirmation': 'Êtes-vous sûr de vouloir supprimer le tableur {spreadsheetName} ?',
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
     'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
     'spreadsheet/reorder_tabs_error': 'Erreur lors du réordonnancement des onglets',
+    'spreadsheet/reset_filters_error': 'Erreur lors de la réinitialisation des filtres du tableur',
     'spreadsheet/rename/label': 'Renommer',
     'spreadsheet/delete/label': 'Supprimer',
     'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
