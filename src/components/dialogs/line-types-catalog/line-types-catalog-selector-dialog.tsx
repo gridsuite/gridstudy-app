@@ -5,29 +5,76 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BasicModificationDialog } from '../commons/basicModificationDialog';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { Option, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, Option, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
+    ID,
     UNDERGROUND_AREAS,
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
 import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
 import { CATEGORIES, TABS } from './segment-utils';
 import LimitCustomAgGrid from './limit-custom-aggrid';
 import LimitParametersSelection from './limit-parameters-selection';
-import { NetworkModificationDialogProps } from '../../graph/menus/network-modifications/network-modification-menu.type';
+import { ModificationDialog } from '../commons/modificationDialog';
+import { DeepNullable } from '../../utils/ts-utils';
+import { yupResolver } from '@hookform/resolvers/yup';
+import yup from '../../utils/yup-config';
+import { InferType } from 'yup';
 
-export type LineTypesCatalogSelectorDialogProps = NetworkModificationDialogProps & {
+const LineTypesCatalogSelectorSchema = yup
+    .object()
+    .shape({
+        [AERIAL_AREAS]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+        [AERIAL_TEMPERATURES]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+        [UNDERGROUND_AREAS]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+        [UNDERGROUND_SHAPE_FACTORS]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [ID]: yup.string().required(),
+            }),
+    })
+    .required();
+
+const emptyFormData = {
+    [AERIAL_AREAS]: null,
+    [AERIAL_TEMPERATURES]: null,
+    [UNDERGROUND_AREAS]: null,
+    [UNDERGROUND_SHAPE_FACTORS]: null,
+};
+
+export type LineTypesCatalogSelectorDialogSchemaForm = InferType<typeof LineTypesCatalogSelectorSchema>;
+
+export type LineTypesCatalogSelectorDialogProps = {
     onSelectLine: (selectedLine: LineTypeInfo) => void;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
@@ -52,10 +99,11 @@ export default function LineTypesCatalogSelectorDialog({
     const [undergroundAreas, setUndergroundAreas] = useState<Option[]>([]);
     const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
     const { aerialRowData, undergroundRowData } = useRowData(rowData);
-    const selectedAerialArea = useWatch({ name: AERIAL_AREAS });
-    const selectedAerialTemperature = useWatch({ name: AERIAL_TEMPERATURES });
-    const selectedUndergroundArea = useWatch({ name: UNDERGROUND_AREAS });
-    const selectedUndergroundShapeFactor = useWatch({ name: UNDERGROUND_SHAPE_FACTORS });
+
+    const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
+        defaultValues: emptyFormData,
+        resolver: yupResolver<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>(LineTypesCatalogSelectorSchema),
+    });
 
     const undergroundShapeFactor: Option[] = [
         { id: '1', label: '1' },
@@ -208,31 +256,6 @@ export default function LineTypesCatalogSelectorDialog({
         highlightSelectedRow();
     }, [highlightSelectedRow, tabIndex]);
 
-    const isValidationBlocked = useMemo(() => {
-        if (!selectedRow) {
-            return true;
-        } else if (selectedRow.category === CATEGORIES.AERIAL && aerialAreas.length > 0) {
-            console.log('selectedArea', selectedAerialArea, selectedAerialTemperature);
-            if (!selectedAerialArea && !selectedAerialTemperature) {
-                return true;
-            }
-        } else if (selectedRow.category === CATEGORIES.UNDERGROUND && undergroundAreas.length > 0) {
-            console.log('selectedUndergroundArea', selectedUndergroundArea, selectedUndergroundShapeFactor);
-            if (!selectedUndergroundArea && !selectedUndergroundShapeFactor) {
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }, [
-        selectedRow,
-        aerialAreas.length,
-        undergroundAreas.length,
-        selectedAerialArea,
-        selectedAerialTemperature,
-        selectedUndergroundArea,
-        selectedUndergroundShapeFactor,
-    ]);
     const headerAndTabs = (
         <Box
             sx={{
@@ -250,41 +273,42 @@ export default function LineTypesCatalogSelectorDialog({
         </Box>
     );
     return (
-        <BasicModificationDialog
-            disabledSave={isValidationBlocked}
-            fullWidth
-            maxWidth="xl"
-            onClear={handleClear}
-            onClose={onClose}
-            onSave={handleSubmit}
-            open={true}
-            PaperProps={{
-                sx: { height: '95vh' },
-            }}
-            subtitle={headerAndTabs}
-            titleId="SelectType"
-            {...dialogProps}
-        >
-            <div style={{ height: '85%' }}>
-                <LimitCustomAgGrid
-                    gridRef={gridRef}
+        <CustomFormProvider validationSchema={LineTypesCatalogSelectorSchema} {...formMethods}>
+            <ModificationDialog
+                fullWidth
+                maxWidth="xl"
+                onClear={handleClear}
+                onClose={onClose}
+                onSave={handleSubmit}
+                open={true}
+                PaperProps={{
+                    sx: { height: '95vh' },
+                }}
+                subtitle={headerAndTabs}
+                titleId="SelectType"
+                {...dialogProps}
+            >
+                <div style={{ height: '85%' }}>
+                    <LimitCustomAgGrid
+                        gridRef={gridRef}
+                        currentTab={tabIndex}
+                        aerialRowData={aerialRowData}
+                        undergroundRowData={undergroundRowData}
+                        aerialColumnDefs={aerialColumnDefs}
+                        undergroundColumnDefs={undergroundColumnDefs}
+                        onSelectionChanged={onSelectionChanged}
+                        onGridReady={scrollToPreselectedElement}
+                    />
+                </div>
+                <LimitParametersSelection
+                    selectedRow={selectedRow}
                     currentTab={tabIndex}
-                    aerialRowData={aerialRowData}
-                    undergroundRowData={undergroundRowData}
-                    aerialColumnDefs={aerialColumnDefs}
-                    undergroundColumnDefs={undergroundColumnDefs}
-                    onSelectionChanged={onSelectionChanged}
-                    onGridReady={scrollToPreselectedElement}
+                    aerialAreas={aerialAreas}
+                    aerialTemperatures={aerialTemperatures}
+                    undergroundAreas={undergroundAreas}
+                    undergroundShapeFactor={undergroundShapeFactor}
                 />
-            </div>
-            <LimitParametersSelection
-                selectedRow={selectedRow}
-                currentTab={tabIndex}
-                aerialAreas={aerialAreas}
-                aerialTemperatures={aerialTemperatures}
-                undergroundAreas={undergroundAreas}
-                undergroundShapeFactor={undergroundShapeFactor}
-            />
-        </BasicModificationDialog>
+            </ModificationDialog>
+        </CustomFormProvider>
     );
 }
