@@ -4,15 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { type RefObject, useCallback } from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { Box, Fade, Theme, CircularProgress, Button, Tooltip } from '@mui/material';
+import { Box, Button, CircularProgress, Fade, Theme, Tooltip } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { resetSpreadsheetColumnsFilters } from '../../../../../services/study/study-config';
-import { useFilteredRowCounterInfo } from './use-filtered-row-counter';
+import { UseFilteredRowCounterInfoReturn } from './use-filtered-row-counter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -33,19 +32,13 @@ const styles = {
 };
 
 export type SpreadsheetFilteredRowCountProps = {
-    gridRef: RefObject<AgGridReact>;
+    rowCounterInfos: UseFilteredRowCounterInfoReturn;
     tableDefinition: SpreadsheetTabDefinition;
-    disabled: boolean;
 };
 
-export function FilteredRowCounter({ gridRef, tableDefinition, disabled }: Readonly<SpreadsheetFilteredRowCountProps>) {
+export function FilteredRowCounter({ rowCounterInfos, tableDefinition }: Readonly<SpreadsheetFilteredRowCountProps>) {
+    const { isLoading, isAnyFilterPresent, rowCountLabel, tooltipContent } = rowCounterInfos;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-
-    const { isLoading, isAnyFilterPresent, rowCountLabel, tooltipContent } = useFilteredRowCounterInfo({
-        gridRef,
-        tableDefinition,
-        disabled,
-    });
     const { snackError } = useSnackMessage();
 
     const handleResetFilters = useCallback(() => {
