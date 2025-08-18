@@ -26,7 +26,7 @@ import { FetchStatus } from '../../../../services/utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {
-    [SECTION_COUNT]: null,
+    [SECTION_COUNT]: 1,
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [SWITCH_KINDS]: [],
 };
