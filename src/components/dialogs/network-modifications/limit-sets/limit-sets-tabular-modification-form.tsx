@@ -39,7 +39,7 @@ import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
-} from '../tabular/modification/tabular-modification-utils';
+} from '../tabular/tabular-modification-utils';
 
 const styles = {
     grid: { height: 500, width: '100%' },
@@ -283,7 +283,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 <GridItem size={4}>{equipmentTypeField}</GridItem>
                 <Grid item>{FileField}</Grid>
             </Grid>
-            <Grid container item spacing={2}>
+            <Grid container item spacing={2} alignItems={'center'}>
                 <Grid item>
                     <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
                 </Grid>
@@ -300,8 +300,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         </Button>
                     </CsvDownloader>
                 </Grid>
-            </Grid>
-            <Grid container item spacing={2} alignItems={'center'}>
                 <Grid item>
                     <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}

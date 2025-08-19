@@ -107,9 +107,13 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
 
         const handleTabChange = useCallback(
             (event: React.SyntheticEvent, newValue: number): void => {
+                // if editing do not change index
+                if (editingTabIndex !== -1) {
+                    return;
+                }
                 setIndexSelectedLimitSet(newValue);
             },
-            [setIndexSelectedLimitSet]
+            [editingTabIndex, setIndexSelectedLimitSet]
         );
 
         const handleOpenMenu = useCallback(
@@ -167,13 +171,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [CURRENT_LIMITS]: {
                         [ID]: name,
-                        [TEMPORARY_LIMITS]: [
-                            emptyTemporaryLimit,
-                            emptyTemporaryLimit,
-                            emptyTemporaryLimit,
-                            emptyTemporaryLimit,
-                            emptyTemporaryLimit,
-                        ],
+                        [TEMPORARY_LIMITS]: [emptyTemporaryLimit],
                         [PERMANENT_LIMIT]: null,
                     },
                 };
@@ -255,7 +253,14 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             }
             prependEmptyOperationalLimitsGroup(formName, name);
             startEditingLimitsGroup(0, name);
-        }, [parentFormName, getValues, prependEmptyOperationalLimitsGroup, startEditingLimitsGroup]);
+            setIndexSelectedLimitSet(0);
+        }, [
+            parentFormName,
+            getValues,
+            prependEmptyOperationalLimitsGroup,
+            startEditingLimitsGroup,
+            setIndexSelectedLimitSet,
+        ]);
 
         useImperativeHandle(ref, () => ({ addNewLimitSet }));
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
     LIMITS,
@@ -20,6 +20,7 @@ import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
+import IconButton from '@mui/material/IconButton';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import GridSection from '../commons/grid-section';
 import { styles } from '../dialog-utils';
@@ -129,7 +130,9 @@ export function LimitsPane({
                     <GridSection title="LimitSets" />
                 </Grid>
                 <Grid container item xs={0.5}>
-                    <Button sx={styles.button} startIcon={<AddIcon onClick={onAddClick} />} />
+                    <IconButton color="primary" sx={styles.button} onClick={onAddClick}>
+                        <AddIcon />
+                    </IconButton>
                 </Grid>
             </Grid>
             <Grid container item xs={12} columns={10.25}>

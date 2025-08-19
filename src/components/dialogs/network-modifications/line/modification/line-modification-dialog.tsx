@@ -18,7 +18,6 @@ import {
     ADDITIONAL_PROPERTIES,
     B1,
     B2,
-    STATE_ESTIMATION,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
     CONNECTED,
@@ -31,7 +30,6 @@ import {
     EQUIPMENT_NAME,
     G1,
     G2,
-    ID,
     LIMITS,
     MEASUREMENT_P1,
     MEASUREMENT_P2,
@@ -39,12 +37,13 @@ import {
     MEASUREMENT_Q2,
     PERMANENT_LIMIT,
     R,
+    STATE_ESTIMATION,
     TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
-    VALUE,
     VALIDITY,
+    VALUE,
     VOLTAGE_LEVEL,
     X,
     SELECTED_LIMITS_GROUP_1,
@@ -283,13 +282,6 @@ const LineModificationDialog = ({
         reset(emptyFormData);
     }, [emptyFormData, reset]);
 
-    const setConnectivityValue = useCallback(
-        (index: string, field: string, value: string) => {
-            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
-        },
-        [setValue]
-    );
-
     /**
      * extract data loaded from the map server and merge it with local data in order to fill the line modification interface
      */
@@ -335,10 +327,6 @@ const LineModificationDialog = ({
                     .then((line: LineInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
-                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
-                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
-                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             reset((formValues: LineModificationEditData) => ({
                                 ...formValues,
                                 ...{
@@ -367,7 +355,6 @@ const LineModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             currentRootNetworkUuid,
-            setConnectivityValue,
             reset,
             updateOpLimitsGroups,
             getValues,

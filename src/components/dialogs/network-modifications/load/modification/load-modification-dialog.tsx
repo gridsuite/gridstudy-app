@@ -65,6 +65,7 @@ import LoadDialogTabsContent from '../common/load-dialog-tabs-content';
 import { LoadFormInfos } from '../common/load.type';
 import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -108,13 +109,14 @@ export default function LoadModificationDialog({
     const [tabIndex, setTabIndex] = useState<number>(LoadDialogTab.CONNECTIVITY_TAB);
     const [loadToModify, setLoadToModify] = useState<LoadFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const formMethods = useForm<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LoadModificationSchemaForm>>(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (load: LoadModificationInfos) => {
@@ -166,8 +168,6 @@ export default function LoadModificationDialog({
                 )
                     .then((load: LoadFormInfos) => {
                         if (load) {
-                            setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, load?.voltageLevelId);
-                            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, load?.busOrBusbarSectionId);
                             setLoadToModify(load);
                             reset((formValues) => ({
                                 ...formValues,
@@ -185,7 +185,7 @@ export default function LoadModificationDialog({
                     });
             }
         },
-        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, setValue, editData]
+        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
@@ -309,6 +309,7 @@ export default function LoadModificationDialog({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         loadToModify={loadToModify}
                         tabIndex={tabIndex}
+                        voltageLevelOptions={voltageLevelOptions}
                         isModification={true}
                     />
                 )}
