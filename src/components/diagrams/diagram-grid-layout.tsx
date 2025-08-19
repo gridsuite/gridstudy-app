@@ -234,21 +234,25 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
 
     const showVoltageLevelDiagram = useCallback(
         (element: EquipmentInfos) => {
-            if (element.type === EquipmentType.VOLTAGE_LEVEL) {
-                const diagram: DiagramParams = {
+            let diagram: DiagramParams | null = null;
+
+            if (element.type === EquipmentType.VOLTAGE_LEVEL || element.voltageLevelId) {
+                diagram = {
                     diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: element.voltageLevelId ?? '',
                     name: '',
                 };
-                createDiagram(diagram);
             } else if (element.type === EquipmentType.SUBSTATION) {
-                const diagram: DiagramParams = {
+                diagram = {
                     diagramUuid: v4() as UUID,
                     type: DiagramType.SUBSTATION,
                     substationId: element.id,
                     name: '',
                 };
+            }
+
+            if (diagram) {
                 createDiagram(diagram);
             }
         },
