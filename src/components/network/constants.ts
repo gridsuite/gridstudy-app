@@ -168,10 +168,16 @@ export const SWITCH_TYPE = {
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 } as const;
 
+export const POSITION_NEW_SECTION_SIDE = {
+    BEFORE: { id: 'BEFORE', label: 'Before' },
+    AFTER: { id: 'AFTER', label: 'After' },
+} as const;
+
 export enum VscConverterMode {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
     SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
 }
+
 export interface VscConverterModeValue {
     id: string;
     label: string;

@@ -810,6 +810,18 @@ export interface CreateVoltageLevelTopologyInfos {
     switchKinds?: string[] | null;
 }
 
+export interface CreateVoltageLevelSectionInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    busbarIndex: string | null;
+    busbarSectionId: string | null;
+    afterBusbarSectionId: boolean;
+    leftSwitchKind: string | null;
+    rightSwitchKind: string | null;
+    switchOpen: boolean;
+}
+
 export type NetworkModificationRequestInfos = {
     studyUuid: UUID;
     nodeUuid: UUID;
