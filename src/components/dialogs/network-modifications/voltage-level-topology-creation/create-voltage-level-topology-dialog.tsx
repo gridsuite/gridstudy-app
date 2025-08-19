@@ -26,12 +26,12 @@ import { FetchStatus } from '../../../../services/utils';
 import { useIntl } from 'react-intl';
 
 const emptyFormData = {
-    [SECTION_COUNT]: 1,
+    [SECTION_COUNT]: null,
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [SWITCH_KINDS]: [],
 };
 const formSchema = yup.object().shape({
-    [SECTION_COUNT]: yup.number().required().min(1, 'AtLeastOneSectionAdded'),
+    [SECTION_COUNT]: yup.number().required().nullable().min(1, 'AtLeastOneSectionAdded'),
     [SWITCHES_BETWEEN_SECTIONS]: yup
         .string()
         .nullable()
