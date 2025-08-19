@@ -26,7 +26,6 @@ import NetworkModificationNodeDialog from './network-modification-node-dialog';
 
 const styles = {
     header: (theme: Theme) => ({
-        backgroundColor: theme.networkModificationPanel.backgroundColor,
         padding: theme.spacing(1),
         color: theme.palette.getContrastText(
             theme.palette.mode === 'light'
@@ -36,25 +35,51 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
     }),
-    titleContainer: {
-        flexGrow: 1,
-        overflow: 'hidden',
-    },
     buttonTitle: {
         textTransform: 'none',
         justifyContent: 'flex-start',
         overflow: 'hidden',
+        minWidth: 0,
+        maxWidth: '100%',
     },
+
     nodeNameText: {
         fontWeight: 'bold',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        display: 'block',
+        maxWidth: '100%',
     },
+
+    titleContainer: {
+        flexGrow: 1,
+        overflow: 'hidden',
+    },
+    accordion: (theme: Theme) => ({
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.background.default,
+        marginRight: theme.spacing(1),
+        borderRadius: theme.shape.borderRadius,
+        width: '100%',
+        boxSizing: 'border-box',
+    }),
+    accordionSummary: {
+        minHeight: 0,
+        '& .MuiAccordionSummary-content': {
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flexGrow: 1,
+        },
+    },
+
     accordionDetails: {
-        paddingLeft: 2,
-        paddingRight: 2,
-        paddingBottom: 1,
+        overflowWrap: 'break-word',
+        wordBreak: 'break-word',
+        whiteSpace: 'normal',
+        paddingTop: 0,
+        maxHeight: 200,
+        overflowY: 'auto',
     },
 };
 
@@ -92,47 +117,12 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
 
             {description && (
                 <Box sx={{ marginRight: 1 }}>
-                    <Accordion
-                        disableGutters
-                        elevation={0}
-                        sx={(theme) => ({
-                            backgroundColor:
-                                theme.palette.mode === 'light'
-                                    ? theme.palette.grey[200]
-                                    : theme.palette.background.default,
-                            marginRight: theme.spacing(1),
-                            borderRadius: theme.shape.borderRadius,
-                            width: '100%',
-                            boxSizing: 'border-box',
-                        })}
-                    >
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            sx={{
-                                paddingRight: 1,
-                                minHeight: 0,
-                                '& .MuiAccordionSummary-content': {
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                    flexGrow: 1,
-                                },
-                            }}
-                        >
-                            <Typography variant="body2" noWrap>
-                                Description
-                            </Typography>
+                    <Accordion disableGutters elevation={0} sx={styles.accordion}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={styles.accordionSummary}>
+                            <Typography noWrap> {description}</Typography>
                         </AccordionSummary>
-                        <AccordionDetails
-                            sx={{
-                                ...styles.accordionDetails,
-                                overflowWrap: 'break-word',
-                                wordBreak: 'break-word',
-                                whiteSpace: 'normal',
-                                paddingTop: 0,
-                            }}
-                        >
-                            <Typography variant="body2" color="textSecondary" sx={{ wordBreak: 'break-word' }}>
+                        <AccordionDetails sx={styles.accordionDetails}>
+                            <Typography color="textSecondary" sx={{ wordBreak: 'break-word' }}>
                                 {description}
                             </Typography>
                         </AccordionDetails>
