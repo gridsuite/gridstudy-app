@@ -18,11 +18,13 @@ import { DiagramType } from '../diagrams/diagram.type';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
+    disablCenterSubstation: boolean;
 }
 
 export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> = ({
     element,
     onClose,
+    disablCenterSubstation,
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -79,13 +81,15 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
                         <TimelineIcon fontSize="small" />
                     </IconButton>
                 )}
-                <IconButton
-                    disabled={(!studyUuid || !currentNode) && element.type !== EQUIPMENT_TYPES.SUBSTATION}
-                    onClick={centerOnSubstationCB}
-                    size="small"
-                >
-                    <GpsFixedIcon fontSize="small" />
-                </IconButton>
+                {!disablCenterSubstation && (
+                    <IconButton
+                        disabled={(!studyUuid || !currentNode) && element.type !== EQUIPMENT_TYPES.SUBSTATION}
+                        onClick={centerOnSubstationCB}
+                        size="small"
+                    >
+                        <GpsFixedIcon fontSize="small" />
+                    </IconButton>
+                )}
             </>
         );
     } else {
