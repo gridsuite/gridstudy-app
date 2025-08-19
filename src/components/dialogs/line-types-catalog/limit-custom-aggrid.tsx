@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { AgGridReact } from 'ag-grid-react';
-import { LineTypeInfo } from './line-catalog.type';
+import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
 import { ColDef } from 'ag-grid-community';
 import { RefObject, useMemo } from 'react';
-import { TABS } from './segment-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
@@ -45,7 +44,7 @@ export default function LimitCustomAgGrid({
     onGridReady,
 }: Readonly<LimitCustomAgGridProps>) {
     const { rowData, columnDefs } = useMemo(() => {
-        if (currentTab === TABS.AERIAL) {
+        if (currentTab === CATEGORIES_TABS.AERIAL.id) {
             return { rowData: aerialRowData, columnDefs: aerialColumnDefs };
         }
         return { rowData: undergroundRowData, columnDefs: undergroundColumnDefs };

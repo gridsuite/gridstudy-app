@@ -44,3 +44,8 @@ export type CurrentLimitsInfo = {
     area: string;
     temperature: string;
 };
+
+export const CATEGORIES_TABS = {
+    AERIAL: { id: 0, name: 'AERIAL' },
+    UNDERGROUND: { id: 1, name: 'UNDERGROUND' },
+} as const;

@@ -5,14 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useMemo } from 'react';
-import { LineTypeInfo } from './line-catalog.type';
-import { CATEGORIES } from './segment-utils';
+import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
 
 export const useRowData = (rowData: LineTypeInfo[]) => {
-    const aerialRowData = useMemo(() => rowData?.filter((row) => row.category === CATEGORIES.AERIAL) || [], [rowData]);
+    const aerialRowData = useMemo(
+        () => rowData?.filter((row) => row.category === CATEGORIES_TABS.AERIAL.name) || [],
+        [rowData]
+    );
 
     const undergroundRowData = useMemo(
-        () => rowData?.filter((row) => row.category === CATEGORIES.UNDERGROUND) || [],
+        () => rowData?.filter((row) => row.category === CATEGORIES_TABS.UNDERGROUND.name) || [],
         [rowData]
     );
 

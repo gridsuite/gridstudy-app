@@ -14,8 +14,8 @@ import {
     UNDERGROUND_AREAS,
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
-import { CATEGORIES, TABS } from './segment-utils';
-import { LineTypeInfo } from './line-catalog.type';
+import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
+import { areIdsEqual } from '../../utils/utils';
 
 interface LimitParametersSelectionProps {
     selectedRow: LineTypeInfo | null;
@@ -26,7 +26,7 @@ interface LimitParametersSelectionProps {
     undergroundShapeFactor: Option[];
 }
 
-export default function LimitParametersSelection({
+export default function LineTypesCatalogSelectorForm({
     selectedRow,
     currentTab,
     aerialAreas,
@@ -34,9 +34,9 @@ export default function LimitParametersSelection({
     undergroundAreas,
     undergroundShapeFactor,
 }: LimitParametersSelectionProps) {
-    const isAerialTab = currentTab === TABS.AERIAL;
-    const isAerialCategory = selectedRow?.category === CATEGORIES.AERIAL;
-    const isUndergroundCategory = selectedRow?.category === CATEGORIES.UNDERGROUND;
+    const isAerialTab = currentTab === CATEGORIES_TABS.AERIAL.id;
+    const isAerialCategory = selectedRow?.category === CATEGORIES_TABS.AERIAL.name;
+    const isUndergroundCategory = selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name;
 
     return (
         <>
@@ -49,6 +49,7 @@ export default function LimitParametersSelection({
                                 name={AERIAL_AREAS}
                                 label="aerialAreas"
                                 options={aerialAreas}
+                                isOptionEqualToValue={areIdsEqual}
                                 size="small"
                             />
                         </GridItem>
@@ -57,6 +58,7 @@ export default function LimitParametersSelection({
                                 name={AERIAL_TEMPERATURES}
                                 label="aerialTemperatures"
                                 options={aerialTemperatures}
+                                isOptionEqualToValue={areIdsEqual}
                                 size="small"
                             />
                         </GridItem>
@@ -72,6 +74,7 @@ export default function LimitParametersSelection({
                                 name={UNDERGROUND_AREAS}
                                 label="lineTypes.currentLimits.underground.Area"
                                 options={undergroundAreas}
+                                isOptionEqualToValue={areIdsEqual}
                                 size="small"
                             />
                         </GridItem>
@@ -80,6 +83,7 @@ export default function LimitParametersSelection({
                                 name={UNDERGROUND_SHAPE_FACTORS}
                                 label="lineTypes.currentLimits.underground.ShapeFactor"
                                 options={undergroundShapeFactor}
+                                isOptionEqualToValue={areIdsEqual}
                                 size={'small'}
                             />
                         </GridItem>

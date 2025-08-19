@@ -10,11 +10,12 @@ import { FormattedMessage } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { CustomFormProvider, Option, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
     ID,
+    SELECTED_CATEGORIES_TAB,
     UNDERGROUND_AREAS,
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
@@ -22,14 +23,13 @@ import { useForm, useFormContext } from 'react-hook-form';
 import { getLineTypeWithLimits } from '../../../services/network-modification';
 import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
-import { CATEGORIES, TABS } from './segment-utils';
 import LimitCustomAgGrid from './limit-custom-aggrid';
-import LimitParametersSelection from './limit-parameters-selection';
 import { ModificationDialog } from '../commons/modificationDialog';
-import { DeepNullable } from '../../utils/ts-utils';
-import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { InferType } from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { DeepNullable } from 'components/utils/ts-utils';
+import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
 
 const LineTypesCatalogSelectorSchema = yup
     .object()
@@ -37,31 +37,47 @@ const LineTypesCatalogSelectorSchema = yup
         [AERIAL_AREAS]: yup
             .object()
             .nullable()
-            .required()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => {
+                    console.log('selectedCategoryTab', selectedCategoryTab);
+                    return selectedCategoryTab === CATEGORIES_TABS.AERIAL.id;
+                },
+                then: (schema) => schema.required(),
+            })
             .shape({
-                [ID]: yup.string().required(),
+                [ID]: yup.string(),
             }),
         [AERIAL_TEMPERATURES]: yup
             .object()
             .nullable()
-            .required()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.AERIAL.id,
+                then: (schema) => schema.required(),
+            })
             .shape({
-                [ID]: yup.string().required(),
+                [ID]: yup.string(),
             }),
         [UNDERGROUND_AREAS]: yup
             .object()
             .nullable()
-            .required()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.UNDERGROUND.id,
+                then: (schema) => schema.required(),
+            })
             .shape({
-                [ID]: yup.string().required(),
+                [ID]: yup.string(),
             }),
         [UNDERGROUND_SHAPE_FACTORS]: yup
             .object()
             .nullable()
-            .required()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.UNDERGROUND.id,
+                then: (schema) => schema.required(),
+            })
             .shape({
-                [ID]: yup.string().required(),
+                [ID]: yup.string(),
             }),
+        [SELECTED_CATEGORIES_TAB]: yup.number(),
     })
     .required();
 
@@ -70,6 +86,7 @@ const emptyFormData = {
     [AERIAL_TEMPERATURES]: null,
     [UNDERGROUND_AREAS]: null,
     [UNDERGROUND_SHAPE_FACTORS]: null,
+    [SELECTED_CATEGORIES_TAB]: CATEGORIES_TABS.AERIAL.id,
 };
 
 export type LineTypesCatalogSelectorDialogSchemaForm = InferType<typeof LineTypesCatalogSelectorSchema>;
@@ -92,7 +109,7 @@ export default function LineTypesCatalogSelectorDialog({
     const gridRef = useRef<AgGridReact>(null);
     const { setValue, getValues } = useFormContext();
 
-    const [tabIndex, setTabIndex] = useState<number>(TABS.AERIAL);
+    const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
     const [aerialAreas, setAerialAreas] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
@@ -153,18 +170,22 @@ export default function LineTypesCatalogSelectorDialog({
     );
 
     const handleSubmit = useCallback(() => {
-        if (selectedRow?.category === CATEGORIES.AERIAL) {
+        if (selectedRow?.category === CATEGORIES_TABS.AERIAL.name) {
             handleSelectedAerial(selectedRow);
-        } else if (selectedRow?.category === CATEGORIES.UNDERGROUND) {
+        } else if (selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
             handleSelectedUnderground(selectedRow);
         }
 
         selectedRow && onSelectLine?.(selectedRow);
     }, [selectedRow, handleSelectedAerial, handleSelectedUnderground, onSelectLine]);
 
-    const handleTabChange = useCallback((newValue: number) => {
-        setTabIndex(newValue);
-    }, []);
+    const handleTabChange = useCallback(
+        (newValue: number) => {
+            setValue(SELECTED_CATEGORIES_TAB, newValue);
+            setTabIndex(newValue);
+        },
+        [setValue]
+    );
 
     const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
         if (!limitsData?.length) {
@@ -198,10 +219,10 @@ export default function LineTypesCatalogSelectorDialog({
                 const lineTypeWithLimits = await getLineTypeWithLimits(selectedData.id);
                 selectedData.limitsForLineType = lineTypeWithLimits.limitsForLineType;
                 setSelectedRow(selectedData);
-                if (selectedData.category === CATEGORIES.AERIAL) {
+                if (selectedData.category === CATEGORIES_TABS.AERIAL.name) {
                     setAerialAreas(createOptionsFromAreas(selectedData.limitsForLineType));
                     setAerialTemperatures(createOptionsFromTemperatures(selectedData.limitsForLineType));
-                } else if (selectedData.category === CATEGORIES.UNDERGROUND) {
+                } else if (selectedData.category === CATEGORIES_TABS.UNDERGROUND.name) {
                     setUndergroundAreas(createOptionsFromUndergroundAreas(selectedData.limitsForLineType));
                 }
             } catch (error) {
@@ -216,7 +237,6 @@ export default function LineTypesCatalogSelectorDialog({
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current?.api?.getSelectedRows();
-        console.log('selectedRows', selectedRows);
         if (selectedRows?.length) {
             setValue(AERIAL_AREAS, null);
             setValue(AERIAL_TEMPERATURES, null);
@@ -246,15 +266,20 @@ export default function LineTypesCatalogSelectorDialog({
     useEffect(() => {
         if (preselectedRowId && rowData) {
             const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
-            const newTabIndex = preselectedRow?.category === CATEGORIES.UNDERGROUND ? TABS.UNDERGROUND : TABS.AERIAL;
+            const newTabIndex =
+                preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name
+                    ? CATEGORIES_TABS.UNDERGROUND.id
+                    : CATEGORIES_TABS.AERIAL.id;
+            setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
             setTabIndex(newTabIndex);
         }
-    }, [rowData, preselectedRowId]);
+    }, [rowData, preselectedRowId, setValue]);
 
     // Tries to highlight the preselected row when changing tabs
     useEffect(() => {
         highlightSelectedRow();
-    }, [highlightSelectedRow, tabIndex]);
+        setValue(SELECTED_CATEGORIES_TAB, tabIndex);
+    }, [highlightSelectedRow, setValue, tabIndex]);
 
     const headerAndTabs = (
         <Box
@@ -300,7 +325,7 @@ export default function LineTypesCatalogSelectorDialog({
                         onGridReady={scrollToPreselectedElement}
                     />
                 </div>
-                <LimitParametersSelection
+                <LineTypesCatalogSelectorForm
                     selectedRow={selectedRow}
                     currentTab={tabIndex}
                     aerialAreas={aerialAreas}
