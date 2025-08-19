@@ -133,16 +133,18 @@ export default function LineTypesCatalogSelectorDialog({
     }, [onClose]);
 
     const handleSelectedAerial = useCallback(
-        (selectedRow: LineTypeInfo) => {
+        (selectedAerialLineType: LineTypeInfo) => {
             const selectedArea = getValues(AERIAL_AREAS);
             const selectedTemperature = getValues(AERIAL_TEMPERATURES);
+            console.log('selectedArea', selectedArea);
+            console.log('selectedTemperature', selectedTemperature);
 
             if (aerialAreas?.length > 0 && aerialTemperatures?.length > 0) {
-                const filteredLimits = selectedRow?.limitsForLineType?.filter(
+                const filteredLimits = selectedAerialLineType?.limitsForLineType?.filter(
                     (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
                 );
                 if (filteredLimits) {
-                    selectedRow.limitsForLineType = filteredLimits;
+                    selectedAerialLineType.limitsForLineType = filteredLimits;
                 }
             }
         },
@@ -150,19 +152,19 @@ export default function LineTypesCatalogSelectorDialog({
     );
 
     const handleSelectedUnderground = useCallback(
-        (selectedRow: LineTypeInfo) => {
+        (selectedUndergroundLineType: LineTypeInfo) => {
             const selectedArea = getValues(UNDERGROUND_AREAS);
             const selectedShapeFactor = parseFloat(getValues(UNDERGROUND_SHAPE_FACTORS)?.id);
 
             if (undergroundAreas.length > 0) {
-                const filteredLimits = selectedRow?.limitsForLineType?.filter(
+                const filteredLimits = selectedUndergroundLineType?.limitsForLineType?.filter(
                     (limit) => limit?.area === selectedArea?.id
                 );
                 if (filteredLimits) {
                     filteredLimits.forEach((limit) => {
                         limit.permanentLimit = limit.permanentLimit / selectedShapeFactor;
                     });
-                    selectedRow.limitsForLineType = filteredLimits;
+                    selectedUndergroundLineType.limitsForLineType = filteredLimits;
                 }
             }
         },
