@@ -12,13 +12,12 @@ import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 import { setToggleOptions } from '../../../../redux/actions';
 import { updateTreeNode } from '../../../../services/study/tree-subtree';
-import { Alert, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
-import { CheckCircleOutlined } from '@mui/icons-material';
-import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
 import { isSecurityModificationNode } from '../../tree-node.type';
 import { StudyDisplayMode } from '../../../network-modification.type';
+import { LoadflowModificationAlert } from './loadflow-modifications/loadflow-modification-alert';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -65,14 +64,6 @@ const NodeEditor = () => {
             });
         });
     };
-
-    const renderLoadFlowModificationTable = () => {
-        return (
-            <Alert sx={styles.loadFlowModif} icon={<CheckCircleOutlined sx={styles.icon} />} severity="success">
-                <FormattedMessage id="loadFlowModification" />
-            </Alert>
-        );
-    };
     return (
         <Box sx={styles.paper}>
             <EditableTitle
@@ -81,9 +72,9 @@ const NodeEditor = () => {
                 onChange={changeNodeName}
             />
             <NetworkModificationNodeEditor />
-            {loadFlowStatus === RunningStatus.SUCCEED &&
-                isSecurityModificationNode(currentTreeNode) &&
-                renderLoadFlowModificationTable()}
+            {loadFlowStatus === RunningStatus.SUCCEED && isSecurityModificationNode(currentTreeNode) && (
+                <LoadflowModificationAlert />
+            )}
         </Box>
     );
 };
