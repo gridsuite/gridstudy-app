@@ -229,21 +229,15 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
         return 0;
     }
 
+    // no "row+1" extra-gap check to favor tighter sibling packing.
+    // This keeps the check for same-row overlaps but avoids enforcing the extra vertical gap
+    // avoiding unnecessary horizontal spacing.
     let availableSpace = Infinity;
 
     for (const [row, rightColumn] of rightColumns) {
         const leftColumnSameRow = leftColumns.get(row);
         if (leftColumnSameRow !== undefined) {
             const space = rightColumn - (leftColumnSameRow + 1);
-            if (space < availableSpace) {
-                availableSpace = space;
-            }
-        }
-        // We want to keep an open space vertically between two different branches, so we also test the space
-        // for the next row.
-        const leftColumnRowBelow = leftColumns.get(row + 1);
-        if (leftColumnRowBelow !== undefined) {
-            const space = rightColumn - (leftColumnRowBelow + 1);
             if (space < availableSpace) {
                 availableSpace = space;
             }
@@ -256,6 +250,24 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
     return availableSpace;
 }
 
+// get the row span ({minRow, maxRow}) of a set of nodes using current placements
+function getRowRange(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid
+): { minRow: number; maxRow: number } | undefined {
+    const rows: number[] = [];
+    nodes.forEach((n) => {
+        const p = placements.getPlacement(n.id);
+        if (p) {
+            rows.push(p.row);
+        }
+    });
+    if (!rows.length) {
+        return undefined;
+    }
+    return { minRow: Math.min(...rows), maxRow: Math.max(...rows) };
+}
+
 /**
  * Will move the provided nodes' placements to the left by shiftValue amount.
  */
@@ -266,6 +278,23 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
             placements.setPlacement(node.id, { row: oldPlacement.row, column: oldPlacement.column - shiftValue });
         }
     });
+}
+
+// return a new Map containing only rows inside the given rowRange
+function filterColumnsByRowRange(
+    columns: Map<number, number>,
+    rowRange: { minRow: number; maxRow: number } | undefined
+): Map<number, number> {
+    if (!rowRange) {
+        return new Map(columns);
+    }
+    const filtered = new Map<number, number>();
+    for (const [row, col] of columns) {
+        if (row >= rowRange.minRow && row <= rowRange.maxRow) {
+            filtered.set(row, col);
+        }
+    }
+    return filtered;
 }
 
 /**
@@ -304,23 +333,22 @@ function compressTreePlacements(
     // For each of those nodes's branches, we will calculate how much space available there is to
     // the left, for each row of the branch.
     nonEldestSiblingsIds.forEach((currentNodeId) => {
-        // We have to find the minimum column placement values (per row) for the current branch, and compare them
-        // to the maximum column placement values (per row) of the nodes on the left.
-        // The resulting space we find represents how much we can shift the current column to the left.
-
         const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
         const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
 
         const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
 
-        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
-        // cases other branches could go under the left neighbor and make edges cross.
-        const leftNodes = nodes.slice(0, currentNodeIndex);
+        // Compute the full left nodes set (don't pre-filter) so security-group extrema logic sees the whole groups.
+        const leftNodesFull = nodes.slice(0, currentNodeIndex);
 
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
+        const leftBranchMaximumColumnByRowFull = getMaximumColumnByRows(leftNodesFull, placements, nodeMap);
 
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
+        // Only consider left columns that overlap the branch row range to avoid deep descendants blocking shallow siblings.
+        const rowRange = getRowRange(currentBranchNodes, placements);
+        const leftBranchMaximumColumnByRow = filterColumnsByRowRange(leftBranchMaximumColumnByRowFull, rowRange);
 
+        // Compute available space (compact behavior: no row+1 extra-gap check)
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
         if (availableSpace > 0) {
