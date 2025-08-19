@@ -37,6 +37,7 @@ import {
     EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
+    HvdcType,
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
@@ -1068,9 +1069,9 @@ export const NetworkMapTab = ({
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
-        if (hvdcType === 'VSC') {
+        if (hvdcType === HvdcType.VSC) {
             return ExtendedEquipmentType.HVDC_LINE_VSC;
-        } else if (hvdcType === 'LCC') {
+        } else if (hvdcType === HvdcType.LCC) {
             return ExtendedEquipmentType.HVDC_LINE_LCC;
         } else {
             return null;
