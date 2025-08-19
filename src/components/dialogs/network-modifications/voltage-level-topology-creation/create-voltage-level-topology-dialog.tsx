@@ -31,7 +31,7 @@ const emptyFormData = {
     [SWITCH_KINDS]: [],
 };
 const formSchema = yup.object().shape({
-    [SECTION_COUNT]: yup.number().nullable(),
+    [SECTION_COUNT]: yup.number().required().nullable().min(1, 'AtLeastOneSectionAdded'),
     [SWITCHES_BETWEEN_SECTIONS]: yup
         .string()
         .nullable()
