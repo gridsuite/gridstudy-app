@@ -100,7 +100,6 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
                 showVoltageLevelDiagram={onSearch}
                 isDialogSearchOpen={isDialogSearchOpen}
                 setIsDialogSearchOpen={setIsDialogSearchOpen}
-                disableEventSearch
             />
         </Box>
     );
