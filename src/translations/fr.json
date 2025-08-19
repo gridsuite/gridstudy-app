@@ -1408,7 +1408,8 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "{count, plural, =0 {Aucun résultat} =1 {# résultat} other {# résultats}}",
     "rootNetwork.loading": "Chargement...",
-    "rootNetwork.originalCaseRemoved": "La situation d'origine a été supprimée",
+    "rootNetwork.originalNotFound": "La situation d'origine est introuvable",
+    "rootNetwork.unknownPath": "<Inconnu>",
     "unlimited": "Illimité",
     "forbidden": "Interdit",
 
@@ -1542,5 +1543,7 @@
     "Busbar": "Jeu de barres",
     "Before": "Avant",
     "After": "Après",
-    "newSwitchStates": "Nouveaux organes de coupure fermés"
+    "newSwitchStates": "Nouveaux organes de coupure fermés",
+    "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
+    "SectionCount": "nombre de sections"
 }
