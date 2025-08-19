@@ -1509,7 +1509,7 @@
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
 
-    "CreateVoltageLevelTopology": "Adding a bus bar",
+    "CreateVoltageLevelTopology": "Adding a busbar",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
@@ -1546,5 +1546,7 @@
     "Busbar": "Busbar",
     "Before": "Before",
     "After": "After",
-    "newSwitchStates": "New switches closed "
+    "newSwitchStates": "New switches closed ",
+    "AtLeastOneSectionAdded": "At least one busbar section must be added",
+    "SectionCount": "section count"
 }
