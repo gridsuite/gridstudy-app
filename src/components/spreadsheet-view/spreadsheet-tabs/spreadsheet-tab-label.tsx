@@ -13,10 +13,12 @@ import { FormattedMessage } from 'react-intl';
 // Menu action constants
 const RENAME = 'RENAME';
 const DELETE = 'DELETE';
+const EDIT = 'EDIT';
 
 const TAB_MENU_DEFINITION = {
     RENAME: { id: RENAME, label: 'spreadsheet/rename/label' },
     DELETE: { id: DELETE, label: 'spreadsheet/delete/label' },
+    EDIT: { id: EDIT, label: 'spreadsheet/edit/label' },
 };
 
 const styles = {
@@ -60,10 +62,17 @@ interface SpreadsheetTabLabelProps {
     name: string;
     onRemove: () => void;
     onRename?: () => void;
+    onEdit: () => void;
     disabled: boolean;
 }
 
-export const SpreadsheetTabLabel: React.FC<SpreadsheetTabLabelProps> = ({ name, onRemove, onRename, disabled }) => {
+export const SpreadsheetTabLabel: React.FC<SpreadsheetTabLabelProps> = ({
+    name,
+    onRemove,
+    onRename,
+    onEdit,
+    disabled,
+}) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isTextTruncated, setIsTextTruncated] = useState(false);
     const textRef = useRef<HTMLSpanElement>(null);
@@ -93,6 +102,9 @@ export const SpreadsheetTabLabel: React.FC<SpreadsheetTabLabelProps> = ({ name, 
                 break;
             case DELETE:
                 onRemove();
+                break;
+            case EDIT:
+                onEdit();
                 break;
         }
     };

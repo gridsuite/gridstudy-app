@@ -115,9 +115,20 @@ const spreadsheetEn = {
     'spreadsheet/reset_filters_error': 'Error while resetting spreadsheet filters',
     'spreadsheet/rename/label': 'Rename',
     'spreadsheet/delete/label': 'Delete',
+    'spreadsheet/edit/label': 'Edit',
     'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',
     'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
     'spreadsheet/spreadsheet_name_le_60': 'Spreadsheet name must be at most 60 characters',
+
+    'spreadsheet/global-model-edition/edit': 'Model edition',
+    'spreadsheet/global-model-edition/column_id': 'ID',
+    'spreadsheet/global-model-edition/column_name': 'Name',
+    'spreadsheet/global-model-edition/column_type': 'Type',
+    'spreadsheet/global-model-edition/column_precision': 'Precision',
+    'spreadsheet/global-model-edition/column_formula': 'Formula',
+    'spreadsheet/global-model-edition/column_dependencies': 'Dependencies',
+    'spreadsheet/global-model-edition/update_confirmation_message': 'Spreadsheet model updated',
+    'spreadsheet/global-model-edition/update_error_message': 'Error while updating spreadsheet model',
 
     // calculations
     'spreadsheet/calculation/sum': 'Sum',

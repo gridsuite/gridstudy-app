@@ -127,6 +127,21 @@ export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: U
     });
 }
 
+export function updateSpreadsheetModel(
+    studyUuid: UUID,
+    spreadsheetModelUuid: UUID,
+    spreadsheetConfig: SpreadsheetConfig
+) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(spreadsheetConfig),
+    });
+}
+
 export function setGlobalFiltersToSpreadsheetConfig(
     studyUuid: UUID,
     spreadsheetModelUuid: UUID,
