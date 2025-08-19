@@ -31,7 +31,7 @@ import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-fo
 import { BusBarSectionInfos, CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
-import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
 
@@ -266,7 +266,7 @@ export default function CreateVoltageLevelSectionDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                         fillerHeight={5}
                     />
                 )}
