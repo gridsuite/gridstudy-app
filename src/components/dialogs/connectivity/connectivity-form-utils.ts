@@ -15,7 +15,8 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     ID,
-    NAME,
+    IS_BUS_OR_BUSBAR_SECTION_MODIFICATION,
+    IS_VOLTAGE_LEVEL_MODIFICATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
@@ -26,10 +27,10 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()
-            .when([], {
-                is: (busOrBusbarSection: { id: string; label: string }) =>
+            .when([IS_VOLTAGE_LEVEL_MODIFICATION, IS_BUS_OR_BUSBAR_SECTION_MODIFICATION], {
+                is: (isVoltageLevelModification: boolean, isBusOrBusbarSectionModification: boolean) =>
                     !isEquipmentModification ||
-                    (isEquipmentModification && busOrBusbarSection !== null && busOrBusbarSection?.id !== null),
+                    (isEquipmentModification && !isVoltageLevelModification && isBusOrBusbarSectionModification),
                 then: (schema) => schema.required(),
             })
             .shape({
@@ -41,13 +42,10 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
             .nullable()
-            .when([VOLTAGE_LEVEL], {
-                is: (voltageLevel: { id: string; label: string }) => {
-                    return (
-                        !isEquipmentModification ||
-                        (isEquipmentModification && voltageLevel !== null && voltageLevel?.id !== null)
-                    );
-                },
+            .when([IS_VOLTAGE_LEVEL_MODIFICATION, IS_BUS_OR_BUSBAR_SECTION_MODIFICATION], {
+                is: (isVoltageLevelModification: boolean, isBusOrBusbarSectionModification: boolean) =>
+                    !isEquipmentModification ||
+                    (isEquipmentModification && isVoltageLevelModification && !isBusOrBusbarSectionModification),
                 then: (schema) => schema.required(),
             })
             .shape({
@@ -55,8 +53,9 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
                     is: () => isEquipmentModification,
                     then: (schema) => schema.nullable(),
                 }),
-                [NAME]: yup.string().nullable(), //TODO : remove name fom connectivity since it is not used (cannot be changed)
             }),
+        [IS_VOLTAGE_LEVEL_MODIFICATION]: yup.boolean(),
+        [IS_BUS_OR_BUSBAR_SECTION_MODIFICATION]: yup.boolean(),
     };
 };
 
@@ -97,6 +96,8 @@ export const getConnectivityPropertiesEmptyFormData = (isEquipmentModification =
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
         [CONNECTED]: isEquipmentModification ? null : true,
+        [IS_VOLTAGE_LEVEL_MODIFICATION]: false,
+        [IS_BUS_OR_BUSBAR_SECTION_MODIFICATION]: false,
     };
 };
 
@@ -130,20 +131,13 @@ export const getConnectivityVoltageLevelData = ({ voltageLevelId }: { voltageLev
     };
 };
 
-export const getConnectivityBusBarSectionData = ({
-    busbarSectionId,
-    busbarSectionName = '',
-}: {
-    busbarSectionId?: string | null;
-    busbarSectionName?: string | null;
-}) => {
+export const getConnectivityBusBarSectionData = ({ busbarSectionId }: { busbarSectionId?: string | null }) => {
     if (!busbarSectionId) {
         return null;
     }
 
     return {
         [ID]: busbarSectionId,
-        [NAME]: busbarSectionName,
     };
 };
 
@@ -162,7 +156,6 @@ export const getConnectivityPropertiesData = ({
         }),
         [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
             busbarSectionId,
-            busbarSectionName,
         }),
     };
 };
