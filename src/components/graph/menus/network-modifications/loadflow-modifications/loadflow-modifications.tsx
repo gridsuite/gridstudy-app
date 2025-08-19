@@ -1,9 +1,10 @@
 import { Box, Button, Dialog, DialogContent, DialogProps, DialogTitle, Tab, Tabs, Theme } from '@mui/material';
-import { FunctionComponent, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useLoadflowModifications } from './use-loadflow-modifications';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
+import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 
 const styles = {
     container: {
@@ -14,38 +15,6 @@ const styles = {
         position: 'relative',
         top: 0,
         left: 0,
-    },
-    succeed: (theme: Theme) => ({
-        color: theme.palette.success.main,
-    }),
-    fail: (theme: Theme) => ({
-        color: theme.palette.error.main,
-    }),
-    buttonApplyModifications: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-    }),
-    typography: {
-        fontWeight: 'bold',
-    },
-    secondTypography: {
-        marginLeft: '5em',
-        fontWeight: 'bold',
-    },
-    totalTypography: {
-        marginLeft: '10px',
-    },
-    reactiveSlacksOverThresholdTypography: {
-        marginLeft: '80px',
-        fontWeight: 'bold',
-        color: 'orange',
-    },
-    show: {
-        display: 'inherit',
-    },
-    hide: {
-        display: 'none',
     },
 };
 
@@ -67,16 +36,16 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'Id' }) },
             },
             {
-                headerName: intl.formatMessage({ id: 'tapPositionIn' }),
+                headerName: intl.formatMessage({ id: 'loadflowModificationsTapIn' }),
                 field: 'tapPositionIn',
                 colId: 'tapPositionIn',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'tapPositionIn' }) },
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'loadflowModificationsTapIn' }) },
             },
             {
-                headerName: intl.formatMessage({ id: 'tapPositionOut' }),
+                headerName: intl.formatMessage({ id: 'loadflowModificationsTapOut' }),
                 field: 'tapPositionOut',
                 colId: 'tapPositionOut',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'tapPositionOut' }) },
+                headerComponentParams: { displayName: intl.formatMessage({ id: 'loadflowModificationsTapOut' }) },
             },
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
@@ -96,19 +65,31 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'ID' }) },
             },
             {
-                headerName: intl.formatMessage({ id: 'sectionCountIn' }),
+                headerName: intl.formatMessage({ id: 'loadflowModificationsSectionCountIn' }),
                 field: 'sectionCountIn',
                 colId: 'sectionCountIn',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'sectionCountIn' }) },
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: 'loadflowModificationsSectionCountIn' }),
+                },
             },
             {
-                headerName: intl.formatMessage({ id: 'sectionCountOut' }),
+                headerName: intl.formatMessage({ id: 'loadflowModificationsSectionCountOut' }),
                 field: 'sectionCountOut',
                 colId: 'sectionCountOut',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'sectionCountOut' }) },
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: 'loadflowModificationsSectionCountOut' }),
+                },
             },
         ];
     }, [intl]);
+
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
+        api?.sizeColumnsToFit();
+    }, []);
+
+    const onRowDataUpdated = useCallback((params: RowDataUpdatedEvent) => {
+        params.api.sizeColumnsToFit();
+    }, []);
 
     const displayedData = useMemo(() => {
         return tabIndex === 0 ? data?.twt : data?.sc;
@@ -150,6 +131,8 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                         rowSelection="single"
                         overrideLocales={AGGRID_LOCALES}
                         loading={isLoading}
+                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 </Box>
                 <Button onClick={onClose}>Fermer</Button>

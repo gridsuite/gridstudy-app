@@ -1540,5 +1540,10 @@
     "Busbar": "Jeu de barres",
     "Before": "Avant",
     "After": "Après",
-    "newSwitchStates": "Nouveaux organes de coupure fermés"
+    "newSwitchStates": "Nouveaux organes de coupure fermés",
+    "loadflowModificationsTapIn": "Prise en entrée",
+    "loadflowModificationsTapOut": "Prise en sortie",
+    "loadflowModificationsSectionCountIn": "Gradin en entrée",
+    "loadflowModificationsSectionCountOut": "Gradin en sortie",
+    "loadflowModifications": "Modification calcul de répartition"
 }
