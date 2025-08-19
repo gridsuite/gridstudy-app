@@ -816,7 +816,7 @@
     "CreateVoltageLevel": "Create a voltage level",
     "ModifyVoltageLevel": "Modify a voltage level",
     "Substation": "Substation",
-    "BusBarSections": "Bus bar sections",
+    "BusBarSections": "Bus bar section",
     "BusBarCount": "Busbar Count",
     "numberOfSections": "Section Count",
     "BusBarSectionID": "ID",
@@ -830,6 +830,7 @@
     "CreateLink": "Add link",
     "BusBarSection": "Bus bar section",
     "VoltageLevelCreationError": "Voltage level creation error",
+    "VoltageLevelSectionCreationError": "Error while creating a section",
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
     "BREAKER": "Breaker",
@@ -1406,7 +1407,8 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
-    "rootNetwork.originalCaseRemoved": "The original case has been removed",
+    "rootNetwork.originalNotFound": "The original case was not found",
+    "rootNetwork.unknownPath": "<Unknown>",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
@@ -1483,7 +1485,7 @@
     "DiagramGridLayoutAndTree": "Diagram grid layout and tree",
 
     "CREATE_COUPLING_DEVICE": "Add a coupling device",
-    "CreateCouplingDeviceEditor": "Add a coupling device",
+    "CreateVoltageLevelSection": "Add busbar section",
     "CreateCouplingDeviceDiagramButton": "Show voltage level",
     "CreateCouplingDeviceIdenticalBusBar": "Busbar section 1 and 2 must be different",
     "builtNodeTooltipForDiagram" : "Current diagram taking into account all applied modifications",
@@ -1508,7 +1510,7 @@
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
 
-    "CreateVoltageLevelTopology": "Adding a bus bar",
+    "CreateVoltageLevelTopology": "Adding a busbar",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
@@ -1534,5 +1536,17 @@
     "genericFilter": "Generic",
     "voltageLevel": "Voltage level",
     "ClickToReset": "Click to remove filters",
-    "RowCounterInfo": "Displays the row count for the current spreadsheet. If filters are applied it will display the current filtered row amount, you can remove all filters by then clicking on this button."
+    "RowCounterInfo": "Displays the row count for the current spreadsheet. If filters are applied it will display the current filtered row amount, you can remove all filters by then clicking on this button.",
+    "isAfterBusBarSectionId": "New section side",
+    "SectionPosition": "Position",
+    "Switch": "Switch",
+    "newSection": "New section",
+    "switchesAfterSections": "Switch after",
+    "switchesBeforeSections": "Switch before",
+    "Busbar": "Busbar",
+    "Before": "Before",
+    "After": "After",
+    "newSwitchStates": "New switches closed ",
+    "AtLeastOneSectionAdded": "At least one busbar section must be added",
+    "SectionCount": "section count"
 }
