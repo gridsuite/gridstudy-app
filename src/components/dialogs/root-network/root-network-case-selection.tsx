@@ -13,6 +13,14 @@ import { FolderOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import ImportCaseDialog from '../import-case-dialog';
 
+const styles = {
+    helperText: {
+        marginLeft: 3.3,
+        marginTop: 0,
+        display: 'block',
+    },
+};
+
 interface RootNetworkCaseSelectionProps {
     onSelectCase: (selectedCase: TreeViewFinderNodeProps) => void;
     isModification: boolean;
@@ -49,6 +57,8 @@ export const RootNetworkCaseSelection = ({
         }
     }, [originalCaseUuid, isModification, selectedItem]);
 
+    const showMissingCase = !selectedItem && isModification;
+
     return (
         <>
             <Grid container alignItems="center" item>
@@ -56,7 +66,9 @@ export const RootNetworkCaseSelection = ({
                     <FolderOutlined />
                 </Grid>
                 <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold">{selectedItem?.path}</Box>
+                    <Box fontWeight="fontWeightBold">
+                        {showMissingCase ? <FormattedMessage id={'rootNetwork.unknownPath'} /> : selectedItem?.path}
+                    </Box>
                 </Typography>
                 <Grid item>
                     <Button
@@ -71,14 +83,13 @@ export const RootNetworkCaseSelection = ({
                         )}
                     </Button>
                 </Grid>
-                <Typography m={1} component="span">
-                    <Box fontWeight="fontWeightBold">
-                        {!selectedItem && isModification ? (
-                            <FormattedMessage id={'rootNetwork.originalCaseRemoved'} />
-                        ) : null}
-                    </Box>
-                </Typography>
             </Grid>
+            {showMissingCase && (
+                <Typography variant="caption" color="error" sx={styles.helperText}>
+                    <FormattedMessage id={'rootNetwork.originalNotFound'} />
+                </Typography>
+            )}
+
             <ImportCaseDialog
                 open={isDialogOpen}
                 onClose={() => setIsDialogOpen(false)}
