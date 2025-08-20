@@ -540,7 +540,7 @@ interface CommonStudyEventData {
 
 export interface StudyEventData {
     headers: StudyEventDataHeaders;
-    payload: NetworkImpactsInfos;
+    payload: NetworkImpactsInfos | string;
 }
 
 export interface ComputationParametersUpdatedEventData {

@@ -7,7 +7,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Badge, Button, Theme, Tooltip } from '@mui/material';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useStateBoolean } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../../../../../constants/node.constant';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { MouseEvent, useCallback, useMemo, useState } from 'react';
@@ -22,6 +22,7 @@ import { isStatusBuilt } from '../../../../graph/util/model-functions';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
+import { isStudyNotification, NetworkImpactsInfos } from '../../../../../types/notification-types';
 
 const styles = {
     badgeStyle: (theme: Theme) => ({
@@ -97,12 +98,23 @@ export default function NodesConfigButton({
         setAnchorEl(null);
     }, []);
 
-    const handleRefresh = useCallback(() => {
-        if (currentNode?.id && currentRootNetworkUuid && nodesToReload?.length) {
-            const nodesIdsToReload = new Set<string>(nodesToReload.map((n) => n.id as string));
-            fetchNodesEquipmentData(nodesIdsToReload, currentNode.id, currentRootNetworkUuid);
-        }
-    }, [currentNode?.id, currentRootNetworkUuid, fetchNodesEquipmentData, nodesToReload]);
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: (event: MessageEvent<string>) => {
+            const eventData = JSON.parse(event.data);
+            if (!isStudyNotification(eventData) || !currentNode?.id) {
+                return;
+            }
+            const payload: NetworkImpactsInfos = JSON.parse(eventData.payload as string);
+            const nodeId = eventData.headers.node;
+            if (
+                currentRootNetworkUuid === eventData.headers.rootNetworkUuid &&
+                payload.impactedElementTypes.includes(tableType) &&
+                nodesToReload?.find((alias) => alias.id === nodeId)
+            ) {
+                fetchNodesEquipmentData(new Set([nodeId]), currentNode.id, currentRootNetworkUuid);
+            }
+        },
+    });
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {
@@ -140,27 +152,6 @@ export default function NodesConfigButton({
                 >
                     <FormattedMessage id={'spreadsheet/custom_column/option/parameter'} />
                 </MenuItem>
-                <Tooltip
-                    title={
-                        <FormattedMessage
-                            id={'spreadsheet/custom_column/option/refresh/tooltip'}
-                            values={{
-                                aliases: nodesToReload?.map((node) => node.alias).join(', '),
-                            }}
-                        />
-                    }
-                >
-                    <MenuItem
-                        key={NodesOptionId.REFRESH}
-                        onClick={() => {
-                            handleClose();
-                            handleRefresh();
-                        }}
-                        disabled={tableType && nodesToReload ? nodesToReload.length === 0 : true}
-                    >
-                        <FormattedMessage id={'spreadsheet/custom_column/option/refresh'} />
-                    </MenuItem>
-                </Tooltip>
             </Menu>
             <NodesConfigDialog open={dialogOpen} nodeAliases={nodeAliases} updateNodeAliases={updateNodeAliases} />
         </>
