@@ -295,11 +295,15 @@ const LineModificationDialog = ({
                     currentLimits: {
                         id: currentLimit.id,
                         applicability: currentLimit.applicability,
-                        permanentLimit: getValues(`${LIMITS}.${CURRENT_LIMITS}[${index}].${PERMANENT_LIMIT}`),
+                        permanentLimit: getValues(
+                            `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}${PERMANENT_LIMIT}`
+                        ),
                         temporaryLimits: addSelectedFieldToRows(
                             updateTemporaryLimits(
                                 formatTemporaryLimits(
-                                    getValues(`${LIMITS}.${CURRENT_LIMITS}[${index}].${TEMPORARY_LIMITS}`)
+                                    getValues(
+                                        `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`
+                                    )
                                 ),
                                 formatTemporaryLimits(currentLimit.temporaryLimits)
                             )

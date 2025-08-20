@@ -183,8 +183,8 @@ const findTemporaryLimit = (temporaryLimits: TemporaryLimit[], limit: TemporaryL
     temporaryLimits?.find((l) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration);
 
 export const updateTemporaryLimits = (
-    modifiedTemporaryLimits: TemporaryLimit[],
-    temporaryLimitsToModify: TemporaryLimit[]
+    modifiedTemporaryLimits: TemporaryLimit[], // from the form (ie network modification values)
+    temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
     let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
     //add temporary limits from previous modifications
