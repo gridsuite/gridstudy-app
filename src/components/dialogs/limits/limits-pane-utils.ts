@@ -98,9 +98,9 @@ const limitsValidationSchemaCreation = (id: string) => {
                 const namesArray: OperationalLimitsId[] = !array
                     ? []
                     : array
-                          .filter((o) => !!o[NAME])
+                          .filter((o) => !!sanitizeString(o[NAME]))
                           .map((o) => {
-                              return { name: sanitizeString(o.name), applicability: o.applicability };
+                              return { name: sanitizeString(o.name) ?? '', applicability: o.applicability };
                           });
                 return areOperationalLimitsGroupUnique(namesArray);
             }),
