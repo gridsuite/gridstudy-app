@@ -131,7 +131,6 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                         lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                         lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
-                        openVoltageLevel={() => {}}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         showInSpreadsheet={(eq) => {

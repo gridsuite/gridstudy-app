@@ -147,10 +147,11 @@ const initialLayouts: Layouts = generateInitialLayouts();
 interface DiagramGridLayoutProps {
     studyUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    showGrid: () => void;
     visible: boolean;
 }
 
-function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<DiagramGridLayoutProps>) {
+function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: Readonly<DiagramGridLayoutProps>) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -253,10 +254,11 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, visible }: Readonly<D
             }
 
             if (diagram) {
+                showGrid();
                 createDiagram(diagram);
             }
         },
-        [createDiagram]
+        [createDiagram, showGrid]
     );
 
     const handleLoadNad = useCallback(
