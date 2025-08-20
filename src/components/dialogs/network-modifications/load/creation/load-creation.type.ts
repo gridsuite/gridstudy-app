@@ -19,7 +19,6 @@ import {
     EQUIPMENT_NAME,
     ID,
     LOAD_TYPE,
-    NAME,
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from '../../../../utils/field-constants';
@@ -33,7 +32,7 @@ export type LoadCreationSchemaForm = {
     [REACTIVE_POWER_SET_POINT]: number;
     [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
         [CONNECTION_DIRECTION]?: string;
         [CONNECTION_NAME]?: string;
         [CONNECTION_POSITION]?: number;
