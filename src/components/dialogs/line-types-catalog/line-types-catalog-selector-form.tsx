@@ -7,48 +7,117 @@
 import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import GridItem from '../commons/grid-item';
 import GridSection from '../commons/grid-section';
-import { Grid } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import {
     AERIAL_AREAS,
     AERIAL_TEMPERATURES,
+    SELECTED_CATEGORIES_TAB,
     UNDERGROUND_AREAS,
     UNDERGROUND_SHAPE_FACTORS,
 } from '../../utils/field-constants';
 import { CATEGORIES_TABS, LineTypeInfo } from './line-catalog.type';
 import { areIdsEqual } from '../../utils/utils';
+import { useFormContext } from 'react-hook-form';
+import { FormattedMessage } from 'react-intl';
+import LimitCustomAgGrid from './limit-custom-aggrid';
+import { useCallback, useEffect, useState } from 'react';
+import { useColumnDefinitions } from './use-column-definitions';
+import { useRowData } from './use-row-data';
 
 interface LimitParametersSelectionProps {
+    gridRef: any;
     selectedRow: LineTypeInfo | null;
-    currentTab: number;
-    aerialAreas: Option[];
+    preselectedRowId: string;
+    rowData: LineTypeInfo[];
+    onSelectionChanged: any;
+    aerialAreasOptions: Option[];
     aerialTemperatures: Option[];
     undergroundAreas: Option[];
     undergroundShapeFactor: Option[];
 }
 
 export default function LineTypesCatalogSelectorForm({
+    gridRef,
     selectedRow,
-    currentTab,
-    aerialAreas,
+    preselectedRowId,
+    rowData,
+    onSelectionChanged,
+    aerialAreasOptions,
     aerialTemperatures,
     undergroundAreas,
     undergroundShapeFactor,
 }: LimitParametersSelectionProps) {
-    const isAerialTab = currentTab === CATEGORIES_TABS.AERIAL.id;
-    const isAerialCategory = selectedRow?.category === CATEGORIES_TABS.AERIAL.name;
-    const isUndergroundCategory = selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name;
+    const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
+    const { setValue } = useFormContext();
+    const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
+    const { aerialRowData, undergroundRowData } = useRowData(rowData);
 
-    return (
+    const handleTabChange = useCallback(
+        (newValue: number) => {
+            setValue(SELECTED_CATEGORIES_TAB, newValue);
+            setTabIndex(newValue);
+        },
+        [setValue]
+    );
+
+    // Select the correct tab when opening the dialog, if a row is preselected
+    useEffect(() => {
+        if (preselectedRowId && rowData) {
+            const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
+            const newTabIndex =
+                preselectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name
+                    ? CATEGORIES_TABS.UNDERGROUND.id
+                    : CATEGORIES_TABS.AERIAL.id;
+            setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
+        }
+    }, [rowData, preselectedRowId, setValue]);
+
+    // Tries to find the selected row to highlight it
+    const highlightSelectedRow = useCallback(() => {
+        const rowIdToHighlight = selectedRow?.id ?? preselectedRowId;
+        if (rowIdToHighlight && rowData) {
+            gridRef.current?.api?.forEachNode(function (node: any) {
+                node.setSelected(node.data?.id === rowIdToHighlight);
+            });
+        }
+    }, [selectedRow?.id, preselectedRowId, rowData, gridRef]);
+
+    const scrollToPreselectedElement = useCallback(() => {
+        const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
+        preselectedRow && gridRef.current?.api?.ensureNodeVisible(preselectedRow, 'middle');
+        highlightSelectedRow();
+    }, [rowData, gridRef, highlightSelectedRow, preselectedRowId]);
+
+    // Tries to highlight the preselected row when changing tabs
+    useEffect(() => {
+        highlightSelectedRow();
+    }, [highlightSelectedRow, setValue, tabIndex]);
+
+    const renderTabContent = (isAerial: boolean) => (
         <>
-            {isAerialCategory && isAerialTab && (
-                <>
-                    <GridSection title="parameters" />
-                    <Grid container spacing={2}>
+            <div style={{ height: '80%', marginTop: '1%' }}>
+                <LimitCustomAgGrid
+                    gridRef={gridRef}
+                    currentTab={tabIndex}
+                    aerialRowData={aerialRowData}
+                    undergroundRowData={undergroundRowData}
+                    aerialColumnDefs={aerialColumnDefs}
+                    undergroundColumnDefs={undergroundColumnDefs}
+                    onSelectionChanged={onSelectionChanged}
+                    onGridReady={scrollToPreselectedElement}
+                />
+            </div>
+
+            <GridSection title="parameters" />
+
+            <Grid container spacing={2}>
+                {isAerial ? (
+                    <>
                         <GridItem size={4}>
                             <AutocompleteInput
                                 name={AERIAL_AREAS}
                                 label="aerialAreas"
-                                options={aerialAreas}
+                                options={aerialAreasOptions}
                                 isOptionEqualToValue={areIdsEqual}
                                 size="small"
                             />
@@ -62,17 +131,13 @@ export default function LineTypesCatalogSelectorForm({
                                 size="small"
                             />
                         </GridItem>
-                    </Grid>
-                </>
-            )}
-            {isUndergroundCategory && !isAerialTab && (
-                <>
-                    <GridSection title="parameters" />
-                    <Grid container spacing={2}>
+                    </>
+                ) : (
+                    <>
                         <GridItem size={4}>
                             <AutocompleteInput
                                 name={UNDERGROUND_AREAS}
-                                label="lineTypes.currentLimits.underground.Area"
+                                label="aerialAreas"
                                 options={undergroundAreas}
                                 isOptionEqualToValue={areIdsEqual}
                                 size="small"
@@ -81,15 +146,27 @@ export default function LineTypesCatalogSelectorForm({
                         <GridItem size={4}>
                             <AutocompleteInput
                                 name={UNDERGROUND_SHAPE_FACTORS}
-                                label="lineTypes.currentLimits.underground.ShapeFactor"
+                                label="undergroundShapeFactors"
                                 options={undergroundShapeFactor}
                                 isOptionEqualToValue={areIdsEqual}
-                                size={'small'}
+                                size="small"
                             />
                         </GridItem>
-                    </Grid>
-                </>
-            )}
+                    </>
+                )}
+            </Grid>
+        </>
+    );
+
+    return (
+        <>
+            <Tabs value={tabIndex} variant="scrollable" onChange={(_event, newValue) => handleTabChange(newValue)}>
+                <Tab label={<FormattedMessage id="lineTypes.category.aerial" />} value={0} />
+                <Tab label={<FormattedMessage id="lineTypes.category.underground" />} value={1} />
+            </Tabs>
+
+            {tabIndex === CATEGORIES_TABS.AERIAL.id && renderTabContent(true)}
+            {tabIndex === CATEGORIES_TABS.UNDERGROUND.id && renderTabContent(false)}
         </>
     );
 }
