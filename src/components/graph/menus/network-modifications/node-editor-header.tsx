@@ -57,7 +57,7 @@ const styles = {
         overflow: 'hidden',
     },
     accordion: (theme: Theme) => ({
-        backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.background.default,
+        backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[900],
         marginRight: theme.spacing(1),
         borderRadius: theme.shape.borderRadius,
         width: '100%',
