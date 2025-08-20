@@ -110,7 +110,7 @@ export function LimitsSidePane({
             }
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l) =>
+                    (l: TemporaryLimit) =>
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
@@ -167,14 +167,26 @@ export function LimitsSidePane({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+        (
+            rowIndex: number,
+            column: ColumnText | ColumnNumeric,
+            arrayFormName: string,
+            temporaryLimits?: TemporaryLimit[]
+        ) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
-            return getValues(arrayFormName) &&
+            let disable: boolean =
+                temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
+                column.dataKey !== TEMPORARY_LIMIT_VALUE;
+
+            if (
+                getValues(arrayFormName) &&
                 getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-                ? false
-                : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                      column.dataKey !== TEMPORARY_LIMIT_VALUE;
+            ) {
+                disable = false;
+            }
+
+            return disable;
         },
         [getValues, temporaryLimitHasPreviousValue]
     );

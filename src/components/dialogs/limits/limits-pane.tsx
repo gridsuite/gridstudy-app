@@ -50,10 +50,11 @@ export function LimitsPane({
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
-    const getCurrentLimits = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits1) {
-            return equipmentToModify.currentLimits1.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
+    const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimits | null => {
+        if (equipmentToModify?.currentLimits) {
+            return equipmentToModify.currentLimits.find(
+                (currentLimit: CurrentLimits) =>
+                    currentLimit.id + currentLimit.applicability === operationalLimitsGroupId
             );
         }
         return null;
@@ -157,10 +158,12 @@ export function LimitsPane({
                                         limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
-                                            getCurrentLimits(equipmentToModify)?.permanentLimit
+                                            getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
+                                                ?.permanentLimit
                                         }
                                         temporaryLimitsPreviousValues={
-                                            getCurrentLimits(equipmentToModify)?.temporaryLimits ?? []
+                                            getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
+                                                ?.temporaryLimits ?? []
                                         }
                                         currentNode={currentNode}
                                         selectedLimitSetName={operationalLimitsGroup.name}

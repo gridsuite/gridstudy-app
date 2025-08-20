@@ -118,8 +118,8 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>
-    temporaryLimits?.map((limit) => {
+export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): TemporaryLimit[] =>
+    temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             name: limit?.name ?? '',
             value: limit?.value ?? null,
