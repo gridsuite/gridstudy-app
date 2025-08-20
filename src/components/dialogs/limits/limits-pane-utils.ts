@@ -100,7 +100,7 @@ const limitsValidationSchemaCreation = (id: string) => {
                     : array
                           .filter((o) => !!o[NAME])
                           .map((o) => {
-                              return { name: o.name, applicability: o.applicability };
+                              return { name: sanitizeString(o.name), applicability: o.applicability };
                           });
                 return areOperationalLimitsGroupUnique(namesArray);
             }),
