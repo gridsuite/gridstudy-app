@@ -1551,5 +1551,7 @@
     "AtLeastOneSectionAdded": "At least one busbar section must be added",
     "SectionCount": "Section count",
     "nodeName": "Node name",
-    "editNode": "Edit node"
+    "editNode": "Edit node",
+
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections"
 }

@@ -1547,5 +1547,7 @@
     "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
     "SectionCount": "Nombre de sections",
     "nodeName": "Nom du noeud",
-    "editNode": "Éditer le noeud"
+    "editNode": "Éditer le noeud",
+
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs"
 }
