@@ -5,114 +5,77 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useIntl } from 'react-intl';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ColDef } from 'ag-grid-community';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 
 export const useColumnDefinitions = () => {
     const intl = useIntl();
 
-    const aerialColumnDefs = useMemo(
-        (): ColDef[] => [
+    const createColumn = useCallback(
+        (id: string, field: string, options: Partial<ColDef> = {}): ColDef => ({
+            headerName: intl.formatMessage({ id }),
+            field,
+            ...options,
+        }),
+        [intl]
+    );
+
+    const columnConfigs = {
+        common: [
+            { id: 'lineTypes.type', field: 'type', options: { pinned: 'left' as const } },
+            { id: 'lineTypes.voltage', field: 'voltage', options: { cellRenderer: DefaultCellRenderer } },
+            { id: 'lineTypes.conductorType', field: 'conductorType' },
+            { id: 'lineTypes.section', field: 'section', options: { cellRenderer: DefaultCellRenderer } },
+        ],
+        aerial: [
             {
-                headerName: intl.formatMessage({ id: 'lineTypes.type' }),
-                field: 'type',
-                pinned: 'left',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
-                field: 'voltage',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.conductorType' }),
-                field: 'conductorType',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.section' }),
-                field: 'section',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.conductorsNumber' }),
+                id: 'lineTypes.conductorsNumber',
                 field: 'conductorsNumber',
-                cellRenderer: DefaultCellRenderer,
+                options: { cellRenderer: DefaultCellRenderer },
             },
+            { id: 'lineTypes.circuitsNumber', field: 'circuitsNumber', options: { cellRenderer: DefaultCellRenderer } },
             {
-                headerName: intl.formatMessage({ id: 'lineTypes.circuitsNumber' }),
-                field: 'circuitsNumber',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.groundWiresNumber' }),
+                id: 'lineTypes.groundWiresNumber',
                 field: 'groundWiresNumber',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.linearResistance' }),
-                field: 'linearResistance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.linearReactance' }),
-                field: 'linearReactance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.linearCapacity' }),
-                field: 'linearCapacity',
-                cellRenderer: DefaultCellRenderer,
+                options: { cellRenderer: DefaultCellRenderer },
             },
         ],
-        [intl]
+        underground: [
+            { id: 'lineTypes.insulator', field: 'insulator' },
+            { id: 'lineTypes.screen', field: 'screen' },
+        ],
+        electrical: [
+            {
+                id: 'lineTypes.linearResistance',
+                field: 'linearResistance',
+                options: { cellRenderer: DefaultCellRenderer },
+            },
+            {
+                id: 'lineTypes.linearReactance',
+                field: 'linearReactance',
+                options: { cellRenderer: DefaultCellRenderer },
+            },
+            { id: 'lineTypes.linearCapacity', field: 'linearCapacity', options: { cellRenderer: DefaultCellRenderer } },
+        ],
+    };
+
+    const aerialColumnDefs = useMemo(
+        (): ColDef[] => [
+            ...columnConfigs.common.map((c) => createColumn(c.id, c.field, c.options)),
+            ...columnConfigs.aerial.map((c) => createColumn(c.id, c.field, c.options)),
+            ...columnConfigs.electrical.map((c) => createColumn(c.id, c.field, c.options)),
+        ],
+        [columnConfigs.aerial, columnConfigs.common, columnConfigs.electrical, createColumn]
     );
 
     const undergroundColumnDefs = useMemo(
         (): ColDef[] => [
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.type' }),
-                field: 'type',
-                pinned: 'left',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
-                field: 'voltage',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.conductorType' }),
-                field: 'conductorType',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.section' }),
-                field: 'section',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.insulator' }),
-                field: 'insulator',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.screen' }),
-                field: 'screen',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.linearResistance' }),
-                field: 'linearResistance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.linearReactance' }),
-                field: 'linearReactance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.linearCapacity' }),
-                field: 'linearCapacity',
-                cellRenderer: DefaultCellRenderer,
-            },
+            ...columnConfigs.common.map((c) => createColumn(c.id, c.field, c.options)),
+            ...columnConfigs.underground.map((c) => createColumn(c.id, c.field, c)),
+            ...columnConfigs.electrical.map((c) => createColumn(c.id, c.field, c.options)),
         ],
-        [intl]
+        [columnConfigs.common, columnConfigs.electrical, columnConfigs.underground, createColumn]
     );
 
     return { aerialColumnDefs, undergroundColumnDefs };
