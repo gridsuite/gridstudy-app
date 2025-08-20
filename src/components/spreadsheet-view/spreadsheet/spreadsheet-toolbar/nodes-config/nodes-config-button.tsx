@@ -7,22 +7,16 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Badge, Button, Theme, Tooltip } from '@mui/material';
-import { NotificationsUrlKeys, useNotificationsListener, useStateBoolean } from '@gridsuite/commons-ui';
-import { ROOT_NODE_LABEL } from '../../../../../constants/node.constant';
+import { useStateBoolean } from '@gridsuite/commons-ui';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { MouseEvent, useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
 import { validAlias } from '../../../hooks/use-node-aliases';
-import { NodeType } from '../../../../graph/tree-node.type';
-import { isStatusBuilt } from '../../../../graph/util/model-functions';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
-import { isStudyNotification, NetworkImpactsInfos } from '../../../../../types/notification-types';
+import { useNodeConfigNotificationsListener } from './use-node-config-notifications-listener';
 
 const styles = {
     badgeStyle: (theme: Theme) => ({
@@ -59,36 +53,13 @@ export default function NodesConfigButton({
 }: Readonly<NodesConfigButtonProps>) {
     const dialogOpen = useStateBoolean(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-
-    const { fetchNodesEquipmentData } = useFetchEquipment(tableType);
-
     const showWarning = useMemo(
         () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
         [nodeAliases]
     );
 
-    const isBuilt = useCallback(
-        (nodeId: string | undefined) =>
-            treeNodes?.find(
-                (node) =>
-                    node.id === nodeId && (node.type === NodeType.ROOT || isStatusBuilt(node.data?.globalBuildStatus))
-            ) !== undefined,
-        [treeNodes]
-    );
-
-    const nodesToReload = useMemo(() => {
-        // Get all valid aliased nodes ids, except for Root and current node (both are always up-to-date), and only the built ones
-        return nodeAliases?.filter(
-            (nodeAlias) =>
-                validAlias(nodeAlias) &&
-                nodeAlias.id !== currentNode?.id &&
-                nodeAlias.name !== ROOT_NODE_LABEL &&
-                isBuilt(nodeAlias.id)
-        );
-    }, [currentNode?.id, isBuilt, nodeAliases]);
+    //Enables to automatically reload nodeAliases data upon receiving study notification related to node and rootNetwork update
+    useNodeConfigNotificationsListener(tableType, nodeAliases);
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -97,24 +68,6 @@ export default function NodesConfigButton({
     const handleClose = useCallback(() => {
         setAnchorEl(null);
     }, []);
-
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: (event: MessageEvent<string>) => {
-            const eventData = JSON.parse(event.data);
-            if (!isStudyNotification(eventData) || !currentNode?.id) {
-                return;
-            }
-            const payload: NetworkImpactsInfos = JSON.parse(eventData.payload as string);
-            const nodeId = eventData.headers.node;
-            if (
-                currentRootNetworkUuid === eventData.headers.rootNetworkUuid &&
-                payload.impactedElementTypes.includes(tableType) &&
-                nodesToReload?.find((alias) => alias.id === nodeId)
-            ) {
-                fetchNodesEquipmentData(new Set([nodeId]), currentNode.id, currentRootNetworkUuid);
-            }
-        },
-    });
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {
