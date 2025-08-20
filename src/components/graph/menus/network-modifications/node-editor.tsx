@@ -7,16 +7,16 @@
 
 import { Theme } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
-import { EditableTitle } from './editable-title';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { setToggleOptions } from '../../../../redux/actions';
-import { updateTreeNode } from '../../../../services/study/tree-subtree';
 import { Alert, Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import { CheckCircleOutlined } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
+import { NodeEditorHeader } from './node-editor-header';
 import { isSecurityModificationNode } from '../../tree-node.type';
 import { StudyDisplayMode } from '../../../network-modification.type';
 
@@ -43,27 +43,13 @@ const styles = {
 
 const NodeEditor = () => {
     const dispatch = useDispatch();
-    const { snackError } = useSnackMessage();
+
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const closeModificationsDrawer = () => {
         dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS)));
-    };
-
-    const changeNodeName = (newName: string) => {
-        updateTreeNode(studyUuid, {
-            id: currentTreeNode?.id,
-            type: currentTreeNode?.type,
-            name: newName,
-        }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'NodeUpdateError',
-            });
-        });
     };
 
     const renderLoadFlowModificationTable = () => {
@@ -75,11 +61,8 @@ const NodeEditor = () => {
     };
     return (
         <Box sx={styles.paper}>
-            <EditableTitle
-                name={currentTreeNode?.data?.label ?? ''}
-                onClose={closeModificationsDrawer}
-                onChange={changeNodeName}
-            />
+            <NodeEditorHeader onClose={closeModificationsDrawer} />
+
             <NetworkModificationNodeEditor />
             {loadFlowStatus === RunningStatus.SUCCEED &&
                 isSecurityModificationNode(currentTreeNode) &&

@@ -260,6 +260,7 @@ export default function CreateVoltageLevelSectionDialog({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
+                        isUpdate={isUpdate}
                     />
                 )}
                 {selectedId == null && (
@@ -268,6 +269,9 @@ export default function CreateVoltageLevelSectionDialog({
                         setSelectedId={setSelectedId}
                         equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                         fillerHeight={5}
+                        freeInputAllowed={false}
+                        autoSelectEnabled={true}
+                        autoHighlightEnabled={true}
                     />
                 )}
             </ModificationDialog>

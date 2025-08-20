@@ -1549,5 +1549,7 @@
     "After": "After",
     "newSwitchStates": "New switches closed ",
     "AtLeastOneSectionAdded": "At least one busbar section must be added",
-    "SectionCount": "Section count"
+    "SectionCount": "Section count",
+    "nodeName": "Node name",
+    "editNode": "Edit node"
 }
