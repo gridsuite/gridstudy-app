@@ -1546,6 +1546,6 @@
     "newSwitchStates": "Nouveaux organes de coupure fermés",
     "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
     "SectionCount": "Nombre de sections",
-     "nodeName": "Nom du noeud",
+    "nodeName": "Nom du noeud",
     "editNode": "Éditer le noeud"
 }
