@@ -33,12 +33,14 @@ import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import {
+    ComputingType,
+    EquipmentInfos,
     EquipmentType,
+    ExtendedEquipmentType,
+    HvdcType,
+    NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
-    EquipmentInfos,
-    NotificationsUrlKeys,
-    ComputingType,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import {
@@ -366,7 +368,7 @@ export const NetworkMapTab = ({
     const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
-            openEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
+            openEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL, null);
         }
     };
 
@@ -977,11 +979,12 @@ export const NetworkMapTab = ({
         x: number,
         y: number,
         equipmentType: EquipmentType,
+        equipmentSubtype: ExtendedEquipmentType | null,
         isInDrawingMode: boolean
     ) => {
         // don't display the equipment menu in drawing mode.
         if (!isInDrawingMode) {
-            openEquipmentMenu(equipment, x, y, equipmentType);
+            openEquipmentMenu(equipment, x, y, equipmentType, equipmentSubtype);
         }
     };
 
@@ -1066,6 +1069,16 @@ export const NetworkMapTab = ({
         [isInDrawingMode, openVoltageLevel]
     );
 
+    const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
+        if (hvdcType === HvdcType.VSC) {
+            return ExtendedEquipmentType.HVDC_LINE_VSC;
+        } else if (hvdcType === HvdcType.LCC) {
+            return ExtendedEquipmentType.HVDC_LINE_LCC;
+        } else {
+            return null;
+        }
+    };
+
     const renderMap = () => (
         <>
             <Box
@@ -1104,6 +1117,7 @@ export const NetworkMapTab = ({
                             x,
                             y,
                             EquipmentType.SUBSTATION,
+                            null,
                             isInDrawingMode
                         )
                     }
@@ -1113,6 +1127,7 @@ export const NetworkMapTab = ({
                             x,
                             y,
                             EquipmentType.LINE,
+                            null,
                             isInDrawingMode
                         )
                     }
@@ -1122,6 +1137,7 @@ export const NetworkMapTab = ({
                             x,
                             y,
                             EquipmentType.HVDC_LINE,
+                            getHvdcExtendedEquipmentType(equipment.hvdcType),
                             isInDrawingMode
                         )
                     }
@@ -1208,6 +1224,7 @@ export const NetworkMapTab = ({
             </Box>
         );
     }
+
     function renderSearchEquipment() {
         return (
             <Box sx={styles.divSearchIcon}>

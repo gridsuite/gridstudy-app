@@ -1408,7 +1408,8 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
-    "rootNetwork.originalCaseRemoved": "The original case has been removed",
+    "rootNetwork.originalNotFound": "The original case was not found",
+    "rootNetwork.unknownPath": "<Unknown>",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
@@ -1510,7 +1511,7 @@
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
 
-    "CreateVoltageLevelTopology": "Adding a bus bar",
+    "CreateVoltageLevelTopology": "Adding a busbar",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
@@ -1546,5 +1547,7 @@
     "Busbar": "Busbar",
     "Before": "Before",
     "After": "After",
-    "newSwitchStates": "New switches closed "
+    "newSwitchStates": "New switches closed ",
+    "AtLeastOneSectionAdded": "At least one busbar section must be added",
+    "SectionCount": "Section count"
 }
