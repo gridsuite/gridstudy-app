@@ -63,19 +63,21 @@ const styles = {
         width: '100%',
         boxSizing: 'border-box',
     }),
-    accordionSummary: {
+    accordionSummary: (theme: Theme) => ({
         minHeight: 0,
+        '&.Mui-expanded .MuiTypography-root': {
+            color: theme.palette.text.secondary,
+        },
         '& .MuiAccordionSummary-content': {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             flexGrow: 1,
         },
-    },
+    }),
 
     accordionDetails: {
         overflowWrap: 'break-word',
-        wordBreak: 'break-word',
         whiteSpace: 'normal',
         paddingTop: 0,
         maxHeight: 200,
@@ -116,15 +118,13 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
             </Box>
 
             {description && (
-                <Box sx={{ marginRight: 1 }}>
+                <Box sx={{ marginRight: 1, marginBottom: 1 }}>
                     <Accordion disableGutters elevation={0} sx={styles.accordion}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={styles.accordionSummary}>
                             <Typography noWrap> {description}</Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={styles.accordionDetails}>
-                            <Typography color="textSecondary" sx={{ wordBreak: 'break-word' }}>
-                                {description}
-                            </Typography>
+                            <Typography sx={{ wordBreak: 'break-word' }}>{description}</Typography>
                         </AccordionDetails>
                     </Accordion>
                 </Box>
