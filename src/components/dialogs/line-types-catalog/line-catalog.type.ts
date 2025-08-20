@@ -26,6 +26,7 @@ export type LineTypeInfo = {
     linearReactance: number;
     linearCapacity: number;
     limitsForLineType: CurrentLimitsInfo[];
+    shapeFactors: number[];
 } & (AerialLineTypeInfo | UndergroundLineTypeInfo);
 
 // Interface with Line creation/modification

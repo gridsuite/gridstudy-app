@@ -102,18 +102,13 @@ export default function LineTypesCatalogSelectorDialog({
     const [aerialAreasOptions, setAerialAreasOptions] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
     const [undergroundAreas, setUndergroundAreas] = useState<Option[]>([]);
+    const [undergroundShapeFactors, setUndergroundShapeFactors] = useState<Option[]>([]);
 
     const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>(formSchema),
     });
     const { setValue, getValues } = formMethods;
-
-    const undergroundShapeFactor: Option[] = [
-        { id: '1', label: '1' },
-        { id: '0.95', label: '0.95' },
-        { id: '0.9', label: '0.9' },
-    ];
 
     const handleSelectedAerial = useCallback(
         (selectedAerialRow: LineTypeInfo) => {
@@ -196,11 +191,16 @@ export default function LineTypesCatalogSelectorDialog({
         return uniqueAreas.map((area) => ({ id: area, label: area }));
     };
 
+    const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
+        return lineInfo.shapeFactors.map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
+    };
+
     const handleSelectedRowData = useCallback(
         async (selectedData: LineTypeInfo) => {
             try {
                 const lineTypeWithLimits = await getLineTypeWithLimits(selectedData.id);
                 selectedData.limitsForLineType = lineTypeWithLimits.limitsForLineType;
+                selectedData.shapeFactors = lineTypeWithLimits.shapeFactors;
                 setSelectedRow(selectedData);
                 const newTabIndex =
                     selectedData.category === CATEGORIES_TABS.AERIAL.name
@@ -213,6 +213,7 @@ export default function LineTypesCatalogSelectorDialog({
                     setAerialTemperatures(createOptionsFromTemperatures(selectedData.limitsForLineType));
                 } else if (selectedData.category === CATEGORIES_TABS.UNDERGROUND.name) {
                     setUndergroundAreas(createOptionsFromUndergroundAreas(selectedData.limitsForLineType));
+                    setUndergroundShapeFactors(createOptionsFromUndergroundShapeFactors(selectedData));
                 }
             } catch (error) {
                 snackError({
@@ -259,7 +260,7 @@ export default function LineTypesCatalogSelectorDialog({
                     aerialAreasOptions={aerialAreasOptions}
                     aerialTemperatures={aerialTemperatures}
                     undergroundAreas={undergroundAreas}
-                    undergroundShapeFactor={undergroundShapeFactor}
+                    undergroundShapeFactor={undergroundShapeFactors}
                 />
             </ModificationDialog>
         </CustomFormProvider>
