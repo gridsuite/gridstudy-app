@@ -100,9 +100,14 @@ import {
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'crypto';
-import { CurrentLimits, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import {
+    CurrentLimits,
+    OperationalLimitsGroup,
+    OperationType,
+} from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LineInfos, LineModificationEditData } from '../../../../../services/study/network-map.type';
+import { useIntl } from 'react-intl';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -144,6 +149,7 @@ const LineModificationDialog = ({
     ...dialogProps
 }: Readonly<LineModificationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
@@ -221,6 +227,20 @@ const LineModificationDialog = ({
 
     const onSubmit = useCallback(
         (line: LineModificationEditData) => {
+            function addOperationType(selectedOpLG: string) {
+                return selectedOpLG ===
+                    intl.formatMessage({
+                        id: 'NoOperationalLimitGroup',
+                    })
+                    ? {
+                          value: selectedOpLG,
+                          op: OperationType.UNSET,
+                      }
+                    : {
+                          value: selectedOpLG,
+                          op: OperationType.SET,
+                      };
+            }
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
@@ -245,8 +265,8 @@ const LineModificationDialog = ({
                     editData,
                     currentNode
                 ),
-                selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
-                selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
+                selectedLimitsGroup1: addOperationType(limits[SELECTED_LIMITS_GROUP_1]),
+                selectedLimitsGroup2: addOperationType(limits[SELECTED_LIMITS_GROUP_2]),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
@@ -275,7 +295,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, selectedId, lineToModify, editData, currentNode, snackError]
+        [studyUuid, currentNodeUuid, editData, selectedId, lineToModify, currentNode, intl, snackError]
     );
 
     const clear = useCallback(() => {

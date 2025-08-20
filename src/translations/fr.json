@@ -876,7 +876,8 @@
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
-    "SelectedOperationalLimitGroup": "Set de limites actif",
+    "SelectedOperationalLimitGroup": "Jeu de limites actif",
+    "NoOperationalLimitGroup": "Aucun",
     "SelectedOperationalLimitGroups": "Jeux de limites actifs",
     "Applicability": "Applicable sur",
 

@@ -550,8 +550,8 @@ export interface LineModificationInfo {
     g2: number;
     b2: number;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
+    selectedLimitsGroup1: AttributeModification<string>;
+    selectedLimitsGroup2: AttributeModification<string>;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;

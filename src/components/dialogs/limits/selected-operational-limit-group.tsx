@@ -10,6 +10,7 @@ import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { APPLICABILITY } from '../../network/constants';
+import { useIntl } from 'react-intl';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
@@ -31,9 +32,10 @@ export const SelectedOperationalLimitGroup = ({
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
     });
+    const intl = useIntl();
 
-    const opLimitsGroupsNames: string[] = useMemo(() => {
-        return optionsValues
+    const opLimitsGroupsNames: string[] = useMemo((): string[] => {
+        const finalOptions: string[] = optionsValues
             ? optionsValues
                   .filter(
                       (optionObj: OperationalLimitsGroup) =>
@@ -44,7 +46,15 @@ export const SelectedOperationalLimitGroup = ({
                   .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
                   .filter((id: string) => id != null)
             : [];
-    }, [filteredApplicability, optionsValues]);
+        if (isABranchModif) {
+            finalOptions.push(
+                intl.formatMessage({
+                    id: 'NoOperationalLimitGroup',
+                })
+            );
+        }
+        return finalOptions;
+    }, [filteredApplicability, intl, isABranchModif, optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
