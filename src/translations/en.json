@@ -1080,7 +1080,7 @@
     "Leg": "Leg",
     "Transformers": "Transformers",
     "EmptyList.variations": "Variations list is empty",
-    "UnsupportedView": "Search is unavailable in tree view",
+    "UnsupportedView": "Search is unavailable in this view",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1123,6 +1123,7 @@
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
+    "NetworkEquipmentSearchLabelInfo": "\"{equipmentId}\" is opened in the image grid",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1407,7 +1408,8 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
-    "rootNetwork.originalCaseRemoved": "The original case has been removed",
+    "rootNetwork.originalNotFound": "The original case was not found",
+    "rootNetwork.unknownPath": "<Unknown>",
     "importCaseFailure": "Unable to import case",
     "networkModificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
 
@@ -1509,7 +1511,7 @@
     "balancesAdjustment.emptyCountries": "At least one country must be selected",
     "loadFlowModification": "Loadflow modification applied",
 
-    "CreateVoltageLevelTopology": "Adding a bus bar",
+    "CreateVoltageLevelTopology": "Adding a busbar",
     "diagramLoadingFail": "An error occurred while loading {diagramName}",
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
@@ -1546,6 +1548,8 @@
     "Before": "Before",
     "After": "After",
     "newSwitchStates": "New switches closed ",
+    "AtLeastOneSectionAdded": "At least one busbar section must be added",
+    "SectionCount": "Section count",
     "nodeName": "Node name",
     "editNode": "Edit node"
 }

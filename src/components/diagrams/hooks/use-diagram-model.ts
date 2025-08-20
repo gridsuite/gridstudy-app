@@ -261,7 +261,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             svg: data,
                             name: getDiagramTitle(diagram, data),
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
-                                initializationNadConfigUuid: undefined, // reset initializationNadConfigUuid after fetching the SVG
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
                                     ...new Set([
