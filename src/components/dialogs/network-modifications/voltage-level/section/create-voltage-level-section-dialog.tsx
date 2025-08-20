@@ -14,6 +14,7 @@ import { ModificationDialog } from 'components/dialogs/commons/modificationDialo
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    ALL_BUS_BAR_SECTIONS,
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     ID,
@@ -49,6 +50,7 @@ const emptyFormData = {
     [IS_AFTER_BUSBAR_SECTION_ID]: null,
     [SWITCHES_BEFORE_SECTIONS]: null,
     [SWITCHES_AFTER_SECTIONS]: null,
+    [ALL_BUS_BAR_SECTIONS]: false,
     [NEW_SWITCH_STATES]: false,
     [SWITCH_BEFORE_NOT_REQUIRED]: false,
     [SWITCH_AFTER_NOT_REQUIRED]: false,
@@ -90,6 +92,7 @@ const formSchema = yup
                 then: (schema) => schema.notRequired(),
                 otherwise: (schema) => schema.required(),
             }),
+        [ALL_BUS_BAR_SECTIONS]: yup.boolean(),
         [NEW_SWITCH_STATES]: yup.boolean(),
         [SWITCH_BEFORE_NOT_REQUIRED]: yup.boolean(),
         [SWITCH_AFTER_NOT_REQUIRED]: yup.boolean(),
@@ -113,6 +116,7 @@ export default function CreateVoltageLevelSectionDialog({
     const currentNodeUuid = currentNode?.id;
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSectionInfos[]>();
+    const [allBusbarSectionsList, setAllBusbarSectionsList] = useState<string[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const { snackError, snackWarning } = useSnackMessage();
     const formMethods = useForm<DeepNullable<CreateVoltageLevelSectionDialogSchemaForm>>({
@@ -146,9 +150,15 @@ export default function CreateVoltageLevelSectionDialog({
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                             if (!voltageLevel.isRetrievedBusbarSections) {
+                                setAllBusbarSectionsList([]);
                                 snackWarning({
                                     messageId: 'BusBarSectionsCopyingNotSupported',
                                 });
+                            } else {
+                                const allSections = Object.values(
+                                    voltageLevel.busBarSectionInfos || {}
+                                ).flat() as string[];
+                                setAllBusbarSectionsList(allSections);
                             }
                         }
                     })
@@ -173,6 +183,7 @@ export default function CreateVoltageLevelSectionDialog({
             }
             reset({
                 [BUS_BAR_INDEX]: getBusBarIndexValue({ busbarIndex: editData?.busbarIndex }) ?? null,
+                [ALL_BUS_BAR_SECTIONS]: editData?.allBusbars ?? false,
                 [BUSBAR_SECTION_ID]: getBusBarIndexValue({ busbarIndex: editData?.busbarSectionId }) ?? null,
                 [IS_AFTER_BUSBAR_SECTION_ID]: editData?.afterBusbarSectionId
                     ? POSITION_NEW_SECTION_SIDE.AFTER.id
@@ -208,8 +219,9 @@ export default function CreateVoltageLevelSectionDialog({
             const voltageLevelSectionInfos = {
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                 voltageLevelId: selectedId,
-                busbarIndex: voltageLevelSection?.busbarIndex?.id || null,
+                busbarIndex: voltageLevelSection?.allBusbarSections ? '' : voltageLevelSection?.busbarIndex?.id || null,
                 busbarSectionId: voltageLevelSection?.busbarSectionId?.id || null,
+                allBusbars: voltageLevelSection?.allBusbarSections || false,
                 afterBusbarSectionId:
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
@@ -257,6 +269,7 @@ export default function CreateVoltageLevelSectionDialog({
                     <CreateVoltageLevelSectionForm
                         busBarSectionInfos={busBarSectionInfos}
                         voltageLevelId={selectedId}
+                        allBusbarSectionsList={allBusbarSectionsList}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}

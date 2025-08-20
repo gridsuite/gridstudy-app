@@ -1551,5 +1551,7 @@
     "AtLeastOneSectionAdded": "At least one busbar section must be added",
     "SectionCount": "Section count",
     "nodeName": "Node name",
-    "editNode": "Edit node"
+    "editNode": "Edit node",
+    "allBusbarSections": "All",
+    "allOptionHelperText": "Busbars have different number of sections"
 }
