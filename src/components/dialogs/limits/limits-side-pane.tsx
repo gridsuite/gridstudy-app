@@ -124,7 +124,7 @@ export function LimitsSidePane({
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
             );
         },
         [getValues, temporaryLimitHasPreviousValue]
@@ -171,7 +171,7 @@ export function LimitsSidePane({
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             return getValues(arrayFormName) &&
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
                 ? false
                 : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                       column.dataKey !== TEMPORARY_LIMIT_VALUE;
@@ -184,7 +184,7 @@ export function LimitsSidePane({
             const temporaryLimits = getValues(arrayFormName);
             const temporaryLimit = temporaryLimits ? temporaryLimits[rowIndex] : null;
             if (
-                temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY &&
                 !isNodeBuilt(currentNode ?? null)
             ) {
                 return false;
