@@ -22,15 +22,18 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
     APPLICABIlITY,
+    NAME,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
+    [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
@@ -92,8 +95,14 @@ const limitsValidationSchemaCreation = (id: string) => {
         [OPERATIONAL_LIMITS_GROUPS]: yup
             .array(yup.object().shape(limitsGroupValidationSchema(false)))
             .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
-                const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
-                return areArrayElementsUnique(namesArray);
+                const namesArray: OperationalLimitsId[] = !array
+                    ? []
+                    : array
+                          .filter((o) => !!sanitizeString(o[NAME]))
+                          .map((o) => {
+                              return { name: sanitizeString(o.name) ?? '', applicability: o.applicability };
+                          });
+                return areOperationalLimitsGroupUnique(namesArray);
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
