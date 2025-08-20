@@ -13,11 +13,12 @@ import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
 import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH, Svg } from '../diagram-common';
-import { mergeSx, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
 import { fetchSvg } from '../../../services/study';
 import { AppState } from 'redux/reducer';
+import RunningStatus from 'components/utils/running-status';
 
 interface PositionDiagramProps {
     diagramTitle: string;
@@ -43,6 +44,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
     const { svgType, disabled } = props;
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [loadingState, updateLoadingState] = useState<boolean>(false);
 
@@ -159,7 +161,10 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
             ref={ref}
             elevation={4}
             square={true}
-            sx={styles.paperBorders}
+            sx={mergeSx(
+                styles.paperBorders,
+                loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
+            )}
             style={{
                 pointerEvents: 'auto',
                 width: serverWidth,
