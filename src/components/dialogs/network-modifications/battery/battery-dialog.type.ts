@@ -23,7 +23,6 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
-    NAME,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
@@ -46,7 +45,7 @@ export type BatteryDialogSchemaBaseForm = {
     [ACTIVE_POWER_SET_POINT]?: number | null;
     [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
         [CONNECTION_DIRECTION]?: string;
         [CONNECTION_NAME]?: string;
         [CONNECTION_POSITION]?: number;
