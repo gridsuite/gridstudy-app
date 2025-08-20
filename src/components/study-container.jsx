@@ -29,7 +29,7 @@ import { fetchRootNetworks } from 'services/root-network';
 import WaitingLoader from './utils/waiting-loader';
 import { NotificationsUrlKeys, useIntlRef, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeBuilt, isNodeEdited, isSameNode } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -495,7 +495,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // then we can update the currentRootNetworkUuidRef.current
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        if (isNodeEdited(previousCurrentNode, currentNode)) {
             return;
         }
         if (!isNodeBuilt(currentNode)) {
