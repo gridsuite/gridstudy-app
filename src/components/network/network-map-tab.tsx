@@ -42,7 +42,7 @@ import {
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import {
     openDiagram,
     resetMapEquipment,
@@ -165,6 +165,7 @@ export const NetworkMapTab = ({
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
     );
     const theme = useTheme();
+    const { snackInfo } = useSnackMessage();
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
@@ -883,7 +884,7 @@ export const NetworkMapTab = ({
             return;
         }
         // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        if (isNodeEdited(previousCurrentNode, currentNode)) {
             return;
         }
         // when switching of root network, networkModificationTree takes some time to load
@@ -1245,13 +1246,20 @@ export const NetworkMapTab = ({
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos: EquipmentInfos) => {
-            if (optionInfos.type === EquipmentType.SUBSTATION) {
-                dispatch(openDiagram(optionInfos.id, DiagramType.SUBSTATION));
-            } else if (optionInfos.voltageLevelId) {
-                dispatch(openDiagram(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL));
+            const isSubstation = optionInfos.type === EquipmentType.SUBSTATION;
+            const id = isSubstation ? optionInfos.id : optionInfos.voltageLevelId;
+
+            if (!id) {
+                return;
             }
+            const diagramType = isSubstation ? DiagramType.SUBSTATION : DiagramType.VOLTAGE_LEVEL;
+            dispatch(openDiagram(id, diagramType));
+            snackInfo({
+                messageId: 'NetworkEquipmentSearchLabelInfo',
+                messageValues: { equipmentId: id },
+            });
         },
-        [dispatch]
+        [dispatch, snackInfo]
     );
 
     return (

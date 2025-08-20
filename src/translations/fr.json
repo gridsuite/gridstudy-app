@@ -1076,7 +1076,7 @@
     "Leg": "Enroulement",
     "Transformers": "Transformateurs",
     "EmptyList.variations": "La liste des variations est vide",
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+    "UnsupportedView": "La fonction de recherche n'est pas disponible dans cette vue",
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1118,6 +1118,8 @@
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
     "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
+
+    "NetworkEquipmentSearchLabelInfo": "\"{equipmentId}\" s'est ouvert dans la grille des images",
 
     "dialog.button.leave": "Quitter",
 
@@ -1543,5 +1545,7 @@
     "After": "Après",
     "newSwitchStates": "Nouveaux organes de coupure fermés",
     "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
-    "SectionCount": "Nombre de sections"
+    "SectionCount": "Nombre de sections",
+    "nodeName": "Nom du noeud",
+    "editNode": "Éditer le noeud"
 }

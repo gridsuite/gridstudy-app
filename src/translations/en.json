@@ -1080,7 +1080,7 @@
     "Leg": "Leg",
     "Transformers": "Transformers",
     "EmptyList.variations": "Variations list is empty",
-    "UnsupportedView": "Search is unavailable in tree view",
+    "UnsupportedView": "Search is unavailable in this view",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
@@ -1123,6 +1123,7 @@
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
+    "NetworkEquipmentSearchLabelInfo": "\"{equipmentId}\" is opened in the image grid",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1548,5 +1549,7 @@
     "After": "After",
     "newSwitchStates": "New switches closed ",
     "AtLeastOneSectionAdded": "At least one busbar section must be added",
-    "SectionCount": "Section count"
+    "SectionCount": "Section count",
+    "nodeName": "Node name",
+    "editNode": "Edit node"
 }
