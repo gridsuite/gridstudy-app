@@ -7,6 +7,7 @@
 import { APPLICABILITY } from '../../network/constants';
 import { areArrayElementsUnique } from '../../utils/utils';
 
+// data needed to determine if an operational limits group is unique
 export interface OperationalLimitsId {
     name: string;
     applicability: string;
