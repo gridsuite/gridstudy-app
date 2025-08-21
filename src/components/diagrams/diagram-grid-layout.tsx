@@ -10,7 +10,7 @@ import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, useTheme } from '@mui/material';
-import { ElementType, EquipmentInfos, EquipmentType, useDebounce } from '@gridsuite/commons-ui';
+import { ElementType, EquipmentInfos, EquipmentType, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
@@ -21,6 +21,7 @@ import MapCard from './map-card';
 import { BLINK_LENGTH_MS } from './card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
+import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from './diagram-grid-layout-utils';
 
 const styles = {
     container: {
@@ -157,6 +158,8 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
+
+    const { snackInfo } = useSnackMessage();
 
     // Blinking diagrams management
     const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
@@ -382,6 +385,21 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     }, []);
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
+    const onOpenNetworkAreaDiagram = useCallback(
+        (elementId?: string) => {
+            if (countOpenedNadDiagrams(diagrams) < MAX_NUMBER_OF_NAD_DIAGRAMS) {
+                if (!elementId) {
+                    return;
+                }
+                snackInfo({
+                    messageId: 'NADOpenedInTheGrid',
+                    messageValues: { elementId: elementId },
+                });
+            }
+        },
+        [diagrams, snackInfo]
+    );
+
     const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
 
     // Debounce the layout save function to avoid excessive calls
@@ -454,6 +472,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
                         onClose={handleRemoveMapCard}
                         errorMessage={globalError}
                         showInSpreadsheet={showInSpreadsheet}
+                        onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                     />
                 )}
             </ResponsiveGridLayout>

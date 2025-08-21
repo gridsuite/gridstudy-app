@@ -129,6 +129,7 @@ type NetworkMapTabProps = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: LineFlowMode;
+    onOpenNetworkAreaDiagram: (elementId?: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     onElementCreated?: () => void;
@@ -145,6 +146,7 @@ export const NetworkMapTab = ({
     lineParallelPath,
     lineFlowMode,
     /* callbacks */
+    onOpenNetworkAreaDiagram,
     showInSpreadsheet,
     onPolygonChanged,
     onElementCreated,
@@ -1266,19 +1268,6 @@ export const NetworkMapTab = ({
             openSLDInTheGrid(id, diagramType);
         },
         [openSLDInTheGrid]
-    );
-
-    const onOpenNetworkAreaDiagram = useCallback(
-        (elementId?: string) => {
-            if (!elementId) {
-                return;
-            }
-            snackInfo({
-                messageId: 'NADOpenedInTheGrid',
-                messageValues: { elementId: elementId },
-            });
-        },
-        [snackInfo]
     );
 
     return (
