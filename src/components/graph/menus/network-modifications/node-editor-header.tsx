@@ -117,7 +117,7 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
             </Box>
 
             {description && (
-                <Card sx={{ maxWidth: 'auto', p: 2, position: 'relative' }}>
+                <Card sx={{ marginRight: 1, marginBottom: 1, p: 2, position: 'relative' }}>
                     <IconButton
                         onClick={() => setExpanded(!expanded)}
                         sx={{
@@ -142,7 +142,7 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
                         sx={{
                             '& .MuiCollapse-wrapperInner': {
                                 overflowY: expanded ? 'auto' : 'hidden',
-                                maxHeight: expanded ? 200 : 30,
+                                maxHeight: expanded ? 200 : 20,
                             },
                         }}
                     >
