@@ -1058,11 +1058,11 @@ export const NetworkMapTab = ({
         leaveDrawingMode();
     }, [leaveDrawingMode, onElementCreated]);
 
-    const openDiagramInTheGrid = useCallback(
+    const openSLDInTheGrid = useCallback(
         (equipmentId: string, diagramType: DiagramType) => {
             dispatch(openDiagram(equipmentId, diagramType));
             snackInfo({
-                messageId: 'diagramOpenedInTheGrid',
+                messageId: 'SLDOpenedInTheGrid',
                 messageValues: { diagramType: intl.formatMessage({ id: diagramType }), equipmentId },
             });
         },
@@ -1073,10 +1073,10 @@ export const NetworkMapTab = ({
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode) {
-                openDiagramInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
+                openSLDInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
             }
         },
-        [isInDrawingMode, openDiagramInTheGrid]
+        [isInDrawingMode, openSLDInTheGrid]
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
@@ -1263,9 +1263,22 @@ export const NetworkMapTab = ({
                 return;
             }
             const diagramType = isSubstation ? DiagramType.SUBSTATION : DiagramType.VOLTAGE_LEVEL;
-            openDiagramInTheGrid(id, diagramType);
+            openSLDInTheGrid(id, diagramType);
         },
-        [openDiagramInTheGrid]
+        [openSLDInTheGrid]
+    );
+
+    const onOpenNetworkAreaDiagram = useCallback(
+        (elementId?: string) => {
+            if (!elementId) {
+                return;
+            }
+            snackInfo({
+                messageId: 'NADOpenedInTheGrid',
+                messageValues: { elementId: elementId },
+            });
+        },
+        [snackInfo]
     );
 
     return (
@@ -1284,6 +1297,7 @@ export const NetworkMapTab = ({
             {studyUuid && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={showVoltageLevelDiagram}
+                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                 />

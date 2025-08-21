@@ -392,6 +392,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
             <DiagramGridHeader
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
+                onOpenNetworkAreaDiagram={showGrid}
                 onMap={!isMapCardAdded() ? onAddMapCard : undefined}
                 onLayoutSave={debouncedGridLayoutSave}
             />
