@@ -97,8 +97,6 @@ const withOperatingStatusMenu =
         modificationInProgress,
         setModificationInProgress,
     }: MenuBranchProps) => {
-
-    console.log(BaseMenu, handleOpenModificationDialog);
         const intl = useIntl();
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
