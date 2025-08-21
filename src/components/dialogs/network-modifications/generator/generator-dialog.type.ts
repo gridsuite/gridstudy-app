@@ -70,7 +70,7 @@ export type GeneratorDialogSchemaBaseForm = {
 
     [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
         [CONNECTION_DIRECTION]?: string;
         [CONNECTION_NAME]?: string;
         [CONNECTION_POSITION]?: number;

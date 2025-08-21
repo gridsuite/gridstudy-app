@@ -35,6 +35,7 @@ interface VoltageLevelSectionsCreationFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
+    isUpdate?: boolean;
 }
 
 export function CreateVoltageLevelSectionForm({
@@ -43,6 +44,7 @@ export function CreateVoltageLevelSectionForm({
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
+    isUpdate,
 }: Readonly<VoltageLevelSectionsCreationFormProps>) {
     const intl = useIntl();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
@@ -111,7 +113,12 @@ export function CreateVoltageLevelSectionForm({
                 setIsNotRequiredSwitchAfter(false);
             }
         }
-    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption]);
+        if (isUpdate && isNodeBuilt(currentNode)) {
+            selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
+                ? setValue(SWITCH_AFTER_NOT_REQUIRED, false)
+                : setValue(SWITCH_BEFORE_NOT_REQUIRED, false);
+        }
+    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption, isUpdate, currentNode]);
 
     const busBarIndexOptions = useMemo(() => {
         if (busBarSectionInfos) {
