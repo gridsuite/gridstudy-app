@@ -809,7 +809,7 @@
     "CreateVoltageLevel": "Créer un poste",
     "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
-    "BusBarSections": "Section de jeu de barres",
+    "BusBarSections": "Section de jeu de barres de référence",
     "BusBarCount": "Nb de barres",
     "numberOfSections": "Nb de sections",
     "BusBarSectionID": "ID",
@@ -1547,5 +1547,6 @@
     "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
     "SectionCount": "Nombre de sections",
     "nodeName": "Nom du noeud",
-    "editNode": "Éditer le noeud"
+    "editNode": "Éditer le noeud",
+    "notValidVoltageLevel": "Poste invalide pour l'ajout de section/tronçon. Veuillez re-créer le poste"
 }

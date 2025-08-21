@@ -816,7 +816,7 @@
     "CreateVoltageLevel": "Create a voltage level",
     "ModifyVoltageLevel": "Modify a voltage level",
     "Substation": "Substation",
-    "BusBarSections": "Bus bar section",
+    "BusBarSections": "Busbar reference section",
     "BusBarCount": "Busbar Count",
     "numberOfSections": "Section Count",
     "BusBarSectionID": "ID",
@@ -1551,5 +1551,6 @@
     "AtLeastOneSectionAdded": "At least one busbar section must be added",
     "SectionCount": "Section count",
     "nodeName": "Node name",
-    "editNode": "Edit node"
+    "editNode": "Edit node",
+    "notValidVoltageLevel": "Poste invalide pour l'ajout de section/tronçon. Veuillez re-créer le poste"
 }
