@@ -214,12 +214,22 @@ export default function CreateVoltageLevelSectionDialog({
         reset(emptyFormData);
     }, [reset]);
 
+    const findBusbarKeyForSection = useCallback(
+        (sectionId: string) => {
+            const infos = busBarSectionInfos as unknown as BusBarSectionInfos;
+            return Object.keys(infos || {}).find((key) => infos[key]?.includes(sectionId)) || null;
+        },
+        [busBarSectionInfos]
+    );
+
     const onSubmit = useCallback(
         (voltageLevelSection: CreateVoltageLevelSectionDialogSchemaForm) => {
             const voltageLevelSectionInfos = {
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                 voltageLevelId: selectedId,
-                busbarIndex: voltageLevelSection?.allBusbarSections ? '' : voltageLevelSection?.busbarIndex?.id || null,
+                busbarIndex: voltageLevelSection?.allBusbarSections
+                    ? findBusbarKeyForSection(voltageLevelSection?.busbarSectionId?.id)
+                    : voltageLevelSection?.busbarIndex?.id || null,
                 busbarSectionId: voltageLevelSection?.busbarSectionId?.id || null,
                 allBusbars: voltageLevelSection?.allBusbarSections || false,
                 afterBusbarSectionId:
@@ -241,7 +251,7 @@ export default function CreateVoltageLevelSectionDialog({
                 });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
+        [selectedId, findBusbarKeyForSection, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     return (

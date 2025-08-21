@@ -78,7 +78,6 @@ export function CreateVoltageLevelSectionForm({
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
             const selectedKey = sectionCount?.id;
-            console.log(selectedKey);
             if (selectedKey === 'all') {
                 setValue(ALL_BUS_BAR_SECTIONS, true);
                 if (allBusbarSectionsList && Array.isArray(allBusbarSectionsList)) {
@@ -160,8 +159,14 @@ export function CreateVoltageLevelSectionForm({
         return [];
     }, [busBarSectionInfos, intl, allBusbarSectionsList]);
 
-    const getOptionLabel = (object: string | { id: string | number }) => {
-        return typeof object === 'string' ? object : String(object?.id ?? '');
+    const getOptionLabel = (object: string | { id: string | number; label: string | number }) => {
+        if (typeof object === 'string') {
+            return object;
+        }
+        if (object?.id === 'all') {
+            return String(object?.label ?? '');
+        }
+        return String(object?.id ?? '');
     };
 
     const isOptionEqualToValue = (val1: Option, val2: Option) => {
@@ -184,10 +189,26 @@ export function CreateVoltageLevelSectionForm({
             options={busBarIndexOptions as Option[]}
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={isOptionEqualToValue}
-            formProps={{
-                helperText: intl.formatMessage({
-                    id: 'allOptionHelperText',
-                }),
+            renderOption={(props, option) => {
+                const allOptionsDisabled = busBarIndexOptions?.every((opt) => (opt as any)?.disabled);
+                return (
+                    <li {...props}>
+                        <div>
+                            <div>{getOptionLabel(option)}</div>
+                            {allOptionsDisabled && (
+                                <div
+                                    style={{
+                                        fontSize: '0.75rem',
+                                        color: 'red',
+                                        marginTop: '2px',
+                                    }}
+                                >
+                                    {intl.formatMessage({ id: 'allOptionHelperText' })}
+                                </div>
+                            )}
+                        </div>
+                    </li>
+                );
             }}
             getOptionDisabled={(option) => (option as any)?.disabled}
             size={'small'}
