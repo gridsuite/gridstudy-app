@@ -32,6 +32,7 @@ import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: EquipmentInfos) => void;
+    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
     disableEventSearch?: boolean;
@@ -43,6 +44,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         isDialogSearchOpen,
         setIsDialogSearchOpen,
         showVoltageLevelDiagram,
+        onOpenNetworkAreaDiagram,
         disableEventSearch,
         disablCenterSubstation = false,
     } = props;
@@ -120,9 +122,14 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
     const suffixRenderer = useCallback(
         (props: TagRendererProps) => (
-            <CustomSuffixRenderer disablCenterSubstation={disablCenterSubstation} {...props} onClose={closeDialog} />
+            <CustomSuffixRenderer
+                disablCenterSubstation={disablCenterSubstation}
+                onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
+                {...props}
+                onClose={closeDialog}
+            />
         ),
-        [closeDialog, disablCenterSubstation]
+        [closeDialog, disablCenterSubstation, onOpenNetworkAreaDiagram]
     );
 
     useSearchEvent(enableSearchDialog);

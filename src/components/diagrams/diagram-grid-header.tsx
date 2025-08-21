@@ -37,12 +37,13 @@ const styles = {
 interface DiagramGridHeaderProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     onSearch: (element: EquipmentInfos) => void;
+    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
     onLayoutSave: () => void;
     onMap?: () => void;
 }
 
 export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
-    const { onLoad, onSearch, onMap, onLayoutSave } = props;
+    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave } = props;
 
     const intl = useIntl();
 
@@ -102,6 +103,7 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
             {!mapOpen && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={onSearch}
+                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                     disablCenterSubstation={true}

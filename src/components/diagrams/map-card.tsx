@@ -41,11 +41,19 @@ interface MapCardProps extends ReactGridLayoutCustomChildComponentProps {
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    onOpenNetworkAreaDiagram: (elementId?: string) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
 
 export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>) => {
-    const { studyUuid, onClose, errorMessage, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
+    const {
+        studyUuid,
+        onClose,
+        errorMessage,
+        showInSpreadsheet,
+        onOpenNetworkAreaDiagram,
+        ...reactGridLayoutCustomChildComponentProps
+    } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
     const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
@@ -132,13 +140,13 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                         lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                         lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
-                        openVoltageLevel={() => {}}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         showInSpreadsheet={(eq) => {
                             handleCloseMap();
                             showInSpreadsheet(eq);
                         }}
+                        onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                         onPolygonChanged={() => {}}
                         onElementCreated={handleCloseMap}
                     ></NetworkMapTab>

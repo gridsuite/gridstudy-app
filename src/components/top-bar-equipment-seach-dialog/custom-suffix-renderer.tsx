@@ -19,12 +19,14 @@ import { DiagramType } from '../diagrams/diagram.type';
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
     disablCenterSubstation: boolean;
+    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
 }
 
 export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> = ({
     element,
     onClose,
     disablCenterSubstation,
+    onOpenNetworkAreaDiagram,
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -64,8 +66,9 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
             dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
             onClose?.();
             e.stopPropagation();
+            onOpenNetworkAreaDiagram?.(element.id);
         },
-        [dispatch, element.id, onClose]
+        [dispatch, element.id, onClose, onOpenNetworkAreaDiagram]
     );
 
     if (
