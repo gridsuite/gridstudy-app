@@ -19,6 +19,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 const styles = {
     container: {
@@ -46,6 +48,7 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
 
     const [isLoadSelectorOpen, setIsLoadSelectorOpen] = useState(false);
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const mapOpen = useSelector((state: AppState) => state.mapOpen);
 
     const selectElement = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements.length > 0 && selectedElements[0].type) {
@@ -96,11 +99,14 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
                 })}
                 multiSelect={false}
             />
-            <TopBarEquipmentSearchDialog
-                showVoltageLevelDiagram={onSearch}
-                isDialogSearchOpen={isDialogSearchOpen}
-                setIsDialogSearchOpen={setIsDialogSearchOpen}
-            />
+            {!mapOpen && (
+                <TopBarEquipmentSearchDialog
+                    showVoltageLevelDiagram={onSearch}
+                    isDialogSearchOpen={isDialogSearchOpen}
+                    setIsDialogSearchOpen={setIsDialogSearchOpen}
+                    disablCenterSubstation={true}
+                />
+            )}
         </Box>
     );
 };

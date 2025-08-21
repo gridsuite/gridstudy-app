@@ -35,12 +35,18 @@ interface TopBarEquipmentSearchDialogProps {
     isDialogSearchOpen: boolean;
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
     disableEventSearch?: boolean;
+    disablCenterSubstation?: boolean;
 }
 
 export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
-    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram, disableEventSearch } = props;
+    const {
+        isDialogSearchOpen,
+        setIsDialogSearchOpen,
+        showVoltageLevelDiagram,
+        disableEventSearch,
+        disablCenterSubstation = false,
+    } = props;
     const intl = useIntl();
-
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -113,8 +119,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
     );
 
     const suffixRenderer = useCallback(
-        (props: TagRendererProps) => <CustomSuffixRenderer {...props} onClose={closeDialog} />,
-        [closeDialog]
+        (props: TagRendererProps) => (
+            <CustomSuffixRenderer disablCenterSubstation={disablCenterSubstation} {...props} onClose={closeDialog} />
+        ),
+        [closeDialog, disablCenterSubstation]
     );
 
     useSearchEvent(enableSearchDialog);
