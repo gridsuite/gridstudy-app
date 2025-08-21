@@ -280,23 +280,6 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
     });
 }
 
-// return a new Map containing only rows inside the given rowRange
-function filterColumnsByRowRange(
-    columns: Map<number, number>,
-    rowRange: { minRow: number; maxRow: number } | undefined
-): Map<number, number> {
-    if (!rowRange) {
-        return new Map(columns);
-    }
-    const filtered = new Map<number, number>();
-    for (const [row, col] of columns) {
-        if (row >= rowRange.minRow && row <= rowRange.maxRow) {
-            filtered.set(row, col);
-        }
-    }
-    return filtered;
-}
-
 /**
  * We will try to compress the tree, using the following rules :
  * - We move a branch to the left if the branch's starting node has a sibling to its left.
@@ -333,22 +316,30 @@ function compressTreePlacements(
     // For each of those nodes's branches, we will calculate how much space available there is to
     // the left, for each row of the branch.
     nonEldestSiblingsIds.forEach((currentNodeId) => {
+        // We have to find the minimum column placement values (per row) for the current branch, and compare them
+        // to the maximum column placement values (per row) of the nodes on the left.
+        // The resulting space we find represents how much we can shift the current column to the left.
+
         const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
         const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
 
         const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
 
-        // Compute the full left nodes set (don't pre-filter) so security-group extrema logic sees the whole groups.
-        const leftNodesFull = nodes.slice(0, currentNodeIndex);
+        // Only compare against left nodes that actually overlap the branch's row span.
+        // This avoids deep descendants to the left from over-constraining shallow siblings.
+        const rowRange = getRowRange(currentBranchNodes, placements);
+        const leftNodes = rowRange
+            ? nodes.slice(0, currentNodeIndex).filter((n) => {
+                  const p = placements.getPlacement(n.id);
+                  return p && p.row >= rowRange.minRow && p.row <= rowRange.maxRow;
+              })
+            : nodes.slice(0, currentNodeIndex);
 
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
-        const leftBranchMaximumColumnByRowFull = getMaximumColumnByRows(leftNodesFull, placements, nodeMap);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
 
-        // Only consider left columns that overlap the branch row range to avoid deep descendants blocking shallow siblings.
-        const rowRange = getRowRange(currentBranchNodes, placements);
-        const leftBranchMaximumColumnByRow = filterColumnsByRowRange(leftBranchMaximumColumnByRowFull, rowRange);
-
-        // Compute available space (compact behavior: no row+1 extra-gap check)
+        // no "row+1" extra-gap check gap for better packing of siblings. This keeps edges from crossing on the same row,
+        // but doesn't impose an extra gap on the row below that often forces unnecessary spacing.
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
         if (availableSpace > 0) {
