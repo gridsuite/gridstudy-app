@@ -6,17 +6,7 @@
  */
 
 import { useState } from 'react';
-import {
-    IconButton,
-    Box,
-    Theme,
-    Button,
-    Tooltip,
-    Typography,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
-} from '@mui/material';
+import { IconButton, Box, Theme, Button, Tooltip, Typography, Collapse, Card } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import { lighten, darken } from '@mui/material/styles';
@@ -99,6 +89,7 @@ interface NodeEditorHeaderProps {
 
 export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
     const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [expanded, setExpanded] = useState(false);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const label = currentTreeNode?.data?.label ?? '';
     const description = currentTreeNode?.data?.description ?? '';
@@ -126,16 +117,46 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
             </Box>
 
             {description && (
-                <Box sx={{ marginRight: 1, marginBottom: 1 }}>
-                    <Accordion disableGutters elevation={0} sx={styles.accordion}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={styles.accordionSummary}>
-                            <Typography sx={styles.topographySummary}>{description}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={styles.accordionDetails}>
-                            <Typography sx={{ wordBreak: 'break-word' }}>{description}</Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                </Box>
+                <Card sx={{ maxWidth: 'auto', p: 2, position: 'relative' }}>
+                    <IconButton
+                        onClick={() => setExpanded(!expanded)}
+                        sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            zIndex: 1,
+                            padding: 0,
+                        }}
+                    >
+                        <ExpandMoreIcon
+                            sx={{
+                                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                                transition: 'transform 0.3s',
+                            }}
+                        />
+                    </IconButton>
+
+                    <Collapse
+                        in={expanded}
+                        collapsedSize={30}
+                        sx={{
+                            '& .MuiCollapse-wrapperInner': {
+                                overflowY: expanded ? 'auto' : 'hidden',
+                                maxHeight: expanded ? 200 : 30,
+                            },
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                whiteSpace: 'pre-wrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
+                        >
+                            {description}
+                        </Typography>
+                    </Collapse>
+                </Card>
             )}
         </>
     );
