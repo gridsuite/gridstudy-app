@@ -620,6 +620,7 @@
     "acceptableDuration": "Tempo (s)",
     "value": "Valeur (A)",
     "side": "Côté",
+    "isActive": "Actif",
     "limitGroupName": "Nom du jeu de limites",
     "modificationType": "Type de modification",
     "temporaryLimitsModificationType": "Type de modification des limites temporaires",
