@@ -328,7 +328,7 @@ export type SetOpenMapAction = Readonly<Action<typeof SET_OPEN_MAP>> & {
     mapOpen: boolean;
 };
 
-export function SetOpenMap(mapOpen: boolean): SetOpenMapAction {
+export function setOpenMap(mapOpen: boolean): SetOpenMapAction {
     return {
         type: SET_OPEN_MAP,
         mapOpen,

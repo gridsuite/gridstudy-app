@@ -12,7 +12,7 @@ import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { EquipmentType, LineFlowMode, mergeSx } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { resetMapEquipment, setMapDataLoading, SetOpenMap, setReloadMapNeeded } from 'redux/actions';
+import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import WorldSvg from 'images/world.svg?react';
 import NetworkMapTab from 'components/network/network-map-tab';
 import { cardStyles } from './card-styles';
@@ -71,11 +71,11 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
         dispatch(resetMapEquipment());
         dispatch(setMapDataLoading(false));
         dispatch(setReloadMapNeeded(true));
-        dispatch(SetOpenMap(true));
+        dispatch(setOpenMap(true));
     }, [dispatch]);
 
     const handleCloseMap = useCallback(() => {
-        dispatch(SetOpenMap(false));
+        dispatch(setOpenMap(false));
         dispatch(resetMapEquipment());
         dispatch(setMapDataLoading(false));
         dispatch(setReloadMapNeeded(true));
