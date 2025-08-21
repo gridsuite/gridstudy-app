@@ -117,7 +117,20 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
             </Box>
 
             {description && (
-                <Card sx={{ marginRight: 1, marginBottom: 1, p: 2, position: 'relative' }}>
+                <Card
+                    sx={(theme) => ({
+                        marginRight: 1,
+                        marginBottom: 1,
+                        p: 2,
+                        position: 'relative',
+                        color: !expanded ? theme.palette.text.secondary : 'inherit',
+                        backgroundColor: !expanded
+                            ? theme.palette.mode === 'light'
+                                ? theme.palette.grey[200]
+                                : theme.palette.grey[900]
+                            : 'inherit',
+                    })}
+                >
                     <IconButton
                         onClick={() => setExpanded(!expanded)}
                         sx={{
