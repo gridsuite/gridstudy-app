@@ -937,8 +937,8 @@ export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedE
     return (notif as NodeCreatedEventData).headers?.updateType === NotificationType.NODE_CREATED;
 }
 
-export function isNodeRenamedNotification(notif: unknown): notif is NodeRenamedEventData {
-    return (notif as NodeRenamedEventData).headers?.updateType === NotificationType.NODE_RENAMED;
+export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEventData {
+    return (notif as NodeEditedEventData).headers?.updateType === NotificationType.NODE_EDITED;
 }
 export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
     return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
