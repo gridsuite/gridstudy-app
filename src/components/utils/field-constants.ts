@@ -46,6 +46,8 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
+export const IS_VOLTAGE_LEVEL_MODIFICATION = 'isVoltageLevelModification';
+export const IS_BUS_OR_BUSBAR_SECTION_MODIFICATION = 'isBusOrBusbarSectionModification';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -86,8 +88,6 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
-export const MAX_ACTIVE_POWER = 'maxActivePower';
-export const MIN_ACTIVE_POWER = 'minActivePower';
 export const MAX_P = 'maxP';
 export const MIN_P = 'minP';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
@@ -232,26 +232,29 @@ export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
 export const BUS_BAR_COUNT = 'busbarCount';
 export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
+export const SWITCHES_BEFORE_SECTIONS = 'switchesBeforeSections';
+export const SWITCHES_AFTER_SECTIONS = 'switchesAfterSections';
+export const NEW_SWITCH_STATES = 'newSwitchStates';
+export const BUSBAR_SECTION_ID = 'busbarSectionId';
+export const IS_AFTER_BUSBAR_SECTION_ID = 'isAfterBusBarSectionId';
+export const BUS_BAR_INDEX = 'busbarIndex';
+export const SWITCH_BEFORE_NOT_REQUIRED = 'switchBeforeNotRequired';
+export const SWITCH_AFTER_NOT_REQUIRED = 'switchAfterNotRequired';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
 export const IP_MAX = 'ipMax';
 // dnd table
 export const SELECTED = 'selected';
-
-export const COUNT = 'count';
-
 export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
 export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
-export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
 export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
 export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
 
-export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
 export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
@@ -264,7 +267,6 @@ export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 
 //percentage-area
-export const PERCENTAGE_AREA = 'percentageArea';
 export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
 export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
 export const SLIDER_PERCENTAGE = 'sliderPercentage';
@@ -279,8 +281,6 @@ export const FILTERS = 'filters';
 export const VARIATION_TYPE = 'variationType';
 export const VARIATION_VALUE = 'variationValue';
 export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
-
-export const MONITORED_BRANCHES_EQUIPMENT = 'monitoredBranchesEquipment';
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
 
@@ -331,25 +331,8 @@ export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
 export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
-export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'flowFlowSensitivityValueThreshold';
-export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'angleFlowSensitivityValueThreshold';
-export const FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD = 'flowVoltageSensitivityValueThreshold';
-export const PARAMETER_SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
-export const SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
-export const SENSI_INJECTION = 'sensiInjection';
-export const PARAMETER_SENSI_INJECTION = 'sensitivityInjection';
-export const PARAMETER_SENSI_HVDC = 'sensitivityHVDC';
-export const PARAMETER_SENSI_PST = 'sensitivityPST';
-export const PARAMETER_SENSI_NODES = 'sensitivityNodes';
 export const CONTINGENCIES = 'contingencies';
-export const EQUIPMENTS_IN_VOLTAGE_REGULATION = 'equipmentsInVoltageRegulation';
-export const SUPERVISED_VOLTAGE_LEVELS = 'monitoredVoltageLevels';
 export const MONITORED_BRANCHES = 'monitoredBranches';
-export const HVDC_LINES = 'hvdcs';
-export const SENSITIVITY_TYPE = 'sensitivityType';
-export const INJECTIONS = 'injections';
-export const DISTRIBUTION_TYPE = 'distributionType';
-export const PSTS = 'psts';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
@@ -420,7 +403,6 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
-export const SPREADSHEET_GS_FILTER = 'SpreadsheetGlobalFilter';
 
 /* State estimation parameters fields */
 /* General */
