@@ -557,6 +557,7 @@
     "Type": "Type",
     "SUBSTATION": "Site",
     "VOLTAGE_LEVEL": "Poste",
+    "BRANCH": "Quadripôle",
     "LINE": "Ligne",
     "TIE_LINE": "Ligne d'interconnexion",
     "SWITCH": "disjoncteur",
@@ -810,7 +811,7 @@
     "CreateVoltageLevel": "Créer un poste",
     "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
-    "BusBarSections": "Section de jeu de barres",
+    "BusBarSections": "Section de jeu de barres de référence",
     "BusBarCount": "Nb de barres",
     "numberOfSections": "Nb de sections",
     "BusBarSectionID": "ID",
@@ -1560,6 +1561,7 @@
     "editNode": "Éditer le noeud",
     "voltage-level": "poste",
     "substation": "site",
+    "notValidVoltageLevel": "Poste invalide pour l'ajout de section/tronçon. Veuillez re-créer le poste."
     "allBusbarSections": "Tous",
     "allOptionHelperText": "Jeux de barres avec différents nombres de sections"
 }
