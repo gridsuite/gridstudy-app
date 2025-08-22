@@ -137,7 +137,8 @@ export type AppActions =
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
     | DeletedOrRenamedNodesAction
-    | RemoveEquipmentDataAction;
+    | RemoveEquipmentDataAction
+    | SetOpenMapAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -319,6 +320,18 @@ export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMEN
 export function resetMapEquipment(): ResetMapEquipmentsAction {
     return {
         type: RESET_MAP_EQUIPMENTS,
+    };
+}
+
+export const SET_OPEN_MAP = 'SET_OPEN_MAP';
+export type SetOpenMapAction = Readonly<Action<typeof SET_OPEN_MAP>> & {
+    mapOpen: boolean;
+};
+
+export function setOpenMap(mapOpen: boolean): SetOpenMapAction {
+    return {
+        type: SET_OPEN_MAP,
+        mapOpen,
     };
 }
 
