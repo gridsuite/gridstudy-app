@@ -61,6 +61,8 @@ export const LIMIT_SETS_MODIFICATION_TYPE = {
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
+export const IS_ACTIVE = 'isActive';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID = 'selectedOperationalLimitsGroupId';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 export const CSV_FILENAME = 'csvFilename';
 

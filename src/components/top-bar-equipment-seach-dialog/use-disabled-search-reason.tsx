@@ -8,20 +8,14 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { StudyDisplayMode } from '../network-modification.type';
 import { RootNetworkIndexationStatus } from 'types/notification-types';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();
-    const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
     const rootNetworkIndexationStatus = useSelector((state: AppState) => state.rootNetworkIndexationStatus);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    if (!toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)) {
-        return intl.formatMessage({
-            id: 'UnsupportedView',
-        });
-    } else if (!isNodeBuilt(currentNode)) {
+    if (!isNodeBuilt(currentNode)) {
         return intl.formatMessage({
             id: 'InvalidNode',
         });

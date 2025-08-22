@@ -20,7 +20,6 @@ export const MAX_WIDTH_SUBSTATION = 1200;
 export const MAX_HEIGHT_SUBSTATION = 700;
 export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
 export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
-export const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
