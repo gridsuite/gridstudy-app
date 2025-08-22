@@ -65,7 +65,7 @@ import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
@@ -129,7 +129,7 @@ type NetworkMapTabProps = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: LineFlowMode;
-    openVoltageLevel: (idVoltageLevel: string) => void;
+    onOpenNetworkAreaDiagram: (elementId?: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     onElementCreated?: () => void;
@@ -146,7 +146,7 @@ export const NetworkMapTab = ({
     lineParallelPath,
     lineFlowMode,
     /* callbacks */
-    openVoltageLevel,
+    onOpenNetworkAreaDiagram,
     showInSpreadsheet,
     onPolygonChanged,
     onElementCreated,
@@ -188,6 +188,7 @@ export const NetworkMapTab = ({
 
     const lineFullPathRef = useRef<boolean>();
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const intl = useIntl();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -1059,14 +1060,25 @@ export const NetworkMapTab = ({
         leaveDrawingMode();
     }, [leaveDrawingMode, onElementCreated]);
 
+    const openSLDInTheGrid = useCallback(
+        (equipmentId: string, diagramType: DiagramType) => {
+            dispatch(openDiagram(equipmentId, diagramType));
+            snackInfo({
+                messageId: 'SLDOpenedInTheGrid',
+                messageValues: { diagramType: intl.formatMessage({ id: diagramType }), equipmentId },
+            });
+        },
+        [dispatch, intl, snackInfo]
+    );
+
     const handleOpenVoltageLevel = useCallback(
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode) {
-                openVoltageLevel(vlId);
+                openSLDInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
             }
         },
-        [isInDrawingMode, openVoltageLevel]
+        [isInDrawingMode, openSLDInTheGrid]
     );
 
     const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
@@ -1253,13 +1265,9 @@ export const NetworkMapTab = ({
                 return;
             }
             const diagramType = isSubstation ? DiagramType.SUBSTATION : DiagramType.VOLTAGE_LEVEL;
-            dispatch(openDiagram(id, diagramType));
-            snackInfo({
-                messageId: 'NetworkEquipmentSearchLabelInfo',
-                messageValues: { equipmentId: id },
-            });
+            openSLDInTheGrid(id, diagramType);
         },
-        [dispatch, snackInfo]
+        [openSLDInTheGrid]
     );
 
     return (
@@ -1278,6 +1286,7 @@ export const NetworkMapTab = ({
             {studyUuid && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={showVoltageLevelDiagram}
+                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                 />
