@@ -12,7 +12,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { suppressEventsToPreventEditMode } from '../commons/utils';
 
-const defaultColDef = {
+const defaultColDef: ColDef = {
     filter: true,
     sortable: true,
     resizable: false,
