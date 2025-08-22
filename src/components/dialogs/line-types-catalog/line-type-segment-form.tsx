@@ -146,11 +146,18 @@ export const LineTypeSegmentForm = () => {
                         if (limit?.temporaryLimitValue != null) {
                             if (computedLimit.temporaryLimitValue == null) {
                                 computedLimit.temporaryLimitValue = limit.temporaryLimitValue;
+                                computedLimit.temporaryLimitName = limit.temporaryLimitName;
+                                computedLimit.temporaryLimitAcceptableDuration = limit.temporaryLimitAcceptableDuration;
                             } else {
-                                computedLimit.temporaryLimitValue = Math.min(
+                                let temporaryLimitValue = Math.min(
                                     computedLimit.temporaryLimitValue,
                                     limit.temporaryLimitValue
                                 );
+                                if (temporaryLimitValue === limit.temporaryLimitValue) {
+                                  computedLimit.temporaryLimitValue =  limit.temporaryLimitValue;
+                                  computedLimit.temporaryLimitAcceptableDuration = limit.temporaryLimitAcceptableDuration;
+                                  computedLimit.temporaryLimitName = limit.temporaryLimitName;
+                                }
                             }
                         }
                         computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
