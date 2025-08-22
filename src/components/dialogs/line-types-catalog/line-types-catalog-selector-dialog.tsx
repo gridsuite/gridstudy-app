@@ -128,7 +128,7 @@ export default function LineTypesCatalogSelectorDialog({
     );
 
     const handleSelectedUnderground = useCallback(
-        (selectedSelectedUndergroundRow: LineTypeInfo) => {
+        (selectedUndergroundRow: LineTypeInfo) => {
             const selectedArea = getValues(UNDERGROUND_AREAS);
             const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
 
@@ -136,7 +136,7 @@ export default function LineTypesCatalogSelectorDialog({
             const shapeFactorId = selectedShapeFactor?.id;
 
             if (undergroundAreas.length > 0 && areaId && shapeFactorId) {
-                const filteredLimits = selectedSelectedUndergroundRow?.limitsForLineType?.filter(
+                const filteredLimits = selectedUndergroundRow?.limitsForLineType?.filter(
                     (limit) => limit?.area === areaId
                 );
 
@@ -147,7 +147,7 @@ export default function LineTypesCatalogSelectorDialog({
                         filteredLimits.forEach((limit) => {
                             limit.permanentLimit = limit.permanentLimit / shapeFactorValue;
                         });
-                        selectedSelectedUndergroundRow.limitsForLineType = filteredLimits;
+                        selectedUndergroundRow.limitsForLineType = filteredLimits;
                     }
                 }
             }

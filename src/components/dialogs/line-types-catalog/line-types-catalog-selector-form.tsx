@@ -23,13 +23,14 @@ import LimitCustomAgGrid from './limit-custom-aggrid';
 import { useCallback, useEffect, useState } from 'react';
 import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
+import { AgGridReact } from 'ag-grid-react';
 
 interface LimitParametersSelectionProps {
-    gridRef: any;
+    gridRef: React.RefObject<AgGridReact>;
     selectedRow: LineTypeInfo | null;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
-    onSelectionChanged: any;
+    onSelectionChanged: () => void;
     aerialAreasOptions: Option[];
     aerialTemperatures: Option[];
     undergroundAreas: Option[];
@@ -46,7 +47,7 @@ export default function LineTypesCatalogSelectorForm({
     aerialTemperatures,
     undergroundAreas,
     undergroundShapeFactor,
-}: LimitParametersSelectionProps) {
+}: Readonly<LimitParametersSelectionProps>) {
     const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const { setValue } = useFormContext();
     const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
@@ -137,7 +138,7 @@ export default function LineTypesCatalogSelectorForm({
                         <GridItem size={4}>
                             <AutocompleteInput
                                 name={UNDERGROUND_AREAS}
-                                label="aerialAreas"
+                                label="undergroundAreas"
                                 options={undergroundAreas}
                                 isOptionEqualToValue={areIdsEqual}
                                 size="small"

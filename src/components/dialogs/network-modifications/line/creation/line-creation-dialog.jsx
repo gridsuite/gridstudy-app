@@ -48,7 +48,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
@@ -270,6 +270,7 @@ const LineCreationDialog = ({
         data[FINAL_CURRENT_LIMITS].forEach((item) => {
             const temporaryLimitsList = [];
             if (item.temporaryLimitValue) {
+                console.log('item', item);
                 temporaryLimitsList.push({
                     name: item.temporaryLimitName,
                     acceptableDuration: item.temporaryLimitAcceptableDuration,
@@ -277,9 +278,9 @@ const LineCreationDialog = ({
                 });
             }
             finalLimits.push({
-                id: item.limitSetName,
+                id: item.limitSetName + APPLICABILITY.EQUIPMENT.id,
                 name: item.limitSetName,
-                applicability: 'EQUIPMENT',
+                applicability: APPLICABILITY.EQUIPMENT.id,
                 currentLimits: {
                     id: item.limitSetName,
                     permanentLimit: item.permanentLimit,

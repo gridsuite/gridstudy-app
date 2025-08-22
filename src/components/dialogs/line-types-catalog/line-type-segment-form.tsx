@@ -135,28 +135,28 @@ export const LineTypeSegmentForm = () => {
         setOpenCatalogDialogIndex(index);
     };
 
-    const updateTotalLimits = useCallback(() => {
+    const keepMostConstrainingLimits = useCallback(() => {
         const segments: SegmentFormData[] = getValues(SEGMENTS);
         const computedLimits = new Map<string, CurrentLimitsInfo>();
         segments.forEach((segment) => {
             segment[SEGMENT_CURRENT_LIMITS]?.forEach((limit: CurrentLimitsInfo) => {
                 if (computedLimits.has(limit.limitSetName)) {
-                    let limitInfo: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
-                    if (limitInfo !== undefined) {
+                    let computedLimit: CurrentLimitsInfo | undefined = computedLimits.get(limit.limitSetName);
+                    if (computedLimit !== undefined) {
                         if (limit?.temporaryLimitValue != null) {
-                            if (limitInfo.temporaryLimitValue == null) {
-                                limitInfo.temporaryLimitValue = limit.temporaryLimitValue;
+                            if (computedLimit.temporaryLimitValue == null) {
+                                computedLimit.temporaryLimitValue = limit.temporaryLimitValue;
                             } else {
-                                limitInfo.temporaryLimitValue = Math.min(
-                                    limitInfo.temporaryLimitValue,
+                                computedLimit.temporaryLimitValue = Math.min(
+                                    computedLimit.temporaryLimitValue,
                                     limit.temporaryLimitValue
                                 );
                             }
                         }
-                        limitInfo.permanentLimit = Math.min(limitInfo.permanentLimit, limit.permanentLimit);
+                        computedLimit.permanentLimit = Math.min(computedLimit.permanentLimit, limit.permanentLimit);
                     }
                 } else {
-                    computedLimits.set(limit.limitSetName, limit as CurrentLimitsInfo);
+                    computedLimits.set(limit.limitSetName, limit);
                 }
             });
         });
@@ -175,7 +175,7 @@ export const LineTypeSegmentForm = () => {
                 updateSegmentValues(openCatalogDialogIndex);
                 updateSegmentLimitsValues(openCatalogDialogIndex);
                 updateTotals();
-                updateTotalLimits();
+                keepMostConstrainingLimits();
             }
         },
         [
@@ -185,7 +185,7 @@ export const LineTypeSegmentForm = () => {
             clearErrors,
             openCatalogDialogIndex,
             updateSegmentLimitsValues,
-            updateTotalLimits,
+            keepMostConstrainingLimits,
         ]
     );
 
@@ -207,10 +207,10 @@ export const LineTypeSegmentForm = () => {
             setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, 0);
             updateTotals();
             setValue(`${SEGMENTS}.${index}.${SEGMENT_CURRENT_LIMITS}`, []);
-            updateTotalLimits();
+            keepMostConstrainingLimits();
             return true; // Needed to remove the line in ExpandableInput
         },
-        [setValue, updateTotals, updateTotalLimits]
+        [setValue, updateTotals, keepMostConstrainingLimits]
     );
 
     const getPreselectedRowIdForCatalog = useCallback(
@@ -250,7 +250,7 @@ export const LineTypeSegmentForm = () => {
 
     const totalSusceptanceField = <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />;
 
-    const defaultColDef = useMemo(
+    const limitsDefaultColDef: ColDef = useMemo(
         () => ({
             sortable: false,
             resizable: false,
@@ -320,7 +320,7 @@ export const LineTypeSegmentForm = () => {
             <Grid container sx={{ height: '100%' }} direction="column">
                 <CustomAGGrid
                     rowData={currentLimitResult}
-                    defaultColDef={defaultColDef}
+                    defaultColDef={limitsDefaultColDef}
                     columnDefs={limitsColumnDefs}
                     domLayout="autoHeight"
                 />

@@ -1160,6 +1160,7 @@
     "aerialAreas": "Area",
     "aerialTemperatures": "Temperature",
     "undergroundShapeFactors": "Shape factor",
+    "undergroundAreas": "Area",
     "menu.create": "Create",
     "menu.createMultiple": "Create multiple equipment",
     "menu.createByTable": "Create by table",

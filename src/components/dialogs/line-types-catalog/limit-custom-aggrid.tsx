@@ -22,7 +22,7 @@ const defaultColDef = {
     suppressKeyboardEvent: suppressEventsToPreventEditMode,
 };
 
-interface LimitCustomAgGridProps {
+interface LimitsCustomAgGridProps {
     gridRef: RefObject<AgGridReact>;
     currentTab: number;
     aerialRowData: LineTypeInfo[];
@@ -42,7 +42,7 @@ export default function LimitCustomAgGrid({
     undergroundColumnDefs,
     onSelectionChanged,
     onGridReady,
-}: Readonly<LimitCustomAgGridProps>) {
+}: Readonly<LimitsCustomAgGridProps>) {
     const { rowData, columnDefs } = useMemo(() => {
         if (currentTab === CATEGORIES_TABS.AERIAL.id) {
             return { rowData: aerialRowData, columnDefs: aerialColumnDefs };

@@ -1158,6 +1158,7 @@
     "aerialAreas": "Zone météo",
     "aerialTemperatures": "Température de répartition",
     "undergroundShapeFactors": "Facteur de forme",
+    "undergroundAreas": "Température de l'environnement",
     "menu.create": "Créer",
     "menu.createMultiple": "Créer plusieurs ouvrages",
     "menu.modifyMultiple": "Modifier plusieurs ouvrages",
