@@ -154,9 +154,10 @@ export const LineTypeSegmentForm = () => {
                                     limit.temporaryLimitValue
                                 );
                                 if (temporaryLimitValue === limit.temporaryLimitValue) {
-                                  computedLimit.temporaryLimitValue =  limit.temporaryLimitValue;
-                                  computedLimit.temporaryLimitAcceptableDuration = limit.temporaryLimitAcceptableDuration;
-                                  computedLimit.temporaryLimitName = limit.temporaryLimitName;
+                                    computedLimit.temporaryLimitValue = limit.temporaryLimitValue;
+                                    computedLimit.temporaryLimitAcceptableDuration =
+                                        limit.temporaryLimitAcceptableDuration;
+                                    computedLimit.temporaryLimitName = limit.temporaryLimitName;
                                 }
                             }
                         }
