@@ -118,9 +118,7 @@ export default function LineTypesCatalogSelectorDialog({
                 const filteredLimits = selectedAerialRow?.limitsForLineType?.filter(
                     (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
                 );
-                if (filteredLimits) {
-                    selectedAerialRow.limitsForLineType = filteredLimits;
-                }
+                selectedAerialRow.limitsForLineType = filteredLimits ? filteredLimits : [];
             }
         },
         [getValues, areasOptions?.length, aerialTemperatures?.length]
@@ -141,13 +139,14 @@ export default function LineTypesCatalogSelectorDialog({
 
                 if (filteredLimits) {
                     const shapeFactorValue = parseFloat(shapeFactorId);
-
                     if (!isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
                         filteredLimits.forEach((limit) => {
                             limit.permanentLimit = limit.permanentLimit / shapeFactorValue;
                         });
                         selectedUndergroundRow.limitsForLineType = filteredLimits;
                     }
+                } else {
+                    selectedUndergroundRow.limitsForLineType = [];
                 }
             }
         },
