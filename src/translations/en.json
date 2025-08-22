@@ -818,7 +818,7 @@
     "CreateVoltageLevel": "Create a voltage level",
     "ModifyVoltageLevel": "Modify a voltage level",
     "Substation": "Substation",
-    "BusBarSections": "Bus bar section",
+    "BusBarSections": "Busbar reference section",
     "BusBarCount": "Busbar Count",
     "numberOfSections": "Section Count",
     "BusBarSectionID": "ID",
@@ -1564,5 +1564,6 @@
     "nodeName": "Node name",
     "editNode": "Edit node",
     "voltage-level": "voltage level",
-    "substation": "substation"
+    "substation": "substation",
+    "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level."
 }
