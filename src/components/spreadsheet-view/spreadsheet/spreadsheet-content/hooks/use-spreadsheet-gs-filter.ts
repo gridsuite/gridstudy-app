@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RefObject, useCallback, useEffect, useState } from 'react';
-import { FilterChangedEvent, IRowNode } from 'ag-grid-community';
-import { UUID } from 'crypto';
+import { type RefObject, useCallback, useEffect, useState } from 'react';
+import { type FilterChangedEvent, type IRowNode } from 'ag-grid-community';
+import type { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/reducer';
+import { type AppState } from '../../../../../redux/reducer';
 import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';
 import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
-import { AgGridReact } from 'ag-grid-react';
+import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
@@ -89,6 +89,7 @@ export const useSpreadsheetGlobalFilter = (
                 }
 
                 const computedFilter = buildExpertFilter(
+                    //@ts-expect-error TODO: what to do with BRANCH type?
                     equipmentType,
                     undefined,
                     countries,
