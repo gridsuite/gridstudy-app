@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AMOUNT_TEMPORARY_LIMITS, MODIFICATIONS_TABLE, SIDE, TYPE } from '../../../utils/field-constants';
+import { AMOUNT_TEMPORARY_LIMITS, CSV_FILENAME, MODIFICATIONS_TABLE, SIDE, TYPE } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -17,7 +17,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';
-import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/modification/tabular-modification-utils';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { formatModification } from '../tabular/tabular-common';
 import { createTabularModification } from '../../../../services/study/network-modifications';
 import { BranchSide } from '../../../utils/constants';
@@ -86,6 +86,7 @@ export function LimitSetsModificationDialog({
                 Object.keys(modification).forEach((key) => {
                     modification[key] = row[key];
                 });
+
                 if (modification[SIDE] === BranchSide.ONE) {
                     modification.operationalLimitsGroup1 = [
                         formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.ONE),
@@ -100,14 +101,15 @@ export function LimitSetsModificationDialog({
                 return modification;
             });
 
-            createTabularModification(
+            createTabularModification({
                 studyUuid,
-                currentNodeUuid,
+                nodeUuid: currentNodeUuid,
                 modificationType,
                 modifications,
-                editData?.uuid,
-                ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
-            ).catch((error) => {
+                modificationUuid: editData?.uuid,
+                type: ModificationType.LIMIT_SETS_TABULAR_MODIFICATION,
+                csvFilename: formData[CSV_FILENAME],
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TabularModificationError',

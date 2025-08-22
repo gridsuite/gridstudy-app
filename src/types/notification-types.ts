@@ -31,7 +31,7 @@ export enum NotificationType {
     NODES_DELETED = 'nodeDeleted',
     NODE_MOVED = 'nodeMoved',
     NODES_UPDATED = 'nodeUpdated',
-    NODE_RENAMED = 'nodeRenamed',
+    NODE_EDITED = 'nodeEdited',
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
@@ -123,7 +123,7 @@ export const MODIFYING_NODES_NOTIFICATION_TYPES = [
 export const MODIFYING_NODE_NOTIFICATION_TYPES = [
     NotificationType.STUDY, // contains 'node' header
     NotificationType.STUDY_ALERT,
-    NotificationType.NODE_RENAMED, // TODO don not manage this one ?
+    NotificationType.NODE_EDITED, // TODO don not manage this one ?
     NotificationType.NODE_BUILD_COMPLETED,
     NotificationType.NODE_BUILD_FAILED,
 ] as NotificationType[];
@@ -263,8 +263,8 @@ interface NodesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     nodes: UUID[];
 }
 
-interface NodeRenamedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.NODE_RENAMED;
+interface NodeEditedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODE_EDITED;
     node: UUID;
 }
 
@@ -610,8 +610,8 @@ export interface NodesUpdatedEventData {
     payload: undefined;
 }
 
-export interface NodeRenamedEventData {
-    headers: NodeRenamedEventDataHeaders;
+export interface NodeEditedEventData {
+    headers: NodeEditedEventDataHeaders;
     payload: undefined;
 }
 
@@ -958,7 +958,7 @@ export function isContainingNodesInformationNotification(notif: unknown): notif 
 export function isContainingNodeInformationNotification(notif: unknown): notif is
     | StudyEventData // contains 'node' header
     | StudyAlertEventData
-    | NodeRenamedEventData // TODO don not manage this one ?
+    | NodeEditedEventData // TODO don not manage this one ?
     | NodeBuildCompletedEventData
     | NodeBuildFailedEventData {
     return MODIFYING_NODE_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
@@ -1061,7 +1061,7 @@ export type StudyUpdateEventData =
     | NodesDeletedEventData
     | NodeMovedEventData
     | NodesUpdatedEventData
-    | NodeRenamedEventData
+    | NodeEditedEventData
     | NodesBuildStatusUpdatedEventData
     | NodeBuildCompletedEventData
     | NodeBuildFailedEventData

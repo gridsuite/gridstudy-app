@@ -16,11 +16,17 @@ import {
     IntegerInput,
     LANG_FRENCH,
 } from '@gridsuite/commons-ui';
-import { AMOUNT_TEMPORARY_LIMITS, EQUIPMENT_ID, MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
+import {
+    AMOUNT_TEMPORARY_LIMITS,
+    EQUIPMENT_ID,
+    CSV_FILENAME,
+    MODIFICATIONS_TABLE,
+    TYPE,
+} from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button, Grid } from '@mui/material';
-import { DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/custom-aggrid/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 import GridItem from '../../commons/grid-item';
@@ -33,7 +39,8 @@ import {
     LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS,
     LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS,
     LIMIT_SETS_TABULAR_MODIFICATION_REPEATABLE_FIELDS,
-} from '../tabular/modification/tabular-modification-utils';
+} from '../tabular/tabular-modification-utils';
+import { BOOLEAN } from '../../../network/constants';
 
 const styles = {
     grid: { height: 500, width: '100%' },
@@ -57,6 +64,26 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     const csvColumns = useMemo<TabularField[]>(() => {
         return [...LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS, ...repeatableColumns];
     }, [repeatableColumns]);
+
+    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
+
+    const amountTemporaryLimits = useWatch({
+        name: AMOUNT_TEMPORARY_LIMITS,
+    });
+    const equipmentType = useWatch({
+        name: TYPE,
+    });
+    const watchTable = useWatch({
+        name: MODIFICATIONS_TABLE,
+    });
+
+    const [selectedFile, FileField, selectedFileError, setAcceptedFile] = useCSVPicker({
+        label: 'ImportModifications',
+        header: csvColumns.map((column) => column.id),
+        disabled: !equipmentType,
+        resetTrigger: typeChangedTrigger,
+        language: language,
+    });
 
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
@@ -118,22 +145,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
             setValue(MODIFICATIONS_TABLE, results.data, {
                 shouldDirty: true,
             });
+            setValue(CSV_FILENAME, selectedFile?.name);
             setIsFetching(false);
         },
-        [clearErrors, csvColumns, intl, setError, setValue]
+        [clearErrors, csvColumns, intl, setError, setValue, selectedFile]
     );
-
-    const amountTemporaryLimits = useWatch({
-        name: AMOUNT_TEMPORARY_LIMITS,
-    });
-
-    const equipmentType = useWatch({
-        name: TYPE,
-    });
-
-    const watchTable = useWatch({
-        name: MODIFICATIONS_TABLE,
-    });
 
     const computeRepeatableColumns = useCallback(() => {
         const columns: TabularField[] = [];
@@ -155,10 +171,10 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     }, [amountTemporaryLimits, trigger]);
 
     const csvTranslatedColumns = useMemo(() => {
-        return LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS.map((field) => {
-            return intl.formatMessage({ id: field.id });
+        return csvColumns.map(({ id, name, index }) => {
+            return `${intl.formatMessage({ id: name ?? id })} ${index ?? ''}`;
         });
-    }, [intl]);
+    }, [csvColumns, intl]);
 
     const commentLines = useMemo(() => {
         const commentKey = `TabularLimitSetsModificationSkeletonComment`;
@@ -176,24 +192,22 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
         return commentData;
     }, [intl, csvTranslatedColumns, language]);
 
-    const [typeChangedTrigger, setTypeChangedTrigger] = useState(false);
-    const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: 'ImportModifications',
-        header: csvColumns.map((column) => column.id),
-        disabled: !csvColumns || !equipmentType,
-        resetTrigger: typeChangedTrigger,
-        language: language,
-    });
-
     const handleChange = useCallback(() => {
         setTypeChangedTrigger(!typeChangedTrigger);
         clearErrors(MODIFICATIONS_TABLE);
         setValue(MODIFICATIONS_TABLE, []);
+        setValue(CSV_FILENAME, undefined);
     }, [clearErrors, setValue, typeChangedTrigger]);
+
+    const csvFilename = getValues(CSV_FILENAME);
 
     useEffect(() => {
         computeRepeatableColumns();
     }, [computeRepeatableColumns]);
+
+    useEffect(() => {
+        setAcceptedFile(csvFilename ? new File([], csvFilename) : undefined);
+    }, [setAcceptedFile, csvFilename]);
 
     useEffect(() => {
         setIsFetching(dataFetching);
@@ -208,9 +222,10 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
     useEffect(() => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
+            setValue(CSV_FILENAME, undefined);
             clearErrors(MODIFICATIONS_TABLE);
             setIsFetching(false);
-        } else if (selectedFile) {
+        } else if (selectedFile && selectedFile.size > 0) {
             setIsFetching(true);
             Papa.parse(selectedFile, {
                 header: true,
@@ -245,11 +260,11 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
 
     const columnDefs = useMemo<ColDef[]>(
         () =>
-            csvColumns.map(({ id, name, index }) => ({
+            csvColumns.map(({ id, name, type, index }) => ({
                 field: id,
                 pinned: id === EQUIPMENT_ID ? true : undefined,
                 headerName: `${intl.formatMessage({ id: name ?? id })} ${index ?? ''}`,
-                cellRenderer: DefaultCellRenderer,
+                cellRenderer: type === BOOLEAN ? BooleanNullableCellRenderer : DefaultCellRenderer,
             })),
         [csvColumns, intl]
     );
@@ -272,7 +287,7 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                 <GridItem size={4}>{equipmentTypeField}</GridItem>
                 <Grid item>{FileField}</Grid>
             </Grid>
-            <Grid container item spacing={2}>
+            <Grid container item spacing={2} alignItems={'center'}>
                 <Grid item>
                     <IntegerInput name={AMOUNT_TEMPORARY_LIMITS} label={'amountTemporaryLimits'} />
                 </Grid>
@@ -289,8 +304,6 @@ export function LimitSetsTabularModificationForm({ dataFetching }: Readonly<Tabu
                         </Button>
                     </CsvDownloader>
                 </Grid>
-            </Grid>
-            <Grid container item spacing={2} alignItems={'center'}>
                 <Grid item>
                     <ErrorInput name={MODIFICATIONS_TABLE} InputField={FieldErrorAlert} />
                     {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}

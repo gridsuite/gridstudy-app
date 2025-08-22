@@ -31,6 +31,7 @@ export enum FilterType {
 export type FilterData = {
     dataType?: string;
     type?: string;
+    originalType?: string; // used to store the original type of the filter before any transformation (e.g EQUALS and NOT_EQUAL in number filters)
     value: unknown;
     tolerance?: number; // tolerance when comparing values. Only useful for the number type
 };

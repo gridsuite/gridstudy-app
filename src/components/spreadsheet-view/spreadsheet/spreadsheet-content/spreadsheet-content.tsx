@@ -24,6 +24,7 @@ import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/ut
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/diagrams/diagram.type';
+import { type FirstDataRenderedEvent } from 'ag-grid-community';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -55,6 +56,7 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    registerRowCounterEvents: (params: FirstDataRenderedEvent) => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
@@ -69,6 +71,7 @@ export const SpreadsheetContent = memo(
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        registerRowCounterEvents,
         openDiagram,
         active,
     }: SpreadsheetContentProps) => {
@@ -136,9 +139,13 @@ export const SpreadsheetContent = memo(
             handleEquipmentScroll();
         }, [handleEquipmentScroll, equipmentId]);
 
-        const onFirstDataRendered = useCallback(() => {
-            handleEquipmentScroll();
-        }, [handleEquipmentScroll]);
+        const onFirstDataRendered = useCallback(
+            (params: FirstDataRenderedEvent) => {
+                handleEquipmentScroll();
+                registerRowCounterEvents(params);
+            },
+            [handleEquipmentScroll, registerRowCounterEvents]
+        );
 
         const onGridReady = useCallback(() => {
             updateLockedColumnsConfig();
