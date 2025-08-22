@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {useCallback, useMemo} from 'react';
-import {validAlias} from '../../../hooks/use-node-aliases';
-import {ROOT_NODE_LABEL} from '../../../../../constants/node.constant';
-import {NotificationsUrlKeys, useNotificationsListener} from '@gridsuite/commons-ui';
-import {isStudyNotification} from '../../../../../types/notification-types';
-import {NodeType} from '../../../../graph/tree-node.type';
-import {isStatusBuilt} from '../../../../graph/util/model-functions';
-import {useSelector} from 'react-redux';
-import {AppState} from '../../../../../redux/reducer';
-import {useFetchEquipment} from '../../../hooks/use-fetch-equipment';
-import {SpreadsheetEquipmentType} from '../../../types/spreadsheet.type';
-import {NodeAlias} from '../../../types/node-alias.type';
+import { useCallback, useMemo } from 'react';
+import { validAlias } from '../../../hooks/use-node-aliases';
+import { ROOT_NODE_LABEL } from '../../../../../constants/node.constant';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { isStudyNotification } from '../../../../../types/notification-types';
+import { NodeType } from '../../../../graph/tree-node.type';
+import { isStatusBuilt } from '../../../../graph/util/model-functions';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../../redux/reducer';
+import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
+import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { NodeAlias } from '../../../types/node-alias.type';
 
 export function useNodeConfigNotificationsListener(
     tableType: SpreadsheetEquipmentType,
