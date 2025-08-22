@@ -8,3 +8,11 @@ export type Nullable<T> = { [K in keyof T]: T[K] | null };
 export type DeepNullable<T> = {
     [K in keyof T]: DeepNullable<T[K]> | null;
 };
+
+export function notUndefined<T>(value: T | undefined): value is T {
+    return value !== undefined;
+}
+
+export function notNull<T>(value: T | null): value is T {
+    return value !== null;
+}

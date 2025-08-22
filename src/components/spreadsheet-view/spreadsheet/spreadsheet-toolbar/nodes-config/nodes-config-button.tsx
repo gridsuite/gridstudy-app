@@ -6,14 +6,12 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button, Theme, Tooltip } from '@mui/material';
+import { Badge, Button, Menu, MenuItem, type Theme, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
-import { NodeAlias } from '../../../types/node-alias.type';
 import { MouseEvent, useCallback, useMemo, useState } from 'react';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import type { NodeAlias } from '../../../types/node-alias.type';
 import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
 import { useNodeConfigNotificationsListener } from './use-node-config-notifications-listener';
@@ -35,7 +33,6 @@ const styles = {
 
 enum NodesOptionId {
     CONFIG = 'CONFIG',
-    REFRESH = 'REFRESH',
 }
 
 type NodesConfigButtonProps = {

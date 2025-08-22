@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback } from 'react';
-import { SEGMENTS, TOTAL_REACTANCE, TOTAL_RESISTANCE, TOTAL_SUSCEPTANCE } from '../../utils/field-constants';
+import { useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../commons/modificationDialog';
@@ -14,7 +13,16 @@ import { useForm } from 'react-hook-form';
 import { LineTypeSegmentForm } from './line-type-segment-form';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { ComputedLineCharacteristics } from './line-catalog.type';
-import { emptyLineSegment, SegmentSchema } from './segment-utils';
+import { SegmentSchema } from './segment-utils';
+import {
+    FINAL_CURRENT_LIMITS,
+    SEGMENTS,
+    TOTAL_REACTANCE,
+    TOTAL_RESISTANCE,
+    TOTAL_SUSCEPTANCE,
+} from '../../utils/field-constants';
+import { InferType } from 'yup';
+import { DeepNullable } from '../../utils/ts-utils';
 
 const LineTypeSegmentSchema = yup
     .object()
@@ -22,17 +30,17 @@ const LineTypeSegmentSchema = yup
         [TOTAL_RESISTANCE]: yup.number().required(),
         [TOTAL_REACTANCE]: yup.number().required(),
         [TOTAL_SUSCEPTANCE]: yup.number().required(),
+        [FINAL_CURRENT_LIMITS]: yup.array(),
         [SEGMENTS]: yup.array().of(SegmentSchema).required().min(1, 'AtLeastOneSegmentNeeded'),
     })
     .required();
 
-export type LineTypeSegmentFormData = yup.InferType<typeof LineTypeSegmentSchema>;
-
-const emptyFormData: LineTypeSegmentFormData = {
+const emptyFormData = {
     [TOTAL_RESISTANCE]: 0.0,
     [TOTAL_REACTANCE]: 0.0,
     [TOTAL_SUSCEPTANCE]: 0.0,
-    [SEGMENTS]: [emptyLineSegment],
+    [FINAL_CURRENT_LIMITS]: [],
+    [SEGMENTS]: [],
 };
 
 export interface LineTypeSegmentDialogProps {
@@ -41,10 +49,12 @@ export interface LineTypeSegmentDialogProps {
     onSave: (data: ComputedLineCharacteristics) => void;
 }
 
-const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ open, onSave, onClose }) => {
-    const formMethods = useForm<LineTypeSegmentFormData>({
+export type LineTypeSegmentDialogSchemaForm = InferType<typeof LineTypeSegmentSchema>;
+
+export default function LineTypeSegmentDialog({ open, onSave, onClose }: Readonly<LineTypeSegmentDialogProps>) {
+    const formMethods = useForm<DeepNullable<LineTypeSegmentDialogSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<LineTypeSegmentFormData>(LineTypeSegmentSchema),
+        resolver: yupResolver<DeepNullable<LineTypeSegmentDialogSchemaForm>>(LineTypeSegmentSchema),
     });
 
     const { reset } = formMethods;
@@ -53,9 +63,6 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
         reset(emptyFormData);
     }, [reset]);
 
-    /**
-     * RENDER
-     */
     return (
         <CustomFormProvider validationSchema={LineTypeSegmentSchema} {...formMethods}>
             <ModificationDialog
@@ -71,6 +78,4 @@ const LineTypeSegmentDialog: FunctionComponent<LineTypeSegmentDialogProps> = ({ 
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-export default LineTypeSegmentDialog;
+}

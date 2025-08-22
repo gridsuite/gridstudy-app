@@ -16,17 +16,20 @@ export interface OperationalLimitsId {
 export const areOperationalLimitsGroupUnique = (array: OperationalLimitsId[]) => {
     const equipmentApplicabilityElements: string[] = array
         .filter((item: OperationalLimitsId) => item.applicability === APPLICABILITY.EQUIPMENT.id)
-        .map((item) => item.name);
+        .map((item: OperationalLimitsId) => item.name);
 
     if (
-        equipmentApplicabilityElements.map((item) => array.filter((arrayItem) => arrayItem.name === item).length > 1)
-            .length > 0
+        // never more than one EQUIPMENT limit set of a given name
+        equipmentApplicabilityElements.filter(
+            (item: string) =>
+                array.filter((arrayItem: OperationalLimitsId): boolean => arrayItem.name === item).length > 1
+        ).length > 0
     ) {
         return false;
     }
 
     const otherApplicabilityElements: string[] = array
         .filter((item: OperationalLimitsId) => item.applicability !== APPLICABILITY.EQUIPMENT.id)
-        .map((item) => item.name + item.applicability);
+        .map((item: OperationalLimitsId) => item.name + item.applicability);
     return areArrayElementsUnique(otherApplicabilityElements);
 };
