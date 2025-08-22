@@ -68,7 +68,7 @@ import {
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { addSelectedFieldToRows, formatTemporaryLimits } from 'components/utils/utils';
+import { addSelectedFieldToRows, formatTemporaryLimits, toModificationOperation } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -101,6 +101,7 @@ import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'crypto';
 import {
+    AttributeModification,
     CurrentLimits,
     OperationalLimitsGroup,
     OperationType,
@@ -227,7 +228,7 @@ const LineModificationDialog = ({
 
     const onSubmit = useCallback(
         (line: LineModificationEditData) => {
-            function addOperationType(selectedOpLG: string) {
+            function addOperationType(selectedOpLG: string): AttributeModification<string> | null {
                 return selectedOpLG ===
                     intl.formatMessage({
                         id: 'NoOperationalLimitGroup',
@@ -236,10 +237,7 @@ const LineModificationDialog = ({
                           value: selectedOpLG,
                           op: OperationType.UNSET,
                       }
-                    : {
-                          value: selectedOpLG,
-                          op: OperationType.SET,
-                      };
+                    : toModificationOperation(selectedOpLG);
             }
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
