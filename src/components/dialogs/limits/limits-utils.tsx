@@ -16,11 +16,11 @@ export interface OperationalLimitsId {
 export const areOperationalLimitsGroupUnique = (array: OperationalLimitsId[]) => {
     const equipmentApplicabilityElements: string[] = array
         .filter((item: OperationalLimitsId) => item.applicability === APPLICABILITY.EQUIPMENT.id)
-        .map((item) => item.name);
+        .map((item: OperationalLimitsId) => item.name);
 
     if (
         equipmentApplicabilityElements
-            .map((item) => array.filter((arrayItem) => arrayItem.name === item).length > 1)
+            .map((item: string) => array.filter((arrayItem: OperationalLimitsId) => arrayItem.name === item).length > 1)
             .filter((item: boolean) => item).length > 0
     ) {
         return false;
@@ -28,6 +28,6 @@ export const areOperationalLimitsGroupUnique = (array: OperationalLimitsId[]) =>
 
     const otherApplicabilityElements: string[] = array
         .filter((item: OperationalLimitsId) => item.applicability !== APPLICABILITY.EQUIPMENT.id)
-        .map((item) => item.name + item.applicability);
+        .map((item: OperationalLimitsId) => item.name + item.applicability);
     return areArrayElementsUnique(otherApplicabilityElements);
 };
