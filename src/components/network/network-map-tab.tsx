@@ -33,14 +33,16 @@ import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import {
+    ComputingType,
+    EquipmentInfos,
     EquipmentType,
+    ExtendedEquipmentType,
+    HvdcType,
+    NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
-    EquipmentInfos,
-    NotificationsUrlKeys,
-    ComputingType,
 } from '@gridsuite/commons-ui';
-import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import {
     openDiagram,
     resetMapEquipment,
@@ -63,7 +65,7 @@ import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
@@ -127,7 +129,7 @@ type NetworkMapTabProps = {
     lineFullPath: boolean;
     lineParallelPath: boolean;
     lineFlowMode: LineFlowMode;
-    openVoltageLevel: (idVoltageLevel: string) => void;
+    onOpenNetworkAreaDiagram: (elementId?: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     onElementCreated?: () => void;
@@ -144,7 +146,7 @@ export const NetworkMapTab = ({
     lineParallelPath,
     lineFlowMode,
     /* callbacks */
-    openVoltageLevel,
+    onOpenNetworkAreaDiagram,
     showInSpreadsheet,
     onPolygonChanged,
     onElementCreated,
@@ -163,6 +165,7 @@ export const NetworkMapTab = ({
         (state: AppState) => state.isNetworkModificationTreeModelUpToDate
     );
     const theme = useTheme();
+    const { snackInfo } = useSnackMessage();
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
@@ -185,6 +188,7 @@ export const NetworkMapTab = ({
 
     const lineFullPathRef = useRef<boolean>();
     const [isDialogSearchOpen, setIsDialogSearchOpen] = useState(false);
+    const intl = useIntl();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -365,7 +369,7 @@ export const NetworkMapTab = ({
     const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
-            openEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
+            openEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL, null);
         }
     };
 
@@ -881,7 +885,7 @@ export const NetworkMapTab = ({
             return;
         }
         // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        if (isNodeEdited(previousCurrentNode, currentNode)) {
             return;
         }
         // when switching of root network, networkModificationTree takes some time to load
@@ -976,11 +980,12 @@ export const NetworkMapTab = ({
         x: number,
         y: number,
         equipmentType: EquipmentType,
+        equipmentSubtype: ExtendedEquipmentType | null,
         isInDrawingMode: boolean
     ) => {
         // don't display the equipment menu in drawing mode.
         if (!isInDrawingMode) {
-            openEquipmentMenu(equipment, x, y, equipmentType);
+            openEquipmentMenu(equipment, x, y, equipmentType, equipmentSubtype);
         }
     };
 
@@ -1055,15 +1060,36 @@ export const NetworkMapTab = ({
         leaveDrawingMode();
     }, [leaveDrawingMode, onElementCreated]);
 
+    const openSLDInTheGrid = useCallback(
+        (equipmentId: string, diagramType: DiagramType) => {
+            dispatch(openDiagram(equipmentId, diagramType));
+            snackInfo({
+                messageId: 'SLDOpenedInTheGrid',
+                messageValues: { diagramType: intl.formatMessage({ id: diagramType }), equipmentId },
+            });
+        },
+        [dispatch, intl, snackInfo]
+    );
+
     const handleOpenVoltageLevel = useCallback(
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
             if (!isInDrawingMode) {
-                openVoltageLevel(vlId);
+                openSLDInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
             }
         },
-        [isInDrawingMode, openVoltageLevel]
+        [isInDrawingMode, openSLDInTheGrid]
     );
+
+    const getHvdcExtendedEquipmentType = (hvdcType: string): ExtendedEquipmentType | null => {
+        if (hvdcType === HvdcType.VSC) {
+            return ExtendedEquipmentType.HVDC_LINE_VSC;
+        } else if (hvdcType === HvdcType.LCC) {
+            return ExtendedEquipmentType.HVDC_LINE_LCC;
+        } else {
+            return null;
+        }
+    };
 
     const renderMap = () => (
         <>
@@ -1103,6 +1129,7 @@ export const NetworkMapTab = ({
                             x,
                             y,
                             EquipmentType.SUBSTATION,
+                            null,
                             isInDrawingMode
                         )
                     }
@@ -1112,6 +1139,7 @@ export const NetworkMapTab = ({
                             x,
                             y,
                             EquipmentType.LINE,
+                            null,
                             isInDrawingMode
                         )
                     }
@@ -1121,6 +1149,7 @@ export const NetworkMapTab = ({
                             x,
                             y,
                             EquipmentType.HVDC_LINE,
+                            getHvdcExtendedEquipmentType(equipment.hvdcType),
                             isInDrawingMode
                         )
                     }
@@ -1207,6 +1236,7 @@ export const NetworkMapTab = ({
             </Box>
         );
     }
+
     function renderSearchEquipment() {
         return (
             <Box sx={styles.divSearchIcon}>
@@ -1228,13 +1258,16 @@ export const NetworkMapTab = ({
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos: EquipmentInfos) => {
-            if (optionInfos.type === EquipmentType.SUBSTATION) {
-                dispatch(openDiagram(optionInfos.id, DiagramType.SUBSTATION));
-            } else if (optionInfos.voltageLevelId) {
-                dispatch(openDiagram(optionInfos.voltageLevelId, DiagramType.VOLTAGE_LEVEL));
+            const isSubstation = optionInfos.type === EquipmentType.SUBSTATION;
+            const id = isSubstation ? optionInfos.id : optionInfos.voltageLevelId;
+
+            if (!id) {
+                return;
             }
+            const diagramType = isSubstation ? DiagramType.SUBSTATION : DiagramType.VOLTAGE_LEVEL;
+            openSLDInTheGrid(id, diagramType);
         },
-        [dispatch]
+        [openSLDInTheGrid]
     );
 
     return (
@@ -1253,6 +1286,7 @@ export const NetworkMapTab = ({
             {studyUuid && (
                 <TopBarEquipmentSearchDialog
                     showVoltageLevelDiagram={showVoltageLevelDiagram}
+                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                     isDialogSearchOpen={isDialogSearchOpen}
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                 />

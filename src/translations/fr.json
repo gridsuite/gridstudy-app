@@ -620,6 +620,7 @@
     "acceptableDuration": "Tempo (s)",
     "value": "Valeur (A)",
     "side": "Côté",
+    "isActive": "Actif",
     "limitGroupName": "Nom du jeu de limites",
     "modificationType": "Type de modification",
     "temporaryLimitsModificationType": "Type de modification des limites temporaires",
@@ -1076,7 +1077,7 @@
     "Leg": "Enroulement",
     "Transformers": "Transformateurs",
     "EmptyList.variations": "La liste des variations est vide",
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+    "UnsupportedView": "La fonction de recherche n'est pas disponible dans cette vue",
 
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
@@ -1118,6 +1119,9 @@
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
     "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
+
+    "SLDOpenedInTheGrid": "Le {diagramType} \"{equipmentId}\" a été ouvert dans la grille des images",
+    "NADOpenedInTheGrid": "L'image nodale de zone \"{elementId}\" a été ouverte dans la grille des images",
 
     "dialog.button.leave": "Quitter",
 
@@ -1543,5 +1547,9 @@
     "After": "Après",
     "newSwitchStates": "Nouveaux organes de coupure fermés",
     "AtLeastOneSectionAdded": "Il faut ajouter au moins une section de jeu de barre",
-    "SectionCount": "nombre de sections"
+    "SectionCount": "Nombre de sections",
+    "nodeName": "Nom du noeud",
+    "editNode": "Éditer le noeud",
+    "voltage-level": "poste",
+    "substation": "site"
 }
