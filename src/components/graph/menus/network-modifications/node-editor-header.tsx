@@ -71,14 +71,22 @@ const styles = {
         '& .MuiAccordionSummary-content': {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+            whiteSpace: 'pre-wrap',
             flexGrow: 1,
         },
     }),
-
+    topographySummary: {
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        WebkitLineClamp: 1,
+        overflow: 'hidden',
+        width: 'auto',
+        textOverflow: 'ellipsis',
+        wordBreak: 'break-word',
+    },
     accordionDetails: {
         overflowWrap: 'break-word',
-        whiteSpace: 'normal',
+        whiteSpace: 'pre-wrap',
         paddingTop: 0,
         maxHeight: 200,
         overflowY: 'auto',
@@ -121,7 +129,7 @@ export const NodeEditorHeader = ({ onClose }: NodeEditorHeaderProps) => {
                 <Box sx={{ marginRight: 1, marginBottom: 1 }}>
                     <Accordion disableGutters elevation={0} sx={styles.accordion}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={styles.accordionSummary}>
-                            <Typography noWrap> {description}</Typography>
+                            <Typography sx={styles.topographySummary}>{description}</Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={styles.accordionDetails}>
                             <Typography sx={{ wordBreak: 'break-word' }}>{description}</Typography>

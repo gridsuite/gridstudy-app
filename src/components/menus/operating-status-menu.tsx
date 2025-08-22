@@ -382,7 +382,7 @@ const withOperatingStatusMenu =
                     </CustomMenuItem>
                     {(equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER ||
                         equipmentType === EquipmentType.LINE ||
-                        equipmentType === EquipmentType.HVDC_LINE) && (
+                        (equipmentType === EquipmentType.HVDC_LINE && equipmentSubtype !== null)) && (
                         <CustomMenuItem
                             sx={styles.menuItem}
                             onClick={() => handleOpenModificationDialog(equipment.id, equipmentType, equipmentSubtype)}

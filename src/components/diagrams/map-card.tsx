@@ -12,7 +12,7 @@ import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { EquipmentType, LineFlowMode, mergeSx } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from 'redux/actions';
+import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import WorldSvg from 'images/world.svg?react';
 import NetworkMapTab from 'components/network/network-map-tab';
 import { cardStyles } from './card-styles';
@@ -41,11 +41,19 @@ interface MapCardProps extends ReactGridLayoutCustomChildComponentProps {
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
+    onOpenNetworkAreaDiagram: (elementId?: string) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
 
 export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>) => {
-    const { studyUuid, onClose, errorMessage, showInSpreadsheet, ...reactGridLayoutCustomChildComponentProps } = props;
+    const {
+        studyUuid,
+        onClose,
+        errorMessage,
+        showInSpreadsheet,
+        onOpenNetworkAreaDiagram,
+        ...reactGridLayoutCustomChildComponentProps
+    } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
     const [isHover, setIsHover] = useState(false);
     const intl = useIntl();
@@ -60,7 +68,8 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     const dispatch = useDispatch();
     const theme = useTheme();
 
-    const [mapOpen, setMapOpen] = useState(false);
+    const mapOpen = useSelector((state: AppState) => state.mapOpen);
+
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
@@ -70,11 +79,11 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
         dispatch(resetMapEquipment());
         dispatch(setMapDataLoading(false));
         dispatch(setReloadMapNeeded(true));
-        setMapOpen(true);
+        dispatch(setOpenMap(true));
     }, [dispatch]);
 
     const handleCloseMap = useCallback(() => {
-        setMapOpen(false);
+        dispatch(setOpenMap(false));
         dispatch(resetMapEquipment());
         dispatch(setMapDataLoading(false));
         dispatch(setReloadMapNeeded(true));
@@ -131,13 +140,13 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
                         lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
                         lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
-                        openVoltageLevel={() => {}}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         showInSpreadsheet={(eq) => {
                             handleCloseMap();
                             showInSpreadsheet(eq);
                         }}
+                        onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                         onPolygonChanged={() => {}}
                         onElementCreated={handleCloseMap}
                     ></NetworkMapTab>

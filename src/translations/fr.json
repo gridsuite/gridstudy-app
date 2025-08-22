@@ -620,6 +620,7 @@
     "acceptableDuration": "Tempo (s)",
     "value": "Valeur (A)",
     "side": "Côté",
+    "isActive": "Actif",
     "limitGroupName": "Nom du jeu de limites",
     "modificationType": "Type de modification",
     "temporaryLimitsModificationType": "Type de modification des limites temporaires",
@@ -1119,7 +1120,8 @@
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
     "NetworkEquipmentNotFound": "L'ouvrage \"{equipmentId}\" n'existe pas dans ce réseau",
 
-    "NetworkEquipmentSearchLabelInfo": "\"{equipmentId}\" s'est ouvert dans la grille des images",
+    "SLDOpenedInTheGrid": "Le {diagramType} \"{equipmentId}\" a été ouvert dans la grille des images",
+    "NADOpenedInTheGrid": "L'image nodale de zone \"{elementId}\" a été ouverte dans la grille des images",
 
     "dialog.button.leave": "Quitter",
 
@@ -1149,6 +1151,14 @@
     "lineTypes.category.underground": "Câbles souterrains",
     "lineTypes.insulator": "Isolant",
     "lineTypes.screen": "Écran",
+    "lineTypes.currentLimits.limitSets": "Jeux de limites",
+    "lineTypes.currentLimits.limitSet": "Jeu de limites",
+    "lineTypes.currentLimits.Permanent": "IST [A]",
+    "lineTypes.currentLimits.Temporary": "Limite temporaire [A]",
+    "aerialAreas": "Zone météo",
+    "aerialTemperatures": "Température de répartition",
+    "undergroundShapeFactors": "Facteur de forme",
+    "undergroundAreas": "Température de l'environnement",
     "menu.create": "Créer",
     "menu.createMultiple": "Créer plusieurs ouvrages",
     "menu.modifyMultiple": "Modifier plusieurs ouvrages",
@@ -1548,6 +1558,8 @@
     "SectionCount": "Nombre de sections",
     "nodeName": "Nom du noeud",
     "editNode": "Éditer le noeud",
+    "voltage-level": "poste",
+    "substation": "site",
     "allBusbarSections": "Tous",
     "allOptionHelperText": "Jeux de barres avec différents nombres de sections"
 }
