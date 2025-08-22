@@ -136,7 +136,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     }, []);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+        return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
     }, []);
 
     useEffect(() => {
