@@ -199,6 +199,8 @@ import {
     SetDiagramGridLayoutAction,
     SET_TOGGLE_OPTIONS,
     setToggleOptionsAction,
+    SET_OPEN_MAP,
+    SetOpenMapAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -507,6 +509,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
     toggleOptions: StudyDisplayMode[];
+    mapOpen: boolean;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -592,6 +595,7 @@ const initialState: AppState = {
     // @ts-expect-error TODO can't have empty eventData here
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
+    setMapOpen: false,
     isExplorerDrawerOpen: true,
     centerOnSubstation: undefined,
     notificationIdList: [],
@@ -1596,6 +1600,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
         state.diagramGridLayout = action.diagramGridLayout;
+    });
+
+    builder.addCase(SET_OPEN_MAP, (state, action: SetOpenMapAction) => {
+        state.mapOpen = action.mapOpen;
     });
 });
 

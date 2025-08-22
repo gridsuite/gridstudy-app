@@ -25,6 +25,8 @@ export type LineTypeInfo = {
     linearResistance: number;
     linearReactance: number;
     linearCapacity: number;
+    limitsForLineType: CurrentLimitsInfo[];
+    shapeFactors: number[];
 } & (AerialLineTypeInfo | UndergroundLineTypeInfo);
 
 // Interface with Line creation/modification
@@ -33,3 +35,18 @@ export type ComputedLineCharacteristics = {
     totalReactance: number;
     totalSusceptance: number;
 };
+
+export type CurrentLimitsInfo = {
+    limitSetName: string;
+    permanentLimit: number;
+    temporaryLimitValue: number;
+    temporaryLimitAcceptableDuration: number;
+    temporaryLimitName: string;
+    area: string;
+    temperature: string;
+};
+
+export const CATEGORIES_TABS = {
+    AERIAL: { id: 0, name: 'AERIAL' },
+    UNDERGROUND: { id: 1, name: 'UNDERGROUND' },
+} as const;
