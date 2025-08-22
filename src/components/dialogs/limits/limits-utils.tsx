@@ -19,9 +19,11 @@ export const areOperationalLimitsGroupUnique = (array: OperationalLimitsId[]) =>
         .map((item: OperationalLimitsId) => item.name);
 
     if (
-        equipmentApplicabilityElements
-            .map((item: string) => array.filter((arrayItem: OperationalLimitsId) => arrayItem.name === item).length > 1)
-            .filter((item: boolean) => item).length > 0
+        // never more than one EQUIPMENT limit set of a given name
+        equipmentApplicabilityElements.filter(
+            (item: string) =>
+                array.filter((arrayItem: OperationalLimitsId): boolean => arrayItem.name === item).length > 1
+        ).length > 0
     ) {
         return false;
     }
