@@ -1552,5 +1552,5 @@
     "SectionCount": "Section count",
     "nodeName": "Node name",
     "editNode": "Edit node",
-    "notValidVoltageLevel": "Poste invalide pour l'ajout de section/tronçon. Veuillez re-créer le poste"
+    "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level."
 }
