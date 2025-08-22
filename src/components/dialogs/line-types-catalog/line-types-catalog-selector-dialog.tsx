@@ -99,9 +99,8 @@ export default function LineTypesCatalogSelectorDialog({
     const { snackError } = useSnackMessage();
     const gridRef = useRef<AgGridReact>(null);
     const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
-    const [aerialAreasOptions, setAerialAreasOptions] = useState<Option[]>([]);
+    const [areasOptions, setAreasOptions] = useState<Option[]>([]);
     const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
-    const [undergroundAreas, setUndergroundAreas] = useState<Option[]>([]);
     const [undergroundShapeFactors, setUndergroundShapeFactors] = useState<Option[]>([]);
 
     const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
@@ -115,7 +114,7 @@ export default function LineTypesCatalogSelectorDialog({
             const selectedArea = getValues(AERIAL_AREAS);
             const selectedTemperature = getValues(AERIAL_TEMPERATURES);
 
-            if (aerialAreasOptions?.length > 0 && aerialTemperatures?.length > 0) {
+            if (areasOptions?.length > 0 && aerialTemperatures?.length > 0) {
                 const filteredLimits = selectedAerialRow?.limitsForLineType?.filter(
                     (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
                 );
@@ -124,7 +123,7 @@ export default function LineTypesCatalogSelectorDialog({
                 }
             }
         },
-        [getValues, aerialAreasOptions?.length, aerialTemperatures?.length]
+        [getValues, areasOptions?.length, aerialTemperatures?.length]
     );
 
     const handleSelectedUnderground = useCallback(
@@ -135,7 +134,7 @@ export default function LineTypesCatalogSelectorDialog({
             const areaId = selectedArea?.id;
             const shapeFactorId = selectedShapeFactor?.id;
 
-            if (undergroundAreas.length > 0 && areaId && shapeFactorId) {
+            if (areasOptions.length > 0 && areaId && shapeFactorId) {
                 const filteredLimits = selectedUndergroundRow?.limitsForLineType?.filter(
                     (limit) => limit?.area === areaId
                 );
@@ -152,7 +151,7 @@ export default function LineTypesCatalogSelectorDialog({
                 }
             }
         },
-        [getValues, undergroundAreas]
+        [getValues, areasOptions]
     );
 
     const onSubmit = useCallback(() => {
@@ -183,14 +182,6 @@ export default function LineTypesCatalogSelectorDialog({
         return uniqueTemperatures.map((temp) => ({ id: temp, label: temp }));
     };
 
-    const createOptionsFromUndergroundAreas = (limitsData?: CurrentLimitsInfo[]): Option[] => {
-        if (!limitsData?.length) {
-            return [];
-        }
-        const uniqueAreas = [...new Set(limitsData.map((limit) => limit.area))];
-        return uniqueAreas.map((area) => ({ id: area, label: area }));
-    };
-
     const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
         return lineInfo.shapeFactors.map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
     };
@@ -209,10 +200,10 @@ export default function LineTypesCatalogSelectorDialog({
 
                 setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
                 if (selectedData.category === CATEGORIES_TABS.AERIAL.name) {
-                    setAerialAreasOptions(createOptionsFromAreas(selectedData.limitsForLineType));
+                    setAreasOptions(createOptionsFromAreas(selectedData.limitsForLineType));
                     setAerialTemperatures(createOptionsFromTemperatures(selectedData.limitsForLineType));
                 } else if (selectedData.category === CATEGORIES_TABS.UNDERGROUND.name) {
-                    setUndergroundAreas(createOptionsFromUndergroundAreas(selectedData.limitsForLineType));
+                    setAreasOptions(createOptionsFromAreas(selectedData.limitsForLineType));
                     setUndergroundShapeFactors(createOptionsFromUndergroundShapeFactors(selectedData));
                 }
             } catch (error) {
@@ -257,9 +248,8 @@ export default function LineTypesCatalogSelectorDialog({
                     preselectedRowId={preselectedRowId}
                     rowData={rowData}
                     onSelectionChanged={onSelectionChanged}
-                    aerialAreasOptions={aerialAreasOptions}
+                    areasOptions={areasOptions}
                     aerialTemperatures={aerialTemperatures}
-                    undergroundAreas={undergroundAreas}
                     undergroundShapeFactor={undergroundShapeFactors}
                 />
             </ModificationDialog>

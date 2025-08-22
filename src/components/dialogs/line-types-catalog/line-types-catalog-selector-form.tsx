@@ -25,15 +25,14 @@ import { useColumnDefinitions } from './use-column-definitions';
 import { useRowData } from './use-row-data';
 import { AgGridReact } from 'ag-grid-react';
 
-interface LimitParametersSelectionProps {
+interface LineTypesCatalogSelectorFormProps {
     gridRef: React.RefObject<AgGridReact>;
     selectedRow: LineTypeInfo | null;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onSelectionChanged: () => void;
-    aerialAreasOptions: Option[];
+    areasOptions: Option[];
     aerialTemperatures: Option[];
-    undergroundAreas: Option[];
     undergroundShapeFactor: Option[];
 }
 
@@ -43,11 +42,10 @@ export default function LineTypesCatalogSelectorForm({
     preselectedRowId,
     rowData,
     onSelectionChanged,
-    aerialAreasOptions,
+    areasOptions,
     aerialTemperatures,
-    undergroundAreas,
     undergroundShapeFactor,
-}: Readonly<LimitParametersSelectionProps>) {
+}: Readonly<LineTypesCatalogSelectorFormProps>) {
     const [tabIndex, setTabIndex] = useState<number>(CATEGORIES_TABS.AERIAL.id);
     const { setValue } = useFormContext();
     const { aerialColumnDefs, undergroundColumnDefs } = useColumnDefinitions();
@@ -118,7 +116,7 @@ export default function LineTypesCatalogSelectorForm({
                             <AutocompleteInput
                                 name={AERIAL_AREAS}
                                 label="aerialAreas"
-                                options={aerialAreasOptions}
+                                options={areasOptions}
                                 isOptionEqualToValue={areIdsEqual}
                                 size="small"
                             />
@@ -139,7 +137,7 @@ export default function LineTypesCatalogSelectorForm({
                             <AutocompleteInput
                                 name={UNDERGROUND_AREAS}
                                 label="undergroundAreas"
-                                options={undergroundAreas}
+                                options={areasOptions}
                                 isOptionEqualToValue={areIdsEqual}
                                 size="small"
                             />
