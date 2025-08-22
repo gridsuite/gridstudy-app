@@ -132,9 +132,9 @@ export function parseIntData(val: string, defaultValue: string) {
     return isNaN(intValue) ? defaultValue : intValue;
 }
 
-export function sanitizeString(val: string | null | undefined) {
+export function sanitizeString(val: string | null | undefined): string | null {
     const trimedValue = val?.trim();
-    return trimedValue === '' ? null : trimedValue;
+    return trimedValue === undefined || trimedValue === '' ? null : trimedValue;
 }
 
 export const getIdOrSelf = (e: any) => e?.id ?? e;

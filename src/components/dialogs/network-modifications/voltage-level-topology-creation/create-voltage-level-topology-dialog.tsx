@@ -9,7 +9,7 @@ import { SECTION_COUNT, SWITCH_KIND, SWITCH_KINDS, SWITCHES_BETWEEN_SECTIONS } f
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../utils/yup-config';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -24,6 +24,7 @@ import { createVoltageLevelTopology } from '../../../../services/study/network-m
 import { CreateVoltageLevelTopologyInfos } from '../../../../services/network-modification-types';
 import { FetchStatus } from '../../../../services/utils';
 import { useIntl } from 'react-intl';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const emptyFormData = {
     [SECTION_COUNT]: null,
@@ -145,7 +146,7 @@ export default function CreateVoltageLevelTopologyDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                         fillerHeight={4}
                     />
                 )}
