@@ -28,7 +28,14 @@ const styles = {
     panelContent: { display: 'flex', flexGrow: 1, height: '100%' },
 };
 
-const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableEquipementChanged, onChangeTab }) => {
+const MapViewer = ({
+    studyUuid,
+    currentRootNetworkUuid,
+    tableEquipment,
+    onTableEquipementChanged,
+    onChangeTab,
+    showGrid,
+}) => {
     const theme = useTheme();
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
@@ -149,6 +156,7 @@ const MapViewer = ({ studyUuid, currentRootNetworkUuid, tableEquipment, onTableE
                                 studyUuid={studyUuid}
                                 visible={state.visibility.grid}
                                 showInSpreadsheet={showInSpreadsheet}
+                                showGrid={showGrid}
                             />
                         </Box>
                     </Panel>

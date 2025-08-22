@@ -624,6 +624,7 @@
     "value": "Value (A)",
     "side": "Side",
     "limitGroupName": "Limits set name",
+    "isActive": "Active",
     "modificationType": "Modification type",
     "temporaryLimitsModificationType": "Temporary limits modification type",
 
@@ -1123,7 +1124,8 @@
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
-    "NetworkEquipmentSearchLabelInfo": "\"{equipmentId}\" is opened in the image grid",
+    "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
+    "NADOpenedInTheGrid": "The network area diagram \"{elementId}\" was opened in the image grid",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1551,5 +1553,7 @@
     "AtLeastOneSectionAdded": "At least one busbar section must be added",
     "SectionCount": "Section count",
     "nodeName": "Node name",
-    "editNode": "Edit node"
+    "editNode": "Edit node",
+    "voltage-level": "voltage level",
+    "substation": "substation"
 }
