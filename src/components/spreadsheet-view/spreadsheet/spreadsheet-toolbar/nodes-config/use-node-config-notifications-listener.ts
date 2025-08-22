@@ -53,11 +53,9 @@ export function useNodeConfigNotificationsListener(
             if (!isStudyNotification(eventData) || !currentNode?.id) {
                 return;
             }
-            const payload: NetworkImpactsInfos = JSON.parse(eventData.payload as string);
             const nodeId = eventData.headers.node;
             if (
                 currentRootNetworkUuid === eventData.headers.rootNetworkUuid &&
-                payload.impactedElementTypes.includes(tableType) &&
                 nodesToReload?.find((alias) => alias.id === nodeId)
             ) {
                 fetchNodesEquipmentData(new Set([nodeId]), currentNode.id, currentRootNetworkUuid);
