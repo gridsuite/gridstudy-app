@@ -373,19 +373,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             id: 'pasteNetworkModificationNode',
             disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(),
             subMenuItems: {
-                PASTE_MODIFICATION_NODE: {
+                PASTE_NEW_BRANCH: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
                     disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.NewBranch),
                 },
-                PASTE_MODIFICATION_NODE_BEFORE: {
+                PASTE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
                     disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.Before),
                 },
-                PASTE_MODIFICATION_NODE_AFTER: {
+                PASTE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
@@ -410,7 +410,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             withDivider: !isSecurityModificationNode(activeNode),
         },
 
-        CONSTRUCTION_MODIFICATION_NODE: {
+        CONSTRUCTION_NODE: {
             onRoot: true,
             disabled: isSecurityModificationNode(activeNode),
             id: 'ConstructionNode',
@@ -430,14 +430,14 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                         ),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
-                INSERT_MODIFICATION_NODE_BEFORE: {
+                INSERT_NODE_BEFORE: {
                     onRoot: false,
 
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
                     id: 'insertNetworkModificationNodeAbove',
                 },
-                INSERT_MODIFICATION_NODE_AFTER: {
+                INSERT_NODE_AFTER: {
                     onRoot: true,
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.CONSTRUCTION),
@@ -445,7 +445,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 },
             },
         },
-        SECURITY_MODIFICATION_NODE: {
+        SECURITY_NODE: {
             onRoot: true,
             id: 'SecurityNode',
             subMenuItems: {
