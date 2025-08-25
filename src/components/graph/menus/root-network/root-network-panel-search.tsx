@@ -15,8 +15,13 @@ import { RootNetworkModificationsSearchResults } from './root-network-modificati
 import { useRootNetworkSearchNotifications } from './use-root-network-search-notifications';
 import SearchBar from './root-network-search-bar';
 import { RootNetworkNodesSearchResults } from './root-network-nodes-search-results';
-import { TAB_VALUES, useRootNetworkSearch } from './use-root-network-search';
+import { useRootNetworkNodeSearch } from './use-root-network-node-search';
+import { useRootNetworkModificationSearch } from './use-root-network-modification-search';
 
+enum TAB_VALUES {
+    modifications = 'MODIFICATIONS',
+    nodes = 'NODES',
+}
 interface RootNetworkSearchPanelProps {
     setIsSearchActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -27,6 +32,10 @@ function getModificationResultsCount(results: ModificationsSearchResult[]): numb
 
 function getNodeResultsCount(results: string[]): number {
     return results.length;
+}
+
+function isNodeTab(tabValue: TAB_VALUES): boolean {
+    return tabValue === TAB_VALUES.nodes;
 }
 
 const styles = {
@@ -56,22 +65,32 @@ const styles = {
 const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSearchActive }) => {
     const intl = useIntl();
     const [tabValue, setTabValue] = useState<TAB_VALUES>(TAB_VALUES.nodes);
-    const {
-        searchTerm,
-        isLoading,
-        nodesResults,
-        modificationsResults,
-        handleOnChange,
-        leaveSearch,
-        resetNodesSearch,
-        resetModificationsSearch,
-    } = useRootNetworkSearch(tabValue, setIsSearchActive);
+
+    const nodesSearch = useRootNetworkNodeSearch();
+    const modificationsSearch = useRootNetworkModificationSearch();
+
+    const isLoading = isNodeTab(tabValue) ? nodesSearch.isLoading : modificationsSearch.isLoading;
+    const searchTerm = isNodeTab(tabValue) ? nodesSearch.searchTerm : modificationsSearch.searchTerm;
+
+    const leaveSearch = () => {
+        nodesSearch.reset();
+        modificationsSearch.reset();
+        setIsSearchActive(false);
+    };
+
+    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (isNodeTab(tabValue)) {
+            nodesSearch.search(value);
+        } else {
+            modificationsSearch.search(value);
+        }
+    };
 
     useRootNetworkSearchNotifications({
-        resetNodesSearch: resetNodesSearch,
-        resetModificationsSearch: resetModificationsSearch,
+        resetNodesSearch: nodesSearch.reset,
+        resetModificationsSearch: modificationsSearch.reset,
     });
-
     const showResultsCount = !isLoading && searchTerm.trim() !== '';
 
     return (
@@ -98,10 +117,9 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
             <Box sx={styles.searchField}>
                 <SearchBar
                     placeholder={intl.formatMessage({
-                        id:
-                            tabValue === TAB_VALUES.nodes
-                                ? 'rootNetwork.searchPlaceholder.nodes'
-                                : 'rootNetwork.searchPlaceholder.modifications',
+                        id: isNodeTab(tabValue)
+                            ? 'rootNetwork.searchPlaceholder.nodes'
+                            : 'rootNetwork.searchPlaceholder.modifications',
                     })}
                     value={searchTerm}
                     onChange={handleOnChange}
@@ -119,19 +137,16 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
                     <FormattedMessage
                         id="rootNetwork.results"
                         values={{
-                            count:
-                                tabValue === TAB_VALUES.modifications
-                                    ? getModificationResultsCount(modificationsResults)
-                                    : getNodeResultsCount(nodesResults),
+                            count: isNodeTab(tabValue)
+                                ? getNodeResultsCount(nodesSearch.results)
+                                : getModificationResultsCount(modificationsSearch.results),
                         }}
                     />
                 </Typography>
             )}
 
-            {tabValue === TAB_VALUES.modifications && (
-                <RootNetworkModificationsSearchResults results={modificationsResults} />
-            )}
-            {tabValue === TAB_VALUES.nodes && <RootNetworkNodesSearchResults results={nodesResults} />}
+            {!isNodeTab(tabValue) && <RootNetworkModificationsSearchResults results={modificationsSearch.results} />}
+            {isNodeTab(tabValue) && <RootNetworkNodesSearchResults results={nodesSearch.results} />}
         </Box>
     );
 };
