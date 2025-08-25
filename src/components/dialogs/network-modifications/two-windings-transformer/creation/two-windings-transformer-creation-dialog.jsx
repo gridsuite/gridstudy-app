@@ -33,9 +33,9 @@ import {
     G,
     ID,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
+    OPERATIONAL_LIMITS_GROUPS,
     PHASE_TAP_CHANGER,
     R,
     RATED_S,
@@ -85,15 +85,16 @@ import {
     getRatioTapChangerValidationSchema,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
-import TwoWindingsTransformerCreationCharacteristicsPane from './characteristics-pane/two-windings-transformer-creation-characteristics-pane';
+import TwoWindingsTransformerCreationCharacteristicsPane
+    from './characteristics-pane/two-windings-transformer-creation-characteristics-pane';
 import {
     getTwoWindingsTransformerEmptyFormData,
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
 import {
-    getLimitsEmptyFormData,
     getAllLimitsFormData,
+    getLimitsEmptyFormData,
     getLimitsValidationSchema,
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
@@ -249,13 +250,13 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: twt.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                    [OPERATIONAL_LIMITS_GROUPS]: twt?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    selectedOperationalLimitsGroup1: twt.selectedOperationalLimitsGroup1 ?? null,
-                    selectedOperationalLimitsGroup2: twt.selectedOperationalLimitsGroup2 ?? null,
+                    selectedOperationalLimitsGroup1: twt?.selectedOperationalLimitsGroup1 ?? null,
+                    selectedOperationalLimitsGroup2: twt?.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
