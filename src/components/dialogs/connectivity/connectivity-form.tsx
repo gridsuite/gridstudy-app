@@ -111,6 +111,10 @@ export function ConnectivityForm({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
 
+    const watchBusBarSectionId = useWatch({
+        name: `${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
+    });
+
     const vlOptions = useMemo(
         () =>
             voltageLevelOptions.map((item) => ({
@@ -149,27 +153,22 @@ export function ConnectivityForm({
         }
     }, [newBusOrBusbarSectionOptions]);
 
+    useEffect(() => {
+        setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, false);
+        setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, false);
+        if (watchVoltageLevelId) {
+            setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, true);
+        }
+        if (watchBusBarSectionId) {
+            setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, true);
+        }
+    }, [id, setValue, watchVoltageLevelId, watchBusBarSectionId]);
+
     const handleChangeVoltageLevel = useCallback(() => {
         onVoltageLevelChangeCallback?.();
         setBusOrBusbarSectionOptions([]);
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-        const currentVoltageLevel = getValues(`${id}.${VOLTAGE_LEVEL}.${ID}`);
-        setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, false);
-        if (currentVoltageLevel !== '' && currentVoltageLevel !== null) {
-            setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, true);
-        } else {
-            setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, false);
-        }
-    }, [getValues, id, onVoltageLevelChangeCallback, setValue]);
-
-    const handleBusOrBusbarSection = useCallback(() => {
-        const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`);
-        if (currentBusOrBusbarSection !== '' && currentBusOrBusbarSection !== null) {
-            setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, true);
-        } else {
-            setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, false);
-        }
-    }, [getValues, id, setValue]);
+    }, [id, onVoltageLevelChangeCallback, setValue]);
 
     useEffect(() => {
         const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}`);
@@ -242,7 +241,6 @@ export function ConnectivityForm({
             previousValue={isEquipmentModification ? previousValues?.busOrBusbarSectionId : undefined}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
-            onChangeCallback={handleBusOrBusbarSection}
             inputTransform={(value) => value ?? ''}
             outputTransform={(value) => {
                 if (typeof value === 'string') {
