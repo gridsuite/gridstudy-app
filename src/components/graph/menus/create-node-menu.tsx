@@ -376,19 +376,19 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                 PASTE_NEW_BRANCH: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
-                    id: 'pasteNetworkModificationNodeInNewBranch',
+                    id: 'insertNodeInNewBranch',
                     disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.NewBranch),
                 },
                 PASTE_BEFORE: {
                     onRoot: false,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
-                    id: 'pasteNetworkModificationNodeAbove',
+                    id: 'insertNodeAbove',
                     disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.Before),
                 },
                 PASTE_AFTER: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode(NodeInsertModes.After),
-                    id: 'pasteNetworkModificationNodeBelow',
+                    id: 'insertNodeBelow',
                     disabled: !isNodePastingAllowed() || isNodeInsertionForbidden(NodeInsertModes.After),
                 },
             },
@@ -412,7 +412,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
 
         CONSTRUCTION_NODE: {
             onRoot: true,
-            disabled: isSecurityModificationNode(activeNode),
+            hidden: isSecurityModificationNode(activeNode),
             id: 'ConstructionNode',
             subMenuItems: {
                 CREATE_NODE: {
@@ -428,20 +428,20 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                             NodeInsertModes.NewBranch,
                             NetworkModificationNodeType.CONSTRUCTION
                         ),
-                    id: 'createNetworkModificationNodeInNewBranch',
+                    id: 'insertNodeInNewBranch',
                 },
                 INSERT_NODE_BEFORE: {
                     onRoot: false,
 
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.CONSTRUCTION),
-                    id: 'insertNetworkModificationNodeAbove',
+                    id: 'insertNodeAbove',
                 },
                 INSERT_NODE_AFTER: {
                     onRoot: true,
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.CONSTRUCTION),
-                    id: 'insertNetworkModificationNodeBelow',
+                    id: 'insertNodeBelow',
                 },
             },
         },
@@ -459,21 +459,21 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                     onRoot: true,
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.NewBranch, NetworkModificationNodeType.SECURITY),
-                    id: 'createNetworkModificationNodeInNewBranch',
+                    id: 'insertNodeInNewBranch',
                 },
                 INSERT_NODE_BEFORE: {
                     onRoot: false,
                     disabled: !isSecurityModificationNode(activeNode),
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.Before, NetworkModificationNodeType.SECURITY),
-                    id: 'insertNetworkModificationNodeAbove',
+                    id: 'insertNodeAbove',
                 },
                 INSERT_NODE_AFTER: {
                     onRoot: true,
                     disabled: !isSecurityModificationNode(activeNode),
                     action: () =>
                         createNetworkModificationNode(NodeInsertModes.After, NetworkModificationNodeType.SECURITY),
-                    id: 'insertNetworkModificationNodeBelow',
+                    id: 'insertNodeBelow',
                     withDivider: !isSecurityModificationNode(activeNode),
                 },
                 CREATE_SECURITY_SEQUENCE: {
