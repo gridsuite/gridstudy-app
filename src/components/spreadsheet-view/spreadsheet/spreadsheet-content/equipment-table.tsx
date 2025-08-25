@@ -9,7 +9,14 @@ import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
+import {
+    ColDef,
+    ColumnMovedEvent,
+    GetRowIdParams,
+    GridOptions,
+    RowClassParams,
+    RowStyle
+} from 'ag-grid-community';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from '../../../../redux/reducer';
@@ -60,6 +67,7 @@ interface EquipmentTableProps {
     isDataEditable: boolean;
     onFirstDataRendered: GridOptions['onFirstDataRendered'];
     onGridReady: GridOptions['onGridReady'];
+    onRowDataUpdated?: GridOptions['onRowDataUpdated'];
     handleModify: (equipmentId: string) => void;
     handleOpenDiagram: (voltageLevelId: string) => void;
     equipmentType?: string;
@@ -75,6 +83,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     isExternalFilterPresent,
     doesExternalFilterPass,
     onModelUpdated,
+    onRowDataUpdated,
     isDataEditable,
     onFirstDataRendered,
     onGridReady,
@@ -154,6 +163,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
                 doesExternalFilterPass={doesExternalFilterPass}
                 onFirstDataRendered={onFirstDataRendered}
                 onGridReady={onGridReady}
+                onRowDataUpdated={onRowDataUpdated}
                 overrideLocales={AGGRID_LOCALES}
                 suppressNoRowsOverlay={rowData === undefined}
                 valueCache
