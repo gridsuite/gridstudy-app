@@ -24,7 +24,7 @@ import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/ut
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/diagrams/diagram.type';
-import { type FirstDataRenderedEvent } from 'ag-grid-community';
+import { type RowDataUpdatedEvent } from 'ag-grid-community';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -56,7 +56,7 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
-    registerRowCounterEvents: (params: FirstDataRenderedEvent) => void;
+    registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
@@ -139,18 +139,21 @@ export const SpreadsheetContent = memo(
             handleEquipmentScroll();
         }, [handleEquipmentScroll, equipmentId]);
 
-        const onFirstDataRendered = useCallback(
-            (params: FirstDataRenderedEvent) => {
-                handleEquipmentScroll();
-                registerRowCounterEvents(params);
-            },
-            [handleEquipmentScroll, registerRowCounterEvents]
-        );
+        const onFirstDataRendered = useCallback(() => {
+            handleEquipmentScroll();
+        }, [handleEquipmentScroll]);
 
         const onGridReady = useCallback(() => {
             updateLockedColumnsConfig();
             setIsGridReady(true);
         }, [updateLockedColumnsConfig]);
+
+        const onRowDataUpdated = useCallback(
+            (params: RowDataUpdatedEvent) => {
+                registerRowCounterEvents(params);
+            },
+            [registerRowCounterEvents]
+        );
 
         const transformedRowData = useMemo(() => {
             if (
@@ -239,6 +242,7 @@ export const SpreadsheetContent = memo(
                             onModelUpdated={onModelUpdated}
                             onFirstDataRendered={onFirstDataRendered}
                             onGridReady={onGridReady}
+                            onRowDataUpdated={onRowDataUpdated}
                             handleModify={handleModify}
                             handleOpenDiagram={handleOpenDiagram}
                             equipmentType={tableDefinition?.type}
