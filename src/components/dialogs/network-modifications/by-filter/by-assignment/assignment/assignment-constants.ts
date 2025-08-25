@@ -48,13 +48,13 @@ export const FIELD_OPTIONS = {
     },
     ACTIVE_POWER_SET_POINT: {
         id: FieldType.ACTIVE_POWER_SET_POINT,
-        label: 'ActivePowerText',
+        label: 'ActivePowerSetPointText',
         unit: MEGA_WATT,
         dataType: DataType.DOUBLE,
     },
     REACTIVE_POWER_SET_POINT: {
         id: FieldType.REACTIVE_POWER_SET_POINT,
-        label: 'ReactivePowerText',
+        label: 'ReactivePowerSetPointText',
         unit: MEGA_VAR,
         dataType: DataType.DOUBLE,
     },
@@ -72,7 +72,7 @@ export const FIELD_OPTIONS = {
     },
     MARGINAL_COST: {
         id: FieldType.MARGINAL_COST,
-        label: 'marginalCost',
+        label: 'MarginalCost',
         dataType: DataType.DOUBLE,
     },
     PLANNED_OUTAGE_RATE: {
@@ -192,37 +192,37 @@ export const FIELD_OPTIONS = {
     },
     G: {
         id: FieldType.G,
-        label: 'G',
+        label: 'ShuntConductanceText',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
     G1: {
         id: FieldType.G1,
-        label: 'G1',
+        label: 'ShuntConductanceText1',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
     G2: {
         id: FieldType.G2,
-        label: 'G2',
+        label: 'ShuntConductanceText2',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
     B: {
         id: FieldType.B,
-        label: 'B',
+        label: 'ShuntSusceptanceText',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
     B1: {
         id: FieldType.B1,
-        label: 'B1',
+        label: 'ShuntSusceptanceText1',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
     B2: {
         id: FieldType.B2,
-        label: 'B2',
+        label: 'ShuntSusceptanceText2',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
@@ -375,8 +375,8 @@ export const EQUIPMENTS_FIELDS = {
     [EquipmentType.LOAD]: [
         FIELD_OPTIONS.PROPERTY,
         FIELD_OPTIONS.LOAD_TYPE,
-        FIELD_OPTIONS.ACTIVE_POWER,
-        FIELD_OPTIONS.REACTIVE_POWER,
+        FIELD_OPTIONS.ACTIVE_POWER_SET_POINT,
+        FIELD_OPTIONS.REACTIVE_POWER_SET_POINT,
     ],
     [EquipmentType.SHUNT_COMPENSATOR]: [
         FIELD_OPTIONS.PROPERTY,
