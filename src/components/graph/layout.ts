@@ -229,6 +229,9 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
         return 0;
     }
 
+    // no "row+1" extra-gap check to favor tighter sibling packing.
+    // This keeps the check for same-row overlaps but avoids enforcing the extra vertical gap
+    // avoiding unnecessary horizontal spacing.
     let availableSpace = Infinity;
 
     for (const [row, rightColumn] of rightColumns) {
@@ -239,21 +242,30 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
                 availableSpace = space;
             }
         }
-        // We want to keep an open space vertically between two different branches, so we also test the space
-        // for the next row.
-        const leftColumnRowBelow = leftColumns.get(row + 1);
-        if (leftColumnRowBelow !== undefined) {
-            const space = rightColumn - (leftColumnRowBelow + 1);
-            if (space < availableSpace) {
-                availableSpace = space;
-            }
-        }
         if (availableSpace <= 0) {
             return 0;
         }
     }
 
     return availableSpace;
+}
+
+// get the row span ({minRow, maxRow}) of a set of nodes using current placements
+function getRowRange(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid
+): { minRow: number; maxRow: number } | undefined {
+    const rows: number[] = [];
+    nodes.forEach((n) => {
+        const p = placements.getPlacement(n.id);
+        if (p) {
+            rows.push(p.row);
+        }
+    });
+    if (!rows.length) {
+        return undefined;
+    }
+    return { minRow: Math.min(...rows), maxRow: Math.max(...rows) };
 }
 
 /**
@@ -313,14 +325,21 @@ function compressTreePlacements(
 
         const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
 
-        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
-        // cases other branches could go under the left neighbor and make edges cross.
-        const leftNodes = nodes.slice(0, currentNodeIndex);
+        // Only compare against left nodes that actually overlap the branch's row span.
+        // This avoids deep descendants to the left from over-constraining shallow siblings.
+        const rowRange = getRowRange(currentBranchNodes, placements);
+        const leftNodes = rowRange
+            ? nodes.slice(0, currentNodeIndex).filter((n) => {
+                  const p = placements.getPlacement(n.id);
+                  return p && p.row >= rowRange.minRow && p.row <= rowRange.maxRow;
+              })
+            : nodes.slice(0, currentNodeIndex);
 
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
-
         const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
 
+        // no "row+1" extra-gap check gap for better packing of siblings. This keeps edges from crossing on the same row,
+        // but doesn't impose an extra gap on the row below that often forces unnecessary spacing.
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
         if (availableSpace > 0) {
