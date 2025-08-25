@@ -204,20 +204,29 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
             });
     };
 
-    const handleRemoveTabClick = (tabUuid: UUID) => {
-        setTabActionInProgressUuid(tabUuid);
-        setConfirmationDialogOpen(true);
-    };
+    const handleRemoveTabClick = useCallback(
+        (tabUuid: UUID) => {
+            setTabActionInProgressUuid(tabUuid);
+            setConfirmationDialogOpen(true);
+        },
+        [setTabActionInProgressUuid, setConfirmationDialogOpen]
+    );
 
-    const handleRenameTabClick = (tabUuid: UUID) => {
-        setTabActionInProgressUuid(tabUuid);
-        setIsRenameDialogOpen(true);
-    };
+    const handleRenameTabClick = useCallback(
+        (tabUuid: UUID) => {
+            setTabActionInProgressUuid(tabUuid);
+            setIsRenameDialogOpen(true);
+        },
+        [setTabActionInProgressUuid, setIsRenameDialogOpen]
+    );
 
-    const handleEditTabClick = (tabUuid: UUID) => {
-        setTabActionInProgressUuid(tabUuid);
-        editDialogOpen.setTrue();
-    };
+    const handleEditTabClick = useCallback(
+        (tabUuid: UUID) => {
+            setTabActionInProgressUuid(tabUuid);
+            editDialogOpen.setTrue();
+        },
+        [editDialogOpen]
+    );
 
     const resetTabSelection = useCallback(
         (newTablesDefinitions: SpreadsheetTabDefinition[]) => {
@@ -276,7 +285,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                 }
             />
         ));
-    }, [tablesDefinitions, disabled]);
+    }, [tablesDefinitions, disabled, handleEditTabClick, handleRenameTabClick, handleRemoveTabClick]);
 
     const tabActionInProgressName = useMemo(() => {
         if (!tabActionInProgressUuid) {
