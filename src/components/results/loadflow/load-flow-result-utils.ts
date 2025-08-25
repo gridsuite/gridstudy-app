@@ -209,6 +209,30 @@ export const convertFilterValues = (filterSelector: FilterConfig[], intl: IntlSh
     });
 };
 
+const makeAgGridFloatColumn = (
+    intlId: string,
+    fieldId: string,
+    intl: IntlShape,
+    sortParams: ColumnContext['sortParams'],
+    filterParams: {
+        type: AgGridFilterType;
+        tab: string;
+    }
+) => {
+    return {
+        headerName: intl.formatMessage({ id: intlId }),
+        colId: fieldId,
+        field: fieldId,
+        context: {
+            numeric: true,
+            fractionDigits: 2,
+            sortParams,
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
+        },
+    };
+};
+
 export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
@@ -245,30 +269,10 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitLoading' }),
-            colId: 'overload',
-            field: 'overload',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'PatlLoading' }),
-            colId: 'patlOverload',
-            field: 'patlOverload',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
+        makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'overload', intl, sortParams, filterParams)),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('PatlLoading', 'patlOverload', intl, sortParams, filterParams)
+        ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
             colId: 'actualOverloadDuration',
@@ -319,42 +323,15 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             },
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
-            colId: 'limit',
-            field: 'limit',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'PatlLimitValue' }),
-            colId: 'patlLimit',
-            field: 'patlLimit',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
-            colId: 'value',
-            field: 'value',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('CurrentViolationLimit', 'limit', intl, sortParams, filterParams)
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, sortParams, filterParams)
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('CurrentViolationValue', 'value', intl, sortParams, filterParams)
+        ),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             colId: 'side',
@@ -433,30 +410,12 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                 return formatLimitType(value.data.limitType, intl);
             },
         }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
-            colId: 'limit',
-            field: 'limit',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
-            colId: 'value',
-            field: 'value',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams,
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: { filterParams: { ...numericFilterParams, ...filterParams } },
-            },
-        }),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('VoltageViolationLimit', 'limit', intl, sortParams, filterParams)
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('VoltageViolationValue', 'value', intl, sortParams, filterParams)
+        ),
     ];
 };
 
