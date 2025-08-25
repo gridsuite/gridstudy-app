@@ -26,6 +26,7 @@ import {
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
+    getComputedLanguage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -37,7 +38,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
