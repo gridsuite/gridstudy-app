@@ -36,9 +36,6 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
     'spreadsheet/custom_column/option/parameter': 'Paramétrer',
-    'spreadsheet/custom_column/option/refresh': 'Recharger',
-    'spreadsheet/custom_column/option/refresh/tooltip':
-        'Recharger les données de cette feuille pour les autres nœuds réalisés et paramétrés ({aliases})',
     'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
