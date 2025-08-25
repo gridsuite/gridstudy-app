@@ -306,10 +306,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         // check if the subtree has children
         return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel);
     }
-    const areAllSubItemsDisabled = (subItems: Record<string, SubMenuItem>, isRootNode: boolean): boolean => {
-        const items = Object.values(subItems).filter((item) => item.onRoot === isRootNode);
-        return items.every((item) => item.disabled || item.hidden);
-    };
 
     const SUBTREE_SUBMENU_ITEMS: Record<string, SubMenuItem> = {
         COPY_SUBTREE: {
@@ -415,12 +411,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             hidden: isSecurityModificationNode(activeNode),
             id: 'ConstructionNode',
             subMenuItems: {
-                CREATE_NODE: {
-                    onRoot: true,
-                    disabled: true,
-                    id: 'createNetworkModificationNode',
-                    withDivider: true,
-                },
                 INSERT_NODE_NEW_BRANCH: {
                     onRoot: true,
                     action: () =>
@@ -449,12 +439,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: true,
             id: 'SecurityNode',
             subMenuItems: {
-                CREATE_NODE: {
-                    onRoot: true,
-                    disabled: true,
-                    id: 'createNetworkModificationNode',
-                    withDivider: true,
-                },
                 INSERT_NODE_NEW_BRANCH: {
                     onRoot: true,
                     action: () =>
@@ -489,7 +473,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: true,
             id: 'NetworkModificationSubtree',
             subMenuItems: SUBTREE_SUBMENU_ITEMS,
-            disabled: areAllSubItemsDisabled(SUBTREE_SUBMENU_ITEMS, activeNode?.type === NodeType.ROOT),
             withDivider: true,
         },
 
