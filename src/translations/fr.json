@@ -511,7 +511,7 @@
     "unbuildNode": "Déréaliser",
     "exportCaseOnNode": "Exporter",
     "ConstructionNode":"Créer un nœud de construction",
-    "SecurityNode":"Créer un Nœud de sécurité",
+    "SecurityNode":"Créer un nœud de sécurité",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
     "StudyUnrecoverableStateRecreate": "Votre étude a rencontré un problème et a été recréée à partir des données initiales",
