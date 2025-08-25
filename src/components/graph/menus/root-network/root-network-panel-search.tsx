@@ -104,12 +104,14 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
                             label={intl.formatMessage({ id: 'rootNetwork.modificationTab' })}
                         />
                     </Tabs>
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'rootNetwork.modificationsInfos' })}
-                        placement="left-start"
-                    >
-                        <InfoIcon color="primary" />
-                    </Tooltip>
+                    {!isNodeTab(tabValue) && (
+                        <Tooltip
+                            title={intl.formatMessage({ id: 'rootNetwork.modificationsInfos' })}
+                            placement="left-start"
+                        >
+                            <InfoIcon color="primary" />
+                        </Tooltip>
+                    )}
                 </Box>
                 <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={false} />
             </Box>

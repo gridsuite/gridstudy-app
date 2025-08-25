@@ -18,7 +18,6 @@ const styles = {
         overflowY: 'auto',
     },
     rootNameTitle: {
-        fontWeight: 'bold',
         display: 'flex',
         alignItems: 'center',
         mb: 1,
@@ -31,7 +30,9 @@ export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResul
                 <Box key={result + '_node'} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
                         <DeviceHubIcon />
-                        <Typography sx={{ marginLeft: '5px' }}>{result}</Typography>
+                        <Typography color="textPrimary" sx={{ marginLeft: '5px' }}>
+                            {result}
+                        </Typography>
                     </Box>
                     <Divider sx={{ mt: 2 }} />
                 </Box>
