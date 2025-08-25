@@ -6,11 +6,14 @@
  */
 
 import { NodePlacement } from './layout.type';
+import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
 
-export const nodeWidth = 230;
-export const nodeHeight = 110;
+const widthSpacing = 70;
+const heightSpacing = 90;
+export const nodeWidth = NODE_WIDTH + widthSpacing;
+export const nodeHeight = NODE_HEIGHT + heightSpacing;
 export const snapGrid = [10, nodeHeight]; // Used for drag and drop
 
 /**
