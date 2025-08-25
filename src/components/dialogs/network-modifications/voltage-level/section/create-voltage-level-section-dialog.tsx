@@ -35,13 +35,35 @@ import { createVoltageLevelSection } from '../../../../../services/study/network
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { IntlShape, useIntl } from 'react-intl';
 
-const getBusBarIndexValue = ({ busbarIndex }: { busbarIndex: string | null }) => {
+const getBusBarIndexValue = ({
+    busbarIndex,
+    allBusbars,
+    intl,
+}: {
+    busbarIndex: string | null;
+    allBusbars: boolean;
+    intl: IntlShape;
+}) => {
     if (!busbarIndex) {
         return null;
     }
+    if (allBusbars) {
+        return {
+            [ID]: intl.formatMessage({ id: 'allBusbarSections' }),
+        };
+    }
     return {
         [ID]: busbarIndex,
+    };
+};
+const getBusBarSectionValue = ({ busbarSectionId }: { busbarSectionId: string | null }) => {
+    if (!busbarSectionId) {
+        return null;
+    }
+    return {
+        [ID]: busbarSectionId,
     };
 };
 const emptyFormData = {
@@ -114,6 +136,7 @@ export default function CreateVoltageLevelSectionDialog({
     ...dialogProps
 }: Readonly<VoltageLevelSectionCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [isExtensionNotFoundOrNotSupportedTopology, setIsExtensionNotFoundOrNotSupportedTopology] =
         useState<boolean>(false);
@@ -149,15 +172,14 @@ export default function CreateVoltageLevelSectionDialog({
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
-                            const isNotSupported =
-                                !voltageLevel.isRetrievedBusbarSections ||
-                                voltageLevel?.topologyKind !== 'NODE_BREAKER';
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
                             const allSections = Object.values(
                                 voltageLevel?.busBarSectionInfos || {}
                             ).flat() as string[];
                             setAllBusbarSectionsList(allSections);
-                            setIsExtensionNotFoundOrNotSupportedTopology(isNotSupported);
+                            setIsExtensionNotFoundOrNotSupportedTopology(
+                                !voltageLevel.isRetrievedBusbarSections || voltageLevel?.topologyKind !== 'NODE_BREAKER'
+                            );
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
                     })
@@ -181,9 +203,14 @@ export default function CreateVoltageLevelSectionDialog({
                 setSelectedId(editData.voltageLevelId);
             }
             reset({
-                [BUS_BAR_INDEX]: getBusBarIndexValue({ busbarIndex: editData?.busbarIndex }) ?? null,
+                [BUS_BAR_INDEX]:
+                    getBusBarIndexValue({
+                        busbarIndex: editData?.busbarIndex,
+                        allBusbars: editData?.allBusbars,
+                        intl: intl,
+                    }) ?? null,
                 [ALL_BUS_BAR_SECTIONS]: editData?.allBusbars ?? false,
-                [BUSBAR_SECTION_ID]: getBusBarIndexValue({ busbarIndex: editData?.busbarSectionId }) ?? null,
+                [BUSBAR_SECTION_ID]: getBusBarSectionValue({ busbarSectionId: editData?.busbarSectionId }) ?? null,
                 [IS_AFTER_BUSBAR_SECTION_ID]: editData?.afterBusbarSectionId
                     ? POSITION_NEW_SECTION_SIDE.AFTER.id
                     : POSITION_NEW_SECTION_SIDE.BEFORE.id,
@@ -192,7 +219,7 @@ export default function CreateVoltageLevelSectionDialog({
                 [NEW_SWITCH_STATES]: editData?.switchOpen ?? false,
             });
         },
-        [reset]
+        [intl, reset]
     );
 
     useEffect(() => {
