@@ -95,7 +95,10 @@ export function HorizontalToolbar() {
                             <ToggleButton value={StudyDisplayMode.TREE}>
                                 <DeviceHubIcon />
                             </ToggleButton>
-                            <ToggleButton value={StudyDisplayMode.MODIFICATIONS}>
+                            <ToggleButton
+                                value={StudyDisplayMode.MODIFICATIONS}
+                                disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
+                            >
                                 <TuneIcon />
                             </ToggleButton>
                             {enableDeveloperMode && (

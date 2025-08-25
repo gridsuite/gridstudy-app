@@ -10,7 +10,12 @@ import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlo
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { reorderNetworkModificationTreeNodes, setCurrentTreeNode, setModificationsDrawerOpen } from '../redux/actions';
+import {
+    reorderNetworkModificationTreeNodes,
+    setCurrentTreeNode,
+    setModificationsDrawerOpen,
+    setToggleOptions,
+} from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
@@ -30,6 +35,7 @@ import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
+import { StudyDisplayMode } from './network-modification.type';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -50,6 +56,8 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
+
+    const toggleOptions = useSelector((state) => state.toggleOptions);
 
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
@@ -100,16 +108,38 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         updateNodePositions();
     }, [updateNodePositions]);
 
+    const handleRootNodeClick = useCallback((toggleOptions) => {
+        const hasRemovableOptions =
+            toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
+            toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO);
+
+        if (!hasRemovableOptions) {
+            return toggleOptions;
+        }
+
+        return toggleOptions.filter(
+            (opt) => opt !== StudyDisplayMode.MODIFICATIONS && opt !== StudyDisplayMode.EVENT_SCENARIO
+        );
+    }, []);
+
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === 'NETWORK_MODIFICATION') {
                 dispatch(setModificationsDrawerOpen());
             }
+            if (node.type === 'ROOT') {
+                handleRootNodeClick(toggleOptions, dispatch);
+
+                const newOptions = handleRootNodeClick(toggleOptions);
+                if (newOptions !== toggleOptions) {
+                    dispatch(setToggleOptions(newOptions));
+                }
+            }
             if (!isSameNode(currentNode, node)) {
                 dispatch(setCurrentTreeNode(node));
             }
         },
-        [dispatch, currentNode]
+        [dispatch, currentNode, toggleOptions, handleRootNodeClick]
     );
 
     const toggleMinimap = useCallback(() => {
