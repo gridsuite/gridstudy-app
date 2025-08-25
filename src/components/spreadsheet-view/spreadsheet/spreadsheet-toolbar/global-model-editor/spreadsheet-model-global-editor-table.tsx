@@ -94,8 +94,8 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 initialValue: COLUMN_TYPES.TEXT,
                 editable: true,
                 options: Object.keys(COLUMN_TYPES),
-                width: '10%',
-                maxWidth: '10%',
+                width: '11%',
+                maxWidth: '11%',
             },
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_precision' }),
@@ -125,8 +125,8 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 type: DndColumnType.CUSTOM,
                 initialValue: undefined,
                 editable: true,
-                width: '25%',
-                maxWidth: '25%',
+                width: '24%',
+                maxWidth: '24%',
                 component: (rowIndex) =>
                     DependenciesEditor({
                         name: `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_DEPENDENCIES}`,

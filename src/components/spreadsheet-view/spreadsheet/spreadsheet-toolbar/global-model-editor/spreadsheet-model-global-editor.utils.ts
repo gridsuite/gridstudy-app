@@ -46,7 +46,7 @@ export const columnsModelFormSchema = yup.object().shape({
                     }),
                 [COLUMN_FORMULA]: yup.string().required(),
                 [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()),
-                [COLUMN_VISIBLE]: yup.boolean(),
+                [COLUMN_VISIBLE]: yup.boolean().required(),
             })
         )
         .required()

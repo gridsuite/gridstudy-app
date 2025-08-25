@@ -39,9 +39,11 @@ import { NodeAlias } from '../types/node-alias.type';
 import SaveIcon from '@mui/icons-material/Save';
 import { SaveSpreadsheetCollectionDialog } from '../spreadsheet/spreadsheet-toolbar/save/save-spreadsheet-collection-dialog';
 import { SpreadsheetModelGlobalEditorDialog } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor-dialog';
-import { columnsModelForm } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.utils';
+import {
+    columnsModelForm,
+    COLUMNS_MODEL,
+} from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.utils';
 import { ColumnGlobalModel } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-edtor.type';
-import { COLUMNS_MODEL } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.utils';
 
 const draggableTabStyles = {
     container: {
@@ -184,7 +186,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                     dependencies: columnModel.columnDependencies?.length
                         ? JSON.stringify(columnModel.columnDependencies)
                         : undefined,
-                    visible: columnModel.columnVisible!,
+                    visible: columnModel.columnVisible,
                 };
                 return column;
             }),
