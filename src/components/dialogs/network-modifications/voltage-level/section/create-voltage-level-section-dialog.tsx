@@ -153,6 +153,10 @@ export default function CreateVoltageLevelSectionDialog({
                                 !voltageLevel.isRetrievedBusbarSections ||
                                 voltageLevel?.topologyKind !== 'NODE_BREAKER';
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
+                            const allSections = Object.values(
+                                voltageLevel?.busBarSectionInfos || {}
+                            ).flat() as string[];
+                            setAllBusbarSectionsList(allSections);
                             setIsExtensionNotFoundOrNotSupportedTopology(isNotSupported);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
