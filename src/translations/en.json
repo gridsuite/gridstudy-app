@@ -76,6 +76,8 @@
     "CBNone": "None",
     "Map": "Map",
     "Tree": "Tree",
+    "modifications": "Modifications",
+    "images": "Images",
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
     "NoneUpcomingOverload": "None",
