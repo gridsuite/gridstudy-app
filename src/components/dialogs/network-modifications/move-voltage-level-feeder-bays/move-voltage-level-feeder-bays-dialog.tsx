@@ -8,8 +8,6 @@
 import {
     CustomFormProvider,
     EquipmentType,
-    MODIFICATION_TYPES,
-    ModificationType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -23,34 +21,22 @@ import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
 import yup from '../../../utils/yup-config';
 import {
-    CURRENT_CONNECTION_STATUS,
-    PREV_CONNECTION_STATUS,
-    SWITCH_ID,
     TOPOLOGY_MODIFICATION_TABLE,
 } from '../../../utils/field-constants';
 import { MoveVoltageLevelFeederBaysForm } from './move-voltage-level-feeder-bays-form';
-import { modifyVoltageLevelTopology } from '../../../../services/study/network-modifications';
 import { TopologyVoltageLevelModificationInfos } from '../../../../services/network-modification-types';
-import { fetchSwitchesOfVoltageLevel } from '../../../../services/study/network';
+import { fetchNetworkElementInfos } from '../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import { SwitchInfos } from '../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const formSchema = yup.object().shape({
-    [TOPOLOGY_MODIFICATION_TABLE]: yup
-        .array()
-        .of(
-            yup.object().shape({
-            })
-        )
-        .required(),
+    [TOPOLOGY_MODIFICATION_TABLE]: yup.array().of(yup.object().shape({})).required(),
 });
 
 const emptyFormData = {
-    [TOPOLOGY_MODIFICATION_TABLE]: [
-        {
-        },
-    ],
+    [TOPOLOGY_MODIFICATION_TABLE]: [{}],
 };
 
 export type MoveVoltageLevelFeederBaysDialogProps = EquipmentModificationDialogProps & {
@@ -99,40 +85,27 @@ export default function MoveVoltageLevelFeederBaysDialog({
         }
     }, [editData]);
 
-    const onEquipmentIdChange = useCallback(
-        (equipmentId: string) => {
-            if (!equipmentId) {
-                setSwitchesToModify([]);
-            } else {
-                setDataFetchStatus(FetchStatus.RUNNING);
-                fetchSwitchesOfVoltageLevel(studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentId)
-                    .then((switchesInfos) => {
-                        if (switchesInfos.length) {
-                            setSwitchesToModify(switchesInfos);
-                            reset(
-                                {
-                                    [TOPOLOGY_MODIFICATION_TABLE]: switchesInfos?.map((row) => ({
-                                        [SWITCH_ID]: row.id,
-                                        [PREV_CONNECTION_STATUS]: row.open,
-                                        [CURRENT_CONNECTION_STATUS]: null,
-                                    })),
-                                },
-                                { keepDirty: true }
-                            );
-                            setDataFetchStatus(FetchStatus.SUCCEED);
-                        } else {
-                            setSwitchesToModify([]);
-                            setDataFetchStatus(FetchStatus.SUCCEED);
-                        }
-                    })
-                    .catch(() => {
-                        setDataFetchStatus(FetchStatus.FAILED);
-                        setSwitchesToModify([]);
-                    });
-            }
-        },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset]
-    );
+    const onEquipmentIdChange = useCallback((equipmentId) => {
+        if (equipmentId) {
+            setDataFetchStatus(FetchStatus.RUNNING);
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+                EQUIPMENT_INFOS_TYPES.FORM.type,
+                equipmentId,
+                true
+            )
+                .then((voltageLevel) => {})
+                .catch(() => {
+                    setDataFetchStatus(FetchStatus.FAILED);
+                    if (editData?.equipmentId !== equipmentId) {
+                        reset(emptyFormData);
+                    }
+                });
+        }
+    }, []);
 
     useEffect(() => {
         if (selectedId) {
@@ -140,54 +113,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onSubmit = useCallback(
-        (topologyVLModificationInfos: MoveVoltageLevelFeederBaysFormSchemaType) => {
-            let equipmentAttributeModificationInfos: {
-                type: ModificationType;
-                equipmentId: string;
-                equipmentAttributeName: string;
-                equipmentAttributeValue: boolean;
-                equipmentType: EquipmentType;
-            }[] = [];
-            if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
-                equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
-                    (item) => {
-                        return !(
-                            item === null ||
-                            item.currentConnectionStatus === null ||
-                            item.currentConnectionStatus === undefined
-                        );
-                    }
-                ).map((item) => ({
-                    type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-                    equipmentId: item.switchId ?? '',
-                    equipmentAttributeName: 'open',
-                    // Note that 'currentConnectionStatus' which presents 'close' should be inverted when submitting open attribute
-                    equipmentAttributeValue: Boolean(!item.currentConnectionStatus),
-                    equipmentType: EquipmentType.SWITCH,
-                }));
-            }
-            const voltageLevelTopologyModificationInfos = {
-                type: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
-                uuid: editData?.uuid,
-                equipmentId: selectedId,
-                equipmentAttributeModificationList: equipmentAttributeModificationInfos,
-            };
-            modifyVoltageLevelTopology({
-                topologyVoltageLevelModificationInfos: voltageLevelTopologyModificationInfos,
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
-                isUpdate: !!editData,
-            }).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'VoltageLevelTopologyModificationError',
-                });
-            });
-        },
-        [editData, selectedId, studyUuid, currentNodeUuid, snackError]
-    );
+    const onSubmit = useCallback(() => {}, []);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:

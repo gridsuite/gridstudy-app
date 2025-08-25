@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useMemo } from "react";
-import { useIntl } from "react-intl";
-import { CurrentTreeNode } from "../../../graph/tree-node.type";
-import { Grid, TextField } from "@mui/material";
-import { SWITCH_ID } from "../../../utils/field-constants";
-import { filledTextField } from "../../dialog-utils";
-import { isNodeBuilt } from "../../../graph/util/model-functions";
-import { useFormContext } from "react-hook-form";
-import SeparatorCellRenderer from "../voltage-level-topology-modification/separator-cell-renderer";
-import HeaderWithTooltip from "../voltage-level-topology-modification/header-with-tooltip";
+import React, { useMemo } from 'react';
+import { useIntl } from 'react-intl';
+import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { Grid, TextField } from '@mui/material';
+import { SWITCH_ID } from '../../../utils/field-constants';
+import { filledTextField } from '../../dialog-utils';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { useFormContext } from 'react-hook-form';
+import SeparatorCellRenderer from '../voltage-level-topology-modification/separator-cell-renderer';
+import HeaderWithTooltip from '../voltage-level-topology-modification/header-with-tooltip';
 
 interface MoveVoltageLevelFeederBaysFormProps {
     currentNode: CurrentTreeNode;
@@ -85,9 +85,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     />
                 </Grid>
             </Grid>
-            <Grid xs paddingTop={2}>
-            
-            </Grid>
+            <Grid xs paddingTop={2}></Grid>
         </Grid>
     );
 }

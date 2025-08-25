@@ -121,8 +121,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
-import MoveVoltageLevelFeederBaysDialog
-  from "../../../dialogs/network-modifications/move-voltage-level-feeder-bays/move-voltage-level-feeder-bays-dialog";
+import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/move-voltage-level-feeder-bays/move-voltage-level-feeder-bays-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
