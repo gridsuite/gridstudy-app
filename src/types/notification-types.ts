@@ -936,6 +936,16 @@ export function isEventCrudFinishedNotification(notif: unknown): notif is EventC
 export function isNodeDeletedNotification(notif: unknown): notif is NodesDeletedEventData {
     return (notif as NodesDeletedEventData).headers?.updateType === NotificationType.NODES_DELETED;
 }
+export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedEventData {
+    return (notif as NodeCreatedEventData).headers?.updateType === NotificationType.NODE_CREATED;
+}
+
+export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEventData {
+    return (notif as NodeEditedEventData).headers?.updateType === NotificationType.NODE_EDITED;
+}
+export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
+    return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+}
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
     | EventCrudFinishedEventData // contains 'nodes' header

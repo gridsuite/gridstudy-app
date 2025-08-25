@@ -1,0 +1,42 @@
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+import { DeviceHubIcon } from '@gridsuite/commons-ui';
+import { Box, Divider, Typography } from '@mui/material';
+import React from 'react';
+
+interface RootNetworkNodesSearchResultsProps {
+    results: string[];
+}
+const styles = {
+    container: {
+        mt: 2,
+        maxHeight: '500px',
+        overflowY: 'auto',
+    },
+    rootNameTitle: {
+        display: 'flex',
+        alignItems: 'center',
+        mb: 1,
+    },
+};
+export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResultsProps> = ({ results }) => {
+    return (
+        <Box sx={styles.container}>
+            {results.map((result) => (
+                <Box key={result + '_node'} sx={{ mb: 2 }}>
+                    <Box sx={styles.rootNameTitle}>
+                        <DeviceHubIcon />
+                        <Typography color="textPrimary" sx={{ marginLeft: '5px' }}>
+                            {result}
+                        </Typography>
+                    </Box>
+                    <Divider sx={{ mt: 2 }} />
+                </Box>
+            ))}
+        </Box>
+    );
+};

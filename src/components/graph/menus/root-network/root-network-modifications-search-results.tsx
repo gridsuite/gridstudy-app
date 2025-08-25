@@ -27,11 +27,13 @@ const styles = {
     },
 };
 
-interface RootNetworkSearchResultsProps {
+interface RootNetworkModificationsSearchResultsProps {
     results: ModificationsSearchResult[];
 }
 
-export const RootNetworkSearchResults: React.FC<RootNetworkSearchResultsProps> = ({ results }) => {
+export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModificationsSearchResultsProps> = ({
+    results,
+}) => {
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     //get the name based on the node uuid from the node tree
     const getName = useCallback(
