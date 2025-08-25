@@ -143,7 +143,7 @@ const lightTheme = createTheme({
         },
         root: {
             border: 'solid 1px #3CEC96',
-            hoverBorderColor: '#00C853',
+            hoverBorderColor: '#3CEC96',
             activeBorderColor: '#64B5F6',
             icon: {
                 fill: '#0B556F',

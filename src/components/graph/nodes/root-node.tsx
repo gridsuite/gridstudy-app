@@ -24,16 +24,13 @@ const styles = {
     rootSelected: (theme: Theme) => ({
         ...selectedBaseNodeStyles(theme, 'row'),
         border: theme.node.root.border,
+        boxShadow: theme.shadows[10],
         ...interactiveNodeStyles(theme, 'root'),
-        minHeight: 110,
-        minWidth: 230,
     }),
     root: (theme: Theme) => ({
         ...baseNodeStyles(theme, 'row'),
         border: theme.node.root.border,
         ...interactiveNodeStyles(theme, 'root'),
-        minHeight: 110,
-        minWidth: 230,
     }),
 
     iconContainer: (theme: Theme) => ({

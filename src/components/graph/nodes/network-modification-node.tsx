@@ -20,12 +20,12 @@ import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
-import { NODE_HEIGHT, NODE_WIDTH } from './constants';
 
 const styles = {
     networkModificationSelected: (theme: Theme) => ({
         ...selectedBaseNodeStyles(theme, 'column'),
         border: theme.node.modification.selectedBorder,
+        boxShadow: theme.shadows[6],
         ...interactiveNodeStyles(theme, 'modification'),
     }),
     networkModification: (theme: Theme) => ({
@@ -33,10 +33,6 @@ const styles = {
         border: theme.node.modification.border,
         ...interactiveNodeStyles(theme, 'modification'),
     }),
-    nodeBox: {
-        height: NODE_HEIGHT,
-        width: NODE_WIDTH,
-    },
     contentBox: (theme: Theme) => ({
         flexGrow: 1,
         display: 'flex',
@@ -107,7 +103,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
             <Box
                 sx={[
                     isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
-                    styles.nodeBox,
                     { opacity: getNodeOpacity() },
                 ]}
             >
