@@ -9,14 +9,7 @@ import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import {
-    ColDef,
-    ColumnMovedEvent,
-    GetRowIdParams,
-    GridOptions,
-    RowClassParams,
-    RowStyle
-} from 'ag-grid-community';
+import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
 import { AppState } from '../../../../redux/reducer';

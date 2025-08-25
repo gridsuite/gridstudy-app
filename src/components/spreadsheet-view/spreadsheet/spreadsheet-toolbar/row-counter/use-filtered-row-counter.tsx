@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
-import { FilterChangedEvent, FirstDataRenderedEvent, ModelUpdatedEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact>;
