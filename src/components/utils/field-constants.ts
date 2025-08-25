@@ -249,6 +249,7 @@ export const IS_AFTER_BUSBAR_SECTION_ID = 'isAfterBusBarSectionId';
 export const BUS_BAR_INDEX = 'busbarIndex';
 export const SWITCH_BEFORE_NOT_REQUIRED = 'switchBeforeNotRequired';
 export const SWITCH_AFTER_NOT_REQUIRED = 'switchAfterNotRequired';
+export const ALL_BUS_BAR_SECTIONS = 'allBusbarSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';

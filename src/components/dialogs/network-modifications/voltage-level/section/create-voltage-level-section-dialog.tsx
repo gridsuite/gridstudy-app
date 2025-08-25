@@ -14,6 +14,7 @@ import { ModificationDialog } from 'components/dialogs/commons/modificationDialo
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    ALL_BUS_BAR_SECTIONS,
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     ID,
@@ -49,6 +50,7 @@ const emptyFormData = {
     [IS_AFTER_BUSBAR_SECTION_ID]: null,
     [SWITCHES_BEFORE_SECTIONS]: null,
     [SWITCHES_AFTER_SECTIONS]: null,
+    [ALL_BUS_BAR_SECTIONS]: false,
     [NEW_SWITCH_STATES]: false,
     [SWITCH_BEFORE_NOT_REQUIRED]: false,
     [SWITCH_AFTER_NOT_REQUIRED]: false,
@@ -90,6 +92,7 @@ const formSchema = yup
                 then: (schema) => schema.notRequired(),
                 otherwise: (schema) => schema.required(),
             }),
+        [ALL_BUS_BAR_SECTIONS]: yup.boolean(),
         [NEW_SWITCH_STATES]: yup.boolean(),
         [SWITCH_BEFORE_NOT_REQUIRED]: yup.boolean(),
         [SWITCH_AFTER_NOT_REQUIRED]: yup.boolean(),
@@ -115,6 +118,7 @@ export default function CreateVoltageLevelSectionDialog({
     const [isExtensionNotFoundOrNotSupportedTopology, setIsExtensionNotFoundOrNotSupportedTopology] =
         useState<boolean>(false);
     const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSectionInfos[]>();
+    const [allBusbarSectionsList, setAllBusbarSectionsList] = useState<string[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const { snackError } = useSnackMessage();
     const formMethods = useForm<DeepNullable<CreateVoltageLevelSectionDialogSchemaForm>>({
@@ -149,6 +153,10 @@ export default function CreateVoltageLevelSectionDialog({
                                 !voltageLevel.isRetrievedBusbarSections ||
                                 voltageLevel?.topologyKind !== 'NODE_BREAKER';
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
+                            const allSections = Object.values(
+                                voltageLevel?.busBarSectionInfos || {}
+                            ).flat() as string[];
+                            setAllBusbarSectionsList(allSections);
                             setIsExtensionNotFoundOrNotSupportedTopology(isNotSupported);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
@@ -174,6 +182,7 @@ export default function CreateVoltageLevelSectionDialog({
             }
             reset({
                 [BUS_BAR_INDEX]: getBusBarIndexValue({ busbarIndex: editData?.busbarIndex }) ?? null,
+                [ALL_BUS_BAR_SECTIONS]: editData?.allBusbars ?? false,
                 [BUSBAR_SECTION_ID]: getBusBarIndexValue({ busbarIndex: editData?.busbarSectionId }) ?? null,
                 [IS_AFTER_BUSBAR_SECTION_ID]: editData?.afterBusbarSectionId
                     ? POSITION_NEW_SECTION_SIDE.AFTER.id
@@ -204,13 +213,24 @@ export default function CreateVoltageLevelSectionDialog({
         reset(emptyFormData);
     }, [reset]);
 
+    const findBusbarKeyForSection = useCallback(
+        (sectionId: string) => {
+            const infos = busBarSectionInfos as unknown as BusBarSectionInfos;
+            return Object.keys(infos || {}).find((key) => infos[key]?.includes(sectionId)) || null;
+        },
+        [busBarSectionInfos]
+    );
+
     const onSubmit = useCallback(
         (voltageLevelSection: CreateVoltageLevelSectionDialogSchemaForm) => {
             const voltageLevelSectionInfos = {
                 type: MODIFICATION_TYPES.CREATE_VOLTAGE_LEVEL_SECTION.type,
                 voltageLevelId: selectedId,
-                busbarIndex: voltageLevelSection?.busbarIndex?.id || null,
+                busbarIndex: voltageLevelSection?.allBusbarSections
+                    ? findBusbarKeyForSection(voltageLevelSection?.busbarSectionId?.id)
+                    : voltageLevelSection?.busbarIndex?.id || null,
                 busbarSectionId: voltageLevelSection?.busbarSectionId?.id || null,
+                allBusbars: voltageLevelSection?.allBusbarSections || false,
                 afterBusbarSectionId:
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
@@ -230,7 +250,7 @@ export default function CreateVoltageLevelSectionDialog({
                 });
             });
         },
-        [selectedId, studyUuid, currentNodeUuid, editData, snackError]
+        [selectedId, findBusbarKeyForSection, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     return (
@@ -258,6 +278,7 @@ export default function CreateVoltageLevelSectionDialog({
                     <CreateVoltageLevelSectionForm
                         busBarSectionInfos={busBarSectionInfos}
                         voltageLevelId={selectedId}
+                        allBusbarSectionsList={allBusbarSectionsList}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}

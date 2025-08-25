@@ -1571,5 +1571,7 @@
     "editNode": "Edit node",
     "voltage-level": "voltage level",
     "substation": "substation",
-    "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level."
+    "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level.",
+    "allBusbarSections": "All",
+    "allOptionHelperText": "Busbars have different number of sections"
 }

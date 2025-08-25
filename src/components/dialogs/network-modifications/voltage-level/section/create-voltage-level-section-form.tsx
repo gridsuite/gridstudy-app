@@ -6,6 +6,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+    ALL_BUS_BAR_SECTIONS,
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
@@ -29,9 +30,12 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { BusBarSectionInfos } from './voltage-level-section.type';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 
+type OptionWithDisabled = Option & { disabled?: boolean };
+
 interface VoltageLevelSectionsCreationFormProps {
     busBarSectionInfos?: BusBarSectionInfos[];
     voltageLevelId: string;
+    allBusbarSectionsList: string[];
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -42,6 +46,7 @@ interface VoltageLevelSectionsCreationFormProps {
 export function CreateVoltageLevelSectionForm({
     busBarSectionInfos,
     voltageLevelId,
+    allBusbarSectionsList,
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
@@ -74,6 +79,21 @@ export function CreateVoltageLevelSectionForm({
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
             const selectedKey = sectionCount?.id;
+            if (selectedKey === 'all') {
+                setValue(ALL_BUS_BAR_SECTIONS, true);
+                if (allBusbarSectionsList && Array.isArray(allBusbarSectionsList)) {
+                    const options = allBusbarSectionsList
+                        .filter((id): id is string => Boolean(id))
+                        .map((id) => ({
+                            id: id,
+                            label: id,
+                        }));
+                    setBusBarSectionsIdOptions(options);
+                } else {
+                    setBusBarSectionsIdOptions([]);
+                }
+                return;
+            }
             const sections = busBarSectionInfos[selectedKey];
             if (!sections || !Array.isArray(sections)) {
                 setBusBarSectionsIdOptions([]);
@@ -89,7 +109,7 @@ export function CreateVoltageLevelSectionForm({
         } else {
             setBusBarSectionsIdOptions([]);
         }
-    }, [busBarSectionInfos, sectionCount]);
+    }, [allBusbarSectionsList, busBarSectionInfos, sectionCount, setValue]);
 
     useEffect(() => {
         if (selectedOption && selectedPositionOption) {
@@ -121,20 +141,33 @@ export function CreateVoltageLevelSectionForm({
         }
     }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption, isUpdate, currentNode]);
 
-    const busBarIndexOptions = useMemo(() => {
+    const busBarIndexOptions = useMemo((): OptionWithDisabled[] => {
         if (busBarSectionInfos) {
-            return Object.keys(busBarSectionInfos || {})
+            const sortedOptions = Object.keys(busBarSectionInfos || {})
                 .sort((a, b) => parseInt(a) - parseInt(b))
                 .map((key) => ({
                     id: key,
                     label: key,
                 }));
+            const allOption = {
+                id: 'all',
+                label: intl.formatMessage({ id: 'allBusbarSections' }),
+                disabled: allBusbarSectionsList.length === 0,
+            } as Option & { disabled?: boolean };
+
+            return [...sortedOptions, allOption];
         }
         return [];
-    }, [busBarSectionInfos]);
+    }, [busBarSectionInfos, intl, allBusbarSectionsList]);
 
-    const getOptionLabel = (object: string | { id: string | number }) => {
-        return typeof object === 'string' ? object : String(object?.id ?? '');
+    const getOptionLabel = (object: string | { id: string | number; label: string | number }) => {
+        if (typeof object === 'string') {
+            return object;
+        }
+        if (object?.id === 'all') {
+            return String(object?.label ?? '');
+        }
+        return String(object?.id ?? '');
     };
 
     const isOptionEqualToValue = (val1: Option, val2: Option) => {
@@ -154,9 +187,31 @@ export function CreateVoltageLevelSectionForm({
             name={BUS_BAR_INDEX}
             label="Busbar"
             onChangeCallback={handleChangeBusbarIndex}
-            options={busBarIndexOptions}
+            options={busBarIndexOptions as Option[]}
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={isOptionEqualToValue}
+            renderOption={(props, option) => {
+                const allOptionsDisabled = busBarIndexOptions?.every((opt) => (opt as any)?.disabled);
+                return (
+                    <li {...props}>
+                        <div>
+                            <div>{getOptionLabel(option)}</div>
+                            {allOptionsDisabled && (
+                                <div
+                                    style={{
+                                        fontSize: '0.75rem',
+                                        color: 'red',
+                                        marginTop: '2px',
+                                    }}
+                                >
+                                    {intl.formatMessage({ id: 'allOptionHelperText' })}
+                                </div>
+                            )}
+                        </div>
+                    </li>
+                );
+            }}
+            getOptionDisabled={(option) => (option as any)?.disabled}
             size={'small'}
             disabled={isNotFoundOrNotSupported}
         />
@@ -166,7 +221,7 @@ export function CreateVoltageLevelSectionForm({
         <AutocompleteInput
             name={BUSBAR_SECTION_ID}
             label="BusBarSections"
-            options={Object.values(busBarSectionsIdOptions)}
+            options={busBarSectionsIdOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}

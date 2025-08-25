@@ -11,6 +11,7 @@ export type CreateVoltageLevelSectionDialogSchemaForm = {
     isAfterBusBarSectionId: string | null;
     switchesBeforeSections?: string | null;
     switchesAfterSections?: string | null;
+    allBusbarSections?: boolean;
     newSwitchStates?: boolean;
 };
 
