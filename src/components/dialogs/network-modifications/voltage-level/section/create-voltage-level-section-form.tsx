@@ -14,7 +14,7 @@ import {
     SWITCHES_AFTER_SECTIONS,
     SWITCHES_BEFORE_SECTIONS,
 } from '../../../../utils/field-constants';
-import { Box, Button, Grid, Slider, TextField, Tooltip } from '@mui/material';
+import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/material';
 import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -36,6 +36,7 @@ interface VoltageLevelSectionsCreationFormProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
+    isNotFoundOrNotSupported: boolean;
 }
 
 export function CreateVoltageLevelSectionForm({
@@ -45,6 +46,7 @@ export function CreateVoltageLevelSectionForm({
     currentNode,
     currentRootNetworkUuid,
     isUpdate,
+    isNotFoundOrNotSupported,
 }: Readonly<VoltageLevelSectionsCreationFormProps>) {
     const intl = useIntl();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
@@ -55,7 +57,6 @@ export function CreateVoltageLevelSectionForm({
     const sectionCount = useWatch({ name: BUS_BAR_INDEX });
     const selectedOption = useWatch({ name: BUSBAR_SECTION_ID });
     const selectedPositionOption = useWatch({ name: IS_AFTER_BUSBAR_SECTION_ID });
-
     const voltageLevelIdField = (
         <TextField
             size="small"
@@ -157,6 +158,7 @@ export function CreateVoltageLevelSectionForm({
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={isOptionEqualToValue}
             size={'small'}
+            disabled={isNotFoundOrNotSupported}
         />
     );
 
@@ -168,7 +170,7 @@ export function CreateVoltageLevelSectionForm({
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
-            disabled={!sectionCount}
+            disabled={!sectionCount || isNotFoundOrNotSupported}
         />
     );
 
@@ -178,7 +180,7 @@ export function CreateVoltageLevelSectionForm({
             label="isAfterBusBarSectionId"
             options={Object.values(POSITION_NEW_SECTION_SIDE)}
             size={'small'}
-            disabled={!sectionCount}
+            disabled={!sectionCount || isNotFoundOrNotSupported}
         />
     );
 
@@ -188,7 +190,7 @@ export function CreateVoltageLevelSectionForm({
             label={'switchesBeforeSections'}
             options={Object.values(SWITCH_TYPE)}
             size={'small'}
-            disabled={!sectionCount || isNotRequiredSwitchBefore}
+            disabled={!sectionCount || isNotRequiredSwitchBefore || isNotFoundOrNotSupported}
         />
     );
     const switchAfterField = (
@@ -197,7 +199,7 @@ export function CreateVoltageLevelSectionForm({
             label={'switchesAfterSections'}
             options={Object.values(SWITCH_TYPE)}
             size={'small'}
-            disabled={!sectionCount || isNotRequiredSwitchAfter}
+            disabled={!sectionCount || isNotRequiredSwitchAfter || isNotFoundOrNotSupported}
         />
     );
     const getLabelDescription = useCallback(() => {
@@ -258,7 +260,13 @@ export function CreateVoltageLevelSectionForm({
                         )}
                     </Grid>
                 </Grid>
-
+                {isNotFoundOrNotSupported && (
+                    <Grid item xs={12}>
+                        <Typography variant="body1" color="red">
+                            <FormattedMessage id={'notValidVoltageLevel'} />
+                        </Typography>
+                    </Grid>
+                )}
                 <Grid item xs={12}>
                     <GridSection title="SectionPosition" />
                 </Grid>

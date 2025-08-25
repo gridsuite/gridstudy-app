@@ -25,3 +25,8 @@ export function getLineTypesCatalog(): Promise<LineTypeInfo[]> {
     const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types`;
     return backendFetchJson(url);
 }
+
+export function getLineTypeWithLimits(id: string): Promise<LineTypeInfo> {
+    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types/${id}`;
+    return backendFetchJson(url);
+}
