@@ -58,13 +58,16 @@ export interface LimitViolationResultProps extends LoadflowResultTap {
 
 export interface OverloadedEquipment {
     overload: number;
+    patlOverload: number;
     subjectId: string;
     locationId: string;
     value: number;
     actualOverloadDuration: number | null;
     upComingOverloadDuration: number | null;
     limit: number;
+    patlLimit: number;
     limitName: string | null | undefined;
+    nextLimitName: string | null | undefined;
     side: string | undefined;
     limitType: string;
 }
@@ -73,10 +76,13 @@ export interface OverloadedEquipmentFromBack {
     subjectId: string;
     locationId: string;
     limit: number;
+    patlLimit: number;
     limitName: string | null;
+    nextLimitName: string | null | undefined;
     actualOverloadDuration: 300;
     upComingOverloadDuration: 300;
     overload: number;
+    patlOverload: number;
     value: number;
     side: BranchSide | '';
     limitType: LimitTypes;
