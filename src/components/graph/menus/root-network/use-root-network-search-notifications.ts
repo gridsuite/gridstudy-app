@@ -13,31 +13,50 @@ import {
     isModificationsUpdateFinishedNotification,
     isNodeBuildCompletedNotification,
     isNodeBuildStatusUpdatedNotification,
+    isNodeCreatedNotification,
+    isNodeDeletedNotification,
+    isNodeEditedNotification,
+    isNodSubTreeCreatedNotification,
     isRootNetworksUpdatedNotification,
 } from 'types/notification-types';
 
 type UseRootNetworkNotificationsProps = {
-    resetSearch: () => void;
+    resetNodesSearch: () => void;
+    resetModificationsSearch: () => void;
 };
 
-export const useRootNetworkSearchNotifications = ({ resetSearch }: UseRootNetworkNotificationsProps) => {
+export const useRootNetworkSearchNotifications = ({
+    resetModificationsSearch,
+    resetNodesSearch,
+}: UseRootNetworkNotificationsProps) => {
     const handleRootNetworkSearchReset = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
-            // reset the search result for : build/unbuild, root network update, create and update modifications.
-            // The current behavior is subject to change in future user stories.
+            // reset the modifications search result for : build/unbuild, root network update, create and update modifications.
+            // reset the nodes search result for : create, remove, rename and create subtree node.
             const nodesStatus =
                 isNodeBuildCompletedNotification(eventData) || isNodeBuildStatusUpdatedNotification(eventData);
             const rootNetworksStatus = isRootNetworksUpdatedNotification(eventData);
             const networkModificationsStatus =
                 isModificationsDeleteFinishedNotification(eventData) ||
                 isModificationsUpdateFinishedNotification(eventData);
+            const nodeDeleted = isNodeDeletedNotification(eventData);
+            const nodeCreated = isNodeCreatedNotification(eventData);
+            const nodeEdited = isNodeEditedNotification(eventData);
+            const nodeSubTreeCreated = isNodSubTreeCreatedNotification(eventData);
 
             if (nodesStatus || rootNetworksStatus || networkModificationsStatus) {
-                resetSearch();
+                console.log(' inside thez modification node');
+
+                resetModificationsSearch();
+            }
+            if (nodeDeleted || nodeCreated || nodeEdited || nodeSubTreeCreated) {
+                console.log(' inside thez delete node');
+                resetNodesSearch();
             }
         },
-        [resetSearch]
+
+        [resetModificationsSearch, resetNodesSearch]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

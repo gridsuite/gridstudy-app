@@ -28,6 +28,7 @@ import {
     CONNECTIVITY_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FINAL_CURRENT_LIMITS,
     G1,
     G2,
     LIMITS,
@@ -47,7 +48,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { APPLICABILITY, FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
@@ -64,8 +65,8 @@ import {
     LineCreationDialogTab,
 } from './line-creation-dialog-utils';
 import {
-    getLimitsEmptyFormData,
     getAllLimitsFormData,
+    getLimitsEmptyFormData,
     getLimitsValidationSchema,
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
@@ -230,13 +231,13 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                    [OPERATIONAL_LIMITS_GROUPS]: line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
+                    [SELECTED_LIMITS_GROUP_1]: line?.selectedOperationalLimitsGroup1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line?.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
@@ -265,6 +266,29 @@ const LineCreationDialog = ({
         setValue(`${CHARACTERISTICS}.${B2}`, data[TOTAL_SUSCEPTANCE] / 2, {
             shouldDirty: true,
         });
+        const finalLimits = [];
+        data[FINAL_CURRENT_LIMITS].forEach((item) => {
+            const temporaryLimitsList = [];
+            if (item.temporaryLimitValue) {
+                console.log('item', item);
+                temporaryLimitsList.push({
+                    name: item.temporaryLimitName,
+                    acceptableDuration: item.temporaryLimitAcceptableDuration,
+                    value: item.temporaryLimitValue,
+                });
+            }
+            finalLimits.push({
+                id: item.limitSetName + APPLICABILITY.EQUIPMENT.id,
+                name: item.limitSetName,
+                applicability: APPLICABILITY.EQUIPMENT.id,
+                currentLimits: {
+                    id: item.limitSetName,
+                    permanentLimit: item.permanentLimit,
+                    temporaryLimits: temporaryLimitsList,
+                },
+            });
+        });
+        setValue(`${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}`, finalLimits);
     };
 
     const onSubmit = useCallback(

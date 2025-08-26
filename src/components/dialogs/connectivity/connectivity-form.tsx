@@ -17,6 +17,8 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     ID,
+    IS_BUS_OR_BUSBAR_SECTION_MODIFICATION,
+    IS_VOLTAGE_LEVEL_MODIFICATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -109,6 +111,10 @@ export function ConnectivityForm({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
 
+    const watchBusBarSectionId = useWatch({
+        name: `${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
+    });
+
     const vlOptions = useMemo(
         () =>
             voltageLevelOptions.map((item) => ({
@@ -147,7 +153,18 @@ export function ConnectivityForm({
         }
     }, [newBusOrBusbarSectionOptions]);
 
-    const handleChange = useCallback(() => {
+    useEffect(() => {
+        setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, false);
+        setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, false);
+        if (watchVoltageLevelId) {
+            setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, true);
+        }
+        if (watchBusBarSectionId) {
+            setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, true);
+        }
+    }, [id, setValue, watchVoltageLevelId, watchBusBarSectionId]);
+
+    const handleChangeVoltageLevel = useCallback(() => {
         onVoltageLevelChangeCallback?.();
         setBusOrBusbarSectionOptions([]);
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
@@ -171,7 +188,7 @@ export function ConnectivityForm({
                 return value;
             }}
             previousValue={isEquipmentModification ? previousValues?.voltageLevelId : undefined}
-            onChangeCallback={handleChange}
+            onChangeCallback={handleChangeVoltageLevel}
             allowNewValue
             forcePopupIcon
             selectOnFocus

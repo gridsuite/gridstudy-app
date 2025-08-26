@@ -7,7 +7,11 @@
 import { isNumber } from 'mathjs';
 import { countDecimalPlaces, countDecimalPlacesFromString } from '../../../../utils/rounding';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
-import { FILTER_NUMBER_COMPARATORS, UNDISPLAYED_FILTER_NUMBER_COMPARATORS } from '../custom-aggrid-filter.type';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    UNDISPLAYED_FILTER_NUMBER_COMPARATORS,
+} from '../custom-aggrid-filter.type';
 
 /**
  * Compute the tolerance that should be applied when comparing filter values to database values
@@ -43,7 +47,11 @@ export const addToleranceToFilter = (
             // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
             let valueAsNumber = typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
             // If the value is successfully converted to a number, apply tolerance adjustments
-            if (typeof valueAsNumber === 'number') {
+            if (
+                typeof valueAsNumber === 'number' &&
+                !isNaN(valueAsNumber) &&
+                filter.dataType === FILTER_DATA_TYPES.NUMBER
+            ) {
                 if (tolerance === undefined) {
                     // better to use the string value (filter.value) in order not to lose the decimal precision for values like 420.0000000
                     finalTolerance = computeTolerance(filter.value);
@@ -57,12 +65,29 @@ export const addToleranceToFilter = (
                             {
                                 ...filter,
                                 type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.GREATER_THAN,
+                                originalType: filter.type,
                                 value: valueAsNumber + finalTolerance,
                             },
                             {
                                 ...filter,
                                 type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.LESS_THAN,
+                                originalType: filter.type,
                                 value: valueAsNumber - finalTolerance,
+                            },
+                        ];
+                    case FILTER_NUMBER_COMPARATORS.EQUALS:
+                        return [
+                            {
+                                ...filter,
+                                type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                originalType: filter.type,
+                                value: valueAsNumber - finalTolerance,
+                            },
+                            {
+                                ...filter,
+                                type: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                originalType: filter.type,
+                                value: valueAsNumber + finalTolerance,
                             },
                         ];
                     case FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL:

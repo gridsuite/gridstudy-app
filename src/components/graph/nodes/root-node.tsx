@@ -5,38 +5,69 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import PhotoIcon from '@mui/icons-material/Photo';
-import { Handle, NodeProps, Position } from '@xyflow/react';
+import { NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
-import Tooltip from '@mui/material/Tooltip';
-import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
 import { RootNode as RootNodeType } from 'components/graph/tree-node.type';
 import { Theme } from '@mui/material/styles';
+import { Box } from '@mui/material';
+import { OverflowableText } from '@gridsuite/commons-ui';
+import { DeviceHub } from '@mui/icons-material';
+import NodeHandle from './node-handle';
+import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
 
 const styles = {
+    // full node container styles
     rootSelected: (theme: Theme) => ({
-        background: theme.node.background,
-        borderRadius: '30%',
-        boxShadow:
-            theme.node.border +
-            ' 0px 0px 3px 3px,' +
-            theme.node.border +
-            ' 0px 0px 25px,' +
-            theme.node.border +
-            ' 0px 0px 5px',
-        '&:hover': {
-            background: theme.node.background,
-        },
+        ...selectedBaseNodeStyles(theme, 'row'),
+        border: theme.node.root.border,
+        boxShadow: theme.shadows[10],
+        ...interactiveNodeStyles(theme, 'root'),
     }),
     root: (theme: Theme) => ({
-        background: 'darkseagreen',
-        borderRadius: '30%',
+        ...baseNodeStyles(theme, 'row'),
+        border: theme.node.root.border,
+        ...interactiveNodeStyles(theme, 'root'),
+    }),
+
+    iconContainer: (theme: Theme) => ({
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: theme.spacing(1),
+    }),
+
+    iconButton: (theme: Theme) => ({
+        width: 37,
+        height: 37,
+        background: theme.node.root.icon.background,
+        borderRadius: '8px',
         '&:hover': {
-            background: theme.node.hover,
+            background: theme.node.root.icon.background,
         },
+    }),
+
+    deviceIcon: (theme: Theme) => ({
+        fill: theme.node.root.icon.fill,
+        width: 18,
+        height: 18,
+    }),
+
+    labelContainer: (theme: Theme) => ({
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '70%',
+        marginRight: theme.spacing(1),
+    }),
+
+    overflowText: (theme: Theme) => ({
+        color: theme.palette.text.primary,
+        fontSize: '14px',
+        fontWeight: 400,
+        lineHeight: 'normal',
+        textAlign: 'left',
     }),
 };
 
@@ -55,22 +86,17 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
 
     return (
         <>
-            <Handle
-                type="source"
-                position={Position.Bottom}
-                style={{
-                    background: '#555',
-                    zIndex: '1',
-                }}
-                isConnectable={false}
-            />
-            <Tooltip title={currentRootNetwork?.name} placement="top" disableHoverListener={!currentRootNetwork?.name}>
-                <IconButton sx={isSelectedNode() ? styles.rootSelected : styles.root}>
-                    {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (
-                        <PhotoIcon />
-                    )}
-                </IconButton>
-            </Tooltip>
+            <NodeHandle type={'source'} position={Position.Bottom} />
+            <Box sx={isSelectedNode() ? styles.rootSelected : styles.root}>
+                <Box sx={styles.iconContainer}>
+                    <IconButton sx={styles.iconButton}>
+                        <DeviceHub sx={styles.deviceIcon} />
+                    </IconButton>
+                </Box>
+                <Box sx={styles.labelContainer}>
+                    <OverflowableText text={currentRootNetwork?.name} sx={styles.overflowText} maxLineCount={3} />
+                </Box>
+            </Box>
         </>
     );
 };

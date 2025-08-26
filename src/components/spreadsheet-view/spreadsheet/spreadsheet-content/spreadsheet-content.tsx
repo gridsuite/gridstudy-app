@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
-import { Identifiable } from '@gridsuite/commons-ui';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AgGridReact } from 'ag-grid-react';
-import { Alert, Box, Theme } from '@mui/material';
+import { type Identifiable } from '@gridsuite/commons-ui';
+import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { type CurrentTreeNode } from 'components/graph/tree-node.type';
+import { type AgGridReact } from 'ag-grid-react';
+import { Alert, Box, type Theme } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { NodeAlias } from '../../types/node-alias.type';
+import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
@@ -23,8 +23,8 @@ import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { DiagramType } from 'components/diagrams/diagram.type';
+import { type FirstDataRenderedEvent } from 'ag-grid-community';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -48,7 +48,7 @@ interface RecursiveIdentifiable extends Identifiable {
 }
 
 interface SpreadsheetContentProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
@@ -56,11 +56,12 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    registerRowCounterEvents: (params: FirstDataRenderedEvent) => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
-export const SpreadsheetContent = React.memo(
+export const SpreadsheetContent = memo(
     ({
         gridRef,
         currentNode,
@@ -70,6 +71,7 @@ export const SpreadsheetContent = React.memo(
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        registerRowCounterEvents,
         openDiagram,
         active,
     }: SpreadsheetContentProps) => {
@@ -137,9 +139,13 @@ export const SpreadsheetContent = React.memo(
             handleEquipmentScroll();
         }, [handleEquipmentScroll, equipmentId]);
 
-        const onFirstDataRendered = useCallback(() => {
-            handleEquipmentScroll();
-        }, [handleEquipmentScroll]);
+        const onFirstDataRendered = useCallback(
+            (params: FirstDataRenderedEvent) => {
+                handleEquipmentScroll();
+                registerRowCounterEvents(params);
+            },
+            [handleEquipmentScroll, registerRowCounterEvents]
+        );
 
         const onGridReady = useCallback(() => {
             updateLockedColumnsConfig();
@@ -204,7 +210,7 @@ export const SpreadsheetContent = React.memo(
         const handleOpenDiagram = useCallback(
             (equipmentId: string) => {
                 const diagramType =
-                    tableDefinition?.type === EQUIPMENT_TYPES.SUBSTATION
+                    tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? DiagramType.SUBSTATION
                         : DiagramType.VOLTAGE_LEVEL;
                 openDiagram?.(equipmentId, diagramType);
