@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { DeviceHubIcon } from '@gridsuite/commons-ui';
-import { Box, Divider, Typography } from '@mui/material';
+import { DeviceHubIcon, OverflowableText } from '@gridsuite/commons-ui';
+import { Box, Divider } from '@mui/material';
 import React from 'react';
 
 interface RootNetworkNodesSearchResultsProps {
@@ -22,6 +22,10 @@ const styles = {
         alignItems: 'center',
         mb: 1,
     },
+    iconMinSize: {
+        minHeight: '20px',
+        minWidth: '20px',
+    },
 };
 export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResultsProps> = ({ results }) => {
     return (
@@ -29,10 +33,8 @@ export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResul
             {results.map((result) => (
                 <Box key={result + '_node'} sx={{ mb: 2 }}>
                     <Box sx={styles.rootNameTitle}>
-                        <DeviceHubIcon />
-                        <Typography color="textPrimary" sx={{ marginLeft: '5px' }}>
-                            {result}
-                        </Typography>
+                        <DeviceHubIcon style={styles.iconMinSize} />
+                        <OverflowableText text={result} sx={{ marginLeft: '5px' }} maxLineCount={1} />
                     </Box>
                     <Divider sx={{ mt: 2 }} />
                 </Box>

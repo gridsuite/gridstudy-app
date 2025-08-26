@@ -46,6 +46,12 @@ export const useRootNetworkModificationSearch = () => {
 
     const searchMatchingElements = useCallback(
         (searchTerm: string) => {
+            // Only proceed if term is not empty
+            if (!searchTerm.trim()) {
+                setModificationsResults([]);
+                setIsLoading(false);
+                return;
+            }
             if (studyUuid && currentRootNetworkUuid) {
                 getModifications(studyUuid, currentRootNetworkUuid, searchTerm)
                     .then(setModificationsResults)
@@ -62,11 +68,6 @@ export const useRootNetworkModificationSearch = () => {
         (term: string) => {
             setIsLoading(true);
             setSearchTerm(term);
-            if (!term) {
-                setModificationsResults([]);
-                setIsLoading(false);
-                return;
-            }
             debouncedHandleChange(term);
         },
         [debouncedHandleChange]
