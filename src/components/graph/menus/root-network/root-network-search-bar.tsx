@@ -11,10 +11,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 
 interface SearchBarProps {
-    placeholder: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onClear: () => void;
+    readonly placeholder: string;
+    readonly value: string;
+    readonly onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    readonly onClear: () => void;
 }
 
 export default function SearchBar({ placeholder, value, onChange, onClear }: SearchBarProps) {
