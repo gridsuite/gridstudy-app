@@ -196,6 +196,8 @@ export const G2 = 'g2';
 export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
+export const LIMIT_SET_NAME = 'limitSetName';
+export const TEMPORARY_LIMIT = 'temporaryLimit';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
@@ -212,11 +214,18 @@ export const SEGMENT_TYPE_ID = 'segmentTypeId';
 export const SEGMENT_RESISTANCE = 'segmentResistance';
 export const SEGMENT_REACTANCE = 'segmentReactance';
 export const SEGMENT_SUSCEPTANCE = 'segmentSusceptance';
+export const SEGMENT_CURRENT_LIMITS = 'segmentCurrentLimits';
 export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
+export const AERIAL_AREAS = 'aerialAreas';
+export const AERIAL_TEMPERATURES = 'aerialTemperatures';
+export const UNDERGROUND_AREAS = 'undergroundAreas';
+export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
+export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
 export const APPLICABIlITY = 'applicability';
+export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
