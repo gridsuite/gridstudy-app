@@ -34,11 +34,10 @@ function getBuildStatusSx(buildStatus: BUILD_STATUS | undefined): SxProps<Theme>
 
         // only set explicit contrast color when it's the "notBuilt" background
         const shouldSetContrast = bg === bs.notBuilt;
-        const contrast = shouldSetContrast ? theme.palette.getContrastText(bg) : undefined;
 
         return {
             background: bg,
-            ...(shouldSetContrast ? { color: contrast } : {}),
+            ...(shouldSetContrast ? { color: theme.palette.getContrastText(bg) } : {}),
             '&:hover': {
                 backgroundColor: bg,
             },
