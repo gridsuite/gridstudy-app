@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import { NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
-import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
 import { RootNode as RootNodeType } from 'components/graph/tree-node.type';
 import { Theme } from '@mui/material/styles';
@@ -37,7 +35,7 @@ const styles = {
         flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
-        marginLeft: theme.spacing(0.8),
+        marginLeft: theme.spacing(1),
     }),
 
     iconButton: (theme: Theme) => ({
@@ -61,7 +59,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'flex-start',
         width: '70%',
-        marginRight: theme.spacing(0.8),
+        marginRight: theme.spacing(1),
     }),
 
     overflowText: (theme: Theme) => ({
@@ -92,11 +90,7 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
             <Box sx={isSelectedNode() ? styles.rootSelected : styles.root}>
                 <Box sx={styles.iconContainer}>
                     <IconButton sx={styles.iconButton}>
-                        {props.data.globalBuildStatus === BUILD_STATUS.BUILDING ? (
-                            <CircularProgress size={24} />
-                        ) : (
-                            <DeviceHub sx={styles.deviceIcon} />
-                        )}
+                        <DeviceHub sx={styles.deviceIcon} />
                     </IconButton>
                 </Box>
                 <Box sx={styles.labelContainer}>

@@ -37,9 +37,9 @@ const styles = {
         flexGrow: 1,
         display: 'flex',
         alignItems: 'flex-end',
-        marginLeft: theme.spacing(0.8),
-        marginRight: theme.spacing(0.8),
-        marginBottom: theme.spacing(0.8),
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     }),
     overflowText: (theme: Theme) => ({
         color: theme.palette.text.primary,
@@ -51,13 +51,13 @@ const styles = {
     footerBox: (theme: Theme) => ({
         display: 'flex',
         justifyContent: 'flex-start',
-        marginLeft: theme.spacing(0.8),
+        marginLeft: theme.spacing(1),
         height: '35%',
     }),
     chipFloating: (theme: Theme) => ({
         position: 'absolute',
         top: theme.spacing(-4),
-        left: theme.spacing(0.8),
+        left: theme.spacing(1),
         zIndex: 2,
     }),
     tooltip: {

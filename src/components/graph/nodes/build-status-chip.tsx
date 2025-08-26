@@ -9,6 +9,7 @@ import React, { ReactElement } from 'react';
 import { Chip, SxProps, Theme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { BUILD_STATUS } from 'components/network/constants';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 function getBuildStatusSx(buildStatus: BUILD_STATUS | undefined): SxProps<Theme> {
     return (theme: Theme) => {
@@ -62,24 +63,17 @@ type BuildStatusChipProps = {
 const BuildStatusChip = ({ buildStatus, sx, icon, onClick }: BuildStatusChipProps) => {
     const intl = useIntl();
 
-    // Normalize user-provided sx into an array without falsy items.
-    const normalizeSxArray = (inSx?: SxProps<Theme>): SxProps<Theme>[] => {
-        if (!inSx) {
-            return [];
-        }
-        if (Array.isArray(inSx)) {
-            return (inSx as unknown[]).filter(Boolean) as SxProps<Theme>[];
-        }
-        return [inSx];
-    };
-
-    const userSxArray = normalizeSxArray(sx);
-
-    const finalSx = [getBuildStatusSx(buildStatus), ...userSxArray, baseStyle] as SxProps<Theme>;
-
     const label = buildStatus ? intl.formatMessage({ id: buildStatus }) : '';
 
-    return <Chip label={label} size="small" icon={icon} onClick={onClick} sx={finalSx} />;
+    return (
+        <Chip
+            label={label}
+            size="small"
+            icon={icon}
+            onClick={onClick}
+            sx={mergeSx(getBuildStatusSx(buildStatus), sx, baseStyle)}
+        />
+    );
 };
 
 export default BuildStatusChip;
