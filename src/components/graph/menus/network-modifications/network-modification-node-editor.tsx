@@ -54,7 +54,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import VscCreationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/creation/vsc-creation-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/hvdc-line/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications/network-modifications-menu';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -1220,19 +1220,31 @@ const NetworkModificationNodeEditor = () => {
             .finally(() => setIsDragging(false));
     };
 
+    const isPasteButtonDisabled = useMemo(() => {
+        return copiedModifications.length <= 0 || isAnyNodeBuilding || mapDataLoading || !currentNode;
+    }, [copiedModifications.length, isAnyNodeBuilding, mapDataLoading, currentNode]);
+
+    const isRestoreButtonDisabled = useMemo(() => {
+        return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
+    }, [modificationsToRestore.length, isAnyNodeBuilding, deleteInProgress]);
+
     return (
         <>
             <Toolbar sx={styles.toolbar}>
                 <Box sx={styles.filler} />
-                <IconButton
-                    size={'small'}
-                    ref={buttonAddRef}
-                    onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding || mapDataLoading}
-                >
-                    <AddIcon />
-                </IconButton>
-                <Tooltip title={<FormattedMessage id={'InsertModificationFrom'} />}>
+                <Tooltip title={<FormattedMessage id={'addNetworkModification'} />}>
+                    <span>
+                        <IconButton
+                            size={'small'}
+                            ref={buttonAddRef}
+                            onClick={openNetworkModificationConfiguration}
+                            disabled={isAnyNodeBuilding || mapDataLoading}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id={'importFromGridExplore'} />}>
                     <span>
                         <IconButton
                             onClick={openImportModificationsDialog}
@@ -1254,26 +1266,37 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                <IconButton
-                    onClick={doCutModifications}
-                    size={'small'}
-                    disabled={
-                        selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode
-                    }
-                >
-                    <ContentCutIcon />
-                </IconButton>
-                <IconButton
-                    onClick={doCopyModifications}
-                    size={'small'}
-                    disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
-                >
-                    <ContentCopyIcon />
-                </IconButton>
+                <Tooltip title={<FormattedMessage id={'cut'} />}>
+                    <span>
+                        <IconButton
+                            onClick={doCutModifications}
+                            size={'small'}
+                            disabled={
+                                selectedNetworkModifications.length === 0 ||
+                                isAnyNodeBuilding ||
+                                mapDataLoading ||
+                                !currentNode
+                            }
+                        >
+                            <ContentCutIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+                <Tooltip title={<FormattedMessage id={'copy'} />}>
+                    <span>
+                        <IconButton
+                            onClick={doCopyModifications}
+                            size={'small'}
+                            disabled={selectedNetworkModifications.length === 0 || isAnyNodeBuilding || mapDataLoading}
+                        >
+                            <ContentCopyIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
                 <Tooltip
                     title={
                         <FormattedMessage
-                            id={'NbModification'}
+                            id={isPasteButtonDisabled ? 'paste' : 'NbModificationToPaste'}
                             values={{
                                 nb: copiedModifications.length,
                                 several: copiedModifications.length > 1 ? 's' : '',
@@ -1282,30 +1305,28 @@ const NetworkModificationNodeEditor = () => {
                     }
                 >
                     <span>
-                        <IconButton
-                            onClick={doPasteModifications}
-                            size={'small'}
-                            disabled={
-                                !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
-                            }
-                        >
+                        <IconButton onClick={doPasteModifications} size={'small'} disabled={isPasteButtonDisabled}>
                             <ContentPasteIcon />
                         </IconButton>
                     </span>
                 </Tooltip>
-                <IconButton
-                    onClick={doDeleteModification}
-                    size={'small'}
-                    disabled={
-                        selectedNetworkModifications.length === 0 ||
-                        isAnyNodeBuilding ||
-                        mapDataLoading ||
-                        deleteInProgress ||
-                        !currentNode
-                    }
-                >
-                    <DeleteIcon />
-                </IconButton>
+                <Tooltip title={<FormattedMessage id={'delete'} />}>
+                    <span>
+                        <IconButton
+                            onClick={doDeleteModification}
+                            size={'small'}
+                            disabled={
+                                selectedNetworkModifications.length === 0 ||
+                                isAnyNodeBuilding ||
+                                mapDataLoading ||
+                                deleteInProgress ||
+                                !currentNode
+                            }
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
                 {deleteInProgress ? (
                     <Tooltip title={<FormattedMessage id={'network_modifications.deletingModification'} />}>
                         <span>
@@ -1316,7 +1337,7 @@ const NetworkModificationNodeEditor = () => {
                     <Tooltip
                         title={
                             <FormattedMessage
-                                id={'NbModificationToRestore'}
+                                id={isRestoreButtonDisabled ? 'restore' : 'NbModificationToRestore'}
                                 values={{
                                     nb: modificationsToRestore.length,
                                     several: modificationsToRestore.length > 1 ? 's' : '',
@@ -1328,7 +1349,7 @@ const NetworkModificationNodeEditor = () => {
                             <IconButton
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
-                                disabled={modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress}
+                                disabled={isRestoreButtonDisabled}
                             >
                                 <RestoreFromTrash />
                             </IconButton>
