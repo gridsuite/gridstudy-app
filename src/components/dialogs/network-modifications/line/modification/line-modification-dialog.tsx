@@ -35,10 +35,8 @@ import {
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
-    PERMANENT_LIMIT,
     R,
     STATE_ESTIMATION,
-    TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -49,7 +47,6 @@ import {
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
     OPERATIONAL_LIMITS_GROUPS,
-    CURRENT_LIMITS,
 } from 'components/utils/field-constants';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
@@ -58,17 +55,17 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    updateTemporaryLimits,
     addModificationTypeToOpLimitsGroups,
     getAllLimitsFormData,
     formatOpLimitGroups,
+    updateOpLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { addSelectedFieldToRows, formatTemporaryLimits, toModificationOperation } from 'components/utils/utils';
+import { toModificationOperation } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -100,12 +97,7 @@ import {
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'crypto';
-import {
-    AttributeModification,
-    CurrentLimits,
-    OperationalLimitsGroup,
-    OperationType,
-} from '../../../../../services/network-modification-types';
+import { AttributeModification, OperationType } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { LineInfos, LineModificationEditData } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
@@ -300,39 +292,6 @@ const LineModificationDialog = ({
         reset(emptyFormData);
     }, [emptyFormData, reset]);
 
-    /**
-     * extract data loaded from the map server and merge it with local data in order to fill the line modification interface
-     */
-    const updateOpLimitsGroups = useCallback(
-        (line: LineInfos): OperationalLimitsGroup[] => {
-            return line.currentLimits.map((currentLimit: CurrentLimits, index: number): OperationalLimitsGroup => {
-                return {
-                    id: currentLimit.id + currentLimit.applicability,
-                    name: currentLimit.id,
-                    applicability: currentLimit.applicability,
-                    currentLimits: {
-                        id: currentLimit.id,
-                        applicability: currentLimit.applicability,
-                        permanentLimit: getValues(
-                            `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}${PERMANENT_LIMIT}`
-                        ),
-                        temporaryLimits: addSelectedFieldToRows(
-                            updateTemporaryLimits(
-                                formatTemporaryLimits(
-                                    getValues(
-                                        `${LIMITS}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`
-                                    )
-                                ),
-                                formatTemporaryLimits(currentLimit.temporaryLimits)
-                            )
-                        ),
-                    },
-                };
-            });
-        },
-        [getValues]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId: string) => {
             if (equipmentId) {
@@ -353,7 +312,7 @@ const LineModificationDialog = ({
                                 ...formValues,
                                 ...{
                                     [LIMITS]: {
-                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(line),
+                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, line),
                                     },
                                 },
                                 [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
@@ -373,16 +332,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            currentRootNetworkUuid,
-            reset,
-            updateOpLimitsGroups,
-            getValues,
-            editData?.equipmentId,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {
