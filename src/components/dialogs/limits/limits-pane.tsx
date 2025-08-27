@@ -102,7 +102,7 @@ export function LimitsPane({
         <>
             {/* active limit sets */}
             <GridSection title="SelectedOperationalLimitGroups" />
-            <Grid container item xs={8} columns={10.25} spacing={0}>
+            <Grid container item xs={8} columns={10.25} spacing={1}>
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
@@ -126,8 +126,8 @@ export function LimitsPane({
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={4.9} display="flex" flexDirection="row">
-                <Grid container item xs={3}>
+            <Grid container item xs={12} display="flex" flexDirection="row">
+                <Grid container item xs={3.5}>
                     <GridSection title="LimitSets" />
                 </Grid>
                 <Grid container item xs={0.5}>
