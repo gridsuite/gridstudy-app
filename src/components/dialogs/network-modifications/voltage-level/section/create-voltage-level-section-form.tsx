@@ -40,6 +40,7 @@ interface VoltageLevelSectionsCreationFormProps {
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
+    isSymmetricalNbBusBarSections: boolean;
     isNotFoundOrNotSupported: boolean;
 }
 
@@ -51,6 +52,7 @@ export function CreateVoltageLevelSectionForm({
     currentNode,
     currentRootNetworkUuid,
     isUpdate,
+    isSymmetricalNbBusBarSections,
     isNotFoundOrNotSupported,
 }: Readonly<VoltageLevelSectionsCreationFormProps>) {
     const intl = useIntl();
@@ -152,13 +154,13 @@ export function CreateVoltageLevelSectionForm({
             const allOption = {
                 id: 'all',
                 label: intl.formatMessage({ id: 'allBusbarSections' }),
-                disabled: allBusbarSectionsList.length === 0,
+                disabled: !isSymmetricalNbBusBarSections,
             } as Option & { disabled?: boolean };
 
             return [...sortedOptions, allOption];
         }
         return [];
-    }, [busBarSectionInfos, intl, allBusbarSectionsList]);
+    }, [busBarSectionInfos, intl, isSymmetricalNbBusBarSections]);
 
     const getOptionLabel = (object: string | { id: string | number; label: string | number }) => {
         if (typeof object === 'string') {

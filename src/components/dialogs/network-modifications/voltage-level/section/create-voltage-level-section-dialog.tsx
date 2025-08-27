@@ -140,6 +140,7 @@ export default function CreateVoltageLevelSectionDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [isExtensionNotFoundOrNotSupportedTopology, setIsExtensionNotFoundOrNotSupportedTopology] =
         useState<boolean>(false);
+    const [isSymmetricalNbBusBarSections, setIsSymmetricalNbBusBarSections] = useState<boolean>(false);
     const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSectionInfos[]>();
     const [allBusbarSectionsList, setAllBusbarSectionsList] = useState<string[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
@@ -173,13 +174,14 @@ export default function CreateVoltageLevelSectionDialog({
                     .then((voltageLevel) => {
                         if (voltageLevel) {
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
-                            const allSections = Object.values(
-                                voltageLevel?.busBarSectionInfos || {}
-                            ).flat() as string[];
-                            setAllBusbarSectionsList(allSections);
-                            setIsExtensionNotFoundOrNotSupportedTopology(
-                                !voltageLevel.isRetrievedBusbarSections || voltageLevel?.topologyKind !== 'NODE_BREAKER'
+                            setAllBusbarSectionsList(
+                                Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[]
                             );
+                            setIsExtensionNotFoundOrNotSupportedTopology(
+                                !voltageLevel.isBusbarSectionPositionFound ||
+                                    voltageLevel?.topologyKind !== 'NODE_BREAKER'
+                            );
+                            setIsSymmetricalNbBusBarSections(voltageLevel.isRetrievedBusbarSections);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
                     })
@@ -310,6 +312,7 @@ export default function CreateVoltageLevelSectionDialog({
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         isUpdate={isUpdate}
+                        isSymmetricalNbBusBarSections={isSymmetricalNbBusBarSections}
                         isNotFoundOrNotSupported={isExtensionNotFoundOrNotSupportedTopology}
                     />
                 )}
