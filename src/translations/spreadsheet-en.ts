@@ -35,7 +35,6 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_name_already_exist': 'Column name already exists',
     'spreadsheet/custom_column/dependencies': 'The formula is linked to other columns',
     'spreadsheet/custom_column/nodes': 'Nodes',
-    'spreadsheet/custom_column/option/parameter': 'Configure',
     'spreadsheet/custom_column/parameter_nodes': 'Configure nodes aliases',
     'spreadsheet/custom_column/add_alias': 'Add an alias',
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
@@ -97,7 +96,7 @@ const spreadsheetEn = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Error while resetting spreadsheet collection',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Reset spreadsheet collection',
-    'spreadsheet/parameter_aliases/button_tooltip': 'Configure or reload nodes',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Configure nodes',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',

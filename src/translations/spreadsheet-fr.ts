@@ -35,7 +35,6 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
-    'spreadsheet/custom_column/option/parameter': 'Paramétrer',
     'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
@@ -102,7 +101,7 @@ const spreadsheetFr = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Erreur lors de la réinitialisation de la collection de tableurs',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Réinitialiser la collection de tableurs',
-    'spreadsheet/parameter_aliases/button_tooltip': 'Paramétrer ou recharger nœuds',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Paramétrer nœuds',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
