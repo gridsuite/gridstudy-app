@@ -99,8 +99,9 @@ import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'crypto';
 import { AttributeModification, OperationType } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { LineInfos, LineModificationEditData } from '../../../../../services/study/network-map.type';
+import { LineInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
+import { LineModificationEditData } from './line-modification-type';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list

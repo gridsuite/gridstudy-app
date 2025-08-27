@@ -28,8 +28,9 @@ import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import { LineInfos, LineModificationEditData } from '../../../services/study/network-map.type';
+import { LineInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
+import { LineModificationEditData } from '../network-modifications/line/modification/line-modification-type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
@@ -235,7 +236,7 @@ export const updateOpLimitsGroups = (
     let updatedOpLG: OperationalLimitsGroup[] = formLine.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
-    updatedOpLG.map((opLG: OperationalLimitsGroup) => {
+    updatedOpLG.forEach((opLG: OperationalLimitsGroup) => {
         const equivalentFromMapServer = mapServerLine.currentLimits.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
@@ -246,7 +247,6 @@ export const updateOpLimitsGroups = (
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
             );
         }
-        return opLG;
     });
 
     // adds all the operational limits groups from mapServerLine THAT ARE NOT DELETED by the netmod

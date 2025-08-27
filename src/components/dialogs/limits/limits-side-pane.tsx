@@ -61,9 +61,6 @@ export function LimitsSidePane({
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
-    /*const useFieldArrayOutputTemporaryLimits = useFieldArray({
-        name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
-    });*/
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -263,8 +260,6 @@ export function LimitsSidePane({
             </Box>
             <TemporaryLimitsTable
                 arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                /* useFieldArrayOutput={useFieldArrayOutputTemporaryLimits} TODO : should be useful
-                withAddRowsDialog={false}*/
                 createRow={createRows}
                 columnsDefinition={columnsDefinition}
                 previousValues={temporaryLimitsPreviousValues}
