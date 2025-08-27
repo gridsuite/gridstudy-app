@@ -36,9 +36,6 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/dependencies': 'The formula is linked to other columns',
     'spreadsheet/custom_column/nodes': 'Nodes',
     'spreadsheet/custom_column/option/parameter': 'Configure',
-    'spreadsheet/custom_column/option/refresh': 'Reload',
-    'spreadsheet/custom_column/option/refresh/tooltip':
-        'Reload data for current sheet for other built and configured nodes ({aliases})',
     'spreadsheet/custom_column/parameter_nodes': 'Configure nodes aliases',
     'spreadsheet/custom_column/add_alias': 'Add an alias',
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
