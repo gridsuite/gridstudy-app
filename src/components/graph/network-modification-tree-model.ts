@@ -9,7 +9,7 @@ import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } f
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { Edge } from '@xyflow/react';
-import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
+import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, NodeType, RootNodeData } from './tree-node.type';
 import { isReactFlowRootNodeData } from '../../redux/utils';
 import { NodeInsertModes } from 'types/notification-types';
 
@@ -22,6 +22,17 @@ export const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
         }
         return acc;
     }, 0);
+};
+
+// Ensure that build status are always defined
+const fillBuildStatus = (node: NetworkModificationNodeData) => {
+    return {
+        ...node,
+        nodeBuildStatus: {
+            globalBuildStatus: node.nodeBuildStatus?.globalBuildStatus ?? BUILD_STATUS.NOT_BUILT,
+            localBuildStatus: node.nodeBuildStatus?.localBuildStatus ?? BUILD_STATUS.NOT_BUILT,
+        },
+    };
 };
 
 export default class NetworkModificationTreeModel {
@@ -105,6 +116,9 @@ export default class NetworkModificationTreeModel {
          *
          * This tree should have its nodes in the array in this order : [A, B, C, D, E, F]
          */
+        if (newNode.type === NodeType.NETWORK_MODIFICATION) {
+            newNode = fillBuildStatus(newNode);
+        }
         const referenceNodeIndex = this.treeNodes.findIndex((node) => node.id === referenceNodeId);
         switch (insertMode) {
             case NodeInsertModes.Before: {
