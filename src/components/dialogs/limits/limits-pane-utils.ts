@@ -21,6 +21,7 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
     NAME,
+    LIMIT_SETS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
 import { addSelectedFieldToRows, areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
@@ -228,16 +229,16 @@ export const updateTemporaryLimits = (
 export const addModificationTypeToTemporaryLimits = (
     temporaryLimits: TemporaryLimit[],
     temporaryLimitsToModify: TemporaryLimit[],
-    currentModifiedTemporaryLimits: TemporaryLimit[],
+    networkTemporaryLimits: TemporaryLimit[],
     currentNode: CurrentTreeNode
 ): TemporaryLimit[] => {
     const formattedTemporaryLimitsToModify = formatTemporaryLimits(temporaryLimitsToModify);
-    const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(currentModifiedTemporaryLimits);
+    const formattedNetworkTemporaryLimits = formatTemporaryLimits(networkTemporaryLimits);
     const updatedTemporaryLimits: TemporaryLimit[] = temporaryLimits.map((limit) => {
         const limitWithSameName = findTemporaryLimit(formattedTemporaryLimitsToModify, limit);
         if (limitWithSameName) {
             const currentLimitWithSameName: TemporaryLimit | undefined = findTemporaryLimit(
-                formattedCurrentModifiedTemporaryLimits,
+                formattedNetworkTemporaryLimits,
                 limitWithSameName
             );
             if (
@@ -277,7 +278,7 @@ export const addModificationTypeToTemporaryLimits = (
         }
     });
     //add previously deleted limits
-    formattedCurrentModifiedTemporaryLimits?.forEach((limit) => {
+    formattedNetworkTemporaryLimits?.forEach((limit) => {
         if (
             !findTemporaryLimit(updatedTemporaryLimits, limit) &&
             limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
@@ -293,11 +294,17 @@ export const addModificationTypeToTemporaryLimits = (
 
 /**
  * converts the limits groups into a modification limits group
+ * ie mostly add the ADD, MODIFY, DELETE and REPLACE tags to the data
  * OperationalLimitsGroup are in a similar structure but readable by the back network modifications
+ *
+ * @param limitsGroups current data from the form
+ * @param networkLine data of the line modified by the network modification
+ * @param editData data from the existing network modification
+ * @param currentNode
  */
 export const addModificationTypeToOpLimitsGroups = (
     limitsGroups: OperationalLimitsGroup[],
-    lineToModify: LineInfos | null,
+    networkLine: LineInfos | null,
     editData: LineModificationEditData | null | undefined,
     currentNode: CurrentTreeNode
 ) => {
@@ -305,11 +312,18 @@ export const addModificationTypeToOpLimitsGroups = (
 
     // calls this on all the limits groups :
     modificationLimitsGroups = modificationLimitsGroups.map((limitsGroup: OperationalLimitsGroup) => {
+        let modificationType: string | null = LIMIT_SETS_MODIFICATION_TYPE.MODIFY;
+        const networkCurrentLimits = networkLine?.currentLimits.find(
+            (lineOpLimitGroup: CurrentLimits) => lineOpLimitGroup.id === limitsGroup.name
+        );
+        if (!networkCurrentLimits) {
+            // limitsGroup.name operational limits groups doesn't exist in the network :
+            modificationType = LIMIT_SETS_MODIFICATION_TYPE.ADD;
+        }
+
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(limitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
-            lineToModify?.currentLimits.find(
-                (lineOpLimitGroup: CurrentLimits) => lineOpLimitGroup.id === limitsGroup.name
-            )?.temporaryLimits ?? [],
+            networkCurrentLimits?.temporaryLimits ?? [],
             editData?.operationalLimitsGroups.find(
                 (lineOpLimitGroup: OperationalLimitsGroup) => lineOpLimitGroup.id === limitsGroup.name
             )?.currentLimits?.temporaryLimits ?? [],
@@ -321,13 +335,47 @@ export const addModificationTypeToOpLimitsGroups = (
             currentLimits.temporaryLimits = temporaryLimits;
         }
 
+        const modifiedLimitsGroups: boolean =
+            currentLimits.temporaryLimits.filter((limit: TemporaryLimit) => limit.modificationType !== null).length ===
+            0;
+        if (modifiedLimitsGroups) {
+            // no modifications whatsoever
+            modificationType = null;
+        }
+
         return {
             id: limitsGroup.id,
             name: limitsGroup.name,
             applicability: limitsGroup.applicability,
             currentLimits: currentLimits,
+            modificationType: modificationType,
         };
     });
+
+    // get the deleted operational limits groups (they are only in networkLine and absent from modificationLimitsGroups)
+    networkLine?.currentLimits
+        .filter(
+            (currentLimit: CurrentLimits) =>
+                modificationLimitsGroups.find(
+                    (modOpLG: OperationalLimitsGroup) =>
+                        modOpLG.id === currentLimit.id && modOpLG.applicability === currentLimit.applicability
+                ) === undefined
+        )
+        .forEach((currentLimit) => {
+            modificationLimitsGroups.push({
+                id: currentLimit.id,
+                name: currentLimit.id,
+                applicability: currentLimit.applicability,
+                // empty currentLimits because the opLG is going to be deleted anyway
+                currentLimits: {
+                    id: currentLimit.id,
+                    applicability: currentLimit.applicability,
+                    permanentLimit: null,
+                    temporaryLimits: [],
+                },
+                modificationType: LIMIT_SETS_MODIFICATION_TYPE.DELETE,
+            });
+        });
 
     return modificationLimitsGroups;
 };

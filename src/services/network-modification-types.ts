@@ -268,6 +268,7 @@ export interface OperationalLimitsGroup {
     name: string;
     applicability?: string;
     currentLimits: CurrentLimits;
+    modificationType?: string | null; // only needed when the data is used for a branch modification
 }
 
 export interface Limit {

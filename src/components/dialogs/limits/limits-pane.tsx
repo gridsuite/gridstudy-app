@@ -145,6 +145,7 @@ export function LimitsPane({
                         indexSelectedLimitSet={indexSelectedLimitSet}
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                         checkLimitSetUnicity={checkLimitSetUnicity}
+                        isAModification={!!equipmentToModify}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>

@@ -57,6 +57,7 @@ export const LIMIT_SETS_MODIFICATION_TYPE = {
     MODIFY: 'MODIFY',
     ADD: 'ADD',
     REPLACE: 'REPLACE',
+    DELETE: 'DELETE',
 } as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';

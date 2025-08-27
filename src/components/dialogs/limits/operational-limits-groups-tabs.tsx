@@ -59,6 +59,7 @@ export interface OperationalLimitsGroupsTabsProps {
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    isAModification: boolean;
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
@@ -79,7 +80,17 @@ function generateUniqueId(baseName: string, names: string[]): string {
 }
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
-    ({ parentFormName, limitsGroups, setIndexSelectedLimitSet, indexSelectedLimitSet, checkLimitSetUnicity }, ref) => {
+    (
+        {
+            parentFormName,
+            limitsGroups,
+            setIndexSelectedLimitSet,
+            indexSelectedLimitSet,
+            checkLimitSetUnicity,
+            isAModification,
+        },
+        ref
+    ) => {
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
         const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -351,6 +362,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
+                    isAModification={isAModification}
                 />
             </>
         );
