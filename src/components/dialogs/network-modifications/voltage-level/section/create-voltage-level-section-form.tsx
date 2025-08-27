@@ -111,7 +111,7 @@ export function CreateVoltageLevelSectionForm({
         } else {
             setBusBarSectionsIdOptions([]);
         }
-    }, [allBusbarSectionsList, busBarSectionInfos, sectionCount, setValue]);
+    }, [allBusbarSectionsList, busBarSectionInfos, intl, sectionCount, setValue]);
 
     useEffect(() => {
         if (selectedOption && selectedPositionOption) {
@@ -167,7 +167,7 @@ export function CreateVoltageLevelSectionForm({
             return object;
         }
         if (object?.id === 'all') {
-            return String(object?.label ?? '');
+            return intl.formatMessage({ id: 'allBusbarSections' }) ?? '';
         }
         return String(object?.id ?? '');
     };
@@ -193,7 +193,7 @@ export function CreateVoltageLevelSectionForm({
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={isOptionEqualToValue}
             renderOption={(props, option) => {
-                const allOptionsDisabled = busBarIndexOptions?.every((opt) => (opt as any)?.disabled);
+                const allOptionsDisabled = (option as any).id === 'all' && (option as any)?.disabled;
                 return (
                     <li {...props}>
                         <div>
@@ -201,7 +201,7 @@ export function CreateVoltageLevelSectionForm({
                             {allOptionsDisabled && (
                                 <div
                                     style={{
-                                        fontSize: '0.75rem',
+                                        fontSize: '0.85rem',
                                         color: 'red',
                                         marginTop: '2px',
                                     }}
@@ -222,7 +222,7 @@ export function CreateVoltageLevelSectionForm({
     const busbarSectionsField = (
         <AutocompleteInput
             name={BUSBAR_SECTION_ID}
-            label="BusBarSections"
+            label="BusBarSectionsReference"
             options={busBarSectionsIdOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}

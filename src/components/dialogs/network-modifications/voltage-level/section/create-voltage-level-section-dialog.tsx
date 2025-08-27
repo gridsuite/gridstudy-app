@@ -35,23 +35,14 @@ import { createVoltageLevelSection } from '../../../../../services/study/network
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { IntlShape, useIntl } from 'react-intl';
 
-const getBusBarIndexValue = ({
-    busbarIndex,
-    allBusbars,
-    intl,
-}: {
-    busbarIndex: string | null;
-    allBusbars: boolean;
-    intl: IntlShape;
-}) => {
+const getBusBarIndexValue = ({ busbarIndex, allBusbars }: { busbarIndex: string | null; allBusbars: boolean }) => {
     if (!busbarIndex) {
         return null;
     }
     if (allBusbars) {
         return {
-            [ID]: intl.formatMessage({ id: 'allBusbarSections' }),
+            [ID]: 'all',
         };
     }
     return {
@@ -136,7 +127,6 @@ export default function CreateVoltageLevelSectionDialog({
     ...dialogProps
 }: Readonly<VoltageLevelSectionCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
-    const intl = useIntl();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [isExtensionNotFoundOrNotSupportedTopology, setIsExtensionNotFoundOrNotSupportedTopology] =
         useState<boolean>(false);
@@ -209,7 +199,6 @@ export default function CreateVoltageLevelSectionDialog({
                     getBusBarIndexValue({
                         busbarIndex: editData?.busbarIndex,
                         allBusbars: editData?.allBusbars,
-                        intl: intl,
                     }) ?? null,
                 [ALL_BUS_BAR_SECTIONS]: editData?.allBusbars ?? false,
                 [BUSBAR_SECTION_ID]: getBusBarSectionValue({ busbarSectionId: editData?.busbarSectionId }) ?? null,
@@ -221,7 +210,7 @@ export default function CreateVoltageLevelSectionDialog({
                 [NEW_SWITCH_STATES]: editData?.switchOpen ?? false,
             });
         },
-        [intl, reset]
+        [reset]
     );
 
     useEffect(() => {
