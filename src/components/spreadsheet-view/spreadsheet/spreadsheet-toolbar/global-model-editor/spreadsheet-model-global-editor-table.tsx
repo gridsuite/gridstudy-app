@@ -50,7 +50,7 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
         [columnsModel, getValues]
     );
 
-    const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string })[] = useMemo(() => {
+    const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string | null | string[] })[] = useMemo(() => {
         return [
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_id' }),
@@ -99,7 +99,7 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_precision' }),
                 dataKey: COLUMN_PRECISION,
                 type: DndColumnType.NUMERIC,
-                initialValue: undefined,
+                initialValue: null,
                 editable: true,
                 width: '3%',
                 maxWidth: '3%',
@@ -121,7 +121,7 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_dependencies' }),
                 dataKey: COLUMN_DEPENDENCIES,
                 type: DndColumnType.CUSTOM,
-                initialValue: undefined,
+                initialValue: [],
                 editable: true,
                 width: '24%',
                 maxWidth: '24%',
