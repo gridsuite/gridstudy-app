@@ -92,7 +92,7 @@ export function SpreadsheetModelGlobalEditorDialog({
                 {...dialogProps}
             >
                 <Grid container>
-                    <SpreadsheetModelGlobalEditorTable columnsModel={columnsModel} />
+                    <SpreadsheetModelGlobalEditorTable />
                 </Grid>
             </ModificationDialog>
         </CustomFormProvider>

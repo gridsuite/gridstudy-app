@@ -6,8 +6,8 @@
  */
 
 import yup from '../../../../utils/yup-config';
-import { areArrayElementsUnique } from '../../../../utils/utils';
 import { COLUMN_TYPES } from '../../../../custom-aggrid/custom-aggrid-header.type';
+import { TestContext } from 'yup';
 
 export const COLUMNS_MODEL = 'columnsModel';
 export const COLUMN_ID = 'columnId';
@@ -24,6 +24,21 @@ export const initialColumnsModelForm: columnsModelForm = {
     [COLUMNS_MODEL]: [],
 };
 
+function checkUnicity(value: string, idCol: string, context: TestContext): boolean {
+    // Skip validation if value is empty (required validation will catch it)
+    if (!value) {
+        return true;
+    }
+    // Get the entire form data to check for duplicates
+    const formData = context.from?.[1]?.value;
+    const columnsModel = formData?.[COLUMNS_MODEL];
+    if (!columnsModel || !Array.isArray(columnsModel)) {
+        return true;
+    }
+    const occurrences = columnsModel.filter((column) => column && column[idCol] === value).length;
+    return occurrences <= 1;
+}
+
 export const columnsModelFormSchema = yup.object().shape({
     [COLUMNS_MODEL]: yup
         .array()
@@ -34,8 +49,17 @@ export const columnsModelFormSchema = yup.object().shape({
                     .string()
                     .required()
                     .max(60, 'spreadsheet/custom_column/error/id_le_60')
-                    .matches(/^[a-zA-Z_]\w*$/, 'spreadsheet/custom_column/error/id_not_conform'),
-                [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_le_60'),
+                    .matches(/^[a-zA-Z_]\w*$/, 'spreadsheet/custom_column/error/id_not_conform')
+                    .test('unique-column-id', 'spreadsheet/custom_column/column_id_already_exist', function (value) {
+                        return checkUnicity(value, COLUMN_ID, this);
+                    }),
+                [COLUMN_NAME]: yup
+                    .string()
+                    .required()
+                    .max(60, 'spreadsheet/custom_column/error/name_le_60')
+                    .test('uniqueColumnName', 'spreadsheet/custom_column/column_name_already_exist', function (value) {
+                        return checkUnicity(value, COLUMN_NAME, this);
+                    }),
                 [COLUMN_TYPE]: yup.mixed<COLUMN_TYPES>().oneOf(Object.values(COLUMN_TYPES)).required(),
                 [COLUMN_PRECISION]: yup
                     .number()
@@ -51,15 +75,7 @@ export const columnsModelFormSchema = yup.object().shape({
                 [SELECTED]: yup.boolean().required(),
             })
         )
-        .required()
-        .test('uniqueColumnsIds', 'spreadsheet/custom_column/column_id_already_exist', (array) => {
-            const columnsIdsArray = array.map((l) => l[COLUMN_ID]).filter((value) => value);
-            return areArrayElementsUnique(columnsIdsArray);
-        })
-        .test('uniqueColumnsNames', 'spreadsheet/custom_column/column_name_already_exist', (array) => {
-            const columnsNamesArray = array.map((l) => l[COLUMN_NAME]).filter((value) => value);
-            return areArrayElementsUnique(columnsNamesArray);
-        }),
+        .required(),
 });
 
 export type columnsModelForm = yup.InferType<typeof columnsModelFormSchema>;

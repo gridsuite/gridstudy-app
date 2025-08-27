@@ -26,11 +26,7 @@ import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';
 import ColumnNameEditor from './columnName-editor';
 
-interface SpreadsheetModelGlobalEditorTableProps {
-    columnsModel: ColumnGlobalModel[] | undefined;
-}
-
-export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<SpreadsheetModelGlobalEditorTableProps>) {
+export function SpreadsheetModelGlobalEditorTable() {
     const intl = useIntl();
 
     const useColumnsModelFieldArrayOutput = useFieldArray({
@@ -40,14 +36,11 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
 
     const getAvailableDependencies = useCallback(
         (excludeColumnId: string) => {
-            if (!columnsModel) {
-                return [];
-            }
             return getValues(COLUMNS_MODEL)
                 .map((column: ColumnGlobalModel) => column.columnId)
                 .filter((id: string) => id !== excludeColumnId);
         },
-        [columnsModel, getValues]
+        [getValues]
     );
 
     const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string | null | string[] })[] = useMemo(() => {
