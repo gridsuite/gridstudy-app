@@ -9,9 +9,9 @@ import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 
 interface ColumnNameEditorProps {
-    name: string;
-    rowIndex: number;
-    generateColumnId: (rowIndex: number, columnName: string) => void;
+    readonly name: string;
+    readonly rowIndex: number;
+    readonly generateColumnId: (rowIndex: number, columnName: string) => void;
 }
 
 export default function ColumnNameEditor({ name, rowIndex, generateColumnId }: ColumnNameEditorProps) {

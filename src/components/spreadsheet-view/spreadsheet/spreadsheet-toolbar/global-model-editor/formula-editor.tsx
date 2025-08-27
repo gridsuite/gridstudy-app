@@ -10,6 +10,6 @@ const styles = {
     flexGrow: 1,
 };
 
-export default function FormulaEditor({ name }: ExpandingTextFieldProps) {
+export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps>) {
     return <ExpandingTextField name={name} label="" minRows={3} rows={3} sx={styles} />;
 }
