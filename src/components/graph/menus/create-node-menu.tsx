@@ -505,7 +505,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
                         {renderMenuItems(item.subMenuItems)}
                     </CustomNestedMenuItem>
                 );
-                return item.withDivider ? [nested, <Divider key={`${item.id}-divider`} />] : [nested];
+                return item.withDivider ? [nested, <Divider key={`${item.id}-divider`} sx={{ my: 1 }} />] : [nested];
             });
         },
         [intl, activeNode?.type]

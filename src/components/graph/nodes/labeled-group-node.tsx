@@ -6,11 +6,12 @@
  */
 
 import { Box, Theme } from '@mui/material';
-import { NodeProps } from '@xyflow/react';
+import { NodeProps, ReactFlowState, useStore } from '@xyflow/react';
 import { nodeHeight as nodeLayoutHeight, nodeWidth as nodeLayoutWidth } from '../layout';
 import SecurityIcon from '@mui/icons-material/Security';
 import { FormattedMessage } from 'react-intl';
 import { LabeledGroupNodeType } from './labeled-group-node.type';
+import { NODE_HEIGHT, NODE_WIDTH } from './constants';
 
 const styles = {
     border: {
@@ -33,10 +34,6 @@ const styles = {
 };
 
 export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
-    // data extracted from index.css - react-flow__node-NETWORK_MODIFICATION class
-    const NODE_WIDTH = 180;
-    const NODE_HEIGHT = 60;
-
     // Vertically, the border is halfway between the node and the edge above,
     // and since that edge is centered between two nodes, we divide the space by 4.
     const verticalPadding = (nodeLayoutHeight - NODE_HEIGHT) / 4;
@@ -50,6 +47,8 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
         (data.position.bottomRight.row - data.position.topLeft.row + 1) * nodeLayoutHeight - 2 * verticalPadding;
     const labeledGroupWidth = (data.position.bottomRight.column - data.position.topLeft.column + 1) * nodeLayoutWidth;
 
+    const zoom = useStore((s: ReactFlowState) => s.transform?.[2] ?? 1);
+
     return (
         <Box
             position={'absolute'}
@@ -60,10 +59,12 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
             width={labeledGroupWidth}
             sx={styles.border}
         >
-            <Box sx={styles.label}>
-                <SecurityIcon sx={{ fontSize: '12px' }} />
-                <FormattedMessage id="labeledGroupSecurity" />
-            </Box>
+            {zoom >= 0.5 && (
+                <Box sx={styles.label}>
+                    <SecurityIcon sx={{ fontSize: '12px' }} />
+                    <FormattedMessage id="labeledGroupSecurity" />
+                </Box>
+            )}
         </Box>
     );
 }

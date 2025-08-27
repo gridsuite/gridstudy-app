@@ -1338,11 +1338,18 @@ export const reducer = createReducer(initialState, (builder) => {
             SpreadsheetEquipmentType,
             Identifiable[],
         ][]) {
+            let updatedEquipments;
+            if (Array.isArray(equipments)) {
+                updatedEquipments = equipments;
+            } else {
+                updatedEquipments = [equipments];
+            }
+
             const currentEquipment: Identifiable[] | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = mapSpreadsheetEquipments(equipmentType, equipments);
+            const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment !== undefined) {

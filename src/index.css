@@ -291,25 +291,18 @@ code {
 /* Network modification tree */
 
 .react-flow__node-ROOT {
-    width: 180px;
-    height: 40px;
-    margin-top: 20px;
-    display: flex;
-    align-content: center;
-    justify-content: center;
+    width: 230px;
+    height: 110px;
 }
 
 .react-flow__node-NETWORK_MODIFICATION {
-    width: 180px;
-    height: 60px;
-    display: flex;
-    align-content: center;
-    justify-content: center;
+    width: 230px;
+    height: 110px;
 }
 
 .react-flow__node > .MuiButton-root {
     width: 100%;
 }
 .react-flow {
-    --xy-edge-stroke-width-default: 2;
+    --xy-edge-stroke-width-default: 1;
 }
