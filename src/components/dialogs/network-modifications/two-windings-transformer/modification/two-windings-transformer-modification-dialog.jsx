@@ -27,7 +27,6 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
-    CURRENT_LIMITS,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_NAME,
@@ -43,7 +42,6 @@ import {
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
     OPERATIONAL_LIMITS_GROUPS,
-    PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
     PHASE_TAP_CHANGER_STATUS,
     R,
@@ -63,7 +61,6 @@ import {
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
-    TEMPORARY_LIMITS,
     TO_BE_ESTIMATED,
     TYPE,
     VALIDITY,
@@ -98,7 +95,6 @@ import {
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
     updateOpLimitsGroups,
-    updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -106,7 +102,6 @@ import {
     addSelectedFieldToRows,
     compareStepsWithPreviousValues,
     computeHighTapPosition,
-    formatTemporaryLimits,
     toModificationOperation,
 } from '../../../../utils/utils';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -534,15 +529,16 @@ const TwoWindingsTransformerModificationDialog = ({
             });
         },
         [
-            twtToModify,
-            editData,
-            currentNode,
             studyUuid,
             currentNodeUuid,
+            editData,
             selectedId,
-            snackError,
+            twtToModify,
+            currentNode,
+            intl,
             computeRatioTapForSubmit,
             computePhaseTapForSubmit,
+            snackError,
         ]
     );
 
@@ -726,7 +722,6 @@ const TwoWindingsTransformerModificationDialog = ({
             currentRootNetworkUuid,
             getValues,
             reset,
-            updateOpLimitsGroups,
             isRatioTapChangerEnabled,
             getRatioTapChangerSteps,
             isPhaseTapChangerEnabled,
