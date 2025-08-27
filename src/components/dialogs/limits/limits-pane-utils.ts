@@ -23,7 +23,7 @@ import {
     NAME,
     LIMIT_SETS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import { addSelectedFieldToRows, areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
+import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
@@ -126,13 +126,12 @@ export const formatOpLimitGroups = (limitGroups: OperationalLimitsGroup[]): Oper
             id: opLimitGroup.id + opLimitGroup.applicability,
             name: opLimitGroup.id,
             applicability: opLimitGroup.applicability,
+            modificationType: opLimitGroup.modificationType,
             currentLimits: {
                 id: opLimitGroup.currentLimits.id,
                 applicability: opLimitGroup.applicability,
                 permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                temporaryLimits: addSelectedFieldToRows(
-                    formatTemporaryLimits(opLimitGroup.currentLimits.temporaryLimits)
-                ),
+                temporaryLimits: formatTemporaryLimits(opLimitGroup.currentLimits.temporaryLimits),
             },
         };
     });
@@ -197,7 +196,7 @@ export const updateTemporaryLimits = (
     temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
     let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
-    //add temporary limits from previous modifications
+    //add temporary limits from from map server that are not in the form values
     temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
         if (findTemporaryLimit(updatedTemporaryLimits, limit) === undefined) {
             updatedTemporaryLimits?.push({
@@ -224,6 +223,59 @@ export const updateTemporaryLimits = (
         }
     });
     return updatedTemporaryLimits;
+};
+
+/**
+ * extract data loaded from the map server and merge it with local data in order to fill the operaitonal liits groups modification interface
+ */
+export const updateOpLimitsGroups = (
+    formLine: LineModificationEditData,
+    mapServerLine: LineInfos
+): OperationalLimitsGroup[] => {
+    let updatedOpLG: OperationalLimitsGroup[] = formLine.limits.operationalLimitsGroups ?? [];
+
+    // updates limit values :
+    updatedOpLG.map((opLG: OperationalLimitsGroup) => {
+        const equivalentFromMapServer = mapServerLine.currentLimits.find(
+            (currentLimit: CurrentLimits) =>
+                currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
+        );
+        if (equivalentFromMapServer !== undefined) {
+            opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
+                formatTemporaryLimits(opLG.currentLimits.temporaryLimits),
+                formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
+            );
+        }
+        return opLG;
+    });
+
+    // adds all the operational limits groups from mapServerLine THAT ARE NOT DELETED by the netmod
+    mapServerLine.currentLimits.forEach((currentLimit: CurrentLimits) => {
+        const equivalentFromNetMod = updatedOpLG.find(
+            (opLG: OperationalLimitsGroup) =>
+                currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
+        );
+        if (equivalentFromNetMod === undefined && equivalentFromNetMod) {
+            updatedOpLG.push({
+                id: currentLimit.id + currentLimit.applicability,
+                name: currentLimit.id,
+                applicability: currentLimit.applicability,
+                currentLimits: {
+                    id: currentLimit.id,
+                    applicability: currentLimit.applicability,
+                    permanentLimit: null,
+                    temporaryLimits: formatTemporaryLimits(currentLimit.temporaryLimits),
+                },
+            });
+        }
+    });
+
+    //remove deleted operational limits groups
+    updatedOpLG = updatedOpLG?.filter(
+        (opLG: OperationalLimitsGroup) => opLG.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
+    );
+
+    return updatedOpLG;
 };
 
 export const addModificationTypeToTemporaryLimits = (
