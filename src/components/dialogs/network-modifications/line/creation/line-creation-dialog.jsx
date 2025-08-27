@@ -231,13 +231,13 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: line.operationalLimitsGroups.map(({ id, ...baseData }) => ({
+                    [OPERATIONAL_LIMITS_GROUPS]: line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
+                    [SELECTED_LIMITS_GROUP_1]: line?.selectedOperationalLimitsGroup1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line?.selectedOperationalLimitsGroup2 ?? null,
                 }),
                 ...getPropertiesFromModification(line.properties),
             });

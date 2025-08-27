@@ -63,7 +63,7 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
                 <Box display="flex" alignItems="center" gap={1}>
                     <OverflowableText text={intl.formatMessage({ id: 'AddNewCard' })} />
                     <ToggleButtonGroup size="small">
-                        <Tooltip title={<FormattedMessage id="AddFromGridexplore" />}>
+                        <Tooltip title={<FormattedMessage id="importFromGridExplore" />}>
                             <ToggleButton value="upload" onClick={() => setIsLoadSelectorOpen(true)}>
                                 <Upload fontSize="small" />
                             </ToggleButton>
@@ -96,7 +96,7 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
                 types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
                 equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                 title={intl.formatMessage({
-                    id: 'AddFromGridexplore',
+                    id: 'elementSelection',
                 })}
                 multiSelect={false}
             />

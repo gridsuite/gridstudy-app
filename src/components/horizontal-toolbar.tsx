@@ -6,7 +6,7 @@
  */
 
 import List from '@mui/material/List';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
@@ -16,7 +16,7 @@ import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-import { Box, Grid, Theme, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, Grid, Theme, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
 import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
 import { useEffect } from 'react';
@@ -92,23 +92,34 @@ export function HorizontalToolbar() {
                             aria-label="view modes"
                             size="small"
                         >
-                            <ToggleButton value={StudyDisplayMode.TREE}>
-                                <DeviceHubIcon />
-                            </ToggleButton>
-                            <ToggleButton value={StudyDisplayMode.MODIFICATIONS}>
-                                <TuneIcon />
-                            </ToggleButton>
-                            {enableDeveloperMode && (
+                            <Tooltip title={<FormattedMessage id={'Tree'} />}>
+                                <ToggleButton value={StudyDisplayMode.TREE}>
+                                    <DeviceHubIcon />
+                                </ToggleButton>
+                            </Tooltip>
+                            <Tooltip title={<FormattedMessage id={'modifications'} />}>
                                 <ToggleButton
-                                    value={StudyDisplayMode.EVENT_SCENARIO}
+                                    value={StudyDisplayMode.MODIFICATIONS}
                                     disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
                                 >
-                                    <OfflineBoltOutlinedIcon fontSize="small" />
+                                    <TuneIcon />
                                 </ToggleButton>
+                            </Tooltip>
+                            {enableDeveloperMode && (
+                                <Tooltip title={<FormattedMessage id={'DynamicSimulation'} />}>
+                                    <ToggleButton
+                                        value={StudyDisplayMode.EVENT_SCENARIO}
+                                        disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
+                                    >
+                                        <OfflineBoltOutlinedIcon fontSize="small" />
+                                    </ToggleButton>
+                                </Tooltip>
                             )}
-                            <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
-                                <PhotoLibraryIcon />
-                            </ToggleButton>
+                            <Tooltip title={<FormattedMessage id={'images'} />}>
+                                <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
+                                    <PhotoLibraryIcon />
+                                </ToggleButton>
+                            </Tooltip>
                         </ToggleButtonGroup>
                     </Box>
                 </List>
