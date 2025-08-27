@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { mergeSx } from '@gridsuite/commons-ui';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
 
 import { Box, Theme, Badge, Stack, Chip } from '@mui/material';
@@ -12,12 +13,14 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
 const styles = {
-    minimizedPanel: (theme: Theme) => ({
+    panel: (theme: Theme) => ({
         flexGrow: 1,
-        marginLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(1),
+    }),
+    minimizedPanel: (theme: Theme) => ({
+        marginLeft: theme.spacing(2),
     }),
     icon: {
         display: 'flex',
@@ -25,8 +28,13 @@ const styles = {
         alignItems: 'center',
     },
 };
+interface RootNetworkMinimizedPanelContentProps {
+    isRootNetworkPanelMinimized: boolean;
+}
 
-const RootNetworkMinimizedPanelContent = () => {
+const RootNetworkMinimizedPanelContent: React.FC<RootNetworkMinimizedPanelContentProps> = ({
+    isRootNetworkPanelMinimized,
+}) => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
 
@@ -35,8 +43,8 @@ const RootNetworkMinimizedPanelContent = () => {
     );
 
     return (
-        <Box sx={styles.minimizedPanel}>
-            <Stack direction="row" spacing={1.5}>
+        <Box sx={mergeSx(styles.panel, isRootNetworkPanelMinimized ? styles.minimizedPanel : undefined)}>
+            <Stack direction="row" spacing={0.5}>
                 <Chip size="small" label={currentRootNetwork?.tag} color="primary" />
                 <Box sx={styles.icon}>
                     <Badge overlap="circular" color="primary" variant="dot">
