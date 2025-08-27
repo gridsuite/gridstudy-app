@@ -14,14 +14,18 @@ import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import SeparatorCellRenderer from '../voltage-level-topology-modification/separator-cell-renderer';
 import HeaderWithTooltip from '../voltage-level-topology-modification/header-with-tooltip';
+import { MoveVoltageLevelFeederBays } from './move-voltage-level-feeder-bays-dialog';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 interface MoveVoltageLevelFeederBaysFormProps {
+    moveVoltageLevelFeederBaysData: MoveVoltageLevelFeederBays;
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
+    moveVoltageLevelFeederBaysData,
     currentNode,
     selectedId,
     isUpdate,
@@ -85,7 +89,17 @@ export function MoveVoltageLevelFeederBaysForm({
                     />
                 </Grid>
             </Grid>
-            <Grid xs paddingTop={2}></Grid>
+            <Grid xs paddingTop={2}>
+                <CustomAGGrid
+                    rowData={moveVoltageLevelFeederBaysData}
+                    defaultColDef={defaultColDef}
+                    columnDefs={columnDefs}
+                    suppressMovableColumns={true}
+                    animateRows={false}
+                    domLayout="normal"
+                    headerHeight={48}
+                />
+            </Grid>
         </Grid>
     );
 }
