@@ -11,10 +11,10 @@ import { filledTextField } from 'components/dialogs/dialog-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
-import { LineInfos } from '../../../../../services/study/network-map.type';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
 
 export interface LineModificationDialogHeaderProps {
-    lineToModify: LineInfos | null;
+    lineToModify: BranchInfos | null;
     tabIndexesWithError: number[];
     tabIndex: number | null;
     setTabIndex: React.Dispatch<React.SetStateAction<number | null>>;

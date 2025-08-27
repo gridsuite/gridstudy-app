@@ -12,7 +12,7 @@ export type SwitchInfos = {
     open: boolean;
 };
 
-export type LineInfos = Equipment & {
+export type BranchInfos = Equipment & {
     name: string;
     voltageLevelId1: string;
     voltageLevelId2: string;

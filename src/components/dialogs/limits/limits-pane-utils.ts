@@ -23,12 +23,18 @@ import {
     NAME,
     LIMIT_SETS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
+import { areArrayElementsUnique, formatTemporaryLimits, toModificationOperation } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import { CurrentLimits, OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
+import {
+    AttributeModification,
+    CurrentLimits,
+    OperationalLimitsGroup,
+    OperationType,
+    TemporaryLimit,
+} from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import { LineInfos } from '../../../services/study/network-map.type';
+import { BranchInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 import { LineModificationEditData } from '../network-modifications/line/modification/line-modification-type';
 
@@ -230,14 +236,16 @@ export const updateTemporaryLimits = (
  * extract data loaded from the map server and merge it with local data in order to fill the operaitonal liits groups modification interface
  */
 export const updateOpLimitsGroups = (
-    formLine: LineModificationEditData,
-    mapServerLine: LineInfos
+    formBranchModification: LineModificationEditData,
+    mapServerBranch: BranchInfos
 ): OperationalLimitsGroup[] => {
-    let updatedOpLG: OperationalLimitsGroup[] = formLine.limits.operationalLimitsGroups ?? [];
+    console.log('Mathieu formBranchModification : ', formBranchModification);
+    console.log('Mathieu mapServerBranch : ', mapServerBranch);
+    let updatedOpLG: OperationalLimitsGroup[] = formBranchModification.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
     updatedOpLG.forEach((opLG: OperationalLimitsGroup) => {
-        const equivalentFromMapServer = mapServerLine.currentLimits.find(
+        const equivalentFromMapServer = mapServerBranch.currentLimits.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
@@ -249,13 +257,13 @@ export const updateOpLimitsGroups = (
         }
     });
 
-    // adds all the operational limits groups from mapServerLine THAT ARE NOT DELETED by the netmod
-    mapServerLine.currentLimits.forEach((currentLimit: CurrentLimits) => {
+    // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
+    mapServerBranch.currentLimits.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroup) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
-        if (equivalentFromNetMod === undefined && equivalentFromNetMod) {
+        if (equivalentFromNetMod === undefined) {
             updatedOpLG.push({
                 id: currentLimit.id + currentLimit.applicability,
                 name: currentLimit.id,
@@ -274,6 +282,7 @@ export const updateOpLimitsGroups = (
     updatedOpLG = updatedOpLG?.filter(
         (opLG: OperationalLimitsGroup) => opLG.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
     );
+    console.log('Mathieu updatedOpLG : ', updatedOpLG);
 
     return updatedOpLG;
 };
@@ -344,6 +353,18 @@ export const addModificationTypeToTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
+export function addOperationTypeToSelectedOpLG(
+    selectedOpLG: string,
+    noSelectionString: string
+): AttributeModification<string> | null {
+    return selectedOpLG === noSelectionString
+        ? {
+              value: selectedOpLG,
+              op: OperationType.UNSET,
+          }
+        : toModificationOperation(selectedOpLG);
+}
+
 /**
  * converts the limits groups into a modification limits group
  * ie mostly add the ADD, MODIFY, DELETE and REPLACE tags to the data
@@ -356,7 +377,7 @@ export const addModificationTypeToTemporaryLimits = (
  */
 export const addModificationTypeToOpLimitsGroups = (
     limitsGroups: OperationalLimitsGroup[],
-    networkLine: LineInfos | null,
+    networkLine: BranchInfos | null,
     editData: LineModificationEditData | null | undefined,
     currentNode: CurrentTreeNode
 ) => {

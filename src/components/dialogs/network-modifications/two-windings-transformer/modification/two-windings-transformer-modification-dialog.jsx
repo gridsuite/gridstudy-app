@@ -92,10 +92,12 @@ import {
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 import {
     addModificationTypeToOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
     formatOpLimitGroups,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
+    updateOpLimitsGroups,
     updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -152,6 +154,7 @@ import {
     getStateEstimationValidationSchema,
 } from './state-estimation-form-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -206,6 +209,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
+    const intl = useIntl();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -479,14 +483,24 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                limitsGroups: addModificationTypeToOpLimitsGroups(
+                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(
                     limits[OPERATIONAL_LIMITS_GROUPS],
                     twtToModify,
                     editData,
                     currentNode
                 ),
-                selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
-                selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
+                selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_LIMITS_GROUP_1],
+                    intl.formatMessage({
+                        id: 'NoOperationalLimitGroup',
+                    })
+                ),
+                selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_LIMITS_GROUP_2],
+                    intl.formatMessage({
+                        id: 'NoOperationalLimitGroup',
+                    })
+                ),
                 ratioTapChanger: computeRatioTapForSubmit(twt),
                 phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
@@ -624,35 +638,6 @@ const TwoWindingsTransformerModificationDialog = ({
         [editData]
     );
 
-    /**
-     * extract data loaded from the map server and merge it with local data in order to fill the line modification interface
-     */
-    const updateOpLimitsGroups = useCallback(
-        (twt) /*: OperationalLimitsGroup[]*/ => {
-            return twt.operationalLimitsGroups.map((opLimitGroup /*: OperationalLimitsGroup*/, index /*: number*/) => {
-                return {
-                    id: opLimitGroup.id + opLimitGroup.applicability,
-                    name: opLimitGroup.id,
-                    applicability: opLimitGroup.applicability,
-                    currentLimits: {
-                        id: opLimitGroup.currentLimits.id,
-                        applicability: opLimitGroup.applicability,
-                        permanentLimit: getValues(`${LIMITS}.${CURRENT_LIMITS}[${index}].${PERMANENT_LIMIT}`),
-                        temporaryLimits: addSelectedFieldToRows(
-                            updateTemporaryLimits(
-                                formatTemporaryLimits(
-                                    getValues(`${LIMITS}.${CURRENT_LIMITS}[${index}].${TEMPORARY_LIMITS}`)
-                                ),
-                                formatTemporaryLimits(opLimitGroup.currentLimits.temporaryLimits)
-                            )
-                        ),
-                    },
-                };
-            });
-        },
-        [getValues]
-    );
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -667,13 +652,14 @@ const TwoWindingsTransformerModificationDialog = ({
                     true
                 )
                     .then((twt) => {
+                        console.log('Mathieu twt : ', twt);
                         if (twt) {
                             setTwtToModify(twt);
                             reset((formValues) => ({
                                 ...formValues,
                                 ...{
                                     [LIMITS]: {
-                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(twt),
+                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, twt),
                                     },
                                 },
                                 ...getRatioTapChangerFormData({

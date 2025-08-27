@@ -59,6 +59,7 @@ import {
     getAllLimitsFormData,
     formatOpLimitGroups,
     updateOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -99,7 +100,7 @@ import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { UUID } from 'crypto';
 import { AttributeModification, OperationType } from '../../../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { LineInfos } from '../../../../../services/study/network-map.type';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
 import { LineModificationEditData } from './line-modification-type';
 
@@ -148,7 +149,7 @@ const LineModificationDialog = ({
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [lineToModify, setLineToModify] = useState<LineInfos | null>(null);
+    const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
     const [tabIndex, setTabIndex] = useState<number | null>(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
     const emptyFormData: any = useMemo(
@@ -221,17 +222,6 @@ const LineModificationDialog = ({
 
     const onSubmit = useCallback(
         (line: LineModificationEditData) => {
-            function addOperationType(selectedOpLG: string): AttributeModification<string> | null {
-                return selectedOpLG ===
-                    intl.formatMessage({
-                        id: 'NoOperationalLimitGroup',
-                    })
-                    ? {
-                          value: selectedOpLG,
-                          op: OperationType.UNSET,
-                      }
-                    : toModificationOperation(selectedOpLG);
-            }
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
@@ -256,8 +246,18 @@ const LineModificationDialog = ({
                     editData,
                     currentNode
                 ),
-                selectedLimitsGroup1: addOperationType(limits[SELECTED_LIMITS_GROUP_1]),
-                selectedLimitsGroup2: addOperationType(limits[SELECTED_LIMITS_GROUP_2]),
+                selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_LIMITS_GROUP_1],
+                    intl.formatMessage({
+                        id: 'NoOperationalLimitGroup',
+                    })
+                ),
+                selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_LIMITS_GROUP_2],
+                    intl.formatMessage({
+                        id: 'NoOperationalLimitGroup',
+                    })
+                ),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
@@ -306,7 +306,7 @@ const LineModificationDialog = ({
                     equipmentId,
                     true
                 )
-                    .then((line: LineInfos) => {
+                    .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
                             reset((formValues: LineModificationEditData) => ({
