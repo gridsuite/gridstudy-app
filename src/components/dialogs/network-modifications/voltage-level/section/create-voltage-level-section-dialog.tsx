@@ -146,7 +146,7 @@ export default function CreateVoltageLevelSectionDialog({
                     .then((voltageLevel) => {
                         if (voltageLevel) {
                             const isNotSupported =
-                                !voltageLevel.isRetrievedBusbarSections ||
+                                !voltageLevel.isBusbarSectionPositionFound ||
                                 voltageLevel?.topologyKind !== 'NODE_BREAKER';
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
                             setIsExtensionNotFoundOrNotSupportedTopology(isNotSupported);

@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
-import { FilterChangedEvent, FirstDataRenderedEvent, ModelUpdatedEvent } from 'ag-grid-community';
+import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 
 type UseFilteredRowCounterInfoParams = {
     gridRef: RefObject<AgGridReact>;
@@ -25,7 +25,7 @@ export type UseFilteredRowCounterInfoReturn = {
     isAnyFilterPresent: boolean;
     rowCountLabel: string | undefined;
     tooltipContent: ReactElement | undefined;
-    registerRowCounterEvents: (params: FirstDataRenderedEvent) => void;
+    registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
 };
 
 export function useFilteredRowCounterInfo({
@@ -80,7 +80,7 @@ export function useFilteredRowCounterInfo({
     );
 
     const registerRowCounterEvents = useCallback(
-        (params: FirstDataRenderedEvent) => {
+        (params: RowDataUpdatedEvent) => {
             params.api.addEventListener('filterChanged', onFilterChanged);
             params.api.addEventListener('modelUpdated', onModelUpdated);
 

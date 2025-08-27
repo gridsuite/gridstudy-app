@@ -112,9 +112,7 @@ function SensitivityAnalysisResultTab({
     }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders]);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        return sensiTab === SENSITIVITY_AT_NODE
-            ? [EQUIPMENT_TYPES.VOLTAGE_LEVEL]
-            : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
+        return sensiTab === SENSITIVITY_AT_NODE ? [] : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
     }, [sensiTab]);
 
     const globalFilterOptions = useMemo(
@@ -144,6 +142,8 @@ function SensitivityAnalysisResultTab({
                                 onChange={handleGlobalFilterChange}
                                 filters={globalFilterOptions}
                                 filterableEquipmentTypes={filterableEquipmentTypes}
+                                genericFiltersStrictMode={true}
+                                disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
                             />
                         </Box>
                         <ExportButton
