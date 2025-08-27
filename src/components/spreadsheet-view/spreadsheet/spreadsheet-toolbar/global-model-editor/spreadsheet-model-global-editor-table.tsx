@@ -18,9 +18,10 @@ import {
     COLUMN_PRECISION,
     COLUMN_FORMULA,
     COLUMN_DEPENDENCIES,
+    COLUMN_VISIBLE,
 } from './spreadsheet-model-global-editor.utils';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { ColumnGlobalModel } from './spreadsheet-model-global-edtor.type';
+import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';
 import ColumnNameEditor from './columnName-editor';
@@ -37,19 +38,16 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
     });
     const { getValues, setValue } = useFormContext();
 
-    const columnDependenciesIds = useCallback(
-        (columnIdToExclude: string) => {
-            return (
-                columnsModel
-                    ?.map((column) => {
-                        return column.columnId;
-                    })
-                    .filter((column) => {
-                        return column !== columnIdToExclude;
-                    }) ?? []
-            );
+    const getAvailableDependencies = useCallback(
+        (excludeColumnId: string) => {
+            if (!columnsModel) {
+                return [];
+            }
+            return getValues(COLUMNS_MODEL)
+                .map((column: ColumnGlobalModel) => column.columnId)
+                .filter((id: string) => id !== excludeColumnId);
         },
-        [columnsModel]
+        [columnsModel, getValues]
     );
 
     const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string })[] = useMemo(() => {
@@ -93,7 +91,7 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 type: DndColumnType.AUTOCOMPLETE,
                 initialValue: COLUMN_TYPES.TEXT,
                 editable: true,
-                options: Object.keys(COLUMN_TYPES),
+                options: Object.values(COLUMN_TYPES),
                 width: '11%',
                 maxWidth: '11%',
             },
@@ -101,7 +99,7 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_precision' }),
                 dataKey: COLUMN_PRECISION,
                 type: DndColumnType.NUMERIC,
-                initialValue: '0',
+                initialValue: undefined,
                 editable: true,
                 width: '3%',
                 maxWidth: '3%',
@@ -130,15 +128,16 @@ export function SpreadsheetModelGlobalEditorTable({ columnsModel }: Readonly<Spr
                 component: (rowIndex) =>
                     DependenciesEditor({
                         name: `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_DEPENDENCIES}`,
-                        dependencies: columnDependenciesIds(getValues(`${COLUMNS_MODEL}[${rowIndex}].${COLUMN_ID}`)),
+                        dependencies: getAvailableDependencies(getValues(`${COLUMNS_MODEL}[${rowIndex}].${COLUMN_ID}`)),
                     }),
             },
         ];
-    }, [intl, columnDependenciesIds, getValues, setValue]);
+    }, [intl, getAvailableDependencies, getValues, setValue]);
 
     const newColumnRowData = useMemo(() => {
         const newRowData: any = {};
         newRowData[SELECTED] = false;
+        newRowData[COLUMN_VISIBLE] = true;
         COLUMNS_MODEL_DEFINITIONS.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [COLUMNS_MODEL_DEFINITIONS]);

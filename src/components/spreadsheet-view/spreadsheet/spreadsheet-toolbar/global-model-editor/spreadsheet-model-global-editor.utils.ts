@@ -18,6 +18,7 @@ export const COLUMN_FORMULA = 'columnFormula';
 export const COLUMN_DEPENDENCIES = 'columnDependencies';
 export const COLUMN_UUID = 'columnUuid';
 export const COLUMN_VISIBLE = 'columnVisible';
+export const SELECTED = 'selected';
 
 export const initialColumnsModelForm: columnsModelForm = {
     [COLUMNS_MODEL]: [],
@@ -47,12 +48,17 @@ export const columnsModelFormSchema = yup.object().shape({
                 [COLUMN_FORMULA]: yup.string().required(),
                 [COLUMN_DEPENDENCIES]: yup.array().of(yup.string().required()),
                 [COLUMN_VISIBLE]: yup.boolean().required(),
+                [SELECTED]: yup.boolean().required(),
             })
         )
         .required()
         .test('uniqueColumnsIds', 'spreadsheet/custom_column/column_id_already_exist', (array) => {
             const columnsIdsArray = array.map((l) => l[COLUMN_ID]).filter((value) => value);
             return areArrayElementsUnique(columnsIdsArray);
+        })
+        .test('uniqueColumnsNames', 'spreadsheet/custom_column/column_name_already_exist', (array) => {
+            const columnsNamesArray = array.map((l) => l[COLUMN_NAME]).filter((value) => value);
+            return areArrayElementsUnique(columnsNamesArray);
         }),
 });
 

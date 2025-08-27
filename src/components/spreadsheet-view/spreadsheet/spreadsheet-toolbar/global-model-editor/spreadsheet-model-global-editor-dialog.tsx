@@ -19,13 +19,13 @@ import {
     columnsModelFormSchema,
     initialColumnsModelForm,
 } from './spreadsheet-model-global-editor.utils';
-import { ColumnGlobalModel } from './spreadsheet-model-global-edtor.type';
+import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 
 export type SpreadsheetModelGlobalEditorDialogProps = {
     open: UseStateBooleanReturn;
     columnsModel: ColumnGlobalModel[] | undefined;
     updateColumnsModel: (newColumnsModel: columnsModelForm) => void;
-};
+} & Omit<React.ComponentProps<typeof ModificationDialog>, 'open' | 'onClose' | 'onSave' | 'onClear' | 'titleId'>;
 
 const styles = {
     dialogContent: {
@@ -36,8 +36,8 @@ const styles = {
     },
 };
 
-const toCustomColumnGlobalModelDialogFormValues = (columsModel: ColumnGlobalModel[]) => {
-    return { [COLUMNS_MODEL]: columsModel };
+const toCustomColumnsGlobalModelDialogFormValues = (columnsModel: ColumnGlobalModel[]) => {
+    return { [COLUMNS_MODEL]: columnsModel };
 };
 
 export function SpreadsheetModelGlobalEditorDialog({
@@ -53,28 +53,32 @@ export function SpreadsheetModelGlobalEditorDialog({
 
     const { reset } = formMethods;
 
-    const onValidate = (data: columnsModelForm) => {
-        onClose();
-        updateColumnsModel(data);
+    const onSave = (data: columnsModelForm) => {
+        // Strip extraneous 'selected' field to match ColumnGlobalModel
+        const cleanedData = {
+            [COLUMNS_MODEL]: data[COLUMNS_MODEL].map(({ selected, ...rest }) => rest),
+        } as columnsModelForm;
+        updateColumnsModel(cleanedData);
     };
-
+    const onClear = () => {
+        reset(initialColumnsModelForm);
+    };
     const onClose = () => {
         open.setFalse();
-        reset(initialColumnsModelForm);
     };
 
     useEffect(() => {
         if (open.value && columnsModel != null) {
-            let selected = { selected: false };
             reset(
-                toCustomColumnGlobalModelDialogFormValues(
-                    columnsModel.map((value) => {
-                        return { ...value, ...selected };
-                    })
+                toCustomColumnsGlobalModelDialogFormValues(
+                    columnsModel.map((value) => ({
+                        ...value,
+                        selected: false,
+                    }))
                 )
             );
         }
-    }, [open, columnsModel, reset]);
+    }, [open.value, columnsModel, reset]);
 
     return (
         <CustomFormProvider validationSchema={columnsModelFormSchema} {...formMethods}>
@@ -82,8 +86,8 @@ export function SpreadsheetModelGlobalEditorDialog({
                 titleId={'spreadsheet/global-model-edition/edit'}
                 open={open.value}
                 onClose={onClose}
-                onSave={onValidate}
-                onClear={() => null}
+                onSave={onSave}
+                onClear={onClear}
                 PaperProps={{ sx: styles.dialogContent }}
                 {...dialogProps}
             >

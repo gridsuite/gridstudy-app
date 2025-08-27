@@ -43,7 +43,7 @@ import {
     columnsModelForm,
     COLUMNS_MODEL,
 } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.utils';
-import { ColumnGlobalModel } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-edtor.type';
+import { ColumnGlobalModel } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.type';
 
 const draggableTabStyles = {
     container: {

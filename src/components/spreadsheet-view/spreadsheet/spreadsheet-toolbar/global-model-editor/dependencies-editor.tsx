@@ -8,24 +8,12 @@ import { AutocompleteInputProps, genHelperError } from '@gridsuite/commons-ui';
 
 import { useController } from 'react-hook-form';
 import { SyntheticEvent } from 'react';
-import { Autocomplete, AutocompleteProps, TextField, Theme } from '@mui/material';
+import { Autocomplete, AutocompleteProps, TextField } from '@mui/material';
 
 const styles = {
-    autocomplete: (theme: Theme) => ({
-        '.MuiAutocomplete-inputRoot': {
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-            flexWrap: 'nowrap',
-            padding: '1px',
-            paddingLeft: '5px',
-        },
-        '.Mui-expanded, .Mui-focused, .Mui-focusVisible': {
-            width: 'inherit',
-            background: theme.palette.tabBackground,
-            flexWrap: 'wrap',
-        },
-    }),
+    autocomplete: {
+        maxWidth: '100%',
+    },
 };
 
 type DependenciesEditorProps = Pick<AutocompleteProps<string, true, false, false>, 'disabled'> & {
