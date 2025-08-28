@@ -6,7 +6,6 @@
  */
 
 import { useCallback, useState } from 'react';
-import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { Checkbox, type CheckboxProps, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import type { SpreadsheetPartialData } from '../../types/SpreadsheetPartialData';
@@ -17,17 +16,25 @@ export type PartialLoadingMenuItemProps<K extends keyof SpreadsheetPartialData> 
     key: K;
     option: keyof SpreadsheetPartialData[K];
     labelId: string;
+    onChange: (newValue: boolean) => void;
 };
 
 export default function PartialLoadingMenuItem<K extends keyof SpreadsheetPartialData>({
     key,
     option,
     labelId,
+    onChange,
 }: Readonly<PartialLoadingMenuItemProps<K>>) {
     const lazyOptions = useSelector((state: AppState) => state.spreadsheetPartialData);
     const currentValue = lazyOptions[key][option] as boolean;
     const [newValue, setNewValue] = useState(currentValue);
-    const handleChange = useCallback<NonNullable<CheckboxProps['onChange']>>((_, value) => setNewValue(value), []);
+    const handleChange = useCallback<NonNullable<CheckboxProps['onChange']>>(
+        (_, value) => {
+            setNewValue(value);
+            onChange(value);
+        },
+        [onChange]
+    );
 
     return (
         <MenuItem>

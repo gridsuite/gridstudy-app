@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'crypto';
+import type { PartialDeep } from 'type-fest';
 import { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Badge, ListSubheader, Menu } from '@mui/material';
@@ -15,20 +17,66 @@ import type { AppState } from '../../../../redux/reducer';
 import type { SpreadsheetPartialData } from '../../types/SpreadsheetPartialData';
 import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
+import { updateSpreadsheetParameters } from '../../../../services/study/spreadsheet';
+
+function updateServerIfModified(
+    studyUuid: UUID | null,
+    branchOlg: boolean | undefined,
+    lineOlg: boolean | undefined,
+    t2wOlg: boolean | undefined,
+    generatorRegTerm: boolean | undefined
+) {
+    // are there parameters modified?
+    const patchParameters: PartialDeep<SpreadsheetPartialData> = {
+        [SpreadsheetEquipmentType.BRANCH]: {
+            ...(branchOlg !== undefined ? { operationalLimitsGroups: branchOlg } : {}),
+        },
+        [SpreadsheetEquipmentType.LINE]: {
+            ...(lineOlg !== undefined ? { operationalLimitsGroups: lineOlg } : {}),
+        },
+        [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
+            ...(t2wOlg !== undefined ? { operationalLimitsGroups: t2wOlg } : {}),
+        },
+        [SpreadsheetEquipmentType.GENERATOR]: {
+            ...(generatorRegTerm !== undefined ? { regulatingTerminal: generatorRegTerm } : {}),
+        },
+    };
+    // clean patch from empty types
+    for (const key of Object.keys(patchParameters) as Array<keyof SpreadsheetPartialData>) {
+        if (Object.keys(patchParameters[key]!).length <= 0) {
+            delete patchParameters[key];
+        }
+    }
+    // send update to the server if there are parameters modified
+    if (studyUuid !== null && Object.keys(patchParameters).length > 0) {
+        return updateSpreadsheetParameters(studyUuid, patchParameters);
+    }
+    return Promise.resolve();
+}
 
 export type LazyLoadingButtonProps = {} & Omit<TooltipIconButtonProps, 'tooltip' | 'size' | 'onClick'>;
 
 export default function PartialLoadingMenuButton({ disabled, ...props }: Readonly<LazyLoadingButtonProps>) {
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const BtnIcon = disabled ? DatasetIcon : DatasetDisabled;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
     const handleClick = useCallback<NonNullable<TooltipIconButtonProps['onClick']>>(
         (event) => setAnchorEl(event.currentTarget),
         []
     );
+    const [branchOlg, setBranchOlg] = useState<boolean | undefined>(undefined);
+    const [lineOlg, setLineOlg] = useState<boolean | undefined>(undefined);
+    const [t2wOlg, setT2wOlg] = useState<boolean | undefined>(undefined);
+    const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean | undefined>(undefined);
     const handleClose = useCallback(() => {
         setAnchorEl(undefined);
-        //TODO send update to server
-    }, []);
+        updateServerIfModified(studyUuid, branchOlg, lineOlg, t2wOlg, generatorRegTerm); //TODO use promise to do loading animation
+        // reset fields
+        setBranchOlg(undefined);
+        setLineOlg(undefined);
+        setT2wOlg(undefined);
+        setGeneratorRegTerm(undefined);
+    }, [studyUuid, branchOlg, generatorRegTerm, lineOlg, t2wOlg]);
     const open = anchorEl === undefined;
     const lazyOptions = useSelector((state: AppState) => state.spreadsheetPartialData);
     const isOptionalData = (Object.keys(lazyOptions) as Array<keyof SpreadsheetPartialData>)
@@ -73,6 +121,7 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     key={SpreadsheetEquipmentType.BRANCH}
                     option="operationalLimitsGroups"
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
+                    onChange={setBranchOlg}
                 />
 
                 <ListSubheader>
@@ -82,6 +131,7 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     key={SpreadsheetEquipmentType.LINE}
                     option="operationalLimitsGroups"
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
+                    onChange={setLineOlg}
                 />
 
                 <ListSubheader>
@@ -91,6 +141,7 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     key={SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER}
                     option="operationalLimitsGroups"
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
+                    onChange={setT2wOlg}
                 />
 
                 <ListSubheader>
@@ -100,6 +151,7 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     key={SpreadsheetEquipmentType.GENERATOR}
                     option="regulatingTerminal"
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
+                    onChange={setGeneratorRegTerm}
                 />
             </Menu>
         </>
