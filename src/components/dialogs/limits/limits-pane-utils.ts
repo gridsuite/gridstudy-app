@@ -239,8 +239,6 @@ export const updateOpLimitsGroups = (
     formBranchModification: LineModificationEditData,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroup[] => {
-    console.log('Mathieu formBranchModification : ', formBranchModification);
-    console.log('Mathieu mapServerBranch : ', mapServerBranch);
     let updatedOpLG: OperationalLimitsGroup[] = formBranchModification.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
@@ -282,7 +280,6 @@ export const updateOpLimitsGroups = (
     updatedOpLG = updatedOpLG?.filter(
         (opLG: OperationalLimitsGroup) => opLG.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
     );
-    console.log('Mathieu updatedOpLG : ', updatedOpLG);
 
     return updatedOpLG;
 };
@@ -383,43 +380,45 @@ export const addModificationTypeToOpLimitsGroups = (
 ) => {
     let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
 
-    // calls this on all the limits groups :
-    modificationLimitsGroups = modificationLimitsGroups.map((limitsGroup: OperationalLimitsGroup) => {
+    modificationLimitsGroups = modificationLimitsGroups.map((formLimitsGroup: OperationalLimitsGroup) => {
         let modificationType: string | null = LIMIT_SETS_MODIFICATION_TYPE.MODIFY;
         const networkCurrentLimits = networkLine?.currentLimits.find(
-            (lineOpLimitGroup: CurrentLimits) => lineOpLimitGroup.id === limitsGroup.name
+            (lineOpLimitGroup: CurrentLimits) =>
+                lineOpLimitGroup.id === formLimitsGroup.name &&
+                lineOpLimitGroup.applicability === formLimitsGroup.applicability
         );
         if (!networkCurrentLimits) {
-            // limitsGroup.name operational limits groups doesn't exist in the network :
+            // formLimitsGroup.name operational limits groups doesn't exist in the network :
             modificationType = LIMIT_SETS_MODIFICATION_TYPE.ADD;
         }
 
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
-            sanitizeLimitNames(limitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
+            sanitizeLimitNames(formLimitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
             networkCurrentLimits?.temporaryLimits ?? [],
             editData?.operationalLimitsGroups.find(
-                (lineOpLimitGroup: OperationalLimitsGroup) => lineOpLimitGroup.id === limitsGroup.name
+                (editDataOpLimitGroup: OperationalLimitsGroup) =>
+                    editDataOpLimitGroup.id === formLimitsGroup.name &&
+                    editDataOpLimitGroup.applicability === formLimitsGroup.applicability
             )?.currentLimits?.temporaryLimits ?? [],
             currentNode
         );
-        let currentLimits = limitsGroup.currentLimits;
-        if (limitsGroup.currentLimits?.[PERMANENT_LIMIT] || temporaryLimits.length > 0) {
-            currentLimits.permanentLimit = limitsGroup.currentLimits?.[PERMANENT_LIMIT];
+        let currentLimits = formLimitsGroup.currentLimits;
+        if (formLimitsGroup.currentLimits?.[PERMANENT_LIMIT] || temporaryLimits.length > 0) {
+            currentLimits.permanentLimit = formLimitsGroup.currentLimits?.[PERMANENT_LIMIT];
             currentLimits.temporaryLimits = temporaryLimits;
         }
 
-        const modifiedLimitsGroups: boolean =
-            currentLimits.temporaryLimits.filter((limit: TemporaryLimit) => limit.modificationType !== null).length ===
-            0;
-        if (modifiedLimitsGroups) {
+        const modificationInsideLimitsGroup: boolean =
+            currentLimits.temporaryLimits.filter((limit: TemporaryLimit) => limit.modificationType !== null).length > 0;
+        if (!modificationInsideLimitsGroup) {
             // no modifications whatsoever
             modificationType = null;
         }
 
         return {
-            id: limitsGroup.id,
-            name: limitsGroup.name,
-            applicability: limitsGroup.applicability,
+            id: formLimitsGroup.id,
+            name: formLimitsGroup.name,
+            applicability: formLimitsGroup.applicability,
             currentLimits: currentLimits,
             modificationType: modificationType,
         };

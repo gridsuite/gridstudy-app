@@ -648,7 +648,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     true
                 )
                     .then((twt) => {
-                        console.log('Mathieu twt : ', twt);
                         if (twt) {
                             setTwtToModify(twt);
                             reset((formValues) => ({
