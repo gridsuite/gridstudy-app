@@ -14,11 +14,19 @@ import { useFormContext } from 'react-hook-form';
 import SeparatorCellRenderer from '../voltage-level-topology-modification/separator-cell-renderer';
 import HeaderWithTooltip from '../voltage-level-topology-modification/header-with-tooltip';
 import { CustomAGGrid, IntegerInput } from '@gridsuite/commons-ui';
-import { BUSBAR_SECTION_ID, CONNECTION_DIRECTION, CONNECTION_NAME, CONNECTION_POSITION, MOVE_VOLTAGE_LEVEL_FEEDER_BAYS } from "../../../utils/field-constants";
+import { BUSBAR_SECTION_ID, CONNECTION_DIRECTION, CONNECTION_NAME, CONNECTION_POSITION,
+  CURRENT_CONNECTION_STATUS, MOVE_VOLTAGE_LEVEL_FEEDER_BAYS, MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
+  TOPOLOGY_MODIFICATION_TABLE
+} from "../../../utils/field-constants";
+import ConnectionCellRenderer from "../voltage-level-topology-modification/connection-cell-render";
+import ConnectionPositionCellRenderer from "./connection-position-cell-render";
+import { SwitchRowForm } from "../voltage-level-topology-modification/voltage-level-topology.type";
+import ConnectionDirectionCellRenderer from "./connection-direction-cell-render";
 
 export type FeederBayData = {
     equipmentId: string;
     busbarId: string;
+    targetBusbarId: string;
     connectionDirection: string;
     connectionName: string;
     connectionPosition: number;
@@ -77,6 +85,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
+                editable: true,
             },
             {
                 field: BUSBAR_SECTION_ID,
@@ -100,6 +109,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
+                editable: true,
             },
             {
                 field: CONNECTION_DIRECTION,
@@ -111,7 +121,11 @@ export function MoveVoltageLevelFeederBaysForm({
                             value: data.title,
                         });
                     } else {
-                        return data[CONNECTION_DIRECTION];
+                        const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+                        const formIndex = watchTable?.findIndex((item: FeederBayData) => item.equipmentId === data.equipmentId);
+                      return ConnectionDirectionCellRenderer({
+                        name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
+                      });
                     }
                 },
                 headerComponent: HeaderWithTooltip,
@@ -123,18 +137,21 @@ export function MoveVoltageLevelFeederBaysForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
+                editable: false,
             },
             {
                 field: CONNECTION_POSITION,
                 filter: true,
-                flex: 2,
+                flex: 1,
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
-                        return SeparatorCellRenderer({
-                            value: data.title,
-                        });
+                        return null;
                     } else {
-                        return data[CONNECTION_POSITION];
+                      const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+                      const formIndex = watchTable?.findIndex((item: FeederBayData) => item.equipmentId === data.equipmentId);
+                      return ConnectionPositionCellRenderer({
+                        name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`,
+                      });
                     }
                 },
                 headerComponent: HeaderWithTooltip,
@@ -146,6 +163,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
+                editable: false,
             },
         ],
         [currentNode, intl, isUpdate, getValues]
