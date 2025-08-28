@@ -223,10 +223,10 @@ export function LimitsSidePane({
                 <>
                     <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
-                        <Grid item xs={4}>
+                        <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid item xs={4}>
                             <SelectInput
                                 options={Object.values(APPLICABILITY)}
                                 name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}

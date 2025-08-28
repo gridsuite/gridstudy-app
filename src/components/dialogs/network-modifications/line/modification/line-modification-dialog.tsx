@@ -410,7 +410,7 @@ const LineModificationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
-                maxWidth={'md'}
+                maxWidth={'xl'}
                 titleId="ModifyLine"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
                 open={open}
