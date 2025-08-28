@@ -16,8 +16,11 @@ import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
 import yup from '../../../utils/yup-config';
-import { TOPOLOGY_MODIFICATION_TABLE } from '../../../utils/field-constants';
-import { MoveVoltageLevelFeederBaysForm } from './move-voltage-level-feeder-bays-form';
+import {
+  BUSBAR_SECTION_ID, CONNECTION_DIRECTION, CONNECTION_NAME, CONNECTION_POSITION,
+  CURRENT_CONNECTION_STATUS,
+  MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE, PREV_CONNECTION_STATUS, SWITCH_ID, TOPOLOGY_MODIFICATION_TABLE } from '../../../utils/field-constants';
+import { FeederBayData, MoveVoltageLevelFeederBaysForm } from './move-voltage-level-feeder-bays-form';
 import { TopologyVoltageLevelModificationInfos } from '../../../../services/network-modification-types';
 import { fetchNetworkElementInfos } from '../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -26,25 +29,27 @@ import { useIntl } from 'react-intl';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const formSchema = yup.object().shape({
-    [TOPOLOGY_MODIFICATION_TABLE]: yup.array().of(yup.object().shape({})).required(),
+    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: yup.array().of(yup.object().shape({
+      [CONNECTION_NAME]: yup.string(),
+      [BUSBAR_SECTION_ID]: yup.string(),
+      [CONNECTION_DIRECTION]: yup.string(),
+      [CONNECTION_POSITION]: yup.number(),
+    })).required(),
 });
 
 const emptyFormData = {
-    [TOPOLOGY_MODIFICATION_TABLE]: [{}],
+    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: [{
+      [CONNECTION_NAME]: '',
+      [BUSBAR_SECTION_ID]: '',
+      [CONNECTION_DIRECTION]: '',
+      [CONNECTION_POSITION]: 0,
+    }],
 };
 
 export type MoveVoltageLevelFeederBaysDialogProps = EquipmentModificationDialogProps & {
     editData: TopologyVoltageLevelModificationInfos;
 };
 export type MoveVoltageLevelFeederBaysFormSchemaType = yup.InferType<typeof formSchema>;
-
-export type FeederBayData = {
-    equipmentId: string;
-    busbarId: string;
-    connectionDirection: string;
-    connectionName: string;
-    connectionPosition: number;
-};
 
 /**
  * Dialog to delete a list of equipment by filter.
@@ -68,12 +73,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
     ...dialogProps
 }: Readonly<MoveVoltageLevelFeederBaysDialogProps>) {
     const currentNodeUuid = currentNode?.id;
-    const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
-    const [switchesToModify, setSwitchesToModify] = useState<SwitchInfos[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const [moveVoltageLevelFeederBaysInfos, setMoveVoltageLevelFeederBaysInfos] = useState<FeederBayData[]>(null);
-    const intl = useIntl();
 
     const formMethods = useForm<MoveVoltageLevelFeederBaysFormSchemaType>({
         defaultValues: emptyFormData,
@@ -165,7 +167,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 fullWidth
                 onSave={onSubmit}
                 maxWidth={'md'}
-                titleId="MoveVoltageLevelFeederBays"
+                titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
                 keepMounted={true}
                 PaperProps={{

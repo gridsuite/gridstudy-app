@@ -8,30 +8,38 @@ import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { Grid, TextField } from '@mui/material';
-import { SWITCH_ID } from '../../../utils/field-constants';
 import { filledTextField } from '../../dialog-utils';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import SeparatorCellRenderer from '../voltage-level-topology-modification/separator-cell-renderer';
 import HeaderWithTooltip from '../voltage-level-topology-modification/header-with-tooltip';
-import { MoveVoltageLevelFeederBays } from './move-voltage-level-feeder-bays-dialog';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, IntegerInput } from '@gridsuite/commons-ui';
+import { BUSBAR_SECTION_ID, CONNECTION_DIRECTION, CONNECTION_NAME, CONNECTION_POSITION, MOVE_VOLTAGE_LEVEL_FEEDER_BAYS } from "../../../utils/field-constants";
+
+export type FeederBayData = {
+    equipmentId: string;
+    busbarId: string;
+    connectionDirection: string;
+    connectionName: string;
+    connectionPosition: number;
+};
 
 interface MoveVoltageLevelFeederBaysFormProps {
-    moveVoltageLevelFeederBaysData: MoveVoltageLevelFeederBays;
+    moveVoltageLevelFeederBaysData: FeederBayData[];
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
+    id = MOVE_VOLTAGE_LEVEL_FEEDER_BAYS,
     moveVoltageLevelFeederBaysData,
     currentNode,
     selectedId,
     isUpdate,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
-    const { getValues, setValue } = useFormContext();
+    const { getValues } = useFormContext();
 
     const defaultColDef = useMemo(
         () => ({
@@ -48,7 +56,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const columnDefs = useMemo(
         () => [
             {
-                field: SWITCH_ID,
+                field: CONNECTION_NAME,
                 filter: true,
                 flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
@@ -57,12 +65,81 @@ export function MoveVoltageLevelFeederBaysForm({
                             value: data.title,
                         });
                     } else {
-                        return data[SWITCH_ID];
+                        return data[CONNECTION_NAME];
                     }
                 },
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
-                    displayName: intl.formatMessage({ id: 'switchId' }),
+                    displayName: intl.formatMessage({ id: 'Feeders' }),
+                    tooltipTitle: intl.formatMessage({
+                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
+                    }),
+                    isNodeBuilt: isNodeBuilt(currentNode),
+                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                },
+            },
+            {
+                field: BUSBAR_SECTION_ID,
+                filter: true,
+                flex: 2,
+                cellRenderer: ({ data }: { data?: any }) => {
+                    if (data.type === 'SEPARATOR') {
+                        return SeparatorCellRenderer({
+                            value: data.title,
+                        });
+                    } else {
+                        return data['busbarId'];
+                    }
+                },
+                headerComponent: HeaderWithTooltip,
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: 'BusBarBus' }),
+                    tooltipTitle: intl.formatMessage({
+                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
+                    }),
+                    isNodeBuilt: isNodeBuilt(currentNode),
+                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                },
+            },
+            {
+                field: CONNECTION_DIRECTION,
+                filter: true,
+                flex: 2,
+                cellRenderer: ({ data }: { data?: any }) => {
+                    if (data.type === 'SEPARATOR') {
+                        return SeparatorCellRenderer({
+                            value: data.title,
+                        });
+                    } else {
+                        return data[CONNECTION_DIRECTION];
+                    }
+                },
+                headerComponent: HeaderWithTooltip,
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: 'connectionDirection' }),
+                    tooltipTitle: intl.formatMessage({
+                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
+                    }),
+                    isNodeBuilt: isNodeBuilt(currentNode),
+                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                },
+            },
+            {
+                field: CONNECTION_POSITION,
+                filter: true,
+                flex: 2,
+                cellRenderer: ({ data }: { data?: any }) => {
+                    if (data.type === 'SEPARATOR') {
+                        return SeparatorCellRenderer({
+                            value: data.title,
+                        });
+                    } else {
+                        return data[CONNECTION_POSITION];
+                    }
+                },
+                headerComponent: HeaderWithTooltip,
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: CONNECTION_POSITION }),
                     tooltipTitle: intl.formatMessage({
                         id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
                     }),
