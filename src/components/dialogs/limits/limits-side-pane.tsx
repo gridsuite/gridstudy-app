@@ -252,7 +252,10 @@ export function LimitsSidePane({
                 </>
             )}
             <Box>
-                <LimitsChart limitsGroupFormName={limitsGroupFormName} />
+                <LimitsChart
+                    limitsGroupFormName={limitsGroupFormName}
+                    previousPermanentLimit={permanentCurrentLimitPreviousValue}
+                />
             </Box>
             <Box sx={{ maxWidth: 300, paddingTop: 2 }}>{PermanentLimitBox}</Box>
             <Box component={`h4`}>
