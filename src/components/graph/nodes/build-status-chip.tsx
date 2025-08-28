@@ -59,10 +59,10 @@ type BuildStatusChipProps = {
     onClick?: (e: React.MouseEvent) => void;
 };
 
-const BuildStatusChip = ({ buildStatus, sx, icon, onClick }: BuildStatusChipProps) => {
+const BuildStatusChip = ({ buildStatus = BUILD_STATUS.NOT_BUILT, sx, icon, onClick }: BuildStatusChipProps) => {
     const intl = useIntl();
 
-    const label = buildStatus ? intl.formatMessage({ id: buildStatus }) : '';
+    const label = intl.formatMessage({ id: buildStatus });
 
     return (
         <Chip
