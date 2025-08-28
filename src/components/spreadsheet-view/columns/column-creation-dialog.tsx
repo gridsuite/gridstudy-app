@@ -56,6 +56,7 @@ import {
 } from './column-creation-form';
 import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
+import { NestedAutocompleteField } from './nested-autocomplete-field';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -148,13 +149,15 @@ export default function ColumnCreationDialog({
     );
 
     const formulaField = (
-        <ExpandingTextField
-            name={FORMULA}
-            label="spreadsheet/custom_column/column_content"
-            minRows={3}
-            rows={3}
-            sx={{ flexGrow: 1 }}
-        />
+        <NestedAutocompleteField formMethods={formMethods} spreadsheetEquipmentType={tableDefinition.type}>
+            <ExpandingTextField
+                name={FORMULA}
+                label="spreadsheet/custom_column/column_content"
+                minRows={3}
+                rows={3}
+                sx={{ flexGrow: 1 }}
+            />
+        </NestedAutocompleteField>
     );
 
     const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
