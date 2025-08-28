@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid, Theme, Tooltip } from '@mui/material';
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { Grid } from '@mui/material';
+import { useCallback, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppState } from 'redux/reducer';
 import AddSpreadsheetButton from '../add-spreadsheet/add-spreadsheet-button';
-import { AppDispatch } from 'redux/store';
+import type { AppDispatch } from 'redux/store';
 import {
     removeEquipmentData,
     removeTableDefinition,
@@ -18,26 +18,24 @@ import {
     reorderTableDefinitions,
 } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { DropResult } from '@hello-pangea/dnd';
+import { useIntl } from 'react-intl';
+import type { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
-import { UUID } from 'crypto';
-import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
+import type { UUID } from 'crypto';
+import type { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import SpreadsheetTabLabel from './spreadsheet-tab-label';
-import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
-import RestoreIcon from '@mui/icons-material/Restore';
+import type { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import {
     removeSpreadsheetConfigFromCollection,
     renameSpreadsheetModel,
     reorderSpreadsheetConfigs,
     updateSpreadsheetModel,
 } from 'services/study/study-config';
-import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
-import { NodeAlias } from '../types/node-alias.type';
-import SaveIcon from '@mui/icons-material/Save';
+import type { NodeAlias } from '../types/node-alias.type';
 import { SaveSpreadsheetCollectionDialog } from '../spreadsheet/spreadsheet-toolbar/save/save-spreadsheet-collection-dialog';
+import SpreadsheetTabsToolbar from './spreadsheet-tabs-toolbar';
 import { SpreadsheetModelGlobalEditorDialog } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor-dialog';
 import {
     columnsModelForm,
@@ -59,17 +57,6 @@ const draggableTabStyles = {
         minHeight: 'auto',
         px: 1,
     },
-};
-
-const styles = {
-    resetButton: (theme: Theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
-    }),
-    saveButton: (theme: Theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
-    }),
 };
 
 interface SpreadsheetTabsProps {
@@ -334,44 +321,15 @@ export default function SpreadsheetTabs({
                         onDragEnd={handleDragEnd}
                     />
                 </Grid>
-                <Grid item padding={1}>
-                    <NodesConfigButton
-                        disabled={disabled}
-                        tableType={tablesDefinitions[selectedTabIndex]?.type}
-                        nodeAliases={nodeAliases}
-                        updateNodeAliases={updateNodeAliases}
-                    />
-                </Grid>
-                <Grid item padding={1}>
-                    <Tooltip title={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}>
-                        <span>
-                            <Button
-                                sx={styles.saveButton}
-                                size={'small'}
-                                onClick={() => {
-                                    saveCollectionDialogOpen.setTrue();
-                                }}
-                                disabled={disabled}
-                            >
-                                <SaveIcon />
-                            </Button>
-                        </span>
-                    </Tooltip>
-                </Grid>
-                <Grid item padding={1}>
-                    <Tooltip title={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}>
-                        <span>
-                            <Button
-                                sx={styles.resetButton}
-                                size={'small'}
-                                onClick={handleResetCollectionClick}
-                                disabled={disabled}
-                            >
-                                <RestoreIcon />
-                            </Button>
-                        </span>
-                    </Tooltip>
-                </Grid>
+                <SpreadsheetTabsToolbar
+                    padding={1}
+                    selectedTabIndex={selectedTabIndex}
+                    disabled={disabled}
+                    onSaveClick={saveCollectionDialogOpen.setTrue}
+                    onExportClick={handleResetCollectionClick}
+                    nodeAliases={nodeAliases}
+                    updateNodeAliases={updateNodeAliases}
+                />
             </Grid>
             {confirmationDialogOpen && (
                 <PopupConfirmationDialog
