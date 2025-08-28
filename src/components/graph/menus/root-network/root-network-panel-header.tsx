@@ -27,8 +27,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -71,7 +69,6 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const dispatch = useDispatch();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const intl = useIntl();
 
@@ -217,11 +214,9 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                             </IconButton>
                         </span>
                     </Tooltip>
-                    {enableDeveloperMode && (
-                        <IconButton size={'small'} onClick={openSearch}>
-                            <SearchIcon />
-                        </IconButton>
-                    )}
+                    <IconButton size={'small'} onClick={openSearch}>
+                        <SearchIcon />
+                    </IconButton>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
                     {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}
