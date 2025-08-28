@@ -388,8 +388,15 @@ export const addModificationTypeToOpLimitsGroups = (
                 lineOpLimitGroup.applicability === formLimitsGroup.applicability
         );
         if (!networkCurrentLimits) {
-            // formLimitsGroup.name operational limits groups doesn't exist in the network :
-            modificationType = LIMIT_SETS_MODIFICATION_TYPE.ADD;
+            // formLimitsGroup.name operational limits groups doesn't exist in the network
+            // check if this is just an applicability change
+            if (
+                networkLine?.currentLimits.filter(
+                    (lineOpLimitGroup: CurrentLimits) => lineOpLimitGroup.id === formLimitsGroup.name
+                ).length !== 1
+            ) {
+                modificationType = LIMIT_SETS_MODIFICATION_TYPE.ADD;
+            }
         }
 
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
