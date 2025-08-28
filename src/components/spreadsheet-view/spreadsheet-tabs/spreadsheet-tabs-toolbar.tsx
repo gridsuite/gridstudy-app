@@ -5,15 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid, type GridProps, Theme, Tooltip } from '@mui/material';
-import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
+import { Grid, type GridProps, type Theme } from '@mui/material';
+import { Restore as RestoreIcon, Save as SaveIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import { Save as SaveIcon } from '@mui/icons-material';
-import { Restore as RestoreIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
-import { updateNodeAliases } from '../../../services/study/node-alias';
-import { NodeAlias } from '../types/node-alias.type';
+import type { AppState } from '../../../redux/reducer';
+import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
+import type { NodeAlias } from '../types/node-alias.type';
+import TooltipIconButton from '../../common/tooltip-icon-button';
 
 const styles = {
     resetButton: (theme: Theme) => ({
@@ -57,22 +56,26 @@ export default function SpreadsheetTabsToolbar({
                 />
             </Grid>
             <Grid item padding={padding}>
-                <Tooltip title={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}>
-                    <span>
-                        <Button sx={styles.saveButton} size={'small'} onClick={onSaveClick} disabled={disabled}>
-                            <SaveIcon />
-                        </Button>
-                    </span>
-                </Tooltip>
+                <TooltipIconButton
+                    tooltip={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}
+                    sx={styles.saveButton}
+                    size="small"
+                    onClick={onSaveClick}
+                    disabled={disabled}
+                >
+                    <SaveIcon />
+                </TooltipIconButton>
             </Grid>
             <Grid item padding={padding}>
-                <Tooltip title={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}>
-                    <span>
-                        <Button sx={styles.resetButton} size="small" onClick={onExportClick} disabled={disabled}>
-                            <RestoreIcon />
-                        </Button>
-                    </span>
-                </Tooltip>
+                <TooltipIconButton
+                    tooltip={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}
+                    sx={styles.resetButton}
+                    size="small"
+                    onClick={onExportClick}
+                    disabled={disabled}
+                >
+                    <RestoreIcon />
+                </TooltipIconButton>
             </Grid>
         </Grid>
     );
