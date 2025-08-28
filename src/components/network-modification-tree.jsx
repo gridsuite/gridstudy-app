@@ -41,6 +41,9 @@ const styles = (theme) => ({
     flexGrow: 1,
     height: '100%',
     backgroundColor: theme.reactflow.backgroundColor,
+    '.react-flow': {
+        '--xy-edge-stroke': theme.reactflow.edge.stroke,
+    },
     '.react-flow__attribution a': {
         color: theme.palette.text.primary,
     },

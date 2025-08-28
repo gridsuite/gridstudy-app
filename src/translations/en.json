@@ -1427,8 +1427,10 @@
     "updateRootNetworksError": "An error occurred while updating the root network",
     "visibleRootNetwork": "Visible network : ",
     "rootNetwork.modificationsInfos": "Only modifications in built nodes and their parent nodes will appear in the results.",
-    "rootNetwork.searchPlaceholder": "Search for a modified equipment…",
+    "rootNetwork.searchPlaceholder.modifications": "Search for a modified equipment…",
+    "rootNetwork.searchPlaceholder.nodes": "Search for a node…",
     "rootNetwork.modificationTab": "Modifications",
+    "rootNetwork.nodeTab": "Nodes",
     "rootNetwork.results": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
     "rootNetwork.loading": "Loading...",
     "rootNetwork.originalNotFound": "The original case was not found",
@@ -1577,5 +1579,9 @@
     "editNode": "Edit node",
     "voltage-level": "voltage level",
     "substation": "substation",
-    "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level."
+    "notValidVoltageLevel": "Invalid voltage level to add busbar section. Please re-create the voltage level.",
+    "BUILT": "Built",
+    "BUILT_WITH_WARNING": "Warnings",
+    "BUILT_WITH_ERROR": "Errors",
+    "NOT_BUILT": "Not built"
 }
