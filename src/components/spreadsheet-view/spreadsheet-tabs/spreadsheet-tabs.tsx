@@ -82,7 +82,7 @@ interface SpreadsheetTabsProps {
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
 }
 
-export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
+export default function SpreadsheetTabs({
     selectedTabUuid,
     handleSwitchTab,
     disabled,
@@ -90,7 +90,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     handleResetCollectionClick,
     nodeAliases,
     updateNodeAliases,
-}) => {
+}: Readonly<SpreadsheetTabsProps>) {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -413,4 +413,4 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
             />
         </>
     );
-};
+}
