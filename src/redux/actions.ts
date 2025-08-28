@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { PartialDeep } from 'type-fest';
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
@@ -62,6 +63,7 @@ import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import type { SpreadsheetPartialData } from '../components/spreadsheet-view/types/SpreadsheetPartialData';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -120,11 +122,13 @@ export type AppActions =
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
+    | UpdateSpreadsheetPartialDataAction
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
+    | AddFilterForNewSpreadsheetAction
     | SaveSpreadSheetGlobalFilterAction
     | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
@@ -1046,6 +1050,20 @@ export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 export function resetLogsFilter(): ResetLogsFilterAction {
     return {
         type: RESET_LOGS_FILTER,
+    };
+}
+
+export const UPDATE_SPREADSHEET_PARTIAL_DATA = 'UPDATE_SPREADSHEET_PARTIAL_DATA';
+export type UpdateSpreadsheetPartialDataAction = Readonly<Action<typeof UPDATE_SPREADSHEET_PARTIAL_DATA>> & {
+    newOptions: PartialDeep<SpreadsheetPartialData>;
+};
+
+export function updateSpreadsheetPartialData(
+    options: PartialDeep<SpreadsheetPartialData>
+): UpdateSpreadsheetPartialDataAction {
+    return {
+        type: UPDATE_SPREADSHEET_PARTIAL_DATA,
+        newOptions: options,
     };
 }
 

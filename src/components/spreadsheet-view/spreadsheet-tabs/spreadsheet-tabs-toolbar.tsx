@@ -13,13 +13,10 @@ import type { AppState } from '../../../redux/reducer';
 import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
 import type { NodeAlias } from '../types/node-alias.type';
 import TooltipIconButton from '../../common/tooltip-icon-button';
+import PartialLoadingMenuButton from './toolbar/PartialLoadingMenuButton';
 
 const styles = {
-    resetButton: (theme: Theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
-    }),
-    saveButton: (theme: Theme) => ({
+    button: (theme: Theme) => ({
         color: theme.palette.primary.main,
         minWidth: '100%',
     }),
@@ -56,9 +53,12 @@ export default function SpreadsheetTabsToolbar({
                 />
             </Grid>
             <Grid item padding={padding}>
+                <PartialLoadingMenuButton sx={styles.button} disabled={disabled} />
+            </Grid>
+            <Grid item padding={padding}>
                 <TooltipIconButton
                     tooltip={<FormattedMessage id="spreadsheet/collection/save/button_tooltip" />}
-                    sx={styles.saveButton}
+                    sx={styles.button}
                     size="small"
                     onClick={onSaveClick}
                     disabled={disabled}
@@ -69,7 +69,7 @@ export default function SpreadsheetTabsToolbar({
             <Grid item padding={padding}>
                 <TooltipIconButton
                     tooltip={<FormattedMessage id="spreadsheet/reset_spreadsheet_collection/button_tooltip" />}
-                    sx={styles.resetButton}
+                    sx={styles.button}
                     size="small"
                     onClick={onExportClick}
                     disabled={disabled}
