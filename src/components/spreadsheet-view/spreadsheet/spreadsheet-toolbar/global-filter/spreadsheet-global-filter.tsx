@@ -9,10 +9,10 @@ import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo } from 'react';
 import { debounce } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { AppState } from '../../../../../redux/reducer';
+import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
+import { type AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
-import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
@@ -32,7 +32,7 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     );
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- useCallback received a function whose dependencies are unknown. Pass an inline function instead.
     const debouncedSetFilters = useCallback(
         debounce((uuid: UUID, filters: GlobalFilter[]) => {
             if (!studyUuid) {
@@ -52,13 +52,14 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
         [debouncedSetFilters, tableDefinition.uuid]
     );
 
-    const filters = useMemo(() => {
-        if (tableDefinition.type === EQUIPMENT_TYPES.SUBSTATION) {
-            return [...countriesFilter, ...propertiesFilter];
-        } else {
-            return [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter];
-        }
-    }, [countriesFilter, propertiesFilter, tableDefinition.type, voltageLevelsFilter]);
+    const filters = useMemo(
+        () => [
+            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ? voltageLevelsFilter : []),
+            ...countriesFilter,
+            ...propertiesFilter,
+        ],
+        [countriesFilter, propertiesFilter, tableDefinition.type, voltageLevelsFilter]
+    );
 
     useEffect(() => {
         if (globalFilterSpreadsheetState) {
@@ -73,7 +74,7 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
     return (
         <GlobalFilterSelector
             filterableEquipmentTypes={[
-                tableDefinition.type as unknown as EQUIPMENT_TYPES,
+                tableDefinition.type as unknown as EQUIPMENT_TYPES, //TODO what to do with BRANCH type?
                 EQUIPMENT_TYPES.SUBSTATION,
                 EQUIPMENT_TYPES.VOLTAGE_LEVEL,
             ]}

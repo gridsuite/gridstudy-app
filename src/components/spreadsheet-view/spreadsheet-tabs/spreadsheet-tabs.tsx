@@ -23,7 +23,7 @@ import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
-import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
+import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import SpreadsheetTabLabel from './spreadsheet-tab-label';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
@@ -32,11 +32,18 @@ import {
     removeSpreadsheetConfigFromCollection,
     renameSpreadsheetModel,
     reorderSpreadsheetConfigs,
+    updateSpreadsheetModel,
 } from 'services/study/study-config';
 import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
 import { NodeAlias } from '../types/node-alias.type';
 import SaveIcon from '@mui/icons-material/Save';
 import { SaveSpreadsheetCollectionDialog } from '../spreadsheet/spreadsheet-toolbar/save/save-spreadsheet-collection-dialog';
+import { SpreadsheetModelGlobalEditorDialog } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor-dialog';
+import {
+    columnsModelForm,
+    COLUMNS_MODEL,
+} from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.utils';
+import { ColumnGlobalModel } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.type';
 
 const draggableTabStyles = {
     container: {
@@ -88,11 +95,12 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const dispatch = useDispatch<AppDispatch>();
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
     const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
-    const [tabToBeRemovedOrRenamedUuid, setTabToBeRemovedOrRenamedUuid] = useState<UUID | null>(null);
+    const editDialogOpen = useStateBoolean(false);
+    const [tabActionInProgressUuid, setTabActionInProgressUuid] = useState<UUID | null>(null);
     const saveCollectionDialogOpen = useStateBoolean(false);
 
     const selectedTabIndex = useMemo(() => {
@@ -104,20 +112,20 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     }, [selectedTabUuid, tablesDefinitions]);
 
     const handleRemoveTab = () => {
-        if (!studyUuid || !tabToBeRemovedOrRenamedUuid || !spreadsheetsCollectionUuid) {
+        if (!studyUuid || !tabActionInProgressUuid || !spreadsheetsCollectionUuid) {
             return;
         }
 
-        const tabToBeRemovedIndex = tablesDefinitions.findIndex((def) => def.uuid === tabToBeRemovedOrRenamedUuid);
+        const tabToBeRemovedIndex = tablesDefinitions.findIndex((def) => def.uuid === tabActionInProgressUuid);
         const tabToBeRemoved = tablesDefinitions[tabToBeRemovedIndex];
 
-        removeSpreadsheetConfigFromCollection(studyUuid, spreadsheetsCollectionUuid, tabToBeRemovedOrRenamedUuid)
+        removeSpreadsheetConfigFromCollection(studyUuid, spreadsheetsCollectionUuid, tabActionInProgressUuid)
             .then(() => {
-                const remainingTabs = tablesDefinitions.filter((tab) => tab.uuid !== tabToBeRemovedOrRenamedUuid);
+                const remainingTabs = tablesDefinitions.filter((tab) => tab.uuid !== tabActionInProgressUuid);
 
                 // If we're removing the currently selected tab or a tab before it,
                 // we need to update the selection
-                if (tabToBeRemovedOrRenamedUuid === selectedTabUuid) {
+                if (tabActionInProgressUuid === selectedTabUuid) {
                     const newIndex = Math.min(selectedTabIndex, remainingTabs.length - 1);
                     if (newIndex >= 0) {
                         handleSwitchTab(remainingTabs[newIndex].uuid);
@@ -143,12 +151,12 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
     };
 
     const handleRenameTab = (newName: string) => {
-        if (!studyUuid || !tabToBeRemovedOrRenamedUuid) {
+        if (!studyUuid || !tabActionInProgressUuid) {
             return;
         }
-        renameSpreadsheetModel(studyUuid, tabToBeRemovedOrRenamedUuid, newName)
+        renameSpreadsheetModel(studyUuid, tabActionInProgressUuid, newName)
             .then(() => {
-                dispatch(renameTableDefinition(tabToBeRemovedOrRenamedUuid, newName));
+                dispatch(renameTableDefinition(tabActionInProgressUuid, newName));
                 setIsRenameDialogOpen(false);
             })
             .catch((error) => {
@@ -159,15 +167,68 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
             });
     };
 
-    const handleRemoveTabClick = (tabUuid: UUID) => {
-        setTabToBeRemovedOrRenamedUuid(tabUuid);
-        setConfirmationDialogOpen(true);
+    const handleUpdateTab = (newColumnsModel: columnsModelForm) => {
+        if (!studyUuid || !tabActionInProgressUuid || !tableDefinitionInProgress) {
+            return;
+        }
+
+        const spreadsheetConfig: SpreadsheetConfig = {
+            name: tableDefinitionInProgress.name,
+            sheetType: tableDefinitionInProgress.type,
+            columns: newColumnsModel[COLUMNS_MODEL].map((columnModel) => {
+                const column: ColumnDefinitionDto = {
+                    uuid: columnModel.columnUuid as UUID,
+                    id: columnModel.columnId,
+                    name: columnModel.columnName,
+                    type: columnModel.columnType,
+                    precision: columnModel.columnPrecision,
+                    formula: columnModel.columnFormula,
+                    dependencies: columnModel.columnDependencies?.length
+                        ? JSON.stringify(columnModel.columnDependencies)
+                        : undefined,
+                    visible: columnModel.columnVisible,
+                };
+                return column;
+            }),
+        };
+
+        updateSpreadsheetModel(studyUuid, tableDefinitionInProgress.uuid, spreadsheetConfig)
+            .then(() => {
+                snackInfo({
+                    headerId: 'spreadsheet/global-model-edition/update_confirmation_message',
+                });
+            })
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'spreadsheet/global-model-edition/update_error_message',
+                });
+            });
     };
 
-    const handleRenameTabClick = (tabUuid: UUID) => {
-        setTabToBeRemovedOrRenamedUuid(tabUuid);
-        setIsRenameDialogOpen(true);
-    };
+    const handleRemoveTabClick = useCallback(
+        (tabUuid: UUID) => {
+            setTabActionInProgressUuid(tabUuid);
+            setConfirmationDialogOpen(true);
+        },
+        [setTabActionInProgressUuid, setConfirmationDialogOpen]
+    );
+
+    const handleRenameTabClick = useCallback(
+        (tabUuid: UUID) => {
+            setTabActionInProgressUuid(tabUuid);
+            setIsRenameDialogOpen(true);
+        },
+        [setTabActionInProgressUuid, setIsRenameDialogOpen]
+    );
+
+    const handleEditTabClick = useCallback(
+        (tabUuid: UUID) => {
+            setTabActionInProgressUuid(tabUuid);
+            editDialogOpen.setTrue();
+        },
+        [editDialogOpen]
+    );
 
     const resetTabSelection = useCallback(
         (newTablesDefinitions: SpreadsheetTabDefinition[]) => {
@@ -220,20 +281,43 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                         name={def.name}
                         onRemove={() => handleRemoveTabClick(def.uuid)}
                         onRename={() => handleRenameTabClick(def.uuid)}
+                        onEdit={() => handleEditTabClick(def.uuid)}
                         disabled={disabled}
                     />
                 }
             />
         ));
-    }, [tablesDefinitions, disabled]);
+    }, [tablesDefinitions, disabled, handleEditTabClick, handleRenameTabClick, handleRemoveTabClick]);
 
-    const tabToBeRemovedOrRenamedName = useMemo(() => {
-        if (!tabToBeRemovedOrRenamedUuid) {
+    const tabActionInProgressName = useMemo(() => {
+        if (!tabActionInProgressUuid) {
             return '';
         }
-        const tab = tablesDefinitions.find((tab) => tab.uuid === tabToBeRemovedOrRenamedUuid);
+        const tab = tablesDefinitions.find((tab) => tab.uuid === tabActionInProgressUuid);
         return tab?.name ?? '';
-    }, [tabToBeRemovedOrRenamedUuid, tablesDefinitions]);
+    }, [tabActionInProgressUuid, tablesDefinitions]);
+
+    const tableDefinitionInProgress = useMemo(() => {
+        if (!tabActionInProgressUuid) {
+            return undefined;
+        }
+        return tablesDefinitions.find((tab) => tab.uuid === tabActionInProgressUuid);
+    }, [tabActionInProgressUuid, tablesDefinitions]);
+
+    const columnsModel: ColumnGlobalModel[] | undefined = useMemo(() => {
+        return tableDefinitionInProgress?.columns.map((columnDef) => {
+            return {
+                columnUuid: columnDef.uuid,
+                columnId: columnDef.id,
+                columnName: columnDef.name,
+                columnType: columnDef.type,
+                columnPrecision: columnDef.precision,
+                columnFormula: columnDef.formula,
+                columnDependencies: columnDef.dependencies,
+                columnVisible: columnDef.visible,
+            };
+        });
+    }, [tableDefinitionInProgress]);
 
     return (
         <>
@@ -304,7 +388,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                         {
                             id: 'spreadsheet/remove_spreadsheet_confirmation',
                         },
-                        { spreadsheetName: tabToBeRemovedOrRenamedName }
+                        { spreadsheetName: tabActionInProgressName }
                     )}
                     openConfirmationPopup={confirmationDialogOpen}
                     setOpenConfirmationPopup={setConfirmationDialogOpen}
@@ -315,11 +399,18 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
                 open={isRenameDialogOpen}
                 onClose={() => setIsRenameDialogOpen(false)}
                 onRename={handleRenameTab}
-                currentName={tabToBeRemovedOrRenamedName}
-                tabUuid={tabToBeRemovedOrRenamedUuid}
+                currentName={tabActionInProgressName}
+                tabUuid={tabActionInProgressUuid}
                 tablesDefinitions={tablesDefinitions}
             />
             <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
+            <SpreadsheetModelGlobalEditorDialog
+                open={editDialogOpen}
+                columnsModel={columnsModel}
+                updateColumnsModel={function (newColumnsModel: columnsModelForm): void {
+                    handleUpdateTab(newColumnsModel);
+                }}
+            />
         </>
     );
 };

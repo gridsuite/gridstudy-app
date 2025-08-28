@@ -112,9 +112,11 @@ export default function CreateVoltageLevelSectionDialog({
 }: Readonly<VoltageLevelSectionCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
+    const [isExtensionNotFoundOrNotSupportedTopology, setIsExtensionNotFoundOrNotSupportedTopology] =
+        useState<boolean>(false);
     const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSectionInfos[]>();
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const formMethods = useForm<DeepNullable<CreateVoltageLevelSectionDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<CreateVoltageLevelSectionDialogSchemaForm>>(formSchema),
@@ -143,13 +145,12 @@ export default function CreateVoltageLevelSectionDialog({
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
+                            const isNotSupported =
+                                !voltageLevel.isBusbarSectionPositionFound ||
+                                voltageLevel?.topologyKind !== 'NODE_BREAKER';
                             setBusBarSectionInfos(voltageLevel?.busBarSectionInfos || []);
+                            setIsExtensionNotFoundOrNotSupportedTopology(isNotSupported);
                             setDataFetchStatus(FetchStatus.SUCCEED);
-                            if (!voltageLevel.isRetrievedBusbarSections) {
-                                snackWarning({
-                                    messageId: 'BusBarSectionsCopyingNotSupported',
-                                });
-                            }
                         }
                     })
                     .catch(() => {
@@ -157,7 +158,7 @@ export default function CreateVoltageLevelSectionDialog({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, snackWarning]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
     );
 
     useEffect(() => {
@@ -260,6 +261,8 @@ export default function CreateVoltageLevelSectionDialog({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
+                        isUpdate={isUpdate}
+                        isNotFoundOrNotSupported={isExtensionNotFoundOrNotSupportedTopology}
                     />
                 )}
                 {selectedId == null && (
@@ -268,6 +271,9 @@ export default function CreateVoltageLevelSectionDialog({
                         setSelectedId={setSelectedId}
                         equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         fillerHeight={5}
+                        freeInputAllowed={false}
+                        autoSelectEnabled={true}
+                        autoHighlightEnabled={true}
                     />
                 )}
             </ModificationDialog>

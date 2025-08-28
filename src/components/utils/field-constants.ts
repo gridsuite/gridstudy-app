@@ -46,19 +46,23 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
+export const IS_VOLTAGE_LEVEL_MODIFICATION = 'isVoltageLevelModification';
+export const IS_BUS_OR_BUSBAR_SECTION_MODIFICATION = 'isBusOrBusbarSectionModification';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
 export const LIMIT_SETS_MODIFICATION_TYPE = {
-    MODIFIED: 'MODIFIED',
-    ADDED: 'ADDED',
-    REPLACED: 'REPLACED',
+    MODIFY: 'MODIFY',
+    ADD: 'ADD',
+    REPLACE: 'REPLACE',
 } as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
+export const IS_ACTIVE = 'isActive';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID = 'selectedOperationalLimitsGroupId';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 export const CSV_FILENAME = 'csvFilename';
 
@@ -194,15 +198,17 @@ export const G2 = 'g2';
 export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
+export const LIMIT_SET_NAME = 'limitSetName';
+export const TEMPORARY_LIMIT = 'temporaryLimit';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
 export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
-    MODIFIED: 'MODIFIED',
-    ADDED: 'ADDED',
-    DELETED: 'DELETED',
-    REPLACED: 'REPLACED',
+    MODIFY: 'MODIFY',
+    ADD: 'ADD',
+    DELETE: 'DELETE',
+    REPLACE: 'REPLACE',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
@@ -210,11 +216,18 @@ export const SEGMENT_TYPE_ID = 'segmentTypeId';
 export const SEGMENT_RESISTANCE = 'segmentResistance';
 export const SEGMENT_REACTANCE = 'segmentReactance';
 export const SEGMENT_SUSCEPTANCE = 'segmentSusceptance';
+export const SEGMENT_CURRENT_LIMITS = 'segmentCurrentLimits';
 export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
+export const AERIAL_AREAS = 'aerialAreas';
+export const AERIAL_TEMPERATURES = 'aerialTemperatures';
+export const UNDERGROUND_AREAS = 'undergroundAreas';
+export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
+export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
 export const APPLICABIlITY = 'applicability';
+export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';

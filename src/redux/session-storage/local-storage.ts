@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DARK_THEME, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
-import { getComputedLanguage } from '../../utils/language';
+import { DARK_THEME, getComputedLanguage, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { APP_NAME } from '../../utils/config-params';
 import { StudyDisplayMode } from 'components/network-modification.type';
 import { UUID } from 'crypto';

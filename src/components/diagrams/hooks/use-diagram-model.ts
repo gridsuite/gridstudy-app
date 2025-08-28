@@ -29,9 +29,10 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
-import { DiagramAdditionalMetadata, MAX_NUMBER_OF_NAD_DIAGRAMS } from '../diagram-common';
+import { DiagramAdditionalMetadata } from '../diagram-common';
 import { mergePositions } from '../diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
+import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from '../diagram-grid-layout-utils';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -261,7 +262,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             svg: data,
                             name: getDiagramTitle(diagram, data),
                             ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
-                                initializationNadConfigUuid: undefined, // reset initializationNadConfigUuid after fetching the SVG
                                 voltageLevelToExpandIds: [],
                                 voltageLevelIds: [
                                     ...new Set([
@@ -354,10 +354,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         },
         [diagrams]
     );
-
-    const countOpenedNadDiagrams = (diagrams: Record<UUID, Diagram>) => {
-        return Object.values(diagrams).filter((diagram) => diagram?.type === DiagramType.NETWORK_AREA_DIAGRAM).length;
-    };
 
     const createDiagram = useCallback(
         (diagramParams: DiagramParams) => {

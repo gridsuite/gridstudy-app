@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FloatInput } from '@gridsuite/commons-ui';
+import { IntegerInput } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
 import GridItem from '../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
@@ -61,7 +61,7 @@ export default function CreateVoltageLevelTopologyForm({
         [intl, voltageLevelId]
     );
 
-    const sectionCountField = <FloatInput name={`${SECTION_COUNT}`} label={'SectionCount'} />;
+    const sectionCountField = <IntegerInput name={`${SECTION_COUNT}`} label={'SectionCount'} />;
 
     const diagramToolTip = useMemo(
         () => (
