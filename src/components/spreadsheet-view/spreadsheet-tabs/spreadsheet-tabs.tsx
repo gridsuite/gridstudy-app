@@ -143,10 +143,7 @@ export default function SpreadsheetTabs({
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'spreadsheet/remove_spreadsheet_error',
-                });
+                snackError({ messageTxt: error.message, headerId: 'spreadsheet/remove_spreadsheet_error' });
             });
     };
 
@@ -160,10 +157,7 @@ export default function SpreadsheetTabs({
                 setIsRenameDialogOpen(false);
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'spreadsheet/rename_spreadsheet_error',
-                });
+                snackError({ messageTxt: error.message, headerId: 'spreadsheet/rename_spreadsheet_error' });
             });
     };
 
@@ -258,10 +252,7 @@ export default function SpreadsheetTabs({
             if (spreadsheetsCollectionUuid) {
                 const newOrder = reorderedTabs.map((tab) => tab.uuid);
                 reorderSpreadsheetConfigs(studyUuid, spreadsheetsCollectionUuid, newOrder).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'spreadsheet/reorder_tabs_error',
-                    });
+                    snackError({ messageTxt: error.message, headerId: 'spreadsheet/reorder_tabs_error' });
                 });
             }
         },
@@ -385,9 +376,7 @@ export default function SpreadsheetTabs({
             {confirmationDialogOpen && (
                 <PopupConfirmationDialog
                     message={intl.formatMessage(
-                        {
-                            id: 'spreadsheet/remove_spreadsheet_confirmation',
-                        },
+                        { id: 'spreadsheet/remove_spreadsheet_confirmation' },
                         { spreadsheetName: tabActionInProgressName }
                     )}
                     openConfirmationPopup={confirmationDialogOpen}
