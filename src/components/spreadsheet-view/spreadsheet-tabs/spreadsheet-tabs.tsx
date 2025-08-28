@@ -77,7 +77,7 @@ interface SpreadsheetTabsProps {
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
     resetNodeAliases: ResetNodeAliasCallback;
-    handleResetCollectionClick?: () => void;
+    handleResetCollectionClick: () => void;
     nodeAliases: NodeAlias[] | undefined;
     updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
 }
