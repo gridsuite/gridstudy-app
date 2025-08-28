@@ -118,9 +118,21 @@ const spreadsheetFr = {
     'spreadsheet/reset_filters_error': 'Erreur lors de la réinitialisation des filtres du tableur',
     'spreadsheet/rename/label': 'Renommer',
     'spreadsheet/delete/label': 'Supprimer',
+    'spreadsheet/edit/label': 'Editer',
     'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
     'spreadsheet/rename_dialog_title': 'Renommer le tableur',
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
+
+    'spreadsheet/global-model-edition/edit': 'Editer le modèle',
+    'spreadsheet/global-model-edition/column_id': 'ID',
+    'spreadsheet/global-model-edition/column_name': 'Nom',
+    'spreadsheet/global-model-edition/column_type': 'Type',
+    'spreadsheet/global-model-edition/column_precision': 'Précision',
+    'spreadsheet/global-model-edition/column_formula': 'Formule',
+    'spreadsheet/global-model-edition/column_dependencies': 'Dépendances',
+    'spreadsheet/global-model-edition/update_confirmation_message': 'Modèle de tableur mis à jour',
+    'spreadsheet/global-model-edition/update_error_message':
+        'Une erreur est survenue lors de la mise à jour du modèle de tableur',
 
     // calculations
     'spreadsheet/calculation/sum': 'Somme',
