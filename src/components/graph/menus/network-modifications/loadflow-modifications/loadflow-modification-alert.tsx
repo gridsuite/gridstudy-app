@@ -6,7 +6,7 @@
  */
 
 import { CheckCircleOutlined } from '@mui/icons-material';
-import { Alert, Box, Button, Theme } from '@mui/material';
+import { Alert, Button, Theme } from '@mui/material';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { LoadflowModifications } from './loadflow-modifications';
