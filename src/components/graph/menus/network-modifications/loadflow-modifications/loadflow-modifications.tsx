@@ -63,7 +63,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
             makeAggridColumnDef('sectionCountIn', 'loadflowModificationsSectionCountIn'),
             makeAggridColumnDef('sectionCountOut', 'loadflowModificationsSectionCountOut'),
         ];
-    }, [intl, makeAggridColumnDef]);
+    }, [makeAggridColumnDef]);
 
     const onGridReady = useCallback(({ api }: GridReadyEvent) => {
         api?.sizeColumnsToFit();
