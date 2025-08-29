@@ -18,7 +18,6 @@ import { JSONSchema7 } from 'json-schema';
 import { UseFormReturn } from 'react-hook-form';
 import { renderTreeData } from './utils/render-tree-data';
 import { usePopoverToggle } from './utils/use-popover-toggle';
-import { useIntl } from 'react-intl';
 
 interface TreeviewSearchableProps {
     properties: JSONSchema7 | null;
@@ -27,7 +26,6 @@ interface TreeviewSearchableProps {
 }
 
 export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: TreeviewSearchableProps) => {
-    const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
