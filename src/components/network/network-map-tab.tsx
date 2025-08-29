@@ -41,15 +41,10 @@ import {
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
+    UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import {
-    openDiagram,
-    resetMapEquipment,
-    setMapDataLoading,
-    setReloadMapNeeded,
-    setStudyDisplayMode,
-} from '../../redux/actions';
+import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -70,7 +65,6 @@ import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { DiagramType } from 'components/diagrams/diagram.type';
 import GuidancePopup from './guidance-popup';
-import { StudyDisplayMode } from 'components/network-modification.type';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
@@ -133,6 +127,7 @@ type NetworkMapTabProps = {
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     onElementCreated?: () => void;
+    isInDrawingMode: UseStateBooleanReturn;
 };
 
 export const NetworkMapTab = ({
@@ -150,12 +145,12 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     onPolygonChanged,
     onElementCreated,
+    isInDrawingMode,
 }: NetworkMapTabProps) => {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
 
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
     const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
-    const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
@@ -220,23 +215,12 @@ export const NetworkMapTab = ({
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
 
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
-    const [isInDrawingMode, setIsInDrawingMode] = useState(false);
     const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
-    const previousStudyDisplayMode = useRef<StudyDisplayMode | undefined>();
     const [nominalVoltages, setNominalVoltages] = useState<number[]>([]);
 
     const onDrawEvent = useCallback((event: DRAW_EVENT) => {
-        switch (event) {
-            case DRAW_EVENT.DELETE:
-                setShouldOpenSelectionCreationPanel(false);
-                break;
-            case DRAW_EVENT.CREATE:
-                setShouldOpenSelectionCreationPanel(true);
-                break;
-            case DRAW_EVENT.UPDATE:
-                break;
-            default:
-                break;
+        if (event === DRAW_EVENT.CREATE) {
+            setShouldOpenSelectionCreationPanel(true);
         }
     }, []);
 
@@ -273,40 +257,6 @@ export const NetworkMapTab = ({
                 }));
         }
     };
-
-    // When the user enter the drawing mode, we need to switch the study display mode to map
-    // and save the previous mode, so we can restore it when the user cancel the drawing
-    useEffect(() => {
-        const all = networkMapRef.current?.getMapDrawer()?.getAll();
-        if (all === undefined) {
-            return;
-        } // map is not initialized yet
-
-        const features = all?.features?.[0];
-        const coordinates = features?.geometry?.coordinates;
-        const isPolygonDrawn = coordinates?.[0]?.length > 3;
-
-        // first click on draw button, the polygon is not drawn yet, and the user want to draw
-        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
-            if (!isInDrawingMode) {
-                // save the previous display mode, so we can restore it when the user cancel the drawing
-                if (!previousStudyDisplayMode.current) {
-                    previousStudyDisplayMode.current = studyDisplayMode;
-                }
-                setIsInDrawingMode(true);
-                //go to map full screen mode
-                dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
-            }
-        }
-        // the user has a polygon, and want to draw another
-        else if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
-            if (networkMapRef.current?.getMapDrawer()?.getAll().features?.length > 1) {
-                setShouldOpenSelectionCreationPanel(false);
-                const idFirstPolygon = networkMapRef.current?.getMapDrawer().getAll().features[0].id;
-                networkMapRef.current?.getMapDrawer().delete(String(idFirstPolygon));
-            }
-        }
-    }, [dispatch, drawingMode, studyDisplayMode, isInDrawingMode, networkMapRef]);
 
     const {
         handleOpenModificationDialog,
@@ -368,14 +318,14 @@ export const NetworkMapTab = ({
 
     const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
-        if (!isInDrawingMode) {
+        if (!isInDrawingMode.value) {
             openEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL, null);
         }
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
         (idSubstation: string, x: number, y: number) => {
-            if (!isInDrawingMode) {
+            if (!isInDrawingMode.value) {
                 setChoiceVoltageLevelsSubstationId(idSubstation);
                 setPosition([x, y]);
             }
@@ -1042,23 +992,44 @@ export const NetworkMapTab = ({
 
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.
-        networkMapRef.current?.getMapDrawer()?.trash();
+        networkMapRef.current?.getMapDrawer().deleteAll();
+        // we need to reset the drawing mode so the draw button can be used again to draw a new feature
+        networkMapRef.current?.getMapDrawer().changeMode(DRAW_MODES.SIMPLE_SELECT);
         setDrawingMode(DRAW_MODES.SIMPLE_SELECT);
-        // leave drawing mode and go back to the previous study display mode and close the creation panel if it's open
-        if (previousStudyDisplayMode.current !== undefined) {
-            dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
+        isInDrawingMode.setFalse();
+        setShouldOpenSelectionCreationPanel(false);
+    }, [isInDrawingMode]);
+
+    useEffect(() => {
+        const all = networkMapRef.current?.getMapDrawer()?.getAll();
+        if (all === undefined) {
+            return;
+        } // map is not initialized yet
+
+        const features = all?.features?.[0];
+        const coordinates = features?.geometry?.coordinates;
+        const isPolygonDrawn = coordinates?.[0]?.length > 3;
+
+        // first click on draw button, the polygon is not drawn yet, and the user want to draw
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
+            if (!isInDrawingMode.value) {
+                isInDrawingMode.setTrue();
+            }
         }
-        setIsInDrawingMode(false);
-        previousStudyDisplayMode.current = undefined;
-        if (shouldOpenSelectionCreationPanel) {
-            setShouldOpenSelectionCreationPanel(false);
+        // the second click leaves drawing mode
+        else if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
+            leaveDrawingMode();
+        } else if (drawingMode === DRAW_MODES.SIMPLE_SELECT && isInDrawingMode.value && !isPolygonDrawn) {
+            leaveDrawingMode();
         }
-    }, [dispatch, shouldOpenSelectionCreationPanel]);
+    }, [dispatch, drawingMode, isInDrawingMode, leaveDrawingMode, networkMapRef]);
 
     const handleElementCreated = useCallback(() => {
-        onElementCreated?.();
+        snackInfo({
+            messageId: 'generatedNADOpenedInTheGrid',
+        });
         leaveDrawingMode();
-    }, [leaveDrawingMode, onElementCreated]);
+    }, [leaveDrawingMode, snackInfo]);
 
     const openSLDInTheGrid = useCallback(
         (equipmentId: string, diagramType: DiagramType) => {
@@ -1074,7 +1045,7 @@ export const NetworkMapTab = ({
     const handleOpenVoltageLevel = useCallback(
         (vlId: string) => {
             // don't open the sld if the drawing mode is activated
-            if (!isInDrawingMode) {
+            if (!isInDrawingMode.value) {
                 openSLDInTheGrid(vlId, DiagramType.VOLTAGE_LEVEL);
             }
         },
@@ -1100,7 +1071,13 @@ export const NetworkMapTab = ({
                     height: '100%',
                     '& .mapbox-gl-draw_polygon': {
                         // To override the bg-color of the draw button when we enter in draw mode
-                        backgroundColor: isInDrawingMode ? 'lightblue !important' : 'inherit',
+                        backgroundColor: isInDrawingMode.value ? 'lightblue !important' : 'inherit',
+                        borderRadius: '4px !important',
+                    },
+                    // we hide trash control button because it is only useful if we allow drawing multiple features
+                    // but in our case, we only allow drawing one feature at a time
+                    '& .mapbox-gl-draw_trash': {
+                        display: 'none',
                     },
                 }}
             >
@@ -1130,7 +1107,7 @@ export const NetworkMapTab = ({
                             y,
                             EquipmentType.SUBSTATION,
                             null,
-                            isInDrawingMode
+                            isInDrawingMode.value
                         )
                     }
                     onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
@@ -1140,7 +1117,7 @@ export const NetworkMapTab = ({
                             y,
                             EquipmentType.LINE,
                             null,
-                            isInDrawingMode
+                            isInDrawingMode.value
                         )
                     }
                     onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
@@ -1150,7 +1127,7 @@ export const NetworkMapTab = ({
                             y,
                             EquipmentType.HVDC_LINE,
                             getHvdcExtendedEquipmentType(equipment.hvdcType),
-                            isInDrawingMode
+                            isInDrawingMode.value
                         )
                     }
                     onVoltageLevelMenuClick={voltageLevelMenuClick}
@@ -1165,7 +1142,7 @@ export const NetworkMapTab = ({
                     // - changing visible when the map provider is changed in the settings because
                     //   it causes a render with the map container having display:none
                     onManualRefreshClick={loadMapManually}
-                    triggerMapResizeOnChange={[studyDisplayMode, visible]}
+                    triggerMapResizeOnChange={[visible]}
                     renderPopover={renderLinePopover}
                     mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
                     mapTheme={theme?.palette.mode}
@@ -1179,17 +1156,12 @@ export const NetworkMapTab = ({
                     onDrawEvent={(event) => {
                         onDrawEvent(event);
                     }}
-                    shouldDisableToolTip={!visible || isInDrawingMode}
+                    shouldDisableToolTip={!visible || isInDrawingMode.value}
                 />
                 {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                 {renderSearchEquipment()}
             </Box>
-            {isInDrawingMode &&
-                (studyDisplayMode === StudyDisplayMode.MAP ||
-                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE) && (
-                    <GuidancePopup onActionClick={leaveDrawingMode} />
-                )}
+            {isInDrawingMode.value && <GuidancePopup onActionClick={leaveDrawingMode} />}
             {shouldOpenSelectionCreationPanel && (
                 <Box
                     sx={{
@@ -1202,7 +1174,7 @@ export const NetworkMapTab = ({
                     <SelectionCreationPanel
                         getEquipments={getEquipments}
                         onCancel={() => {
-                            setShouldOpenSelectionCreationPanel(false);
+                            leaveDrawingMode();
                         }}
                         leaveDrawingMode={handleElementCreated}
                         nominalVoltages={nominalVoltages}
@@ -1274,7 +1246,7 @@ export const NetworkMapTab = ({
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>{basicDataReady && mapDataLoading && <LinearProgress />}</Box>
             {renderMap()}
-            {!isInDrawingMode && (
+            {!isInDrawingMode.value && (
                 <>
                     {renderEquipmentMenu()}
                     {renderModificationDialog()}

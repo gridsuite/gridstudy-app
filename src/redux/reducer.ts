@@ -158,7 +158,6 @@ import {
     SET_RELOAD_MAP_NEEDED,
     SET_ROOT_NETWORK_INDEXATION_STATUS,
     SET_ROOT_NETWORKS,
-    SET_STUDY_DISPLAY_MODE,
     SET_TOGGLE_OPTIONS,
     type SetAppTabIndexAction,
     type SetCalculationSelectionsAction,
@@ -177,7 +176,6 @@ import {
     type SetReloadMapNeededAction,
     type SetRootNetworkIndexationStatusAction,
     type SetRootNetworksAction,
-    type SetStudyDisplayModeAction,
     type SetToggleOptionsAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     type ShortcircuitAnalysisResultFilterAction,
@@ -452,7 +450,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramDepth: number;
-    studyDisplayMode: StudyDisplayMode;
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
     tables: TablesState;
@@ -605,7 +602,6 @@ const initialState: AppState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     isMonoRootStudy: true,
-    studyDisplayMode: StudyDisplayMode.TREE,
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -1202,21 +1198,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isModificationsInProgress = action.isModificationsInProgress;
     });
 
-    builder.addCase(SET_STUDY_DISPLAY_MODE, (state, action: SetStudyDisplayModeAction) => {
-        if (Object.values(StudyDisplayMode).includes(action.studyDisplayMode)) {
-            // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-            // Some actions in the TREE display mode could change this value after that
-            // ex: change current Node, current Node updated ...
-            if (action.studyDisplayMode === StudyDisplayMode.TREE) {
-                state.freezeMapUpdates = true;
-            } else {
-                state.freezeMapUpdates = false;
-            }
-
-            state.studyDisplayMode = action.studyDisplayMode;
-        }
-    });
-
     builder.addCase(SET_MONO_ROOT_STUDY, (state, action: SetMonoRootStudyAction) => {
         state.isMonoRootStudy = action.isMonoRootStudy;
     });
@@ -1247,14 +1228,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 positions: [],
             };
         }
-
-        // Switch to the grid layout in order to see the newly opened diagram
-        if (
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
-        ) {
-            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
-        }
     });
 
     builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
@@ -1271,14 +1244,6 @@ export const reducer = createReducer(initialState, (builder) => {
             voltageLevelToOmitIds: [],
             positions: [],
         };
-
-        // Switch to the grid layout in order to see the newly opened diagram
-        if (
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
-        ) {
-            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
-        }
     });
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {

@@ -102,7 +102,6 @@ export type AppActions =
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
     | SetComputingStatusAction
@@ -743,18 +742,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
-export type SetStudyDisplayModeAction = Readonly<Action<typeof SET_STUDY_DISPLAY_MODE>> & {
-    studyDisplayMode: StudyDisplayMode;
-};
-
-export function setStudyDisplayMode(studyDisplayMode: StudyDisplayMode): SetStudyDisplayModeAction {
-    return {
-        type: SET_STUDY_DISPLAY_MODE,
-        studyDisplayMode: studyDisplayMode,
     };
 }
 
