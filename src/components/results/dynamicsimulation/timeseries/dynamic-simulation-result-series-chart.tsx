@@ -11,7 +11,7 @@ import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from '../plot/plotly-series-chart';
 import { Card, CardContent, CardHeader, Theme, Typography } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
-import TooltipIconButton from '../common/tooltip-icon-button';
+import TooltipIconButton from '../../../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { Series } from '../plot/plot-types';

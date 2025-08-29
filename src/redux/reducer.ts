@@ -192,11 +192,13 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
+    type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
     USE_NAME,
@@ -290,6 +292,7 @@ import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotificat
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
+import type { SpreadsheetPartialData } from '../components/spreadsheet-view/types/SpreadsheetPartialData';
 
 // Redux state
 export type StudyUpdated = {
@@ -475,6 +478,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
+    spreadsheetPartialData: SpreadsheetPartialData;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
@@ -616,6 +620,20 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: {},
+    spreadsheetPartialData: {
+        [SpreadsheetEquipmentType.BRANCH]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.LINE]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.GENERATOR]: {
+            regulatingTerminal: false,
+        },
+    },
     diagramGridLayout: {
         gridLayouts: {},
         params: [],
@@ -1531,6 +1549,22 @@ export const reducer = createReducer(initialState, (builder) => {
         state[LOGS_STORE_FIELD] = {
             ...initialLogsFilterState,
         };
+    });
+
+    builder.addCase(UPDATE_SPREADSHEET_PARTIAL_DATA, (state, action: UpdateSpreadsheetPartialDataAction) => {
+        // we deeply merge because the server can notify only partial option change and also to not trigger unneeded redux events
+        for (const typeKey of Object.keys(state.spreadsheetPartialData) as Array<keyof SpreadsheetPartialData>) {
+            const newOption = action.newOptions[typeKey];
+            if (newOption) {
+                for (const optKey of Object.keys(state.spreadsheetPartialData[typeKey]) as Array<
+                    keyof SpreadsheetPartialData[typeof typeKey]
+                >) {
+                    if (newOption[optKey] !== undefined) {
+                        state.spreadsheetPartialData[typeKey][optKey] = newOption[optKey];
+                    }
+                }
+            }
+        }
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {

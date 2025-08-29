@@ -1,0 +1,27 @@
+/*
+ * Copyright © 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { SpreadsheetEquipmentType } from './spreadsheet.type';
+
+type SpreadsheetLazyDataBranch = {
+    operationalLimitsGroups: boolean;
+};
+
+export type SpreadsheetPartialData = {
+    [SpreadsheetEquipmentType.BRANCH]: SpreadsheetLazyDataBranch;
+    [SpreadsheetEquipmentType.LINE]: SpreadsheetLazyDataBranch & {
+        // ...
+    };
+    [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: SpreadsheetLazyDataBranch & {
+        // ...
+    };
+    [SpreadsheetEquipmentType.GENERATOR]: {
+        regulatingTerminal: boolean;
+    };
+};
+
+'' as SpreadsheetPartialData satisfies Partial<Record<SpreadsheetEquipmentType, Record<string, boolean>>>; //compilation-time check

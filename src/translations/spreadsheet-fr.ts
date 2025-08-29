@@ -122,6 +122,12 @@ const spreadsheetFr = {
     'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
     'spreadsheet/rename_dialog_title': 'Renommer le tableur',
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
+    'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
+    'spreadsheet/tabs/lazy_loading/error_loading_title': 'Erreur lors du chargement des paramètres',
+    'spreadsheet/tabs/lazy_loading/error_loading_message':
+        'Le chargement des données optionnelles sera désactivée par défault.',
+    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Operational Limit Groups non-actifs',
+    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux de réglage des groupes',
 
     'spreadsheet/global-model-edition/edit': 'Editer le modèle',
     'spreadsheet/global-model-edition/column_id': 'ID',

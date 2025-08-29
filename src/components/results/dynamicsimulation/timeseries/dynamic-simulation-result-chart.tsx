@@ -10,7 +10,7 @@ import DynamicSimulationResultSeriesList from './dynamic-simulation-result-serie
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
 import VisibilityBox from '../common/visibility-box';
-import TooltipIconButton from '../common/tooltip-icon-button';
+import TooltipIconButton from '../../../common/tooltip-icon-button';
 import AddIcon from '@mui/icons-material/Add';
 import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
