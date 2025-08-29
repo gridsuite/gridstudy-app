@@ -300,14 +300,14 @@ export default function SpreadsheetTabs({
     return (
         <>
             <Grid container direction="row" wrap="nowrap" item>
-                <Grid item padding={1}>
+                <Grid item padding={1} xs="auto">
                     <AddSpreadsheetButton
                         disabled={disabled}
                         resetTabIndex={resetTabSelection}
                         resetNodeAliases={resetNodeAliases}
                     />
                 </Grid>
-                <Grid item sx={{ overflow: 'hidden', flexGrow: 1 }}>
+                <Grid item xs sx={{ overflow: 'hidden' }}>
                     <DroppableTabs
                         id="equipment-tabs"
                         value={selectedTabIndex}
@@ -323,6 +323,7 @@ export default function SpreadsheetTabs({
                 </Grid>
                 <SpreadsheetTabsToolbar
                     padding={1}
+                    xs="auto"
                     selectedTabIndex={selectedTabIndex}
                     disabled={disabled}
                     onSaveClick={saveCollectionDialogOpen.setTrue}

@@ -93,6 +93,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                     isSpreadsheetParametersUpdatedNotification(eventData) &&
                     eventData.headers.studyUuid === studyUuid
                 ) {
+                    console.debug('Event: spreadsheet parameters updated', eventData);
                     dispatch(updateSpreadsheetPartialData(JSON.parse(eventData.payload)));
                 }
             },

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Checkbox, type CheckboxProps, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import type { SpreadsheetPartialData } from '../../types/SpreadsheetPartialData';
@@ -13,21 +13,22 @@ import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 
 export type PartialLoadingMenuItemProps<K extends keyof SpreadsheetPartialData> = {
-    key: K;
+    type: K;
     option: keyof SpreadsheetPartialData[K];
     labelId: string;
     onChange: (newValue: boolean) => void;
 };
 
 export default function PartialLoadingMenuItem<K extends keyof SpreadsheetPartialData>({
-    key,
+    type,
     option,
     labelId,
     onChange,
 }: Readonly<PartialLoadingMenuItemProps<K>>) {
     const lazyOptions = useSelector((state: AppState) => state.spreadsheetPartialData);
-    const currentValue = lazyOptions[key][option] as boolean;
+    const currentValue = lazyOptions[type][option] as boolean;
     const [newValue, setNewValue] = useState(currentValue);
+    useEffect(() => setNewValue(currentValue), [currentValue]); // to keep menu is sync with updates
     const handleChange = useCallback<NonNullable<CheckboxProps['onChange']>>(
         (_, value) => {
             setNewValue(value);
@@ -39,7 +40,7 @@ export default function PartialLoadingMenuItem<K extends keyof SpreadsheetPartia
     return (
         <MenuItem>
             <Checkbox
-                defaultChecked={currentValue}
+                checked={newValue}
                 onChange={handleChange}
                 color={currentValue === newValue ? 'primary' : 'secondary'}
             />

@@ -22,5 +22,8 @@ export function updateSpreadsheetParameters(
     return backendFetch(`${getStudyUrl(studyUuid)}/spreadsheet/parameters`, {
         method: 'PUT',
         body: JSON.stringify(parameters),
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 }

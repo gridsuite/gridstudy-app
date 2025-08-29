@@ -9,7 +9,7 @@ import type { UUID } from 'crypto';
 import type { PartialDeep } from 'type-fest';
 import { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Badge, ListSubheader, Menu } from '@mui/material';
+import { Badge, ListSubheader, Menu, styled, type SxProps, type Theme } from '@mui/material';
 import { Dataset as DatasetIcon, DatasetOutlined as DatasetDisabled } from '@mui/icons-material';
 import TooltipIconButton, { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
 import { useSelector } from 'react-redux';
@@ -54,11 +54,17 @@ function updateServerIfModified(
     return Promise.resolve();
 }
 
+const styles = {
+    headers: (theme) => ({
+        backgroundColor: 'transparent',
+    }),
+} as const satisfies Record<string, SxProps<Theme>>;
+
 export type LazyLoadingButtonProps = {} & Omit<TooltipIconButtonProps, 'tooltip' | 'size' | 'onClick'>;
 
 export default function PartialLoadingMenuButton({ disabled, ...props }: Readonly<LazyLoadingButtonProps>) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const BtnIcon = disabled ? DatasetIcon : DatasetDisabled;
+    const BtnIcon = disabled ? DatasetDisabled : DatasetIcon;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
     const handleClick = useCallback<NonNullable<TooltipIconButtonProps['onClick']>>(
         (event) => setAnchorEl(event.currentTarget),
@@ -77,7 +83,7 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
         setT2wOlg(undefined);
         setGeneratorRegTerm(undefined);
     }, [studyUuid, branchOlg, generatorRegTerm, lineOlg, t2wOlg]);
-    const open = anchorEl === undefined;
+    const open = anchorEl !== undefined;
     const lazyOptions = useSelector((state: AppState) => state.spreadsheetPartialData);
     const isOptionalData = (Object.keys(lazyOptions) as Array<keyof SpreadsheetPartialData>)
         .map((key) => lazyOptions[key])
@@ -100,7 +106,7 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                 {...props}
             >
                 <Badge variant="dot" color="secondary" invisible={!isOptionalData}>
-                    <BtnIcon color="action" />
+                    <BtnIcon color={open ? 'action' : 'primary'} />
                 </Badge>
             </TooltipIconButton>
             <Menu
@@ -114,41 +120,41 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                 }}
                 variant="menu"
             >
-                <ListSubheader>
+                <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="BRANCH" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    key={SpreadsheetEquipmentType.BRANCH}
+                    type={SpreadsheetEquipmentType.BRANCH}
                     option="operationalLimitsGroups"
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
                     onChange={setBranchOlg}
                 />
 
-                <ListSubheader>
+                <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="LINE" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    key={SpreadsheetEquipmentType.LINE}
+                    type={SpreadsheetEquipmentType.LINE}
                     option="operationalLimitsGroups"
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
                     onChange={setLineOlg}
                 />
 
-                <ListSubheader>
+                <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="TWO_WINDINGS_TRANSFORMER" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    key={SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER}
+                    type={SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER}
                     option="operationalLimitsGroups"
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
                     onChange={setT2wOlg}
                 />
 
-                <ListSubheader>
+                <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="GENERATOR" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    key={SpreadsheetEquipmentType.GENERATOR}
+                    type={SpreadsheetEquipmentType.GENERATOR}
                     option="regulatingTerminal"
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
                     onChange={setGeneratorRegTerm}
