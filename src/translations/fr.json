@@ -818,7 +818,8 @@
     "CreateVoltageLevel": "Créer un poste",
     "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
-    "BusBarSections": "Section de jeu de barres de référence",
+    "BusBarSections": "Section de jeu de barres",
+    "BusBarSectionsReference": "Section de jeu de barres de référence",
     "BusBarCount": "Nb de barres",
     "numberOfSections": "Nb de sections",
     "BusBarSectionID": "ID",
@@ -1579,5 +1580,7 @@
     "BUILT": "Réalisé",
     "BUILT_WITH_WARNING": "Alertes",
     "BUILT_WITH_ERROR": "Erreurs",
-    "NOT_BUILT": "Non réalisé"
+    "NOT_BUILT": "Non réalisé",
+    "allBusbarSections": "Tous",
+    "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)"
 }
