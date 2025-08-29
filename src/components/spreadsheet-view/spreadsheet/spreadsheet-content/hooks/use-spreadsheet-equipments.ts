@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useStateBoolean } from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
@@ -29,14 +29,15 @@ import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
+import type { SpreadsheetPartialData } from '../../../types/SpreadsheetPartialData';
 
-export const useSpreadsheetEquipments = (
+export function useSpreadsheetEquipments(
     type: SpreadsheetEquipmentType,
     equipmentToUpdateId: string | null,
     highlightUpdatedEquipment: () => void,
     nodeAliases: NodeAlias[] | undefined,
     active: boolean = false
-) => {
+) {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
@@ -261,19 +262,146 @@ export const useSpreadsheetEquipments = (
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: listenerUpdateEquipmentsLocal });
 
+    // reload/free data when parameters change
+    const currentOptions = useSelector(
+        (state: AppState) => state.spreadsheetPartialData[type as keyof SpreadsheetPartialData]
+    );
+    const prevOptions = useRef<SpreadsheetPartialData[keyof SpreadsheetPartialData] | undefined>(
+        currentOptions ? { ...currentOptions } : undefined
+    );
+    const reloadTrigger = useStateBoolean(false);
+    useEffect(() => {
+        function cleanBranchEquipment(eq: any) {
+            delete eq.operationalLimitsGroup1;
+            delete eq.operationalLimitsGroup1Names;
+            delete eq.selectedOperationalLimitsGroup1;
+            delete eq.operationalLimitsGroup2;
+            delete eq.operationalLimitsGroup2Names;
+            delete eq.selectedOperationalLimitsGroup2;
+        }
+        let reload = false;
+        if (type === SpreadsheetEquipmentType.BRANCH) {
+            const currentOpts = currentOptions as SpreadsheetPartialData[SpreadsheetEquipmentType.BRANCH];
+            const prevOpts = prevOptions.current as SpreadsheetPartialData[SpreadsheetEquipmentType.BRANCH];
+            const branchOlg = currentOpts.operationalLimitsGroups;
+            if (prevOpts.operationalLimitsGroups !== branchOlg) {
+                prevOpts.operationalLimitsGroups = branchOlg;
+                if (branchOlg) {
+                    reloadTrigger.setTrue();
+                } else {
+                    Object.values(equipments.equipmentsByNodeId).forEach((eqs) => eqs.forEach(cleanBranchEquipment));
+                }
+            }
+            //...
+        } else if (type === SpreadsheetEquipmentType.LINE) {
+            const currentOpts = currentOptions as SpreadsheetPartialData[SpreadsheetEquipmentType.LINE];
+            const prevOpts = prevOptions.current as SpreadsheetPartialData[SpreadsheetEquipmentType.LINE];
+            const lineOlg = currentOpts.operationalLimitsGroups;
+            if (prevOpts.operationalLimitsGroups !== lineOlg) {
+                prevOpts.operationalLimitsGroups = lineOlg;
+                if (lineOlg) {
+                    reloadTrigger.setTrue();
+                } else {
+                    Object.values(equipments.equipmentsByNodeId).forEach((eqs) => eqs.forEach(cleanBranchEquipment));
+                }
+            }
+            //...
+        } else if (type === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER) {
+            const currentOpts =
+                currentOptions as SpreadsheetPartialData[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER];
+            const prevOpts =
+                prevOptions.current as SpreadsheetPartialData[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER];
+            const t2wOlg = currentOpts.operationalLimitsGroups;
+            if (prevOpts.operationalLimitsGroups !== t2wOlg) {
+                prevOpts.operationalLimitsGroups = t2wOlg;
+                if (t2wOlg) {
+                    reloadTrigger.setTrue();
+                } else {
+                    Object.values(equipments.equipmentsByNodeId).forEach((eqs) => eqs.forEach(cleanBranchEquipment));
+                }
+            }
+            //...
+        } else if (type === SpreadsheetEquipmentType.GENERATOR) {
+            const currentOpts = currentOptions as SpreadsheetPartialData[SpreadsheetEquipmentType.GENERATOR];
+            const prevOpts = prevOptions.current as SpreadsheetPartialData[SpreadsheetEquipmentType.GENERATOR];
+            const generatorRegTerm = currentOpts.regulatingTerminal;
+            if (prevOpts.regulatingTerminal !== generatorRegTerm) {
+                prevOpts.regulatingTerminal = generatorRegTerm;
+                if (generatorRegTerm) {
+                    reloadTrigger.setTrue();
+                } else {
+                    Object.values(equipments.equipmentsByNodeId).forEach((eqs) =>
+                        eqs.forEach((eq: any) => {
+                            delete eq.regulatingTerminalVlName;
+                            delete eq.regulatingTerminalConnectableId;
+                            delete eq.regulatingTerminalConnectableType;
+                            delete eq.regulatingTerminalVlId;
+                        })
+                    );
+                }
+            }
+            //...
+        }
+        if (reloadTrigger.value) {
+            console.debug('Change in spreadsheet parameter detected, updating data.');
+        }
+    }, [currentOptions, equipments.equipmentsByNodeId, reloadTrigger, type]);
+    useEffect(() => {
+        console.log({
+            type,
+            active,
+            cnId: currentNode?.id,
+            cnType: currentNode?.type,
+            currentRootNetworkUuid,
+            cnStatus: currentNode?.data.globalBuildStatus,
+            isNetworkModificationTreeModelUpToDate,
+            nodesIdToFetch,
+            equipments,
+            reloadTrigger,
+        });
+    }, [
+        active,
+        currentNode?.data.globalBuildStatus,
+        currentNode?.id,
+        currentNode?.type,
+        currentRootNetworkUuid,
+        equipments,
+        isNetworkModificationTreeModelUpToDate,
+        nodesIdToFetch,
+        reloadTrigger,
+        type,
+    ]);
+    useEffect(
+        () =>
+            console.log(
+                // eslint-disable-next-line eqeqeq
+                type == SpreadsheetEquipmentType.LINE &&
+                    Object.values(equipments.equipmentsByNodeId).map((eq: any) => eq.operationalLimitsGroup1)
+            ),
+        [equipments.equipmentsByNodeId, type]
+    );
+
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
     useEffect(() => {
+        const nodeIds = new Set<UUID>();
+        nodesIdToFetch.forEach((id) => nodeIds.add(id));
+        if (reloadTrigger.value) {
+            equipments.nodesId.forEach((id) => nodeIds.add(id));
+        }
         if (
             active &&
             currentNode?.id &&
             currentRootNetworkUuid &&
-            nodesIdToFetch.size > 0 &&
+            nodeIds.size > 0 &&
             isNetworkModificationTreeModelUpToDate &&
             (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data.globalBuildStatus))
         ) {
             setIsFetching(true);
-            fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, () => setIsFetching(false));
+            fetchNodesEquipmentData(nodeIds, currentNode.id, currentRootNetworkUuid, () => {
+                setIsFetching(false);
+                reloadTrigger.setFalse();
+            });
         }
     }, [
         active,
@@ -284,7 +412,9 @@ export const useSpreadsheetEquipments = (
         currentRootNetworkUuid,
         fetchNodesEquipmentData,
         nodesIdToFetch,
+        reloadTrigger,
+        equipments.nodesId,
     ]);
 
     return { equipments, isFetching };
-};
+}
