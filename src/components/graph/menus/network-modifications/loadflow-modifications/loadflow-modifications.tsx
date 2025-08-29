@@ -1,10 +1,17 @@
-import { Box, Button, Dialog, DialogContent, DialogProps, DialogTitle, Tab, Tabs, Theme } from '@mui/material';
+/**
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { Box, Button, Dialog, DialogContent, DialogProps, DialogTitle, Tab, Tabs } from '@mui/material';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useLoadflowModifications } from './use-loadflow-modifications';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { ColDef, GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
+import { GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
 
 const styles = {
     container: {
