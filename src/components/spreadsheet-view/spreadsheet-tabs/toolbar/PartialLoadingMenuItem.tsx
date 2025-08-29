@@ -36,12 +36,18 @@ export default function PartialLoadingMenuItem<K extends keyof SpreadsheetPartia
         },
         [onChange]
     );
+    const handleToggle = useCallback(() => {
+        const value = !newValue;
+        setNewValue(value);
+        onChange(value);
+    }, [newValue, onChange]);
 
     return (
-        <MenuItem>
+        <MenuItem onClick={handleToggle}>
             <Checkbox
                 checked={newValue}
                 onChange={handleChange}
+                onClick={(e) => e.stopPropagation()} // avoid double toggle when clicking the checkbox itself
                 color={currentValue === newValue ? 'primary' : 'secondary'}
             />
             <FormattedMessage id={labelId} />
