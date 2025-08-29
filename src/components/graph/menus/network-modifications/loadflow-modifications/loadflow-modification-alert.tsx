@@ -12,13 +12,6 @@ import { FormattedMessage } from 'react-intl';
 import { LoadflowModifications } from './loadflow-modifications';
 
 const styles = {
-    paper: (theme: Theme) => ({
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        elevation: 3,
-        background: theme.palette.background.paper,
-    }),
     loadFlowModif: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',

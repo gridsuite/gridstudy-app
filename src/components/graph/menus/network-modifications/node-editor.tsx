@@ -27,17 +27,6 @@ const styles = {
         elevation: 3,
         background: theme.palette.background.paper,
     }),
-    loadFlowModif: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(2),
-    }),
-    icon: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-        fontSize: theme.spacing(2.75),
-    }),
 };
 
 const NodeEditor = () => {

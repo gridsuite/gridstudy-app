@@ -35,32 +35,23 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
     const [tabIndex, setTabIndex] = useState(0);
     const [data, isLoading] = useLoadflowModifications();
 
+    const makeAggridColumnDef = useCallback(
+        (field: string, translationId: string) => ({
+            headerName: intl.formatMessage({ id: translationId }),
+            field: field,
+            colId: field,
+            headerComponentParams: { displayName: intl.formatMessage({ id: translationId }) },
+        }),
+        [intl]
+    );
+
     const twtColumnDefs = useMemo(() => {
         return [
+            { ...makeAggridColumnDef('twoWindingsTransformerId', 'Id'), sort: SortWay.ASC },
+            makeAggridColumnDef('tapPositionIn', 'loadflowModificationsTapIn'),
+            makeAggridColumnDef('tapPositionOut', 'loadflowModificationsTapOut'),
             {
-                headerName: intl.formatMessage({ id: 'Id' }),
-                sort: SortWay.ASC,
-                field: 'twoWindingsTransformerId',
-                colId: 'twoWindingsTransformerId',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'Id' }) },
-            },
-            {
-                headerName: intl.formatMessage({ id: 'loadflowModificationsTapIn' }),
-                field: 'tapPositionIn',
-                colId: 'tapPositionIn',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'loadflowModificationsTapIn' }) },
-            },
-            {
-                headerName: intl.formatMessage({ id: 'loadflowModificationsTapOut' }),
-                field: 'tapPositionOut',
-                colId: 'tapPositionOut',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'loadflowModificationsTapOut' }) },
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Type' }),
-                field: 'type',
-                colId: 'type',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'Type' }) },
+                ...makeAggridColumnDef('type', 'Type'),
                 valueFormatter: (params: ValueFormatterParams) => intl.formatMessage({ id: params.value }),
             },
         ];
@@ -68,29 +59,9 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
 
     const scColumnDefs = useMemo(() => {
         return [
-            {
-                headerName: intl.formatMessage({ id: 'ID' }),
-                sort: SortWay.ASC,
-                field: 'shuntCompensatorId',
-                colId: 'shuntCompensatorId',
-                headerComponentParams: { displayName: intl.formatMessage({ id: 'ID' }) },
-            },
-            {
-                headerName: intl.formatMessage({ id: 'loadflowModificationsSectionCountIn' }),
-                field: 'sectionCountIn',
-                colId: 'sectionCountIn',
-                headerComponentParams: {
-                    displayName: intl.formatMessage({ id: 'loadflowModificationsSectionCountIn' }),
-                },
-            },
-            {
-                headerName: intl.formatMessage({ id: 'loadflowModificationsSectionCountOut' }),
-                field: 'sectionCountOut',
-                colId: 'sectionCountOut',
-                headerComponentParams: {
-                    displayName: intl.formatMessage({ id: 'loadflowModificationsSectionCountOut' }),
-                },
-            },
+            { ...makeAggridColumnDef('shuntCompensatorId', 'Id'), sort: SortWay.ASC },
+            makeAggridColumnDef('sectionCountIn', 'loadflowModificationsSectionCountIn'),
+            makeAggridColumnDef('sectionCountOut', 'loadflowModificationsSectionCountOut'),
         ];
     }, [intl]);
 
