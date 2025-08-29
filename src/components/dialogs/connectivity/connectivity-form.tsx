@@ -159,6 +159,9 @@ export function ConnectivityForm({
         if (watchVoltageLevelId) {
             setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, true);
         }
+        if (watchBusBarSectionId === '') {
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+        }
         if (watchBusBarSectionId) {
             setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, true);
         }
