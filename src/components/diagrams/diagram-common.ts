@@ -61,11 +61,16 @@ export const styles = {
                 stroke: theme.palette.text.primary,
             },
         '& .sld-flash, .sld-lock': {
-            stroke: 'none',
             fill: theme.palette.text.primary,
+            stroke: 'none',
         },
         '& .arrow': {
             fill: theme.palette.text.primary,
+        },
+    }),
+    divSingleLineDiagramDevModeDisabled: (theme: Theme) => ({
+        '& .sld-flash, .sld-lock': {
+            display: 'none',
         },
     }),
     divDiagramReadOnly: {
