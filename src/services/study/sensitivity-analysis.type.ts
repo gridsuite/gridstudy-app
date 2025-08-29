@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { GsLang } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 
 export enum DistributionType {
@@ -89,6 +90,7 @@ export type CsvConfig = {
     csvHeaders: string[];
     resultTab: string;
     sensitivityFunctionType?: string;
+    language: GsLang;
 };
 export type SensitivityOfTo = {
     type: 'SensitivityOfTo' | 'SensitivityWithContingency'; // discrimination field

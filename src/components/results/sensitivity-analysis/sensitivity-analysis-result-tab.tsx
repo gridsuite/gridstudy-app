@@ -17,7 +17,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
@@ -54,6 +54,7 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
@@ -92,6 +93,7 @@ function SensitivityAnalysisResultTab({
             csvHeaders: csvHeaders,
             resultTab: SensitivityResultTabs[nOrNkIndex].id,
             sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
+            language: language,
         })
             .then((response) => {
                 response.blob().then((blob: Blob) => {
@@ -109,7 +111,7 @@ function SensitivityAnalysisResultTab({
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders]);
+    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders, language]);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         return sensiTab === SENSITIVITY_AT_NODE ? [] : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];

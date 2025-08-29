@@ -9,6 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QU
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
+import { GsLang } from '@gridsuite/commons-ui';
 
 export function startSecurityAnalysis(
     studyUuid: UUID,
@@ -84,7 +85,8 @@ export function downloadSecurityAnalysisResultZippedCsv(
     currentRootNetworkUuid: UUID,
     queryParams: { resultType: RESULT_TYPE },
     headers: string[] | undefined,
-    enumValueTranslations: Record<string, string>
+    enumValueTranslations: Record<string, string>,
+    language: GsLang
 ) {
     console.info(
         `Fetching security analysis zipped csv on ${studyUuid} on root network  ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
@@ -110,6 +112,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
         body: JSON.stringify({
             headers,
             enumValueTranslations: enumValueTranslations,
+            language: language,
         }),
     });
 }
