@@ -18,6 +18,7 @@ import { JSONSchema7 } from 'json-schema';
 import { UseFormReturn } from 'react-hook-form';
 import { renderTreeData } from './utils/render-tree-data';
 import { usePopoverToggle } from './utils/use-popover-toggle';
+import { useIntl } from 'react-intl';
 
 interface TreeviewSearchableProps {
     properties: JSONSchema7 | null;
@@ -26,6 +27,7 @@ interface TreeviewSearchableProps {
 }
 
 export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: TreeviewSearchableProps) => {
+    const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
@@ -55,10 +57,10 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: Tre
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resetSearch={handleResetSearch}
-                    placeholder="Filter fields..."
+                    placeholder={intl.formatMessage({ id: 'SearchEquipmentField' })}
                 />
             </Box>
-            <Box sx={{ flex: 1, overflow: 'auto', maxHeight: '45vh', px: 1 }} onKeyDown={handleKeyDown}>
+            <Box sx={{ overflow: 'auto', maxHeight: '45vh', px: 1 }} onKeyDown={handleKeyDown}>
                 <SimpleTreeView
                     expandedItems={expandedItems}
                     onExpandedItemsChange={(_, ids) => setExpandedItems(ids)}

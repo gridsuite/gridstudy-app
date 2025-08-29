@@ -15,6 +15,8 @@ import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import { JSONSchema7 } from 'json-schema';
 import { TreeviewSearchable } from './treeview-searchable';
 import { usePopoverToggle } from './utils/use-popover-toggle';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 
 interface FormulaAutocompleteFieldProps {
     children: ReactNode;
@@ -29,10 +31,14 @@ export function FloatingPopoverTreeviewWrapper({
 }: Readonly<FormulaAutocompleteFieldProps>) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [properties, setProperties] = useState<JSONSchema7 | null>(null);
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     useEffect(() => {
-        fetchSpreadsheetEquipmentTypeSchema(spreadsheetEquipmentType).then((result) => setProperties(result));
-    }, [spreadsheetEquipmentType]);
+        fetchSpreadsheetEquipmentTypeSchema(spreadsheetEquipmentType)
+            .then((result) => setProperties(result))
+            .catch((error) => snackError({ headerId: 'FetchingEquipmentSchemaError', messageTxt: error }));
+    }, [snackError, spreadsheetEquipmentType]);
 
     const { handleKeyDown } = usePopoverToggle(properties, setAnchorEl);
 
@@ -41,11 +47,7 @@ export function FloatingPopoverTreeviewWrapper({
         <>
             <Box onKeyDown={handleKeyDown} sx={{ position: 'relative' }}>
                 {children}
-                <Tooltip
-                    title={
-                        "Ouvre la liste des champs disponibles pour l'équipement associé à la feuille, peut également être ouverte via une double pression de la touche Shift du clavier"
-                    }
-                >
+                <Tooltip title={intl.formatMessage({ id: 'EquipmentSchemaPopoverSchema' })}>
                     <span>
                         <Button
                             sx={{ position: 'absolute', left: '-5vh', top: 0 }}

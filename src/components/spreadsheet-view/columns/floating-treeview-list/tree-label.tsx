@@ -12,6 +12,7 @@ import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import DataArrayIcon from '@mui/icons-material/DataArray';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { Box } from '@mui/material';
 
 type TreeLabelProps = {
     text: string;
@@ -63,7 +64,7 @@ export function TreeLabel({ text, type, highlight, active }: TreeLabelProps) {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <span>{highlightText(text, highlight, active)}</span>
+            <Box sx={{ px: 1 }}>{highlightText(text, highlight, active)}</Box>
             {icon && <span>{icon}</span>}
         </div>
     );
