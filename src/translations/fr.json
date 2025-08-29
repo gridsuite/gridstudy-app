@@ -1582,5 +1582,5 @@
     "BUILT_WITH_ERROR": "Erreurs",
     "NOT_BUILT": "Non réalisé",
     "allBusbarSections": "Tous",
-    "allOptionHelperText": "Jeux de barres avec différents nombres de sections"
+    "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)"
 }

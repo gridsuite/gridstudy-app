@@ -96,7 +96,6 @@ export function CreateVoltageLevelSectionForm({
 
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
-            setValue(IS_AFTER_BUSBAR_SECTION_ID, null);
             const selectedKey = sectionCount?.id;
             if (selectedKey === 'all') {
                 setValue(ALL_BUS_BAR_SECTIONS, true);
@@ -158,9 +157,8 @@ export function CreateVoltageLevelSectionForm({
             }
         }
         if (isUpdate && isNodeBuilt(currentNode)) {
-            selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
-                ? setValue(SWITCH_AFTER_NOT_REQUIRED, true)
-                : setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
+            setValue(SWITCH_AFTER_NOT_REQUIRED, true);
+            setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
         }
     }, [selectedOption, setValue, busBarSectionInfos, selectedPositionOption, arrayPosition, isUpdate, currentNode]);
 
