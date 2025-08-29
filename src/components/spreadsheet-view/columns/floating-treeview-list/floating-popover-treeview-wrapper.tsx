@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {ReactNode, useEffect, useState} from 'react';
-import {Box, Popover, Slide, Tooltip} from '@mui/material';
-import {UseFormReturn} from 'react-hook-form';
+import { ReactNode, useEffect, useState } from 'react';
+import { Box, Popover, Slide, Tooltip } from '@mui/material';
+import { UseFormReturn } from 'react-hook-form';
 import Button from '@mui/material/Button';
 import LoupeIcon from '@mui/icons-material/Loupe';
-import {fetchSpreadsheetEquipmentTypeSchema} from '../../../../services/study/network';
-import {SpreadsheetEquipmentType} from '../../types/spreadsheet.type';
-import {JSONSchema7} from 'json-schema';
-import {TreeviewSearchable} from './treeview-searchable';
-import {usePopoverToggle} from './utils/use-popover-toggle';
+import { fetchSpreadsheetEquipmentTypeSchema } from '../../../../services/study/network';
+import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
+import { JSONSchema7 } from 'json-schema';
+import { TreeviewSearchable } from './treeview-searchable';
+import { usePopoverToggle } from './utils/use-popover-toggle';
 
 interface FormulaAutocompleteFieldProps {
     children: ReactNode;
