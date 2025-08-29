@@ -12,6 +12,7 @@ import { useLoadflowModifications } from './use-loadflow-modifications';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
 import { GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
+import { SortWay } from 'types/custom-aggrid-types';
 
 const styles = {
     container: {
@@ -38,7 +39,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
         return [
             {
                 headerName: intl.formatMessage({ id: 'Id' }),
-                sort: 'asc',
+                sort: SortWay.ASC,
                 field: 'twoWindingsTransformerId',
                 colId: 'twoWindingsTransformerId',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'Id' }) },
@@ -69,7 +70,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
         return [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
-                sort: 'asc',
+                sort: SortWay.ASC,
                 field: 'shuntCompensatorId',
                 colId: 'shuntCompensatorId',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'ID' }) },
