@@ -6,9 +6,9 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button, Menu, MenuItem, type Theme, Tooltip } from '@mui/material';
+import { Badge, Button, type Theme, Tooltip } from '@mui/material';
 import { useStateBoolean } from '@gridsuite/commons-ui';
-import { MouseEvent, useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import type { NodeAlias } from '../../../types/node-alias.type';
@@ -31,10 +31,6 @@ const styles = {
     }),
 };
 
-enum NodesOptionId {
-    CONFIG = 'CONFIG',
-}
-
 type NodesConfigButtonProps = {
     disabled?: boolean;
     tableType: SpreadsheetEquipmentType;
@@ -49,7 +45,6 @@ export default function NodesConfigButton({
     updateNodeAliases,
 }: Readonly<NodesConfigButtonProps>) {
     const dialogOpen = useStateBoolean(false);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const showWarning = useMemo(
         () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
         [nodeAliases]
@@ -57,14 +52,6 @@ export default function NodesConfigButton({
 
     //Enables to automatically reload nodeAliases data upon receiving study notification related to node and rootNetwork update
     useNodeConfigNotificationsListener(tableType, nodeAliases);
-
-    const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    }, []);
-
-    const handleClose = useCallback(() => {
-        setAnchorEl(null);
-    }, []);
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {
@@ -86,23 +73,17 @@ export default function NodesConfigButton({
             >
                 <Tooltip title={<FormattedMessage id="spreadsheet/parameter_aliases/button_tooltip" />}>
                     <span>
-                        <Button sx={styles.nodesConfigButton} size={'small'} onClick={handleClick} disabled={disabled}>
+                        <Button
+                            sx={styles.nodesConfigButton}
+                            size={'small'}
+                            onClick={() => dialogOpen.setTrue()}
+                            disabled={disabled}
+                        >
                             <PolylineOutlined />
                         </Button>
                     </span>
                 </Tooltip>
             </Badge>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                <MenuItem
-                    key={NodesOptionId.CONFIG}
-                    onClick={() => {
-                        dialogOpen.setTrue();
-                        handleClose();
-                    }}
-                >
-                    <FormattedMessage id={'spreadsheet/custom_column/option/parameter'} />
-                </MenuItem>
-            </Menu>
             <NodesConfigDialog open={dialogOpen} nodeAliases={nodeAliases} updateNodeAliases={updateNodeAliases} />
         </>
     );
