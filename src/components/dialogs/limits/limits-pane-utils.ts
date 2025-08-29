@@ -364,12 +364,12 @@ export function addOperationTypeToSelectedOpLG(
 
 /**
  * converts the limits groups into a modification limits group
- * ie mostly add the ADD, MODIFY, DELETE and REPLACE tags to the data
- * OperationalLimitsGroup are in a similar structure but readable by the back network modifications
+ * ie mostly add the ADD, MODIFY, MODIFY_OR_ADD, DELETE and REPLACE tags to the data using a delta between the form and the network values
+ * note : for now only ADD and MODIFY_OR_ADD are handled, the others have been disabled for various reasons
  *
  * @param limitsGroups current data from the form
  * @param networkLine data of the line modified by the network modification
- * @param editData data from the existing network modification
+ * @param editData data from the existing network modification, if the user is editing a netmod already stored in database
  * @param currentNode
  */
 export const addModificationTypeToOpLimitsGroups = (
@@ -381,14 +381,14 @@ export const addModificationTypeToOpLimitsGroups = (
     let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
 
     modificationLimitsGroups = modificationLimitsGroups.map((formLimitsGroup: OperationalLimitsGroup) => {
-        let modificationType: string | null = LIMIT_SETS_MODIFICATION_TYPE.MODIFY;
+        let modificationType: string = LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD;
         const networkCurrentLimits = networkLine?.currentLimits.find(
             (lineOpLimitGroup: CurrentLimits) =>
                 lineOpLimitGroup.id === formLimitsGroup.name &&
                 lineOpLimitGroup.applicability === formLimitsGroup.applicability
         );
         if (!networkCurrentLimits) {
-            // formLimitsGroup.name operational limits groups doesn't exist in the network
+            // formLimitsGroup operational limits groups doesn't exist in the network, probably an ADD
             // check if this is just an applicability change
             if (
                 networkLine?.currentLimits.filter(
@@ -413,13 +413,6 @@ export const addModificationTypeToOpLimitsGroups = (
         if (formLimitsGroup.currentLimits?.[PERMANENT_LIMIT] || temporaryLimits.length > 0) {
             currentLimits.permanentLimit = formLimitsGroup.currentLimits?.[PERMANENT_LIMIT];
             currentLimits.temporaryLimits = temporaryLimits;
-        }
-
-        const modificationInsideLimitsGroup: boolean =
-            currentLimits.temporaryLimits.filter((limit: TemporaryLimit) => limit.modificationType !== null).length > 0;
-        if (!modificationInsideLimitsGroup) {
-            // no modifications whatsoever
-            modificationType = null;
         }
 
         return {

@@ -55,6 +55,7 @@ export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
 export const LIMIT_SETS_MODIFICATION_TYPE = {
     MODIFY: 'MODIFY',
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     ADD: 'ADD',
     REPLACE: 'REPLACE',
     DELETE: 'DELETE',
