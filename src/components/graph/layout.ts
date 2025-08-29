@@ -137,9 +137,33 @@ function getColumnsByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
     nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
-    getMax: boolean
+    getMax: boolean,
+    mergeSecurityRows: boolean = true
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
+
+    // In scoped mode we disable SECURITY-row merging so rows can pack normally inside the group.
+    if (!mergeSecurityRows) {
+        // Pick the extrema operator once (max for right edge, min for left edge)
+        const selectExtreme = getMax ? Math.max : Math.min;
+
+        for (const node of nodes) {
+            const p = placements.getPlacement(node.id);
+            // Skip root and nodes without placement
+            if (!p || !node.parentId) {
+                continue;
+            }
+
+            const row = p.row;
+            const col = p.column;
+            const prev = columnsByRow.get(row);
+
+            // If first value for this row, use col; otherwise combine with extrema
+            const next = prev === undefined ? col : selectExtreme(prev, col);
+            columnsByRow.set(row, next);
+        }
+        return columnsByRow;
+    }
 
     // These two variables are used to process the groups of security nodes, to make them all match the same value.
     // When in a security group, we store the extreme value in currentExtremeValue, and the rows of the current
@@ -207,17 +231,19 @@ function getColumnsByRows(
 function getMinimumColumnByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    mergeSecurityRows: boolean = true
 ): Map<number, number> {
-    return getColumnsByRows(nodes, placements, nodeMap, false);
+    return getColumnsByRows(nodes, placements, nodeMap, false, mergeSecurityRows);
 }
 
 function getMaximumColumnByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    mergeSecurityRows: boolean = true
 ): Map<number, number> {
-    return getColumnsByRows(nodes, placements, nodeMap, true);
+    return getColumnsByRows(nodes, placements, nodeMap, true, mergeSecurityRows);
 }
 
 /**
@@ -283,55 +309,157 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param nodeMap nodeId to index in tree and node info map
  * @param childrenMap nodeId to list of children map
  */
+type CompressionOptions = {
+    scope?: Set<string>; // if set, only nodes in scope move/participate
+    includeLeftNodeIds?: Set<string>; // extra fixed left barriers (e.g., SECURITY root)
+    mergeSecurityRows?: boolean; // default true (global), false in scoped pass
+};
+
 function compressTreePlacements(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
     nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
-    childrenMap: Map<string, CurrentTreeNode[]>
+    childrenMap: Map<string, CurrentTreeNode[]>,
+    options?: CompressionOptions
 ) {
-    // Calculate subtree sizes in a single pass (bottom-up) to have the children nodes sizes ready
-    const subTreeSizeMap = new Map<string, number>();
+    const inScope = (id: string) => (options?.scope ? options.scope.has(id) : true);
+    const mergeSecurityRows = options?.mergeSecurityRows ?? true;
 
-    for (let i = nodes.length - 1; i >= 0; i--) {
-        const node = nodes[i];
-        const children = childrenMap.get(node.id) || [];
-        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) ?? 0), 0);
-        subTreeSizeMap.set(node.id, 1 + childrenSize);
+    const subTreeSizeMap = computeSubTreeSizes(nodes, childrenMap);
+
+    // Identify branch starters once
+    const starters: string[] = [];
+    for (const n of nodes) {
+        if (isBranchStarter(n, childrenMap, inScope)) {
+            starters.push(n.id);
+        }
     }
 
-    // We find all the nodes that start a branch and that have a sibling to their left.
-    const nonEldestSiblingsIds = nodes
-        .filter((node) => node.parentId && childrenMap.get(node.parentId)![0].id !== node.id)
-        .map((node) => node.id);
+    // Process each branch with the exact same logic, globally or within a scope
+    for (const startId of starters) {
+        const startIdx = nodeMap.get(startId)!.index;
 
-    // For each of those nodes's branches, we will calculate how much space available there is to
-    // the left, for each row of the branch.
-    nonEldestSiblingsIds.forEach((currentNodeId) => {
-        // We have to find the minimum column placement values (per row) for the current branch, and compare them
-        // to the maximum column placement values (per row) of the nodes on the left.
-        // The resulting space we find represents how much we can shift the current column to the left.
+        const branchNodes = collectBranchNodesByRange(nodes, nodeMap, subTreeSizeMap, startId, inScope);
+        if (branchNodes.length === 0) {
+            continue;
+        }
 
-        const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
-        const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
+        const leftNodes = collectLeftNodes(nodes, nodeMap, startIdx, inScope, options?.includeLeftNodeIds);
 
-        const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
-
-        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
-        // cases other branches could go under the left neighbor and make edges cross.
-        const leftNodes = nodes.slice(0, currentNodeIndex);
-
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
-
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
-
-        const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
+        const availableSpace = computeAvailableSpaceForBranch(
+            placements,
+            nodeMap,
+            leftNodes,
+            branchNodes,
+            mergeSecurityRows
+        );
 
         if (availableSpace > 0) {
-            shiftPlacementsToTheLeft(currentBranchNodes, placements, availableSpace);
+            shiftPlacementsToTheLeft(branchNodes, placements, availableSpace);
         }
-    });
+    }
 
     return placements;
+}
+
+function computeSubTreeSizes(
+    nodes: CurrentTreeNode[],
+    childrenMap: Map<string, CurrentTreeNode[]>
+): Map<string, number> {
+    const sizes = new Map<string, number>();
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        const n = nodes[i];
+        const children = childrenMap.get(n.id) || [];
+        const sum = children.reduce((acc, k) => acc + (sizes.get(k.id) ?? 0), 0);
+        sizes.set(n.id, 1 + sum);
+    }
+    return sizes;
+}
+
+function isBranchStarter(
+    node: CurrentTreeNode,
+    childrenMap: Map<string, CurrentTreeNode[]>,
+    inScope: (id: string) => boolean
+): boolean {
+    if (!node.parentId) {
+        return false;
+    }
+    if (!inScope(node.id)) {
+        return false;
+    }
+
+    const siblings = childrenMap.get(node.parentId) || [];
+    // In scoped mode, only siblings inside the scope matter
+    const relevantSiblings = siblings.filter((s) => inScope(s.id));
+    if (relevantSiblings.length === 0) {
+        return false;
+    }
+
+    // Non-eldest among relevant siblings
+    return relevantSiblings[0].id !== node.id;
+}
+
+/**
+ * Return all nodes belonging to the branch that starts at startNodeId.
+ * - nodes is a preorder list (parent always appears before its descendants).
+ * - subTreeSizeMap.get(startNodeId) gives the contiguous slice length for the branch.
+ * - We slice [startIndex, startIndex + size) and then filter with inScope so the same
+ *   function works in both global and scoped modes.
+ */
+function collectBranchNodesByRange(
+    nodes: CurrentTreeNode[],
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    subTreeSizeMap: Map<string, number>,
+    startNodeId: string,
+    inScope: (id: string) => boolean
+): CurrentTreeNode[] {
+    // Compute the contiguous slice covering the whole subtree of startNodeId
+    const startIdx = nodeMap.get(startNodeId)!.index;
+    const endIdxExclusive = startIdx + subTreeSizeMap.get(startNodeId)!;
+
+    // Take only nodes allowed by the current scope (global => all nodes, scoped => subset)
+    const slice = nodes.slice(startIdx, endIdxExclusive);
+    return slice.filter((n) => inScope(n.id));
+}
+
+/**
+ * Build the set of nodes on the left used to measure available space for compression.
+ * - Takes all nodes strictly before `beforeIndex` and filters them by scope (so we
+ *   don't consider nodes that shouldn't participate/move in scoped mode).
+ * - Optionally appends "barrier" nodes (e.g., a SECURITY root) even if they are
+ *   outside the scope, provided they lie to the left of the current branch index.
+ */
+function collectLeftNodes(
+    nodes: CurrentTreeNode[],
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    beforeIndex: number,
+    inScope: (id: string) => boolean,
+    includeLeftNodeIds?: Set<string>
+): CurrentTreeNode[] {
+    // All nodes placed before the branch start, filtered by scope.
+    let left = nodes.slice(0, beforeIndex).filter((n) => inScope(n.id));
+
+    // Add fixed “barrier” nodes (e.g., SECURITY root). They may be outside the scope but
+    // still must block compression if they are located to the left of the branch.
+    if (includeLeftNodeIds?.size) {
+        const barriers = nodes.filter((n) => includeLeftNodeIds.has(n.id) && nodeMap.get(n.id)!.index < beforeIndex);
+        if (barriers.length) {
+            left = left.concat(barriers);
+        }
+    }
+    return left;
+}
+
+function computeAvailableSpaceForBranch(
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    leftNodes: CurrentTreeNode[],
+    branchNodes: CurrentTreeNode[],
+    mergeSecurityRows: boolean
+): number {
+    const rightMin = getMinimumColumnByRows(branchNodes, placements, nodeMap, mergeSecurityRows);
+    const leftMax = getMaximumColumnByRows(leftNodes, placements, nodeMap, mergeSecurityRows);
+    return calculateAvailableSpace(leftMax, rightMin);
 }
 
 function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
@@ -453,6 +581,76 @@ function computeSecurityGroupNodes(
     }));
 }
 
+function isTopSecurityRoot(
+    node: CurrentTreeNode,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+): boolean {
+    if (node.data?.nodeType !== NetworkModificationNodeType.SECURITY) {
+        return false;
+    }
+    if (!node.parentId) {
+        return true;
+    }
+    const parent = nodeMap.get(node.parentId)?.node;
+    return !(parent && parent.data?.nodeType === NetworkModificationNodeType.SECURITY);
+}
+
+// detect SECURITY group scopes (topmost SECURITY nodes -> full subtree of their descendants, contiguous in preorder)
+function detectSecurityGroupScopes(
+    nodes: CurrentTreeNode[],
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    childrenMap: Map<string, CurrentTreeNode[]>
+): { rootId: string; set: Set<string> }[] {
+    const scopes: { rootId: string; set: Set<string> }[] = [];
+
+    // Precompute subtree sizes once (works because nodes are in preorder)
+    const subTreeSizeMap = computeSubTreeSizes(nodes, childrenMap);
+
+    for (const node of nodes) {
+        if (!isTopSecurityRoot(node, nodeMap)) {
+            continue;
+        }
+
+        const rootIdx = nodeMap.get(node.id)!.index;
+        const subTreeSize = subTreeSizeMap.get(node.id) ?? 1;
+
+        // children-only slice: exclude the root itself
+        const start = rootIdx + 1;
+        const end = rootIdx + subTreeSize;
+
+        if (end <= start) {
+            continue;
+        } // no descendants
+
+        const set = new Set<string>();
+        for (let i = start; i < end; i++) {
+            set.add(nodes[i].id);
+        }
+
+        if (set.size) {
+            scopes.push({ rootId: node.id, set });
+        }
+    }
+
+    return scopes;
+}
+
+function compressSecurityGroups(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    childrenMap: Map<string, CurrentTreeNode[]>
+) {
+    const scopes = detectSecurityGroupScopes(nodes, nodeMap, childrenMap);
+    scopes.forEach(({ rootId, set }) => {
+        compressTreePlacements(nodes, placements, nodeMap, childrenMap, {
+            scope: set,
+            includeLeftNodeIds: new Set([rootId]), // act as a left barrier
+            mergeSecurityRows: false, // pack rows normally inside the group
+        });
+    });
+}
+
 /**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
  */
@@ -462,6 +660,10 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
 
     const uncompressedNodePlacements = getNodePlacements(newNodes);
 
+    // First pass: compress inside SECURITY groups using the same algorithm in scoped mode
+    compressSecurityGroups(newNodes, uncompressedNodePlacements, nodeMap, childrenMap);
+
+    // Global pass (original behavior)
     const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements, nodeMap, childrenMap);
 
     const securityGroupsNodes = computeSecurityGroupNodes(newNodes, nodePlacements, nodeMap);
