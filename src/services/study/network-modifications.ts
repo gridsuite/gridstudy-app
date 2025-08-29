@@ -2166,7 +2166,6 @@ export function createVoltageLevelTopology({
     } else {
         console.info('Creating voltage level topology');
     }
-    console.log('test', createVoltageLevelTopologyInfos);
     return backendFetchText(modifyUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
