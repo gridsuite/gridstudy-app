@@ -86,12 +86,12 @@ import {
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
 import { formatCompleteCurrentLimit } from '../../../../utils/utils';
-import { LimitsPaneCreation } from '../../../limits/creation/limits-pane-creation.tsx';
+import { LimitsPane } from '../../../limits/limits-pane.tsx';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(false),
+    ...getLimitsEmptyFormData(),
     ...emptyProperties,
 };
 
@@ -182,11 +182,11 @@ const LineCreationDialog = ({
                             CONNECTIVITY_2
                         )),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(line.currentLimits),
-                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroup1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                ...getAllLimitsFormData(
+                    formatCompleteCurrentLimit(line.currentLimits),
+                    line.selectedOperationalLimitsGroup1 ?? null,
+                    line.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...copyEquipmentPropertiesForCreation(line),
             },
             { keepDefaultValues: true }
@@ -230,15 +230,15 @@ const LineCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
+                ...getAllLimitsFormData(
+                    line?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    [SELECTED_LIMITS_GROUP_1]: line?.selectedOperationalLimitsGroup1 ?? null,
-                    [SELECTED_LIMITS_GROUP_2]: line?.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                    line?.selectedOperationalLimitsGroup1 ?? null,
+                    line?.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...getPropertiesFromModification(line.properties),
             });
         },
@@ -423,7 +423,7 @@ const LineCreationDialog = ({
                 </Box>
 
                 <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
-                    <LimitsPaneCreation />
+                    <LimitsPane />
                 </Box>
 
                 <EquipmentSearchDialog

@@ -10,13 +10,14 @@ import { filledTextField } from '../dialog-utils';
 import { UUID } from 'crypto';
 import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { EquipmentType, ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
+import { ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
 import GridItem from '../commons/grid-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const styles = {
     message: (theme: Theme) => ({
@@ -33,7 +34,7 @@ const styles = {
 interface EquipmentIdSelectorProps {
     defaultValue: string | null;
     setSelectedId: (value: string) => void;
-    equipmentType: EquipmentType | ExtendedEquipmentType;
+    equipmentType: EQUIPMENT_TYPES | ExtendedEquipmentType;
     readOnly?: boolean;
     fillerHeight?: number;
     fillerMessageId?: string;

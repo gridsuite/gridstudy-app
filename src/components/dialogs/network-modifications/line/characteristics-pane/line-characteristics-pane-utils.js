@@ -74,10 +74,7 @@ export const getCharacteristicsFormData = (
     },
 });
 
-export const getCharacteristicsWithOutConnectivityFormData = (
-    { r = null, x = null, g1 = null, b1 = null, g2 = null, b2 = null },
-    id = CHARACTERISTICS
-) => ({
+export const getCharacteristicsWithOutConnectivityFormData = ({ r, x, g1, b1, g2, b2 }, id = CHARACTERISTICS) => ({
     [id]: {
         [R]: r,
         [X]: x,
