@@ -141,7 +141,7 @@ export default function LineTypesCatalogSelectorDialog({
                     const shapeFactorValue = parseFloat(shapeFactorId);
                     if (!isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
                         filteredLimits.forEach((limit) => {
-                            limit.permanentLimit = limit.permanentLimit / shapeFactorValue;
+                            limit.permanentLimit = Math.floor(limit.permanentLimit / shapeFactorValue);
                         });
                         selectedUndergroundRow.limitsForLineType = filteredLimits;
                     }
