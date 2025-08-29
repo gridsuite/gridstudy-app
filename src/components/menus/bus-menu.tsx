@@ -8,7 +8,7 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -22,13 +22,13 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { EquipmentType, useSnackMessage, CustomMenuItem, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, CustomMenuItem, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
 interface BusMenuProps {
     busId: string;
-    handleRunShortcircuitAnalysis: (busId: string) => void;
+    handleRunShortcircuitAnalysis: (busId: string, debug: boolean) => void;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: EquipmentType,
@@ -105,10 +105,13 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const handleClickRunShortcircuitAnalysis = useCallback(() => {
-        onClose();
-        handleRunShortcircuitAnalysis(busId);
-    }, [busId, onClose, handleRunShortcircuitAnalysis]);
+    const handleClickRunShortcircuitAnalysis = useCallback(
+        (event: ReactMouseEvent<HTMLLIElement>) => {
+            onClose();
+            handleRunShortcircuitAnalysis(busId, event.ctrlKey);
+        },
+        [busId, onClose, handleRunShortcircuitAnalysis]
+    );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
         (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
