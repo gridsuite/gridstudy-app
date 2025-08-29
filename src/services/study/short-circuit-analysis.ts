@@ -13,12 +13,14 @@ import {
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
     currentNodeUuid?: UUID;
     currentRootNetworkUuid?: UUID;
     type: ShortCircuitAnalysisType;
+    globalFilters?: GlobalFilters;
 }
 interface Selector {
     page: number;
@@ -105,6 +107,7 @@ export function fetchShortCircuitAnalysisResult({
     currentNodeUuid,
     currentRootNetworkUuid,
     type,
+    globalFilters,
 }: ShortCircuitAnalysisResult) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
@@ -114,6 +117,9 @@ export function fetchShortCircuitAnalysisResult({
     const urlSearchParams = new URLSearchParams();
     if (analysisType) {
         urlSearchParams.append('type', analysisType);
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =
@@ -130,6 +136,7 @@ export function fetchShortCircuitAnalysisPagedResults({
     currentRootNetworkUuid,
     selector = {},
     type = ShortCircuitAnalysisType.ALL_BUSES,
+    globalFilters,
 }: ShortCircuitAnalysisPagedResults) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
@@ -157,6 +164,10 @@ export function fetchShortCircuitAnalysisPagedResults({
 
     if (filter?.length) {
         urlSearchParams.append('filters', JSON.stringify(filter));
+    }
+
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =
