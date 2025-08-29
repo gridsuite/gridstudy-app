@@ -292,12 +292,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
                         newDiagrams[diagram.diagramUuid] = {
                             ...diagrams[diagram.diagramUuid],
-                            name: intl.formatMessage(
-                                {
-                                    id: 'diagramLoadingFail',
-                                },
-                                { diagramName: getDiagramTitle(diagram) }
-                            ),
                         };
                         return newDiagrams;
                     });
@@ -324,7 +318,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [getDiagramTitle, getUrl, intl, snackInfo, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [getDiagramTitle, getUrl, snackInfo, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
     );
 
     const findSimilarDiagram = useCallback(
