@@ -55,7 +55,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                 valueFormatter: (params: ValueFormatterParams) => intl.formatMessage({ id: params.value }),
             },
         ];
-    }, [intl]);
+    }, [intl, makeAggridColumnDef]);
 
     const scColumnDefs = useMemo(() => {
         return [
@@ -63,7 +63,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
             makeAggridColumnDef('sectionCountIn', 'loadflowModificationsSectionCountIn'),
             makeAggridColumnDef('sectionCountOut', 'loadflowModificationsSectionCountOut'),
         ];
-    }, [intl]);
+    }, [intl, makeAggridColumnDef]);
 
     const onGridReady = useCallback(({ api }: GridReadyEvent) => {
         api?.sizeColumnsToFit();
