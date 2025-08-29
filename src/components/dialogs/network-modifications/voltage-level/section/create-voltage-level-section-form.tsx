@@ -30,6 +30,22 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { BusBarSectionInfos } from './voltage-level-section.type';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 
+const getArrayPosition = (data: BusBarSectionInfos[], selectedOptionId: string) => {
+    if (!selectedOptionId || !data) {
+        return { position: -1, length: 0 };
+    }
+
+    for (const array of Object.values(data)) {
+        if (Array.isArray(array)) {
+            const position = array.indexOf(selectedOptionId);
+            if (position !== -1) {
+                return { position, length: array.length };
+            }
+        }
+    }
+    return { position: -1, length: 0 };
+};
+
 type OptionWithDisabled = Option & { disabled?: boolean };
 
 interface VoltageLevelSectionsCreationFormProps {
@@ -80,6 +96,7 @@ export function CreateVoltageLevelSectionForm({
 
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
+            setValue(IS_AFTER_BUSBAR_SECTION_ID, null);
             const selectedKey = sectionCount?.id;
             if (selectedKey === 'all') {
                 setValue(ALL_BUS_BAR_SECTIONS, true);
@@ -113,11 +130,15 @@ export function CreateVoltageLevelSectionForm({
         }
     }, [allBusbarSectionsList, busBarSectionInfos, intl, sectionCount, setValue]);
 
+    const arrayPosition = useMemo(
+        () => busBarSectionInfos && getArrayPosition(busBarSectionInfos, selectedOption?.id),
+        [busBarSectionInfos, selectedOption?.id]
+    );
+
     useEffect(() => {
-        if (selectedOption && selectedPositionOption) {
-            const selectedSectionIndex = busBarSectionsIdOptions.findIndex((option: Option) =>
-                areIdsEqual(option, selectedOption)
-            );
+        if (selectedOption && selectedPositionOption && busBarSectionInfos && arrayPosition) {
+            const selectedSectionIndex = arrayPosition.position;
+            const busBarSections = arrayPosition.length - 1;
             if (selectedSectionIndex === 0 && selectedPositionOption === POSITION_NEW_SECTION_SIDE.BEFORE.id) {
                 setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
                 setIsNotRequiredSwitchBefore(true);
@@ -126,7 +147,7 @@ export function CreateVoltageLevelSectionForm({
                 setIsNotRequiredSwitchBefore(false);
             }
             if (
-                busBarSectionsIdOptions?.length - 1 === selectedSectionIndex &&
+                busBarSections === selectedSectionIndex &&
                 selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
             ) {
                 setValue(SWITCH_AFTER_NOT_REQUIRED, true);
@@ -138,10 +159,10 @@ export function CreateVoltageLevelSectionForm({
         }
         if (isUpdate && isNodeBuilt(currentNode)) {
             selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
-                ? setValue(SWITCH_AFTER_NOT_REQUIRED, false)
-                : setValue(SWITCH_BEFORE_NOT_REQUIRED, false);
+                ? setValue(SWITCH_AFTER_NOT_REQUIRED, true)
+                : setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
         }
-    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption, isUpdate, currentNode]);
+    }, [selectedOption, setValue, busBarSectionInfos, selectedPositionOption, arrayPosition, isUpdate, currentNode]);
 
     const busBarIndexOptions = useMemo((): OptionWithDisabled[] => {
         if (busBarSectionInfos) {
@@ -194,8 +215,9 @@ export function CreateVoltageLevelSectionForm({
             isOptionEqualToValue={isOptionEqualToValue}
             renderOption={(props, option) => {
                 const allOptionsDisabled = (option as any).id === 'all' && (option as any)?.disabled;
+                const { key, ...otherProps } = props;
                 return (
-                    <li {...props}>
+                    <li key={key} {...otherProps}>
                         <div>
                             <div>{getOptionLabel(option)}</div>
                             {allOptionsDisabled && (
