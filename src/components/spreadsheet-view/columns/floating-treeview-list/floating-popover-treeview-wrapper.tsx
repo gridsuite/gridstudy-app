@@ -22,7 +22,7 @@ interface FormulaAutocompleteFieldProps {
     spreadsheetEquipmentType: SpreadsheetEquipmentType;
 }
 
-export function FloatingPopoverFieldTreeview({
+export function FloatingPopoverTreeviewWrapper({
     children,
     formMethods,
     spreadsheetEquipmentType,
