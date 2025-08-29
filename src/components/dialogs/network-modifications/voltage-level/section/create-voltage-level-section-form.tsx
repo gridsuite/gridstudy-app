@@ -6,6 +6,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+    ALL_BUS_BAR_SECTIONS,
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
@@ -29,23 +30,45 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { BusBarSectionInfos } from './voltage-level-section.type';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 
+const getArrayPosition = (data: BusBarSectionInfos[], selectedOptionId: string) => {
+    if (!selectedOptionId || !data) {
+        return { position: -1, length: 0 };
+    }
+
+    for (const array of Object.values(data)) {
+        if (Array.isArray(array)) {
+            const position = array.indexOf(selectedOptionId);
+            if (position !== -1) {
+                return { position, length: array.length };
+            }
+        }
+    }
+    return { position: -1, length: 0 };
+};
+
+type OptionWithDisabled = Option & { disabled?: boolean };
+
 interface VoltageLevelSectionsCreationFormProps {
     busBarSectionInfos?: BusBarSectionInfos[];
     voltageLevelId: string;
+    allBusbarSectionsList: string[];
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
     isUpdate?: boolean;
+    isSymmetricalNbBusBarSections: boolean;
     isNotFoundOrNotSupported: boolean;
 }
 
 export function CreateVoltageLevelSectionForm({
     busBarSectionInfos,
     voltageLevelId,
+    allBusbarSectionsList,
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
     isUpdate,
+    isSymmetricalNbBusBarSections,
     isNotFoundOrNotSupported,
 }: Readonly<VoltageLevelSectionsCreationFormProps>) {
     const intl = useIntl();
@@ -74,6 +97,21 @@ export function CreateVoltageLevelSectionForm({
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
             const selectedKey = sectionCount?.id;
+            if (selectedKey === 'all') {
+                setValue(ALL_BUS_BAR_SECTIONS, true);
+                if (allBusbarSectionsList && Array.isArray(allBusbarSectionsList)) {
+                    const options = allBusbarSectionsList
+                        .filter((id): id is string => Boolean(id))
+                        .map((id) => ({
+                            id: id,
+                            label: id,
+                        }));
+                    setBusBarSectionsIdOptions(options);
+                } else {
+                    setBusBarSectionsIdOptions([]);
+                }
+                return;
+            }
             const sections = busBarSectionInfos[selectedKey];
             if (!sections || !Array.isArray(sections)) {
                 setBusBarSectionsIdOptions([]);
@@ -89,13 +127,17 @@ export function CreateVoltageLevelSectionForm({
         } else {
             setBusBarSectionsIdOptions([]);
         }
-    }, [busBarSectionInfos, sectionCount]);
+    }, [allBusbarSectionsList, busBarSectionInfos, intl, sectionCount, setValue]);
+
+    const arrayPosition = useMemo(
+        () => busBarSectionInfos && getArrayPosition(busBarSectionInfos, selectedOption?.id),
+        [busBarSectionInfos, selectedOption?.id]
+    );
 
     useEffect(() => {
-        if (selectedOption && selectedPositionOption) {
-            const selectedSectionIndex = busBarSectionsIdOptions.findIndex((option: Option) =>
-                areIdsEqual(option, selectedOption)
-            );
+        if (selectedOption && selectedPositionOption && busBarSectionInfos && arrayPosition) {
+            const selectedSectionIndex = arrayPosition.position;
+            const busBarSections = arrayPosition.length - 1;
             if (selectedSectionIndex === 0 && selectedPositionOption === POSITION_NEW_SECTION_SIDE.BEFORE.id) {
                 setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
                 setIsNotRequiredSwitchBefore(true);
@@ -104,7 +146,7 @@ export function CreateVoltageLevelSectionForm({
                 setIsNotRequiredSwitchBefore(false);
             }
             if (
-                busBarSectionsIdOptions?.length - 1 === selectedSectionIndex &&
+                busBarSections === selectedSectionIndex &&
                 selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
             ) {
                 setValue(SWITCH_AFTER_NOT_REQUIRED, true);
@@ -115,26 +157,38 @@ export function CreateVoltageLevelSectionForm({
             }
         }
         if (isUpdate && isNodeBuilt(currentNode)) {
-            selectedPositionOption === POSITION_NEW_SECTION_SIDE.AFTER.id
-                ? setValue(SWITCH_AFTER_NOT_REQUIRED, false)
-                : setValue(SWITCH_BEFORE_NOT_REQUIRED, false);
+            setValue(SWITCH_AFTER_NOT_REQUIRED, true);
+            setValue(SWITCH_BEFORE_NOT_REQUIRED, true);
         }
-    }, [selectedOption, busBarSectionsIdOptions, setValue, selectedPositionOption, isUpdate, currentNode]);
+    }, [selectedOption, setValue, busBarSectionInfos, selectedPositionOption, arrayPosition, isUpdate, currentNode]);
 
-    const busBarIndexOptions = useMemo(() => {
+    const busBarIndexOptions = useMemo((): OptionWithDisabled[] => {
         if (busBarSectionInfos) {
-            return Object.keys(busBarSectionInfos || {})
+            const sortedOptions = Object.keys(busBarSectionInfos || {})
                 .sort((a, b) => parseInt(a) - parseInt(b))
                 .map((key) => ({
                     id: key,
                     label: key,
                 }));
+            const allOption = {
+                id: 'all',
+                label: intl.formatMessage({ id: 'allBusbarSections' }),
+                disabled: !isSymmetricalNbBusBarSections,
+            } as Option & { disabled?: boolean };
+
+            return [...sortedOptions, allOption];
         }
         return [];
-    }, [busBarSectionInfos]);
+    }, [busBarSectionInfos, intl, isSymmetricalNbBusBarSections]);
 
-    const getOptionLabel = (object: string | { id: string | number }) => {
-        return typeof object === 'string' ? object : String(object?.id ?? '');
+    const getOptionLabel = (object: string | { id: string | number; label: string | number }) => {
+        if (typeof object === 'string') {
+            return object;
+        }
+        if (object?.id === 'all') {
+            return intl.formatMessage({ id: 'allBusbarSections' }) ?? '';
+        }
+        return String(object?.id ?? '');
     };
 
     const isOptionEqualToValue = (val1: Option, val2: Option) => {
@@ -154,9 +208,32 @@ export function CreateVoltageLevelSectionForm({
             name={BUS_BAR_INDEX}
             label="Busbar"
             onChangeCallback={handleChangeBusbarIndex}
-            options={busBarIndexOptions}
+            options={busBarIndexOptions as Option[]}
             getOptionLabel={getOptionLabel}
             isOptionEqualToValue={isOptionEqualToValue}
+            renderOption={(props, option) => {
+                const allOptionsDisabled = (option as any).id === 'all' && (option as any)?.disabled;
+                const { key, ...otherProps } = props;
+                return (
+                    <li key={key} {...otherProps}>
+                        <div>
+                            <div>{getOptionLabel(option)}</div>
+                            {allOptionsDisabled && (
+                                <div
+                                    style={{
+                                        fontSize: '0.85rem',
+                                        color: 'red',
+                                        marginTop: '2px',
+                                    }}
+                                >
+                                    {intl.formatMessage({ id: 'allOptionHelperText' })}
+                                </div>
+                            )}
+                        </div>
+                    </li>
+                );
+            }}
+            getOptionDisabled={(option) => (option as any)?.disabled}
             size={'small'}
             disabled={isNotFoundOrNotSupported}
         />
@@ -165,8 +242,8 @@ export function CreateVoltageLevelSectionForm({
     const busbarSectionsField = (
         <AutocompleteInput
             name={BUSBAR_SECTION_ID}
-            label="BusBarSections"
-            options={Object.values(busBarSectionsIdOptions)}
+            label="BusBarSectionsReference"
+            options={busBarSectionsIdOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
