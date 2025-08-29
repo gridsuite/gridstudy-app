@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import { useLoadflowModifications } from './use-loadflow-modifications';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AGGRID_LOCALES } from 'translations/not-intl/aggrid-locales';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, RowDataUpdatedEvent, ValueFormatterParams } from 'ag-grid-community';
 
 const styles = {
     container: {
@@ -31,6 +31,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
         return [
             {
                 headerName: intl.formatMessage({ id: 'Id' }),
+                sort: 'asc',
                 field: 'twoWindingsTransformerId',
                 colId: 'twoWindingsTransformerId',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'Id' }) },
@@ -52,6 +53,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                 field: 'type',
                 colId: 'type',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'Type' }) },
+                valueFormatter: (params: ValueFormatterParams) => intl.formatMessage({ id: params.value }),
             },
         ];
     }, [intl]);
@@ -60,6 +62,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
         return [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
+                sort: 'asc',
                 field: 'shuntCompensatorId',
                 colId: 'shuntCompensatorId',
                 headerComponentParams: { displayName: intl.formatMessage({ id: 'ID' }) },
@@ -92,12 +95,17 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
     }, []);
 
     const displayedData = useMemo(() => {
-        return tabIndex === 0 ? data?.twt : data?.sc;
-    }, [data?.sc, data?.twt, tabIndex]);
+        return tabIndex === 0 ? data?.twoWindingsTransformerModifications : data?.shuntCompensatorModifications;
+    }, [data?.shuntCompensatorModifications, data?.twoWindingsTransformerModifications, tabIndex]);
 
     const displayedDataColDef = useMemo(() => {
         return tabIndex === 0 ? twtColumnDefs : scColumnDefs;
     }, [scColumnDefs, tabIndex, twtColumnDefs]);
+
+    const defaultColDef = {
+        resizable: false,
+        suppressMovable: true,
+    };
 
     return (
         <Dialog
@@ -126,6 +134,7 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                 </Box>
                 <Box mt={1} style={{ flexGrow: 1 }}>
                     <CustomAGGrid
+                        defaultColDef={defaultColDef}
                         rowData={displayedData}
                         columnDefs={displayedDataColDef}
                         rowSelection="single"

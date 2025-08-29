@@ -1584,5 +1584,8 @@
     "loadflowModificationsTapOut": "Prise en sortie",
     "loadflowModificationsSectionCountIn": "Gradin en entrée",
     "loadflowModificationsSectionCountOut": "Gradin en sortie",
-    "loadflowModifications": "Modification calcul de répartition"
+    "loadflowModifications": "Modification calcul de répartition",
+    "loadFlowModificationDetails": "Détails",
+    "PHASE_TAP": "Déphaseur",
+    "RATIO_TAP": "Régleur"
 }

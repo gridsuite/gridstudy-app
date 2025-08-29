@@ -1,5 +1,5 @@
 import { CheckCircleOutlined } from '@mui/icons-material';
-import { Alert, Button, Theme } from '@mui/material';
+import { Alert, Box, Button, Theme } from '@mui/material';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { LoadflowModifications } from './loadflow-modifications';
@@ -38,9 +38,17 @@ export const LoadflowModificationAlert = () => {
 
     return (
         <>
-            <Alert sx={styles.loadFlowModif} icon={<CheckCircleOutlined sx={styles.icon} />} severity="success">
+            <Alert
+                sx={styles.loadFlowModif}
+                icon={<CheckCircleOutlined sx={styles.icon} />}
+                action={
+                    <Button onClick={handleDetailsClick}>
+                        <FormattedMessage id="loadFlowModificationDetails" />
+                    </Button>
+                }
+                severity="success"
+            >
                 <FormattedMessage id="loadFlowModification" />
-                <Button onClick={handleDetailsClick}>Détails</Button>
             </Alert>
             {isModificationDialogOpen && (
                 <LoadflowModifications open={isModificationDialogOpen} onClose={handleLoadflowModificationsClose} />
