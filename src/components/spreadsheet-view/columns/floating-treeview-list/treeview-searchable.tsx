@@ -57,7 +57,7 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: Tre
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resetSearch={handleResetSearch}
-                    placeholder={intl.formatMessage({ id: 'SearchEquipmentField' })}
+                    placeholder={'SearchEquipmentField'}
                 />
             </Box>
             <Box sx={{ overflow: 'auto', maxHeight: '45vh', px: 1 }} onKeyDown={handleKeyDown}>
