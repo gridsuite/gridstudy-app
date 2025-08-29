@@ -9,7 +9,7 @@ import type { UUID } from 'crypto';
 import type { PartialDeep } from 'type-fest';
 import { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Badge, ListSubheader, Menu, styled, type SxProps, type Theme } from '@mui/material';
+import { Badge, ListSubheader, Menu, type SxProps, type Theme } from '@mui/material';
 import { Dataset as DatasetIcon, DatasetOutlined as DatasetDisabled } from '@mui/icons-material';
 import TooltipIconButton, { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
 import { useSelector } from 'react-redux';
