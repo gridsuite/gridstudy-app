@@ -85,7 +85,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
-                editable: true,
+                editable: false,
             },
             {
                 field: BUSBAR_SECTION_ID,
@@ -109,7 +109,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     isNodeBuilt: isNodeBuilt(currentNode),
                     disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
                 },
-                editable: true,
+                editable: false,
             },
             {
                 field: CONNECTION_DIRECTION,
@@ -123,9 +123,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     } else {
                         const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item: FeederBayData) => item.equipmentId === data.equipmentId);
-                      return ConnectionDirectionCellRenderer({
-                        name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
-                      });
+                        console.log();
+                        return ConnectionDirectionCellRenderer({
+                            direction: getValues(`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`),
+                        });
                     }
                 },
                 headerComponent: HeaderWithTooltip,

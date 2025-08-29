@@ -13,21 +13,29 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 type ConnectionDirectionCellRendererProps = {
-    name: string;
+    direction: string;
 };
 
-export default function ConnectionDirectionCellRenderer({ name }: Readonly<ConnectionDirectionCellRendererProps>) {
-    const {
-        field: { value },
-    } = useController({ name });
-  const [direction] = useState<string>();
+export default function ConnectionDirectionCellRenderer({ direction }: Readonly<ConnectionDirectionCellRendererProps>) {
+    let [isDirectionTop] = useState<boolean>(direction === 'TOP');
+    let [directionValue] = useState<string>(direction);
     return (
         <div>
-          <IconButton >
-            {name}
-            direction === ''
-            <ArrowUpwardIcon />
-            <ArrowDownwardIcon/>
+          <IconButton
+            style={{
+              alignItems: 'end',
+            }}
+            edge="end"
+            onClick={() => {
+                isDirectionTop = !isDirectionTop;
+                if (isDirectionTop) {
+                
+            }}
+            size={'small'}>
+            {directionValue}
+            {isDirectionTop ?
+            <ArrowUpwardIcon /> :
+            <ArrowDownwardIcon/>}
           </IconButton>
         </div>
     );
