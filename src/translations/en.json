@@ -1050,6 +1050,10 @@
     "InvalidNode": "Node not built",
     "NoSpreadsheets": "You have no spreadsheets, please create one",
 
+    "SearchEquipmentField": "Search for a field",
+    "EquipmentSchemaPopoverSchema": "Opens the list of fields for the equipment associated with the sheet. The list can also be opened by pressing the Shift key on the keyboard twice.",
+    "FetchingEquipmentSchemaError": "An error occurred while fetching equipment schema",
+
     "depth": "Depth: ",
 
     "root": "Root",
