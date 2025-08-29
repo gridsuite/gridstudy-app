@@ -1583,5 +1583,13 @@
     "BUILT": "Built",
     "BUILT_WITH_WARNING": "Warnings",
     "BUILT_WITH_ERROR": "Errors",
-    "NOT_BUILT": "Not built"
+    "NOT_BUILT": "Not built",
+    "loadflowModificationsTapIn": "Initial tap",
+    "loadflowModificationsTapOut": "Final tap",
+    "loadflowModificationsSectionCountIn": "Initial section",
+    "loadflowModificationsSectionCountOut": "Final section",
+    "loadflowModifications": "Loadflow modification",
+    "loadFlowModificationDetails":"Details",
+    "PHASE_TAP": "Phase",
+    "RATIO_TAP": "Ratio"
 }

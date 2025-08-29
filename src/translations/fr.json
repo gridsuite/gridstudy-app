@@ -1579,5 +1579,13 @@
     "BUILT": "Réalisé",
     "BUILT_WITH_WARNING": "Alertes",
     "BUILT_WITH_ERROR": "Erreurs",
-    "NOT_BUILT": "Non réalisé"
+    "NOT_BUILT": "Non réalisé",
+    "loadflowModificationsTapIn": "Prise en entrée",
+    "loadflowModificationsTapOut": "Prise en sortie",
+    "loadflowModificationsSectionCountIn": "Gradin en entrée",
+    "loadflowModificationsSectionCountOut": "Gradin en sortie",
+    "loadflowModifications": "Modification calcul de répartition",
+    "loadFlowModificationDetails": "Détails",
+    "PHASE_TAP": "Déphaseur",
+    "RATIO_TAP": "Régleur"
 }
