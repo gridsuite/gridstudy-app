@@ -24,7 +24,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
 import { UUID } from 'crypto';
@@ -62,6 +62,7 @@ function SensitivityAnalysisResultTab({
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
@@ -115,7 +116,8 @@ function SensitivityAnalysisResultTab({
                 sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
             },
             mappedFilters,
-            getGlobalFilterParameter(globalFilters)
+            getGlobalFilterParameter(globalFilters),
+            language
         )
             .then((response) => {
                 response.blob().then((blob: Blob) => {
@@ -139,6 +141,7 @@ function SensitivityAnalysisResultTab({
         filters,
         getGlobalFilterParameter,
         globalFilters,
+        language,
         nOrNkIndex,
         sensiTab,
         csvHeaders,
