@@ -15,7 +15,7 @@ import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
 import { DiagramGridHeader } from './diagram-grid-header';
-import './diagram-grid-layout.css';
+import './grid-layout-panel.css';
 import { DiagramCard } from './diagram-card';
 import MapCard from './map-card';
 import { BLINK_LENGTH_MS } from './card-header';
@@ -145,14 +145,14 @@ const createLayoutItem = (id: string, layouts: Layouts): Layouts => {
 
 const initialLayouts: Layouts = generateInitialLayouts();
 
-interface DiagramGridLayoutProps {
+interface GridLayoutPanelProps {
     studyUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     showGrid: () => void;
     visible: boolean;
 }
 
-function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: Readonly<DiagramGridLayoutProps>) {
+function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Readonly<GridLayoutPanelProps>) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -480,4 +480,4 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     );
 }
 
-export default DiagramGridLayout;
+export default GridLayoutPanel;

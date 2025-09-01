@@ -16,7 +16,7 @@ import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type';
+import { DiagramType } from './grid-layout/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
 import { openDiagram, setToggleOptions } from '../redux/actions.js';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,8 +67,8 @@ const StudyPane = ({
         // switch to tree view
         onChangeTab(0);
         // toggle diagram grid layout
-        if (!toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)) {
-            dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.DIAGRAM_GRID_LAYOUT]));
+        if (!toggleOptions.includes(StudyDisplayMode.GRID_LAYOUT_PANEL)) {
+            dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.GRID_LAYOUT_PANEL]));
         }
     }, [dispatch, onChangeTab, toggleOptions]);
 

@@ -11,7 +11,7 @@ import GridItem from '../../../commons/grid-item';
 import { getObjectId } from '../../../../utils/utils';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from '../../../../diagrams/singleLineDiagram/position-diagram-pane';
+import PositionDiagramPane from '../../../../grid-layout/singleLineDiagram/position-diagram-pane';
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';

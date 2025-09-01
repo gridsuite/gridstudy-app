@@ -13,7 +13,7 @@ import { useMemo, useCallback } from 'react';
 
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import WaitingLoader from './utils/waiting-loader';
-import DiagramGridLayout from './diagrams/diagram-grid-layout';
+import GridLayoutPanel from './grid-layout/grid-layout-panel';
 import NodeEditor from './graph/menus/network-modifications/node-editor';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import ResizeHandle from './resize-handle';
@@ -139,8 +139,8 @@ const MapViewer = ({
                         id={PANEL_IDS.GRID}
                         minSize={PANEL_CONFIG.MIN_SIZE}
                         collapsible
-                        onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
-                        onExpand={() => handlers.handlePanelExpand(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)}
+                        onCollapse={() => handlers.handlePanelCollapse(StudyDisplayMode.GRID_LAYOUT_PANEL)}
+                        onExpand={() => handlers.handlePanelExpand(StudyDisplayMode.GRID_LAYOUT_PANEL)}
                     >
                         <Box
                             sx={{
@@ -152,7 +152,7 @@ const MapViewer = ({
                                         : theme.palette.background.paper,
                             }}
                         >
-                            <DiagramGridLayout
+                            <GridLayoutPanel
                                 studyUuid={studyUuid}
                                 visible={state.visibility.grid}
                                 showInSpreadsheet={showInSpreadsheet}

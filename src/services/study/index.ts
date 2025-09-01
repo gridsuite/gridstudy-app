@@ -9,7 +9,7 @@ import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromLi
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
-import type { Svg } from 'components/diagrams/diagram-common';
+import type { Svg } from 'components/grid-layout/diagram-common';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {

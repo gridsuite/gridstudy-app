@@ -283,7 +283,7 @@ import {
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
-import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
+import { DiagramParams, DiagramType } from '../components/grid-layout/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
@@ -1250,10 +1250,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // Switch to the grid layout in order to see the newly opened diagram
         if (
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT_PANEL_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT_PANEL
         ) {
-            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+            state.studyDisplayMode = StudyDisplayMode.GRID_LAYOUT_PANEL_AND_TREE;
         }
     });
 
@@ -1274,10 +1274,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // Switch to the grid layout in order to see the newly opened diagram
         if (
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE &&
-            state.studyDisplayMode !== StudyDisplayMode.DIAGRAM_GRID_LAYOUT
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT_PANEL_AND_TREE &&
+            state.studyDisplayMode !== StudyDisplayMode.GRID_LAYOUT_PANEL
         ) {
-            state.studyDisplayMode = StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE;
+            state.studyDisplayMode = StudyDisplayMode.GRID_LAYOUT_PANEL_AND_TREE;
         }
     });
 

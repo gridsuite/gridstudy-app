@@ -23,7 +23,7 @@ import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 
 const styles = {

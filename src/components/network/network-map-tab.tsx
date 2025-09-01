@@ -68,7 +68,7 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/diagram.type';
 import GuidancePopup from './guidance-popup';
 import { StudyDisplayMode } from 'components/network-modification.type';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
@@ -1186,8 +1186,8 @@ export const NetworkMapTab = ({
             </Box>
             {isInDrawingMode &&
                 (studyDisplayMode === StudyDisplayMode.MAP ||
-                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT ||
-                    studyDisplayMode === StudyDisplayMode.DIAGRAM_GRID_LAYOUT_AND_TREE) && (
+                    studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_PANEL ||
+                    studyDisplayMode === StudyDisplayMode.GRID_LAYOUT_PANEL_AND_TREE) && (
                     <GuidancePopup onActionClick={leaveDrawingMode} />
                 )}
             {shouldOpenSelectionCreationPanel && (
