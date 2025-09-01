@@ -292,7 +292,7 @@ import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotificat
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
-import type { SpreadsheetPartialData } from '../components/spreadsheet-view/types/SpreadsheetPartialData';
+import type { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 // Redux state
 export type StudyUpdated = {
@@ -478,7 +478,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
-    spreadsheetPartialData: SpreadsheetPartialData;
+    spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
@@ -620,7 +620,7 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: {},
-    spreadsheetPartialData: {
+    spreadsheetOptionalLoadingParameters: {
         [SpreadsheetEquipmentType.BRANCH]: {
             operationalLimitsGroups: false,
         },
@@ -1552,19 +1552,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_SPREADSHEET_PARTIAL_DATA, (state, action: UpdateSpreadsheetPartialDataAction) => {
-        // we deeply merge because the server can notify only partial option change and also to not trigger unneeded redux events
-        for (const typeKey of Object.keys(state.spreadsheetPartialData) as Array<keyof SpreadsheetPartialData>) {
-            const newOption = action.newOptions[typeKey];
-            if (newOption) {
-                for (const optKey of Object.keys(state.spreadsheetPartialData[typeKey]) as Array<
-                    keyof SpreadsheetPartialData[typeof typeKey]
-                >) {
-                    if (newOption[optKey] !== undefined) {
-                        state.spreadsheetPartialData[typeKey][optKey] = newOption[optKey];
-                    }
-                }
-            }
-        }
+        state.spreadsheetOptionalLoadingParameters = action.newOptions;
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {

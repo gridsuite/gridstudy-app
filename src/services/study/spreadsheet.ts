@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { PartialDeep } from 'type-fest';
 import type { UUID } from 'crypto';
 import { backendFetchJson, backendFetch } from '../utils';
 import { getStudyUrl } from './index';
-import type { SpreadsheetPartialData } from '../../components/spreadsheet-view/types/SpreadsheetPartialData';
+import type { SpreadsheetOptionalLoadingParameters } from '../../components/spreadsheet-view/types/spreadsheet.type';
 
-export function fetchSpreadsheetParameters(studyUuid: UUID): Promise<SpreadsheetPartialData> {
+export function fetchSpreadsheetParameters(studyUuid: UUID): Promise<SpreadsheetOptionalLoadingParameters> {
     return backendFetchJson(`${getStudyUrl(studyUuid)}/spreadsheet/parameters`);
 }
 
 export function updateSpreadsheetParameters(
     studyUuid: UUID,
-    parameters: PartialDeep<SpreadsheetPartialData>
+    parameters: SpreadsheetOptionalLoadingParameters
 ): Promise<void> {
     return backendFetch(`${getStudyUrl(studyUuid)}/spreadsheet/parameters`, {
         method: 'PUT',

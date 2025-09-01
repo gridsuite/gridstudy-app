@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert, Paper } from '@mui/material';
 import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
@@ -19,20 +19,10 @@ import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { Spreadsheet } from './spreadsheet/spreadsheet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
-import { initTableDefinitions, updateSpreadsheetPartialData } from 'redux/actions';
-import {
-    NotificationsUrlKeys,
-    PopupConfirmationDialog,
-    useNotificationsListener,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { initTableDefinitions } from 'redux/actions';
+import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/diagrams/diagram.type';
-import { useRunOnceNonNull } from '../../utils/useRunOnce';
-import { fetchSpreadsheetParameters } from '../../services/study/spreadsheet';
-import type { PartialDeep } from 'type-fest';
-import type { SpreadsheetPartialData } from './types/SpreadsheetPartialData';
-import { isSpreadsheetParametersUpdatedNotification } from '../../types/notification-types';
 
 const styles = {
     invalidNode: {
@@ -41,6 +31,7 @@ const styles = {
         left: '43%',
     },
 };
+
 interface SpreadsheetViewProps {
     currentNode: CurrentTreeNode;
     equipmentId: string;
@@ -69,37 +60,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
-
-    useRunOnceNonNull(
-        studyUuid === null
-            ? null
-            : () => {
-                  fetchSpreadsheetParameters(studyUuid)
-                      .then((params) => dispatch(updateSpreadsheetPartialData(params)))
-                      .catch((error) => {
-                          console.error('Error while loading spreadsheet parameter', error);
-                          snackError({
-                              headerId: 'spreadsheet/tabs/lazy_loading/error_loading_title',
-                              messageId: 'spreadsheet/tabs/lazy_loading/error_loading_message',
-                          });
-                      });
-              }
-    );
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: useCallback(
-            (event: MessageEvent) => {
-                const eventData: PartialDeep<SpreadsheetPartialData> = JSON.parse(event.data);
-                if (
-                    isSpreadsheetParametersUpdatedNotification(eventData) &&
-                    eventData.headers.studyUuid === studyUuid
-                ) {
-                    console.debug('Event: spreadsheet parameters updated', eventData);
-                    dispatch(updateSpreadsheetPartialData(JSON.parse(eventData.payload)));
-                }
-            },
-            [dispatch, studyUuid]
-        ),
-    });
 
     // Initialize activeTabUuid with the first tab's UUID if not already set
     useEffect(() => {

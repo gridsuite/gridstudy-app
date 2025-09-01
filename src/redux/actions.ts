@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { PartialDeep } from 'type-fest';
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
@@ -63,7 +62,7 @@ import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
-import type { SpreadsheetPartialData } from '../components/spreadsheet-view/types/SpreadsheetPartialData';
+import type { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -1055,11 +1054,11 @@ export function resetLogsFilter(): ResetLogsFilterAction {
 
 export const UPDATE_SPREADSHEET_PARTIAL_DATA = 'UPDATE_SPREADSHEET_PARTIAL_DATA';
 export type UpdateSpreadsheetPartialDataAction = Readonly<Action<typeof UPDATE_SPREADSHEET_PARTIAL_DATA>> & {
-    newOptions: PartialDeep<SpreadsheetPartialData>;
+    newOptions: SpreadsheetOptionalLoadingParameters;
 };
 
 export function updateSpreadsheetPartialData(
-    options: PartialDeep<SpreadsheetPartialData>
+    options: SpreadsheetOptionalLoadingParameters
 ): UpdateSpreadsheetPartialDataAction {
     return {
         type: UPDATE_SPREADSHEET_PARTIAL_DATA,

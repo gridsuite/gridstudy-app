@@ -5,54 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
-import type { PartialDeep } from 'type-fest';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Badge, ListSubheader, Menu, type SxProps, type Theme } from '@mui/material';
 import { Dataset as DatasetIcon, DatasetOutlined as DatasetDisabled } from '@mui/icons-material';
 import TooltipIconButton, { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
-import type { SpreadsheetPartialData } from '../../types/SpreadsheetPartialData';
 import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
 import { updateSpreadsheetParameters } from '../../../../services/study/spreadsheet';
-
-function updateServerIfModified(
-    studyUuid: UUID | null,
-    branchOlg: boolean | undefined,
-    lineOlg: boolean | undefined,
-    t2wOlg: boolean | undefined,
-    generatorRegTerm: boolean | undefined
-) {
-    // are there parameters modified?
-    const patchParameters: PartialDeep<SpreadsheetPartialData> = {
-        [SpreadsheetEquipmentType.BRANCH]: {
-            ...(branchOlg !== undefined ? { operationalLimitsGroups: branchOlg } : {}),
-        },
-        [SpreadsheetEquipmentType.LINE]: {
-            ...(lineOlg !== undefined ? { operationalLimitsGroups: lineOlg } : {}),
-        },
-        [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
-            ...(t2wOlg !== undefined ? { operationalLimitsGroups: t2wOlg } : {}),
-        },
-        [SpreadsheetEquipmentType.GENERATOR]: {
-            ...(generatorRegTerm !== undefined ? { regulatingTerminal: generatorRegTerm } : {}),
-        },
-    };
-    // clean patch from empty types
-    for (const key of Object.keys(patchParameters) as Array<keyof SpreadsheetPartialData>) {
-        if (Object.keys(patchParameters[key]!).length <= 0) {
-            delete patchParameters[key];
-        }
-    }
-    // send update to the server if there are parameters modified
-    if (studyUuid !== null && Object.keys(patchParameters).length > 0) {
-        return updateSpreadsheetParameters(studyUuid, patchParameters);
-    }
-    return Promise.resolve();
-}
 
 const styles = {
     headers: (theme) => ({
@@ -66,32 +28,80 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const BtnIcon = disabled ? DatasetDisabled : DatasetIcon;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);
-    const handleClick = useCallback<NonNullable<TooltipIconButtonProps['onClick']>>(
-        (event) => setAnchorEl(event.currentTarget),
-        []
+
+    const remoteBranchOlg = useSelector(
+        (state: AppState) =>
+            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BRANCH].operationalLimitsGroups
     );
-    const [branchOlg, setBranchOlg] = useState<boolean | undefined>(undefined);
-    const [lineOlg, setLineOlg] = useState<boolean | undefined>(undefined);
-    const [t2wOlg, setT2wOlg] = useState<boolean | undefined>(undefined);
-    const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean | undefined>(undefined);
+    const remoteLineOlg = useSelector(
+        (state: AppState) =>
+            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.LINE].operationalLimitsGroups
+    );
+    const remoteTwtOlg = useSelector(
+        (state: AppState) =>
+            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
+                .operationalLimitsGroups
+    );
+    const remoteGeneratorRegTerm = useSelector(
+        (state: AppState) =>
+            state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
+    );
+    const [localBranchOlg, setLocalBranchOlg] = useState<boolean>(remoteBranchOlg);
+    const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
+    const [localTwtOlg, setLocalTwtOlg] = useState<boolean>(remoteTwtOlg);
+    const [localGeneratorRegTerm, setLocalGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+
+    const handleClick = useCallback<NonNullable<TooltipIconButtonProps['onClick']>>(
+        (event) => {
+            setAnchorEl(event.currentTarget);
+            setLocalBranchOlg(remoteBranchOlg);
+            setLocalLineOlg(remoteLineOlg);
+            setLocalTwtOlg(remoteTwtOlg);
+            setLocalGeneratorRegTerm(remoteGeneratorRegTerm);
+        },
+        [remoteBranchOlg, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
+    );
+
     const handleClose = useCallback(() => {
         setAnchorEl(undefined);
-        updateServerIfModified(studyUuid, branchOlg, lineOlg, t2wOlg, generatorRegTerm); //TODO use promise to do loading animation
-        // reset fields
-        setBranchOlg(undefined);
-        setLineOlg(undefined);
-        setT2wOlg(undefined);
-        setGeneratorRegTerm(undefined);
-    }, [studyUuid, branchOlg, generatorRegTerm, lineOlg, t2wOlg]);
+        if (
+            localBranchOlg !== remoteBranchOlg ||
+            localLineOlg !== remoteLineOlg ||
+            localTwtOlg !== remoteTwtOlg ||
+            localGeneratorRegTerm !== remoteGeneratorRegTerm
+        ) {
+            if (studyUuid) {
+                updateSpreadsheetParameters(studyUuid, {
+                    [SpreadsheetEquipmentType.BRANCH]: { operationalLimitsGroups: localBranchOlg },
+                    [SpreadsheetEquipmentType.LINE]: { operationalLimitsGroups: localLineOlg },
+                    [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
+                        operationalLimitsGroups: localTwtOlg,
+                    },
+                    [SpreadsheetEquipmentType.GENERATOR]: {
+                        regulatingTerminal: localGeneratorRegTerm,
+                    },
+                });
+            }
+        }
+    }, [
+        localBranchOlg,
+        remoteBranchOlg,
+        localLineOlg,
+        remoteLineOlg,
+        localTwtOlg,
+        remoteTwtOlg,
+        localGeneratorRegTerm,
+        remoteGeneratorRegTerm,
+        studyUuid,
+    ]);
+
     const open = anchorEl !== undefined;
-    const lazyOptions = useSelector((state: AppState) => state.spreadsheetPartialData);
-    const isOptionalData = (Object.keys(lazyOptions) as Array<keyof SpreadsheetPartialData>)
-        .map((key) => lazyOptions[key])
-        .some((option) =>
-            (Object.keys(option) as Array<keyof SpreadsheetPartialData[keyof SpreadsheetPartialData]>).some(
-                (key) => option[key]
-            )
-        ); // can't memoize it because deeply looking into, and object isn't rebuild but modified in reducer.
+
+    const isOptionalData = useMemo(
+        () => remoteBranchOlg || remoteLineOlg || remoteTwtOlg || remoteGeneratorRegTerm,
+        [remoteBranchOlg, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
+    );
+
     return (
         <>
             <TooltipIconButton
@@ -124,40 +134,36 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     <FormattedMessage id="BRANCH" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    type={SpreadsheetEquipmentType.BRANCH}
-                    option="operationalLimitsGroups"
+                    value={localBranchOlg}
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
-                    onChange={setBranchOlg}
+                    onChange={setLocalBranchOlg}
                 />
 
                 <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="LINE" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    type={SpreadsheetEquipmentType.LINE}
-                    option="operationalLimitsGroups"
+                    value={localLineOlg}
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
-                    onChange={setLineOlg}
+                    onChange={setLocalLineOlg}
                 />
 
                 <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="TWO_WINDINGS_TRANSFORMER" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    type={SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER}
-                    option="operationalLimitsGroups"
+                    value={localTwtOlg}
                     labelId="spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups"
-                    onChange={setT2wOlg}
+                    onChange={setLocalTwtOlg}
                 />
 
                 <ListSubheader sx={styles.headers}>
                     <FormattedMessage id="GENERATOR" />
                 </ListSubheader>
                 <PartialLoadingMenuItem
-                    type={SpreadsheetEquipmentType.GENERATOR}
-                    option="regulatingTerminal"
+                    value={localGeneratorRegTerm}
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
-                    onChange={setGeneratorRegTerm}
+                    onChange={setLocalGeneratorRegTerm}
                 />
             </Menu>
         </>

@@ -5,50 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback } from 'react';
 import { Checkbox, type CheckboxProps, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import type { SpreadsheetPartialData } from '../../types/SpreadsheetPartialData';
-import { useSelector } from 'react-redux';
-import type { AppState } from '../../../../redux/reducer';
 
-export type PartialLoadingMenuItemProps<K extends keyof SpreadsheetPartialData> = {
-    type: K;
-    option: keyof SpreadsheetPartialData[K];
+export type PartialLoadingMenuItemProps = {
+    value: boolean;
     labelId: string;
-    onChange: (newValue: boolean) => void;
+    onChange: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function PartialLoadingMenuItem<K extends keyof SpreadsheetPartialData>({
-    type,
-    option,
-    labelId,
-    onChange,
-}: Readonly<PartialLoadingMenuItemProps<K>>) {
-    const lazyOptions = useSelector((state: AppState) => state.spreadsheetPartialData);
-    const currentValue = lazyOptions[type][option] as boolean;
-    const [newValue, setNewValue] = useState(currentValue);
-    useEffect(() => setNewValue(currentValue), [currentValue]); // to keep menu is sync with updates
+export default function PartialLoadingMenuItem({ value, labelId, onChange }: Readonly<PartialLoadingMenuItemProps>) {
     const handleChange = useCallback<NonNullable<CheckboxProps['onChange']>>(
-        (_, value) => {
-            setNewValue(value);
-            onChange(value);
+        (event) => {
+            onChange(event.target.checked);
         },
         [onChange]
     );
     const handleToggle = useCallback(() => {
-        const value = !newValue;
-        setNewValue(value);
-        onChange(value);
-    }, [newValue, onChange]);
+        onChange((oldValue) => !oldValue);
+    }, [onChange]);
 
     return (
         <MenuItem onClick={handleToggle}>
             <Checkbox
-                checked={newValue}
+                checked={value}
                 onChange={handleChange}
                 onClick={(e) => e.stopPropagation()} // avoid double toggle when clicking the checkbox itself
-                color={currentValue === newValue ? 'primary' : 'secondary'}
             />
             <FormattedMessage id={labelId} />
         </MenuItem>

@@ -7,8 +7,6 @@
 import type { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
 import type { ComputingType } from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
-import type { PartialDeep } from 'type-fest';
-import type { SpreadsheetPartialData } from '../components/spreadsheet-view/types/SpreadsheetPartialData';
 
 export enum NotificationType {
     // Study status
@@ -858,8 +856,8 @@ export interface StateEstimationStatusEventData {
 export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
-     * stringified of <code>PartialDeep<SpreadsheetPartialData></code>
-     * @see SpreadsheetPartialData
+     * stringified of <code>PartialDeep<SpreadsheetOptionalLoadingParameters></code>
+     * @see SpreadsheetOptionalLoadingParameters
      */
     payload: string;
 }
