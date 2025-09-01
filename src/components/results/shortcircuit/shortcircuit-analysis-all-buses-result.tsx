@@ -20,11 +20,13 @@ import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitAnalysisAllBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
+    openVoltageLevelDiagram,
 }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
@@ -47,6 +49,7 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitA
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
+            openVoltageLevelDiagram={openVoltageLevelDiagram}
         />
     );
 };
