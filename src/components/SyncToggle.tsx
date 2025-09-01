@@ -22,9 +22,9 @@ const SyncToggle = () => {
 
     const STORAGE_KEYS = useMemo(
         () => ({
-            SYNC_ENABLED: `${studyUuid}-${BASE_KEYS.SYNC_ENABLED}`,
-            ROOT_NETWORK_UUID: `${studyUuid}-${BASE_KEYS.ROOT_NETWORK_UUID}`,
-            TREE_NODE: `${studyUuid}-${BASE_KEYS.TREE_NODE}`,
+            SYNC_ENABLED: `${BASE_KEYS.SYNC_ENABLED}-${studyUuid}`,
+            ROOT_NETWORK_UUID: `${BASE_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`,
+            TREE_NODE: `${BASE_KEYS.TREE_NODE}-${studyUuid}`,
         }),
         [studyUuid]
     );

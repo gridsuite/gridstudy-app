@@ -19,7 +19,7 @@ export const useSetCurrentRootNetworkUuid = () => {
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const key = useMemo(() => `${studyUuid}-${BASE_KEYS.ROOT_NETWORK_UUID}`, [studyUuid]);
+    const key = useMemo(() => `${BASE_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`, [studyUuid]);
 
     return useCallback(
         (uuid: UUID) => {
@@ -41,7 +41,7 @@ export const useSetCurrentTreeNode = () => {
     const dispatch = useDispatch();
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const key = useMemo(() => `${studyUuid}-${BASE_KEYS.TREE_NODE}`, [studyUuid]);
+    const key = useMemo(() => `${BASE_KEYS.TREE_NODE}-${studyUuid}`, [studyUuid]);
 
     return useCallback(
         (treeNode: CurrentTreeNode) => {

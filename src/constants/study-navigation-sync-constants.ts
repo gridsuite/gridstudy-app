@@ -6,7 +6,7 @@
  */
 
 export const BASE_KEYS = {
-    SYNC_ENABLED: 'syncEnabled',
-    ROOT_NETWORK_UUID: 'selectedRootNetworkUuid',
-    TREE_NODE: 'selectedTreeNode',
+    SYNC_ENABLED: 'SYNC_ENABLED',
+    ROOT_NETWORK_UUID: 'ROOT_NETWORK_UUID',
+    TREE_NODE: 'TREE_NODE',
 };

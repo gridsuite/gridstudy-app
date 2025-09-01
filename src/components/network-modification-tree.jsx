@@ -122,24 +122,26 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         );
     }, []);
 
+    // close modifications/ event scenario when current node is root
+    useEffect(() => {
+        if (currentNode?.type === 'ROOT') {
+            const newOptions = handleRootNodeClick(toggleOptions);
+            if (newOptions !== toggleOptions) {
+                dispatch(setToggleOptions(newOptions));
+            }
+        }
+    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
+
     const onNodeClick = useCallback(
         (event, node) => {
             if (node.type === 'NETWORK_MODIFICATION') {
                 dispatch(setModificationsDrawerOpen());
             }
-            if (node.type === 'ROOT') {
-                handleRootNodeClick(toggleOptions, dispatch);
-
-                const newOptions = handleRootNodeClick(toggleOptions);
-                if (newOptions !== toggleOptions) {
-                    dispatch(setToggleOptions(newOptions));
-                }
-            }
             if (!isSameNode(currentNode, node)) {
                 setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, dispatch, handleRootNodeClick, setCurrentTreeNodeWithSync, toggleOptions]
+        [currentNode, dispatch, setCurrentTreeNodeWithSync]
     );
 
     const toggleMinimap = useCallback(() => {

@@ -55,7 +55,7 @@ export function saveLocalStorageToggleOptions(studyUuid: UUID, toggleOptions: St
 }
 
 export function getLocalStorageSyncEnabled(studyUuid: UUID): boolean {
-    const saved = localStorage.getItem(`${studyUuid}-${BASE_KEYS.SYNC_ENABLED}`);
+    const saved = localStorage.getItem(`${BASE_KEYS.SYNC_ENABLED}-${studyUuid}`);
     if (saved) {
         try {
             return JSON.parse(saved);
