@@ -94,7 +94,7 @@ export default function LineTypesCatalogSelectorForm({
 
     const renderTabContent = (isAerial: boolean) => (
         <>
-            <div style={{ height: '80%', marginTop: '1%' }}>
+            <div style={{ height: '75%', marginTop: '1%' }}>
                 <LimitCustomAgGrid
                     gridRef={gridRef}
                     currentTab={tabIndex}
