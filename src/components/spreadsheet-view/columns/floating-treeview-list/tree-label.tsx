@@ -27,7 +27,7 @@ function highlightText(text: string, query?: string, active?: boolean) {
     }
     return text.split(new RegExp(`(${query})`, 'gi')).map((part, idx) =>
         part.toLowerCase() === query.toLowerCase() ? (
-            <span key={idx} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
+            <span key={part} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
                 {part}
             </span>
         ) : (
@@ -36,7 +36,7 @@ function highlightText(text: string, query?: string, active?: boolean) {
     );
 }
 
-export function TreeLabel({ text, type, highlight, active }: TreeLabelProps) {
+export function TreeLabel({ text, type, highlight, active }: Readonly<TreeLabelProps>) {
     let icon: ReactNode;
     switch (type) {
         case 'string':

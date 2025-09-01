@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction, useRef, KeyboardEvent } from 'react';
 import { JSONSchema7 } from 'json-schema';
 
 export const usePopoverToggle = (
@@ -15,14 +15,12 @@ export const usePopoverToggle = (
 ) => {
     const lastShiftTime = useRef(0);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
         if (properties !== null) {
             if (e.key === 'Shift') {
                 const now = Date.now();
                 if (now - lastShiftTime.current < 300) {
-                    setAnchorEl((prevState) =>
-                        prevState ? null : (e.currentTarget.closest('[data-popover-anchor]') as HTMLElement)
-                    );
+                    setAnchorEl((prevState) => (prevState ? null : e.currentTarget.closest('[data-popover-anchor]')));
                 }
                 lastShiftTime.current = now;
             }
@@ -33,7 +31,7 @@ export const usePopoverToggle = (
         }
     };
 
-    const handleTreeviewKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    const handleTreeviewKeyDown = (e: KeyboardEvent<HTMLElement>) => {
         e.preventDefault();
         if (handleConfirm && e.key === 'Enter') {
             handleConfirm();
