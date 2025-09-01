@@ -72,7 +72,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
                 setResultsCountDisplay(true);
             }
         },
-        [debounceSearch, resetSearch, searchTerm.length]
+        [debounceSearch, resetSearch]
     );
 
     const handleClear = useCallback(() => {
