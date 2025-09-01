@@ -156,6 +156,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
+    const responsiveGridLayoutRef = useRef(null);
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
 
@@ -312,6 +313,17 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
         setLayouts((prev) => ({ ...prev, [currentBreakpointRef.current]: currentLayout }));
     }, []);
 
+    const handleResize = useCallback((_, __, ___, ____, event) => {
+        const container = responsiveGridLayoutRef.current;
+        if (!container) {
+            return;
+        }
+        const { bottom } = container.getBoundingClientRect();
+        if (event.clientY > bottom) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }, []);
+
     /**
      * Handle card resizing across all breakpoints
      * Maintains consistent card dimensions regardless of screen size
@@ -415,6 +427,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
                 onLayoutSave={debouncedGridLayoutSave}
             />
             <ResponsiveGridLayout
+                innerRef={responsiveGridLayoutRef}
                 className="layout"
                 breakpoints={GRID_CONFIG.breakpoints}
                 cols={GRID_CONFIG.cols}
@@ -422,6 +435,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
                 compactType={'vertical'}
                 onLayoutChange={handleLayoutChange}
                 onResizeStop={handleResizeStop}
+                onResize={handleResize}
                 onBreakpointChange={handleBreakpointChange}
                 layouts={layouts}
                 style={{
