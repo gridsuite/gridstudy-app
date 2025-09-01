@@ -64,7 +64,9 @@ const useStudyNavigationSync = () => {
                     updateFn(parsed);
                 }
             });
-        } catch (err) {}
+        } catch (err) {
+            console.warn('Failed to sync from localStorage:', err);
+        }
     }, [keyActions]);
 
     useEffect(() => {
@@ -76,7 +78,9 @@ const useStudyNavigationSync = () => {
                     }
                     const newSync = JSON.parse(event.newValue);
                     dispatch(selectSyncEnabled(newSync));
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('Failed to parse storage event value', err);
+                }
                 return;
             }
             if (
@@ -92,7 +96,9 @@ const useStudyNavigationSync = () => {
                 try {
                     const parsed = JSON.parse(event.newValue);
                     updateFn(parsed);
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('Failed to parse storage event value', err);
+                }
             }
         };
 

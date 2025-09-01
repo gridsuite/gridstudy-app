@@ -27,7 +27,9 @@ export const useSetCurrentRootNetworkUuid = () => {
             if (syncEnabled) {
                 try {
                     localStorage.setItem(key, JSON.stringify(uuid));
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('Failed to set root network UUID in localStorage:', err);
+                }
             }
         },
         [dispatch, syncEnabled, key]
@@ -47,7 +49,9 @@ export const useSetCurrentTreeNode = () => {
             if (syncEnabled) {
                 try {
                     localStorage.setItem(key, JSON.stringify(treeNode));
-                } catch (err) {}
+                } catch (err) {
+                    console.warn('Failed to set current tree node in localStorage:', err);
+                }
             }
         },
         [dispatch, syncEnabled, key]
