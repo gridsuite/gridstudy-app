@@ -50,7 +50,6 @@ function SensitivityAnalysisResultTab({
     const [sensiTab, setSensiTab] = useState<SensiTab>(SENSITIVITY_IN_DELTA_MW);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState<boolean>(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState<boolean>(false);
-    const [page, setPage] = useState<number>(0);
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
@@ -59,11 +58,6 @@ function SensitivityAnalysisResultTab({
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const initTable = () => {
-        /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
-           for the page prop of MUI TablePagination if was not on the first page
-           for the prev sensiKind */
-        setPage(0);
-
         setIsCsvExportSuccessful(false);
     };
 
@@ -159,8 +153,6 @@ function SensitivityAnalysisResultTab({
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
-                        page={page}
-                        setPage={setPage}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
                         globalFilters={getGlobalFilterParameter(globalFilters)}
