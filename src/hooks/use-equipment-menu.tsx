@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useMemo, FunctionComponent } from 'react';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import withOperatingStatusMenu, { MenuBranchProps } from '../components/menus/operating-status-menu';
 import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../components/menus/base-equipment-menu';
 import withEquipmentMenu from '../components/menus/equipment-menu';
@@ -17,6 +17,7 @@ type EquipmentMenuProps = {
     position?: [number, number] | null;
     equipment?: BaseEquipment;
     equipmentType?: EquipmentType;
+    equipmentSubtype?: ExtendedEquipmentType | null;
     display: boolean;
 };
 
@@ -36,7 +37,7 @@ interface UseEquipmentMenuProps {
     disabled: boolean;
     onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => void;
     onDeleteEquipment: (equipmentType: EquipmentType | null, equipmentId: string) => void;
-    onOpenModificationDialog: (id: string, type: EquipmentType | null) => void;
+    onOpenModificationDialog: (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => void;
     onOpenDynamicSimulationEventDialog?: (
         equipmentId: string,
         equipmentType: EquipmentType | null,
@@ -75,44 +76,68 @@ export const useEquipmentMenu = ({
     } = useMemo(
         () => ({
             MenuBranch: withOperatingStatusMenu(BaseEquipmentMenu),
-            MenuSubstation: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, 'substation-menus'),
-            MenuVoltageLevel: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus'),
-            MenuLoad: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.LOAD, 'load-menus'),
-            MenuBattery: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.BATTERY, 'battery-menus'),
-            MenuDanglingLine: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.DANGLING_LINE, 'dangling-line-menus'),
-            MenuGenerator: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.GENERATOR, 'generator-menus'),
+            MenuSubstation: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.SUBSTATION, null, 'substation-menus'),
+            MenuVoltageLevel: withEquipmentMenu(
+                BaseEquipmentMenu,
+                EquipmentType.VOLTAGE_LEVEL,
+                null,
+                'voltage-level-menus'
+            ),
+            MenuLoad: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.LOAD, null, 'load-menus'),
+            MenuBattery: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.BATTERY, null, 'battery-menus'),
+            MenuDanglingLine: withEquipmentMenu(
+                BaseEquipmentMenu,
+                EquipmentType.DANGLING_LINE,
+                null,
+                'dangling-line-menus'
+            ),
+            MenuGenerator: withEquipmentMenu(BaseEquipmentMenu, EquipmentType.GENERATOR, null, 'generator-menus'),
             MenuStaticVarCompensator: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.STATIC_VAR_COMPENSATOR,
+                null,
                 'static-var-compensator-menus'
             ),
             MenuShuntCompensator: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.SHUNT_COMPENSATOR,
+                null,
                 'shunt-compensator-menus'
             ),
             MenuLccConverterStation: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.LCC_CONVERTER_STATION,
+                null,
                 'lcc-converter-station-menus'
             ),
             MenuVscConverterStation: withEquipmentMenu(
                 BaseEquipmentMenu,
                 EquipmentType.VSC_CONVERTER_STATION,
+                null,
                 'vsc-converter-station-menus'
             ),
         }),
         []
     );
 
-    const openEquipmentMenu = useCallback((equipment: BaseEquipment, x: number, y: number, type: EquipmentType) => {
-        setEquipmentMenu({
-            position: [x, y],
-            equipment: equipment,
-            equipmentType: type,
-            display: true,
-        });
-    }, []);
+    const openEquipmentMenu = useCallback(
+        (
+            equipment: BaseEquipment,
+            x: number,
+            y: number,
+            type: EquipmentType,
+            subtype: ExtendedEquipmentType | null
+        ) => {
+            setEquipmentMenu({
+                position: [x, y],
+                equipment: equipment,
+                equipmentType: type,
+                equipmentSubtype: subtype,
+                display: true,
+            });
+        },
+        []
+    );
 
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({ display: false });
@@ -135,8 +160,8 @@ export const useEquipmentMenu = ({
     );
 
     const handleOpenModificationDialog = useCallback(
-        (id: string, type: EquipmentType | null) => {
-            onOpenModificationDialog(id, type);
+        (id: string, type: EquipmentType | null, subtype: ExtendedEquipmentType | null) => {
+            onOpenModificationDialog(id, type, subtype);
             closeEquipmentMenu();
         },
         [onOpenModificationDialog, closeEquipmentMenu]
@@ -161,6 +186,7 @@ export const useEquipmentMenu = ({
                     <Menu
                         equipment={equipmentMenu?.equipment}
                         equipmentType={equipmentMenu?.equipmentType}
+                        equipmentSubtype={equipmentMenu?.equipmentSubtype ?? null}
                         position={equipmentMenu.position}
                         handleClose={closeEquipmentMenu}
                         handleViewInSpreadsheet={handleViewInSpreadsheet}

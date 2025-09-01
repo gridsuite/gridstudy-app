@@ -111,7 +111,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 const convertedEquipmentType = getEquipmentTypeFromFeederType(equipmentType);
                 setHoveredEquipmentId(equipmentId);
                 setEquipmentPopoverAnchorEl(currentTarget);
-                setHoveredEquipmentType(convertedEquipmentType || '');
+                setHoveredEquipmentType(convertedEquipmentType?.equipmentType || '');
             } else {
                 setHoveredEquipmentId('');
                 setEquipmentPopoverAnchorEl(null);
@@ -254,11 +254,16 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             handleTogglePopover(false, null, '', '');
 
             const convertedType = getEquipmentTypeFromFeederType(equipmentType);
-
-            if (convertedType) {
+            if (convertedType?.equipmentType) {
                 // Create a minimal equipment object
                 const equipment = { id: equipmentId };
-                openEquipmentMenu(equipment as MapEquipment, x, y, convertedType);
+                openEquipmentMenu(
+                    equipment as MapEquipment,
+                    x,
+                    y,
+                    convertedType.equipmentType,
+                    convertedType.equipmentSubtype ?? null
+                );
             }
         },
         [handleTogglePopover, openEquipmentMenu]

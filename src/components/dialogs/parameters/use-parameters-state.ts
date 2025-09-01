@@ -8,10 +8,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useSnackMessage, updateConfigParameter } from '@gridsuite/commons-ui';
+import { updateConfigParameter, useSnackMessage } from '@gridsuite/commons-ui';
 import { AppConfigState } from 'redux/reducer';
 
 import { simpleConverterToString } from '../../../utils/types-utils';
+import { APP_NAME } from '../../../utils/config-params';
 
 // Overload for primitive types: paramValueUpdateConvertor is optional
 export function useParameterState<K extends keyof AppConfigState>(
@@ -44,15 +45,17 @@ export function useParameterState<K extends keyof AppConfigState>(
     const handleChangeParamLocalState = useCallback(
         (value: AppConfigState[K]) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, (paramValueUpdateConvertor ?? simpleConverterToString)(value)).catch(
-                (error) => {
-                    setParamLocalState(paramGlobalState);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsChangingError',
-                    });
-                }
-            );
+            updateConfigParameter(
+                APP_NAME,
+                paramName,
+                (paramValueUpdateConvertor ?? simpleConverterToString)(value)
+            ).catch((error) => {
+                setParamLocalState(paramGlobalState);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'paramsChangingError',
+                });
+            });
         },
         [paramName, snackError, paramGlobalState, paramValueUpdateConvertor]
     );

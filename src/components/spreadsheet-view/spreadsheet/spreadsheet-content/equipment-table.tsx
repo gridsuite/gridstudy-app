@@ -60,6 +60,7 @@ interface EquipmentTableProps {
     isDataEditable: boolean;
     onFirstDataRendered: GridOptions['onFirstDataRendered'];
     onGridReady: GridOptions['onGridReady'];
+    onRowDataUpdated?: GridOptions['onRowDataUpdated'];
     handleModify: (equipmentId: string) => void;
     handleOpenDiagram: (voltageLevelId: string) => void;
     equipmentType?: string;
@@ -75,6 +76,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     isExternalFilterPresent,
     doesExternalFilterPass,
     onModelUpdated,
+    onRowDataUpdated,
     isDataEditable,
     onFirstDataRendered,
     onGridReady,
@@ -154,6 +156,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
                 doesExternalFilterPass={doesExternalFilterPass}
                 onFirstDataRendered={onFirstDataRendered}
                 onGridReady={onGridReady}
+                onRowDataUpdated={onRowDataUpdated}
                 overrideLocales={AGGRID_LOCALES}
                 suppressNoRowsOverlay={rowData === undefined}
                 valueCache

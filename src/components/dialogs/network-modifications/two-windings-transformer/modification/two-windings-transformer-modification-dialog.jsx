@@ -210,7 +210,7 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, getValues } = formMethods;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
@@ -606,13 +606,6 @@ const TwoWindingsTransformerModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const setConnectivityValue = useCallback(
-        (index, field, value) => {
-            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
-        },
-        [setValue]
-    );
-
     const isRatioTapChangerEnabled = useCallback(
         (twt) => {
             if (editData?.ratioTapChanger?.enabled === undefined) {
@@ -683,10 +676,6 @@ const TwoWindingsTransformerModificationDialog = ({
                     .then((twt) => {
                         if (twt) {
                             setTwtToModify(twt);
-                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, twt?.voltageLevelId1);
-                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, twt?.voltageLevelId2);
-                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId1);
-                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, twt?.busOrBusbarSectionId2);
                             const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
                                 twt?.currentLimits1,
                                 twt?.selectedOperationalLimitsGroup1
@@ -774,7 +763,6 @@ const TwoWindingsTransformerModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             currentRootNetworkUuid,
-            setConnectivityValue,
             getValues,
             reset,
             isRatioTapChangerEnabled,

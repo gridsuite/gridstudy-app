@@ -8,7 +8,7 @@
 import { GridApi } from 'ag-grid-community';
 import { addToleranceToFilter } from './filter-tolerance-utils';
 import { FilterConfig } from '../../../../types/custom-aggrid-types';
-import { FILTER_DATA_TYPES } from '../custom-aggrid-filter.type';
+import { FILTER_DATA_TYPES, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid-filter.type';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -65,12 +65,17 @@ const formatCustomFiltersForAgGrid = (filters: FilterConfig[]): FilterModel => {
                 filterType: filter.dataType,
                 filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
             }));
+            // Determine operator based on filter types
+            let operator = 'OR';
+            if (filters.length === 2 && filters.every((f) => f?.originalType === FILTER_NUMBER_COMPARATORS.EQUALS)) {
+                operator = 'AND'; // For EQUALS with tolerance
+            }
 
             // Create a combined filter model with 'OR' for all conditions
             agGridFilterModel[column] = {
                 type: filters[0].type,
                 tolerance: filters[0].tolerance,
-                operator: 'OR',
+                operator: operator,
                 conditions,
             };
         }

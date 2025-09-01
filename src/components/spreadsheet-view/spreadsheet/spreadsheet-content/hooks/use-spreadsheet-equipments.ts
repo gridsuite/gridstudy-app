@@ -5,70 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type Identifiable, NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     deleteEquipments,
-    EquipmentToDelete,
+    type EquipmentToDelete,
     removeNodeData,
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
+    type UpdateEquipmentsAction,
 } from 'redux/actions';
-import { type AppState, EquipmentUpdateType } from 'redux/reducer';
-import type { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
+import { type AppState } from 'redux/reducer';
+import { isSpreadsheetEquipmentType, SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { isStatusBuilt } from '../../../../graph/util/model-functions';
 import { useFetchEquipment } from '../../../hooks/use-fetch-equipment';
-import { isStudyNotification } from 'types/notification-types';
+import { type DeletedEquipment, isStudyNotification, type NetworkImpactsInfos } from 'types/notification-types';
 import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from 'services/study/network';
-
-const getEquipmentUpdateTypeFromType = (type: SpreadsheetEquipmentType) => {
-    switch (type) {
-        case 'SUBSTATION':
-            return EquipmentUpdateType.SUBSTATIONS;
-        case 'VOLTAGE_LEVEL':
-            return EquipmentUpdateType.VOLTAGE_LEVELS;
-        case 'TIE_LINE':
-            return EquipmentUpdateType.TIE_LINES;
-        case 'LINE':
-            return EquipmentUpdateType.LINES;
-        case 'TWO_WINDINGS_TRANSFORMER':
-            return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
-        case 'THREE_WINDINGS_TRANSFORMER':
-            return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
-        case 'HVDC_LINE':
-            return EquipmentUpdateType.HVDC_LINES;
-        case 'BUS':
-            return EquipmentUpdateType.BUSES;
-        case 'BUSBAR_SECTION':
-            return EquipmentUpdateType.BUSBAR_SECTIONS;
-        case 'GENERATOR':
-            return EquipmentUpdateType.GENERATORS;
-        case 'BATTERY':
-            return EquipmentUpdateType.BATTERIES;
-        case 'LOAD':
-            return EquipmentUpdateType.LOADS;
-        case 'SHUNT_COMPENSATOR':
-            return EquipmentUpdateType.SHUNT_COMPENSATORS;
-        case 'DANGLING_LINE':
-            return EquipmentUpdateType.DANGLING_LINES;
-        case 'STATIC_VAR_COMPENSATOR':
-            return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
-        case 'VSC_CONVERTER_STATION':
-            return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
-        case 'LCC_CONVERTER_STATION':
-            return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
-        default:
-            return;
-    }
-};
+import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -87,10 +47,8 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
-
+    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
     // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
@@ -103,76 +61,66 @@ export const useSpreadsheetEquipments = (
             .filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
         if (aliasedNodesIds.length > 0) {
-            treeNodes?.forEach((treeNode) => {
-                if (
-                    aliasedNodesIds.includes(treeNode.id) &&
-                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
-                ) {
-                    computedIds.push(treeNode.id);
-                }
-            });
+            computedIds =
+                treeNodes
+                    ?.filter(
+                        (treeNode) =>
+                            aliasedNodesIds.includes(treeNode.id) &&
+                            (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                    )
+                    .map((treeNode) => treeNode.id) ?? [];
         }
+        computedIds.sort((a, b) => a.localeCompare(b));
         // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
-        setBuiltAliasedNodesIds((prevState) => {
-            const currentIds = prevState;
-            currentIds?.sort((a, b) => a.localeCompare(b));
-            computedIds.sort((a, b) => a.localeCompare(b));
-            if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
-                return computedIds;
-            }
-            return prevState;
-        });
+        setBuiltAliasedNodesIds((prevState) =>
+            JSON.stringify(prevState) !== JSON.stringify(computedIds) ? computedIds : prevState
+        );
     }, [nodeAliases, treeNodes]);
 
     const nodesIdToFetch = useMemo(() => {
-        let nodesIdToFetch = new Set<string>();
-        if (!equipments || !builtAliasedNodesIds) {
+        const nodesIdToFetch = new Set<UUID>();
+        if (!equipments.nodesId || !builtAliasedNodesIds || !currentNode?.id) {
             return nodesIdToFetch;
         }
-        // We check if we have the data for the currentNode and if we don't we save the fact that we need to fetch it
-        if (equipments.nodesId.find((nodeId) => nodeId === currentNode?.id) === undefined) {
-            nodesIdToFetch.add(currentNode?.id as string);
+        // We check if we have the data for the currentNode and if we don't, we save the fact that we need to fetch it
+        if (equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
+            nodesIdToFetch.add(currentNode.id);
         }
         // Then we do the same for the other nodes we need the data of (the ones defined in aliases)
-        builtAliasedNodesIds.forEach((builtAliasNodeId) => {
+        for (const builtAliasNodeId of builtAliasedNodesIds) {
             if (equipments.nodesId.find((nodeId) => nodeId === builtAliasNodeId) === undefined) {
                 nodesIdToFetch.add(builtAliasNodeId);
             }
-        });
+        }
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments, builtAliasedNodesIds]);
+    }, [currentNode?.id, equipments.nodesId, builtAliasedNodesIds]);
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!equipments || !builtAliasedNodesIds) {
+        if (!equipments || !builtAliasedNodesIds.length || !currentNode?.id) {
             return;
         }
-        const currentNodeId = currentNode?.id as UUID;
-        let unwantedFetchedNodes = new Set<string>();
-        unwantedFetchedNodes = new Set([...unwantedFetchedNodes, ...equipments.nodesId]);
+        const currentNodeId = currentNode.id;
+        const unwantedFetchedNodes = new Set(equipments.nodesId);
         const usedNodesId = new Set(builtAliasedNodesIds);
         usedNodesId.add(currentNodeId);
         usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         if (unwantedFetchedNodes.size !== 0) {
             dispatch(removeNodeData(Array.from(unwantedFetchedNodes)));
         }
-    }, [builtAliasedNodesIds, currentNode, dispatch, equipments]);
+    }, [builtAliasedNodesIds, currentNode?.id, dispatch, equipments]);
 
-    const updateEquipmentsLocal = useCallback(
-        (
-            impactedSubstationsIds: string[],
-            deletedEquipments: { equipmentType: string; equipmentId: string }[],
-            impactedElementTypes: string[]
-        ) => {
+    const deleteEquipmentsLocal = useCallback(
+        (impactedSubstationsIds: UUID[], deletedEquipments: DeletedEquipment[], impactedElementTypes: string[]) => {
             if (!type) {
                 return;
             }
             // updating data related to impacted elements
-            const nodeId = currentNode?.id as UUID;
+            const nodeId = currentNode?.id as UUID; //TODO maybe do nothing if no current node?
 
             // Handle updates and resets based on impacted element types
             if (impactedElementTypes.length > 0) {
-                if (impactedElementTypes.includes(EQUIPMENT_TYPES.SUBSTATION)) {
+                if (impactedElementTypes.includes(SpreadsheetEquipmentType.SUBSTATION)) {
                     dispatch(resetEquipments());
                     return;
                 }
@@ -180,15 +128,17 @@ export const useSpreadsheetEquipments = (
                     Object.keys(allEquipments).includes(type)
                 );
                 if (impactedSpreadsheetEquipmentsTypes.length > 0) {
-                    dispatch(resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes as SpreadsheetEquipmentType[]));
+                    dispatch(
+                        resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes.filter(isSpreadsheetEquipmentType))
+                    );
                 }
             }
 
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
                 // The formatting of the fetched equipments is done in the reducer
                 if (
-                    type === EQUIPMENT_TYPES.SUBSTATION ||
-                    type === EQUIPMENT_TYPES.VOLTAGE_LEVEL ||
+                    type === SpreadsheetEquipmentType.SUBSTATION ||
+                    type === SpreadsheetEquipmentType.VOLTAGE_LEVEL ||
                     !equipmentToUpdateId
                 ) {
                     // we must fetch data for all equipments, as substation data (country) and voltage level data(nominalV)
@@ -201,22 +151,50 @@ export const useSpreadsheetEquipments = (
                     );
                 } else {
                     // here, we can fetch only the data for the modified equipment
-                    fetchNetworkElementInfos(
-                        studyUuid,
-                        nodeId,
-                        currentRootNetworkUuid,
-                        type,
-                        'TAB',
-                        equipmentToUpdateId,
-                        false
-                    ).then((value: Identifiable) => {
-                        highlightUpdatedEquipment();
-                        const updateType = getEquipmentUpdateTypeFromType(type);
-                        if (updateType) {
-                            const equipmentsToUpdate: Partial<Record<EquipmentUpdateType, Identifiable[]>> = {
-                                [updateType]: [value],
-                            };
-                            dispatch(updateEquipments(equipmentsToUpdate, nodeId));
+                    const promises = [
+                        fetchNetworkElementInfos(
+                            studyUuid,
+                            nodeId,
+                            currentRootNetworkUuid,
+                            type,
+                            EQUIPMENT_INFOS_TYPES.TAB.type,
+                            equipmentToUpdateId,
+                            false
+                        ),
+                    ];
+                    if (
+                        type === SpreadsheetEquipmentType.LINE ||
+                        type === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
+                    ) {
+                        promises.push(
+                            fetchNetworkElementInfos(
+                                studyUuid,
+                                nodeId,
+                                currentRootNetworkUuid,
+                                SpreadsheetEquipmentType.BRANCH,
+                                EQUIPMENT_INFOS_TYPES.TAB.type,
+                                equipmentToUpdateId,
+                                false
+                            )
+                        );
+                    }
+                    Promise.allSettled(promises).then((results) => {
+                        const updates: UpdateEquipmentsAction['equipments'] = {};
+                        if (results[0].status === 'rejected') {
+                            //TODO show snackbar error?
+                        } else {
+                            updates[type] = results[0].value;
+                        }
+                        if (results.length > 1) {
+                            if (results[1].status === 'rejected') {
+                                //TODO show snackbar error?
+                            } else {
+                                updates[SpreadsheetEquipmentType.BRANCH] = results[1].value;
+                            }
+                        }
+                        if (Object.keys(updates).length > 1) {
+                            highlightUpdatedEquipment();
+                            dispatch(updateEquipments(updates, nodeId));
                         }
                     });
                 }
@@ -236,11 +214,12 @@ export const useSpreadsheetEquipments = (
                     });
 
                 if (equipmentsToDelete.length > 0) {
-                    const equipmentsToDeleteArray: EquipmentToDelete[] = equipmentsToDelete.map((equipment) => ({
-                        equipmentType: equipment.equipmentType as SpreadsheetEquipmentType,
-                        equipmentId: equipment.equipmentId,
-                        nodeId: nodeId,
-                    }));
+                    const equipmentsToDeleteArray = equipmentsToDelete
+                        .filter((e) => isSpreadsheetEquipmentType(e.equipmentType))
+                        .map<EquipmentToDelete>((equipment) => ({
+                            equipmentType: equipment.equipmentType as unknown as SpreadsheetEquipmentType,
+                            equipmentId: equipment.equipmentId,
+                        }));
                     dispatch(deleteEquipments(equipmentsToDeleteArray, nodeId));
                 }
             }
@@ -269,25 +248,18 @@ export const useSpreadsheetEquipments = (
                     currentNode?.id === eventNodeUuid &&
                     currentRootNetworkUuid === eventRootNetworkUuid
                 ) {
-                    // @ts-ignore
                     const payload = JSON.parse(eventData.payload) as NetworkImpactsInfos;
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
                     const impactedElementTypes = payload.impactedElementTypes ?? [];
-                    updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
+                    deleteEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
                 }
             }
         },
-        [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
+        [currentNode?.id, currentRootNetworkUuid, studyUuid, deleteEquipmentsLocal]
     );
 
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: listenerUpdateEquipmentsLocal,
-    });
-
-    const onFetchingDone = () => {
-        setIsFetching(false);
-    };
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: listenerUpdateEquipmentsLocal });
 
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
@@ -301,7 +273,7 @@ export const useSpreadsheetEquipments = (
             (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data.globalBuildStatus))
         ) {
             setIsFetching(true);
-            fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, onFetchingDone);
+            fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, () => setIsFetching(false));
         }
     }, [
         active,

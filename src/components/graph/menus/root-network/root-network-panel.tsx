@@ -13,9 +13,7 @@ import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
-import ModificationsPanel from './root-network-panel-search';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
+import RootNetworkSearchPanel from './root-network-panel-search';
 
 const styles = {
     paper: {
@@ -33,12 +31,11 @@ const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworkPanelMinimized, setIsRootNetworkPanelMinimized] = useState(false);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const [isSearchActive, setIsSearchActive] = useState(false);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const theme = useTheme();
     // Set the panel's width and height based on designer's proposed values
     const panelStyle = useMemo(() => {
-        const width = theme.spacing(isRootNetworkPanelMinimized ? 25 : 38);
+        const width = theme.spacing(isRootNetworkPanelMinimized ? 25 : 42);
 
         const minHeight = theme.spacing(
             isRootNetworkPanelMinimized ? (isMonoRootStudy ? 6 : 12) : isMonoRootStudy ? 14 : 38
@@ -56,14 +53,18 @@ const RootNetworkPanel: FunctionComponent = () => {
         setIsRootNetworksProcessing,
     });
 
-    useEffect(() => {
-        if (!enableDeveloperMode) {
-            setIsSearchActive(false);
-        }
-    }, [enableDeveloperMode]);
-
     const closeSearchPanel = useCallback(() => {
         setIsSearchActive(false);
+    }, []);
+
+    useEffect(() => {
+        const handleMinimize = () => {
+            setIsRootNetworkPanelMinimized(true);
+            setIsSearchActive(false);
+        };
+
+        window.addEventListener('minimizeRootNetworkPanel', handleMinimize);
+        return () => window.removeEventListener('minimizeRootNetworkPanel', handleMinimize);
     }, []);
 
     return (
@@ -76,14 +77,16 @@ const RootNetworkPanel: FunctionComponent = () => {
                 setIsSearchActive={setIsSearchActive}
                 closeSearchPanel={closeSearchPanel}
             />
-            {isRootNetworkPanelMinimized && !isMonoRootStudy && !isSearchActive && <RootNetworkMinimizedPanelContent />}
+            {isRootNetworkPanelMinimized && !isMonoRootStudy && !isSearchActive && (
+                <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={isRootNetworkPanelMinimized} />
+            )}
             {!isSearchActive && !isRootNetworkPanelMinimized && (
                 <RootNetworkNodeEditor
                     isRootNetworksProcessing={isRootNetworksProcessing}
                     setIsRootNetworksProcessing={setIsRootNetworksProcessing}
                 />
             )}
-            {enableDeveloperMode && isSearchActive && <ModificationsPanel setIsSearchActive={setIsSearchActive} />}
+            {isSearchActive && <RootNetworkSearchPanel setIsSearchActive={setIsSearchActive} />}
         </Paper>
     );
 };

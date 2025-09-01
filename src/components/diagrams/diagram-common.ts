@@ -8,9 +8,9 @@
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { Theme } from '@mui/material';
-import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
+import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;
@@ -20,7 +20,6 @@ export const MAX_WIDTH_SUBSTATION = 1200;
 export const MAX_HEIGHT_SUBSTATION = 700;
 export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
 export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
-export const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
 
 // Array of zoom levels used to determine level-of-detail rendering by applying in the network-viewer the
 // corresponding css class 'nad-zoom-{level}' to the NAD's SVG.
@@ -116,36 +115,47 @@ export const styles = {
 };
 
 // be careful when using this method because there are treatments made on purpose
-export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EquipmentType | null {
+export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): {
+    equipmentType: EquipmentType | null;
+    equipmentSubtype?: ExtendedEquipmentType;
+} | null {
     switch (feederType) {
         case FEEDER_TYPES.LINE:
-            return EquipmentType.LINE;
+            return { equipmentType: EquipmentType.LINE };
         case FEEDER_TYPES.LOAD:
-            return EquipmentType.LOAD;
+            return { equipmentType: EquipmentType.LOAD };
         case FEEDER_TYPES.BATTERY:
-            return EquipmentType.BATTERY;
+            return { equipmentType: EquipmentType.BATTERY };
         case FEEDER_TYPES.TIE_LINE:
-            return EquipmentType.TIE_LINE;
+            return { equipmentType: EquipmentType.TIE_LINE };
         case FEEDER_TYPES.DANGLING_LINE:
-            return EquipmentType.DANGLING_LINE;
+            return { equipmentType: EquipmentType.DANGLING_LINE };
         case FEEDER_TYPES.GENERATOR:
-            return EquipmentType.GENERATOR;
-        case FEEDER_TYPES.LCC_CONVERTER_STATION: // return EquipmentType.LCC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
-        case FEEDER_TYPES.VSC_CONVERTER_STATION: // return EquipmentType.VSC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
+            return { equipmentType: EquipmentType.GENERATOR };
+        case FEEDER_TYPES.LCC_CONVERTER_STATION:
+            return {
+                equipmentType: EquipmentType.HVDC_LINE,
+                equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_LCC,
+            };
+        case FEEDER_TYPES.VSC_CONVERTER_STATION:
+            return {
+                equipmentType: EquipmentType.HVDC_LINE,
+                equipmentSubtype: ExtendedEquipmentType.HVDC_LINE_VSC,
+            };
         case FEEDER_TYPES.HVDC_LINE:
-            return EquipmentType.HVDC_LINE;
+            return { equipmentType: EquipmentType.HVDC_LINE };
         case FEEDER_TYPES.CAPACITOR:
         case FEEDER_TYPES.INDUCTOR:
-            return EquipmentType.SHUNT_COMPENSATOR;
+            return { equipmentType: EquipmentType.SHUNT_COMPENSATOR };
         case FEEDER_TYPES.STATIC_VAR_COMPENSATOR:
-            return EquipmentType.STATIC_VAR_COMPENSATOR;
+            return { equipmentType: EquipmentType.STATIC_VAR_COMPENSATOR };
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG:
         case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER:
-            return EquipmentType.TWO_WINDINGS_TRANSFORMER;
+            return { equipmentType: EquipmentType.TWO_WINDINGS_TRANSFORMER };
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG:
-            return EquipmentType.THREE_WINDINGS_TRANSFORMER;
+            return { equipmentType: EquipmentType.THREE_WINDINGS_TRANSFORMER };
         default: {
             console.log('bad feeder type ', feederType);
             return null;
