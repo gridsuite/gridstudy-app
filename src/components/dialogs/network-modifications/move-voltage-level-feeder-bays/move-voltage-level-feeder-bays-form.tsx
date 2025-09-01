@@ -4,29 +4,39 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { Grid, TextField } from '@mui/material';
+import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { filledTextField } from '../../dialog-utils';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import SeparatorCellRenderer from '../voltage-level-topology-modification/separator-cell-renderer';
 import HeaderWithTooltip from '../voltage-level-topology-modification/header-with-tooltip';
-import { CustomAGGrid, IntegerInput } from '@gridsuite/commons-ui';
-import { BUSBAR_SECTION_ID, CONNECTION_DIRECTION, CONNECTION_NAME, CONNECTION_POSITION,
-  CURRENT_CONNECTION_STATUS, MOVE_VOLTAGE_LEVEL_FEEDER_BAYS, MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
-  TOPOLOGY_MODIFICATION_TABLE
-} from "../../../utils/field-constants";
-import ConnectionCellRenderer from "../voltage-level-topology-modification/connection-cell-render";
-import ConnectionPositionCellRenderer from "./connection-position-cell-render";
-import { SwitchRowForm } from "../voltage-level-topology-modification/voltage-level-topology.type";
-import ConnectionDirectionCellRenderer from "./connection-direction-cell-render";
+import { CustomAGGrid } from '@gridsuite/commons-ui';
+import {
+    BUSBAR_SECTION_IDS,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    MOVE_VOLTAGE_LEVEL_FEEDER_BAYS,
+    MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
+    TARGET_BUSBAR_SECTION_ID,
+} from '../../../utils/field-constants';
+import FeederBayPositionCellRenderer from './feeder-bay-position-cell-render';
+import FeeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
+import FeederBayNameCellRenderer from './feeder-bay-name-cell-render';
+import FeederBayTargetBusbarIdCellRenderer from './feeder-bay-target-busbar-id-cell-render';
+import GridItem from '../../commons/grid-item';
+import Button from '@mui/material/Button';
+import { InfoOutlined } from '@mui/icons-material';
+import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane';
+import { UUID } from 'crypto';
 
 export type FeederBayData = {
-    equipmentId: string;
-    busbarId: string;
-    targetBusbarId: string;
+    connectableId: string;
+    busbarSectionId: string;
+    targetBusbarSectionId: string;
     connectionDirection: string;
     connectionName: string;
     connectionPosition: number;
@@ -37,6 +47,8 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
+    currentRootNetworkUuid: UUID;
+    studyUuid: UUID;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
@@ -45,9 +57,19 @@ export function MoveVoltageLevelFeederBaysForm({
     currentNode,
     selectedId,
     isUpdate,
+    currentRootNetworkUuid,
+    studyUuid,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
     const { getValues } = useFormContext();
+    const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
+
+    const handleCloseDiagramPane = useCallback(() => {
+        setIsDiagramPaneOpen(false);
+    }, []);
+    const handleClickOpenDiagramPane = useCallback(() => {
+        setIsDiagramPaneOpen(true);
+    }, []);
 
     const defaultColDef = useMemo(
         () => ({
@@ -59,6 +81,21 @@ export function MoveVoltageLevelFeederBaysForm({
             suppressMovable: true,
         }),
         []
+    );
+
+    const voltageLevelIdField = useMemo(
+        () => (
+            <TextField
+                fullWidth
+                label="ID"
+                value={selectedId}
+                size="small"
+                InputProps={{ readOnly: true }}
+                disabled
+                {...filledTextField}
+            />
+        ),
+        [selectedId]
     );
 
     const columnDefs = useMemo(
@@ -73,7 +110,13 @@ export function MoveVoltageLevelFeederBaysForm({
                             value: data.title,
                         });
                     } else {
-                        return data[CONNECTION_NAME];
+                        const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+                        const formIndex = watchTable?.findIndex(
+                            (item: FeederBayData) => item.connectableId === data.connectableId
+                        );
+                        return FeederBayNameCellRenderer({
+                            name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`,
+                        });
                     }
                 },
                 headerComponent: HeaderWithTooltip,
@@ -88,7 +131,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 editable: false,
             },
             {
-                field: BUSBAR_SECTION_ID,
+                field: TARGET_BUSBAR_SECTION_ID,
                 filter: true,
                 flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
@@ -97,7 +140,18 @@ export function MoveVoltageLevelFeederBaysForm({
                             value: data.title,
                         });
                     } else {
-                        return data['busbarId'];
+                        const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+                        const formIndex = watchTable?.findIndex(
+                            (item: FeederBayData) => item.connectableId === data.connectableId
+                        );
+                        const value = getValues(
+                            `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${TARGET_BUSBAR_SECTION_ID}`
+                        );
+                        return FeederBayTargetBusbarIdCellRenderer({
+                            name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${TARGET_BUSBAR_SECTION_ID}`,
+                            value: { id: value, label: value },
+                            busBarSectionIds: getValues(BUSBAR_SECTION_IDS),
+                        });
                     }
                 },
                 headerComponent: HeaderWithTooltip,
@@ -122,10 +176,13 @@ export function MoveVoltageLevelFeederBaysForm({
                         });
                     } else {
                         const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-                        const formIndex = watchTable?.findIndex((item: FeederBayData) => item.equipmentId === data.equipmentId);
-                        console.log();
-                        return ConnectionDirectionCellRenderer({
-                            direction: getValues(`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`),
+                        const formIndex = watchTable?.findIndex(
+                            (item: FeederBayData) => item.connectableId === data.connectableId
+                        );
+                        return FeeederBayDirectionCellRenderer({
+                            direction: getValues(
+                                `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`
+                            ),
                         });
                     }
                 },
@@ -148,11 +205,13 @@ export function MoveVoltageLevelFeederBaysForm({
                     if (data.type === 'SEPARATOR') {
                         return null;
                     } else {
-                      const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-                      const formIndex = watchTable?.findIndex((item: FeederBayData) => item.equipmentId === data.equipmentId);
-                      return ConnectionPositionCellRenderer({
-                        name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`,
-                      });
+                        const watchTable: FeederBayData[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+                        const formIndex = watchTable?.findIndex(
+                            (item: FeederBayData) => item.connectableId === data.connectableId
+                        );
+                        return FeederBayPositionCellRenderer({
+                            name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`,
+                        });
                     }
                 },
                 headerComponent: HeaderWithTooltip,
@@ -170,20 +229,29 @@ export function MoveVoltageLevelFeederBaysForm({
         [currentNode, intl, isUpdate, getValues]
     );
 
+    const diagramToolTip = useMemo(
+        () => (
+            <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
+                <InfoOutlined color="info" fontSize="medium" />
+            </Tooltip>
+        ),
+        [intl]
+    );
+
     return (
         <Grid container sx={{ height: '100%' }} direction="column">
             <Grid container item spacing={2}>
                 <Grid item xs={4}>
-                    <TextField
-                        fullWidth
-                        label="ID"
-                        value={selectedId}
-                        size="small"
-                        InputProps={{ readOnly: true }}
-                        disabled
-                        {...filledTextField}
-                    />
+                    {voltageLevelIdField}
                 </Grid>
+                {isNodeBuilt(currentNode) && (
+                    <GridItem size={3}>
+                        <Button onClick={handleClickOpenDiagramPane} variant="outlined">
+                            <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
+                        </Button>
+                        {diagramToolTip}
+                    </GridItem>
+                )}
             </Grid>
             <Grid xs paddingTop={2}>
                 <CustomAGGrid
@@ -196,6 +264,16 @@ export function MoveVoltageLevelFeederBaysForm({
                     headerHeight={48}
                 />
             </Grid>
+            <Box>
+                <PositionDiagramPane
+                    studyUuid={studyUuid}
+                    open={isDiagramPaneOpen}
+                    onClose={handleCloseDiagramPane}
+                    voltageLevelId={selectedId}
+                    currentNodeUuid={currentNode?.id}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
+            </Box>
         </Grid>
     );
 }

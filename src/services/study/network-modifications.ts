@@ -39,6 +39,7 @@ import {
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
+    MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
@@ -2174,5 +2175,36 @@ export function createVoltageLevelTopology({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(createVoltageLevelTopologyInfos),
+    });
+}
+
+export function moveVoltageLevelFeederBays({
+    moveVoltageLevelFeederBaysInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    moveVoltageLevelFeederBaysInfos: MoveVoltageLevelFeederBaysInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology');
+    } else {
+        console.info('Creating voltage level topology');
+    }
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
     });
 }

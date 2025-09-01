@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
+import { useCallback, useEffect, useState } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -17,35 +17,61 @@ import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
 import yup from '../../../utils/yup-config';
 import {
-  BUSBAR_SECTION_ID, CONNECTION_DIRECTION, CONNECTION_NAME, CONNECTION_POSITION,
-  CURRENT_CONNECTION_STATUS, EQUIPMENT_ID,
-  MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE, PREV_CONNECTION_STATUS, SWITCH_ID, TOPOLOGY_MODIFICATION_TABLE } from '../../../utils/field-constants';
+  ADD_SUBSTATION_CREATION,
+  BUSBAR_SECTION_ID,
+    BUSBAR_SECTION_IDS,
+    CONNECTABLE_ID,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION, EQUIPMENT_ID,
+    MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
+    TARGET_BUSBAR_SECTION_ID,
+} from '../../../utils/field-constants';
 import { FeederBayData, MoveVoltageLevelFeederBaysForm } from './move-voltage-level-feeder-bays-form';
-import { TopologyVoltageLevelModificationInfos } from '../../../../services/network-modification-types';
+import {
+    MoveVoltageLevelFeederBaysInfos,
+    TopologyVoltageLevelModificationInfos,
+} from '../../../../services/network-modification-types';
 import { fetchNetworkElementInfos } from '../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { SwitchInfos } from '../../../../services/study/network-map.type';
-import { useIntl } from 'react-intl';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { moveVoltageLevelFeederBays } from '../../../../services/study/network-modifications';
 
 const formSchema = yup.object().shape({
-    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: yup.array().of(yup.object().shape({
-      [EQUIPMENT_ID]: yup.string(),
-      [CONNECTION_NAME]: yup.string(),
-      [BUSBAR_SECTION_ID]: yup.string(),
-      [CONNECTION_DIRECTION]: yup.string(),
-      [CONNECTION_POSITION]: yup.number(),
-    })).required(),
+    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [CONNECTABLE_ID]: yup.string().nonNullable().required(),
+                [CONNECTION_NAME]: yup.string().nonNullable().required(),
+                [BUSBAR_SECTION_ID]: yup.string().required(),
+                [TARGET_BUSBAR_SECTION_ID]: yup.string().nonNullable().required(),
+                [CONNECTION_DIRECTION]: yup.string().nonNullable().required(),
+                [CONNECTION_POSITION]: yup.number().nonNullable().when([], {
+                  is: true,
+                  then: (schema) =>
+                    schema
+                      .required()
+                      .notOneOf({'connectionPosition'}, 'test'),
+                }),
+            })
+        )
+        .required(),
+    [BUSBAR_SECTION_IDS]: yup.array(),
 });
 
 const emptyFormData = {
-    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: [{
-      [EQUIPMENT_ID]: '',
-      [CONNECTION_NAME]: '',
-      [BUSBAR_SECTION_ID]: '',
-      [CONNECTION_DIRECTION]: '',
-      [CONNECTION_POSITION]: 0,
-    }],
+    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: [
+        {
+            [CONNECTABLE_ID]: '',
+            [CONNECTION_NAME]: '',
+            [BUSBAR_SECTION_ID]: '',
+            [TARGET_BUSBAR_SECTION_ID]: '',
+            [CONNECTION_DIRECTION]: '',
+            [CONNECTION_POSITION]: 0,
+        },
+    ],
+    [BUSBAR_SECTION_IDS]: [],
 };
 
 export type MoveVoltageLevelFeederBaysDialogProps = EquipmentModificationDialogProps & {
@@ -78,6 +104,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const [moveVoltageLevelFeederBaysInfos, setMoveVoltageLevelFeederBaysInfos] = useState<FeederBayData[]>(null);
+    const { snackError } = useSnackMessage();
 
     const formMethods = useForm<MoveVoltageLevelFeederBaysFormSchemaType>({
         defaultValues: emptyFormData,
@@ -107,13 +134,19 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 )
                     .then((voltageLevel) => {
                         const finalFeederBaysData: FeederBayData[] = [];
+                        const busbarSectionIdsData: Option[] = [];
                         if (voltageLevel) {
-                            Object.keys(voltageLevel.feederBaysInfos).forEach((equipmentId) => {
-                                voltageLevel.feederBaysInfos[equipmentId].forEach((connectionPositionInfo) => {
+                            Object.keys(voltageLevel.busBarSectionInfos).forEach((indexSection) => {
+                                voltageLevel.busBarSectionInfos[indexSection].forEach((item) => {
+                                    busbarSectionIdsData.push({ id: item, label: item });
+                                });
+                            });
+                            Object.keys(voltageLevel.feederBaysInfos).forEach((connectableId) => {
+                                voltageLevel.feederBaysInfos[connectableId].forEach((connectionPositionInfo) => {
                                     finalFeederBaysData.push({
-                                        equipmentId: equipmentId,
-                                        busbarId: connectionPositionInfo.busbarId,
-                                        targetBusbarId: connectionPositionInfo.busbarId,
+                                        connectableId: connectableId,
+                                        busbarSectionId: connectionPositionInfo.busbarId,
+                                        targetBusbarSectionId: connectionPositionInfo.busbarId,
                                         connectionDirection:
                                             connectionPositionInfo.connectablePositionInfos.connectionDirection,
                                         connectionName: connectionPositionInfo.connectablePositionInfos.connectionName,
@@ -124,16 +157,18 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             });
                             setMoveVoltageLevelFeederBaysInfos(finalFeederBaysData);
                             reset(
-                              {
-                                [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: finalFeederBaysData?.map((row) => ({
-                                  [EQUIPMENT_ID]: row.equipmentId,
-                                  [CONNECTION_NAME]: row.connectionName,
-                                  [BUSBAR_SECTION_ID]: row.targetBusbarId,
-                                  [CONNECTION_DIRECTION]: row.connectionDirection,
-                                  [CONNECTION_POSITION]: row.connectionPosition,
-                                })),
-                              },
-                              { keepDirty: true }
+                                {
+                                    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: finalFeederBaysData?.map((row) => ({
+                                        [CONNECTABLE_ID]: row.connectableId,
+                                        [CONNECTION_NAME]: row.connectionName,
+                                        [BUSBAR_SECTION_ID]: row.busbarSectionId,
+                                        [TARGET_BUSBAR_SECTION_ID]: row.targetBusbarSectionId,
+                                        [CONNECTION_DIRECTION]: row.connectionDirection,
+                                        [CONNECTION_POSITION]: row.connectionPosition,
+                                    })),
+                                    [BUSBAR_SECTION_IDS]: busbarSectionIdsData,
+                                },
+                                { keepDirty: true }
                             );
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
@@ -156,8 +191,25 @@ export default function MoveVoltageLevelFeederBaysDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(() => {
-      console.log('submit', moveVoltageLevelFeederBaysInfos)
-      console.log('submit2', getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE))
+        console.log("submit", getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE))
+        const moveVoltageLevelFeederBaysInfos = {
+            voltageLevelId: selectedId,
+            feederBaysAttributeList: getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE),
+            type: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
+            uuid: editData?.uuid,
+        } satisfies MoveVoltageLevelFeederBaysInfos;
+        moveVoltageLevelFeederBays({
+            moveVoltageLevelFeederBaysInfos: moveVoltageLevelFeederBaysInfos,
+            studyUuid: studyUuid,
+            nodeUuid: currentNodeUuid,
+            modificationUuid: editData?.uuid,
+            isUpdate: !!editData,
+        }).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'MoveVoltageLevelFeederBaysError',
+            });
+        });
     }, [moveVoltageLevelFeederBaysInfos, getValues]);
 
     const open = useOpenShortWaitFetching({
@@ -215,6 +267,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         currentNode={currentNode}
                         selectedId={selectedId}
                         isUpdate={isUpdate}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
+                        studyUuid={studyUuid}
                     />
                 )}
             </ModificationDialog>
