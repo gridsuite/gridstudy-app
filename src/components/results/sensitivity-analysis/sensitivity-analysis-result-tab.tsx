@@ -114,10 +114,10 @@ function SensitivityAnalysisResultTab({
                 csvHeaders: csvHeaders,
                 resultTab: SensitivityResultTabs[nOrNkIndex].id,
                 sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
+                language: language,
             },
             mappedFilters,
-            getGlobalFilterParameter(globalFilters),
-            language
+            getGlobalFilterParameter(globalFilters)
         )
             .then((response) => {
                 response.blob().then((blob: Blob) => {
