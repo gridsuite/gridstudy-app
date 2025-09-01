@@ -42,7 +42,7 @@ type UseDiagramModelProps = {
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
-    const { snackInfo } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     // context
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -301,7 +301,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
                     } else {
                         errorMessage = 'svgLoadingFail';
-                        snackInfo({
+                        snackError({
                             headerId: errorMessage,
                         });
                     }
@@ -318,7 +318,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [getDiagramTitle, getUrl, snackInfo, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [getDiagramTitle, getUrl, snackError, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
     );
 
     const findSimilarDiagram = useCallback(
