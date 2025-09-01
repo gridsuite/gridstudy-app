@@ -79,7 +79,6 @@ export const useFormulaQuickSearch = (treeData: TreeNode[], setExpandedItems: Di
         }
     }, [currentResultIndex, matches]);
 
-    // --- QuickSearch integration
     const handleSearch = (searchTerm: string) => {
         setFilter(searchTerm);
     };

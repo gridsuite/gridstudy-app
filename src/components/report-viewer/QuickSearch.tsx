@@ -62,7 +62,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     const handleChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             const value = event.target.value;
-            if (value.length < searchTerm.length || value === '') {
+            if (value === '') {
                 resetSearch();
                 setResultsCountDisplay(false);
             }

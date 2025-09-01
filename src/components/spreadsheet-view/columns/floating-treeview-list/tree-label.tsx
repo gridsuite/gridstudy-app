@@ -25,7 +25,7 @@ function highlightText(text: string, query?: string, active?: boolean) {
     if (!query) {
         return text;
     }
-    return text.split(new RegExp(`(${query})`, 'gi')).map((part, idx) =>
+    return text.split(new RegExp(`(${query})`, 'gi')).map((part) =>
         part.toLowerCase() === query.toLowerCase() ? (
             <span key={part} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
                 {part}
