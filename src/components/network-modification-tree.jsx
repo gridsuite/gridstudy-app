@@ -10,12 +10,7 @@ import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlo
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-    reorderNetworkModificationTreeNodes,
-    setCurrentTreeNode,
-    setModificationsDrawerOpen,
-    setToggleOptions,
-} from '../redux/actions';
+import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
@@ -36,6 +31,7 @@ import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
+import { useSetCurrentTreeNode } from 'hooks/use-sync-actions';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -57,6 +53,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const setCurrentTreeNodeWithSync = useSetCurrentTreeNode();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
@@ -139,10 +136,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                 }
             }
             if (!isSameNode(currentNode, node)) {
-                dispatch(setCurrentTreeNode(node));
+                setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, dispatch, handleRootNodeClick, toggleOptions]
+        [currentNode, dispatch, handleRootNodeClick, setCurrentTreeNodeWithSync, toggleOptions]
     );
 
     const toggleMinimap = useCallback(() => {

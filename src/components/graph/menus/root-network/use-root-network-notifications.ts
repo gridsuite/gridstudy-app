@@ -10,13 +10,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchRootNetworks } from 'services/root-network';
-import { setCurrentRootNetworkUuid, setMonoRootStudy, setRootNetworks } from 'redux/actions';
+import { setMonoRootStudy, setRootNetworks } from 'redux/actions';
 import { RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import {
     isRootNetworkDeletionStartedNotification,
     isRootNetworksUpdatedNotification,
     isRootNetworkUpdateFailedNotification,
 } from 'types/notification-types';
+import { useSetCurrentRootNetworkUuid } from 'hooks/use-sync-actions';
 
 type UseRootNetworkNotificationsProps = {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
@@ -28,6 +29,7 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
+    const setCurrentRootNetworkUuidWithSync = useSetCurrentRootNetworkUuid();
 
     const doFetchRootNetworks = useCallback(() => {
         if (studyUuid) {
@@ -90,11 +92,11 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
                     (rootNetwork) => !deletedRootNetworksUuids.includes(rootNetwork.rootNetworkUuid)
                 );
                 if (newSelectedRootNetwork) {
-                    dispatch(setCurrentRootNetworkUuid(newSelectedRootNetwork.rootNetworkUuid));
+                    setCurrentRootNetworkUuidWithSync(newSelectedRootNetwork.rootNetworkUuid);
                 }
             }
         },
-        [currentRootNetworkUuid, dispatch, rootNetworks]
+        [currentRootNetworkUuid, rootNetworks, setCurrentRootNetworkUuidWithSync]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

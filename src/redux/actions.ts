@@ -1297,3 +1297,15 @@ export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig)
         diagramGridLayout: diagramGridLayout,
     };
 }
+
+export const SELECT_SYNC_ENABLED = 'SELECT_SYNC_ENABLED';
+export type SelectSyncEnabledAction = Readonly<Action<typeof SELECT_SYNC_ENABLED>> & {
+    syncEnabled: boolean;
+};
+
+export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction {
+    return {
+        type: SELECT_SYNC_ENABLED,
+        syncEnabled,
+    };
+}

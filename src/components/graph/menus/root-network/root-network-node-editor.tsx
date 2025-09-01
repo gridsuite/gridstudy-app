@@ -28,17 +28,17 @@ import {
 
 import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
+import { useSetCurrentRootNetworkUuid } from 'hooks/use-sync-actions';
 
 const styles = {
     checkboxListItem: (theme: Theme) => ({
@@ -126,10 +126,10 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const setCurrentRootNetworkUuidWithSync = useSetCurrentRootNetworkUuid();
 
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
-    const dispatch = useDispatch();
 
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
@@ -157,7 +157,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             return (
                 <IconButton
                     onClick={() => {
-                        dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
+                        setCurrentRootNetworkUuidWithSync(rootNetwork.rootNetworkUuid);
                     }}
                     disabled={rootNetwork.isCreating || isRootNetworksProcessing}
                 >
@@ -171,7 +171,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 </IconButton>
             );
         },
-        [currentRootNetworkUuid, dispatch, isRootNetworksProcessing]
+        [currentRootNetworkUuid, isRootNetworksProcessing, setCurrentRootNetworkUuidWithSync]
     );
 
     useEffect(() => {
