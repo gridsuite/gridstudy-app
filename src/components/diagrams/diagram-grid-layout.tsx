@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState, useRef } from 'react';
-import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
+import { Layout, Layouts, ItemCallback, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, useTheme } from '@mui/material';
@@ -156,7 +156,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
-    const responsiveGridLayoutRef = useRef(null);
+    const responsiveGridLayoutRef = useRef<HTMLDivElement | null>(null);
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
 
@@ -313,7 +313,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
         setLayouts((prev) => ({ ...prev, [currentBreakpointRef.current]: currentLayout }));
     }, []);
 
-    const handleResize = useCallback((_, __, ___, ____, event) => {
+    const handleResize = useCallback<ItemCallback>((layout, oldItem, newItem, placeholder, event, _el) => {
         const container = responsiveGridLayoutRef.current;
         if (!container) {
             return;
