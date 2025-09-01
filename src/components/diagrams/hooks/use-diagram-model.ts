@@ -293,12 +293,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
                         newDiagrams[diagram.diagramUuid] = {
                             ...diagrams[diagram.diagramUuid],
-                            name: intl.formatMessage(
-                                {
-                                    id: 'diagramLoadingFail',
-                                },
-                                { diagramName: getDiagramTitle(diagram) }
-                            ),
                         };
                         return newDiagrams;
                     });
@@ -325,13 +319,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [
-            getUrl,
-            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
-            getDiagramTitle,
-            intl,
-            snackInfo,
-        ]
+        [getDiagramTitle, getUrl, snackInfo, networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode]
     );
 
     const findSimilarDiagram = useCallback(

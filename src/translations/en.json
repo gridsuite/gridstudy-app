@@ -541,7 +541,9 @@
     "Auxiliary": "Auxiliary",
     "Fictitious": "Fictitious",
     "ActivePowerText": "Active power",
+    "ActivePowerSetPointText": "Active power setpoint",
     "ReactivePowerText": "Reactive power",
+    "ReactivePowerSetPointText": "Reactive power setpoint",
     "BusBarBus": "Bus bar section / bus",
     "Buses": "Buses",
     "Magnitude": "Voltage magnitude",
@@ -696,7 +698,7 @@
     "Droop": "Droop",
     "PlannedActivePowerSetPointForm": "Planning active power set point",
     "plannedActivePowerSetPoint": "Planning P (MW)",
-    "MarginalCost": "Cost",
+    "MarginalCost": "Generation dispatch cost",
     "plannedOutageRate": "Planning outage rate",
     "forcedOutageRate": "Forced outage rate",
     "MinActivePowerMustBeLessOrEqualToMaxActivePower": "Minimum active power value must be less than or equal to maximum active power value",
@@ -825,7 +827,8 @@
     "CreateVoltageLevel": "Create a voltage level",
     "ModifyVoltageLevel": "Modify a voltage level",
     "Substation": "Substation",
-    "BusBarSections": "Busbar reference section",
+    "BusBarSections": "Busbar section",
+    "BusBarSectionsReference": "Busbar reference section",
     "BusBarCount": "Busbar Count",
     "numberOfSections": "Section Count",
     "BusBarSectionID": "ID",
@@ -1583,5 +1586,7 @@
     "BUILT": "Built",
     "BUILT_WITH_WARNING": "Warnings",
     "BUILT_WITH_ERROR": "Errors",
-    "NOT_BUILT": "Not built"
+    "NOT_BUILT": "Not built",
+    "allBusbarSections": "All",
+    "allOptionHelperText": "Busbars have different sections (number or index)"
 }
