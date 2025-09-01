@@ -16,6 +16,7 @@ import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { NodeAlias } from '../types/node-alias.type';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { DiagramType } from 'components/diagrams/diagram.type';
+import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
@@ -42,6 +43,11 @@ export const Spreadsheet = React.memo(
         const gridRef = useRef<AgGridReact>(null);
 
         const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
+        const rowCounterInfos = useFilteredRowCounterInfo({
+            gridRef,
+            tableDefinition,
+            disabled,
+        });
 
         const displayedColsDefs = useMemo(() => {
             const columns = tableDefinition?.columns;
@@ -65,6 +71,7 @@ export const Spreadsheet = React.memo(
                 <SpreadsheetToolbar
                     gridRef={gridRef}
                     tableDefinition={tableDefinition}
+                    rowCounterInfos={rowCounterInfos}
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
                     disabled={disabled}
@@ -79,6 +86,7 @@ export const Spreadsheet = React.memo(
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}
+                    registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
                     openDiagram={openDiagram}
                     active={active}
                 />

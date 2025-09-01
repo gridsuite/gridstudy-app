@@ -5,29 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createReducer, Draft } from '@reduxjs/toolkit';
+import { createReducer, type Draft } from '@reduxjs/toolkit';
 import {
-    AuthenticationActions,
-    AuthenticationRouterErrorAction,
-    AuthenticationRouterErrorState,
-    CommonStoreState,
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    Identifiable,
+    type AuthenticationActions,
+    type AuthenticationRouterErrorAction,
+    type AuthenticationRouterErrorState,
+    type CommonStoreState,
+    ComputingType,
+    type GsLang,
+    type GsLangUser,
+    type GsTheme,
+    type Identifiable,
     LOGOUT_ERROR,
-    LogoutErrorAction,
+    type LogoutErrorAction,
+    type NetworkVisualizationParameters,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
-    ShowAuthenticationRouterLoginAction,
+    type ShowAuthenticationRouterLoginAction,
     UNAUTHORIZED_USER_INFO,
-    UnauthorizedUserAction,
+    type UnauthorizedUserAction,
     USER,
     USER_VALIDATION_ERROR,
-    UserAction,
-    UserValidationErrorAction,
-    NetworkVisualizationParameters,
-    ComputingType,
+    type UserAction,
+    type UserValidationErrorAction,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -35,177 +35,181 @@ import {
     ADD_NOTIFICATION,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
-    AddFilterForNewSpreadsheetAction,
-    AddNotificationAction,
-    AddSortForNewSpreadsheetAction,
-    AddToRecentGlobalFiltersAction,
-    AppActions,
+    type AddFilterForNewSpreadsheetAction,
+    type AddNotificationAction,
+    type AddSortForNewSpreadsheetAction,
+    type AddToRecentGlobalFiltersAction,
+    type AppActions,
     ATTEMPT_LEAVE_PARAMETERS_TAB,
-    AttemptLeaveParametersTabAction,
+    type AttemptLeaveParametersTabAction,
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
-    CenterOnSubstationAction,
+    type CenterOnSubstationAction,
     CLOSE_STUDY,
-    CloseStudyAction,
+    type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
     CURRENT_ROOT_NETWORK_UUID,
     CURRENT_TREE_NODE,
-    CurrentRootNetworkUuidAction,
-    CurrentTreeNodeAction,
+    type CurrentRootNetworkUuidAction,
+    type CurrentTreeNodeAction,
     DELETE_EQUIPMENTS,
-    DeleteEquipmentsAction,
+    DELETED_OR_RENAMED_NODES,
+    type DeletedOrRenamedNodesAction,
+    type DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
-    DynamicSimulationResultFilterAction,
+    type DynamicSimulationResultFilterAction,
     ENABLE_DEVELOPER_MODE,
-    EnableDeveloperModeAction,
+    type EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
-    FavoriteContingencyListsAction,
+    type FavoriteContingencyListsAction,
     INIT_TABLE_DEFINITIONS,
-    InitTableDefinitionsAction,
+    type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
-    LoadEquipmentsAction,
+    type LoadEquipmentsAction,
     LOADFLOW_RESULT_FILTER,
-    LoadflowResultFilterAction,
-    LoadNetworkModificationTreeSuccessAction,
+    type LoadflowResultFilterAction,
+    type LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
-    LogsFilterAction,
+    type LogsFilterAction,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
-    MapDataLoadingAction,
-    MapEquipmentsCreatedAction,
-    MapEquipmentsInitializedAction,
+    type MapDataLoadingAction,
+    type MapEquipmentsCreatedAction,
+    type MapEquipmentsInitializedAction,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_REORDER,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NetworkModificationHandleSubtreeAction,
-    NetworkModificationTreeNodeAddedAction,
-    NetworkModificationTreeNodeMovedAction,
-    NetworkModificationTreeNodesRemovedAction,
-    NetworkModificationTreeNodesReorderAction,
-    NetworkModificationTreeNodesUpdatedAction,
+    type NetworkModificationHandleSubtreeAction,
+    type NetworkModificationTreeNodeAddedAction,
+    type NetworkModificationTreeNodeMovedAction,
+    type NetworkModificationTreeNodesRemovedAction,
+    type NetworkModificationTreeNodesReorderAction,
+    type NetworkModificationTreeNodesUpdatedAction,
     NODE_SELECTION_FOR_COPY,
-    NodeSelectionForCopyAction,
+    type NodeSelectionForCopyAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
-    OpenDiagramAction,
-    OpenNadListAction,
-    OpenStudyAction,
+    type OpenDiagramAction,
+    type OpenNadListAction,
+    type OpenStudyAction,
+    type ParameterizedComputingType,
     REMOVE_COLUMN_DEFINITION,
+    REMOVE_EQUIPMENT_DATA,
     REMOVE_FROM_RECENT_GLOBAL_FILTERS,
     REMOVE_NODE_DATA,
     REMOVE_NOTIFICATION_BY_NODE,
     REMOVE_TABLE_DEFINITION,
-    RemoveColumnDefinitionAction,
-    RemoveFromRecentGlobalFiltersAction,
-    RemoveNodeDataAction,
-    RemoveNotificationByNodeAction,
-    RemoveTableDefinitionAction,
+    type RemoveColumnDefinitionAction,
+    type RemoveEquipmentDataAction,
+    type RemoveFromRecentGlobalFiltersAction,
+    type RemoveNodeDataAction,
+    type RemoveNotificationByNodeAction,
+    type RemoveTableDefinitionAction,
     RENAME_TABLE_DEFINITION,
-    RenameTableDefinitionAction,
+    type RenameTableDefinitionAction,
     REORDER_TABLE_DEFINITIONS,
-    ReorderTableDefinitionsAction,
+    type ReorderTableDefinitionsAction,
     RESET_ALL_SPREADSHEET_GS_FILTERS,
+    RESET_DIAGRAM_EVENT,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
-    ResetAllSpreadsheetGlobalFiltersAction,
-    ResetEquipmentsAction,
-    ResetEquipmentsByTypesAction,
-    ResetEquipmentsPostComputationAction,
-    ResetLogsFilterAction,
-    ResetMapEquipmentsAction,
+    type ResetAllSpreadsheetGlobalFiltersAction,
+    type ResetDiagramEventAction,
+    type ResetEquipmentsAction,
+    type ResetEquipmentsByTypesAction,
+    type ResetEquipmentsPostComputationAction,
+    type ResetLogsFilterAction,
+    type ResetMapEquipmentsAction,
     SAVE_SPREADSHEET_GS_FILTER,
-    SaveSpreadSheetGlobalFilterAction,
+    type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
-    SecurityAnalysisResultFilterAction,
+    type SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_THEME,
-    SelectComputedLanguageAction,
-    SelectLanguageAction,
-    SelectThemeAction,
+    type SelectComputedLanguageAction,
+    type SelectLanguageAction,
+    type SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
-    SensitivityAnalysisResultFilterAction,
+    type SensitivityAnalysisResultFilterAction,
     SET_APP_TAB_INDEX,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
-    SET_EVENT_SCENARIO_DRAWER_OPEN,
+    SET_COMPUTING_STATUS_INFOS,
+    SET_DIAGRAM_GRID_LAYOUT,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
+    SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    SET_OPEN_MAP,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
-    SET_ROOT_NETWORKS,
     SET_RELOAD_MAP_NEEDED,
-    SET_STUDY_DISPLAY_MODE,
     SET_ROOT_NETWORK_INDEXATION_STATUS,
-    SetAppTabIndexAction,
-    SetCalculationSelectionsAction,
-    SetComputationStartingAction,
-    SetComputingStatusAction,
-    SetEventScenarioDrawerOpenAction,
-    SetLastCompletedComputationAction,
-    SetModificationsDrawerOpenAction,
-    SetModificationsInProgressAction,
-    SetOneBusShortcircuitAnalysisDiagramAction,
-    SetOptionalServicesAction,
-    SetParamsLoadedAction,
-    SetRootNetworksAction,
-    SetReloadMapNeededAction,
-    SetStudyDisplayModeAction,
-    SetRootNetworkIndexationStatusAction,
+    SET_ROOT_NETWORKS,
+    SET_STUDY_DISPLAY_MODE,
+    SET_TOGGLE_OPTIONS,
+    type SetAppTabIndexAction,
+    type SetCalculationSelectionsAction,
+    type SetComputationStartingAction,
+    type SetComputingStatusAction,
+    type SetComputingStatusParametersAction,
+    type SetDiagramGridLayoutAction,
+    type SetLastCompletedComputationAction,
+    type SetModificationsDrawerOpenAction,
+    type SetModificationsInProgressAction,
+    type SetMonoRootStudyAction,
+    type SetOneBusShortcircuitAnalysisDiagramAction,
+    type SetOpenMapAction,
+    type SetOptionalServicesAction,
+    type SetParamsLoadedAction,
+    type SetReloadMapNeededAction,
+    type SetRootNetworkIndexationStatusAction,
+    type SetRootNetworksAction,
+    type SetStudyDisplayModeAction,
+    type SetToggleOptionsAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-    ShortcircuitAnalysisResultFilterAction,
+    type ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
-    SpreadsheetFilterAction,
+    type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
-    StateEstimationResultFilterAction,
+    type StateEstimationResultFilterAction,
     STUDY_UPDATED,
-    StudyUpdatedAction,
+    type StudyUpdatedAction,
     TABLE_SORT,
-    TableSortAction,
+    type TableSortAction,
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
-    UPDATE_TABLE_DEFINITION,
-    UpdateColumnsDefinitionsAction,
-    UpdateEquipmentsAction,
-    UpdateNetworkVisualizationParametersAction,
-    UpdateTableDefinitionAction,
-    USE_NAME,
-    UseNameAction,
-    DELETED_OR_RENAMED_NODES,
-    DeletedOrRenamedNodesAction,
-    REMOVE_EQUIPMENT_DATA,
-    RemoveEquipmentDataAction,
     UPDATE_TABLE_COLUMNS,
-    UpdateTableColumnsAction,
-    SET_MONO_ROOT_STUDY,
-    SetMonoRootStudyAction,
-    RESET_DIAGRAM_EVENT,
-    ResetDiagramEventAction,
-    SET_COMPUTING_STATUS_INFOS,
-    SetComputingStatusParametersAction,
-    ParameterizedComputingType,
-    SET_DIAGRAM_GRID_LAYOUT,
-    SetDiagramGridLayoutAction,
+    UPDATE_TABLE_DEFINITION,
+    type UpdateColumnsDefinitionsAction,
+    type UpdateEquipmentsAction,
+    type UpdateNetworkVisualizationParametersAction,
+    type UpdateTableColumnsAction,
+    type UpdateTableDefinitionAction,
+    USE_NAME,
+    type UseNameAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
     getLocalStorageTheme,
+    getLocalStorageToggleOptions,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
+    saveLocalStorageToggleOptions,
 } from './session-storage/local-storage';
 import {
     PARAM_COMPUTED_LANGUAGE,
@@ -220,7 +224,11 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { getAllChildren, getNetworkModificationNode } from 'components/graph/util/model-functions';
 import { RunningStatus } from 'components/utils/running-status';
-import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
+import {
+    type IOptionalService,
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../components/utils/optional-services';
 import {
     ALL_BUSES,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,
@@ -255,33 +263,33 @@ import {
     TABLE_SORT_STORE,
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
-import { UUID } from 'crypto';
-import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
-import type { ValueOf } from 'type-fest';
+import type { UUID } from 'crypto';
+import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { Entries, ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import {
     CurrentTreeNode,
-    NetworkModificationNodeInfos,
     NetworkModificationNodeData,
+    NetworkModificationNodeInfos,
     NetworkModificationNodeType,
     RootNodeData,
 } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
-import GSMapEquipments from 'components/network/gs-map-equipments';
+import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
-    ColumnDefinition,
-    SpreadsheetEquipmentsByNodes,
+    type ColumnDefinition,
+    type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    SpreadsheetTabDefinition,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
 import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
-import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateNotification } from 'types/notification-types';
+import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { Layouts } from 'react-grid-layout';
-import { DiagramConfigPosition } from '../services/explore';
+import { type DiagramConfigPosition } from '../services/explore';
 
 // Redux state
 export type StudyUpdated = {
@@ -458,8 +466,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     nadNodeMovements: NadNodeMovement[];
     nadTextNodeMovements: NadTextMovement[];
     isExplorerDrawerOpen: boolean;
-    isModificationsDrawerOpen: boolean;
-    isEventScenarioDrawerOpen: boolean;
     centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
     isMonoRootStudy: boolean;
@@ -506,6 +512,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
+    toggleOptions: StudyDisplayMode[];
+    mapOpen: boolean;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -530,27 +538,27 @@ const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
 
 export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, SpreadsheetEquipmentsByNodes>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
-    [EQUIPMENT_TYPES.SUBSTATION]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.LOAD]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.BATTERY]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.TIE_LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.BUS]: emptySpreadsheetEquipmentsByNodes,
-    [EQUIPMENT_TYPES.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BATTERY]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BRANCH]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BUS]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.BUSBAR_SECTION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.DANGLING_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.GENERATOR]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.HVDC_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.LCC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.LOAD]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.SHUNT_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.SUBSTATION]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.TIE_LINE]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.VOLTAGE_LEVEL]: emptySpreadsheetEquipmentsByNodes,
+    [SpreadsheetEquipmentType.VSC_CONVERTER_STATION]: emptySpreadsheetEquipmentsByNodes,
 };
 
 export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
-const initialGlobalFilterSpreadsheet: GlobalFilterSpreadsheetState = {};
 
 interface TablesState {
     uuid: UUID | null;
@@ -591,14 +599,13 @@ const initialState: AppState = {
     // @ts-expect-error TODO can't have empty eventData here
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
+    setMapOpen: false,
     isExplorerDrawerOpen: true,
-    isModificationsDrawerOpen: false,
-    isEventScenarioDrawerOpen: false,
     centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
     isMonoRootStudy: true,
-    studyDisplayMode: StudyDisplayMode.HYBRID,
+    studyDisplayMode: StudyDisplayMode.TREE,
     latestDiagramEvent: undefined,
     nadNodeMovements: [],
     nadTextNodeMovements: [],
@@ -608,11 +615,12 @@ const initialState: AppState = {
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
-    globalFilterSpreadsheetState: initialGlobalFilterSpreadsheet,
+    globalFilterSpreadsheetState: {},
     diagramGridLayout: {
         gridLayouts: {},
         params: [],
     },
+    toggleOptions: [StudyDisplayMode.TREE],
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -776,6 +784,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
+        // Load toggleOptions for this study
+        state.toggleOptions = getLocalStorageToggleOptions(state.studyUuid);
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1161,21 +1171,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
-    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, action: SetModificationsDrawerOpenAction) => {
-        state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
-
-        // exclusively open between two components
-        if (action.isModificationsDrawerOpen && state.isEventScenarioDrawerOpen) {
-            state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
+    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
+        if (!state.toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
+            state.toggleOptions = [...state.toggleOptions, StudyDisplayMode.MODIFICATIONS];
         }
     });
 
-    builder.addCase(SET_EVENT_SCENARIO_DRAWER_OPEN, (state, action: SetEventScenarioDrawerOpenAction) => {
-        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
-
-        // exclusively open between two components
-        if (action.isEventScenarioDrawerOpen && state.isModificationsDrawerOpen) {
-            state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
+    builder.addCase(SET_TOGGLE_OPTIONS, (state, action: SetToggleOptionsAction) => {
+        state.toggleOptions = action.toggleOptions;
+        if (state.studyUuid) {
+            saveLocalStorageToggleOptions(state.studyUuid, state.toggleOptions);
         }
     });
 
@@ -1277,7 +1282,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
-        Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId).forEach(([nodeId, equipments]) => {
+        (
+            Object.entries(action.spreadsheetEquipmentByNodes.equipmentsByNodeId) as Entries<
+                LoadEquipmentsAction['spreadsheetEquipmentByNodes']['equipmentsByNodeId']
+            >
+        ).forEach(([nodeId, equipments]) => {
             state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = equipments;
         });
         //to remove duplicate
@@ -1322,31 +1331,30 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
         // for now, this action receives an object containing all equipments from a substation
-        // it will be modified when the notifications received after a network modification will be more precise
-        const updatedEquipments = action.equipments;
-
-        // equipmentType : type of equipment updated
-        // equipments : list of updated equipments of type <equipmentType>
-        for (const [updateType, equipments] of Object.entries(updatedEquipments) as [
-            EquipmentUpdateType,
+        // it will be modified when the notifications received after a network modification are more precise
+        // equipmentType: type of equipment updated
+        // equipments: list of updated equipments of type <equipmentType>
+        for (const [equipmentType, equipments] of Object.entries(action.equipments) as [
+            SpreadsheetEquipmentType,
             Identifiable[],
         ][]) {
-            const equipmentType = getEquipmentTypeFromUpdateType(updateType);
+            let updatedEquipments;
+            if (Array.isArray(equipments)) {
+                updatedEquipments = equipments;
+            } else {
+                updatedEquipments = [equipments];
+            }
+
             const currentEquipment: Identifiable[] | undefined =
-                // @ts-expect-error TODO manage undefined value case
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = mapSpreadsheetEquipments(
-                // @ts-expect-error TODO manage undefined value case
-                equipmentType,
-                equipments
-            );
+            const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
-            if (currentEquipment != null) {
+            if (currentEquipment !== undefined) {
                 //since substations data contains voltage level ones, they have to be treated separately
-                if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+                if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
@@ -1364,7 +1372,6 @@ export const reducer = createReducer(initialState, (builder) => {
                             updatedVoltageLevels;
                     }
                 } else {
-                    // @ts-expect-error TODO manage undefined value case
                     state.spreadsheetNetwork[equipmentType].equipmentsByNodeId[action.nodeId] = updateEquipments(
                         currentEquipment,
                         formattedEquipments
@@ -1380,13 +1387,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];
             if (currentEquipments !== undefined) {
                 // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
-                    const currentSubstations = state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
-                        action.nodeId
-                    ] as Substation[] | null;
+                if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
+                    const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
+                        .equipmentsByNodeId[action.nodeId] as Substation[] | null;
                     if (currentSubstations != null) {
-                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[action.nodeId] =
-                            updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
+                        state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
+                            action.nodeId
+                        ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                     }
                 }
 
@@ -1600,6 +1607,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SET_DIAGRAM_GRID_LAYOUT, (state, action: SetDiagramGridLayoutAction) => {
         state.diagramGridLayout = action.diagramGridLayout;
     });
+
+    builder.addCase(SET_OPEN_MAP, (state, action: SetOpenMapAction) => {
+        state.mapOpen = action.mapOpen;
+    });
 });
 
 function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToDeleteId: string): Substation[] {
@@ -1613,67 +1624,6 @@ function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToD
     }
 
     return currentSubstations;
-}
-
-export enum EquipmentUpdateType {
-    LINES = 'lines',
-    TIE_LINES = 'tieLines',
-    TWO_WINDINGS_TRANSFORMERS = 'twoWindingsTransformers',
-    THREE_WINDINGS_TRANSFORMERS = 'threeWindingsTransformers',
-    GENERATORS = 'generators',
-    LOADS = 'loads',
-    BATTERIES = 'batteries',
-    DANGLING_LINES = 'danglingLines',
-    HVDC_LINES = 'hvdcLines',
-    LCC_CONVERTER_STATIONS = 'lccConverterStations',
-    VSC_CONVERTER_STATIONS = 'vscConverterStations',
-    SHUNT_COMPENSATORS = 'shuntCompensators',
-    STATIC_VAR_COMPENSATORS = 'staticVarCompensators',
-    VOLTAGE_LEVELS = 'voltageLevels',
-    SUBSTATIONS = 'substations',
-    BUSES = 'buses',
-    BUSBAR_SECTIONS = 'busbarSections',
-}
-
-function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
-    switch (updateType) {
-        case 'lines':
-            return EQUIPMENT_TYPES.LINE;
-        case 'tieLines':
-            return EQUIPMENT_TYPES.TIE_LINE;
-        case 'twoWindingsTransformers':
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
-        case 'threeWindingsTransformers':
-            return EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER;
-        case 'generators':
-            return EQUIPMENT_TYPES.GENERATOR;
-        case 'loads':
-            return EQUIPMENT_TYPES.LOAD;
-        case 'batteries':
-            return EQUIPMENT_TYPES.BATTERY;
-        case 'danglingLines':
-            return EQUIPMENT_TYPES.DANGLING_LINE;
-        case 'hvdcLines':
-            return EQUIPMENT_TYPES.HVDC_LINE;
-        case 'lccConverterStations':
-            return EQUIPMENT_TYPES.LCC_CONVERTER_STATION;
-        case 'vscConverterStations':
-            return EQUIPMENT_TYPES.VSC_CONVERTER_STATION;
-        case 'shuntCompensators':
-            return EQUIPMENT_TYPES.SHUNT_COMPENSATOR;
-        case 'staticVarCompensators':
-            return EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR;
-        case 'voltageLevels':
-            return EQUIPMENT_TYPES.VOLTAGE_LEVEL;
-        case 'substations':
-            return EQUIPMENT_TYPES.SUBSTATION;
-        case 'buses':
-            return EQUIPMENT_TYPES.BUS;
-        case 'busbarSections':
-            return EQUIPMENT_TYPES.BUSBAR_SECTION;
-        default:
-            return;
-    }
 }
 
 function deleteEquipment(currentEquipments: Identifiable[], equipmentToDeleteId: string) {

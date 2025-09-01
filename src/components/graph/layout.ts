@@ -6,11 +6,14 @@
  */
 
 import { NodePlacement } from './layout.type';
+import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
 
-export const nodeWidth = 230;
-export const nodeHeight = 110;
+const widthSpacing = 70;
+const heightSpacing = 90;
+export const nodeWidth = NODE_WIDTH + widthSpacing;
+export const nodeHeight = NODE_HEIGHT + heightSpacing;
 export const snapGrid = [10, nodeHeight]; // Used for drag and drop
 
 /**
@@ -523,17 +526,19 @@ export function getFirstAncestorWithSibling(
  * Computes the absolute position of a node by calculating the sum of all the relative positions of
  * the node's lineage.
  */
-export function getAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
-    let current: CurrentTreeNode | undefined = node;
-    let absolutePosition = { x: 0, y: 0 };
-    while (current) {
-        absolutePosition.x += current.position.x;
-        absolutePosition.y += current.position.y;
-        const parentId: string | undefined = current.parentId;
-        if (!parentId) {
-            break;
-        }
-        current = nodes.find((node) => node.id === parentId);
+export function getAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode): { x: number; y: number } {
+    if (!node.parentId) {
+        return { x: node.position.x, y: node.position.y };
     }
-    return absolutePosition;
+
+    const parent = nodes.find((n) => n.id === node.parentId);
+    if (!parent) {
+        return { x: node.position.x, y: node.position.y };
+    }
+
+    const parentAbsolutePosition = getAbsolutePosition(nodes, parent);
+    return {
+        x: parentAbsolutePosition.x + node.position.x,
+        y: parentAbsolutePosition.y + node.position.y,
+    };
 }

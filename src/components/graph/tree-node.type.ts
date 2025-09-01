@@ -82,7 +82,7 @@ export type RootNode = Node<NodeCommonData, NodeType.ROOT> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 
-export const isSecurityModificationNode = (node: CurrentTreeNode | undefined): node is ModificationNode => {
+export const isSecurityModificationNode = (node: CurrentTreeNode | undefined | null): node is ModificationNode => {
     return (
         !!node &&
         node.type === NodeType.NETWORK_MODIFICATION &&

@@ -35,10 +35,6 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/custom_column/dependencies': "La formule fait référence à d'autres colonnes",
     'spreadsheet/custom_column/nodes': 'Nœuds',
-    'spreadsheet/custom_column/option/parameter': 'Paramétrer',
-    'spreadsheet/custom_column/option/refresh': 'Recharger',
-    'spreadsheet/custom_column/option/refresh/tooltip':
-        'Recharger les données de cette feuille pour les autres nœuds réalisés et paramétrés ({aliases})',
     'spreadsheet/custom_column/parameter_nodes': 'Paramétrer les alias de nœuds',
     'spreadsheet/custom_column/add_alias': 'Ajouter un alias',
     'spreadsheet/custom_column/creates_cyclic_dependency':
@@ -105,7 +101,7 @@ const spreadsheetFr = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Erreur lors de la réinitialisation de la collection de tableurs',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Réinitialiser la collection de tableurs',
-    'spreadsheet/parameter_aliases/button_tooltip': 'Paramétrer ou recharger nœuds',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Paramétrer nœuds',
     'spreadsheet/parameter_aliases/node_name': 'Nom du nœud',
     'spreadsheet/parameter_aliases/node_alias': 'Alias du nœud',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Ne doit pas dépasser 10 caractères',
@@ -119,11 +115,24 @@ const spreadsheetFr = {
     'spreadsheet/remove_spreadsheet_error': 'Erreur lors de la suppression du tableur',
     'spreadsheet/reorder_columns/error': 'Erreur lors du réordonnancement des colonnes',
     'spreadsheet/reorder_tabs_error': 'Erreur lors du réordonnancement des onglets',
+    'spreadsheet/reset_filters_error': 'Erreur lors de la réinitialisation des filtres du tableur',
     'spreadsheet/rename/label': 'Renommer',
     'spreadsheet/delete/label': 'Supprimer',
+    'spreadsheet/edit/label': 'Editer',
     'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
     'spreadsheet/rename_dialog_title': 'Renommer le tableur',
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
+
+    'spreadsheet/global-model-edition/edit': 'Editer le modèle',
+    'spreadsheet/global-model-edition/column_id': 'ID',
+    'spreadsheet/global-model-edition/column_name': 'Nom',
+    'spreadsheet/global-model-edition/column_type': 'Type',
+    'spreadsheet/global-model-edition/column_precision': 'Précision',
+    'spreadsheet/global-model-edition/column_formula': 'Formule',
+    'spreadsheet/global-model-edition/column_dependencies': 'Dépendances',
+    'spreadsheet/global-model-edition/update_confirmation_message': 'Modèle de tableur mis à jour',
+    'spreadsheet/global-model-edition/update_error_message':
+        'Une erreur est survenue lors de la mise à jour du modèle de tableur',
 
     // calculations
     'spreadsheet/calculation/sum': 'Somme',

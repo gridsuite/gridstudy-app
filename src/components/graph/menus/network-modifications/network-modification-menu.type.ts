@@ -14,6 +14,21 @@ export interface RootNetworkMetadata {
     name: string;
     tag: string;
     isCreating: boolean;
+    description?: string;
+}
+
+export interface RootNetworkInfos {
+    id?: UUID;
+    name: string;
+    tag: string;
+    description?: string;
+    caseInfos: CaseInfos;
+    importParametersRaw: Record<string, any> | null;
+}
+
+export interface CaseInfos {
+    originalCaseUuid: UUID | null;
+    caseFormat: string | null;
 }
 
 export interface ExcludedNetworkModifications {
@@ -45,6 +60,7 @@ export interface NetworkModificationCopyInfo {
 export interface MenuDefinitionSubItem {
     id: string;
     label: string;
+    hide?: boolean;
     action: () => JSX.Element;
 }
 

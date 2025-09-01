@@ -159,7 +159,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
             ref={ref}
             elevation={4}
             square={true}
-            sx={styles.paperBorders}
+            sx={mergeSx(styles.paperBorders, styles.divDiagramInvalid)}
             style={{
                 pointerEvents: 'auto',
                 width: serverWidth,

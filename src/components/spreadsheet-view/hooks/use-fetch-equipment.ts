@@ -6,104 +6,48 @@
  */
 
 import { useCallback } from 'react';
-import { EquipmentFetcher, SpreadsheetEquipmentsByNodes, SpreadsheetEquipmentType } from '../types/spreadsheet.type';
-import { UUID } from 'crypto';
+import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from '../types/spreadsheet.type';
+import type { UUID } from 'crypto';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { type AppState } from '../../../redux/reducer';
 import { loadEquipments } from '../../../redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import {
-    fetchBatteries,
-    fetchBusbarSections,
-    fetchBuses,
-    fetchDanglingLines,
-    fetchGenerators,
-    fetchHvdcLines,
-    fetchLccConverterStations,
-    fetchLines,
-    fetchLoads,
-    fetchShuntCompensators,
-    fetchStaticVarCompensators,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTieLines,
-    fetchTwoWindingsTransformers,
-    fetchVoltageLevels,
-    fetchVscConverterStations,
-} from '../../../services/study/network';
+import { fetchNetworkElementsInfos } from '../../../services/study/network';
 import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
+import { EQUIPMENT_INFOS_TYPES } from '../../utils/equipment-types';
 
-const getFetcher = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher => {
-    switch (equipmentType) {
-        case EQUIPMENT_TYPES.SUBSTATION:
-            return fetchSubstations;
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-            return fetchVoltageLevels;
-        case EQUIPMENT_TYPES.LINE:
-            return fetchLines;
-        case EQUIPMENT_TYPES.TIE_LINE:
-            return fetchTieLines;
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-            return fetchTwoWindingsTransformers;
-        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
-            return fetchThreeWindingsTransformers;
-        case EQUIPMENT_TYPES.HVDC_LINE:
-            return fetchHvdcLines;
-        case EQUIPMENT_TYPES.GENERATOR:
-            return fetchGenerators;
-        case EQUIPMENT_TYPES.BATTERY:
-            return fetchBatteries;
-        case EQUIPMENT_TYPES.LOAD:
-            return fetchLoads;
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-            return fetchShuntCompensators;
-        case EQUIPMENT_TYPES.DANGLING_LINE:
-            return fetchDanglingLines;
-        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
-            return fetchStaticVarCompensators;
-        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
-            return fetchVscConverterStations;
-        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
-            return fetchLccConverterStations;
-        case EQUIPMENT_TYPES.BUS:
-            return fetchBuses;
-        case EQUIPMENT_TYPES.BUSBAR_SECTION:
-            return fetchBusbarSections;
-    }
-};
-
-export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
+export function useFetchEquipment(type: SpreadsheetEquipmentType) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const mapEquipments = useCallback(
-        (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return mapSpreadsheetEquipments(type, fetchedEquipments);
-        },
-        [type]
-    );
-
     const fetchNodesEquipmentData = useCallback(
-        (nodeIds: Set<string>, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, onFetchingDone?: () => void) => {
+        (nodeIds: Set<UUID>, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, onFetchingDone?: () => void) => {
             if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
-                let fetcherPromises: Promise<unknown>[] = [];
-                let spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
+                const fetcherPromises: ReturnType<typeof fetchNetworkElementsInfos>[] = [];
+                const spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
                     nodesId: [],
                     equipmentsByNodeId: {},
                 };
 
                 nodeIds.forEach((nodeId) => {
-                    const promise = getFetcher(type)(studyUuid, nodeId as UUID, currentRootNetworkUuid, []);
+                    const promise = fetchNetworkElementsInfos(
+                        studyUuid,
+                        nodeId,
+                        currentRootNetworkUuid,
+                        [],
+                        type,
+                        EQUIPMENT_INFOS_TYPES.TAB.type
+                    );
                     fetcherPromises.push(promise);
                     promise
                         .then((results) => {
-                            let fetchedEquipments = results.flat();
                             spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
-                            fetchedEquipments = mapEquipments(fetchedEquipments);
-                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = fetchedEquipments;
+                            // Format the equipments data to set calculated fields so that the edition validation is consistent with the displayed data
+                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = mapSpreadsheetEquipments(
+                                type,
+                                results
+                            );
                         })
                         .catch((err) => {
                             console.error(
@@ -131,8 +75,8 @@ export const useFetchEquipment = (type: SpreadsheetEquipmentType) => {
                     });
             }
         },
-        [dispatch, mapEquipments, snackError, studyUuid, type]
+        [dispatch, snackError, studyUuid, type]
     );
 
     return { fetchNodesEquipmentData };
-};
+}
