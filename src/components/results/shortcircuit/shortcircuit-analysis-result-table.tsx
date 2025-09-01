@@ -201,7 +201,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 field: 'voltageLevel',
                 cellRenderer: voltageLevelIdRenderer,
                 context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('textFilterParams') }),
+                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -418,10 +418,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         limitMin: lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
                         limitMax: lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT' ? lv.limit : null,
                         current: lv.value,
-                        elementId: '', // we have to add these '' otherwise they are automatically filtered
-                        faultType: '',
-                        voltageLevel: '',
-                        connectableId: '',
+                        elementId: '', // we have to add this otherwise it's automatically filtered
+                        voltageLevel: '', // we have to add this otherwise it's automatically filtered
+                        faultType: '', // we have to add this otherwise it's automatically filtered
+                        connectableId: '', // we have to add this otherwise it's automatically filtered
                     });
                 });
                 const feederResults = faultResult.feederResults ?? [];
@@ -433,10 +433,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         connectableId: feederResult.connectableId,
                         linkedElementId: fault.id,
                         current: current,
-                        elementId: '', // we have to add these '' otherwise they are automatically filtered
-                        faultType: '',
-                        voltageLevel: '',
-                        limitType: '',
+                        elementId: '', // we have to add this otherwise it's automatically filtered
+                        voltageLevel: '', // we have to add this otherwise it's automatically filtered
+                        faultType: '', // we have to add this otherwise it's automatically filtered
+                        limitType: '', // we have to add this otherwise it's automatically filtered
                         side: convertSide(side, intl),
                     });
                 });
