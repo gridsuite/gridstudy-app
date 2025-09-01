@@ -13,6 +13,7 @@ import {
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GsLang } from '@gridsuite/commons-ui';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -175,7 +176,8 @@ export function downloadShortCircuitResultZippedCsv(
     currentRootNetworkUuid: UUID,
     analysisType: number,
     headersCsv: string[] | undefined,
-    enumValueTranslations: Record<string, string>
+    enumValueTranslations: Record<string, string>,
+    language: GsLang
 ) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
@@ -198,6 +200,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations }),
+        body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
     });
 }
