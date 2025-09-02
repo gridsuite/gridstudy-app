@@ -184,7 +184,7 @@ export default function LineTypesCatalogSelectorDialog({
     };
 
     const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
-        lineInfo.shapeFactors = lineInfo.shapeFactors.toSorted();
+        lineInfo.shapeFactors = lineInfo.shapeFactors.toSorted((a, b) => a - b);
         return lineInfo.shapeFactors.map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
     };
 
