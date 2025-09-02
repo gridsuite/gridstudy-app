@@ -111,7 +111,7 @@ import {
     SHUNT_COMPENSATOR_TYPES,
     SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
-import {Applicability, BranchSide} from '../../../utils/constants';
+import { Applicability } from '../../../utils/constants';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
