@@ -314,44 +314,47 @@ export enum EquipmentUpdateType {
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
     BUSBAR_SECTIONS = 'busbarSections',
+    BRANCHES = 'branches', // LINE + TWO_WINDINGS_TRANSFORMER
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
     switch (updateType) {
-        case 'lines':
+        case EquipmentUpdateType.LINES:
             return SpreadsheetEquipmentType.LINE;
-        case 'tieLines':
+        case EquipmentUpdateType.TIE_LINES:
             return SpreadsheetEquipmentType.TIE_LINE;
-        case 'twoWindingsTransformers':
+        case EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS:
             return SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER;
-        case 'threeWindingsTransformers':
+        case EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS:
             return SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER;
-        case 'generators':
+        case EquipmentUpdateType.GENERATORS:
             return SpreadsheetEquipmentType.GENERATOR;
-        case 'loads':
+        case EquipmentUpdateType.LOADS:
             return SpreadsheetEquipmentType.LOAD;
-        case 'batteries':
+        case EquipmentUpdateType.BATTERIES:
             return SpreadsheetEquipmentType.BATTERY;
-        case 'danglingLines':
+        case EquipmentUpdateType.DANGLING_LINES:
             return SpreadsheetEquipmentType.DANGLING_LINE;
-        case 'hvdcLines':
+        case EquipmentUpdateType.HVDC_LINES:
             return SpreadsheetEquipmentType.HVDC_LINE;
-        case 'lccConverterStations':
+        case EquipmentUpdateType.LCC_CONVERTER_STATIONS:
             return SpreadsheetEquipmentType.LCC_CONVERTER_STATION;
-        case 'vscConverterStations':
+        case EquipmentUpdateType.VSC_CONVERTER_STATIONS:
             return SpreadsheetEquipmentType.VSC_CONVERTER_STATION;
-        case 'shuntCompensators':
+        case EquipmentUpdateType.SHUNT_COMPENSATORS:
             return SpreadsheetEquipmentType.SHUNT_COMPENSATOR;
-        case 'staticVarCompensators':
+        case EquipmentUpdateType.STATIC_VAR_COMPENSATORS:
             return SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR;
-        case 'voltageLevels':
+        case EquipmentUpdateType.VOLTAGE_LEVELS:
             return SpreadsheetEquipmentType.VOLTAGE_LEVEL;
-        case 'substations':
+        case EquipmentUpdateType.SUBSTATIONS:
             return SpreadsheetEquipmentType.SUBSTATION;
-        case 'buses':
+        case EquipmentUpdateType.BUSES:
             return SpreadsheetEquipmentType.BUS;
-        case 'busbarSections':
+        case EquipmentUpdateType.BUSBAR_SECTIONS:
             return SpreadsheetEquipmentType.BUSBAR_SECTION;
+        case EquipmentUpdateType.BRANCHES:
+            return SpreadsheetEquipmentType.BRANCH;
         default:
             return;
     }
