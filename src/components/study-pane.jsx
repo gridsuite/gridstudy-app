@@ -14,7 +14,7 @@ import TabPanelLazy from './results/common/tab-panel-lazy';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
 import ParametersTabs from './parameters-tabs';
-import MapViewer from './map-viewer';
+import TreeTab from './tree-tab';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
@@ -100,14 +100,14 @@ const StudyPane = ({
                         display: view === StudyView.TREE ? null : 'none',
                     }}
                 >
-                    <MapViewer
+                    <TreeTab
                         studyUuid={studyUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         tableEquipment={tableEquipment}
                         onTableEquipementChanged={handleTableEquipmentChanged}
                         onChangeTab={onChangeTab}
                         showGrid={showGrid}
-                    ></MapViewer>
+                    />
                 </div>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
                 <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>

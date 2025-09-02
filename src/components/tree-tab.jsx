@@ -28,7 +28,7 @@ const styles = {
     panelContent: { display: 'flex', flexGrow: 1, height: '100%' },
 };
 
-const MapViewer = ({
+const TreeTab = ({
     studyUuid,
     currentRootNetworkUuid,
     tableEquipment,
@@ -166,4 +166,4 @@ const MapViewer = ({
     );
 };
 
-export default MapViewer;
+export default TreeTab;
