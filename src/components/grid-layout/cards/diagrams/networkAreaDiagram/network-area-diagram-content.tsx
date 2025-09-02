@@ -9,6 +9,7 @@ import { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import RunningStatus from 'components/utils/running-status';
 import {
+    buildPositionsFromNadMetadata,
     MIN_HEIGHT,
     MIN_WIDTH,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
@@ -26,7 +27,6 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
