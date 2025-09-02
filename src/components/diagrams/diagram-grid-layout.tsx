@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState, useRef } from 'react';
-import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
+import { Layout, Layouts, ItemCallback, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { Box, useTheme } from '@mui/material';
@@ -156,6 +156,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
+    const responsiveGridLayoutRef = useRef<any>(null);
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
 
@@ -312,6 +313,19 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
         setLayouts((prev) => ({ ...prev, [currentBreakpointRef.current]: currentLayout }));
     }, []);
 
+    const handleResize = useCallback<ItemCallback>((layout, oldItem, newItem, placeholder, event, _el) => {
+        // We cannot use the ResponsiveGridLayout's innerRef prop (see https://github.com/react-grid-layout/react-grid-layout/issues/1444)
+        // so we manually fetch its inner ref inside to get the HTMLDivElement.
+        const container = responsiveGridLayoutRef.current?.elementRef?.current;
+        if (!container) {
+            return;
+        }
+        const { bottom } = container.getBoundingClientRect();
+        if (event.clientY > bottom) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }, []);
+
     /**
      * Handle card resizing across all breakpoints
      * Maintains consistent card dimensions regardless of screen size
@@ -415,6 +429,9 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
                 onLayoutSave={debouncedGridLayoutSave}
             />
             <ResponsiveGridLayout
+                ref={responsiveGridLayoutRef} // the provided innerRef prop is bugged (see https://github.com/react-grid-layout/react-grid-layout/issues/1444)
+                autoSize={false} // This props should do the resizing for us but is bugged too. We force it to false, otherwise the grid has strange behaviors.
+                onResize={handleResize} // We manually scroll down when resizing downward. This is a workaround due to the bugs.
                 className="layout"
                 breakpoints={GRID_CONFIG.breakpoints}
                 cols={GRID_CONFIG.cols}
@@ -443,7 +460,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
                     }
                     handleDragStop(layout);
                 }}
-                autoSize={false} // otherwise the grid has strange behavior
                 resizeHandle={<CustomResizeHandle />}
             >
                 {Object.values(diagrams).map((diagram) => {
