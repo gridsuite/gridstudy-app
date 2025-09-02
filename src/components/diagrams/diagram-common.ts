@@ -68,7 +68,7 @@ export const styles = {
             fill: theme.palette.text.primary,
         },
     }),
-    divSingleLineDiagramDevModeDisabled: (theme: Theme) => ({
+    divSingleLineDiagramHideLockAndBolt: (_theme: Theme) => ({
         '& .sld-flash, .sld-lock': {
             display: 'none',
         },

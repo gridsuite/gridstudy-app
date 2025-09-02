@@ -391,7 +391,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
-                    !enableDeveloperMode ? styles.divSingleLineDiagramDevModeDisabled : undefined
+                    !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
                 style={{ height: '100%' }}
             />
