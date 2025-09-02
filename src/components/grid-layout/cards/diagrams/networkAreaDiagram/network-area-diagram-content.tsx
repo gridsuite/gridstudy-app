@@ -7,17 +7,16 @@
 
 import { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
+import RunningStatus from 'components/utils/running-status';
 import {
     MIN_HEIGHT,
     MIN_WIDTH,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-    styles,
     NAD_ZOOM_LEVELS,
     getEquipmentTypeFromFeederType,
     equipmentsWithPopover,
-} from '../diagram-common';
+} from '../diagram-utils';
 import {
     NetworkAreaDiagramViewer,
     DiagramMetadata,
@@ -40,13 +39,14 @@ import {
     mergeSx,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import DiagramControls from '../diagram-controls';
-import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
+import DiagramControls from './diagram-controls';
+import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from 'services/explore';
 import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
+import { styles } from '../diagram-styles';
 
 type NetworkAreaDiagramContentProps = {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;

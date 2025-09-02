@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramType } from 'components/grid-layout/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 import { useDispatch, useSelector } from 'react-redux';

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramParams, DiagramParamsDto } from 'components/grid-layout/diagram.type';
+import { DiagramParams, DiagramParamsDto } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { UUID } from 'crypto';
 import { Layout } from 'react-grid-layout';
 

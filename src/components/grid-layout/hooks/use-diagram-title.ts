@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { Diagram, DiagramType } from '../diagram.type';
+import { Diagram, DiagramType } from '../cards/diagrams/diagram.type';
 import { SldSvg, Svg } from '../diagram-common';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 

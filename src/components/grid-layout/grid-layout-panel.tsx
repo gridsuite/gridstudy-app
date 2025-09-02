@@ -8,17 +8,17 @@
 import { useCallback, useState, useRef } from 'react';
 import { Layout, Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
-import { Diagram, DiagramParams, DiagramType } from './diagram.type';
+import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
 import { Box, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
-import { DiagramGridHeader } from './diagram-grid-header';
+import { GridLayoutToolbar } from './grid-layout-toolbar';
 import './grid-layout-panel.css';
-import { DiagramCard } from './diagram-card';
-import MapCard from './map-card';
-import { BLINK_LENGTH_MS } from './card-header';
+import { DiagramCard } from './cards/diagrams/diagram-card';
+import MapCard from './cards/map/map-card';
+import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
 import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from './diagram-grid-layout-utils';
@@ -407,7 +407,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     return (
         <Box sx={styles.container}>
-            <DiagramGridHeader
+            <GridLayoutToolbar
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onOpenNetworkAreaDiagram={showGrid}

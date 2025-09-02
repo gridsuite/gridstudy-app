@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'crypto';
-import { Diagram, DiagramType } from './diagram.type';
+import { Diagram, DiagramType } from './cards/diagrams/diagram.type';
 
 export const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
 

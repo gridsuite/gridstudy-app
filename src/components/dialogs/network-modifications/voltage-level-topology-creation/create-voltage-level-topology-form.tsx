@@ -10,7 +10,7 @@ import { SECTION_COUNT } from 'components/utils/field-constants';
 import GridItem from '../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from '../../../grid-layout/singleLineDiagram/position-diagram-pane';
+import PositionDiagramPane from '../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';

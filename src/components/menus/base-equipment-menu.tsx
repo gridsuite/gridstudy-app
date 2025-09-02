@@ -16,7 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { getCommonEquipmentType } from 'components/grid-layout/diagram-common';
+import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import {
     Equipment,

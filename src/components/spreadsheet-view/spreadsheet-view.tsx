@@ -22,7 +22,7 @@ import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from '
 import { initTableDefinitions } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
-import { DiagramType } from 'components/grid-layout/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 const styles = {
     invalidNode: {

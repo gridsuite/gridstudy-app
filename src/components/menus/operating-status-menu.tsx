@@ -44,7 +44,7 @@ import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.mod
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
-import { getCommonEquipmentType } from 'components/grid-layout/diagram-common';
+import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { UUID } from 'crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { CurrentTreeNode } from '../graph/tree-node.type';

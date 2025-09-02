@@ -11,8 +11,8 @@ import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { Chip, darken, lighten, Theme } from '@mui/material';
-import { setOneBusShortcircuitAnalysisDiagram } from '../../redux/actions';
-import { AppDispatch } from '../../redux/store';
+import { setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
+import { AppDispatch } from 'redux/store';
 import {
     isOneBusShortCircuitFailedNotification,
     isOneBusShortCircuitResultNotification,

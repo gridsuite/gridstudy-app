@@ -14,7 +14,7 @@ import {
     NetworkAreaDiagram,
     SubstationDiagram,
     VoltageLevelDiagram,
-} from '../diagram.type';
+} from '../cards/diagrams/diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSvg, getNetworkAreaDiagramUrl } from 'services/study';
 import { useDiagramNotificationsListener } from './use-diagram-notifications-listener';
@@ -30,7 +30,7 @@ import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { DiagramAdditionalMetadata } from '../diagram-common';
-import { mergePositions } from '../diagram-utils';
+import { mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from '../diagram-grid-layout-utils';
 

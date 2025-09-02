@@ -16,7 +16,7 @@ import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './grid-layout/diagram.type';
+import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
 import { openDiagram, setToggleOptions } from '../redux/actions.js';
 import { useDispatch, useSelector } from 'react-redux';
