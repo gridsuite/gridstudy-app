@@ -98,7 +98,7 @@ export function HorizontalToolbar() {
                                 </ToggleButton>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'modifications'} />}>
-                                <span>
+                                <span style={{ display: 'inline-flex' }}>
                                     <ToggleButton
                                         value={StudyDisplayMode.MODIFICATIONS}
                                         disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
