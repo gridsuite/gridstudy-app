@@ -98,21 +98,27 @@ export function HorizontalToolbar() {
                                 </ToggleButton>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'modifications'} />}>
-                                <ToggleButton
-                                    value={StudyDisplayMode.MODIFICATIONS}
-                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
-                                >
-                                    <TuneIcon />
-                                </ToggleButton>
+                                <span>
+                                    <ToggleButton
+                                        value={StudyDisplayMode.MODIFICATIONS}
+                                        disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
+                                    >
+                                        <TuneIcon />
+                                    </ToggleButton>
+                                </span>
                             </Tooltip>
                             {enableDeveloperMode && (
                                 <Tooltip title={<FormattedMessage id={'DynamicSimulation'} />}>
-                                    <ToggleButton
-                                        value={StudyDisplayMode.EVENT_SCENARIO}
-                                        disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
-                                    >
-                                        <OfflineBoltOutlinedIcon fontSize="small" />
-                                    </ToggleButton>
+                                    <span>
+                                        <ToggleButton
+                                            value={StudyDisplayMode.EVENT_SCENARIO}
+                                            disabled={
+                                                currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'
+                                            }
+                                        >
+                                            <OfflineBoltOutlinedIcon fontSize="small" />
+                                        </ToggleButton>
+                                    </span>
                                 </Tooltip>
                             )}
                             <Tooltip title={<FormattedMessage id={'images'} />}>
