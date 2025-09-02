@@ -31,7 +31,8 @@ import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
-import { useSetCurrentTreeNode } from 'hooks/use-sync-actions';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -53,7 +54,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const setCurrentTreeNodeWithSync = useSetCurrentTreeNode();
+    const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
@@ -124,7 +125,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     // close modifications/ event scenario when current node is root
     useEffect(() => {
-        if (currentNode?.type === 'ROOT') {
+        if (currentNode?.type === NodeType.ROOT) {
             const newOptions = handleRootNodeClick(toggleOptions);
             if (newOptions !== toggleOptions) {
                 dispatch(setToggleOptions(newOptions));
@@ -134,7 +135,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     const onNodeClick = useCallback(
         (event, node) => {
-            if (node.type === 'NETWORK_MODIFICATION') {
+            if (node.type === NodeType.NETWORK_MODIFICATION) {
                 dispatch(setModificationsDrawerOpen());
             }
             if (!isSameNode(currentNode, node)) {

@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import { useMemo } from 'react';
-import { useSetCurrentRootNetworkUuid } from 'hooks/use-sync-actions';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
     selectRoot: (theme: Theme) => ({
@@ -29,7 +29,7 @@ interface RootNetworkSelectProps {
 }
 
 export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<RootNetworkSelectProps>) {
-    const setCurrentRootNetworkUuidWithSync = useSetCurrentRootNetworkUuid();
+    const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
 
     const filteredRootNetworks = useMemo(() => {
         return rootNetworks.filter((item) => item.rootNetworkUuid !== currentRootNetworkUuid);

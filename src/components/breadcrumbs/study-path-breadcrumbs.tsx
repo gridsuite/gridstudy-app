@@ -73,11 +73,9 @@ export default function StudyPathBreadcrumbs({
             </Tooltip>
             <Box>{studyName}</Box>
             <Box>{currentNode?.data?.label}</Box>
-            <Box display="flex" alignItems="center" gap={1}>
-                {rootNetworks && rootNetworks.length > 1 && (
-                    <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
-                )}
-            </Box>
+            {rootNetworks && rootNetworks.length > 1 && (
+                <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
+            )}
         </MuiBreadcrumbs>
     );
 }

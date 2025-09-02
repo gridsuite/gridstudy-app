@@ -17,7 +17,7 @@ import {
     isRootNetworksUpdatedNotification,
     isRootNetworkUpdateFailedNotification,
 } from 'types/notification-types';
-import { useSetCurrentRootNetworkUuid } from 'hooks/use-sync-actions';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 type UseRootNetworkNotificationsProps = {
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;
@@ -29,7 +29,7 @@ export const useRootNetworkNotifications = ({ setIsRootNetworksProcessing }: Use
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
-    const setCurrentRootNetworkUuidWithSync = useSetCurrentRootNetworkUuid();
+    const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
 
     const doFetchRootNetworks = useCallback(() => {
         if (studyUuid) {

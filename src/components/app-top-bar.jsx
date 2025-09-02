@@ -23,7 +23,7 @@ import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
-import SyncToggle from './SyncToggle';
+import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 
 const styles = {
     boxContent: (theme) => ({ display: 'flex', overflow: 'hidden', width: '100%', marginLeft: theme.spacing(4) }),
@@ -133,7 +133,7 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
                         />
                     </Box>
                     <Box sx={styles.syncToggleContainer}>
-                        <SyncToggle />
+                        <StudyNavigationSyncToggle />
                     </Box>
                 </Box>
             )}

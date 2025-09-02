@@ -5,31 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToggleButton, Tooltip } from '@mui/material';
 import { Sync, SyncDisabled } from '@mui/icons-material';
 import { selectSyncEnabled } from '../redux/actions';
-import { BASE_KEYS } from 'constants/study-navigation-sync-constants';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
+import { useStudyScopedNavigationKeys } from 'hooks/use-study-scoped-navigation-keys';
 
-const SyncToggle = () => {
+const StudyNavigationSyncToggle = () => {
     const dispatch = useDispatch();
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
 
-    const STORAGE_KEYS = useMemo(
-        () => ({
-            SYNC_ENABLED: `${BASE_KEYS.SYNC_ENABLED}-${studyUuid}`,
-            ROOT_NETWORK_UUID: `${BASE_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`,
-            TREE_NODE: `${BASE_KEYS.TREE_NODE}-${studyUuid}`,
-        }),
-        [studyUuid]
-    );
+    const STORAGE_KEYS = useStudyScopedNavigationKeys();
 
     const handleToggle = () => {
         const newValue = !syncEnabled;
@@ -61,4 +52,4 @@ const SyncToggle = () => {
     );
 };
 
-export default SyncToggle;
+export default StudyNavigationSyncToggle;

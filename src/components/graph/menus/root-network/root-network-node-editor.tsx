@@ -38,7 +38,7 @@ import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
-import { useSetCurrentRootNetworkUuid } from 'hooks/use-sync-actions';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
     checkboxListItem: (theme: Theme) => ({
@@ -126,7 +126,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const setCurrentRootNetworkUuidWithSync = useSetCurrentRootNetworkUuid();
+    const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
 
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);

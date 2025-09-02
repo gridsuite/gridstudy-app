@@ -6,28 +6,25 @@
  */
 
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { BASE_KEYS } from 'constants/study-navigation-sync-constants';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSyncEnabled, setCurrentRootNetworkUuid, setCurrentTreeNode } from 'redux/actions';
 import { AppState } from 'redux/reducer';
+import { useStudyScopedNavigationKeys } from './use-study-scoped-navigation-keys';
 
+/**
+ * Custom hook that synchronizes navigation state from localStorage to Redux when sync is enabled.
+ * It listens for storage events and visibility changes to update the current root network UUID and tree node,
+ * ensuring consistency across browser tabs.
+ */
 const useStudyNavigationSync = () => {
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const dispatch = useDispatch();
 
-    const STORAGE_KEYS = useMemo(
-        () => ({
-            SYNC_ENABLED: `${BASE_KEYS.SYNC_ENABLED}-${studyUuid}`,
-            ROOT_NETWORK_UUID: `${BASE_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`,
-            TREE_NODE: `${BASE_KEYS.TREE_NODE}-${studyUuid}`,
-        }),
-        [studyUuid]
-    );
+    const STORAGE_KEYS = useStudyScopedNavigationKeys();
 
     const updateRootNetworkUuid = useCallback(
         (uuid: UUID | null) => {
