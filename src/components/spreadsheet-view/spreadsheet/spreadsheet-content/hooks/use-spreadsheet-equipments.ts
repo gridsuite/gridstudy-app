@@ -10,6 +10,7 @@ import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    cleanEquipments,
     deleteEquipments,
     type EquipmentToDelete,
     removeNodeData,
@@ -52,8 +53,20 @@ export const useSpreadsheetEquipments = (
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
-    const { shouldLoadOptionalLoadingParameters, equipmentsWithLoadingOptionsLoaded } =
-        useOptionalLoadingParametersForEquipments(type);
+    const {
+        shouldLoadOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsLoaded,
+        shouldCleanOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsCleaned,
+    } = useOptionalLoadingParametersForEquipments(type);
+
+    useEffect(() => {
+        if (shouldCleanOptionalLoadingParameters) {
+            dispatch(cleanEquipments(type));
+            equipmentsWithLoadingOptionsCleaned();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shouldCleanOptionalLoadingParameters, type]);
 
     // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
     useEffect(() => {

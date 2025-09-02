@@ -290,6 +290,18 @@ export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputation
     };
 }
 
+export const CLEAN_EQUIPMENTS = 'CLEAN_EQUIPMENTS';
+export type CleanEquipmentsAction = Readonly<Action<typeof CLEAN_EQUIPMENTS>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanEquipmentsAction {
+    return {
+        type: CLEAN_EQUIPMENTS,
+        equipmentType,
+    };
+}
+
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export type MapEquipmentsCreatedAction = Readonly<Action<typeof MAP_EQUIPMENTS_CREATED>> & {
     mapEquipments: GSMapEquipments;

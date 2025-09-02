@@ -45,6 +45,8 @@ import {
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     type CenterOnSubstationAction,
+    CLEAN_EQUIPMENTS,
+    CleanEquipmentsAction,
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
@@ -278,6 +280,7 @@ import {
 } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
+import type { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
@@ -292,7 +295,6 @@ import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotificat
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
-import type { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 // Redux state
 export type StudyUpdated = {
@@ -1441,6 +1443,44 @@ export const reducer = createReducer(initialState, (builder) => {
             [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
             [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
         };
+    });
+
+    builder.addCase(CLEAN_EQUIPMENTS, (state, action: CleanEquipmentsAction) => {
+        if (
+            action.equipmentType === SpreadsheetEquipmentType.BRANCH ||
+            action.equipmentType === SpreadsheetEquipmentType.LINE ||
+            action.equipmentType === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
+        ) {
+            state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = state.spreadsheetNetwork[
+                    action.equipmentType
+                ].equipmentsByNodeId[nodeId].map((eq) => {
+                    return {
+                        ...eq,
+                        operationalLimitsGroup1: undefined,
+                        operationalLimitsGroup1Names: undefined,
+                        selectedOperationalLimitsGroup1: undefined,
+                        operationalLimitsGroup2: undefined,
+                        operationalLimitsGroup2Names: undefined,
+                        selectedOperationalLimitsGroup2: undefined,
+                    };
+                });
+            });
+        } else if (action.equipmentType === SpreadsheetEquipmentType.GENERATOR) {
+            state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = state.spreadsheetNetwork[
+                    action.equipmentType
+                ].equipmentsByNodeId[nodeId].map((eq) => {
+                    return {
+                        ...eq,
+                        regulatingTerminalVlName: undefined,
+                        regulatingTerminalConnectableId: undefined,
+                        regulatingTerminalConnectableType: undefined,
+                        regulatingTerminalVlId: undefined,
+                    };
+                });
+            });
+        }
     });
 
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {

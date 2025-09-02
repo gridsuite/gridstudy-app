@@ -38,16 +38,45 @@ export function useOptionalLoadingParametersForEquipments(type: SpreadsheetEquip
         setValue: setShouldLoadOptionalLoadingParameters,
         setFalse: equipmentsWithLoadingOptionsLoaded,
     } = useStateBoolean(false);
+    const {
+        value: shouldCleanOptionalLoadingParameters,
+        setValue: setShouldCleanOptionalLoadingParameters,
+        setFalse: equipmentsWithLoadingOptionsCleaned,
+    } = useStateBoolean(false);
 
     useEffect(() => {
-        if (type === SpreadsheetEquipmentType.BRANCH && remoteBranchOlg !== branchOlg) {
+        if (type === SpreadsheetEquipmentType.BRANCH && remoteBranchOlg !== branchOlg && remoteBranchOlg) {
             setShouldLoadOptionalLoadingParameters(true);
-        } else if (type === SpreadsheetEquipmentType.LINE && remoteLineOlg !== lineOlg) {
+        } else if (type === SpreadsheetEquipmentType.BRANCH && remoteBranchOlg !== branchOlg && !remoteBranchOlg) {
+            setShouldCleanOptionalLoadingParameters(true);
+        } else if (type === SpreadsheetEquipmentType.LINE && remoteLineOlg !== lineOlg && remoteLineOlg) {
             setShouldLoadOptionalLoadingParameters(true);
-        } else if (type === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER && remoteTwtOlg !== twtOlg) {
+        } else if (type === SpreadsheetEquipmentType.LINE && remoteLineOlg !== lineOlg && !remoteLineOlg) {
+            setShouldCleanOptionalLoadingParameters(true);
+        } else if (
+            type === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
+            remoteTwtOlg !== twtOlg &&
+            remoteTwtOlg
+        ) {
             setShouldLoadOptionalLoadingParameters(true);
-        } else if (type === SpreadsheetEquipmentType.GENERATOR && remoteGeneratorRegTerm !== generatorRegTerm) {
+        } else if (
+            type === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
+            remoteTwtOlg !== twtOlg &&
+            !remoteTwtOlg
+        ) {
+            setShouldCleanOptionalLoadingParameters(true);
+        } else if (
+            type === SpreadsheetEquipmentType.GENERATOR &&
+            remoteGeneratorRegTerm !== generatorRegTerm &&
+            remoteGeneratorRegTerm
+        ) {
             setShouldLoadOptionalLoadingParameters(true);
+        } else if (
+            type === SpreadsheetEquipmentType.GENERATOR &&
+            remoteGeneratorRegTerm !== generatorRegTerm &&
+            !remoteGeneratorRegTerm
+        ) {
+            setShouldCleanOptionalLoadingParameters(true);
         }
         setBranchOlg(remoteBranchOlg);
         setLineOlg(remoteLineOlg);
@@ -61,10 +90,16 @@ export function useOptionalLoadingParametersForEquipments(type: SpreadsheetEquip
         remoteGeneratorRegTerm,
         remoteLineOlg,
         remoteTwtOlg,
+        setShouldCleanOptionalLoadingParameters,
         setShouldLoadOptionalLoadingParameters,
         twtOlg,
         type,
     ]);
 
-    return { shouldLoadOptionalLoadingParameters, equipmentsWithLoadingOptionsLoaded };
+    return {
+        shouldLoadOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsLoaded,
+        shouldCleanOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsCleaned,
+    };
 }
