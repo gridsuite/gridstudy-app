@@ -21,7 +21,7 @@ import MapCard from './cards/map/map-card';
 import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
-import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from './diagram-grid-layout-utils';
+import { isThereTooManyOpenedNadDiagrams } from './cards/diagrams/diagram-utils';
 
 const styles = {
     container: {
@@ -387,7 +387,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     const onOpenNetworkAreaDiagram = useCallback(
         (elementId?: string) => {
-            if (countOpenedNadDiagrams(diagrams) < MAX_NUMBER_OF_NAD_DIAGRAMS) {
+            if (isThereTooManyOpenedNadDiagrams(diagrams)) {
                 if (!elementId) {
                     return;
                 }

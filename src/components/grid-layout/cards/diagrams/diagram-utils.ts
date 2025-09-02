@@ -8,7 +8,8 @@ import { DiagramConfigPosition } from '../../../../services/explore';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
-import { Svg } from './diagram.type';
+import { Diagram, DiagramType, Svg } from './diagram.type';
+import { UUID } from 'crypto';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;
@@ -175,3 +176,12 @@ export function mergePositions(
     // Convert map back to array
     return Array.from(positionsMap.values());
 }
+
+const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
+
+export const isThereTooManyOpenedNadDiagrams = (diagrams: Record<UUID, Diagram>) => {
+    return (
+        Object.values(diagrams).filter((diagram) => diagram?.type === DiagramType.NETWORK_AREA_DIAGRAM).length >=
+        MAX_NUMBER_OF_NAD_DIAGRAMS
+    );
+};
