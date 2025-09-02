@@ -168,8 +168,8 @@ export default function LineTypesCatalogSelectorDialog({
             return [];
         }
 
-        const uniqueAreas = [...new Set(limitsData.map((limit) => limit.area))];
-        uniqueAreas.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        let uniqueAreas = [...new Set(limitsData.map((limit) => limit.area))];
+        uniqueAreas = uniqueAreas.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         return uniqueAreas.map((area) => ({ id: area, label: area }));
     };
 
@@ -178,13 +178,13 @@ export default function LineTypesCatalogSelectorDialog({
             return [];
         }
 
-        const uniqueTemperatures = [...new Set(limitsData.map((limit) => limit.temperature))];
-        uniqueTemperatures.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        let uniqueTemperatures = [...new Set(limitsData.map((limit) => limit.temperature))];
+        uniqueTemperatures = uniqueTemperatures.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         return uniqueTemperatures.map((temp) => ({ id: temp, label: temp }));
     };
 
     const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
-        lineInfo.shapeFactors.toSorted();
+        lineInfo.shapeFactors = lineInfo.shapeFactors.toSorted();
         return lineInfo.shapeFactors.map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
     };
 
