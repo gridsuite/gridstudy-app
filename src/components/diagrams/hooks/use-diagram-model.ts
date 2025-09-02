@@ -284,6 +284,18 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 })
                 .catch((error) => {
                     console.error('Error while fetching SVG', error.message);
+                    if (error.status === 400) {
+                        // remove the failed diagram from loading list and show a snack error.
+                        setDiagrams((diagrams) => {
+                            const newDiagrams = { ...diagrams };
+                            delete newDiagrams[diagram.diagramUuid];
+                            return newDiagrams;
+                        });
+                        snackError({
+                            headerId: 'svgConfiguredModeFailed',
+                        });
+                        return;
+                    }
                     setDiagrams((diagrams) => {
                         if (!diagrams[diagram.diagramUuid]) {
                             console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
