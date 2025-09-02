@@ -20,11 +20,10 @@ import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modificat
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { formatModification } from '../tabular/tabular-common';
 import { createTabularModification } from '../../../../services/study/network-modifications';
-import { BranchSide } from '../../../utils/constants';
 import {
     emptyFormData,
     formatBackToFront,
-    formatOperationalLimitGroupsFrontToBack,
+    formatOperationalLimitGroupsFrontToBack, formatSelectedOperationalGroupId,
     formSchema,
     LimitSetModificationMetadata,
     SchemaType,
@@ -86,21 +85,15 @@ export function LimitSetsModificationDialog({
                 Object.keys(modification).forEach((key) => {
                     modification[key] = row[key];
                 });
-
-                if (modification[SIDE] === BranchSide.ONE) {
-                    modification.operationalLimitsGroup1 = [
-                        formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.ONE),
-                    ];
-                } else if (modification[SIDE] === BranchSide.TWO) {
-                    modification.operationalLimitsGroup2 = [
-                        formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.TWO),
-                    ];
-                }
-
+                modification.operationalLimitsGroups = [
+                    formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits),
+                ];
+                formatSelectedOperationalGroupId(modification);
                 modification.type = modificationType;
                 return modification;
             });
 
+            console.log(modifications);
             createTabularModification({
                 studyUuid,
                 nodeUuid: currentNodeUuid,
