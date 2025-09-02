@@ -14,7 +14,6 @@ import { RootNetworkMetadata } from '../graph/menus/network-modifications/networ
 import { UUID } from 'crypto';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import RootNetworkSelect from './root-network-select';
-import SyncToggle from 'components/SyncToggle';
 
 const styles = {
     tooltipItem: {
@@ -78,7 +77,6 @@ export default function StudyPathBreadcrumbs({
                 {rootNetworks && rootNetworks.length > 1 && (
                     <RootNetworkSelect currentRootNetworkUuid={currentRootNetworkUuid} rootNetworks={rootNetworks} />
                 )}
-                <SyncToggle />
             </Box>
         </MuiBreadcrumbs>
     );

@@ -7,11 +7,12 @@
 
 import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { IconButton } from '@mui/material';
+import { ToggleButton, Tooltip } from '@mui/material';
 import { Sync, SyncDisabled } from '@mui/icons-material';
 import { selectSyncEnabled } from '../redux/actions';
 import { BASE_KEYS } from 'constants/study-navigation-sync-constants';
 import { AppState } from 'redux/reducer';
+import { useIntl } from 'react-intl';
 
 const SyncToggle = () => {
     const dispatch = useDispatch();
@@ -19,6 +20,7 @@ const SyncToggle = () => {
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const intl = useIntl();
 
     const STORAGE_KEYS = useMemo(
         () => ({
@@ -45,9 +47,17 @@ const SyncToggle = () => {
     };
 
     return (
-        <IconButton onClick={handleToggle} size="small">
-            {syncEnabled ? <Sync /> : <SyncDisabled />}
-        </IconButton>
+        <Tooltip
+            title={
+                syncEnabled
+                    ? intl.formatMessage({ id: 'disableNavigationSync' })
+                    : intl.formatMessage({ id: 'enableNavigationSync' })
+            }
+        >
+            <ToggleButton value={'sync'} selected={syncEnabled} onChange={handleToggle} size="small">
+                {syncEnabled ? <Sync /> : <SyncDisabled />}
+            </ToggleButton>
+        </Tooltip>
     );
 };
 
