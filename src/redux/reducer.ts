@@ -122,6 +122,9 @@ import {
     RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
     RESET_MAP_EQUIPMENTS,
+    RESET_SECURITY_ANALYSIS_PAGINATION,
+    RESET_SENSITIVITY_ANALYSIS_PAGINATION,
+    RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
     type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetDiagramEventAction,
     type ResetEquipmentsAction,
@@ -129,6 +132,9 @@ import {
     type ResetEquipmentsPostComputationAction,
     type ResetLogsFilterAction,
     type ResetMapEquipmentsAction,
+    ResetSecurityAnalysisPaginationAction,
+    ResetSensitivityAnalysisPaginationAction,
+    ResetShortcircuitAnalysisPaginationAction,
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -294,8 +300,11 @@ import {
 import {
     FilterConfig,
     PaginationConfig,
+    SECURITY_ANALYSIS_TABS,
     SecurityAnalysisTab,
+    SENSITIVITY_ANALYSIS_TABS,
     SensitivityAnalysisTab,
+    SHORTCIRCUIT_ANALYSIS_TABS,
     ShortcircuitAnalysisTab,
     SortConfig,
     SortWay,
@@ -1628,6 +1637,17 @@ export const reducer = createReducer(initialState, (builder) => {
             action[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD];
     });
 
+    builder.addCase(RESET_SECURITY_ANALYSIS_PAGINATION, (state, _action: ResetSecurityAnalysisPaginationAction) => {
+        // Reset all security analysis tabs to page 0 but keep their rowsPerPage
+        SECURITY_ANALYSIS_TABS.forEach((tab) => {
+            const currentPagination = state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][tab];
+            state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][tab] = {
+                page: 0,
+                rowsPerPage: currentPagination.rowsPerPage,
+            };
+        });
+    });
+
     builder.addCase(
         SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
         (state, action: SensitivityAnalysisResultPaginationAction) => {
@@ -1637,10 +1657,38 @@ export const reducer = createReducer(initialState, (builder) => {
     );
 
     builder.addCase(
+        RESET_SENSITIVITY_ANALYSIS_PAGINATION,
+        (state, _action: ResetSensitivityAnalysisPaginationAction) => {
+            // Reset all sensitivity analysis tabs to page 0 but keep their rowsPerPage
+            SENSITIVITY_ANALYSIS_TABS.forEach((tab) => {
+                const currentPagination = state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][tab];
+                state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][tab] = {
+                    page: 0,
+                    rowsPerPage: currentPagination.rowsPerPage,
+                };
+            });
+        }
+    );
+
+    builder.addCase(
         SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
         (state, action: ShortcircuitAnalysisResultPaginationAction) => {
             state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
                 action[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD];
+        }
+    );
+
+    builder.addCase(
+        RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+        (state, _action: ResetShortcircuitAnalysisPaginationAction) => {
+            // Reset all shortcircuit analysis tabs to page 0 but keep their rowsPerPage
+            SHORTCIRCUIT_ANALYSIS_TABS.forEach((tab) => {
+                const currentPagination = state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][tab];
+                state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][tab] = {
+                    page: 0,
+                    rowsPerPage: currentPagination.rowsPerPage,
+                };
+            });
         }
     );
 
