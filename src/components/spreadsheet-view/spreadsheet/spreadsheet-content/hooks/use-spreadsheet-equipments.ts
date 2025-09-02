@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import {
+    NotificationsUrlKeys,
+    useNotificationsListener,
+    useSnackMessage,
+    useStateBoolean,
+} from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,6 +42,7 @@ export const useSpreadsheetEquipments = (
     nodeAliases: NodeAlias[] | undefined,
     active: boolean = false
 ) => {
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
@@ -186,13 +192,21 @@ export const useSpreadsheetEquipments = (
                     Promise.allSettled(promises).then((results) => {
                         const updates: UpdateEquipmentsAction['equipments'] = {};
                         if (results[0].status === 'rejected') {
-                            //TODO show snackbar error?
+                            snackError({
+                                headerId: 'spreadsheet/loading/error_fetching_type_title',
+                                headerValues: { type },
+                                messageTxt: `Details: ${results[0].reason}`,
+                            });
                         } else {
                             updates[type] = results[0].value;
                         }
                         if (results.length > 1) {
                             if (results[1].status === 'rejected') {
-                                //TODO show snackbar error?
+                                snackError({
+                                    headerId: 'spreadsheet/loading/error_fetching_type_title',
+                                    headerValues: { type: SpreadsheetEquipmentType.BRANCH },
+                                    messageTxt: `Details: ${results[1].reason}`,
+                                });
                             } else {
                                 updates[SpreadsheetEquipmentType.BRANCH] = results[1].value;
                             }
@@ -238,6 +252,7 @@ export const useSpreadsheetEquipments = (
             allEquipments,
             equipmentToUpdateId,
             highlightUpdatedEquipment,
+            snackError,
         ]
     );
 
