@@ -132,7 +132,9 @@ import {
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
+    SECURITY_ANALYSIS_RESULT_PAGINATION,
     type SecurityAnalysisResultFilterAction,
+    SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_THEME,
@@ -140,7 +142,9 @@ import {
     type SelectLanguageAction,
     type SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
+    SensitivityAnalysisResultPaginationAction,
     SET_APP_TAB_INDEX,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
@@ -180,7 +184,9 @@ import {
     type SetStudyDisplayModeAction,
     type SetToggleOptionsAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     type ShortcircuitAnalysisResultFilterAction,
+    ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -240,10 +246,12 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     LOGS_STORE_FIELD,
     ONE_BUS,
+    SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_AT_NODE_N,
@@ -252,6 +260,7 @@ import {
     SENSITIVITY_IN_DELTA_A_N_K,
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
+    SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
@@ -282,7 +291,15 @@ import {
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
-import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
+import {
+    FilterConfig,
+    PaginationConfig,
+    SecurityAnalysisTab,
+    SensitivityAnalysisTab,
+    ShortcircuitAnalysisTab,
+    SortConfig,
+    SortWay,
+} from '../types/custom-aggrid-types';
 import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
@@ -505,6 +522,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
         [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
         [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
     };
+    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
+    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
+    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -568,6 +588,11 @@ interface TablesState {
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
+};
+
+export const DEFAULT_PAGINATION: PaginationConfig = {
+    page: 0,
+    rowsPerPage: 25,
 };
 
 const initialState: AppState = {
@@ -681,6 +706,22 @@ const initialState: AppState = {
     },
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
+    },
+    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [SECURITY_ANALYSIS_RESULT_N]: { ...DEFAULT_PAGINATION },
+        [SECURITY_ANALYSIS_RESULT_N_K]: { ...DEFAULT_PAGINATION },
+    },
+    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [SENSITIVITY_IN_DELTA_MW_N]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_IN_DELTA_MW_N_K]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_IN_DELTA_A_N]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_IN_DELTA_A_N_K]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_AT_NODE_N]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_AT_NODE_N_K]: { ...DEFAULT_PAGINATION },
+    },
+    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [ONE_BUS]: { ...DEFAULT_PAGINATION },
+        [ALL_BUSES]: { ...DEFAULT_PAGINATION },
     },
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
         [STATEESTIMATION_QUALITY_CRITERION]: [],
@@ -1513,6 +1554,27 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
         state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
     });
+
+    builder.addCase(SECURITY_ANALYSIS_RESULT_PAGINATION, (state, action: SecurityAnalysisResultPaginationAction) => {
+        state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+            action[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD];
+    });
+
+    builder.addCase(
+        SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
+        (state, action: SensitivityAnalysisResultPaginationAction) => {
+            state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+                action[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD];
+        }
+    );
+
+    builder.addCase(
+        SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
+        (state, action: ShortcircuitAnalysisResultPaginationAction) => {
+            state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+                action[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD];
+        }
+    );
 
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
