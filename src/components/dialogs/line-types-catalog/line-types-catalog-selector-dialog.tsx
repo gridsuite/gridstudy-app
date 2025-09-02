@@ -169,7 +169,7 @@ export default function LineTypesCatalogSelectorDialog({
         }
 
         const uniqueAreas = [...new Set(limitsData.map((limit) => limit.area))];
-        uniqueAreas.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        uniqueAreas.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         return uniqueAreas.map((area) => ({ id: area, label: area }));
     };
 
@@ -179,12 +179,12 @@ export default function LineTypesCatalogSelectorDialog({
         }
 
         const uniqueTemperatures = [...new Set(limitsData.map((limit) => limit.temperature))];
-        uniqueTemperatures.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        uniqueTemperatures.toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         return uniqueTemperatures.map((temp) => ({ id: temp, label: temp }));
     };
 
     const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
-        lineInfo.shapeFactors.sort();
+        lineInfo.shapeFactors.toSorted();
         return lineInfo.shapeFactors.map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
     };
 
