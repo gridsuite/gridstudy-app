@@ -201,10 +201,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const resetResultStates = useCallback(() => {
         setResult(null);
         setCount(0);
-        dispatchPagination({ page: 0, rowsPerPage });
-    }, [setResult, rowsPerPage, dispatchPagination]);
+    }, [setResult]);
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {
+        dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
