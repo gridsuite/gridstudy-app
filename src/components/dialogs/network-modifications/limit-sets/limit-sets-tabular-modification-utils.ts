@@ -31,7 +31,7 @@ import { UUID } from 'crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { toModificationOperation } from '../../../utils/utils';
 import { AttributeModification } from '../../../../services/network-modification-types';
-import {APPLICABILITY} from "../../../network/constants";
+import { APPLICABILITY } from '../../../network/constants';
 
 type TemporaryLimit = {
     name: string;
