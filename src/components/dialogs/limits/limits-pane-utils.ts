@@ -35,9 +35,7 @@ const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
     [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup
-        .object()
-        .shape(isModification ? currentLimitsValidationSchema(true) : currentLimitsValidationSchemaCreation()),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
 
 const temporaryLimitsValidationSchema = () => {
@@ -54,38 +52,10 @@ const temporaryLimitsValidationSchema = () => {
     });
 };
 
-const currentLimitsValidationSchemaCreation = () => ({
-    [PERMANENT_LIMIT]: yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
-    [TEMPORARY_LIMITS]: yup
-        .array()
-        .of(temporaryLimitsValidationSchema())
-        .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
-            const namesArray = !array
-                ? []
-                : array.filter((l) => !!l[TEMPORARY_LIMIT_NAME]).map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
-            return areArrayElementsUnique(namesArray);
-        })
-        .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
-            const durationsArray = !array ? [] : array.map((l) => l[TEMPORARY_LIMIT_DURATION]).filter((d) => d); // empty lines are ignored
-            return areArrayElementsUnique(durationsArray);
-        }),
-});
-
 const currentLimitsValidationSchema = (isModification = false) => ({
-    [PERMANENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .positive('permanentCurrentLimitMustBeGreaterThanZero')
-        // if there are valid (named) temporary limits, permanent limit is mandatory
-        .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits: TemporaryLimit[]) =>
-                temporaryLimits?.length > 0 && temporaryLimits.find((limit) => limit.name) && !isModification,
-            then: () =>
-                yup
-                    .number()
-                    .required('permanentCurrentLimitMandatory')
-                    .positive('permanentCurrentLimitMustBeGreaterThanZero'),
-        }),
+    [PERMANENT_LIMIT]: isModification
+        ? yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero')
+        : yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
