@@ -167,7 +167,6 @@ const mapOperationalLimitGroupBackToFront = (
     modification: LimitSetModification,
     group: OperationalLimitGroup
 ): ModificationRow => {
-    console.log(modification, group);
     let row: ModificationRow = {};
     row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
     row[IS_ACTIVE] =
