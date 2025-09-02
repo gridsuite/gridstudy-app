@@ -6,7 +6,7 @@
  */
 
 import { Box } from '@mui/material';
-import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useState } from 'react';
+import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useMemo, useState } from 'react';
 import CardHeader from './card-header';
 import { Diagram, DiagramParams, DiagramType } from './diagram.type';
 import { UUID } from 'crypto';
@@ -16,7 +16,7 @@ import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram
 import { ElementType, EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { DiagramAdditionalMetadata } from './diagram-common';
-import { FormattedMessage } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { cardStyles } from './card-styles';
 import { v4 } from 'uuid';
 
@@ -64,6 +64,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
 
     const [diagramsInEditMode, setDiagramsInEditMode] = useState<boolean>(false);
+    const intl = useIntl();
 
     const handleExpandAllVoltageLevels = useCallback(() => {
         if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -151,13 +152,19 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         [createDiagram]
     );
 
+    const cardTitle = useMemo((): string => {
+        if (loading) {
+            return intl.formatMessage({ id: 'loadingOptions' });
+        }
+        if (errorMessage) {
+            return intl.formatMessage({ id: 'diagramLoadingFail' }, { diagramName: diagram.name });
+        }
+        return diagram.name;
+    }, [loading, errorMessage, diagram.name, intl]);
+
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CardHeader
-                title={loading ? <FormattedMessage id="loadingOptions" /> : diagram.name}
-                blinking={blinking}
-                onClose={onClose}
-            />
+            <CardHeader title={cardTitle} blinking={blinking} onClose={onClose} />
             {errorMessage ? (
                 <>
                     <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />
