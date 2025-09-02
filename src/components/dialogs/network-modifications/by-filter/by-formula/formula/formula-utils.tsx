@@ -54,15 +54,15 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText', unit: MEGA_WATT },
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText', unit: MEGA_WATT },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText', unit: MEGA_WATT },
-        { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText', unit: MEGA_WATT },
-        { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText', unit: MEGA_VAR },
+        { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerSetPointText', unit: MEGA_WATT },
+        { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerSetPointText', unit: MEGA_VAR },
         { id: 'VOLTAGE_SET_POINT', label: 'GeneratorTargetV', unit: KILO_VOLT },
         {
             id: 'PLANNED_ACTIVE_POWER_SET_POINT',
             label: 'PlannedActivePowerSetPointForm',
             unit: MEGA_WATT,
         },
-        { id: 'MARGINAL_COST', label: 'marginalCost' },
+        { id: 'MARGINAL_COST', label: 'MarginalCost' },
         { id: 'PLANNED_OUTAGE_RATE', label: 'plannedOutageRate' },
         { id: 'FORCED_OUTAGE_RATE', label: 'forcedOutageRate' },
         { id: 'DROOP', label: 'ActivePowerRegulationDroop', unit: PERCENTAGE },
@@ -77,8 +77,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.BATTERY]: [
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText', unit: MEGA_WATT },
         { id: 'MAXIMUM_ACTIVE_POWER', label: 'MaximumActivePowerText', unit: MEGA_WATT },
-        { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerText', unit: MEGA_WATT },
-        { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerText', unit: MEGA_VAR },
+        { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerSetPointText', unit: MEGA_WATT },
+        { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerSetPointText', unit: MEGA_VAR },
         { id: 'DROOP', label: 'Droop', unit: PERCENTAGE },
     ],
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
@@ -103,8 +103,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
         },
     ],
     [EQUIPMENT_TYPES.LOAD]: [
-        { id: 'ACTIVE_POWER', label: 'ActivePowerText', unit: MEGA_WATT },
-        { id: 'REACTIVE_POWER', label: 'ReactivePowerText', unit: MEGA_VAR },
+        { id: 'ACTIVE_POWER_SET_POINT', label: 'ActivePowerSetPointText', unit: MEGA_WATT },
+        { id: 'REACTIVE_POWER_SET_POINT', label: 'ReactivePowerSetPointText', unit: MEGA_VAR },
     ],
     [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
         { id: 'R', label: 'SeriesResistanceText', unit: OHM },
