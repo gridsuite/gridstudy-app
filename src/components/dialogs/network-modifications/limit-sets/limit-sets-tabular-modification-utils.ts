@@ -25,13 +25,13 @@ import {
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
     TYPE,
 } from '../../../utils/field-constants';
-import { Applicability } from '../../../utils/constants';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import { UUID } from 'crypto';
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { toModificationOperation } from '../../../utils/utils';
 import { AttributeModification } from '../../../../services/network-modification-types';
+import {APPLICABILITY} from "../../../network/constants";
 
 type TemporaryLimit = {
     name: string;
@@ -108,11 +108,11 @@ const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountM
 };
 export const formatSelectedOperationalGroupId = (modification: ModificationRow) => {
     if (modification[IS_ACTIVE]) {
-        if (modification[SIDE] === Applicability.SIDE1) {
+        if (modification[SIDE] === APPLICABILITY.SIDE1.id) {
             modification.selectedOperationalLimitsGroup1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
-        } else if (modification[SIDE] === Applicability.SIDE2) {
+        } else if (modification[SIDE] === APPLICABILITY.SIDE2.id) {
             modification.selectedOperationalLimitsGroup2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
-        } else if (modification[SIDE] === Applicability.EQUIPMENT) {
+        } else if (modification[SIDE] === APPLICABILITY.EQUIPMENT.id) {
             modification.selectedOperationalLimitsGroup1 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
             modification.selectedOperationalLimitsGroup2 = toModificationOperation(modification[LIMIT_GROUP_NAME]);
         }
@@ -172,12 +172,12 @@ const mapOperationalLimitGroupBackToFront = (
     row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
     row[IS_ACTIVE] =
         (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1].value === group.id &&
-            group.applicability === Applicability.SIDE1) ||
+            group.applicability === APPLICABILITY.SIDE1.id) ||
         (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2].value === group.id &&
-            group.applicability === Applicability.SIDE2) ||
+            group.applicability === APPLICABILITY.SIDE2.id) ||
         (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2].value === group.id &&
             modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1].value === group.id &&
-            group.applicability === Applicability.EQUIPMENT);
+            group.applicability === APPLICABILITY.EQUIPMENT.id);
     row[SIDE] = group[APPLICABIlITY];
     row[LIMIT_GROUP_NAME] = group.id;
     row[MODIFICATION_TYPE] = group.modificationType;

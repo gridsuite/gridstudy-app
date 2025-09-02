@@ -8,9 +8,3 @@ export enum BranchSide {
     ONE = 'ONE',
     TWO = 'TWO',
 }
-
-export enum Applicability {
-    SIDE1 = 'SIDE1',
-    SIDE2 = 'SIDE2',
-    EQUIPMENT = 'EQUIPMENT',
-}
