@@ -1587,5 +1587,7 @@
     "NOT_BUILT": "Not built",
     "allBusbarSections": "All",
     "allOptionHelperText": "Busbars have different sections (number or index)",
-    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections"
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
+    "TOP": "TOP",
+    "BOTTOM": "BOTTOM"
 }

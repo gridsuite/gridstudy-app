@@ -5,31 +5,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
-import { Button, Theme } from '@mui/material';
+import React, { useCallback } from 'react';
+import { IconButton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { TextInput } from '@gridsuite/commons-ui';
+import { useController } from 'react-hook-form';
+import { useIntl } from "react-intl";
 
 type FeeederBayDirectionCellRendererProps = {
-    direction: string;
+    name: string;
 };
 
-const styles = {
-    button: (theme: Theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
-    }),
-};
+export default function FeederBayDirectionCellRenderer({ name }: Readonly<FeeederBayDirectionCellRendererProps>) {
+    const {
+        field: { value, onChange },
+    } = useController({ name });
+    const intl = useIntl();
 
-export default function FeeederBayDirectionCellRenderer({ direction }: Readonly<FeeederBayDirectionCellRendererProps>) {
-    let [directionValue, setDirectionValue] = useState<string>(direction);
-    const handleButtonClick = useCallback(() => {
-        directionValue === 'TOP' ? setDirectionValue('BOTTOM') : setDirectionValue('TOP');
-    }, [directionValue, setDirectionValue]);
-    return (
-        <Button sx={styles.button} onClick={handleButtonClick} size="small" variant="outlined">
-            {directionValue}
-            {directionValue === 'TOP' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-        </Button>
+    const handleClick = useCallback(() => {
+        if (value !== null) {
+          const newValue = intl.formatMessage({ id: value === 'TOP' ? 'TOP' : 'BOTTOM' });
+          onChange(newValue);
+        }
+    }, [value, onChange, intl]);
+
+    const addIconAdornment = useCallback(
+        (clickCallback: () => void) => {
+            return (
+                <IconButton onClick={clickCallback} sx={{ position: 'start' }}>
+                    {value === 'TOP' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+                </IconButton>
+            );
+        },
+        [value]
     );
+
+    return <TextInput name={name} customAdornment={addIconAdornment(handleClick)} />;
 }

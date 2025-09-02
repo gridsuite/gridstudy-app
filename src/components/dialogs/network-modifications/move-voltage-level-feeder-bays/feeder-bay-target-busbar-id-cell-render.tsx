@@ -8,7 +8,6 @@
 import React from 'react';
 import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import { areIdsEqual, getObjectId } from '../../../utils/utils';
-import { getConnectivityVoltageLevelData } from "../../connectivity/connectivity-form-utils";
 
 type FeederBayTargetBusbarIdCellRendererProps = {
     name: string;
@@ -25,12 +24,10 @@ export default function FeederBayTargetBusbarIdCellRenderer({
         <div>
             <AutocompleteInput
                 name={name}
-                value={value}
                 options={busBarSectionIds}
                 size="small"
-                clearable={true}
-                isOptionEqualToValue={areIdsEqual}
                 getOptionLabel={getObjectId}
+                isOptionEqualToValue={areIdsEqual}
             />
         </div>
     );

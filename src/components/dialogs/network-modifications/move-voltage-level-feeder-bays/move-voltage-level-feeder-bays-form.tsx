@@ -24,7 +24,7 @@ import {
     TARGET_BUSBAR_SECTION_ID,
 } from '../../../utils/field-constants';
 import FeederBayPositionCellRenderer from './feeder-bay-position-cell-render';
-import FeeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
+import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
 import FeederBayNameCellRenderer from './feeder-bay-name-cell-render';
 import FeederBayTargetBusbarIdCellRenderer from './feeder-bay-target-busbar-id-cell-render';
 import GridItem from '../../commons/grid-item';
@@ -179,10 +179,8 @@ export function MoveVoltageLevelFeederBaysForm({
                         const formIndex = watchTable?.findIndex(
                             (item: FeederBayData) => item.connectableId === data.connectableId
                         );
-                        return FeeederBayDirectionCellRenderer({
-                            direction: getValues(
-                                `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`
-                            ),
+                        return FeederBayDirectionCellRenderer({
+                            name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
                         });
                     }
                 },

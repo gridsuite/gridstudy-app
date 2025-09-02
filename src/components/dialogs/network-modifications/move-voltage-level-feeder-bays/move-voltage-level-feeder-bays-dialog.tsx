@@ -17,13 +17,14 @@ import { ModificationDialog } from '../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
 import yup from '../../../utils/yup-config';
 import {
-  ADD_SUBSTATION_CREATION,
-  BUSBAR_SECTION_ID,
+    BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,
     CONNECTABLE_ID,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
-    CONNECTION_POSITION, EQUIPMENT_ID,
+    CONNECTION_POSITION,
+    ID,
+    LABEL,
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
     TARGET_BUSBAR_SECTION_ID,
 } from '../../../utils/field-constants';
@@ -44,16 +45,17 @@ const formSchema = yup.object().shape({
             yup.object().shape({
                 [CONNECTABLE_ID]: yup.string().nonNullable().required(),
                 [CONNECTION_NAME]: yup.string().nonNullable().required(),
-                [BUSBAR_SECTION_ID]: yup.string().required(),
-                [TARGET_BUSBAR_SECTION_ID]: yup.string().nonNullable().required(),
+                [BUSBAR_SECTION_ID]: yup.string().nonNullable().required(),
+                [TARGET_BUSBAR_SECTION_ID]: yup
+                    .object()
+                    .nonNullable()
+                    .shape({
+                        [ID]: yup.string(),
+                        [LABEL]: yup.string(),
+                    })
+                    .required(),
                 [CONNECTION_DIRECTION]: yup.string().nonNullable().required(),
-                [CONNECTION_POSITION]: yup.number().nonNullable().when([], {
-                  is: true,
-                  then: (schema) =>
-                    schema
-                      .required()
-                      .notOneOf({'connectionPosition'}, 'test'),
-                }),
+                [CONNECTION_POSITION]: yup.number().nonNullable(),
             })
         )
         .required(),
@@ -162,7 +164,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                         [CONNECTABLE_ID]: row.connectableId,
                                         [CONNECTION_NAME]: row.connectionName,
                                         [BUSBAR_SECTION_ID]: row.busbarSectionId,
-                                        [TARGET_BUSBAR_SECTION_ID]: row.targetBusbarSectionId,
+                                        [TARGET_BUSBAR_SECTION_ID]: {
+                                            id: row.targetBusbarSectionId,
+                                            label: row.targetBusbarSectionId,
+                                        },
                                         [CONNECTION_DIRECTION]: row.connectionDirection,
                                         [CONNECTION_POSITION]: row.connectionPosition,
                                     })),
@@ -191,10 +196,18 @@ export default function MoveVoltageLevelFeederBaysDialog({
     }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(() => {
-        console.log("submit", getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE))
+        console.log('submit', getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE));
+
         const moveVoltageLevelFeederBaysInfos = {
             voltageLevelId: selectedId,
-            feederBaysAttributeList: getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE),
+            feederBaysAttributeList: getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE).map((row) => ({
+                connectableId: row.connectableId,
+                busbarSectionId: row.busbarSectionId,
+                targetBusbarSectionId: row.targetBusbarSectionId.id,
+                connectionPosition: row.connectionPosition,
+                connectionName: row.connectionName,
+                connectionDirection: row.connectionDirection,
+            })),
             type: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
             uuid: editData?.uuid,
         } satisfies MoveVoltageLevelFeederBaysInfos;
