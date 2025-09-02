@@ -167,7 +167,7 @@ export default function LineTypesCatalogSelectorDialog({
         if (!limitsData?.length) {
             return [];
         }
-      
+
         return [...new Set(limitsData.map((limit) => limit.area))]
             .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }))
             .map((area) => ({ id: area, label: area }));
@@ -177,14 +177,16 @@ export default function LineTypesCatalogSelectorDialog({
         if (!limitsData?.length) {
             return [];
         }
-      
+
         return [...new Set(limitsData.map((limit) => limit.temperature))]
             .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }))
             .map((temp) => ({ id: temp, label: temp }));
     };
 
     const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
-        return lineInfo.shapeFactors.toSorted((a, b) => a - b).map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
+        return lineInfo.shapeFactors
+            .toSorted((a, b) => a - b)
+            .map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
     };
 
     const handleSelectedRowData = useCallback(
