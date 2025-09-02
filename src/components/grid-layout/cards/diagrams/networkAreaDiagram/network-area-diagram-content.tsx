@@ -58,9 +58,9 @@ type NetworkAreaDiagramContentProps = {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
-    visible: boolean;
-    isEditNadMode: boolean;
-    onToggleEditNadMode?: (isEditMode: boolean) => void;
+    readonly visible: boolean;
+    readonly isEditNadMode: boolean;
+    readonly onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
