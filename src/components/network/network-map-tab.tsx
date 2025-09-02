@@ -126,7 +126,6 @@ type NetworkMapTabProps = {
     onOpenNetworkAreaDiagram: (elementId?: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
-    onElementCreated?: () => void;
     isInDrawingMode: UseStateBooleanReturn;
 };
 
@@ -144,7 +143,6 @@ export const NetworkMapTab = ({
     onOpenNetworkAreaDiagram,
     showInSpreadsheet,
     onPolygonChanged,
-    onElementCreated,
     isInDrawingMode,
 }: NetworkMapTabProps) => {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
@@ -214,7 +212,6 @@ export const NetworkMapTab = ({
     const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
 
-    const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
     const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
     const [nominalVoltages, setNominalVoltages] = useState<number[]>([]);
 
@@ -986,45 +983,50 @@ export const NetworkMapTab = ({
         updateMapEquipmentsAndGeoData,
     ]);
 
-    const onDrawingModeEnter = useCallback((active: DRAW_MODES) => {
-        setDrawingMode(active);
-    }, []);
-
     const leaveDrawingMode = useCallback(() => {
         // clear the user drawing and go back to simple select.
         networkMapRef.current?.getMapDrawer().deleteAll();
         // we need to reset the drawing mode so the draw button can be used again to draw a new feature
         networkMapRef.current?.getMapDrawer().changeMode(DRAW_MODES.SIMPLE_SELECT);
-        setDrawingMode(DRAW_MODES.SIMPLE_SELECT);
         isInDrawingMode.setFalse();
         setShouldOpenSelectionCreationPanel(false);
     }, [isInDrawingMode]);
 
-    useEffect(() => {
-        const all = networkMapRef.current?.getMapDrawer()?.getAll();
-        if (all === undefined) {
-            return;
-        } // map is not initialized yet
+    const handleDrawingModeChange = useCallback(
+        (active: DRAW_MODES) => {
+            const all = networkMapRef.current?.getMapDrawer()?.getAll();
+            if (all === undefined) {
+                return;
+            } // map is not initialized yet
 
-        const features = all?.features?.[0];
-        const coordinates = features?.geometry?.coordinates;
-        const isPolygonDrawn = coordinates?.[0]?.length > 3;
+            const features = all?.features?.[0];
+            const coordinates = features?.geometry?.coordinates;
+            const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
-        // first click on draw button, the polygon is not drawn yet, and the user want to draw
-        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
-            if (!isInDrawingMode.value) {
-                isInDrawingMode.setTrue();
+            // first click on draw button, the polygon is not drawn yet, and the user want to draw
+            if (active === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
+                if (!isInDrawingMode.value) {
+                    isInDrawingMode.setTrue();
+                }
             }
-        }
-        // the second click leaves drawing mode
-        else if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
-            leaveDrawingMode();
-        } else if (drawingMode === DRAW_MODES.SIMPLE_SELECT && isInDrawingMode.value && !isPolygonDrawn) {
-            leaveDrawingMode();
-        }
-    }, [dispatch, drawingMode, isInDrawingMode, leaveDrawingMode, networkMapRef]);
+            // the second click leaves drawing mode
+            else if (active === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
+                leaveDrawingMode();
+            } else if (active === DRAW_MODES.SIMPLE_SELECT && !isPolygonDrawn) {
+                leaveDrawingMode();
+            }
+        },
+        [isInDrawingMode, leaveDrawingMode]
+    );
 
-    const handleElementCreated = useCallback(() => {
+    const onDrawingModeEnter = useCallback(
+        (active: DRAW_MODES) => {
+            handleDrawingModeChange(active);
+        },
+        [handleDrawingModeChange]
+    );
+
+    const onNADCreation = useCallback(() => {
         snackInfo({
             messageId: 'generatedNADOpenedInTheGrid',
         });
@@ -1176,7 +1178,7 @@ export const NetworkMapTab = ({
                         onCancel={() => {
                             leaveDrawingMode();
                         }}
-                        leaveDrawingMode={handleElementCreated}
+                        onNADCreation={onNADCreation}
                         nominalVoltages={nominalVoltages}
                     />
                 </Box>

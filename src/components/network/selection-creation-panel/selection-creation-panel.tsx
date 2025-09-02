@@ -43,7 +43,7 @@ import { VoltageLevel } from '../../utils/equipment-types';
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
     onCancel: () => void;
-    leaveDrawingMode: () => void;
+    onNADCreation: () => void;
     nominalVoltages: number[];
 };
 
@@ -63,7 +63,7 @@ function isVoltageLevel(obj: Identifiable): obj is VoltageLevel {
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
     onCancel,
-    leaveDrawingMode,
+    onNADCreation,
     nominalVoltages,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -102,7 +102,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         if (formData.selectionType === SELECTION_TYPES.NAD) {
             const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-network-viewer is migrated to TS
 
-            leaveDrawingMode();
+            onNADCreation();
             dispatch(
                 openNadList(
                     selectedSubstationsWithVl
