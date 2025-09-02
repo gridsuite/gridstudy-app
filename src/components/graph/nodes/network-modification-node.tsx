@@ -20,6 +20,8 @@ import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
+import React from 'react';
+import { BuildButton } from './build-button';
 
 const styles = {
     networkModificationSelected: (theme: Theme) => ({
@@ -54,6 +56,13 @@ const styles = {
         marginLeft: theme.spacing(1),
         height: '35%',
     }),
+    buildBox: (theme: Theme) => ({
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginTop: theme.spacing(-5),
+        marginRight: theme.spacing(0),
+        height: '35%',
+    }),
     chipFloating: (theme: Theme) => ({
         position: 'absolute',
         top: theme.spacing(-4),
@@ -68,6 +77,8 @@ const styles = {
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.nodeSelectionForCopy);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -118,6 +129,17 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <Box sx={styles.footerBox}>
                     {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
                         <BuildStatusChip buildStatus={props.data.localBuildStatus} />
+                    )}
+                </Box>
+
+                <Box sx={styles.buildBox}>
+                    {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
+                        <BuildButton
+                            buildStatus={props.data.localBuildStatus}
+                            studyUuid={studyUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            nodeUuid={props.id}
+                        />
                     )}
                 </Box>
 

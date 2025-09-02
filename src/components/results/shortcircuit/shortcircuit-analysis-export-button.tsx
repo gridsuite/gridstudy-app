@@ -7,13 +7,15 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ExportButton } from '../../utils/export-button';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { UUID } from 'crypto';
 import { BranchSide } from 'components/utils/constants';
+import { AppState } from 'redux/reducer';
+import { useSelector } from 'react-redux';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
@@ -32,6 +34,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
     const intl = useIntl();
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
@@ -69,7 +72,8 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             currentRootNetworkUuid,
             analysisType,
             csvHeaders,
-            enumValueTranslations
+            enumValueTranslations,
+            language
         )
             .then((response) => {
                 response.blob().then((fileBlob: Blob) => {
@@ -101,6 +105,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         csvHeaders,
         analysisType,
         enumValueTranslations,
+        language,
     ]);
 
     return (
