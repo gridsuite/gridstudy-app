@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import WorldSvg from 'images/world.svg?react';
-import NetworkMapTab from 'components/network/network-map-tab';
+import NetworkMapPanel from 'components/network/network-map-panel';
 import { cardStyles } from '../card-styles';
 import { Close } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -134,7 +134,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         <Close fontSize="small" />
                         <FormattedMessage id="close" />
                     </Fab>
-                    <NetworkMapTab
+                    <NetworkMapPanel
                         studyUuid={studyUuid}
                         visible={mapOpen}
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
@@ -149,7 +149,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                         onPolygonChanged={() => {}}
                         onElementCreated={handleCloseMap}
-                    ></NetworkMapTab>
+                    />
                 </Dialog>
             </Box>
             {children}

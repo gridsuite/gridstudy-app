@@ -121,7 +121,7 @@ const styles = {
 
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 
-type NetworkMapTabProps = {
+type NetworkMapPanelProps = {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -135,7 +135,7 @@ type NetworkMapTabProps = {
     onElementCreated?: () => void;
 };
 
-export const NetworkMapTab = ({
+export const NetworkMapPanel = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
@@ -150,7 +150,7 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     onPolygonChanged,
     onElementCreated,
-}: NetworkMapTabProps) => {
+}: NetworkMapPanelProps) => {
     const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
 
     const mapEquipments = useSelector((state: AppState) => state.mapEquipments);
@@ -1295,4 +1295,4 @@ export const NetworkMapTab = ({
     );
 };
 
-export default NetworkMapTab;
+export default NetworkMapPanel;
