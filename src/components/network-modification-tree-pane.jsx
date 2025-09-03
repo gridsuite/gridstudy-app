@@ -51,7 +51,7 @@ const noNodeSelectionForCopy = {
     allChildrenIds: null,
 };
 
-const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
+export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
 export const NetworkModificationTreePane = ({
     studyUuid,
