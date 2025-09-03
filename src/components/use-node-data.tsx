@@ -134,7 +134,7 @@ export function useNodeData<T, R = T>({
     }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter]);
 
     // Debounce the update to avoid excessive calls
-    const debouncedUpdate = useDebounce(update, 500);
+    const debouncedUpdate = useDebounce(update, 1000);
 
     /* initial fetch and update */
     useEffect(() => {
