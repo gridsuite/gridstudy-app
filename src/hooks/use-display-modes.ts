@@ -17,9 +17,9 @@ function isEmptySelection(modes: StudyDisplayMode[]) {
 function isGridOnlyToGridAndModifications(prev: StudyDisplayMode[], next: StudyDisplayMode[]) {
     return (
         prev.length === 1 &&
-        prev.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
+        prev.includes(StudyDisplayMode.GRID_LAYOUT_PANEL) &&
         (next.includes(StudyDisplayMode.MODIFICATIONS) || next.includes(StudyDisplayMode.EVENT_SCENARIO)) &&
-        next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT) &&
+        next.includes(StudyDisplayMode.GRID_LAYOUT_PANEL) &&
         next.length === 2
     );
 }
@@ -28,7 +28,7 @@ function isAllOptionsSelectedToGridOnly(next: StudyDisplayMode[]) {
     return (
         !next.includes(StudyDisplayMode.TREE) &&
         (next.includes(StudyDisplayMode.MODIFICATIONS) || next.includes(StudyDisplayMode.EVENT_SCENARIO)) &&
-        next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)
+        next.includes(StudyDisplayMode.GRID_LAYOUT_PANEL)
     );
 }
 
@@ -36,7 +36,7 @@ function isModificationsSelectedAlone(next: StudyDisplayMode[]) {
     return (
         !next.includes(StudyDisplayMode.TREE) &&
         (next.includes(StudyDisplayMode.MODIFICATIONS) || next.includes(StudyDisplayMode.EVENT_SCENARIO)) &&
-        !next.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)
+        !next.includes(StudyDisplayMode.GRID_LAYOUT_PANEL)
     );
 }
 
@@ -52,16 +52,16 @@ export function useDisplayModes() {
     );
 
     const handleAllOptionsSelectedToGridOnly = useCallback(() => {
-        applyModes([StudyDisplayMode.DIAGRAM_GRID_LAYOUT]);
+        applyModes([StudyDisplayMode.GRID_LAYOUT_PANEL]);
     }, [applyModes]);
 
     const handleGridOnlyToGridAndModifications = useCallback(
         (filteredModes: StudyDisplayMode[]) => {
-            const { TREE, MODIFICATIONS, EVENT_SCENARIO, DIAGRAM_GRID_LAYOUT } = StudyDisplayMode;
+            const { TREE, MODIFICATIONS, EVENT_SCENARIO, GRID_LAYOUT_PANEL } = StudyDisplayMode;
             applyModes([
                 TREE,
                 filteredModes.includes(MODIFICATIONS) ? MODIFICATIONS : EVENT_SCENARIO,
-                DIAGRAM_GRID_LAYOUT,
+                GRID_LAYOUT_PANEL,
             ]);
         },
         [applyModes]

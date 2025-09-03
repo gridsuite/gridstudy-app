@@ -8,20 +8,20 @@
 import { useCallback, useState, useRef } from 'react';
 import { Layout, Layouts, ItemCallback, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
-import { Diagram, DiagramParams, DiagramType } from './diagram.type';
+import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
 import { Box, useTheme } from '@mui/material';
 import { ElementType, EquipmentInfos, EquipmentType, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
-import { DiagramGridHeader } from './diagram-grid-header';
-import './diagram-grid-layout.css';
-import { DiagramCard } from './diagram-card';
-import MapCard from './map-card';
-import { BLINK_LENGTH_MS } from './card-header';
+import { GridLayoutToolbar } from './grid-layout-toolbar';
+import './grid-layout-panel.css';
+import { DiagramCard } from './cards/diagrams/diagram-card';
+import MapCard from './cards/map/map-card';
+import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
-import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from './diagram-grid-layout-utils';
+import { isThereTooManyOpenedNadDiagrams } from './cards/diagrams/diagram-utils';
 
 const styles = {
     container: {
@@ -145,14 +145,14 @@ const createLayoutItem = (id: string, layouts: Layouts): Layouts => {
 
 const initialLayouts: Layouts = generateInitialLayouts();
 
-interface DiagramGridLayoutProps {
+interface GridLayoutPanelProps {
     studyUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     showGrid: () => void;
     visible: boolean;
 }
 
-function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: Readonly<DiagramGridLayoutProps>) {
+function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Readonly<GridLayoutPanelProps>) {
     const theme = useTheme();
     const [layouts, setLayouts] = useState<Layouts>(initialLayouts);
     const [blinkingDiagrams, setBlinkingDiagrams] = useState<UUID[]>([]);
@@ -401,7 +401,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
 
     const onOpenNetworkAreaDiagram = useCallback(
         (elementId?: string) => {
-            if (countOpenedNadDiagrams(diagrams) < MAX_NUMBER_OF_NAD_DIAGRAMS) {
+            if (isThereTooManyOpenedNadDiagrams(diagrams)) {
                 if (!elementId) {
                     return;
                 }
@@ -421,7 +421,7 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
 
     return (
         <Box sx={styles.container}>
-            <DiagramGridHeader
+            <GridLayoutToolbar
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onOpenNetworkAreaDiagram={showGrid}
@@ -495,4 +495,4 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
     );
 }
 
-export default DiagramGridLayout;
+export default GridLayoutPanel;

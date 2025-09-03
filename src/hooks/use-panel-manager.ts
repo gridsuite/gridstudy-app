@@ -80,7 +80,7 @@ export function usePanelManager(): UsePanelManagerReturn {
         modificationsOrEventScenario:
             toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
             toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO),
-        grid: toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT),
+        grid: toggleOptions.includes(StudyDisplayMode.GRID_LAYOUT_PANEL),
         treeAndModificationsGroup: false,
         modificationsResizeHandle: false,
         gridResizeHandle: false,
@@ -159,7 +159,7 @@ export function usePanelManager(): UsePanelManagerReturn {
                 ],
                 [StudyDisplayMode.MODIFICATIONS]: [StudyDisplayMode.MODIFICATIONS],
                 [StudyDisplayMode.EVENT_SCENARIO]: [StudyDisplayMode.EVENT_SCENARIO],
-                [StudyDisplayMode.DIAGRAM_GRID_LAYOUT]: [StudyDisplayMode.DIAGRAM_GRID_LAYOUT],
+                [StudyDisplayMode.GRID_LAYOUT_PANEL]: [StudyDisplayMode.GRID_LAYOUT_PANEL],
             };
 
             const filtered = toggleOptions.filter((option) => !filters[mode]?.includes(option));

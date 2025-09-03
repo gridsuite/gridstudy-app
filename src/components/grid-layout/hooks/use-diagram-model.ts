@@ -9,12 +9,13 @@ import { UUID } from 'crypto';
 import { useDiagramEventListener } from './use-diagram-event-listener';
 import {
     Diagram,
+    DiagramAdditionalMetadata,
     DiagramParams,
     DiagramType,
     NetworkAreaDiagram,
     SubstationDiagram,
     VoltageLevelDiagram,
-} from '../diagram.type';
+} from '../cards/diagrams/diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSvg, getNetworkAreaDiagramUrl } from 'services/study';
 import { useDiagramNotificationsListener } from './use-diagram-notifications-listener';
@@ -29,10 +30,8 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
-import { DiagramAdditionalMetadata } from '../diagram-common';
-import { mergePositions } from '../diagram-utils';
+import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
-import { countOpenedNadDiagrams, MAX_NUMBER_OF_NAD_DIAGRAMS } from '../diagram-grid-layout-utils';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -364,10 +363,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
     const createDiagram = useCallback(
         (diagramParams: DiagramParams) => {
-            if (
-                diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM &&
-                countOpenedNadDiagrams(diagrams) >= MAX_NUMBER_OF_NAD_DIAGRAMS
-            ) {
+            if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
                 });

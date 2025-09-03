@@ -6,16 +6,15 @@
  */
 
 import Dialog from '@mui/material/Dialog';
-import { useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../../../../utils/config-params';
 import PositionDiagram from './position-diagram';
-import { SLD_DISPLAY_MODE } from '../../network/constants';
-import { getVoltageLevelSingleLineDiagram } from '../../../services/study/network';
-import { FC } from 'react';
+import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
+import { getVoltageLevelSingleLineDiagram } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { DiagramType } from '../diagram.type';
+import { DiagramType } from '../../diagram.type';
 
 interface PositionDiagramPaneProps {
     open: boolean;

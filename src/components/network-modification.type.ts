@@ -8,7 +8,7 @@
 // move here because of cyclic dependency between reducer and network-modification-tree-pane & network-modification-tree
 export enum StudyDisplayMode {
     TREE = 'Tree',
-    DIAGRAM_GRID_LAYOUT = 'DiagramGridLayout',
+    GRID_LAYOUT_PANEL = 'GridLayoutPanel',
     MODIFICATIONS = 'Modifications',
     EVENT_SCENARIO = 'EventScenario',
 }
