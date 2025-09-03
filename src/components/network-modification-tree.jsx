@@ -10,12 +10,7 @@ import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlo
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-    reorderNetworkModificationTreeNodes,
-    setCurrentTreeNode,
-    setModificationsDrawerOpen,
-    setToggleOptions,
-} from '../redux/actions';
+import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
@@ -36,6 +31,8 @@ import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -57,6 +54,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
@@ -125,24 +123,26 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         );
     }, []);
 
+    // close modifications/ event scenario when current node is root
+    useEffect(() => {
+        if (currentNode?.type === NodeType.ROOT) {
+            const newOptions = handleRootNodeClick(toggleOptions);
+            if (newOptions !== toggleOptions) {
+                dispatch(setToggleOptions(newOptions));
+            }
+        }
+    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
+
     const onNodeClick = useCallback(
         (event, node) => {
-            if (node.type === 'NETWORK_MODIFICATION') {
+            if (node.type === NodeType.NETWORK_MODIFICATION) {
                 dispatch(setModificationsDrawerOpen());
             }
-            if (node.type === 'ROOT') {
-                handleRootNodeClick(toggleOptions, dispatch);
-
-                const newOptions = handleRootNodeClick(toggleOptions);
-                if (newOptions !== toggleOptions) {
-                    dispatch(setToggleOptions(newOptions));
-                }
-            }
             if (!isSameNode(currentNode, node)) {
-                dispatch(setCurrentTreeNode(node));
+                setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, dispatch, handleRootNodeClick, toggleOptions]
+        [currentNode, dispatch, setCurrentTreeNodeWithSync]
     );
 
     const toggleMinimap = useCallback(() => {
