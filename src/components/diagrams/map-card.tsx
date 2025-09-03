@@ -85,8 +85,8 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     const isInDrawingMode = useStateBoolean(false);
     const handleCloseMap = useCallback(
         (event?: any, reason?: string) => {
+            isInDrawingMode.setFalse();
             if (reason && reason === 'escapeKeyDown' && isInDrawingMode.value) {
-                isInDrawingMode.setFalse();
                 return;
             }
             dispatch(setOpenMap(false));
