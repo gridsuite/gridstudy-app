@@ -39,7 +39,7 @@ interface DiagramHeaderProps {
 }
 
 const DiagramHeader: React.FC<DiagramHeaderProps> = ({ diagramTitle, showCloseControl = false, onClose }) => {
-    const handleClose = useCallback(() => onClose && onClose(), [onClose]);
+    const handleClose = useCallback(() => onClose?.(), [onClose]);
 
     return (
         <Box sx={styles.header}>
