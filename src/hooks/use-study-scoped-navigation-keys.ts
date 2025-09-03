@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BASE_KEYS } from 'constants/study-navigation-sync-constants';
+import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -16,9 +16,9 @@ export const useStudyScopedNavigationKeys = () => {
 
     return useMemo(
         () => ({
-            SYNC_ENABLED: `${BASE_KEYS.SYNC_ENABLED}-${studyUuid}`,
-            ROOT_NETWORK_UUID: `${BASE_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`,
-            TREE_NODE: `${BASE_KEYS.TREE_NODE}-${studyUuid}`,
+            SYNC_ENABLED: `${BASE_NAVIGATION_KEYS.SYNC_ENABLED}-${studyUuid}`,
+            ROOT_NETWORK_UUID: `${BASE_NAVIGATION_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`,
+            TREE_NODE: `${BASE_NAVIGATION_KEYS.TREE_NODE}-${studyUuid}`,
         }),
         [studyUuid]
     );

@@ -317,6 +317,7 @@ import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotificat
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
+import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 
 // Redux state
 export type StudyUpdated = {
@@ -1835,6 +1836,16 @@ function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID
     //  we need to overwrite state.currentTreeNode to consider label change for example.
     if (nextCurrentNode) {
         state.currentTreeNode = { ...nextCurrentNode };
+        /**
+         * we need to sync the current tree node uuid to localStorage
+         * to avoid having deleted node selected in other tabs for example.
+         */
+        if (state.syncEnabled) {
+            localStorage.setItem(
+                `${BASE_NAVIGATION_KEYS.TREE_NODE}-${state.studyUuid}`,
+                JSON.stringify(nextCurrentNode.id)
+            );
+        }
     }
 }
 

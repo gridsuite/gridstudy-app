@@ -29,7 +29,7 @@ const StudyNavigationSyncToggle = () => {
             localStorage.setItem(STORAGE_KEYS.SYNC_ENABLED, JSON.stringify(newValue));
             if (newValue) {
                 // Save current values when enabling sync for other tabs
-                localStorage.setItem(STORAGE_KEYS.TREE_NODE, JSON.stringify(currentTreeNode));
+                localStorage.setItem(STORAGE_KEYS.TREE_NODE, JSON.stringify(currentTreeNode?.id));
                 localStorage.setItem(STORAGE_KEYS.ROOT_NETWORK_UUID, JSON.stringify(currentRootNetworkUuid));
             }
         } catch (err) {

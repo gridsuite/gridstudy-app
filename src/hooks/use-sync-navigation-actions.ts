@@ -45,7 +45,7 @@ export const useSyncNavigationActions = () => {
             dispatch(setCurrentTreeNode(treeNode));
             if (syncEnabled) {
                 try {
-                    localStorage.setItem(keys.TREE_NODE, JSON.stringify(treeNode));
+                    localStorage.setItem(keys.TREE_NODE, JSON.stringify(treeNode.id));
                 } catch (err) {
                     console.warn('Failed to set current tree node in localStorage:', err);
                 }

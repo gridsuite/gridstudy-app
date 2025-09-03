@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const BASE_KEYS = {
+export const BASE_NAVIGATION_KEYS = {
     SYNC_ENABLED: 'SYNC_ENABLED',
     ROOT_NETWORK_UUID: 'ROOT_NETWORK_UUID',
     TREE_NODE: 'TREE_NODE',

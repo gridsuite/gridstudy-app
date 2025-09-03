@@ -480,18 +480,15 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
                 }
             }
 
-            node.position = {
-                x: placement.column * nodeWidth,
-                y: placement.row * nodeHeight,
+            return {
+                ...node,
+                position: {
+                    x: placement.column * nodeWidth,
+                    y: placement.row * nodeHeight,
+                },
             };
         }
-        return {
-            ...node,
-            position: {
-                x: node.position.x,
-                y: node.position.y,
-            },
-        };
+        return node;
     });
 
     return [nodesWithUpdatedPositions, securityGroupsNodes] as const;
