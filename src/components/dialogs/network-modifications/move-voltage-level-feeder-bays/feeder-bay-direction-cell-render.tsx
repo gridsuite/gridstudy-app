@@ -11,13 +11,13 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { TextInput } from '@gridsuite/commons-ui';
 import { useController } from 'react-hook-form';
-import { useIntl } from "react-intl";
+import { useIntl } from 'react-intl';
 
-type FeeederBayDirectionCellRendererProps = {
+type FeederBayDirectionCellRendererProps = {
     name: string;
 };
 
-export default function FeederBayDirectionCellRenderer({ name }: Readonly<FeeederBayDirectionCellRendererProps>) {
+export default function FeederBayDirectionCellRenderer({ name }: Readonly<FeederBayDirectionCellRendererProps>) {
     const {
         field: { value, onChange },
     } = useController({ name });
@@ -25,21 +25,33 @@ export default function FeederBayDirectionCellRenderer({ name }: Readonly<Feeede
 
     const handleClick = useCallback(() => {
         if (value !== null) {
-          const newValue = intl.formatMessage({ id: value === 'TOP' ? 'TOP' : 'BOTTOM' });
-          onChange(newValue);
+            const newValue = intl.formatMessage({ id: value === 'Top' ? 'Bottom' : 'Top' });
+            onChange(newValue);
         }
-    }, [value, onChange, intl]);
+    }, [value, intl, onChange]);
 
-    const addIconAdornment = useCallback(
-        (clickCallback: () => void) => {
-            return (
-                <IconButton onClick={clickCallback} sx={{ position: 'start' }}>
-                    {value === 'TOP' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                </IconButton>
-            );
-        },
-        [value]
+    return (
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 0',
+                width: '100%',
+            }}
+        >
+            <IconButton onClick={handleClick} size="small" style={{ flexShrink: 0 }}>
+                {value === 'Top' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+            </IconButton>
+            <div style={{ flex: 1, minWidth: 0 }}>
+                <TextInput
+                    name={name}
+                    formProps={{
+                        size: 'small',
+                        variant: 'filled',
+                    }}
+                />
+            </div>
+        </div>
     );
-
-    return <TextInput name={name} customAdornment={addIconAdornment(handleClick)} />;
 }

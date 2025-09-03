@@ -869,16 +869,15 @@ export type BalancesAdjustmentInfos = {
 
 export interface MoveVoltageLevelFeederBaysInfos {
     type: ModificationType;
-    uuid?: string;
+    uuid: string | null;
     voltageLevelId: string;
-    feederBaysAttributeList: ConnectablePositionModificationInfos[];
+    feederBaysAttributeList?: ConnectablePositionModificationInfos[] | [];
 }
 
 export interface ConnectablePositionModificationInfos {
     connectableId: string;
     busbarSectionId: string;
-    targetBusbarSectionId: string;
-    connectionPosition: number;
+    connectionPosition: string;
     connectionName: string;
     connectionDirection: string;
 }
