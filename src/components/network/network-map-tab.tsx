@@ -1019,13 +1019,6 @@ export const NetworkMapTab = ({
         [isInDrawingMode, leaveDrawingMode]
     );
 
-    const onDrawingModeEnter = useCallback(
-        (active: DRAW_MODES) => {
-            handleDrawingModeChange(active);
-        },
-        [handleDrawingModeChange]
-    );
-
     const onNADCreation = useCallback(() => {
         snackInfo({
             messageId: 'generatedNADOpenedInTheGrid',
@@ -1149,9 +1142,7 @@ export const NetworkMapTab = ({
                     mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
                     mapTheme={theme?.palette.mode}
                     areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
-                    onDrawPolygonModeActive={(active: DRAW_MODES) => {
-                        onDrawingModeEnter(active);
-                    }}
+                    onDrawPolygonModeActive={handleDrawingModeChange}
                     onPolygonChanged={(features) => {
                         onPolygonChanged(features);
                     }}
@@ -1175,9 +1166,7 @@ export const NetworkMapTab = ({
                 >
                     <SelectionCreationPanel
                         getEquipments={getEquipments}
-                        onCancel={() => {
-                            leaveDrawingMode();
-                        }}
+                        onCancel={leaveDrawingMode}
                         onNADCreation={onNADCreation}
                         nominalVoltages={nominalVoltages}
                     />
