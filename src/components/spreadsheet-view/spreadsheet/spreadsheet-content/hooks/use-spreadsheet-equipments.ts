@@ -49,7 +49,7 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>([]);
+    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
@@ -78,20 +78,25 @@ export const useSpreadsheetEquipments = (
             .filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
         if (aliasedNodesIds.length > 0) {
-            computedIds =
-                treeNodes
-                    ?.filter(
-                        (treeNode) =>
-                            aliasedNodesIds.includes(treeNode.id) &&
-                            (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
-                    )
-                    .map((treeNode) => treeNode.id) ?? [];
+            treeNodes?.forEach((treeNode) => {
+                if (
+                    aliasedNodesIds.includes(treeNode.id) &&
+                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                ) {
+                    computedIds.push(treeNode.id);
+                }
+            });
         }
-        computedIds.sort((a, b) => a.localeCompare(b));
         // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
-        setBuiltAliasedNodesIds((prevState) =>
-            JSON.stringify(prevState) !== JSON.stringify(computedIds) ? computedIds : prevState
-        );
+        setBuiltAliasedNodesIds((prevState) => {
+            const currentIds = prevState;
+            currentIds?.sort((a, b) => a.localeCompare(b));
+            computedIds.sort((a, b) => a.localeCompare(b));
+            if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
+                return computedIds;
+            }
+            return prevState;
+        });
     }, [nodeAliases, treeNodes]);
 
     const nodesIdToFetch = useMemo(() => {
@@ -124,7 +129,7 @@ export const useSpreadsheetEquipments = (
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!equipments || !builtAliasedNodesIds.length || !currentNode?.id) {
+        if (!equipments || !builtAliasedNodesIds?.length || !currentNode?.id) {
             return;
         }
         const currentNodeId = currentNode.id;
