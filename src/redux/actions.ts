@@ -60,6 +60,7 @@ import {
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
+    type SpreadsheetOptionalLoadingParameters,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
@@ -72,7 +73,6 @@ import {
 import type { DiagramType } from '../components/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
-import type { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;

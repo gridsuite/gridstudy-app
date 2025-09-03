@@ -289,12 +289,12 @@ import {
 } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
-import type { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
+    type SpreadsheetOptionalLoadingParameters,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
