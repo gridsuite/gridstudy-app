@@ -1590,5 +1590,13 @@
     "allBusbarSections": "All",
     "allOptionHelperText": "Busbars have different sections (number or index)",
     "enableNavigationSync" : "Enable multi-tab tree navigation",
-    "disableNavigationSync" : "Disable multi-tab tree navigation"
+    "disableNavigationSync" : "Disable multi-tab tree navigation",
+    "loadflowModificationsTapIn": "Initial tap",
+    "loadflowModificationsTapOut": "Final tap",
+    "loadflowModificationsSectionCountIn": "Initial section",
+    "loadflowModificationsSectionCountOut": "Final section",
+    "loadflowModifications": "Loadflow modification",
+    "loadFlowModificationDetails":"Details",
+    "PHASE_TAP": "Phase",
+    "RATIO_TAP": "Ratio"
 }
