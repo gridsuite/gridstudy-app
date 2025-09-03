@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDispatch } from 'react-redux';
 import { Box, ListItemText, MenuItem, Select, Theme } from '@mui/material';
-import { setCurrentRootNetworkUuid } from '../../redux/actions';
 import { UUID } from 'crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import { useMemo } from 'react';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
     selectRoot: (theme: Theme) => ({
@@ -30,7 +29,7 @@ interface RootNetworkSelectProps {
 }
 
 export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<RootNetworkSelectProps>) {
-    const dispatch = useDispatch();
+    const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
 
     const filteredRootNetworks = useMemo(() => {
         return rootNetworks.filter((item) => item.rootNetworkUuid !== currentRootNetworkUuid);
@@ -42,7 +41,9 @@ export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks
             id="breadCrumbsSelect"
             sx={styles.selectRoot}
             value={currentRootNetworkUuid}
-            onChange={(event) => dispatch(setCurrentRootNetworkUuid(event.target.value as UUID))}
+            onChange={(event) => {
+                setCurrentRootNetworkUuidWithSync(event.target.value as UUID);
+            }}
             renderValue={(value) => {
                 const tag = rootNetworks.find((item) => item.rootNetworkUuid === value)?.tag;
                 return (

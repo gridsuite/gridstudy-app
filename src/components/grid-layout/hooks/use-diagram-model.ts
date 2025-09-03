@@ -223,7 +223,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     voltageLevelToExpandIds: diagram.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagram.voltageLevelToOmitIds,
                     positions: diagram.positions,
-                    withGeoData: networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+                    nadPositionsGenerationMode:
+                        networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
                 };
                 fetchOptions = {
                     method: 'POST',
@@ -282,6 +283,18 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 })
                 .catch((error) => {
                     console.error('Error while fetching SVG', error.message);
+                    if (error.status === 400) {
+                        // remove the failed diagram from loading list and show a snack error.
+                        setDiagrams((diagrams) => {
+                            const newDiagrams = { ...diagrams };
+                            delete newDiagrams[diagram.diagramUuid];
+                            return newDiagrams;
+                        });
+                        snackError({
+                            headerId: 'nadConfiguredPositionsModeFailed',
+                        });
+                        return;
+                    }
                     setDiagrams((diagrams) => {
                         if (!diagrams[diagram.diagramUuid]) {
                             console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
@@ -317,7 +330,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     });
                 });
         },
-        [getDiagramTitle, getUrl, snackError, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
+        [getDiagramTitle, getUrl, snackError, networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode]
     );
 
     const findSimilarDiagram = useCallback(
