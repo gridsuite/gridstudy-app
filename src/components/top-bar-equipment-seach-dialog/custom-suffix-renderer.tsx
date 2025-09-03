@@ -14,7 +14,7 @@ import { centerOnSubstation, openDiagram } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { DiagramType } from '../diagrams/diagram.type';
+import { DiagramType } from '../grid-layout/cards/diagrams/diagram.type';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
