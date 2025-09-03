@@ -477,7 +477,6 @@ function DiagramGridLayout({ studyUuid, showInSpreadsheet, showGrid, visible }: 
                             createDiagram={createDiagram}
                             updateDiagram={updateDiagram}
                             updateDiagramPositions={updateDiagramPositions}
-                            onLoad={handleLoadNad}
                         />
                     );
                 })}

@@ -1191,6 +1191,7 @@
     "elementSelection": "Element selection",
     "addNetworkModification": "Add a network modification",
     "importFromGridExplore": "Import from GridExplore",
+    "importAndReplaceFromGridExplore": "Import and replace from GridExplore",
     "SaveToGridexplore": "Save to GridExplore",
     "SaveToGridexploreError": "An error occurred while saving to GridExplore",
     "diagramConfigCreationMsg": "Network area diagram created in {directory}",
