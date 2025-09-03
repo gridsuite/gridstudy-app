@@ -17,7 +17,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
-import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { AppState } from '../../../redux/reducer';
@@ -50,20 +50,15 @@ function SensitivityAnalysisResultTab({
     const [sensiTab, setSensiTab] = useState<SensiTab>(SENSITIVITY_IN_DELTA_MW);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState<boolean>(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState<boolean>(false);
-    const [page, setPage] = useState<number>(0);
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const initTable = () => {
-        /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
-           for the page prop of MUI TablePagination if was not on the first page
-           for the prev sensiKind */
-        setPage(0);
-
         setIsCsvExportSuccessful(false);
     };
 
@@ -92,6 +87,7 @@ function SensitivityAnalysisResultTab({
             csvHeaders: csvHeaders,
             resultTab: SensitivityResultTabs[nOrNkIndex].id,
             sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
+            language: language,
         })
             .then((response) => {
                 response.blob().then((blob: Blob) => {
@@ -109,7 +105,7 @@ function SensitivityAnalysisResultTab({
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders]);
+    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiTab, csvHeaders, language]);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         return sensiTab === SENSITIVITY_AT_NODE ? [] : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
@@ -159,8 +155,6 @@ function SensitivityAnalysisResultTab({
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
-                        page={page}
-                        setPage={setPage}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
                         globalFilters={getGlobalFilterParameter(globalFilters)}
