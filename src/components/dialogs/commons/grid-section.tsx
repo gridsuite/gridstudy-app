@@ -34,7 +34,7 @@ export default function GridSection({
                 <Box
                     sx={mergeSx(customStyle, {
                         display: 'flex',
-                        alignItems: 'flex-start',
+                        alignItems: 'center',
                     })}
                     component={`h${heading}`}
                 >
