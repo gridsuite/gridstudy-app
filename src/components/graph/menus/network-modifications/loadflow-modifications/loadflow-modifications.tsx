@@ -48,8 +48,8 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
     const twtColumnDefs = useMemo(() => {
         return [
             { ...makeAggridColumnDef('twoWindingsTransformerId', 'Id'), sort: SortWay.ASC },
-            makeAggridColumnDef('tapPositionIn', 'loadflowModificationsTapIn'),
-            makeAggridColumnDef('tapPositionOut', 'loadflowModificationsTapOut'),
+            makeAggridColumnDef('initialTapPosition', 'loadflowModificationsTapIn'),
+            makeAggridColumnDef('solvedTapPosition', 'loadflowModificationsTapOut'),
             {
                 ...makeAggridColumnDef('type', 'Type'),
                 valueFormatter: (params: ValueFormatterParams) => intl.formatMessage({ id: params.value }),
@@ -60,8 +60,8 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
     const scColumnDefs = useMemo(() => {
         return [
             { ...makeAggridColumnDef('shuntCompensatorId', 'Id'), sort: SortWay.ASC },
-            makeAggridColumnDef('sectionCountIn', 'loadflowModificationsSectionCountIn'),
-            makeAggridColumnDef('sectionCountOut', 'loadflowModificationsSectionCountOut'),
+            makeAggridColumnDef('initialSectionCount', 'loadflowModificationsSectionCountIn'),
+            makeAggridColumnDef('solvedSectionCount', 'loadflowModificationsSectionCountOut'),
         ];
     }, [makeAggridColumnDef]);
 
