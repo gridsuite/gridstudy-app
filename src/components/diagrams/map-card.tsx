@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Dialog, Fab, Theme, useTheme } from '@mui/material';
-import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useState } from 'react';
+import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useRef, useState } from 'react';
 import CardHeader from './card-header';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import WorldSvg from 'images/world.svg?react';
-import NetworkMapTab from 'components/network/network-map-tab';
+import NetworkMapTab, { NetworkMapTabRef } from 'components/network/network-map-tab';
 import { cardStyles } from './card-styles';
 import { Close } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -83,10 +83,12 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     }, [dispatch]);
 
     const isInDrawingMode = useStateBoolean(false);
+    const networkMapTabRef = useRef<NetworkMapTabRef>(null);
+
     const handleCloseMap = useCallback(
         (event?: any, reason?: string) => {
             if (isInDrawingMode.value) {
-                isInDrawingMode.setFalse();
+                networkMapTabRef.current?.leaveDrawingMode();
                 if (reason && reason === 'escapeKeyDown') {
                     return; // Do not close the map but only the drawing mode
                 }
@@ -145,6 +147,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         <FormattedMessage id="close" />
                     </Fab>
                     <NetworkMapTab
+                        ref={networkMapTabRef}
                         studyUuid={studyUuid}
                         visible={mapOpen}
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
