@@ -41,7 +41,6 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     createDiagram: (diagram: DiagramParams) => void;
     updateDiagram: (diagram: Diagram) => void;
     updateDiagramPositions: (diagram: DiagramParams) => void;
-    onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
 
@@ -58,7 +57,6 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         createDiagram,
         updateDiagram,
         updateDiagramPositions,
-        onLoad,
         ...reactGridLayoutCustomChildComponentProps
     } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
@@ -134,6 +132,25 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         [diagram, updateDiagramPositions]
     );
 
+    const handleReplaceNad = useCallback(
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    ...diagram,
+                    name: elementName,
+                    nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
+                    filterUuid: elementType === ElementType.FILTER ? elementUuid : undefined,
+                    initializationNadConfigUuid: undefined,
+                    voltageLevelIds: [],
+                    voltageLevelToExpandIds: [],
+                    voltageLevelToOmitIds: [],
+                    positions: [],
+                });
+            }
+        },
+        [diagram, updateDiagram]
+    );
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -207,7 +224,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             visible={visible}
                             isEditNadMode={diagramsInEditMode}
                             onToggleEditNadMode={(isEditMode) => setDiagramsInEditMode(isEditMode)}
-                            onLoadNad={onLoad}
+                            onLoadNad={handleReplaceNad}
                             onExpandVoltageLevel={handleExpandVoltageLevelId}
                             onAddVoltageLevel={handleAddVoltageLevel}
                             onExpandAllVoltageLevels={handleExpandAllVoltageLevels}

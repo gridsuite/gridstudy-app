@@ -1188,6 +1188,7 @@
     "elementSelection": "Sélection d'un élément",
     "addNetworkModification": "Ajouter une modification de réseau",
     "importFromGridExplore": "Importer de GridExplore",
+    "importAndReplaceFromGridExplore": "Importer et remplacer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",

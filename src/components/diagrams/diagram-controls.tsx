@@ -215,7 +215,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             <SaveIcon sx={styles.icon} />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={<FormattedMessage id={'importFromGridExplore'} />}>
+                    <Tooltip title={<FormattedMessage id={'importAndReplaceFromGridExplore'} />}>
                         <IconButton sx={styles.actionIcon} onClick={handleClickLoadIcon}>
                             <UploadIcon sx={styles.icon} />
                         </IconButton>
