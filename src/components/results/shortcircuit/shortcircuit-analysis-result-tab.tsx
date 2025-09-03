@@ -140,7 +140,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     }, []);
 
     useEffect(() => {
-        // RàZ du filtre au changement d'onglet
+        // Clear the globalfilter when tab changes
         handleGlobalFilterChange([]);
     }, [handleGlobalFilterChange, tabIndex]);
 
@@ -171,6 +171,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         onChange={handleGlobalFilterChange}
                         filters={globalFilterOptions}
                         filterableEquipmentTypes={filterableEquipmentTypes}
+                        genericFiltersStrictMode={true}
                     />
                 )}
                 {resultOrLogIndex === RESULTS_TAB_INDEX &&
