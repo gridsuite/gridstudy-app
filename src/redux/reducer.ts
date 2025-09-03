@@ -132,15 +132,21 @@ import {
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
+    SECURITY_ANALYSIS_RESULT_PAGINATION,
     type SecurityAnalysisResultFilterAction,
+    SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_THEME,
     type SelectComputedLanguageAction,
     type SelectLanguageAction,
     type SelectThemeAction,
+    SELECT_SYNC_ENABLED,
+    type SelectSyncEnabledAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
+    SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
+    SensitivityAnalysisResultPaginationAction,
     SET_APP_TAB_INDEX,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
@@ -180,7 +186,9 @@ import {
     type SetStudyDisplayModeAction,
     type SetToggleOptionsAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
+    SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     type ShortcircuitAnalysisResultFilterAction,
+    ShortcircuitAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -205,6 +213,7 @@ import {
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
+    getLocalStorageSyncEnabled,
     getLocalStorageTheme,
     getLocalStorageToggleOptions,
     saveLocalStorageLanguage,
@@ -240,10 +249,12 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     LOGS_STORE_FIELD,
     ONE_BUS,
+    SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_AT_NODE_N,
@@ -252,6 +263,7 @@ import {
     SENSITIVITY_IN_DELTA_A_N_K,
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
+    SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
@@ -282,7 +294,15 @@ import {
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
-import { FilterConfig, SortConfig, SortWay } from '../types/custom-aggrid-types';
+import {
+    FilterConfig,
+    PaginationConfig,
+    SecurityAnalysisTab,
+    SensitivityAnalysisTab,
+    ShortcircuitAnalysisTab,
+    SortConfig,
+    SortWay,
+} from '../types/custom-aggrid-types';
 import { DiagramParams, DiagramType } from '../components/diagrams/diagram.type';
 import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
@@ -295,6 +315,70 @@ import { type DiagramConfigPosition } from '../services/explore';
 export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & StudyUpdateNotification;
+
+export enum EquipmentUpdateType {
+    LINES = 'lines',
+    TIE_LINES = 'tieLines',
+    TWO_WINDINGS_TRANSFORMERS = 'twoWindingsTransformers',
+    THREE_WINDINGS_TRANSFORMERS = 'threeWindingsTransformers',
+    GENERATORS = 'generators',
+    LOADS = 'loads',
+    BATTERIES = 'batteries',
+    DANGLING_LINES = 'danglingLines',
+    HVDC_LINES = 'hvdcLines',
+    LCC_CONVERTER_STATIONS = 'lccConverterStations',
+    VSC_CONVERTER_STATIONS = 'vscConverterStations',
+    SHUNT_COMPENSATORS = 'shuntCompensators',
+    STATIC_VAR_COMPENSATORS = 'staticVarCompensators',
+    VOLTAGE_LEVELS = 'voltageLevels',
+    SUBSTATIONS = 'substations',
+    BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
+    BRANCHES = 'branches', // LINE + TWO_WINDINGS_TRANSFORMER
+}
+
+function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
+    switch (updateType) {
+        case EquipmentUpdateType.LINES:
+            return SpreadsheetEquipmentType.LINE;
+        case EquipmentUpdateType.TIE_LINES:
+            return SpreadsheetEquipmentType.TIE_LINE;
+        case EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS:
+            return SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER;
+        case EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS:
+            return SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER;
+        case EquipmentUpdateType.GENERATORS:
+            return SpreadsheetEquipmentType.GENERATOR;
+        case EquipmentUpdateType.LOADS:
+            return SpreadsheetEquipmentType.LOAD;
+        case EquipmentUpdateType.BATTERIES:
+            return SpreadsheetEquipmentType.BATTERY;
+        case EquipmentUpdateType.DANGLING_LINES:
+            return SpreadsheetEquipmentType.DANGLING_LINE;
+        case EquipmentUpdateType.HVDC_LINES:
+            return SpreadsheetEquipmentType.HVDC_LINE;
+        case EquipmentUpdateType.LCC_CONVERTER_STATIONS:
+            return SpreadsheetEquipmentType.LCC_CONVERTER_STATION;
+        case EquipmentUpdateType.VSC_CONVERTER_STATIONS:
+            return SpreadsheetEquipmentType.VSC_CONVERTER_STATION;
+        case EquipmentUpdateType.SHUNT_COMPENSATORS:
+            return SpreadsheetEquipmentType.SHUNT_COMPENSATOR;
+        case EquipmentUpdateType.STATIC_VAR_COMPENSATORS:
+            return SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR;
+        case EquipmentUpdateType.VOLTAGE_LEVELS:
+            return SpreadsheetEquipmentType.VOLTAGE_LEVEL;
+        case EquipmentUpdateType.SUBSTATIONS:
+            return SpreadsheetEquipmentType.SUBSTATION;
+        case EquipmentUpdateType.BUSES:
+            return SpreadsheetEquipmentType.BUS;
+        case EquipmentUpdateType.BUSBAR_SECTIONS:
+            return SpreadsheetEquipmentType.BUSBAR_SECTION;
+        case EquipmentUpdateType.BRANCHES:
+            return SpreadsheetEquipmentType.BRANCH;
+        default:
+            return;
+    }
+}
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
@@ -477,6 +561,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
+    syncEnabled: boolean;
+
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
         [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
@@ -505,6 +591,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
         [STATEESTIMATION_QUALITY_CRITERION]: FilterConfig[];
         [STATEESTIMATION_QUALITY_PER_REGION]: FilterConfig[];
     };
+    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
+    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
+    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -570,7 +659,13 @@ const initialTablesState: TablesState = {
     definitions: [],
 };
 
+export const DEFAULT_PAGINATION: PaginationConfig = {
+    page: 0,
+    rowsPerPage: 25,
+};
+
 const initialState: AppState = {
+    syncEnabled: false,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     studyUuid: null,
@@ -682,6 +777,22 @@ const initialState: AppState = {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
+    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [SECURITY_ANALYSIS_RESULT_N]: { ...DEFAULT_PAGINATION },
+        [SECURITY_ANALYSIS_RESULT_N_K]: { ...DEFAULT_PAGINATION },
+    },
+    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [SENSITIVITY_IN_DELTA_MW_N]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_IN_DELTA_MW_N_K]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_IN_DELTA_A_N]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_IN_DELTA_A_N_K]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_AT_NODE_N]: { ...DEFAULT_PAGINATION },
+        [SENSITIVITY_AT_NODE_N_K]: { ...DEFAULT_PAGINATION },
+    },
+    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [ONE_BUS]: { ...DEFAULT_PAGINATION },
+        [ALL_BUSES]: { ...DEFAULT_PAGINATION },
+    },
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
         [STATEESTIMATION_QUALITY_CRITERION]: [],
         [STATEESTIMATION_QUALITY_PER_REGION]: [],
@@ -786,6 +897,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.studyUuid = action.studyRef[0];
         // Load toggleOptions for this study
         state.toggleOptions = getLocalStorageToggleOptions(state.studyUuid);
+        state.syncEnabled = getLocalStorageSyncEnabled(state.studyUuid);
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1332,10 +1444,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
         // for now, this action receives an object containing all equipments from a substation
         // it will be modified when the notifications received after a network modification are more precise
-        // equipmentType: type of equipment updated
+        // updatedEquipmentType: type of equipment updated
         // equipments: list of updated equipments of type <equipmentType>
-        for (const [equipmentType, equipments] of Object.entries(action.equipments) as [
-            SpreadsheetEquipmentType,
+        for (const [updatedEquipmentType, equipments] of Object.entries(action.equipments) as [
+            EquipmentUpdateType,
             Identifiable[],
         ][]) {
             let updatedEquipments;
@@ -1345,6 +1457,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 updatedEquipments = [equipments];
             }
 
+            const equipmentType = getEquipmentTypeFromUpdateType(updatedEquipmentType);
+            if (!equipmentType) {
+                continue;
+            }
             const currentEquipment: Identifiable[] | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
@@ -1514,6 +1630,27 @@ export const reducer = createReducer(initialState, (builder) => {
         state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
     });
 
+    builder.addCase(SECURITY_ANALYSIS_RESULT_PAGINATION, (state, action: SecurityAnalysisResultPaginationAction) => {
+        state[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+            action[SECURITY_ANALYSIS_PAGINATION_STORE_FIELD];
+    });
+
+    builder.addCase(
+        SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
+        (state, action: SensitivityAnalysisResultPaginationAction) => {
+            state[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+                action[SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD];
+        }
+    );
+
+    builder.addCase(
+        SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
+        (state, action: ShortcircuitAnalysisResultPaginationAction) => {
+            state[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+                action[SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD];
+        }
+    );
+
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
@@ -1610,6 +1747,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_OPEN_MAP, (state, action: SetOpenMapAction) => {
         state.mapOpen = action.mapOpen;
+    });
+
+    builder.addCase(SELECT_SYNC_ENABLED, (state, action: SelectSyncEnabledAction) => {
+        state.syncEnabled = action.syncEnabled;
     });
 });
 
