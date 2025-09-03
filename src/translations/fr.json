@@ -56,7 +56,7 @@
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
     "svgLoadingFail": "L'image n'a pas pu être chargée",
-    "svgConfiguredModeFailed": "Les positions configurées n'ont pas été initialisées. Vous devez modifier le paramétrage d'initialisation des images nodales de la zone.",
+    "nadConfiguredPositionsModeFailed": "Les positions configurées n'ont pas été initialisées. Vous devez modifier le paramétrage d'initialisation des images nodales de la zone.",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
     "geoDataLoadingFail": "Erreur lors du chargement des données géographiques.",
 

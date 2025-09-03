@@ -56,7 +56,7 @@
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
-    "svgConfiguredModeFailed": "The configured positions have not been initialized. You need to change the initialization parameter of the network area diagrams.",
+    "nadConfiguredPositionsModeFailed": "The configured positions have not been initialized. You need to change the initialization parameter of the network area diagrams.",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "An error occurred while loading geographical data.",
 

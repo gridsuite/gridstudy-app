@@ -292,7 +292,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             return newDiagrams;
                         });
                         snackError({
-                            headerId: 'svgConfiguredModeFailed',
+                            headerId: 'nadConfiguredPositionsModeFailed',
                         });
                         return;
                     }
