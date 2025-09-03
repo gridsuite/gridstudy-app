@@ -174,6 +174,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         genericFiltersStrictMode={true}
                     />
                 )}
+                <Box sx={{ flexGrow: 1 }}></Box>
                 {resultOrLogIndex === RESULTS_TAB_INDEX &&
                     (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ||
                         tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS) && (
