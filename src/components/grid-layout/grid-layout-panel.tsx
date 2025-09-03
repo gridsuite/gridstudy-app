@@ -477,7 +477,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             createDiagram={createDiagram}
                             updateDiagram={updateDiagram}
                             updateDiagramPositions={updateDiagramPositions}
-                            onLoad={handleLoadNad}
                         />
                     );
                 })}
