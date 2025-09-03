@@ -106,8 +106,8 @@ export const LoadflowModifications: FunctionComponent<LoadflowModificationsProps
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
                         <Tabs value={tabIndex} onChange={(_event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab label={intl.formatMessage({ id: 'Transformateurs' })} />
-                            <Tab label={intl.formatMessage({ id: 'MCS' })} />
+                            <Tab label={intl.formatMessage({ id: 'Transformers' })} />
+                            <Tab label={intl.formatMessage({ id: 'SHUNT_COMPENSATOR' })} />
                         </Tabs>
                     </Box>
                 </Box>
