@@ -81,8 +81,8 @@ const styles = {
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
-const PAGE_OPTIONS = [15, 30, 50, 100];
-const DEFAULT_PAGE_COUNT = 15;
+const PAGE_OPTIONS = [30, 50, 100];
+const DEFAULT_PAGE_COUNT = 30;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
