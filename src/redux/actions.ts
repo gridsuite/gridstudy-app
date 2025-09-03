@@ -150,7 +150,10 @@ export type AppActions =
     | SetOpenMapAction
     | SecurityAnalysisResultPaginationAction
     | SensitivityAnalysisResultPaginationAction
-    | ShortcircuitAnalysisResultPaginationAction;
+    | ShortcircuitAnalysisResultPaginationAction
+    | ResetSecurityAnalysisPaginationAction
+    | ResetSensitivityAnalysisPaginationAction
+    | ResetShortcircuitAnalysisPaginationAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1036,6 +1039,15 @@ export function setSecurityAnalysisResultPagination(
     };
 }
 
+export const RESET_SECURITY_ANALYSIS_PAGINATION = 'RESET_SECURITY_ANALYSIS_PAGINATION';
+export type ResetSecurityAnalysisPaginationAction = Readonly<Action<typeof RESET_SECURITY_ANALYSIS_PAGINATION>>;
+
+export function resetSecurityAnalysisPagination(): ResetSecurityAnalysisPaginationAction {
+    return {
+        type: RESET_SECURITY_ANALYSIS_PAGINATION,
+    };
+}
+
 export const SENSITIVITY_ANALYSIS_RESULT_PAGINATION = 'SENSITIVITY_ANALYSIS_RESULT_PAGINATION';
 export type SensitivityAnalysisResultPaginationAction = Readonly<
     Action<typeof SENSITIVITY_ANALYSIS_RESULT_PAGINATION>
@@ -1055,6 +1067,15 @@ export function setSensitivityAnalysisResultPagination(
     };
 }
 
+export const RESET_SENSITIVITY_ANALYSIS_PAGINATION = 'RESET_SENSITIVITY_ANALYSIS_PAGINATION';
+export type ResetSensitivityAnalysisPaginationAction = Readonly<Action<typeof RESET_SENSITIVITY_ANALYSIS_PAGINATION>>;
+
+export function resetSensitivityAnalysisPagination(): ResetSensitivityAnalysisPaginationAction {
+    return {
+        type: RESET_SENSITIVITY_ANALYSIS_PAGINATION,
+    };
+}
+
 export const SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION = 'SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION';
 export type ShortcircuitAnalysisResultPaginationAction = Readonly<
     Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION>
@@ -1071,6 +1092,15 @@ export function setShortcircuitAnalysisResultPagination(
         type: SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
         paginationTab: paginationTab,
         [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: shortcircuitAnalysisPagination,
+    };
+}
+
+export const RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION = 'RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION';
+export type ResetShortcircuitAnalysisPaginationAction = Readonly<Action<typeof RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION>>;
+
+export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysisPaginationAction {
+    return {
+        type: RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
     };
 }
 
