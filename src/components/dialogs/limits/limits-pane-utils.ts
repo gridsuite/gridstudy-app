@@ -60,20 +60,9 @@ const temporaryLimitsValidationSchema = () => {
 };
 
 const currentLimitsValidationSchema = (isModification = false) => ({
-    [PERMANENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .positive('permanentCurrentLimitMustBeGreaterThanZero')
-        // if there are valid (named) temporary limits, permanent limit is mandatory
-        .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits: TemporaryLimit[]) =>
-                temporaryLimits?.length > 0 && temporaryLimits.find((limit) => limit.name) && !isModification,
-            then: () =>
-                yup
-                    .number()
-                    .required('permanentCurrentLimitMandatory')
-                    .positive('permanentCurrentLimitMustBeGreaterThanZero'),
-        }),
+    [PERMANENT_LIMIT]: isModification
+        ? yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero')
+        : yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())

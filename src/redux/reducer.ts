@@ -313,6 +313,70 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & StudyUpdateNotification;
 
+export enum EquipmentUpdateType {
+    LINES = 'lines',
+    TIE_LINES = 'tieLines',
+    TWO_WINDINGS_TRANSFORMERS = 'twoWindingsTransformers',
+    THREE_WINDINGS_TRANSFORMERS = 'threeWindingsTransformers',
+    GENERATORS = 'generators',
+    LOADS = 'loads',
+    BATTERIES = 'batteries',
+    DANGLING_LINES = 'danglingLines',
+    HVDC_LINES = 'hvdcLines',
+    LCC_CONVERTER_STATIONS = 'lccConverterStations',
+    VSC_CONVERTER_STATIONS = 'vscConverterStations',
+    SHUNT_COMPENSATORS = 'shuntCompensators',
+    STATIC_VAR_COMPENSATORS = 'staticVarCompensators',
+    VOLTAGE_LEVELS = 'voltageLevels',
+    SUBSTATIONS = 'substations',
+    BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
+    BRANCHES = 'branches', // LINE + TWO_WINDINGS_TRANSFORMER
+}
+
+function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): SpreadsheetEquipmentType | undefined {
+    switch (updateType) {
+        case EquipmentUpdateType.LINES:
+            return SpreadsheetEquipmentType.LINE;
+        case EquipmentUpdateType.TIE_LINES:
+            return SpreadsheetEquipmentType.TIE_LINE;
+        case EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS:
+            return SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER;
+        case EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS:
+            return SpreadsheetEquipmentType.THREE_WINDINGS_TRANSFORMER;
+        case EquipmentUpdateType.GENERATORS:
+            return SpreadsheetEquipmentType.GENERATOR;
+        case EquipmentUpdateType.LOADS:
+            return SpreadsheetEquipmentType.LOAD;
+        case EquipmentUpdateType.BATTERIES:
+            return SpreadsheetEquipmentType.BATTERY;
+        case EquipmentUpdateType.DANGLING_LINES:
+            return SpreadsheetEquipmentType.DANGLING_LINE;
+        case EquipmentUpdateType.HVDC_LINES:
+            return SpreadsheetEquipmentType.HVDC_LINE;
+        case EquipmentUpdateType.LCC_CONVERTER_STATIONS:
+            return SpreadsheetEquipmentType.LCC_CONVERTER_STATION;
+        case EquipmentUpdateType.VSC_CONVERTER_STATIONS:
+            return SpreadsheetEquipmentType.VSC_CONVERTER_STATION;
+        case EquipmentUpdateType.SHUNT_COMPENSATORS:
+            return SpreadsheetEquipmentType.SHUNT_COMPENSATOR;
+        case EquipmentUpdateType.STATIC_VAR_COMPENSATORS:
+            return SpreadsheetEquipmentType.STATIC_VAR_COMPENSATOR;
+        case EquipmentUpdateType.VOLTAGE_LEVELS:
+            return SpreadsheetEquipmentType.VOLTAGE_LEVEL;
+        case EquipmentUpdateType.SUBSTATIONS:
+            return SpreadsheetEquipmentType.SUBSTATION;
+        case EquipmentUpdateType.BUSES:
+            return SpreadsheetEquipmentType.BUS;
+        case EquipmentUpdateType.BUSBAR_SECTIONS:
+            return SpreadsheetEquipmentType.BUSBAR_SECTION;
+        case EquipmentUpdateType.BRANCHES:
+            return SpreadsheetEquipmentType.BRANCH;
+        default:
+            return;
+    }
+}
+
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
     nodeId: UUID;
@@ -1373,10 +1437,10 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
         // for now, this action receives an object containing all equipments from a substation
         // it will be modified when the notifications received after a network modification are more precise
-        // equipmentType: type of equipment updated
+        // updatedEquipmentType: type of equipment updated
         // equipments: list of updated equipments of type <equipmentType>
-        for (const [equipmentType, equipments] of Object.entries(action.equipments) as [
-            SpreadsheetEquipmentType,
+        for (const [updatedEquipmentType, equipments] of Object.entries(action.equipments) as [
+            EquipmentUpdateType,
             Identifiable[],
         ][]) {
             let updatedEquipments;
@@ -1386,6 +1450,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 updatedEquipments = [equipments];
             }
 
+            const equipmentType = getEquipmentTypeFromUpdateType(updatedEquipmentType);
+            if (!equipmentType) {
+                continue;
+            }
             const currentEquipment: Identifiable[] | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
