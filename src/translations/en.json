@@ -56,6 +56,7 @@
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
+    "nadConfiguredPositionsModeFailed": "The configured positions have not been initialized. You need to change the initialization parameter of the network area diagrams.",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "An error occurred while loading geographical data.",
 
@@ -518,8 +519,8 @@
     "removeNode": "Remove",
     "unbuildNode": "Unbuild",
     "exportCaseOnNode": "Export",
-    "ConstructionNode":"Create a construction node",
-    "SecurityNode":"Create a security node",
+    "ConstructionNode": "Create a construction node",
+    "SecurityNode": "Create a security node",
     "NetworkModificationTreeLoadError": "An error occurred while loading network modification tree",
     "MapEquipmentsLoadError": "An error occurred while loading network map",
     "StudyUnrecoverableStateRecreate": "Your study had a problem and has been recreated from initial data",
@@ -1034,7 +1035,7 @@
     "cutNetworkModificationNode": "Cut",
     "pasteNetworkModificationNode": "Paste",
 
-    "cancelCutNetworkModificationNode": "Cancel cut", 
+    "cancelCutNetworkModificationNode": "Cancel cut",
     "NetworkModificationSubtree": "Subtree",
     "copyNetworkModificationSubtree": "Copy",
     "pasteNetworkModificationSubtree": "Paste",
