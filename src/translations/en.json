@@ -1588,5 +1588,7 @@
     "BUILT_WITH_ERROR": "Errors",
     "NOT_BUILT": "Not built",
     "allBusbarSections": "All",
-    "allOptionHelperText": "Busbars have different sections (number or index)"
+    "allOptionHelperText": "Busbars have different sections (number or index)",
+    "enableNavigationSync" : "Enable multi-tab tree navigation",
+    "disableNavigationSync" : "Disable multi-tab tree navigation"
 }
