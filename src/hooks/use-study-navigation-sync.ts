@@ -40,7 +40,7 @@ const useStudyNavigationSync = () => {
             if (uuid !== null && uuid !== currentTreeNode?.id) {
                 const currentNode = treeModel?.treeNodes.find((node) => node.id === uuid);
                 if (currentNode) {
-                    dispatch(setCurrentTreeNode(currentNode));
+                    dispatch(setCurrentTreeNode({ ...currentNode }));
                 }
             }
         },
@@ -112,12 +112,14 @@ const useStudyNavigationSync = () => {
         window.addEventListener('storage', handleStorage);
         if (syncEnabled) {
             handleVisibility();
+            document.addEventListener('visibilitychange', handleVisibility);
         }
-        document.addEventListener('visibilitychange', handleVisibility);
 
         return () => {
             window.removeEventListener('storage', handleStorage);
-            document.removeEventListener('visibilitychange', handleVisibility);
+            if (syncEnabled) {
+                document.removeEventListener('visibilitychange', handleVisibility);
+            }
         };
     }, [dispatch, syncEnabled, syncFromLocalStorage, keyActions, STORAGE_KEYS.SYNC_ENABLED]);
 };
