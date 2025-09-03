@@ -1585,5 +1585,7 @@
     "BUILT_WITH_ERROR": "Erreurs",
     "NOT_BUILT": "Non réalisé",
     "allBusbarSections": "Tous",
-    "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)"
+    "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)",
+    "enableNavigationSync": "Activer la navigation dans l'arbre en multi-onglets",
+    "disableNavigationSync": "Désactiver la navigation dans l'arbre en multi-onglets"
 }

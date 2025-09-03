@@ -141,6 +141,8 @@ import {
     type SelectComputedLanguageAction,
     type SelectLanguageAction,
     type SelectThemeAction,
+    SELECT_SYNC_ENABLED,
+    type SelectSyncEnabledAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
@@ -209,6 +211,7 @@ import {
 import {
     getLocalStorageComputedLanguage,
     getLocalStorageLanguage,
+    getLocalStorageSyncEnabled,
     getLocalStorageTheme,
     getLocalStorageToggleOptions,
     saveLocalStorageLanguage,
@@ -555,6 +558,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
+    syncEnabled: boolean;
+
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: FilterConfig[];
         [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: FilterConfig[];
@@ -657,6 +662,7 @@ export const DEFAULT_PAGINATION: PaginationConfig = {
 };
 
 const initialState: AppState = {
+    syncEnabled: false,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     studyUuid: null,
@@ -887,6 +893,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.studyUuid = action.studyRef[0];
         // Load toggleOptions for this study
         state.toggleOptions = getLocalStorageToggleOptions(state.studyUuid);
+        state.syncEnabled = getLocalStorageSyncEnabled(state.studyUuid);
     });
 
     builder.addCase(CLOSE_STUDY, (state, _action: CloseStudyAction) => {
@@ -1705,6 +1712,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_OPEN_MAP, (state, action: SetOpenMapAction) => {
         state.mapOpen = action.mapOpen;
+    });
+
+    builder.addCase(SELECT_SYNC_ENABLED, (state, action: SelectSyncEnabledAction) => {
+        state.syncEnabled = action.syncEnabled;
     });
 });
 
