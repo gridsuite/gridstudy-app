@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { SELECTED } from '../../../../utils/field-constants';
 import { DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -25,6 +25,7 @@ import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';
 import ColumnNameEditor from './columnName-editor';
+import ColumnIDEditor from './columnID-editor';
 
 export function SpreadsheetModelGlobalEditorTable() {
     const intl = useIntl();
@@ -32,7 +33,7 @@ export function SpreadsheetModelGlobalEditorTable() {
     const useColumnsModelFieldArrayOutput = useFieldArray({
         name: `${COLUMNS_MODEL}`,
     });
-    const { getValues, setValue } = useFormContext();
+    const { getValues, setValue, setFocus } = useFormContext();
 
     const getAvailableDependencies = useCallback(
         (excludeColumnId: string) => {
@@ -45,16 +46,6 @@ export function SpreadsheetModelGlobalEditorTable() {
 
     const COLUMNS_MODEL_DEFINITIONS: (DndColumn & { initialValue?: string | null | string[] })[] = useMemo(() => {
         return [
-            {
-                label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_id' }),
-                dataKey: COLUMN_ID,
-                type: DndColumnType.TEXT,
-                editable: true,
-                initialValue: '',
-                showErrorMsg: true,
-                width: '20%',
-                maxWidth: '20%',
-            },
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_name' }),
                 dataKey: COLUMN_NAME,
@@ -76,6 +67,20 @@ export function SpreadsheetModelGlobalEditorTable() {
                                 );
                             }
                         },
+                    }),
+            },
+            {
+                label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_id' }),
+                dataKey: COLUMN_ID,
+                type: DndColumnType.CUSTOM,
+                editable: true,
+                initialValue: '',
+                showErrorMsg: true,
+                width: '20%',
+                maxWidth: '20%',
+                component: (rowIndex) =>
+                    ColumnIDEditor({
+                        name: `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_ID}`,
                     }),
             },
             {
@@ -139,6 +144,10 @@ export function SpreadsheetModelGlobalEditorTable() {
         return [newColumnRowData];
     };
 
+    useEffect(() => {
+        setFocus(`${COLUMNS_MODEL}[0].${COLUMN_ID}`);
+    }, [setFocus]);
+
     return (
         <DndTable
             arrayFormName={`${COLUMNS_MODEL}`}
@@ -148,6 +157,7 @@ export function SpreadsheetModelGlobalEditorTable() {
             withAddRowsDialog={false}
             disableDragAndDrop={false}
             showMoveArrow={false}
+            tableHeight={450}
         />
     );
 }
