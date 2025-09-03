@@ -42,6 +42,7 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
+import { useStudyScopedNavigationKeys } from 'hooks/use-study-scoped-navigation-keys';
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
@@ -64,6 +65,8 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
     const [nodesToRestore, setNodesToRestore] = useState([]);
+    const navigationKeys = useStudyScopedNavigationKeys();
+    const navigationSyncEnabled = useSelector((state) => state.navigationSyncEnabled);
 
     const dispatchNodeSelectionForCopy = useCallback(
         (sourceStudyUuid, nodeId, copyType) => {
@@ -303,6 +306,10 @@ export const NetworkModificationTreePane = ({
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     // when the current node is updated, we need to reset the logs filter
                     dispatch(resetLogsFilter());
+                    // we also need to update the local storage with the current node new value
+                    if (navigationSyncEnabled) {
+                        localStorage.setItem(navigationKeys.TREE_NODE, currentNodeRef.current);
+                    }
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (
@@ -327,6 +334,8 @@ export const NetworkModificationTreePane = ({
         currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
+        navigationKeys.TREE_NODE,
+        navigationSyncEnabled,
     ]);
 
     const handleCreateNode = useCallback(
