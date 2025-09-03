@@ -1585,6 +1585,8 @@
     "NOT_BUILT": "Non réalisé",
     "allBusbarSections": "Tous",
     "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)",
+    "enableNavigationSync": "Activer la navigation dans l'arbre en multi-onglets",
+    "disableNavigationSync": "Désactiver la navigation dans l'arbre en multi-onglets",
     "loadflowModificationsTapIn": "Prise en entrée",
     "loadflowModificationsTapOut": "Prise en sortie",
     "loadflowModificationsSectionCountIn": "Gradin en entrée",
