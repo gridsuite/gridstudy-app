@@ -6,7 +6,7 @@
  */
 import { Box, Dialog, Fab, Theme, useTheme } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useRef, useState } from 'react';
-import CardHeader from './card-header';
+import CustomCardHeader from '../custom-card-header';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { EquipmentType, LineFlowMode, mergeSx, useStateBoolean } from '@gridsuite/commons-ui';
@@ -14,8 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import WorldSvg from 'images/world.svg?react';
-import NetworkMapTab, { NetworkMapTabRef } from 'components/network/network-map-tab';
-import { cardStyles } from './card-styles';
+import NetworkMapPanel, { NetworkMapPanelRef } from 'components/network/network-map-panel';
+import { cardStyles } from '../card-styles';
 import { Close } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -83,12 +83,12 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     }, [dispatch]);
 
     const isInDrawingMode = useStateBoolean(false);
-    const networkMapTabRef = useRef<NetworkMapTabRef>(null);
+    const networkMapPanelRef = useRef<NetworkMapPanelRef>(null);
 
     const handleCloseMap = useCallback(
         (event?: any, reason?: string) => {
             if (isInDrawingMode.value) {
-                networkMapTabRef.current?.leaveDrawingMode();
+                networkMapPanelRef.current?.leaveDrawingMode();
                 if (reason && reason === 'escapeKeyDown') {
                     return; // Do not close the map but only the drawing mode
                 }
@@ -104,7 +104,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
     if (!studyUuid || !currentNode || !currentRootNetworkUuid || !networkVisuParams) {
         return (
             <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-                <CardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
+                <CustomCardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
                 <AlertCustomMessageNode message={'MapCardNotAvailable'} noMargin style={cardStyles.alertMessage} />
                 <Box sx={cardStyles.diagramContainer} /> {/* Empty container to keep the layout */}
             </Box>
@@ -113,7 +113,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
 
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
+            <CustomCardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
             {errorMessage && <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />}
             <Box sx={cardStyles.diagramContainer}>
                 <WorldSvg
@@ -146,8 +146,8 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         <Close fontSize="small" />
                         <FormattedMessage id="close" />
                     </Fab>
-                    <NetworkMapTab
-                        ref={networkMapTabRef}
+                    <NetworkMapPanel
+                        ref={networkMapPanelRef}
                         studyUuid={studyUuid}
                         visible={mapOpen}
                         lineFullPath={networkVisuParams.mapParameters.lineFullPath}
@@ -162,7 +162,7 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
                         onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
                         onPolygonChanged={() => {}}
                         isInDrawingMode={isInDrawingMode}
-                    ></NetworkMapTab>
+                    />
                 </Dialog>
             </Box>
             {children}

@@ -7,17 +7,16 @@
 
 import { Box } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useMemo, useState } from 'react';
-import CardHeader from './card-header';
-import { Diagram, DiagramParams, DiagramType } from './diagram.type';
+import CustomCardHeader from '../custom-card-header';
+import { Diagram, DiagramAdditionalMetadata, DiagramParams, DiagramType } from './diagram.type';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { ElementType, EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramAdditionalMetadata } from './diagram-common';
 import { useIntl } from 'react-intl';
-import { cardStyles } from './card-styles';
+import { cardStyles } from '../card-styles';
 import { v4 } from 'uuid';
 
 interface ReactGridLayoutCustomChildComponentProps {
@@ -41,7 +40,6 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     createDiagram: (diagram: DiagramParams) => void;
     updateDiagram: (diagram: Diagram) => void;
     updateDiagramPositions: (diagram: DiagramParams) => void;
-    onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
 
@@ -58,7 +56,6 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         createDiagram,
         updateDiagram,
         updateDiagramPositions,
-        onLoad,
         ...reactGridLayoutCustomChildComponentProps
     } = props;
     const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
@@ -134,6 +131,25 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         [diagram, updateDiagramPositions]
     );
 
+    const handleReplaceNad = useCallback(
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                updateDiagram({
+                    ...diagram,
+                    name: elementName,
+                    nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
+                    filterUuid: elementType === ElementType.FILTER ? elementUuid : undefined,
+                    initializationNadConfigUuid: undefined,
+                    voltageLevelIds: [],
+                    voltageLevelToExpandIds: [],
+                    voltageLevelToOmitIds: [],
+                    positions: [],
+                });
+            }
+        },
+        [diagram, updateDiagram]
+    );
+
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
@@ -164,7 +180,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
 
     return (
         <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CardHeader title={cardTitle} blinking={blinking} onClose={onClose} />
+            <CustomCardHeader title={cardTitle} blinking={blinking} onClose={onClose} />
             {errorMessage ? (
                 <>
                     <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />
@@ -207,7 +223,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             visible={visible}
                             isEditNadMode={diagramsInEditMode}
                             onToggleEditNadMode={(isEditMode) => setDiagramsInEditMode(isEditMode)}
-                            onLoadNad={onLoad}
+                            onLoadNad={handleReplaceNad}
                             onExpandVoltageLevel={handleExpandVoltageLevelId}
                             onAddVoltageLevel={handleAddVoltageLevel}
                             onExpandAllVoltageLevels={handleExpandAllVoltageLevels}

@@ -7,17 +7,17 @@
 
 import { useLayoutEffect, useRef, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
+import RunningStatus from 'components/utils/running-status';
 import {
+    buildPositionsFromNadMetadata,
     MIN_HEIGHT,
     MIN_WIDTH,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-    styles,
     NAD_ZOOM_LEVELS,
     getEquipmentTypeFromFeederType,
     equipmentsWithPopover,
-} from '../diagram-common';
+} from '../diagram-utils';
 import {
     NetworkAreaDiagramViewer,
     DiagramMetadata,
@@ -27,7 +27,6 @@ import {
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
-import { buildPositionsFromNadMetadata } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
@@ -40,13 +39,14 @@ import {
     mergeSx,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import DiagramControls from '../diagram-controls';
-import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from '../../../services/explore';
+import DiagramControls from './diagram-controls';
+import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from 'services/explore';
 import { DiagramType } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
+import { styles } from '../diagram-styles';
 
 type NetworkAreaDiagramContentProps = {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -58,9 +58,9 @@ type NetworkAreaDiagramContentProps = {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
-    visible: boolean;
-    isEditNadMode: boolean;
-    onToggleEditNadMode?: (isEditMode: boolean) => void;
+    readonly visible: boolean;
+    readonly isEditNadMode: boolean;
+    readonly onToggleEditNadMode?: (isEditMode: boolean) => void;
     readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
