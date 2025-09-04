@@ -32,7 +32,7 @@ export interface LimitsGroupsContextualMenuProps {
     startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
-    isAModification: boolean;
+    isModification: boolean;
 }
 
 export function LimitsGroupsContextualMenu({
@@ -45,7 +45,7 @@ export function LimitsGroupsContextualMenu({
     startEditingLimitsGroup,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
-    isAModification,
+    isModification,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
@@ -97,25 +97,25 @@ export function LimitsGroupsContextualMenu({
 
     return (
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-            {!isAModification /* TODO : uncomment this when the removal of operational limits groups will be possible in powsybl network store */ && (
-                <MenuItem
-                    onClick={() =>
-                        activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null)
-                    }
-                >
-                    <ListItemIcon>
-                        <Edit fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
-                </MenuItem>
-            )}
-            {!isAModification /* TODO : uncomment this when the removal of operational limits groups will be possible in powsybl network store */ && (
-                <MenuItem onClick={handleDeleteTab}>
-                    <ListItemIcon>
-                        <Delete fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
-                </MenuItem>
+            {!isModification /* TODO : uncomment this when the removal of operational limits groups will be possible in powsybl network store */ && (
+                <>
+                    <MenuItem
+                        onClick={() =>
+                            activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null)
+                        }
+                    >
+                        <ListItemIcon>
+                            <Edit fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
+                    </MenuItem>
+                    <MenuItem onClick={handleDeleteTab}>
+                        <ListItemIcon>
+                            <Delete fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
+                    </MenuItem>
+                </>
             )}
             <MenuItem onClick={handleDuplicateTab}>
                 <ListItemIcon>

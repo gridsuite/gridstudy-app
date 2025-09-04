@@ -487,13 +487,13 @@ const TwoWindingsTransformerModificationDialog = ({
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
-                        id: 'NoOperationalLimitGroup',
+                        id: 'None',
                     })
                 ),
                 selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_2],
                     intl.formatMessage({
-                        id: 'NoOperationalLimitGroup',
+                        id: 'None',
                     })
                 ),
                 ratioTapChanger: computeRatioTapForSubmit(twt),

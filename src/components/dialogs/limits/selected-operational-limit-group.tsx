@@ -18,7 +18,7 @@ export interface SelectedOperationalLimitGroupProps {
     label?: string;
     filteredApplicability?: string;
     previousValue?: string;
-    isABranchModif: boolean; // is false, this is a branch creation
+    isABranchModif: boolean; // if false, this is a branch creation
 }
 
 export const SelectedOperationalLimitGroup = ({
@@ -49,7 +49,7 @@ export const SelectedOperationalLimitGroup = ({
         if (isABranchModif) {
             finalOptions.push(
                 intl.formatMessage({
-                    id: 'NoOperationalLimitGroup',
+                    id: 'None',
                 })
             );
         }

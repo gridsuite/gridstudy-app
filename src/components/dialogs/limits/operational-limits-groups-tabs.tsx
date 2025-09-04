@@ -362,7 +362,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
-                    isAModification={isAModification}
+                    isModification={isAModification}
                 />
             </>
         );
