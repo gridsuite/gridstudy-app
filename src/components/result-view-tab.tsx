@@ -157,10 +157,11 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     view={view}
+                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [view, currentNode?.id, studyUuid, currentRootNetworkUuid]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, view, openVoltageLevelDiagram]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (

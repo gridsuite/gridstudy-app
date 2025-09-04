@@ -47,6 +47,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
@@ -57,6 +58,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     customTablePaginationProps,
     onGridColumnsChanged,
     onRowDataUpdated,
+    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -247,6 +249,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}
+                openVoltageLevelDiagram={openVoltageLevelDiagram}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

@@ -21,13 +21,8 @@ import {
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-
-const styles = {
-    button: {
-        color: 'node.background',
-    },
-};
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -106,10 +101,8 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                         equipmentId: row.subjectId || '',
                                     },
                                 });
-                            } else {
-                                if (openVoltageLevelDiagram) {
-                                    openVoltageLevelDiagram(vlId);
-                                }
+                            } else if (openVoltageLevelDiagram) {
+                                openVoltageLevelDiagram(vlId);
                             }
                         });
                 }
@@ -129,7 +122,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
             if (value) {
                 return (
                     <Tooltip title={value}>
-                        <Button sx={styles.button} onClick={onClick}>
+                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
                             {value}
                         </Button>
                     </Tooltip>

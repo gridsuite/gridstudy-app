@@ -33,6 +33,7 @@ interface ShortCircuitAnalysisResultTabProps {
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     view: string;
+    openVoltageLevelDiagram: (id: string) => void;
 }
 
 const getDisplayedColumns = (params: GridReadyEvent) => {
@@ -49,6 +50,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     nodeUuid,
     currentRootNetworkUuid,
     view,
+    openVoltageLevelDiagram,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
@@ -163,11 +165,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

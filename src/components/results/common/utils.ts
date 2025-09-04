@@ -37,3 +37,9 @@ export enum FilterType {
     GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',
 }
+
+export const resultsStyles = {
+    sldLink: {
+        color: 'node.background',
+    },
+};

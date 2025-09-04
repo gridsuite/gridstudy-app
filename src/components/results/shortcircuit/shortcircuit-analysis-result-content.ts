@@ -16,6 +16,7 @@ export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 
 export const FROM_COLUMN_TO_FIELD: Record<string, string> = {
     elementId: 'fault.id',
+    voltageLevel: 'fault.voltageLevelId',
     faultType: 'fault.faultType',
     connectableId: 'feederResults.connectableId',
     current: 'current',
