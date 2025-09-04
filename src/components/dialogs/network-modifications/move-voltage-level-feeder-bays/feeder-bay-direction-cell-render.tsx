@@ -6,29 +6,50 @@
  */
 
 import React, { useCallback } from 'react';
-import { IconButton } from '@mui/material';
+import { IconButton, TextField } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { TextInput } from '@gridsuite/commons-ui';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import { TextInput } from '@gridsuite/commons-ui';
+
+const CONNECTION_DIRECTIONS_VALUES = {
+    TOP: { id: 'TOP', label: 'Top' },
+    BOTTOM: { id: 'BOTTOM', label: 'Bottom' },
+} as const;
 
 type FeederBayDirectionCellRendererProps = {
     name: string;
 };
 
 export default function FeederBayDirectionCellRenderer({ name }: Readonly<FeederBayDirectionCellRendererProps>) {
+    const { setValue } = useFormContext();
     const {
-        field: { value, onChange },
+        field: { value },
     } = useController({ name });
     const intl = useIntl();
 
+    const getTranslatedLabel = useCallback(
+        (directionId: string) => {
+            const direction = Object.values(CONNECTION_DIRECTIONS_VALUES).find((dir) => dir.id === directionId);
+            return direction ? intl.formatMessage({ id: direction.label }) : '';
+        },
+        [intl]
+    );
+
     const handleClick = useCallback(() => {
-        if (value !== null) {
-            const newValue = intl.formatMessage({ id: value === 'TOP' ? 'Bottom' : 'Top' });
-            onChange(newValue);
+        if (value) {
+            const newValue =
+                value === CONNECTION_DIRECTIONS_VALUES.TOP.id
+                    ? CONNECTION_DIRECTIONS_VALUES.BOTTOM.id
+                    : CONNECTION_DIRECTIONS_VALUES.TOP.id;
+            setValue(name, newValue, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+            });
         }
-    }, [value, intl, onChange]);
+    }, [value, setValue, name]);
 
     return (
         <div
@@ -39,21 +60,27 @@ export default function FeederBayDirectionCellRenderer({ name }: Readonly<Feeder
             }}
         >
             <IconButton onClick={handleClick} size="small">
-                {value === 'TOP' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+                {value === CONNECTION_DIRECTIONS_VALUES.TOP.id ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
             </IconButton>
-            <TextInput
-                name={name}
-                formProps={{
-                    size: 'small',
-                    variant: 'filled',
-                    sx: {
-                        padding: '8px',
-                        '& input': {
-                            textAlign: 'center',
-                        },
+            <TextField
+                value={getTranslatedLabel(value)}
+                size="small"
+                variant="filled"
+                InputProps={{
+                    readOnly: true,
+                    style: { cursor: 'pointer', textAlign: 'center' },
+                }}
+                onClick={handleClick}
+                sx={{
+                    padding: '8px',
+                    '& input': {
+                        textAlign: 'center',
                     },
                 }}
             />
+            <div style={{ display: 'none' }}>
+                <TextInput name={name} />
+            </div>
         </div>
     );
 }
