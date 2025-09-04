@@ -187,6 +187,10 @@ export const useSpreadsheetEquipments = (
                     Promise.allSettled(promises).then((results) => {
                         const updates: UpdateEquipmentsAction['equipments'] = {};
                         if (results[0].status === 'rejected') {
+                            console.error(
+                                `(re)loading of spreadsheet data of type ${type} ${results[0].status}`,
+                                results[0].reason
+                            );
                             snackError({
                                 headerId: 'spreadsheet/loading/error_fetching_type_title',
                                 headerValues: { type },
@@ -197,6 +201,10 @@ export const useSpreadsheetEquipments = (
                         }
                         if (results.length > 1) {
                             if (results[1].status === 'rejected') {
+                                console.error(
+                                    `(re)loading of spreadsheet data of type ${type} ${results[1].status}`,
+                                    results[1].reason
+                                );
                                 snackError({
                                     headerId: 'spreadsheet/loading/error_fetching_type_title',
                                     headerValues: { type: SpreadsheetEquipmentType.BRANCH },
