@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
@@ -29,7 +29,7 @@ interface SpreadsheetProps {
     active: boolean;
 }
 
-export const Spreadsheet = React.memo(
+export const Spreadsheet = memo(
     ({
         currentNode,
         tableDefinition,
