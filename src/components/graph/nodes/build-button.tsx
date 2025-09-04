@@ -43,7 +43,7 @@ export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, no
 
             setIsLoading(true);
 
-            if (buildStatus === BUILD_STATUS.NOT_BUILT) {
+            if (!buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT) {
                 buildNode(studyUuid, nodeUuid, currentRootNetworkUuid)
                     .catch((error) => {
                         if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
@@ -83,7 +83,7 @@ export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, no
         if (isLoading) {
             return <CircularProgress size={24} color="primary" />;
         }
-        return buildStatus === BUILD_STATUS.NOT_BUILT ? (
+        return !buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT ? (
             <PlayCircleFilled sx={styles.playColor} />
         ) : (
             <StopCircleOutlined color="primary" />
