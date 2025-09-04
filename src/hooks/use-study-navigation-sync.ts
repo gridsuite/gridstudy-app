@@ -50,9 +50,9 @@ const useStudyNavigationSync = () => {
     const keyActions = useMemo(
         () => ({
             [STORAGE_KEYS.ROOT_NETWORK_UUID]: updateRootNetworkUuid,
-            [STORAGE_KEYS.TREE_NODE]: updateTreeNode,
+            [STORAGE_KEYS.TREE_NODE_UUID]: updateTreeNode,
         }),
-        [STORAGE_KEYS.ROOT_NETWORK_UUID, STORAGE_KEYS.TREE_NODE, updateRootNetworkUuid, updateTreeNode]
+        [STORAGE_KEYS.ROOT_NETWORK_UUID, STORAGE_KEYS.TREE_NODE_UUID, updateRootNetworkUuid, updateTreeNode]
     );
 
     const syncFromLocalStorage = useCallback(() => {

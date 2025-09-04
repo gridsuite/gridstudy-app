@@ -1842,7 +1842,7 @@ function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID
          */
         if (state.syncEnabled) {
             localStorage.setItem(
-                `${BASE_NAVIGATION_KEYS.TREE_NODE}-${state.studyUuid}`,
+                `${BASE_NAVIGATION_KEYS.TREE_NODE_UUID}-${state.studyUuid}`,
                 JSON.stringify(nextCurrentNode.id)
             );
         }

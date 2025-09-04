@@ -18,7 +18,7 @@ export const useStudyScopedNavigationKeys = () => {
         () => ({
             SYNC_ENABLED: `${BASE_NAVIGATION_KEYS.SYNC_ENABLED}-${studyUuid}`,
             ROOT_NETWORK_UUID: `${BASE_NAVIGATION_KEYS.ROOT_NETWORK_UUID}-${studyUuid}`,
-            TREE_NODE: `${BASE_NAVIGATION_KEYS.TREE_NODE}-${studyUuid}`,
+            TREE_NODE_UUID: `${BASE_NAVIGATION_KEYS.TREE_NODE_UUID}-${studyUuid}`,
         }),
         [studyUuid]
     );
