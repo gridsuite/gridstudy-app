@@ -1046,7 +1046,7 @@
     "InvalidNode": "Nœud non réalisé",
     "NoSpreadsheets": "Vous n'avez pas de feuille de calcul, veuillez en créer une",
 
-    "SearchEquipmentField": "Rechercher un champ",
+    "LookForEquipmentField": "Rechercher un champ",
     "EquipmentSchemaPopoverSchema": "Ouvre la liste des champs pour l'équipement associé à la feuille, la list peut également être ouverte via une double pression de la touche Shift du clavier.",
     "FetchingEquipmentSchemaError": "Une erreur est survenue lors de la récupération du schéma d'un équipement",
 
@@ -1598,5 +1598,12 @@
     "loadflowModifications": "Modification calcul de répartition",
     "loadFlowModificationDetails": "Détails",
     "PHASE_TAP": "Déphaseur",
-    "RATIO_TAP": "Régleur"
+    "RATIO_TAP": "Régleur",
+    "Insert": "Insérer",
+    "String": "Chaîne de caractère",
+    "Number": "Nombre",
+    "Object": "Objet",
+    "Array": "Tableau",
+    "Boolean": "Booléen",
+    "Enum": "Énumération"
 }

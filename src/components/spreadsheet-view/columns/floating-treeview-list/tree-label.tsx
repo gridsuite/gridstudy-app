@@ -12,7 +12,8 @@ import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import DataArrayIcon from '@mui/icons-material/DataArray';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
+import { useIntl } from 'react-intl';
 
 type TreeLabelProps = {
     text: string;
@@ -37,26 +38,51 @@ function highlightText(text: string, query?: string, active?: boolean) {
 }
 
 export function TreeLabel({ text, type, highlight, active }: Readonly<TreeLabelProps>) {
+    const intl = useIntl();
     let icon: ReactNode;
     switch (type) {
         case 'string':
-            icon = <FormatColorTextIcon fontSize="small" />;
+            icon = (
+                <Tooltip title={intl.formatMessage({ id: 'String' })}>
+                    <FormatColorTextIcon fontSize="small" />
+                </Tooltip>
+            );
             break;
         case 'number':
         case 'integer':
-            icon = <NumbersIcon fontSize="small" />;
+            icon = (
+                <Tooltip title={intl.formatMessage({ id: 'Number' })}>
+                    <NumbersIcon fontSize="small" />
+                </Tooltip>
+            );
             break;
         case 'boolean':
-            icon = <ToggleOnIcon fontSize="small" />;
+            icon = (
+                <Tooltip title={intl.formatMessage({ id: 'Boolean' })}>
+                    <ToggleOnIcon fontSize="small" />
+                </Tooltip>
+            );
             break;
         case 'object':
-            icon = <DataObjectIcon fontSize="small" />;
+            icon = (
+                <Tooltip title={intl.formatMessage({ id: 'Object' })}>
+                    <DataObjectIcon fontSize="small" />
+                </Tooltip>
+            );
             break;
         case 'array':
-            icon = <DataArrayIcon fontSize="small" />;
+            icon = (
+                <Tooltip title={intl.formatMessage({ id: 'Array' })}>
+                    <DataArrayIcon fontSize="small" />
+                </Tooltip>
+            );
             break;
         case 'enum':
-            icon = <FormatListBulletedIcon fontSize="small" />;
+            icon = (
+                <Tooltip title={intl.formatMessage({ id: 'Enum' })}>
+                    <FormatListBulletedIcon fontSize="small" />
+                </Tooltip>
+            );
             break;
         default:
             icon = null;

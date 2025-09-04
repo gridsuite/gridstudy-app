@@ -14,18 +14,20 @@ import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react'
 import { FORMULA } from '../column-creation-form';
 import { useFormulaQuickSearch } from './use-formula-quicksearch';
 import { buildTreeData } from './utils/json-schema-parser';
-import { JSONSchema7 } from 'json-schema';
+import { JSONSchema4 } from 'json-schema';
 import { UseFormReturn } from 'react-hook-form';
 import { renderTreeData } from './utils/render-tree-data';
 import { usePopoverToggle } from './utils/use-popover-toggle';
+import { useIntl } from 'react-intl';
 
 interface TreeviewSearchableProps {
-    properties: JSONSchema7 | null;
+    properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
     setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
 }
 
 export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: TreeviewSearchableProps) => {
+    const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
@@ -55,7 +57,7 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: Tre
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resetSearch={handleResetSearch}
-                    placeholder={'SearchEquipmentField'}
+                    placeholder={'LookForEquipmentField'}
                     sx={{ width: '100%' }}
                 />
             </Box>
@@ -78,7 +80,7 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: Tre
             </Box>
             <Box sx={{ p: 1, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
                 <Button variant="contained" size="small" disabled={!pendingSelection} onClick={handleConfirm}>
-                    Insert
+                    {intl.formatMessage({ id: 'Insert' })}
                 </Button>
             </Box>
         </>

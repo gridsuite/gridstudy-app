@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import LoupeIcon from '@mui/icons-material/Loupe';
 import { fetchSpreadsheetEquipmentTypeSchema } from '../../../../services/study/network';
 import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
-import { JSONSchema7 } from 'json-schema';
+import { JSONSchema4 } from 'json-schema';
 import { TreeviewSearchable } from './treeview-searchable';
 import { usePopoverToggle } from './utils/use-popover-toggle';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -30,7 +30,7 @@ export function FloatingPopoverTreeviewWrapper({
     spreadsheetEquipmentType,
 }: Readonly<FormulaAutocompleteFieldProps>) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const [properties, setProperties] = useState<JSONSchema7 | null>(null);
+    const [properties, setProperties] = useState<JSONSchema4 | null>(null);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
@@ -48,9 +48,8 @@ export function FloatingPopoverTreeviewWrapper({
             <Box onKeyDown={handleKeyDown} sx={{ position: 'relative' }}>
                 {children}
                 <Tooltip title={intl.formatMessage({ id: 'EquipmentSchemaPopoverSchema' })}>
-                    <span>
+                    <Box sx={{ position: 'absolute', left: '-5vh', top: 0 }}>
                         <Button
-                            sx={{ position: 'absolute', left: '-5vh', top: 0 }}
                             onClick={(e) =>
                                 setAnchorEl(e.currentTarget.closest('[data-popover-anchor]') as HTMLElement)
                             }
@@ -58,7 +57,7 @@ export function FloatingPopoverTreeviewWrapper({
                         >
                             <LoupeIcon />
                         </Button>
-                    </span>
+                    </Box>
                 </Tooltip>
             </Box>
             <Popover
@@ -67,7 +66,7 @@ export function FloatingPopoverTreeviewWrapper({
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 TransitionComponent={Slide}
-                sx={{ position: 'absolute', left: '5vh', maxHeight: '60vh' }}
+                sx={{ position: 'absolute', left: '2vh', maxHeight: '60vh' }}
             >
                 <TreeviewSearchable properties={properties} formMethods={formMethods} setAnchorEl={setAnchorEl} />
             </Popover>

@@ -13,7 +13,7 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../..
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 import { SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
-import { JSONSchema7 } from 'json-schema';
+import { JSONSchema4 } from 'json-schema';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -397,7 +397,7 @@ export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: U
     return getUrlWithToken(url);
 }
 
-export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema7> {
+export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
     const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
     return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
         method: 'get',

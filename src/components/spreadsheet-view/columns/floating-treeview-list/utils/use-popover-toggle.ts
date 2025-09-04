@@ -6,10 +6,10 @@
  */
 
 import { Dispatch, SetStateAction, useRef, KeyboardEvent } from 'react';
-import { JSONSchema7 } from 'json-schema';
+import { JSONSchema4 } from 'json-schema';
 
 export const usePopoverToggle = (
-    properties: JSONSchema7 | null,
+    properties: JSONSchema4 | null,
     setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>,
     handleConfirm?: () => void
 ) => {

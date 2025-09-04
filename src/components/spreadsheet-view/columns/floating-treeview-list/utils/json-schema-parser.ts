@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { JSONSchema7 } from 'json-schema';
+import { JSONSchema4 } from 'json-schema';
 
 export type TreeNode = {
     id: string;
@@ -14,71 +14,85 @@ export type TreeNode = {
     children?: TreeNode[];
 };
 
-function resolveRef(ref: string, rootSchema: JSONSchema7): JSONSchema7 | null {
-    if (!ref.startsWith('#/$defs/')) {
-        return null;
+/**
+ * Builds a registry of all schemas found by walking the tree.
+ */
+function collectSchemas(schema: JSONSchema4, registry: Map<string, JSONSchema4>) {
+    if (!schema) {
+        return;
     }
-    const defKey = ref.replace('#/$defs/', '');
-    return rootSchema.$defs?.[defKey] as JSONSchema7;
+    if (schema.id) {
+        registry.set(schema.id, schema);
+    }
+
+    if (schema.properties) {
+        Object.values(schema.properties).forEach((v) => collectSchemas(v as JSONSchema4, registry));
+    }
+
+    if (schema.items) {
+        if (Array.isArray(schema.items)) {
+            schema.items.forEach((s) => collectSchemas(s as JSONSchema4, registry));
+        } else {
+            collectSchemas(schema.items as JSONSchema4, registry);
+        }
+    }
+
+    if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+        collectSchemas(schema.additionalProperties as JSONSchema4, registry);
+    }
+}
+
+/**
+ * Resolves $ref against the registry.
+ */
+function resolveRef(ref: string, registry: Map<string, JSONSchema4>): JSONSchema4 | null {
+    return registry.get(ref) ?? null;
 }
 
 export function buildTreeData(
-    schema: JSONSchema7 | null,
-    rootSchema: JSONSchema7 | null,
-    parentKey: string = ''
+    schema: JSONSchema4 | null,
+    rootSchema: JSONSchema4 | null,
+    parentKey: string = '',
+    registry?: Map<string, JSONSchema4>
 ): TreeNode[] {
     if (!schema || !rootSchema) {
         return [];
     }
 
-    if (schema.$ref) {
-        const resolved = resolveRef(schema.$ref, rootSchema);
-        if (resolved) {
-            return buildTreeData(resolved, rootSchema, parentKey);
-        }
+    // Build registry once at the root call
+    if (!registry) {
+        registry = new Map();
+        collectSchemas(rootSchema, registry);
     }
 
-    if (schema.anyOf || schema.oneOf) {
-        return flattenCombinedSchemas(schema, rootSchema, parentKey);
+    if (schema.$ref) {
+        const resolved = resolveRef(schema.$ref, registry);
+        if (!resolved) {
+            console.warn(`Unresolved $ref during json schema parsing: ${schema.$ref}`);
+            return [];
+        }
+        return buildTreeData(resolved, rootSchema, parentKey, registry);
     }
 
     if (schema.type?.includes('array') && schema.items) {
-        return buildTreeData(schema.items as JSONSchema7, rootSchema, `${parentKey}[]`);
+        return buildTreeData(schema.items as JSONSchema4, rootSchema, `${parentKey}[]`);
     }
 
     if (schema.additionalProperties) {
-        if ((schema.additionalProperties as JSONSchema7).$ref) {
-            return buildTreeData(schema.additionalProperties as JSONSchema7, rootSchema, parentKey);
-        }
-    }
-
-    if (schema.enum) {
-        return [
-            {
-                id: parentKey,
-                label: parentKey,
-                type: 'enum',
-            },
-        ];
+        return buildTreeData(schema.additionalProperties as JSONSchema4, rootSchema, parentKey);
     }
 
     if (schema.type === 'object' || schema.properties) {
         return Object.entries(schema.properties ?? {}).map(([key, value]) => {
-            const childSchema = value as JSONSchema7;
+            const childSchema = value as JSONSchema4;
             let nodeId = parentKey ? `${parentKey}.${key}` : key;
             // Flatten case: anyOf with $ref to enum
-            if (childSchema.anyOf) {
-                const refSchema = childSchema.anyOf.find((s: any) => !!s.$ref) as JSONSchema7;
-                if (refSchema?.$ref) {
-                    const resolved = resolveRef(refSchema.$ref, rootSchema);
-                    if (resolved?.enum) {
-                        return {
-                            id: nodeId,
-                            label: key,
-                            type: 'enum',
-                        };
-                    }
-                }
+            if (childSchema?.enum) {
+                return {
+                    id: nodeId,
+                    label: key,
+                    type: 'enum',
+                };
             }
 
             let type: (string | undefined)[] = Array.isArray(childSchema.type)
@@ -96,9 +110,4 @@ export function buildTreeData(
     }
 
     return [];
-}
-
-function flattenCombinedSchemas(schema: JSONSchema7, rootSchema: JSONSchema7, parentKey: string): TreeNode[] {
-    const schemas = schema.anyOf ?? schema.oneOf ?? [];
-    return schemas.flatMap((s) => buildTreeData(s as JSONSchema7, rootSchema, parentKey));
 }

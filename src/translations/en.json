@@ -1050,7 +1050,7 @@
     "InvalidNode": "Node not built",
     "NoSpreadsheets": "You have no spreadsheets, please create one",
 
-    "SearchEquipmentField": "Search for a field",
+    "LookForEquipmentField": "Look for a field",
     "EquipmentSchemaPopoverSchema": "Opens the list of fields for the equipment associated with the sheet. The list can also be opened by pressing the Shift key on the keyboard twice.",
     "FetchingEquipmentSchemaError": "An error occurred while fetching equipment schema",
 
@@ -1602,5 +1602,12 @@
     "loadflowModifications": "Loadflow modification",
     "loadFlowModificationDetails":"Details",
     "PHASE_TAP": "Phase",
-    "RATIO_TAP": "Ratio"
+    "RATIO_TAP": "Ratio",
+    "Insert": "Insert",
+    "String": "String",
+    "Number": "Number",
+    "Object": "Object",
+    "Array": "Array",
+    "Boolean": "Boolean",
+    "Enum": "Enumeration"
 }
