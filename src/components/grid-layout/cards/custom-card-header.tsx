@@ -38,6 +38,9 @@ const styles = {
             },
         },
     }),
+    tooltip: (theme: Theme) => ({
+        maxWidth: theme.spacing(40),
+    }),
 };
 
 interface CustomCardHeaderProps {
@@ -52,6 +55,7 @@ const CustomCardHeader: React.FC<CustomCardHeaderProps> = ({ title, onClose, bli
             <OverflowableText
                 className="react-grid-dragHandle"
                 sx={{ flexGrow: '1', paddingBottom: '2px' }}
+                tooltipSx={styles.tooltip}
                 text={<Typography variant="caption">{title}</Typography>}
             />
             <Box>
