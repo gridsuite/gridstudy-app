@@ -66,10 +66,8 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: Tre
                     expandedItems={expandedItems}
                     onExpandedItemsChange={(_, ids) => setExpandedItems(ids)}
                     onKeyDown={handleTreeviewKeyDown}
-                    onSelectedItemsChange={(event, itemIds) => {
-                        const lastId = Array.isArray(itemIds) ? itemIds[itemIds.length - 1] : itemIds;
-                        setPendingSelection(lastId);
-                    }}
+                    onSelectedItemsChange={(e, itemId) => setPendingSelection(itemId)}
+                    onItemFocus={(e, itemId) => setPendingSelection(itemId)}
                     slots={{
                         expandIcon: ChevronRight,
                         collapseIcon: ExpandMore,
