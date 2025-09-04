@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +21,7 @@ const useStudyNavigationSync = () => {
     const syncEnabled = useSelector((state: AppState) => state.syncEnabled);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const dispatch = useDispatch();
 
     const STORAGE_KEYS = useStudyScopedNavigationKeys();
@@ -36,20 +36,23 @@ const useStudyNavigationSync = () => {
     );
 
     const updateTreeNode = useCallback(
-        (treeNode: CurrentTreeNode | null) => {
-            if (treeNode !== null && JSON.stringify(treeNode) !== JSON.stringify(currentTreeNode)) {
-                dispatch(setCurrentTreeNode(treeNode));
+        (uuid: UUID | null) => {
+            if (uuid !== null && uuid !== currentTreeNode?.id) {
+                const currentNode = treeModel?.treeNodes.find((node) => node.id === uuid);
+                if (currentNode) {
+                    dispatch(setCurrentTreeNode({ ...currentNode }));
+                }
             }
         },
-        [dispatch, currentTreeNode]
+        [dispatch, currentTreeNode, treeModel]
     );
 
     const keyActions = useMemo(
         () => ({
             [STORAGE_KEYS.ROOT_NETWORK_UUID]: updateRootNetworkUuid,
-            [STORAGE_KEYS.TREE_NODE]: updateTreeNode,
+            [STORAGE_KEYS.TREE_NODE_UUID]: updateTreeNode,
         }),
-        [STORAGE_KEYS.ROOT_NETWORK_UUID, STORAGE_KEYS.TREE_NODE, updateRootNetworkUuid, updateTreeNode]
+        [STORAGE_KEYS.ROOT_NETWORK_UUID, STORAGE_KEYS.TREE_NODE_UUID, updateRootNetworkUuid, updateTreeNode]
     );
 
     const syncFromLocalStorage = useCallback(() => {
