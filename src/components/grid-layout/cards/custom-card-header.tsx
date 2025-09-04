@@ -38,9 +38,9 @@ const styles = {
             },
         },
     }),
-    tooltip: (theme: Theme) => ({
-        maxWidth: theme.spacing(40),
-    }),
+    tooltip: {
+        maxWidth: '720px',
+    },
 };
 
 interface CustomCardHeaderProps {
