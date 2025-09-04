@@ -29,6 +29,7 @@ export default function ColumnNameEditor({ name, rowIndex, generateColumnId }: C
                 autoFocus: true,
                 onBlur: onBlurColumnName,
             }}
+            showErrorMsg={true}
         />
     );
 }
