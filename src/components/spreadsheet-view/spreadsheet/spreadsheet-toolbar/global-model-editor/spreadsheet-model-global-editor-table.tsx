@@ -145,7 +145,7 @@ export function SpreadsheetModelGlobalEditorTable() {
     };
 
     useEffect(() => {
-        setFocus(`${COLUMNS_MODEL}[0].${COLUMN_ID}`);
+        setFocus(`${COLUMNS_MODEL}[0].${COLUMN_NAME}`);
     }, [setFocus]);
 
     return (
