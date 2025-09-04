@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useEffect } from 'react';
 import { Layouts } from 'react-grid-layout';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ import { setDiagramGridLayout } from 'redux/actions';
 import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
 import { getDiagramGridLayout } from 'services/study/study-config';
 import { MAX_INT32 } from 'services/utils';
-import { DiagramGridLayoutDto } from 'components/diagrams/diagram-grid-layout.types';
+import { DiagramGridLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
 
 export const useDiagramGridLayout = () => {
     const dispatch = useDispatch();
