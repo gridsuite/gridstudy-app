@@ -11,12 +11,12 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRe
 import { useSelector } from 'react-redux';
 import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
-import { evaluateJsonFilter, type IdentifiableAttributes } from '../../../../../../services/study/filter';
+import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from './curve-selector-utils';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import type { FilterEquipmentType, IdentifiableAttributes } from '../../../../../../types/filter-lib';
 import { AppState } from 'redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import { AGGRID_LOCALES } from '../../../../../../translations/not-intl/aggrid-locales';
@@ -28,8 +28,8 @@ export interface GetSelectedEquipmentsHandle {
 }
 
 interface EquipmentFilterProps {
-    equipmentType: EQUIPMENT_TYPES;
-    onChangeEquipmentType: (newEquipmentType: EQUIPMENT_TYPES) => void;
+    equipmentType: FilterEquipmentType;
+    onChangeEquipmentType: (newEquipmentType: FilterEquipmentType) => void;
 }
 
 const styles = {
@@ -67,8 +67,8 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         const [equipmentType, setEquipmentType] = useState(initialEquipmentType);
 
         const handleEquipmentTypeChange = useCallback(
-            (event: SelectChangeEvent) => {
-                const selectedEquipmentType = event.target.value as EQUIPMENT_TYPES;
+            (event: SelectChangeEvent<FilterEquipmentType>) => {
+                const selectedEquipmentType = event.target.value as FilterEquipmentType;
                 setEquipmentType(selectedEquipmentType);
                 onChangeEquipmentType(selectedEquipmentType);
             },

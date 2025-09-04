@@ -41,4 +41,4 @@ export const EQUIPMENT_TYPE_LABEL_KEYS = {
     [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: 'LccConverterStation',
     [EQUIPMENT_TYPES.TIE_LINE]: 'TieLine',
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: 'ShuntCompensator',
-};
+} as const satisfies Record<EQUIPMENT_TYPES, string>;

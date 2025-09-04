@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ExpertFilter } from 'services/study/filter';
 import {
     EQUIPMENT_TYPES,
     EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE,
@@ -14,8 +13,20 @@ import {
     EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES,
     EQUIPMENTS_WITH_TWO_SUBSTATIONS,
 } from '../../../../../utils/equipment-types';
-import { CombinatorType, OperatorType } from '../../../../filter/expert/expert-filter.type';
-import { DataType, FieldType } from '@gridsuite/commons-ui';
+import {
+    type CombinatorExpertRule,
+    type EnumExpertRule,
+    type ExpertFilter,
+    type ExpertRule,
+    FieldType,
+    FilterEquipmentType,
+    FilterType,
+    type NumberExpertRule,
+    type PropertiesExpertRule,
+    type StringExpertRule,
+    TopologyKind,
+} from '../../../../../../types/filter-lib';
+import { CombinatorType, DataType, OperatorType } from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -25,28 +36,38 @@ export const CURVE_EQUIPMENT_TYPES = [
 ];
 
 // this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
-export const getReferencedEquipmentTypeForModel = (equipmentType: EQUIPMENT_TYPES) => {
+type ReferencedEquipmentResult<T extends FilterEquipmentType> = T extends FilterEquipmentType.BUSBAR_SECTION
+    ? EQUIPMENT_TYPES.BUS
+    : Extract<EQUIPMENT_TYPES, T>;
+export function getReferencedEquipmentTypeForModel<T extends FilterEquipmentType>(
+    equipmentType: T
+): ReferencedEquipmentResult<T> {
     // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
-    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION ? EQUIPMENT_TYPES.BUS : equipmentType;
-};
+    return (
+        equipmentType === FilterEquipmentType.BUSBAR_SECTION
+            ? EQUIPMENT_TYPES.BUS
+            : (equipmentType as unknown as EQUIPMENT_TYPES)
+    ) as ReferencedEquipmentResult<T>;
+}
 
 // this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
-export const getTopologyKindIfNecessary = (equipmentType: string) => {
-    return equipmentType === EQUIPMENT_TYPES.BUS
-        ? {
-              topologyKind: 'BUS_BREAKER',
-          }
-        : {};
-};
+type TopologyKindResult<T extends FilterEquipmentType> = T extends FilterEquipmentType.BUS
+    ? { topologyKind: TopologyKind.BUS_BREAKER }
+    : {};
+export function getTopologyKindIfNecessary<T extends FilterEquipmentType>(equipmentType: T): TopologyKindResult<T> {
+    return (
+        equipmentType === FilterEquipmentType.BUS ? { topologyKind: TopologyKind.BUS_BREAKER } : {}
+    ) as TopologyKindResult<T>;
+}
 
-const buildSubstationPropertiesRules = (
-    equipmentType: EQUIPMENT_TYPES,
+function buildSubstationPropertiesRules(
+    equipmentType: FilterEquipmentType,
     substationProperties: Record<string, string[]>,
-    rules: any[]
-) => {
-    if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
+    rules: ExpertRule[]
+) {
+    if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
         let propertyField = FieldType.SUBSTATION_PROPERTIES;
-        if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+        if (equipmentType === FilterEquipmentType.SUBSTATION) {
             propertyField = FieldType.FREE_PROPERTIES;
         }
 
@@ -58,11 +79,11 @@ const buildSubstationPropertiesRules = (
                     propertyName: propertyName,
                     propertyValues: propertyValues,
                     dataType: DataType.PROPERTY,
-                };
+                } as const satisfies PropertiesExpertRule;
                 rules.push(substationPropertiesRule);
             }
         });
-    } else if (EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType)) {
+    } else if (EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
         Object.entries(substationProperties).forEach(([propertyName, propertyValues]) => {
             if (propertyValues?.length) {
                 const substationPropertiesRule = {
@@ -84,22 +105,22 @@ const buildSubstationPropertiesRules = (
                             dataType: DataType.PROPERTY,
                         },
                     ],
-                };
+                } as const satisfies CombinatorExpertRule;
                 rules.push(substationPropertiesRule);
             }
         });
     }
-};
+}
 
-export const buildExpertRules = (
-    equipmentType: EQUIPMENT_TYPES,
+export function buildExpertRules(
+    equipmentType: FilterEquipmentType,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
     substationProperties: Record<string, string[]> | undefined,
     ids: Record<string, string[]> | undefined
-) => {
-    const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
+) {
+    const rules: ExpertRule[] = [];
 
     // create rule IN for voltageLevelIds
     if (voltageLevelIds?.length) {
@@ -108,20 +129,23 @@ export const buildExpertRules = (
             operator: OperatorType.IN,
             values: voltageLevelIds,
             dataType: DataType.STRING,
-        };
+        } as const satisfies StringExpertRule;
         rules.push(voltageLevelIdsRule);
     }
 
     // create rule IN for countries
-    if (countries?.length && EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
+    if (countries?.length && EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
         const countriesRule = {
             field: FieldType.COUNTRY,
             operator: OperatorType.IN,
             values: countries,
             dataType: DataType.ENUM,
-        };
+        } as const satisfies EnumExpertRule;
         rules.push(countriesRule);
-    } else if (countries?.length && EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType)) {
+    } else if (
+        countries?.length &&
+        EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType as unknown as EQUIPMENT_TYPES)
+    ) {
         const countriesRule = {
             combinator: CombinatorType.OR,
             dataType: DataType.COMBINATOR,
@@ -139,20 +163,26 @@ export const buildExpertRules = (
                     dataType: DataType.ENUM,
                 },
             ],
-        };
+        } as const satisfies CombinatorExpertRule;
         rules.push(countriesRule);
     }
 
     // create rule IN for nominalVoltages
-    if (nominalVoltages?.length && EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType)) {
+    if (
+        nominalVoltages?.length &&
+        EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType as unknown as EQUIPMENT_TYPES)
+    ) {
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
             values: nominalVoltages,
             dataType: DataType.NUMBER,
-        };
+        } as const satisfies NumberExpertRule;
         rules.push(nominalVoltagesRule);
-    } else if (nominalVoltages?.length && EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES.includes(equipmentType)) {
+    } else if (
+        nominalVoltages?.length &&
+        EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES.includes(equipmentType as unknown as EQUIPMENT_TYPES)
+    ) {
         const nominalVoltagesRule = {
             combinator: CombinatorType.OR,
             dataType: DataType.COMBINATOR,
@@ -170,9 +200,12 @@ export const buildExpertRules = (
                     dataType: DataType.NUMBER,
                 },
             ],
-        };
+        } as const satisfies CombinatorExpertRule;
         rules.push(nominalVoltagesRule);
-    } else if (nominalVoltages?.length && EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES.includes(equipmentType)) {
+    } else if (
+        nominalVoltages?.length &&
+        EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES.includes(equipmentType as unknown as EQUIPMENT_TYPES)
+    ) {
         const nominalVoltagesRule = {
             combinator: CombinatorType.OR,
             dataType: DataType.COMBINATOR,
@@ -196,7 +229,7 @@ export const buildExpertRules = (
                     dataType: DataType.NUMBER,
                 },
             ],
-        };
+        } as const satisfies CombinatorExpertRule;
         rules.push(nominalVoltagesRule);
     }
 
@@ -207,16 +240,17 @@ export const buildExpertRules = (
     // create rule IN or VOLTAGE_LEVEL_ID IN or SUBSTATION_ID IN for ids
     if (ids && Object.keys(ids).length) {
         for (const eqType in ids) {
-            if ((eqType as EQUIPMENT_TYPES) === EQUIPMENT_TYPES.SUBSTATION) {
-                if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType)) {
+            if (eqType === EQUIPMENT_TYPES.SUBSTATION) {
+                if (EQUIPMENTS_WITH_ONE_SUBSTATION.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
                     const idsRule = {
-                        field: equipmentType !== EQUIPMENT_TYPES.SUBSTATION ? FieldType.SUBSTATION_ID : FieldType.ID,
+                        field:
+                            equipmentType !== FilterEquipmentType.SUBSTATION ? FieldType.SUBSTATION_ID : FieldType.ID,
                         operator: OperatorType.IN,
                         values: ids[eqType],
                         dataType: DataType.STRING,
-                    };
+                    } as const satisfies StringExpertRule;
                     rules.push(idsRule);
-                } else if (EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType)) {
+                } else if (EQUIPMENTS_WITH_TWO_SUBSTATIONS.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
                     const idsRule = {
                         combinator: CombinatorType.OR,
                         dataType: DataType.COMBINATOR,
@@ -234,20 +268,22 @@ export const buildExpertRules = (
                                 dataType: DataType.STRING,
                             },
                         ],
-                    };
+                    } as const satisfies CombinatorExpertRule;
                     rules.push(idsRule);
                 }
             } else if ((eqType as EQUIPMENT_TYPES) === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
-                if (EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType)) {
+                if (EQUIPMENTS_WITH_ONE_NOMINAL_VOLTAGE.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
                     const idsRule = {
                         field:
-                            equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL ? FieldType.VOLTAGE_LEVEL_ID : FieldType.ID,
+                            equipmentType !== FilterEquipmentType.VOLTAGE_LEVEL
+                                ? FieldType.VOLTAGE_LEVEL_ID
+                                : FieldType.ID,
                         operator: OperatorType.IN,
                         values: ids[eqType],
                         dataType: DataType.STRING,
-                    };
+                    } as const satisfies StringExpertRule;
                     rules.push(idsRule);
-                } else if (EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES.includes(equipmentType)) {
+                } else if (EQUIPMENTS_WITH_TWO_NOMINAL_VOLTAGES.includes(equipmentType as unknown as EQUIPMENT_TYPES)) {
                     const idsRule = {
                         combinator: CombinatorType.OR,
                         dataType: DataType.COMBINATOR,
@@ -265,9 +301,11 @@ export const buildExpertRules = (
                                 dataType: DataType.STRING,
                             },
                         ],
-                    };
+                    } as const satisfies CombinatorExpertRule;
                     rules.push(idsRule);
-                } else if (EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES.includes(equipmentType)) {
+                } else if (
+                    EQUIPMENTS_WITH_THREE_NOMINAL_VOLTAGES.includes(equipmentType as unknown as EQUIPMENT_TYPES)
+                ) {
                     const idsRule = {
                         combinator: CombinatorType.OR,
                         dataType: DataType.COMBINATOR,
@@ -291,7 +329,7 @@ export const buildExpertRules = (
                                 dataType: DataType.STRING,
                             },
                         ],
-                    };
+                    } as const satisfies CombinatorExpertRule;
                     rules.push(idsRule);
                 }
             } else {
@@ -300,7 +338,7 @@ export const buildExpertRules = (
                     operator: OperatorType.IN,
                     values: ids[eqType],
                     dataType: DataType.STRING,
-                };
+                } as const satisfies StringExpertRule;
                 rules.push(idsRule);
             }
         }
@@ -310,23 +348,23 @@ export const buildExpertRules = (
         combinator: CombinatorType.AND,
         dataType: DataType.COMBINATOR,
         rules,
-    };
-};
+    } as const satisfies CombinatorExpertRule;
+}
 
-export const buildExpertFilter = (
-    equipmentType: EQUIPMENT_TYPES,
+export function buildExpertFilter(
+    equipmentType: FilterEquipmentType,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined,
     substationProperties?: Record<string, string[]>,
     ids?: Record<string, string[]>
-): ExpertFilter => {
+) {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
-        type: 'EXPERT',
+        type: FilterType.EXPERT,
         equipmentType: equipmentType,
         rules: buildExpertRules(equipmentType, voltageLevelIds, countries, nominalVoltages, substationProperties, ids),
-    };
-};
+    } as const satisfies ExpertFilter;
+}
 
 export const NOMINAL_VOLTAGE_UNIT = 'kV';
