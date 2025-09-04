@@ -7,7 +7,7 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RunningStatus } from '../../utils/running-status';
+import { RunningStatus } from '../../../../utils/running-status';
 import {
     equipmentsWithPopover,
     getEquipmentTypeFromFeederType,
@@ -17,29 +17,29 @@ import {
     MAX_WIDTH_VOLTAGE_LEVEL,
     MIN_HEIGHT,
     MIN_WIDTH,
-    styles,
-} from '../diagram-common';
-import { MapEquipment } from '../../menus/base-equipment-menu';
+} from '../diagram-utils';
+import { styles } from '../diagram-styles';
+import { MapEquipment } from '../../../../menus/base-equipment-menu';
 import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
-import { isNodeReadOnly } from '../../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
+import { isNodeReadOnly } from '../../../../graph/util/model-functions';
+import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { ComputingType, EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import EquipmentPopover from '../../tooltips/equipment-popover';
-import { updateSwitchState } from '../../../services/study/network-modifications';
+import EquipmentPopover from '../../../../tooltips/equipment-popover';
+import { updateSwitchState } from '../../../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
-import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
-import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
+import { startShortCircuitAnalysis } from '../../../../../services/study/short-circuit-analysis';
+import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
+import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
-import { useEquipmentMenu } from '../../../hooks/use-equipment-menu';
+import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 
 interface SingleLineDiagramContentProps {

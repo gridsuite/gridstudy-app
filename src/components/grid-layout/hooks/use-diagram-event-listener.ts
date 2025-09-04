@@ -8,7 +8,7 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, DiagramEvent, DiagramEventType } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { DiagramParams, DiagramType } from '../diagram.type';
+import { DiagramParams, DiagramType } from '../cards/diagrams/diagram.type';
 import { resetDiagramEvent } from 'redux/actions';
 import { v4 } from 'uuid';
 
