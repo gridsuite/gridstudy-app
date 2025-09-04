@@ -15,6 +15,9 @@ import {
     ShortcircuitAnalysisTab,
 } from '../types/custom-aggrid-types';
 import {
+    resetSecurityAnalysisPagination,
+    resetSensitivityAnalysisPagination,
+    resetShortcircuitAnalysisPagination,
     setSecurityAnalysisResultPagination,
     setSensitivityAnalysisResultPagination,
     setShortcircuitAnalysisResultPagination,
@@ -78,4 +81,21 @@ export const usePaginationSelector = (paginationType: PaginationType, pagination
     );
 
     return { pagination, dispatchPagination };
+};
+
+const PAGINATION_RESET_DISPATCHERS = {
+    [PaginationType.SecurityAnalysis]: resetSecurityAnalysisPagination,
+    [PaginationType.SensitivityAnalysis]: resetSensitivityAnalysisPagination,
+    [PaginationType.ShortcircuitAnalysis]: resetShortcircuitAnalysisPagination,
+} as const;
+
+export const usePaginationReset = (paginationType: PaginationType) => {
+    const dispatch = useDispatch();
+
+    const resetPagination = useCallback(() => {
+        const resetAction = PAGINATION_RESET_DISPATCHERS[paginationType]();
+        dispatch(resetAction);
+    }, [dispatch, paginationType]);
+
+    return resetPagination;
 };
