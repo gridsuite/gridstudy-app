@@ -370,23 +370,12 @@ export const addModificationTypeToOpLimitsGroups = (
     let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
 
     modificationLimitsGroups = modificationLimitsGroups.map((formLimitsGroup: OperationalLimitsGroup) => {
-        let modificationType: string = LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD;
+        const modificationType: string = LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD;
         const networkCurrentLimits = networkLine?.currentLimits.find(
             (lineOpLimitGroup: CurrentLimits) =>
                 lineOpLimitGroup.id === formLimitsGroup.name &&
                 lineOpLimitGroup.applicability === formLimitsGroup.applicability
         );
-        if (!networkCurrentLimits) {
-            // formLimitsGroup operational limits groups doesn't exist in the network, probably an ADD
-            // check if this is just an applicability change
-            if (
-                networkLine?.currentLimits.filter(
-                    (lineOpLimitGroup: CurrentLimits) => lineOpLimitGroup.id === formLimitsGroup.name
-                ).length !== 1
-            ) {
-                modificationType = LIMIT_SETS_MODIFICATION_TYPE.ADD;
-            }
-        }
 
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(formLimitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
