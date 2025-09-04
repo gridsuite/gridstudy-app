@@ -25,7 +25,7 @@ export default function FeederBayDirectionCellRenderer({ name }: Readonly<Feeder
 
     const handleClick = useCallback(() => {
         if (value !== null) {
-            const newValue = intl.formatMessage({ id: value === 'Top' ? 'Bottom' : 'Top' });
+            const newValue = intl.formatMessage({ id: value === 'TOP' ? 'Bottom' : 'Top' });
             onChange(newValue);
         }
     }, [value, intl, onChange]);
@@ -36,22 +36,24 @@ export default function FeederBayDirectionCellRenderer({ name }: Readonly<Feeder
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '8px 0',
-                width: '100%',
             }}
         >
-            <IconButton onClick={handleClick} size="small" style={{ flexShrink: 0 }}>
-                {value === 'Top' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
+            <IconButton onClick={handleClick} size="small">
+                {value === 'TOP' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
             </IconButton>
-            <div style={{ flex: 1, minWidth: 0 }}>
-                <TextInput
-                    name={name}
-                    formProps={{
-                        size: 'small',
-                        variant: 'filled',
-                    }}
-                />
-            </div>
+            <TextInput
+                name={name}
+                formProps={{
+                    size: 'small',
+                    variant: 'filled',
+                    sx: {
+                        padding: '8px',
+                        '& input': {
+                            textAlign: 'center',
+                        },
+                    },
+                }}
+            />
         </div>
     );
 }

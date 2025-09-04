@@ -58,25 +58,12 @@ export function MoveVoltageLevelFeederBaysForm({
         setIsDiagramPaneOpen(true);
     }, []);
 
-    const CellWrapper = ({ children }: { children: React.ReactNode }) => (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '8px 0',
-            }}
-        >
-            {children}
-        </div>
-    );
-
     const defaultColDef = useMemo(
         () => ({
             sortable: false,
             resizable: true,
-            wrapHeaderText: true,
             editable: false,
-            headerClass: 'centered-header-spaced',
+            headerClass: 'centered-header',
             suppressMovable: true,
         }),
         []
@@ -112,11 +99,21 @@ export function MoveVoltageLevelFeederBaysForm({
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.voltageLevelId === data.voltageLevelId);
                         return (
-                            <CellWrapper>
+                            <div>
                                 <TextInput
                                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
+                                    formProps={{
+                                        size: 'small',
+                                        variant: 'filled',
+                                        sx: {
+                                            padding: '8px',
+                                            '& input': {
+                                                textAlign: 'center',
+                                            },
+                                        },
+                                    }}
                                 />
-                            </CellWrapper>
+                            </div>
                         );
                     }
                 },
@@ -151,6 +148,7 @@ export function MoveVoltageLevelFeederBaysForm({
                                 options={busBarSectionIds}
                                 size="small"
                                 sx={{ padding: '8px 0' }}
+                                disableClearable
                             />
                         );
                     }
@@ -168,7 +166,7 @@ export function MoveVoltageLevelFeederBaysForm({
             {
                 field: CONNECTION_DIRECTION,
                 filter: true,
-                flex: 1,
+                flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
                         return SeparatorCellRenderer({
@@ -203,16 +201,21 @@ export function MoveVoltageLevelFeederBaysForm({
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.voltageLevelId === data.voltageLevelId);
                         return (
-                            <CellWrapper>
+                            <div>
                                 <IntegerInput
                                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
                                     formProps={{
                                         size: 'small',
                                         variant: 'filled',
-                                        sx: { alignItems: 'center' },
+                                        sx: {
+                                            padding: '8px',
+                                            '& input': {
+                                                textAlign: 'center',
+                                            },
+                                        },
                                     }}
                                 />
-                            </CellWrapper>
+                            </div>
                         );
                     }
                 },
