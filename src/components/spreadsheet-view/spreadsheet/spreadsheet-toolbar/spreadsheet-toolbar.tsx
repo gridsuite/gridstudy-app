@@ -51,11 +51,10 @@ export const SpreadsheetToolbar = ({
     nodeAliases,
     disabled,
 }: SpreadsheetToolbarProps) => {
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
             <Grid item sx={styles.filterContainer}>
-                {(tableDefinition.type !== SpreadsheetEquipmentType.BRANCH || enableDeveloperMode) && (
+                {tableDefinition.type !== SpreadsheetEquipmentType.BRANCH && (
                     <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
                 )}
             </Grid>

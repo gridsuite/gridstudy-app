@@ -59,7 +59,7 @@ export default function SaveNamingFilterDialog({
             return {
                 id: filterId,
                 type: 'IDENTIFIER_LIST',
-                equipmentType: tableDefinition.type as unknown as EquipmentType,
+                equipmentType: tableDefinition.type,
                 filterEquipmentsAttributes: ids.map((eqId) => ({ equipmentID: eqId })),
             };
         },
