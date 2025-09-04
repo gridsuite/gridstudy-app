@@ -355,12 +355,19 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.SHORT_CIRCUIT]: {
                 messageId: 'ShortCircuitAnalysis',
-                startComputation() {
+                startComputation(debug) {
                     startComputationAsync(
                         ComputingType.SHORT_CIRCUIT,
                         null,
-                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
-                        () => {},
+                        () =>
+                            startShortCircuitAnalysis(
+                                studyUuid,
+                                currentNode?.id,
+                                currentRootNetworkUuid,
+                                undefined,
+                                debug
+                            ),
+                        () => debug && subscribeDebug(ComputingType.SHORT_CIRCUIT),
                         null,
                         'startShortCircuitError'
                     );
