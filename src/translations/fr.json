@@ -56,6 +56,7 @@
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
     "svgLoadingFail": "L'image n'a pas pu être chargée",
+    "nadConfiguredPositionsModeFailed": "Les positions configurées n'ont pas été initialisées. Vous devez modifier le paramétrage d'initialisation des images nodales de la zone.",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
     "geoDataLoadingFail": "Erreur lors du chargement des données géographiques.",
 
@@ -518,8 +519,8 @@
     "removeNode": "Supprimer",
     "unbuildNode": "Déréaliser",
     "exportCaseOnNode": "Exporter",
-    "ConstructionNode":"Créer un nœud de construction",
-    "SecurityNode":"Créer un nœud de sécurité",
+    "ConstructionNode": "Créer un nœud de construction",
+    "SecurityNode": "Créer un nœud de sécurité",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
     "StudyUnrecoverableStateRecreate": "Votre étude a rencontré un problème et a été recréée à partir des données initiales",
@@ -1030,7 +1031,7 @@
     "cutNetworkModificationNode": "Couper",
     "pasteNetworkModificationNode": "Coller",
 
-    "cancelCutNetworkModificationNode": "Annuler couper", 
+    "cancelCutNetworkModificationNode": "Annuler couper",
     "NetworkModificationSubtree": "Sous-arbre",
     "copyNetworkModificationSubtree": "Copier",
     "pasteNetworkModificationSubtree": "Coller",
@@ -1136,6 +1137,7 @@
 
     "SLDOpenedInTheGrid": "Le {diagramType} \"{equipmentId}\" a été ouvert dans la grille des images",
     "NADOpenedInTheGrid": "L'image nodale de zone \"{elementId}\" a été ouverte dans la grille des images",
+    "generatedNADOpenedInTheGrid": "L'image nodale de zone générée a été ouverte dans la grille des images",
 
     "dialog.button.leave": "Quitter",
 
@@ -1191,6 +1193,7 @@
     "elementSelection": "Sélection d'un élément",
     "addNetworkModification": "Ajouter une modification de réseau",
     "importFromGridExplore": "Importer de GridExplore",
+    "importAndReplaceFromGridExplore": "Importer et remplacer à partir de GridExplore",
     "SaveToGridexplore": "Enregistrer dans GridExplore",
     "SaveToGridexploreError": "Une erreur est survenue lors de la sauvegarde dans GridExplore",
     "diagramConfigCreationMsg": "Création de l'image nodale de zone dans {directory}",
@@ -1511,8 +1514,8 @@
     "currentStatus": "État modifié",
     "Open": "Ouvert",
     "Closed": "Fermé",
-    "DiagramGridLayout": "Grille des diagrammes",
-    "DiagramGridLayoutAndTree": "Grille des diagrammes et arbre décisionnel",
+    "GridLayoutPanel": "Grille des images",
+    "GridLayoutPanelAndTree": "Grille des images et arbre décisionnel",
 
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
     "CreateVoltageLevelSection": "Ajouter un tronçon ou une section",
@@ -1555,8 +1558,8 @@
     "AddNewCard": "Images",
     "Display": "Affichage",
     "SaveGridLayout": "Enregistrer",
-    "diagramGridLayoutSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
-    "diagramGridLayoutSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
+    "GridLayoutPanelSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
+    "GridLayoutPanelSaveSuccess": "La grille des diagrammes a été enregistrée avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
     "NoMatch": "Pas de correspondance",
     "Rows": "ligne",
