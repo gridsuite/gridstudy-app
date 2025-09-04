@@ -25,7 +25,7 @@ export enum NotificationType {
     // Root networks
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
+    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
     // Nodes and tree
     NODE_CREATED = 'nodeCreated',
     NODES_DELETED = 'nodeDeleted',
@@ -201,7 +201,7 @@ interface RootNetworkUpdateFailedEventDataHeaders extends CommonStudyEventDataHe
 }
 
 interface RootNetworkDeletionStartedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.ROOT_NETWORK_DELETION_STARTED;
+    updateType: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
     rootNetworksUuids: UUID[];
 }
 
@@ -872,7 +872,7 @@ export function isStateEstimationResultNotification(notif: unknown): notif is St
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
     return (
         (notif as RootNetworkDeletionStartedEventData).headers?.updateType ===
-        NotificationType.ROOT_NETWORK_DELETION_STARTED
+        NotificationType.ROOT_NETWORKS_DELETION_STARTED
     );
 }
 
