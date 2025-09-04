@@ -270,7 +270,6 @@ const LineCreationDialog = ({
         data[FINAL_CURRENT_LIMITS].forEach((item) => {
             const temporaryLimitsList = [];
             if (item.temporaryLimitValue) {
-                console.log('item', item);
                 temporaryLimitsList.push({
                     name: item.temporaryLimitName,
                     acceptableDuration: item.temporaryLimitAcceptableDuration,
