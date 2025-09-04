@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { RefObject } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid, Theme } from '@mui/material';
 import { ColumnsConfig } from './columns-config';
@@ -16,6 +17,8 @@ import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 import { FilteredRowCounter } from './row-counter/filtered-row-counter';
 import { UseFilteredRowCounterInfoReturn } from './row-counter/use-filtered-row-counter';
+import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const styles = {
     toolbar: (theme: Theme) => ({
@@ -32,7 +35,7 @@ const styles = {
 };
 
 interface SpreadsheetToolbarProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact>;
     tableDefinition: SpreadsheetTabDefinition;
     rowCounterInfos: UseFilteredRowCounterInfoReturn;
     columns: CustomColDef[];
@@ -48,10 +51,13 @@ export const SpreadsheetToolbar = ({
     nodeAliases,
     disabled,
 }: SpreadsheetToolbarProps) => {
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
             <Grid item sx={styles.filterContainer}>
-                <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
+                {(tableDefinition.type !== SpreadsheetEquipmentType.BRANCH || enableDeveloperMode) && (
+                    <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
+                )}
             </Grid>
             <Grid item>
                 <FilteredRowCounter rowCounterInfos={rowCounterInfos} tableDefinition={tableDefinition} />
