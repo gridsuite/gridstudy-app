@@ -25,7 +25,6 @@ import { ColumnGlobalModel } from './spreadsheet-model-global-editor.type';
 import DependenciesEditor from './dependencies-editor';
 import FormulaEditor from './formula-editor';
 import ColumnNameEditor from './columnName-editor';
-import ColumnIDEditor from './columnID-editor';
 
 export function SpreadsheetModelGlobalEditorTable() {
     const intl = useIntl();
@@ -72,16 +71,12 @@ export function SpreadsheetModelGlobalEditorTable() {
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_id' }),
                 dataKey: COLUMN_ID,
-                type: DndColumnType.CUSTOM,
+                type: DndColumnType.TEXT,
                 editable: true,
                 initialValue: '',
                 showErrorMsg: true,
                 width: '20%',
                 maxWidth: '20%',
-                component: (rowIndex) =>
-                    ColumnIDEditor({
-                        name: `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_ID}`,
-                    }),
             },
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_type' }),
