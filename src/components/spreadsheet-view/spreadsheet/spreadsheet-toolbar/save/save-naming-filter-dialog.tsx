@@ -6,18 +6,17 @@
  */
 
 import {
+    createFilter,
     ElementSaveDialog,
     ElementType,
-    IElementCreationDialog,
-    IElementUpdateDialog,
-    UseStateBooleanReturn,
-    useSnackMessage,
-    EquipmentType,
-    createFilter,
+    type IElementCreationDialog,
+    type IElementUpdateDialog,
+    type NewFilterType,
     saveFilter,
-    NewFilterType,
+    useSnackMessage,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
-import { useCallback, RefObject } from 'react';
+import { type RefObject, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';

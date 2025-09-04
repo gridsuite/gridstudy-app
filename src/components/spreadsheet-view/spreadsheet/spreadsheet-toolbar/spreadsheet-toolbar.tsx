@@ -17,8 +17,6 @@ import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 import { FilteredRowCounter } from './row-counter/filtered-row-counter';
 import { UseFilteredRowCounterInfoReturn } from './row-counter/use-filtered-row-counter';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const styles = {
     toolbar: (theme: Theme) => ({
