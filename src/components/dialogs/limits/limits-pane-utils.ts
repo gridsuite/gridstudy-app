@@ -413,30 +413,5 @@ export const addModificationTypeToOpLimitsGroups = (
         };
     });
 
-    // get the deleted operational limits groups (they are only in networkLine and absent from modificationLimitsGroups)
-    networkLine?.currentLimits
-        .filter(
-            (currentLimit: CurrentLimits) =>
-                modificationLimitsGroups.find(
-                    (modOpLG: OperationalLimitsGroup) =>
-                        modOpLG.id === currentLimit.id && modOpLG.applicability === currentLimit.applicability
-                ) === undefined
-        )
-        .forEach((currentLimit) => {
-            modificationLimitsGroups.push({
-                id: currentLimit.id,
-                name: currentLimit.id,
-                applicability: currentLimit.applicability,
-                // empty currentLimits because the opLG is going to be deleted anyway
-                currentLimits: {
-                    id: currentLimit.id,
-                    applicability: currentLimit.applicability,
-                    permanentLimit: null,
-                    temporaryLimits: [],
-                },
-                modificationType: LIMIT_SETS_MODIFICATION_TYPE.DELETE,
-            });
-        });
-
     return modificationLimitsGroups;
 };
