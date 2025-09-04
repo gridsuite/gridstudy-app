@@ -37,6 +37,24 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../utils/equipment
 import { DeepNullable } from '../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../services/study/network-modifications';
+import { AnyObject, TestFunction } from 'yup';
+
+const checkConnectionPositionField: TestFunction<any, AnyObject> = (value, context) => {
+    if (!value) {
+        return true;
+    }
+    const array = context.from?.[1]?.value?.[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE];
+    if (!array) {
+        return true;
+    }
+    const duplicateExists = array.some((item: { [x: string]: any }, index: number) => {
+        return (
+            index !== parseInt(context.path.match(/\[(\d+)\]/)?.[1] || '-1') &&
+            String(item[CONNECTION_POSITION]) === String(value)
+        );
+    });
+    return !duplicateExists;
+};
 
 const formSchema = yup.object().shape({
     [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: yup.array().of(
@@ -46,7 +64,9 @@ const formSchema = yup.object().shape({
             [BUSBAR_SECTION_IDS]: yup.array().of(yup.string()).required(),
             [CONNECTION_NAME]: yup.string().required(),
             [CONNECTION_DIRECTION]: yup.string().required(),
-            [CONNECTION_POSITION]: yup.string(),
+            [CONNECTION_POSITION]: yup
+                .string()
+                .test('checkUniquePositions', 'DuplicatedPositionsError', checkConnectionPositionField),
         })
     ),
 });

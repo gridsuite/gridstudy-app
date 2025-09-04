@@ -1585,5 +1585,6 @@
     "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)",
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
     "TOP": "HAUT",
-    "BOTTOM": "BAS"
+    "BOTTOM": "BAS",
+    "DuplicatedPositionsError": "Duplicated position erreur"
 }

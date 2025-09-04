@@ -1589,5 +1589,6 @@
     "allOptionHelperText": "Busbars have different sections (number or index)",
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
     "TOP": "TOP",
-    "BOTTOM": "BOTTOM"
+    "BOTTOM": "BOTTOM",
+    "DuplicatedPositionsError": "Duplicated position error"
 }

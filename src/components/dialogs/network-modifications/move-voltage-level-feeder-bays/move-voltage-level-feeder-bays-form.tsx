@@ -257,14 +257,14 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid paddingTop={2}>
+            <Grid xs paddingTop={2}>
                 <CustomAGGrid
                     rowData={feederBaysInfos}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     suppressMovableColumns={true}
                     animateRows={false}
-                    domLayout="autoHeight"
+                    domLayout="normal"
                     headerHeight={48}
                     rowHeight={60}
                 />
