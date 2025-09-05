@@ -61,6 +61,7 @@ import {
     addNotification,
     removeNotificationByNode,
     resetLogsFilter,
+    resetLogsPagination,
     setModificationsInProgress,
 } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
@@ -819,6 +820,7 @@ const NetworkModificationNodeEditor = () => {
             // reset the network modification and computing logs filter when the user changes the current node
             if (hasNodeChanged) {
                 dispatch(resetLogsFilter());
+                dispatch(resetLogsPagination());
             }
         }
     }, [
