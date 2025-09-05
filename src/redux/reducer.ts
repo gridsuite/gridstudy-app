@@ -213,6 +213,10 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    LOGS_RESULT_PAGINATION,
+    LogsResultPaginationAction,
+    RESET_LOGS_PAGINATION,
+    ResetLogsPaginationAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -251,6 +255,7 @@ import {
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     ONE_BUS,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -300,6 +305,7 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    LogsPaginationConfig,
     PaginationConfig,
     SECURITY_ANALYSIS_TABS,
     SecurityAnalysisTab,
@@ -387,6 +393,18 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
             return;
     }
 }
+
+export const DEFAULT_PAGINATION: PaginationConfig = {
+    page: 0,
+    rowsPerPage: 25,
+};
+
+export const DEFAULT_LOGS_PAGE_COUNT = 30;
+
+export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
+    page: 0,
+    rowsPerPage: DEFAULT_LOGS_PAGE_COUNT,
+};
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
@@ -520,6 +538,8 @@ export interface DiagramGridLayoutConfig {
     params: DiagramParams[];
 }
 
+export type LogsPaginationState = Record<string, LogsPaginationConfig>;
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -604,6 +624,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
+    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
@@ -625,6 +646,20 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
+};
+
+const initialLogsPaginationState: LogsPaginationState = {
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SENSITIVITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
 };
 
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
@@ -664,11 +699,6 @@ interface TablesState {
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
-};
-
-export const DEFAULT_PAGINATION: PaginationConfig = {
-    page: 0,
-    rowsPerPage: 25,
 };
 
 const initialState: AppState = {
@@ -808,6 +838,7 @@ const initialState: AppState = {
     [SPREADSHEET_STORE_FIELD]: {},
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
+    [LOGS_PAGINATION_STORE_FIELD]: { ...initialLogsPaginationState },
 
     [TABLE_SORT_STORE]: {
         [SPREADSHEET_SORT_STORE]: {},
@@ -1682,6 +1713,23 @@ export const reducer = createReducer(initialState, (builder) => {
         state[LOGS_STORE_FIELD] = {
             ...initialLogsFilterState,
         };
+    });
+
+    builder.addCase(LOGS_RESULT_PAGINATION, (state, action: LogsResultPaginationAction) => {
+        state[LOGS_PAGINATION_STORE_FIELD][action.paginationTab] = action[LOGS_PAGINATION_STORE_FIELD];
+    });
+
+    builder.addCase(RESET_LOGS_PAGINATION, (state, _action: ResetLogsPaginationAction) => {
+        // Reset all logs tabs to page 0 but keep their rowsPerPage
+        Object.keys(COMPUTING_AND_NETWORK_MODIFICATION_TYPE).forEach((key) => {
+            const reportType =
+                COMPUTING_AND_NETWORK_MODIFICATION_TYPE[key as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE];
+            const currentPagination = state[LOGS_PAGINATION_STORE_FIELD][reportType];
+            state[LOGS_PAGINATION_STORE_FIELD][reportType] = {
+                page: 0,
+                rowsPerPage: currentPagination.rowsPerPage,
+            };
+        });
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
