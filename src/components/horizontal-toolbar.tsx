@@ -116,7 +116,7 @@ export function HorizontalToolbar() {
                                 </Tooltip>
                             )}
                             <Tooltip title={<FormattedMessage id={'images'} />}>
-                                <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
+                                <ToggleButton value={StudyDisplayMode.GRID_LAYOUT_PANEL}>
                                     <PhotoLibraryIcon />
                                 </ToggleButton>
                             </Tooltip>

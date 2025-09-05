@@ -138,7 +138,8 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
     }, [equipmentType, dialogMode]);
 
     const downloadCsvFile = useCallback(({ content, filename }: FileDownloadParams): void => {
-        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const bom = '\uFEFF'; // UTF-8 BOM to ensure proper encoding detection in Excel
+        const blob = new Blob([bom + content], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
 
