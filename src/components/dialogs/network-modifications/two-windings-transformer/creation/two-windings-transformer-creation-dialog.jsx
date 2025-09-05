@@ -277,9 +277,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
                     steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
-                    equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType,
-                    voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
+                    equipmentId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableId,
+                    equipmentType: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableType,
+                    voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableVlId,
                 }),
                 ...getRatioTapChangerFormData({
                     enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -293,9 +293,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
                     steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
-                    equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType,
-                    voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
+                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableId,
+                    equipmentType: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableType,
+                    voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableVlId,
                 }),
                 ...getPropertiesFromModification(twt.properties),
             });
@@ -502,16 +502,16 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratioTap = {
                     ...ratioTapChangerFormValues,
                     isRegulating: computeRatioTapChangerRegulating(ratioTapChangerFormValues),
-                    regulatingTerminalId: getRegulatingValue(
+                    terminalRefConnectableId: getRegulatingValue(
                         computeRegulatingTerminalId,
                         ratioTapChangerFormValues,
                         twt[EQUIPMENT_ID]
                     ),
-                    regulatingTerminalType: getRegulatingValue(
+                    terminalRefConnectableType: getRegulatingValue(
                         computeRegulatingTerminalType,
                         ratioTapChangerFormValues
                     ),
-                    regulatingTerminalVlId: getRegulatingValue(
+                    terminalRefConnectableVlId: getRegulatingValue(
                         computeTapTerminalVlId,
                         ratioTapChangerFormValues,
                         characteristics[CONNECTIVITY_1],
@@ -529,9 +529,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     hasLoadTapChangingCapabilities: true,
                     isRegulating: computePhaseTapChangerRegulating(phaseTapChangerFormValues),
                     regulationValue: computePhaseTapChangerRegulationValue(phaseTapChangerFormValues),
-                    regulatingTerminalId: computeRegulatingTerminalId(phaseTapChangerFormValues, twt[EQUIPMENT_ID]),
-                    regulatingTerminalType: computeRegulatingTerminalType(phaseTapChangerFormValues),
-                    regulatingTerminalVlId: computeTapTerminalVlId(
+                    terminalRefConnectableId: computeRegulatingTerminalId(phaseTapChangerFormValues, twt[EQUIPMENT_ID]),
+                    terminalRefConnectableType: computeRegulatingTerminalType(phaseTapChangerFormValues),
+                    terminalRefConnectableVlId: computeTapTerminalVlId(
                         phaseTapChangerFormValues,
                         characteristics[CONNECTIVITY_1],
                         characteristics[CONNECTIVITY_2]
