@@ -1467,7 +1467,7 @@ export const reducer = createReducer(initialState, (builder) => {
             if (!equipmentType) {
                 continue;
             }
-            const currentEquipment: Identifiable[] | undefined =
+            const currentEquipment: Record<string, Identifiable> | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
@@ -1480,9 +1480,9 @@ export const reducer = createReducer(initialState, (builder) => {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
-                        ] as Substation[],
+                        ] as Record<string, Substation>,
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[action.nodeId],
-                        formattedEquipments
+                        formattedEquipments as Record<string, Substation>
                     );
 
                     if (updatedSubstations != null) {
@@ -1511,7 +1511,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
                 if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
                     const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
-                        .equipmentsByNodeId[action.nodeId] as Substation[] | null;
+                        .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
                     if (currentSubstations != null) {
                         state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
@@ -1816,24 +1816,24 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 });
 
-function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToDeleteId: string): Substation[] {
-    const substationToUpdateIndex = currentSubstations.findIndex((sub) =>
+function updateSubstationAfterVLDeletion(
+    currentSubstations: Record<string, Substation>,
+    VLToDeleteId: string
+): Record<string, Substation> {
+    const substationToUpdateId = Object.values(currentSubstations).find((sub) =>
         sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
-    );
-    if (substationToUpdateIndex >= 0) {
-        currentSubstations[substationToUpdateIndex].voltageLevels = currentSubstations[
-            substationToUpdateIndex
+    )?.id;
+    if (substationToUpdateId) {
+        currentSubstations[substationToUpdateId].voltageLevels = currentSubstations[
+            substationToUpdateId
         ].voltageLevels.filter((vl) => vl.id !== VLToDeleteId);
     }
 
     return currentSubstations;
 }
 
-function deleteEquipment(currentEquipments: Identifiable[], equipmentToDeleteId: string) {
-    const equipmentToDeleteIndex = currentEquipments.findIndex((eq) => eq.id === equipmentToDeleteId);
-    if (equipmentToDeleteIndex >= 0) {
-        currentEquipments.splice(equipmentToDeleteIndex, 1);
-    }
+function deleteEquipment(currentEquipments: Record<string, Identifiable>, equipmentToDeleteId: string) {
+    delete currentEquipments[equipmentToDeleteId];
     return currentEquipments;
 }
 
@@ -1842,9 +1842,9 @@ export type Substation = Identifiable & {
 };
 
 function updateSubstationsAndVoltageLevels(
-    currentSubstations: Substation[],
-    currentVoltageLevels: Identifiable[],
-    newOrUpdatedSubstations: Substation[]
+    currentSubstations: Record<string, Substation>,
+    currentVoltageLevels: Record<string, Identifiable>,
+    newOrUpdatedSubstations: Record<string, Substation>
 ) {
     const updatedSubstations = updateEquipments(currentSubstations, newOrUpdatedSubstations);
 
@@ -1852,9 +1852,15 @@ function updateSubstationsAndVoltageLevels(
 
     // if voltage levels are not loaded yet, we don't need to update them
     if (currentVoltageLevels != null) {
-        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce((acc, currentSub) => {
-            return acc.concat([...currentSub.voltageLevels]);
-        }, [] as Identifiable[]);
+        const newOrUpdatedVoltageLevels = Object.values(newOrUpdatedSubstations).reduce(
+            (acc, currentSub) => {
+                currentSub.voltageLevels.forEach((vl) => {
+                    acc[vl.id] = vl;
+                });
+                return acc;
+            },
+            {} as Record<string, Identifiable>
+        );
 
         updatedVoltageLevels = updateEquipments(currentVoltageLevels, newOrUpdatedVoltageLevels);
     }
@@ -1862,17 +1868,13 @@ function updateSubstationsAndVoltageLevels(
     return [updatedSubstations, updatedVoltageLevels];
 }
 
-function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipments: Identifiable[]) {
-    newOrUpdatedEquipments.forEach((equipment) => {
-        const existingEquipmentIndex = currentEquipments.findIndex((equip) => equip.id === equipment.id);
-
-        if (existingEquipmentIndex >= 0) {
-            currentEquipments[existingEquipmentIndex] = equipment;
-        } else {
-            currentEquipments.push(equipment);
-        }
+function updateEquipments(
+    currentEquipments: Record<string, Identifiable>,
+    newOrUpdatedEquipments: Record<string, Identifiable>
+) {
+    Object.entries(newOrUpdatedEquipments).forEach(([id, equipment]) => {
+        currentEquipments[id] = equipment;
     });
-
     return currentEquipments;
 }
 
