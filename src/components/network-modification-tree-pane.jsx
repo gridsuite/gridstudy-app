@@ -54,12 +54,7 @@ const noNodeSelectionForCopy = {
 
 export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
-export const NetworkModificationTreePane = ({
-    studyUuid,
-    studyMapTreeDisplay,
-    currentRootNetworkUuid,
-    onTreePanelResize,
-}) => {
+export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid, onTreePanelResize }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
@@ -563,7 +558,6 @@ export const NetworkModificationTreePane = ({
             <NetworkModificationTree
                 onNodeContextMenu={onNodeContextMenu}
                 studyUuid={studyUuid}
-                studyMapTreeDisplay={studyMapTreeDisplay}
                 onTreePanelResize={onTreePanelResize}
             />
             {createNodeMenu.display && (
@@ -616,6 +610,6 @@ export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
-    studyMapTreeDisplay: PropTypes.string.isRequired,
     currentRootNetworkUuid: PropTypes.string.isRequired,
+    onTreePanelResize: PropTypes.object.isRequired,
 };

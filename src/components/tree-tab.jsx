@@ -37,7 +37,6 @@ const TreeTab = ({
     showGrid,
 }) => {
     const theme = useTheme();
-    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
     const { refs, state, handlers } = usePanelManager();
@@ -84,7 +83,6 @@ const TreeTab = ({
                                     <ReactFlowProvider>
                                         <NetworkModificationTreePane
                                             studyUuid={studyUuid}
-                                            studyMapTreeDisplay={studyDisplayMode}
                                             currentRootNetworkUuid={currentRootNetworkUuid}
                                             onTreePanelResize={refs.onTreePanelResizeHandlerRef}
                                         />
