@@ -378,7 +378,6 @@
     "ViolationType": "Violation type",
     "Bus": "Bus",
     "LimitSide": "Side",
-    "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
     "NextLimitNameCurrentViolation": "Next limit name",
     "Limit_name": "Limit name",
