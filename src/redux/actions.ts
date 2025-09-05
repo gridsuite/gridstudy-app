@@ -42,6 +42,7 @@ import type { GlobalFilter } from '../components/results/common/global-filter/gl
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
+    LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
@@ -63,6 +64,7 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    LogsPaginationConfig,
     PaginationConfig,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
@@ -72,6 +74,7 @@ import {
 import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -152,7 +155,9 @@ export type AppActions =
     | ShortcircuitAnalysisResultPaginationAction
     | ResetSecurityAnalysisPaginationAction
     | ResetSensitivityAnalysisPaginationAction
-    | ResetShortcircuitAnalysisPaginationAction;
+    | ResetShortcircuitAnalysisPaginationAction
+    | LogsResultPaginationAction
+    | ResetLogsPaginationAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1131,6 +1136,32 @@ export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 export function resetLogsFilter(): ResetLogsFilterAction {
     return {
         type: RESET_LOGS_FILTER,
+    };
+}
+
+export const LOGS_RESULT_PAGINATION = 'LOGS_RESULT_PAGINATION';
+export type LogsResultPaginationAction = Readonly<Action<typeof LOGS_RESULT_PAGINATION>> & {
+    paginationTab: ComputingAndNetworkModificationType;
+    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationConfig;
+};
+
+export function setLogsResultPagination(
+    paginationTab: ComputingAndNetworkModificationType,
+    logsPagination: LogsPaginationConfig
+): LogsResultPaginationAction {
+    return {
+        type: LOGS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [LOGS_PAGINATION_STORE_FIELD]: logsPagination,
+    };
+}
+
+export const RESET_LOGS_PAGINATION = 'RESET_LOGS_PAGINATION';
+export type ResetLogsPaginationAction = Readonly<Action<typeof RESET_LOGS_PAGINATION>>;
+
+export function resetLogsPagination(): ResetLogsPaginationAction {
+    return {
+        type: RESET_LOGS_PAGINATION,
     };
 }
 
