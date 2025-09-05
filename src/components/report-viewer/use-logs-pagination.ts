@@ -12,6 +12,8 @@ import { LogsPaginationConfig } from 'types/custom-aggrid-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { LOGS_PAGINATION_STORE_FIELD } from 'utils/store-sort-filter-fields';
 
+export const DEFAULT_LOGS_PAGE_COUNT = 30;
+
 export const useLogsPagination = (reportType: ComputingAndNetworkModificationType) => {
     const dispatch = useDispatch();
 
@@ -40,7 +42,7 @@ export const useLogsPaginationResetByType = () => {
             dispatch(
                 setLogsResultPagination(computingType, {
                     page: 0,
-                    rowsPerPage: currentPagination?.rowsPerPage || 25,
+                    rowsPerPage: currentPagination?.rowsPerPage || DEFAULT_LOGS_PAGE_COUNT,
                 })
             );
         },

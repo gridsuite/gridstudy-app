@@ -324,6 +324,7 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
+import { DEFAULT_LOGS_PAGE_COUNT } from 'components/report-viewer/use-logs-pagination';
 
 // Redux state
 export type StudyUpdated = {
@@ -401,7 +402,7 @@ export const DEFAULT_PAGINATION: PaginationConfig = {
 
 export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
     page: 0,
-    rowsPerPage: 15,
+    rowsPerPage: DEFAULT_LOGS_PAGE_COUNT,
 };
 
 export interface OneBusShortCircuitAnalysisDiagram {
