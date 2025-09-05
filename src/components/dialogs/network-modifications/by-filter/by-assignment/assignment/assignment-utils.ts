@@ -15,14 +15,17 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { Assignment, DataType, FieldValue } from './assignment.type';
+import { Assignment, DataType, FieldOptionType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
 };
+export const getUnsettable = (fieldName?: string | null) => {
+    return getFieldOption(fieldName)?.unsettable;
+};
 
-export const getFieldOption = (fieldName?: string | null) => {
+export const getFieldOption = (fieldName?: string | null): FieldOptionType | undefined => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
@@ -61,7 +64,8 @@ export function getAssignmentsSchema() {
                     .mixed<FieldValue>()
                     .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
-                        return getValueSchema(dataType);
+                        const unsettable = getUnsettable(editedField);
+                        return getValueSchema(dataType, unsettable);
                     })
                     .required(),
             })
@@ -69,7 +73,7 @@ export function getAssignmentsSchema() {
         .required();
 }
 
-function getValueSchema(dataType?: DataType) {
+function getValueSchema(dataType?: DataType, unsettable?: boolean) {
     let schema: Schema;
     // set type
     switch (dataType) {
@@ -92,7 +96,7 @@ function getValueSchema(dataType?: DataType) {
             schema = yup.number();
     }
 
-    return schema.required();
+    return unsettable ? schema : schema.required();
 }
 
 export function getAssignmentFromEditData(assignment: Assignment): Assignment {

@@ -32,6 +32,7 @@ export type FieldOptionType = {
     label: string;
     unit?: string;
     dataType: DataType;
+    unsettable?: boolean; // with the possibility to save an empty value which means "unset". undefined means false
     values?: Option[];
     outputConverter?: (value: number) => number | undefined;
     inputConverter?: (value: number) => number | undefined;

@@ -52,6 +52,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
     }, [watchEditedField, equipmentFields]);
 
+    const unsettable: boolean = useMemo(() => {
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.unsettable ?? false;
+    }, [watchEditedField, equipmentFields]);
+
     const watchPropertyName = useWatch({
         name: `${name}.${index}.${PROPERTY_NAME_FIELD}`,
     });
@@ -142,9 +146,13 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
         }
 
+        if (unsettable && dataType === DataType.DOUBLE) {
+            return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="None" />;
+        }
+
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, name, index, predefinedPropertiesValues, options]);
+    }, [dataType, unsettable, name, index, predefinedPropertiesValues, options]);
 
     return (
         <>

@@ -22,7 +22,7 @@ import {
     SIEMENS,
 } from '@gridsuite/commons-ui';
 
-export const FIELD_OPTIONS = {
+export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
     PROPERTY: {
         id: FieldType.FREE_PROPERTIES,
         label: 'Property',
@@ -146,24 +146,28 @@ export const FIELD_OPTIONS = {
         id: FieldType.LOW_VOLTAGE_LIMIT,
         label: 'LowVoltageLimit',
         unit: KILO_VOLT,
+        unsettable: true,
         dataType: DataType.DOUBLE,
     },
     HIGH_VOLTAGE_LIMIT: {
         id: FieldType.HIGH_VOLTAGE_LIMIT,
         label: 'HighVoltageLimit',
         unit: KILO_VOLT,
+        unsettable: true,
         dataType: DataType.DOUBLE,
     },
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
+        unsettable: true,
         dataType: DataType.DOUBLE,
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
+        unsettable: true,
         dataType: DataType.DOUBLE,
     },
     ACTIVE_POWER: {
