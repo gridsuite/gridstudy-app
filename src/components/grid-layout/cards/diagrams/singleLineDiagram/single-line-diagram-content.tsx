@@ -390,7 +390,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
                 style={{ height: '100%' }}
             />
