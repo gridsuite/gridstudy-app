@@ -17,7 +17,6 @@ import { fetchEquipmentsIds } from '../../../services/study/network-map';
 import GridItem from '../commons/grid-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-
 const styles = {
     message: (theme: Theme) => ({
         fontSize: 'small',

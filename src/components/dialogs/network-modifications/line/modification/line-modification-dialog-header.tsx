@@ -11,8 +11,23 @@ import { filledTextField } from 'components/dialogs/dialog-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 import GridItem from '../../../commons/grid-item';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
 
-const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIndex, setTabIndex, equipmentId }) => {
+export interface LineModificationDialogHeaderProps {
+    lineToModify: BranchInfos | null;
+    tabIndexesWithError: number[];
+    tabIndex: number | null;
+    setTabIndex: React.Dispatch<React.SetStateAction<number | null>>;
+    equipmentId: string;
+}
+
+const LineModificationDialogHeader = ({
+    lineToModify,
+    tabIndexesWithError,
+    tabIndex,
+    setTabIndex,
+    equipmentId,
+}: Readonly<LineModificationDialogHeaderProps>) => {
     const lineIdField = (
         <TextField
             size="small"
@@ -38,26 +53,24 @@ const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIn
     );
 
     return (
-        <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '15px',
-                }}
-            >
-                <Grid container spacing={2}>
-                    <GridItem size={4}>{lineIdField}</GridItem>
-                    <GridItem size={4}>{lineNameField}</GridItem>
-                </Grid>
-                <LineDialogTabs
-                    tabIndex={tabIndex}
-                    tabIndexesWithError={tabIndexesWithError}
-                    setTabIndex={setTabIndex}
-                    isModification={true}
-                />
-            </Box>
-        </>
+        <Box
+            sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '15px',
+            }}
+        >
+            <Grid container spacing={2}>
+                <GridItem size={4}>{lineIdField}</GridItem>
+                <GridItem size={4}>{lineNameField}</GridItem>
+            </Grid>
+            <LineDialogTabs
+                tabIndex={tabIndex}
+                tabIndexesWithError={tabIndexesWithError}
+                setTabIndex={setTabIndex}
+                isModification={true}
+            />
+        </Box>
     );
 };
 

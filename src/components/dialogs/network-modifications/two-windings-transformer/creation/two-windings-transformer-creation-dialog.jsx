@@ -125,7 +125,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(false),
+    ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -223,8 +223,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,
@@ -248,15 +246,15 @@ const TwoWindingsTransformerCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS]: twt?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
+                ...getAllLimitsFormData(
+                    twt?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
                         ...baseData,
                         name: id,
                         id: id + baseData.applicability,
                     })),
-                    selectedOperationalLimitsGroup1: twt?.selectedOperationalLimitsGroup1 ?? null,
-                    selectedOperationalLimitsGroup2: twt?.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                    twt?.selectedOperationalLimitsGroup1 ?? null,
+                    twt?.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                     regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
@@ -336,11 +334,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             CONNECTIVITY_2
                         ),
                     }),
-                    ...getAllLimitsFormData({
-                        [OPERATIONAL_LIMITS_GROUPS]: formatCompleteCurrentLimit(twt.currentLimits),
-                        [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroup1 ?? null,
-                        [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroup2 ?? null,
-                    }),
+                    ...getAllLimitsFormData(
+                        formatCompleteCurrentLimit(twt.currentLimits),
+                        twt.selectedOperationalLimitsGroup1 ?? null,
+                        twt.selectedOperationalLimitsGroup2 ?? null
+                    ),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                         hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],

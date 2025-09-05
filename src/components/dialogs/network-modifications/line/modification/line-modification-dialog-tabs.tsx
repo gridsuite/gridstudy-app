@@ -6,13 +6,30 @@
  */
 
 import { Box } from '@mui/material';
-import { LimitsPane } from '../../../limits/modification/limits-pane.tsx';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import { BranchConnectivityForm } from '../../../connectivity/branch-connectivity-form';
-import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form.tsx';
+import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { LineModificationDialogTab } from '../line-utils';
+import { LimitsPane } from '../../../limits/limits-pane';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
 
-const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetworkUuid, lineToModify, tabIndex }) => {
+export interface LineModificationDialogTabsProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    lineToModify: BranchInfos | null;
+    tabIndex: number | null;
+}
+
+const LineModificationDialogTabs = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    lineToModify,
+    tabIndex,
+}: Readonly<LineModificationDialogTabsProps>): JSX.Element => {
     return (
         <>
             <Box hidden={tabIndex !== LineModificationDialogTab.CONNECTIVITY_TAB} p={1}>
@@ -20,7 +37,6 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}
-                    withPosition={true}
                     isModification={true}
                     previousValues={lineToModify}
                 />
@@ -38,12 +54,7 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetwork
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPane
-                    currentNode={currentNode}
-                    equipmentToModify={lineToModify}
-                    clearableFields={true}
-                    onlySelectedLimitsGroup
-                />
+                <LimitsPane currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
             </Box>
 
             <Box hidden={tabIndex !== LineModificationDialogTab.STATE_ESTIMATION_TAB} p={1}>
