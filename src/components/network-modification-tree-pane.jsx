@@ -17,6 +17,7 @@ import {
     resetLogsFilter,
     reorderNetworkModificationTreeNodes,
     deletedOrRenamedNodes,
+    resetLogsPagination,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -298,6 +299,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     // when the current node is updated, we need to reset the logs filter
                     dispatch(resetLogsFilter());
+                    dispatch(resetLogsPagination());
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (

@@ -1544,6 +1544,8 @@
     "expandAllVoltageLevels": "Étendre tous les postes",
     "addVoltageLevel": "Ajouter un poste",
     "hide": "Masquer",
+    "hideLabels": "Masquer les libellés en mode edition",
+    "showLabels": "Afficher les libellés",
     "CreateSubstationInVoltageLevelIdenticalId": "L'ID du poste doit être différent de celui du site",
     "labeledGroupSecurity": "Sécurité",
     "selectedOperationalLimitsGroup1": "Jeu de limites actif côté 1",
