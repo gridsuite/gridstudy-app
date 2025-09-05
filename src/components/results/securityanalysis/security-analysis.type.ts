@@ -17,10 +17,13 @@ export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
     limit?: number;
+    patlLimit?: number;
     limitName?: string;
+    nextLimitName?: string;
     limitReduction?: number;
     limitType?: string;
     loading?: number;
+    patlLoading?: number;
     side?: string;
     value?: number;
     locationId?: string;
@@ -50,10 +53,13 @@ export interface SecurityAnalysisNmkTableRow {
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
     limit?: number;
+    patlLimit?: number;
     limitName?: string | null;
+    nextLimitName?: string | null;
     limitType?: string;
     linkedElementId?: string;
     loading?: number;
+    patlLoading?: number;
     side?: string;
     value?: number;
     violationCount?: number;
