@@ -22,9 +22,9 @@ const styles = {
     }),
 } as const satisfies Record<string, SxProps<Theme>>;
 
-export type LazyLoadingButtonProps = Omit<TooltipIconButtonProps, 'tooltip' | 'size' | 'onClick'>;
+export type PartialLoadingMenuButtonProps = Omit<TooltipIconButtonProps, 'tooltip' | 'size' | 'onClick'>;
 
-export default function PartialLoadingMenuButton({ disabled, ...props }: Readonly<LazyLoadingButtonProps>) {
+export default function PartialLoadingMenuButton({ disabled, ...props }: Readonly<PartialLoadingMenuButtonProps>) {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const BtnIcon = disabled ? DatasetDisabled : DatasetIcon;
     const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>(undefined);

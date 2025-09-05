@@ -121,9 +121,9 @@ const spreadsheetEn = {
     'spreadsheet/loading/error_fetching_type_title': 'Error during (re)load of spreadsheet(s) of type {type}',
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Include additional data',
     'spreadsheet/tabs/lazy_loading/error_loading_title': 'Error while retrieving spreadsheet parameters',
-    'spreadsheet/tabs/lazy_loading/error_loading_message': 'Optional data will be disable for now.',
-    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Operational Limit Groups',
-    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Regulating Terminal',
+    'spreadsheet/tabs/lazy_loading/error_loading_message': 'Optional data will be disabled for now.',
+    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Inactive limit sets',
+    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Regulated terminals',
 
     'spreadsheet/global-model-edition/edit': 'Model edition',
     'spreadsheet/global-model-edition/column_id': 'ID',

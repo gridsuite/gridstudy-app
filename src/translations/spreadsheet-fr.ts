@@ -126,9 +126,9 @@ const spreadsheetFr = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
     'spreadsheet/tabs/lazy_loading/error_loading_title': 'Erreur lors du chargement des paramètres',
     'spreadsheet/tabs/lazy_loading/error_loading_message':
-        'Le chargement des données optionnelles sera désactivée par défault.',
-    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Operational Limit Groups non-actifs',
-    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux de réglage des groupes',
+        'Le chargement des données optionnelles sera désactivé par défaut.',
+    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Sets de limites inactifs',
+    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux distants réglés',
 
     'spreadsheet/global-model-edition/edit': 'Éditer le modèle',
     'spreadsheet/global-model-edition/column_id': 'ID',
