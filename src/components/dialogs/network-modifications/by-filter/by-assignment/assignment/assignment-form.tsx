@@ -26,6 +26,7 @@ import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
+import { useIntl } from 'react-intl';
 
 interface AssignmentFormProps {
     name: string;
@@ -43,6 +44,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     equipmentType,
 }) => {
     const { setValue } = useFormContext();
+    const intl = useIntl();
 
     const watchEditedField = useWatch({
         name: `${name}.${index}.${EDITED_FIELD}`,
@@ -52,8 +54,8 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
     }, [watchEditedField, equipmentFields]);
 
-    const unsettable: boolean = useMemo(() => {
-        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.unsettable ?? false;
+    const settable_to_none: boolean = useMemo(() => {
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.settable_to_none ?? false;
     }, [watchEditedField, equipmentFields]);
 
     const watchPropertyName = useWatch({
@@ -146,13 +148,22 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
         }
 
-        if (unsettable && dataType === DataType.DOUBLE) {
-            return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="None" />;
+        if (dataType === DataType.DOUBLE && settable_to_none) {
+            return (
+                <AutocompleteInput
+                    name={`${name}.${index}.${VALUE_FIELD}`}
+                    label={'Value ou Aucun'}
+                    options={[intl.formatMessage({ id: 'None' })]}
+                    size={'small'}
+                    getOptionLabel={(value) => value.toString()}
+                    allowNewValue
+                />
+            );
         }
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, unsettable, name, index, predefinedPropertiesValues, options]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, intl]);
 
     return (
         <>

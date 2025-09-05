@@ -22,7 +22,7 @@ export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
 };
 export const getUnsettable = (fieldName?: string | null) => {
-    return getFieldOption(fieldName)?.unsettable;
+    return getFieldOption(fieldName)?.settable_to_none;
 };
 
 export const getFieldOption = (fieldName?: string | null): FieldOptionType | undefined => {
@@ -78,7 +78,14 @@ function getValueSchema(dataType?: DataType, unsettable?: boolean) {
     // set type
     switch (dataType) {
         case DataType.DOUBLE:
-            schema = yup.number();
+            schema = unsettable
+                ? yup
+                      .string()
+                      .test('is-number-or-aucune', "Le champ doit être un nombre ou égal à 'Aucun'", (value) => {
+                          // Vérifie si la valeur est "Aucune" ou un nombre valide
+                          return value === 'Aucun' || !isNaN(Number(value));
+                      })
+                : yup.number();
             break;
         case DataType.INTEGER:
             schema = yup.number().integer();
@@ -96,7 +103,7 @@ function getValueSchema(dataType?: DataType, unsettable?: boolean) {
             schema = yup.number();
     }
 
-    return unsettable ? schema : schema.required();
+    return schema.required();
 }
 
 export function getAssignmentFromEditData(assignment: Assignment): Assignment {
