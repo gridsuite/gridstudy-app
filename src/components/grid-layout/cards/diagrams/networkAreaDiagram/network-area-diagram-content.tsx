@@ -131,8 +131,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     );
 
     const handleToggleShowLabels = useCallback(() => {
-        setShowLabels(!showLabels);
-    }, [showLabels]);
+        setShowLabels((oldShowLabels) => !oldShowLabels);
+    }, []);
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
