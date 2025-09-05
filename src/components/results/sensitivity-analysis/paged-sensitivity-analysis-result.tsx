@@ -10,7 +10,6 @@ import {
     DATA_KEY_TO_FILTER_KEY_N,
     DATA_KEY_TO_FILTER_KEY_NK,
     DATA_KEY_TO_SORT_KEY,
-    DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     mappingTabs,
     PAGE_OPTIONS,
@@ -28,12 +27,18 @@ import { useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
+import {
+    FilterType as AgGridFilterType,
+    PaginationType,
+    SensitivityAnalysisTab,
+    SortWay,
+} from '../../../types/custom-aggrid-types';
 import { UUID } from 'crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { usePaginationSelector } from 'hooks/use-pagination-selector';
 
 export type PagedSensitivityAnalysisResultProps = {
     studyUuid: UUID;
@@ -41,8 +46,6 @@ export type PagedSensitivityAnalysisResultProps = {
     currentRootNetworkUuid: UUID;
     nOrNkIndex: number;
     sensiKind: SensiKind;
-    page: number;
-    setPage: (newPage: number) => void;
     setCsvHeaders: (newHeaders: string[]) => void;
     setIsCsvButtonDisabled: (newIsCsv: boolean) => void;
     globalFilters?: GlobalFilters;
@@ -54,15 +57,12 @@ function PagedSensitivityAnalysisResult({
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
-    page,
-    setPage,
     setCsvHeaders,
     setIsCsvButtonDisabled,
     globalFilters,
 }: Readonly<PagedSensitivityAnalysisResultProps>) {
     const intl = useIntl();
 
-    const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
     const [count, setCount] = useState<number>(0);
     const [result, setResult] = useState<SensitivityResult | null>(null);
     const [options, setOptions] = useState<SensitivityResultFilterOptions | null>(null);
@@ -74,6 +74,11 @@ function PagedSensitivityAnalysisResult({
     );
 
     const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.SensitivityAnalysis,
+        mappingTabs(sensiKind, nOrNkIndex) as SensitivityAnalysisTab
+    );
+    const { page, rowsPerPage } = pagination;
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -106,22 +111,22 @@ function PagedSensitivityAnalysisResult({
 
     const handleChangePage = useCallback(
         (_: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-            setPage(newPage);
+            dispatchPagination({ ...pagination, page: newPage });
         },
-        [setPage]
+        [pagination, dispatchPagination]
     );
 
     const handleChangeRowsPerPage = useCallback(
         (event: ChangeEvent<HTMLInputElement>) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
+            const newRowsPerPage = parseInt(event.target.value, 10);
+            dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
         },
-        [setPage]
+        [dispatchPagination]
     );
 
     const onFilter = useCallback(() => {
-        setPage(0);
-    }, [setPage]);
+        dispatchPagination({ ...pagination, page: 0 });
+    }, [pagination, dispatchPagination]);
 
     const fetchFilterOptions = useCallback(() => {
         const selector = {
