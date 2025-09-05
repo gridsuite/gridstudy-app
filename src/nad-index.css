@@ -270,20 +270,6 @@ g.nad-disconnected > g.nad-disconnected {
     display: none;
 }
 
-.nad-busnode-highlight{
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-    transform: scale(1.3);
-}
-.nad-textnode-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+.nad-textnode-highlight  {
     transform: scale(1.1);
-}
-
-.nad-zoom-2000 .nad-busnode-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-    transform: scale(1.6);
-}
-.nad-zoom-2000 .nad-textnode-highlight  {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-    transform: scale(1.4);
 }
