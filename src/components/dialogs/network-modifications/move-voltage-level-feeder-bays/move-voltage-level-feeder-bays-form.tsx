@@ -26,9 +26,9 @@ import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
 import GridItem from '../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane';
 import { UUID } from 'crypto';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import PositionDiagramPane from '../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 interface MoveVoltageLevelFeederBaysFormProps {
     feederBaysInfos: FeederBaysFormInfos[];
