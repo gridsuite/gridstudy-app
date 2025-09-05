@@ -1548,7 +1548,7 @@
     "expandAllVoltageLevels": "Expand all voltage levels",
     "addVoltageLevel": "Add a voltage level",
     "hide": "Hide",
-    "hideLabels": "Hide labels in Edit mode",
+    "hideLabels": "Hide labels in edit mode",
     "showLabels": "Show labels",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
     "labeledGroupSecurity": "Security",
