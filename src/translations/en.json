@@ -86,7 +86,7 @@
     "NominalVoltage": "Nominal voltage",
     "I_(A)": "I (A)",
     "limit": "limit",
-    "Limit": "Limit value (A or kV)",
+    "LimitLabelAOrKv": "Limit (A or kV)",
     "LimitLabel": "Limit (A)",
     "upComingOverloadDuration": "Upcoming overload",
     "actualOverloadDuration": "Actual overload",
@@ -393,6 +393,7 @@
     "Key": "Key",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
+    "Contingency": "Contingency",
     "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
@@ -451,7 +452,6 @@
     "ContingenciesFromConstraints": "Constraints -> contingencies",
 
     "Equipment": "Equipment",
-    "Constraint": "Constraint",
     "EquipmentType": "Equipment type",
     "selectionType": "Selection type",
 

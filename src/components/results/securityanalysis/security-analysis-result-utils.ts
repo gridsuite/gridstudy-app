@@ -80,9 +80,12 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                       })
                     : '',
                 limit: limitViolation.limit,
+                patlLimit: limitViolation.patlLimit,
                 value: limitViolation.value,
                 loading: limitViolation.loading,
+                patlLoading: limitViolation.patlLoading,
                 limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
+                nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
                 side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
                 linkedElementId: contingencyId,
                 // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
@@ -117,13 +120,16 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                           })
                         : '',
                     limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
+                    nextLimitName: translateLimitNameBackToFront(limitViolation.nextLimitName, intl),
                     side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
                     // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
                         limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
                     limit: limitViolation.limit,
+                    patlLimit: limitViolation.patlLimit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
+                    patlLoading: limitViolation.patlLoading,
                     locationId: limitViolation.locationId,
                     linkedElementId: subjectId,
                 });
@@ -187,7 +193,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         }),
 
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitName' }),
+            headerName: intl.formatMessage({ id: 'LimitNameCurrentViolation' }),
             colId: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
@@ -205,7 +211,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         }),
 
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
+            headerName: intl.formatMessage({ id: 'LimitLabelAOrKv' }),
             colId: 'limit',
             field: 'limit',
             context: {
@@ -243,7 +249,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         }),
 
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Loading' }),
+            headerName: intl.formatMessage({ id: 'LimitLoading' }),
             colId: 'loading',
             field: 'loading',
             context: {
@@ -320,7 +326,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     };
     return [
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ContingencyId' }),
+            headerName: intl.formatMessage({ id: 'Contingency' }),
             colId: 'contingencyId',
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
@@ -355,26 +361,10 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Constraint' }),
+            headerName: intl.formatMessage({ id: 'Equipment' }),
             colId: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Bus' }),
-            colId: 'locationId',
-            field: 'locationId',
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridComparatorFilter,
@@ -404,9 +394,24 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 },
             },
         }),
-
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitName' }),
+            headerName: intl.formatMessage({ id: 'Bus' }),
+            colId: 'locationId',
+            field: 'locationId',
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'LimitNameCurrentViolation' }),
             colId: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
@@ -422,44 +427,9 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 },
             },
         }),
+
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            colId: 'limit',
-            field: 'limit',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.NUMBER,
-                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            colId: 'value',
-            field: 'value',
-            context: {
-                numeric: true,
-                fractionDigits: 2,
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.NUMBER,
-                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Loading' }),
+            headerName: intl.formatMessage({ id: 'LimitLoading' }),
             colId: 'loading',
             field: 'loading',
             context: {
@@ -477,6 +447,25 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'PatlLoading' }),
+            colId: 'patlLoading',
+            field: 'patlLoading',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
@@ -486,6 +475,81 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             context: {
                 sortParams: { ...sortParams, isChildren: true },
                 filterComponent: CustomAggridDurationFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'NextLimitNameCurrentViolation' }),
+            colId: 'nextLimitName',
+            field: 'nextLimitName',
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
+            context: {
+                sortParams,
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'LimitLabelAOrKv' }),
+            colId: 'limit',
+            field: 'limit',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'PatlLimitValue' }),
+            colId: 'patlLimit',
+            field: 'patlLimit',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            colId: 'value',
+            field: 'value',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
                 filterComponentParams: {
                     filterParams: {
                         dataType: FILTER_DATA_TYPES.NUMBER,
@@ -541,7 +605,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     };
     return [
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Constraint' }),
+            headerName: intl.formatMessage({ id: 'Equipment' }),
             colId: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
@@ -558,7 +622,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'ContingencyId' }),
+            headerName: intl.formatMessage({ id: 'Contingency' }),
             colId: 'contingencyId',
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
@@ -593,22 +657,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             },
         }),
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Bus' }),
-            colId: 'locationId',
-            field: 'locationId',
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridComparatorFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.TEXT,
-                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
-        makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
             field: 'limitType',
@@ -625,9 +673,25 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 },
             },
         }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'Bus' }),
+            colId: 'locationId',
+            field: 'locationId',
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
 
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'LimitName' }),
+            headerName: intl.formatMessage({ id: 'LimitNameCurrentViolation' }),
             colId: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
@@ -643,8 +707,62 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 },
             },
         }),
+
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Limit' }),
+            headerName: intl.formatMessage({ id: 'LimitLoading' }),
+            colId: 'loading',
+            field: 'loading',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'PatlLoading' }),
+            colId: 'patlLoading',
+            field: 'patlLoading',
+            context: {
+                numeric: true,
+                fractionDigits: 2,
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.NUMBER,
+                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'NextLimitNameCurrentViolation' }),
+            colId: 'nextLimitName',
+            field: 'nextLimitName',
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
+            context: {
+                sortParams: { ...sortParams, isChildren: true },
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                        ...filterParams,
+                    },
+                },
+            },
+        }),
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'LimitLabelAOrKv' }),
             colId: 'limit',
             field: 'limit',
             context: {
@@ -661,10 +779,11 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 },
             },
         }),
+
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
-            colId: 'value',
-            field: 'value',
+            headerName: intl.formatMessage({ id: 'PatlLimitValue' }),
+            colId: 'patlLimit',
+            field: 'patlLimit',
             context: {
                 numeric: true,
                 fractionDigits: 2,
@@ -679,10 +798,11 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 },
             },
         }),
+
         makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Loading' }),
-            colId: 'loading',
-            field: 'loading',
+            headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            colId: 'value',
+            field: 'value',
             context: {
                 numeric: true,
                 fractionDigits: 2,
@@ -876,6 +996,7 @@ export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     status: 'result.status',
     limitType: 'limitType',
     limitName: 'limitName',
+    nextLimitName: 'nextLimitName',
     side: 'side',
     acceptableDuration: 'acceptableDuration',
     limit: 'limit',
@@ -890,11 +1011,14 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     status: 'status',
     limitType: 'contingencyLimitViolations.limitType',
     limitName: 'contingencyLimitViolations.limitName',
+    nextLimitName: 'contingencyLimitViolations.nextLimitName',
     side: 'contingencyLimitViolations.side',
     acceptableDuration: 'contingencyLimitViolations.acceptableDuration',
     limit: 'contingencyLimitViolations.limit',
+    patlLimit: 'contingencyLimitViolations.patlLimit',
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
+    patlLoading: 'contingencyLimitViolations.patlLoading',
 };
 
 export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
@@ -904,11 +1028,14 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     status: 'contingencyLimitViolations.contingency.status',
     limitType: 'contingencyLimitViolations.limitType',
     limitName: 'contingencyLimitViolations.limitName',
+    nextLimitName: 'contingencyLimitViolations.nextLimitName',
     side: 'contingencyLimitViolations.side',
     acceptableDuration: 'contingencyLimitViolations.acceptableDuration',
     limit: 'contingencyLimitViolations.limit',
+    patlLimit: 'contingencyLimitViolations.patlLimit',
     value: 'contingencyLimitViolations.value',
     loading: 'contingencyLimitViolations.loading',
+    patlLoading: 'contingencyLimitViolations.patlLoading',
 };
 
 export enum NMK_TYPE {
@@ -937,6 +1064,7 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterConfi
     return filterSelector.map((filter) => {
         switch (filter.column) {
             case 'limitName':
+            case 'nextLimitName':
                 return {
                     ...filter,
                     value: translateLimitNameFrontToBack(filter.value as string, intl),
