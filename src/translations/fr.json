@@ -1599,5 +1599,9 @@
     "loadflowModifications": "Modification calcul de répartition",
     "loadFlowModificationDetails": "Détails",
     "PHASE_TAP": "Déphaseur",
-    "RATIO_TAP": "Régleur"
+    "RATIO_TAP": "Régleur",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
+    "TOP": "HAUT",
+    "BOTTOM": "BAS",
+    "DuplicatedPositionsError": "Duplicated position erreur"
 }

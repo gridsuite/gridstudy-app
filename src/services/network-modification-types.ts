@@ -866,3 +866,18 @@ export type BalancesAdjustmentInfos = {
     subtractLoadFlowBalancing: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };
+
+export interface MoveVoltageLevelFeederBaysInfos {
+    type: ModificationType;
+    uuid: string | null;
+    voltageLevelId: string;
+    feederBaysAttributeList?: ConnectablePositionModificationInfos[] | [];
+}
+
+export interface ConnectablePositionModificationInfos {
+    connectableId: AttributeModification<string> | null;
+    busbarSectionId: AttributeModification<string> | null;
+    connectionPosition: AttributeModification<string> | null;
+    connectionName: AttributeModification<string> | null;
+    connectionDirection: AttributeModification<string> | null;
+}

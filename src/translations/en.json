@@ -1603,5 +1603,9 @@
     "loadflowModifications": "Loadflow modification",
     "loadFlowModificationDetails":"Details",
     "PHASE_TAP": "Phase",
-    "RATIO_TAP": "Ratio"
+    "RATIO_TAP": "Ratio",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
+    "TOP": "TOP",
+    "BOTTOM": "BOTTOM",
+    "DuplicatedPositionsError": "Duplicated position error"
 }
