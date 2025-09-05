@@ -43,10 +43,6 @@ const styles = {
     },
 };
 
-interface RecursiveIdentifiable extends Identifiable {
-    [alias: string]: Identifiable | string | undefined;
-}
-
 interface SpreadsheetContentProps {
     gridRef: RefObject<AgGridReact>;
     currentNode: CurrentTreeNode;
@@ -164,17 +160,27 @@ export const SpreadsheetContent = memo(
                 return undefined;
             }
 
-            return equipments.equipmentsByNodeId[currentNode.id].map((equipment) => {
-                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
-                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, nodeEquipments]) => {
-                    let matchingEquipment = nodeEquipments.find((eq) => eq.id === equipment.id);
-                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
-                    if (nodeAlias && matchingEquipment) {
-                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
-                    }
-                });
-                return equipmentToAdd;
-            });
+            const currentNodeData: Record<string, Identifiable> = equipments.equipmentsByNodeId[currentNode.id];
+            return Object.values(
+                Object.entries(equipments.equipmentsByNodeId).reduce(
+                    (prev, [nodeId, nodeEquipments]) => {
+                        if (nodeId === currentNode.id) {
+                            return prev;
+                        }
+                        const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
+                        if (nodeAlias) {
+                            Object.values(nodeEquipments).forEach((eq) => {
+                                prev[eq.id] = {
+                                    ...prev[eq.id],
+                                    [nodeAlias.alias]: eq,
+                                };
+                            });
+                        }
+                        return prev;
+                    },
+                    { ...currentNodeData }
+                )
+            );
         }, [equipments, currentNode.id, nodeAliases]);
 
         useEffect(() => {

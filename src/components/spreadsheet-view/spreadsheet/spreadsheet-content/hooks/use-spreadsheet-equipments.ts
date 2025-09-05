@@ -130,7 +130,7 @@ export const useSpreadsheetEquipments = (
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!equipments || !builtAliasedNodesIds?.length || !currentNode?.id) {
+        if (!equipments || !builtAliasedNodesIds || !currentNode?.id) {
             return;
         }
         const currentNodeId = currentNode.id;
