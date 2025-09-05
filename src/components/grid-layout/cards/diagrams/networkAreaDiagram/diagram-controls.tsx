@@ -25,6 +25,8 @@ import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
+import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
+import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import { Theme, Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -76,6 +78,8 @@ interface DiagramControlsProps {
     onToggleEditNadMode?: (isEditMode: boolean) => void;
     onExpandAllVoltageLevels?: () => void;
     onAddVoltageLevel: (vlId: string) => void;
+    onToggleShowLabels?: () => void;
+    isShowLabels?: boolean;
     isDiagramLoading?: boolean;
 }
 
@@ -87,6 +91,8 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
     onToggleEditNadMode,
     onExpandAllVoltageLevels,
     onAddVoltageLevel,
+    onToggleShowLabels,
+    isShowLabels,
     isDiagramLoading,
 }) => {
     const intl = useIntl();
@@ -110,6 +116,12 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
 
     const handleClickLoadIcon = () => {
         setIsLoadSelectorOpen(true);
+    };
+
+    const handleToggleShowLabels = () => {
+        if (onToggleShowLabels && !isDiagramLoading) {
+            onToggleShowLabels();
+        }
     };
 
     const handleClickExpandAllVoltageLevelsIcon = () => {
@@ -239,6 +251,19 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                                     disabled={isDiagramLoading}
                                 >
                                     <AddLocationOutlined sx={styles.icon} />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={<FormattedMessage id={isShowLabels ? 'hideLabels' : 'showLabels'} />}>
+                                <IconButton
+                                    sx={styles.actionIcon}
+                                    onClick={handleToggleShowLabels}
+                                    disabled={isDiagramLoading}
+                                >
+                                    {isShowLabels ? (
+                                        <SpeakerNotesOutlinedIcon sx={styles.icon} />
+                                    ) : (
+                                        <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
+                                    )}
                                 </IconButton>
                             </Tooltip>
                         </>
