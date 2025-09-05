@@ -260,9 +260,9 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                                     disabled={isDiagramLoading}
                                 >
                                     {isShowLabels ? (
-                                        <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
-                                    ) : (
                                         <SpeakerNotesOutlinedIcon sx={styles.icon} />
+                                    ) : (
+                                        <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
                                     )}
                                 </IconButton>
                             </Tooltip>
