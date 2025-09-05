@@ -42,7 +42,12 @@ export default function DependenciesEditor({ name, dependencies, ...props }: Dep
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     inputRef={ref}
-                    inputProps={{ ...inputProps }}
+                    inputProps={{
+                        style: {
+                            fontSize: 'small',
+                        },
+                        ...inputProps,
+                    }}
                     {...genHelperError(error?.message)}
                     {...rest}
                 />
