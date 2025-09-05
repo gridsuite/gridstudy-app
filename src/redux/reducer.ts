@@ -73,7 +73,9 @@ import {
     type LoadflowResultFilterAction,
     type LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
+    LOGS_RESULT_PAGINATION,
     type LogsFilterAction,
+    LogsResultPaginationAction,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
@@ -123,6 +125,7 @@ import {
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
+    RESET_LOGS_PAGINATION,
     RESET_MAP_EQUIPMENTS,
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
@@ -133,6 +136,7 @@ import {
     type ResetEquipmentsByTypesAction,
     type ResetEquipmentsPostComputationAction,
     type ResetLogsFilterAction,
+    ResetLogsPaginationAction,
     type ResetMapEquipmentsAction,
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
@@ -145,12 +149,12 @@ import {
     SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
+    SELECT_SYNC_ENABLED,
     SELECT_THEME,
     type SelectComputedLanguageAction,
     type SelectLanguageAction,
-    type SelectThemeAction,
-    SELECT_SYNC_ENABLED,
     type SelectSyncEnabledAction,
+    type SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
@@ -217,10 +221,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    LOGS_RESULT_PAGINATION,
-    LogsResultPaginationAction,
-    RESET_LOGS_PAGINATION,
-    ResetLogsPaginationAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -305,8 +305,8 @@ import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    type SpreadsheetTabDefinition,
     type SpreadsheetOptionalLoadingParameters,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
@@ -1574,33 +1574,41 @@ export const reducer = createReducer(initialState, (builder) => {
             action.equipmentType === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
         ) {
             state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
-                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = state.spreadsheetNetwork[
-                    action.equipmentType
-                ].equipmentsByNodeId[nodeId].map((eq) => {
-                    return {
-                        ...eq,
-                        operationalLimitsGroup1: undefined,
-                        operationalLimitsGroup1Names: undefined,
-                        selectedOperationalLimitsGroup1: undefined,
-                        operationalLimitsGroup2: undefined,
-                        operationalLimitsGroup2Names: undefined,
-                        selectedOperationalLimitsGroup2: undefined,
-                    };
-                });
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
+                    state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
+                ).reduce(
+                    (acc, eq) => {
+                        acc[eq.id] = {
+                            ...eq,
+                            operationalLimitsGroup1: undefined,
+                            operationalLimitsGroup1Names: undefined,
+                            selectedOperationalLimitsGroup1: undefined,
+                            operationalLimitsGroup2: undefined,
+                            operationalLimitsGroup2Names: undefined,
+                            selectedOperationalLimitsGroup2: undefined,
+                        };
+                        return acc;
+                    },
+                    {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
+                );
             });
         } else if (action.equipmentType === SpreadsheetEquipmentType.GENERATOR) {
             state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
-                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = state.spreadsheetNetwork[
-                    action.equipmentType
-                ].equipmentsByNodeId[nodeId].map((eq) => {
-                    return {
-                        ...eq,
-                        regulatingTerminalVlName: undefined,
-                        regulatingTerminalConnectableId: undefined,
-                        regulatingTerminalConnectableType: undefined,
-                        regulatingTerminalVlId: undefined,
-                    };
-                });
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
+                    state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
+                ).reduce(
+                    (acc, eq) => {
+                        acc[eq.id] = {
+                            ...eq,
+                            regulatingTerminalVlName: undefined,
+                            regulatingTerminalConnectableId: undefined,
+                            regulatingTerminalConnectableType: undefined,
+                            regulatingTerminalVlId: undefined,
+                        };
+                        return acc;
+                    },
+                    {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
+                );
             });
         }
     });
