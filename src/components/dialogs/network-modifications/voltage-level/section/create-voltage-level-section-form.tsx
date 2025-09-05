@@ -97,6 +97,7 @@ export function CreateVoltageLevelSectionForm({
     useEffect(() => {
         if (busBarSectionInfos && sectionCount) {
             const selectedKey = sectionCount?.id;
+            setValue(ALL_BUS_BAR_SECTIONS, false);
             if (selectedKey === 'all') {
                 setValue(ALL_BUS_BAR_SECTIONS, true);
                 if (allBusbarSectionsList && Array.isArray(allBusbarSectionsList)) {
