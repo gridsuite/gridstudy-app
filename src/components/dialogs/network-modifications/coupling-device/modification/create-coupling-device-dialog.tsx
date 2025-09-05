@@ -15,7 +15,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { createCouplingDevice } from '../../../../../services/study/network-modifications';
-import { CustomFormProvider, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, Option, useSnackMessage } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../../../services/study/network';
 import CreateCouplingDeviceForm from './create-coupling-device-form';
@@ -24,7 +24,6 @@ import { EquipmentModificationDialogProps } from '../../../../graph/menus/networ
 import { CreateCouplingDeviceInfos } from '../../../../../services/network-modification-types';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { CreateCouplingDeviceDialogSchemaForm } from '../coupling-device-dialog.type';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 const emptyFormData = {
     [BUS_BAR_SECTION_ID1]: null,
@@ -182,7 +181,7 @@ export default function CreateCouplingDeviceDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         fillerHeight={4}
                     />
                 )}

@@ -97,7 +97,7 @@ export function LimitsGroupsContextualMenu({
 
     return (
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-            {!isModification /* TODO : uncomment this when the removal of operational limits groups will be possible in powsybl network store */ && (
+            {!isModification /* TODO : Remove this when the removal of operational limits groups will be possible in powsybl network store */ && (
                 <>
                     <MenuItem
                         onClick={() =>

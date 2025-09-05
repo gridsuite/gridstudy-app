@@ -8,7 +8,7 @@
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -64,7 +64,7 @@ import {
     setCurrentReactiveCapabilityCurveChoice,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyGenerator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -269,7 +269,7 @@ export default function GeneratorModificationDialog({
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.GENERATOR,
+                    EquipmentType.GENERATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -420,7 +420,7 @@ export default function GeneratorModificationDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.GENERATOR}
+                        equipmentType={EquipmentType.GENERATOR}
                         fillerHeight={17}
                     />
                 )}

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -35,7 +35,7 @@ import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -161,7 +161,7 @@ export default function LoadModificationDialog({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.LOAD,
+                    EquipmentType.LOAD,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -298,7 +298,7 @@ export default function LoadModificationDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.LOAD}
+                        equipmentType={EquipmentType.LOAD}
                         fillerHeight={2}
                     />
                 )}

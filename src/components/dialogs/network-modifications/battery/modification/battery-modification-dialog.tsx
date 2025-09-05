@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useState } from 'react';
-import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -44,7 +44,7 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { REMOVE } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -212,7 +212,7 @@ export default function BatteryModificationDialog({
                     studyUuid,
                     currentNode.id,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.BATTERY,
+                    EquipmentType.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -344,7 +344,7 @@ export default function BatteryModificationDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.BATTERY}
+                        equipmentType={EquipmentType.BATTERY}
                         fillerHeight={17}
                     />
                 )}

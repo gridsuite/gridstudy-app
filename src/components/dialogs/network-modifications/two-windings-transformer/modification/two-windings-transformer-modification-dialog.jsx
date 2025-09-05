@@ -9,6 +9,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentType,
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -104,7 +105,7 @@ import {
     computeHighTapPosition,
     toModificationOperation,
 } from '../../../../utils/utils';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
     getComputedPhaseTapChangerRegulationMode,
@@ -642,7 +643,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+                    EquipmentType.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -777,7 +778,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
+                        equipmentType={EquipmentType.TWO_WINDINGS_TRANSFORMER}
                     />
                 )}
                 {selectedId != null && (

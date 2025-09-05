@@ -57,7 +57,7 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
                 (item.name === intl.formatMessage({ id: 'IST' }) && permanentLimit) ||
                 (!permanentLimit && !item.acceptableDuration);
 
-            const permanentLimitValue = permanentLimit ? permanentLimit : maxValuePermanentLimit;
+            const permanentLimitValue = permanentLimit || maxValuePermanentLimit;
 
             const itemTempoGreaterThanPrevious: boolean =
                 (item?.acceptableDuration &&

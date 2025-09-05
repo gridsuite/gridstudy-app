@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MODIFICATION_TYPES, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    EquipmentType,
+    MODIFICATION_TYPES,
+    ModificationType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { useForm } from 'react-hook-form';
@@ -29,7 +35,6 @@ import { fetchSwitchesOfVoltageLevel } from '../../../../services/study/network'
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import { SwitchInfos } from '../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const formSchema = yup.object().shape({
     [TOPOLOGY_MODIFICATION_TABLE]: yup
@@ -148,7 +153,7 @@ export default function VoltageLevelTopologyModificationDialog({
                 equipmentId: string;
                 equipmentAttributeName: string;
                 equipmentAttributeValue: boolean;
-                equipmentType: EQUIPMENT_TYPES;
+                equipmentType: EquipmentType;
             }[] = [];
             if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
                 equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
@@ -165,7 +170,7 @@ export default function VoltageLevelTopologyModificationDialog({
                     equipmentAttributeName: 'open',
                     // Note that 'currentConnectionStatus' which presents 'close' should be inverted when submitting open attribute
                     equipmentAttributeValue: Boolean(!item.currentConnectionStatus),
-                    equipmentType: EQUIPMENT_TYPES.SWITCH,
+                    equipmentType: EquipmentType.SWITCH,
                 }));
             }
             const voltageLevelTopologyModificationInfos = {
@@ -334,7 +339,7 @@ export default function VoltageLevelTopologyModificationDialog({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         fillerHeight={17}
                         freeInputAllowed={false}
                         autoSelectEnabled={true}

@@ -7,7 +7,7 @@
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import {
     createFilter,
     EquipmentInfos,
@@ -94,7 +94,7 @@ export function fetchEquipmentsIds(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     substationsIds: string[],
-    equipmentType: EQUIPMENT_TYPES | EquipmentType | ExtendedEquipmentType,
+    equipmentType: EquipmentType | ExtendedEquipmentType,
     inUpstreamBuiltParentNode: boolean,
     nominalVoltages?: number[]
 ) {

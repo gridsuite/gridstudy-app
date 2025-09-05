@@ -10,6 +10,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentType,
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -71,7 +72,7 @@ import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -299,7 +300,7 @@ const LineModificationDialog = ({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.LINE,
+                    EquipmentType.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -430,7 +431,7 @@ const LineModificationDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.LINE}
+                        equipmentType={EquipmentType.LINE}
                     />
                 )}
                 {selectedId != null && (
