@@ -73,6 +73,7 @@ import {
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
 import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
+import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 
 const noUserManager = { instance: null, error: null };
 
@@ -93,6 +94,8 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
+
+    useOptionalLoadingParameters(studyUuid);
 
     const updateNetworkVisualizationsParams = useCallback(
         (params) => {

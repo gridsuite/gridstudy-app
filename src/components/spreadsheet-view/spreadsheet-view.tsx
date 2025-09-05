@@ -6,10 +6,10 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert, Paper } from '@mui/material';
-import { SpreadsheetTabs } from './spreadsheet-tabs/spreadsheet-tabs';
+import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
@@ -31,6 +31,7 @@ const styles = {
         left: '43%',
     },
 };
+
 interface SpreadsheetViewProps {
     currentNode: CurrentTreeNode;
     equipmentId: string;
