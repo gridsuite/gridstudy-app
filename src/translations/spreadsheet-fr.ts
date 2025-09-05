@@ -124,9 +124,6 @@ const spreadsheetFr = {
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
     'spreadsheet/loading/error_fetching_type_title': 'Erreur lors du (re)chargement du/des tableaux de type {type}',
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
-    'spreadsheet/tabs/lazy_loading/error_loading_title': 'Erreur lors du chargement des paramètres',
-    'spreadsheet/tabs/lazy_loading/error_loading_message':
-        'Le chargement des données optionnelles sera désactivé par défaut.',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Sets de limites inactifs',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux distants réglés',
 
