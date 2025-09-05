@@ -72,6 +72,7 @@ import {
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
+import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
 import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 
 const noUserManager = { instance: null, error: null };
@@ -158,6 +159,8 @@ const App = () => {
     useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: updateConfig,
     });
+
+    useStudyNavigationSync();
 
     const networkVisuParamsUpdated = useCallback(
         (event) => {

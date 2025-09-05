@@ -118,6 +118,7 @@ const spreadsheetEn = {
     'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',
     'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
     'spreadsheet/spreadsheet_name_le_60': 'Spreadsheet name must be at most 60 characters',
+    'spreadsheet/loading/error_fetching_type_title': 'Error during (re)load of spreadsheet(s) of type {type}',
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Include additional data',
     'spreadsheet/tabs/lazy_loading/error_loading_title': 'Error while retrieving spreadsheet parameters',
     'spreadsheet/tabs/lazy_loading/error_loading_message': 'Optional data will be disable for now.',

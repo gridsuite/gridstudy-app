@@ -14,9 +14,9 @@ import TabPanelLazy from './results/common/tab-panel-lazy';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
 import ParametersTabs from './parameters-tabs';
-import MapViewer from './map-viewer';
+import TreeTab from './tree-tab';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type';
+import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
 import { openDiagram, setToggleOptions } from '../redux/actions.js';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,8 +67,8 @@ const StudyPane = ({
         // switch to tree view
         onChangeTab(0);
         // toggle diagram grid layout
-        if (!toggleOptions.includes(StudyDisplayMode.DIAGRAM_GRID_LAYOUT)) {
-            dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.DIAGRAM_GRID_LAYOUT]));
+        if (!toggleOptions.includes(StudyDisplayMode.GRID_LAYOUT_PANEL)) {
+            dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.GRID_LAYOUT_PANEL]));
         }
     }, [dispatch, onChangeTab, toggleOptions]);
 
@@ -100,14 +100,14 @@ const StudyPane = ({
                         display: view === StudyView.TREE ? null : 'none',
                     }}
                 >
-                    <MapViewer
+                    <TreeTab
                         studyUuid={studyUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         tableEquipment={tableEquipment}
                         onTableEquipementChanged={handleTableEquipmentChanged}
                         onChangeTab={onChangeTab}
                         showGrid={showGrid}
-                    ></MapViewer>
+                    />
                 </div>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
                 <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>

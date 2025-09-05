@@ -42,6 +42,7 @@ import type { GlobalFilter } from '../components/results/common/global-filter/gl
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
+    LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
@@ -64,15 +65,17 @@ import {
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    LogsPaginationConfig,
     PaginationConfig,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
     SortConfig,
 } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/diagrams/diagram.type';
+import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -113,7 +116,6 @@ export type AppActions =
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
     | SetComputingStatusAction
@@ -153,7 +155,12 @@ export type AppActions =
     | SetOpenMapAction
     | SecurityAnalysisResultPaginationAction
     | SensitivityAnalysisResultPaginationAction
-    | ShortcircuitAnalysisResultPaginationAction;
+    | ShortcircuitAnalysisResultPaginationAction
+    | ResetSecurityAnalysisPaginationAction
+    | ResetSensitivityAnalysisPaginationAction
+    | ResetShortcircuitAnalysisPaginationAction
+    | LogsResultPaginationAction
+    | ResetLogsPaginationAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -774,18 +781,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     };
 }
 
-export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
-export type SetStudyDisplayModeAction = Readonly<Action<typeof SET_STUDY_DISPLAY_MODE>> & {
-    studyDisplayMode: StudyDisplayMode;
-};
-
-export function setStudyDisplayMode(studyDisplayMode: StudyDisplayMode): SetStudyDisplayModeAction {
-    return {
-        type: SET_STUDY_DISPLAY_MODE,
-        studyDisplayMode: studyDisplayMode,
-    };
-}
-
 export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
 export type OpenDiagramAction = Readonly<Action<typeof OPEN_DIAGRAM>> & {
     id: string;
@@ -1051,6 +1046,15 @@ export function setSecurityAnalysisResultPagination(
     };
 }
 
+export const RESET_SECURITY_ANALYSIS_PAGINATION = 'RESET_SECURITY_ANALYSIS_PAGINATION';
+export type ResetSecurityAnalysisPaginationAction = Readonly<Action<typeof RESET_SECURITY_ANALYSIS_PAGINATION>>;
+
+export function resetSecurityAnalysisPagination(): ResetSecurityAnalysisPaginationAction {
+    return {
+        type: RESET_SECURITY_ANALYSIS_PAGINATION,
+    };
+}
+
 export const SENSITIVITY_ANALYSIS_RESULT_PAGINATION = 'SENSITIVITY_ANALYSIS_RESULT_PAGINATION';
 export type SensitivityAnalysisResultPaginationAction = Readonly<
     Action<typeof SENSITIVITY_ANALYSIS_RESULT_PAGINATION>
@@ -1070,6 +1074,15 @@ export function setSensitivityAnalysisResultPagination(
     };
 }
 
+export const RESET_SENSITIVITY_ANALYSIS_PAGINATION = 'RESET_SENSITIVITY_ANALYSIS_PAGINATION';
+export type ResetSensitivityAnalysisPaginationAction = Readonly<Action<typeof RESET_SENSITIVITY_ANALYSIS_PAGINATION>>;
+
+export function resetSensitivityAnalysisPagination(): ResetSensitivityAnalysisPaginationAction {
+    return {
+        type: RESET_SENSITIVITY_ANALYSIS_PAGINATION,
+    };
+}
+
 export const SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION = 'SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION';
 export type ShortcircuitAnalysisResultPaginationAction = Readonly<
     Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION>
@@ -1086,6 +1099,15 @@ export function setShortcircuitAnalysisResultPagination(
         type: SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
         paginationTab: paginationTab,
         [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: shortcircuitAnalysisPagination,
+    };
+}
+
+export const RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION = 'RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION';
+export type ResetShortcircuitAnalysisPaginationAction = Readonly<Action<typeof RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION>>;
+
+export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysisPaginationAction {
+    return {
+        type: RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
     };
 }
 
@@ -1129,6 +1151,32 @@ export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 export function resetLogsFilter(): ResetLogsFilterAction {
     return {
         type: RESET_LOGS_FILTER,
+    };
+}
+
+export const LOGS_RESULT_PAGINATION = 'LOGS_RESULT_PAGINATION';
+export type LogsResultPaginationAction = Readonly<Action<typeof LOGS_RESULT_PAGINATION>> & {
+    paginationTab: ComputingAndNetworkModificationType;
+    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationConfig;
+};
+
+export function setLogsResultPagination(
+    paginationTab: ComputingAndNetworkModificationType,
+    logsPagination: LogsPaginationConfig
+): LogsResultPaginationAction {
+    return {
+        type: LOGS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [LOGS_PAGINATION_STORE_FIELD]: logsPagination,
+    };
+}
+
+export const RESET_LOGS_PAGINATION = 'RESET_LOGS_PAGINATION';
+export type ResetLogsPaginationAction = Readonly<Action<typeof RESET_LOGS_PAGINATION>>;
+
+export function resetLogsPagination(): ResetLogsPaginationAction {
+    return {
+        type: RESET_LOGS_PAGINATION,
     };
 }
 
@@ -1392,5 +1440,17 @@ export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig)
     return {
         type: SET_DIAGRAM_GRID_LAYOUT,
         diagramGridLayout: diagramGridLayout,
+    };
+}
+
+export const SELECT_SYNC_ENABLED = 'SELECT_SYNC_ENABLED';
+export type SelectSyncEnabledAction = Readonly<Action<typeof SELECT_SYNC_ENABLED>> & {
+    syncEnabled: boolean;
+};
+
+export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction {
+    return {
+        type: SELECT_SYNC_ENABLED,
+        syncEnabled,
     };
 }
