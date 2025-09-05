@@ -1547,6 +1547,7 @@
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
     "addVoltageLevel": "Add a voltage level",
+    "tooManyVoltageLevels": "Too many voltage levels",
     "hide": "Hide",
     "hideLabels": "Hide labels in edit mode",
     "showLabels": "Show labels",
