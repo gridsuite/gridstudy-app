@@ -12,7 +12,7 @@ export const RESULTS_LOADING_DELAY = 500;
 export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
-] as const;
+];
 // and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 

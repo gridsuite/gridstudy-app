@@ -15,14 +15,17 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { Assignment, DataType, FieldValue } from './assignment.type';
+import { Assignment, DataType, FieldOptionType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
 };
+export const getUnsettable = (fieldName?: string | null) => {
+    return getFieldOption(fieldName)?.settable_to_none;
+};
 
-export const getFieldOption = (fieldName?: string | null) => {
+export const getFieldOption = (fieldName?: string | null): FieldOptionType | undefined => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
@@ -61,7 +64,8 @@ export function getAssignmentsSchema() {
                     .mixed<FieldValue>()
                     .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
-                        return getValueSchema(dataType);
+                        const unsettable = getUnsettable(editedField);
+                        return getValueSchema(dataType, unsettable);
                     })
                     .required(),
             })
@@ -69,12 +73,19 @@ export function getAssignmentsSchema() {
         .required();
 }
 
-function getValueSchema(dataType?: DataType) {
+function getValueSchema(dataType?: DataType, unsettable?: boolean) {
     let schema: Schema;
     // set type
     switch (dataType) {
         case DataType.DOUBLE:
-            schema = yup.number();
+            schema = unsettable
+                ? yup
+                      .string()
+                      .test('is-number-or-aucune', "Le champ doit être un nombre ou égal à 'Aucun'", (value) => {
+                          // Vérifie si la valeur est "Aucune" ou un nombre valide
+                          return value === 'Aucun' || !isNaN(Number(value));
+                      })
+                : yup.number();
             break;
         case DataType.INTEGER:
             schema = yup.number().integer();

@@ -31,6 +31,7 @@ import {
 } from './assignment/assignment-utils';
 import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { useIntl } from 'react-intl';
 
 const formSchema = yup
     .object()
@@ -55,6 +56,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     // "DeepNullable" to allow deeply null values as default values for required values
     // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
@@ -101,8 +103,13 @@ const ModificationByAssignmentDialog: FC<any> = ({
             const assignmentsList = formData[ASSIGNMENTS].map((assignment) => {
                 const dataType = getDataType(assignment[EDITED_FIELD]);
                 const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
-                const field = FieldType[fieldKey];
-                const value = assignment[VALUE_FIELD];
+                const field: FieldType = FieldType[fieldKey];
+                let value = assignment[VALUE_FIELD];
+                // None values have to be set to an empty string :
+                if (value === intl.formatMessage({ id: 'None' })) {
+                    // put this in convertOutputValue ??
+                    value = '';
+                }
                 const valueConverted = convertOutputValue(field, value);
                 return {
                     ...assignment,
@@ -124,7 +131,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, intl, snackError, studyUuid]
     );
 
     return (
