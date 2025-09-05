@@ -11,14 +11,13 @@ import { ComputingType } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setToggleOptions } from '../../../../redux/actions';
-import { Alert, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
-import { CheckCircleOutlined } from '@mui/icons-material';
-import { FormattedMessage } from 'react-intl';
 import RunningStatus from 'components/utils/running-status';
 import { NodeEditorHeader } from './node-editor-header';
 import { isSecurityModificationNode } from '../../tree-node.type';
 import { StudyDisplayMode } from '../../../network-modification.type';
+import { LoadflowModificationAlert } from './loadflow-modifications/loadflow-modification-alert';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -27,17 +26,6 @@ const styles = {
         flexDirection: 'column',
         elevation: 3,
         background: theme.palette.background.paper,
-    }),
-    loadFlowModif: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(2),
-    }),
-    icon: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-        fontSize: theme.spacing(2.75),
     }),
 };
 
@@ -52,21 +40,14 @@ const NodeEditor = () => {
         dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS)));
     };
 
-    const renderLoadFlowModificationTable = () => {
-        return (
-            <Alert sx={styles.loadFlowModif} icon={<CheckCircleOutlined sx={styles.icon} />} severity="success">
-                <FormattedMessage id="loadFlowModification" />
-            </Alert>
-        );
-    };
     return (
         <Box sx={styles.paper}>
             <NodeEditorHeader onClose={closeModificationsDrawer} />
 
             <NetworkModificationNodeEditor />
-            {loadFlowStatus === RunningStatus.SUCCEED &&
-                isSecurityModificationNode(currentTreeNode) &&
-                renderLoadFlowModificationTable()}
+            {loadFlowStatus === RunningStatus.SUCCEED && isSecurityModificationNode(currentTreeNode) && (
+                <LoadflowModificationAlert />
+            )}
         </Box>
     );
 };

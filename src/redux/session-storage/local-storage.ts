@@ -9,6 +9,7 @@ import { DARK_THEME, getComputedLanguage, GsLang, GsTheme, LANG_SYSTEM } from '@
 import { APP_NAME } from '../../utils/config-params';
 import { StudyDisplayMode } from 'components/network-modification.type';
 import { UUID } from 'crypto';
+import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
 const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
@@ -51,4 +52,16 @@ export function getLocalStorageToggleOptions(studyUuid: string): StudyDisplayMod
 
 export function saveLocalStorageToggleOptions(studyUuid: UUID, toggleOptions: StudyDisplayMode[]) {
     localStorage.setItem(getToggleOptionsKey(studyUuid), JSON.stringify(toggleOptions));
+}
+
+export function getLocalStorageSyncEnabled(studyUuid: UUID): boolean {
+    const saved = localStorage.getItem(`${BASE_NAVIGATION_KEYS.SYNC_ENABLED}-${studyUuid}`);
+    if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch {
+            // fallback to default if parsing fails
+        }
+    }
+    return false;
 }
