@@ -1569,48 +1569,43 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CLEAN_EQUIPMENTS, (state, action: CleanEquipmentsAction) => {
         if (
-            action.equipmentType === SpreadsheetEquipmentType.BRANCH ||
-            action.equipmentType === SpreadsheetEquipmentType.LINE ||
-            action.equipmentType === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
+            action.equipmentType !== SpreadsheetEquipmentType.BRANCH &&
+            action.equipmentType !== SpreadsheetEquipmentType.LINE &&
+            action.equipmentType !== SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
+            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR
         ) {
-            state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
-                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
-                    state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
-                ).reduce(
-                    (acc, eq) => {
-                        acc[eq.id] = {
-                            ...eq,
-                            operationalLimitsGroup1: undefined,
-                            operationalLimitsGroup1Names: undefined,
-                            selectedOperationalLimitsGroup1: undefined,
-                            operationalLimitsGroup2: undefined,
-                            operationalLimitsGroup2Names: undefined,
-                            selectedOperationalLimitsGroup2: undefined,
-                        };
-                        return acc;
-                    },
-                    {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
-                );
-            });
-        } else if (action.equipmentType === SpreadsheetEquipmentType.GENERATOR) {
-            state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
-                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
-                    state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
-                ).reduce(
-                    (acc, eq) => {
-                        acc[eq.id] = {
-                            ...eq,
-                            regulatingTerminalVlName: undefined,
-                            regulatingTerminalConnectableId: undefined,
-                            regulatingTerminalConnectableType: undefined,
-                            regulatingTerminalVlId: undefined,
-                        };
-                        return acc;
-                    },
-                    {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
-                );
-            });
+            return;
         }
+        const propsToClean =
+            action.equipmentType === SpreadsheetEquipmentType.GENERATOR
+                ? {
+                      regulatingTerminalVlName: undefined,
+                      regulatingTerminalConnectableId: undefined,
+                      regulatingTerminalConnectableType: undefined,
+                      regulatingTerminalVlId: undefined,
+                  }
+                : {
+                      operationalLimitsGroup1: undefined,
+                      operationalLimitsGroup1Names: undefined,
+                      selectedOperationalLimitsGroup1: undefined,
+                      operationalLimitsGroup2: undefined,
+                      operationalLimitsGroup2Names: undefined,
+                      selectedOperationalLimitsGroup2: undefined,
+                  };
+        state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
+            state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
+            ).reduce(
+                (acc, eq) => {
+                    acc[eq.id] = {
+                        ...eq,
+                        ...propsToClean,
+                    };
+                    return acc;
+                },
+                {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
+            );
+        });
     });
 
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
