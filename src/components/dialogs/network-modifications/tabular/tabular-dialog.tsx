@@ -20,14 +20,15 @@ import {
     convertInputValues,
     getEquipmentTypeFromModificationType,
     getFieldType,
+    TABULAR_MODIFICATION_FIELDS,
     TABULAR_MODIFICATION_TYPES,
     transformModificationsTable,
 } from './tabular-modification-utils.js';
 import {
     addPropertiesFromBack,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
-    emptyTabularFormData,
     formatModification,
+    getEmptyTabularFormData,
     Modification,
     tabularFormSchema,
     TabularFormType,
@@ -42,6 +43,7 @@ import {
     convertCreationFieldFromBackToFront,
     convertCreationFieldFromFrontToBack,
     getEquipmentTypeFromCreationType,
+    TABULAR_CREATION_FIELDS,
     TABULAR_CREATION_TYPES,
 } from './tabular-creation-utils';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -63,8 +65,14 @@ export function TabularDialog({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
+    const defaultEquipmentType = useMemo(() => {
+        return dialogMode === TabularModificationType.CREATION
+            ? (Object.keys(TABULAR_CREATION_FIELDS).at(0) ?? '')
+            : (Object.keys(TABULAR_MODIFICATION_FIELDS).at(0) ?? '');
+    }, [dialogMode]);
+
     const formMethods = useForm<TabularFormType>({
-        defaultValues: emptyTabularFormData,
+        defaultValues: getEmptyTabularFormData(defaultEquipmentType),
         resolver: yupResolver(tabularFormSchema),
     });
 
@@ -207,8 +215,8 @@ export function TabularDialog({
     );
 
     const clear = useCallback(() => {
-        reset(emptyTabularFormData);
-    }, [reset]);
+        reset(getEmptyTabularFormData(defaultEquipmentType));
+    }, [defaultEquipmentType, reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:

@@ -42,7 +42,7 @@ interface DiagramGridHeaderProps {
     onMap?: () => void;
 }
 
-export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
+export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
     const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave } = props;
 
     const intl = useIntl();
@@ -113,4 +113,4 @@ export const DiagramGridHeader = (props: DiagramGridHeaderProps) => {
     );
 };
 
-export default DiagramGridHeader;
+export default GridLayoutToolbar;

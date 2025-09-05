@@ -63,7 +63,7 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Search } from '@mui/icons-material';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
@@ -115,7 +115,7 @@ const styles = {
 
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 
-type NetworkMapTabProps = {
+type NetworkMapPanelProps = {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     currentRootNetworkUuid: UUID;
@@ -129,11 +129,11 @@ type NetworkMapTabProps = {
     isInDrawingMode: UseStateBooleanReturn;
 };
 
-export type NetworkMapTabRef = {
+export type NetworkMapPanelRef = {
     leaveDrawingMode: () => void;
 };
 
-export const NetworkMapTab = forwardRef<NetworkMapTabRef, NetworkMapTabProps>(
+export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelProps>(
     (
         {
             /* redux can be use as redux*/
@@ -150,7 +150,7 @@ export const NetworkMapTab = forwardRef<NetworkMapTabRef, NetworkMapTabProps>(
             showInSpreadsheet,
             onPolygonChanged,
             isInDrawingMode,
-        }: NetworkMapTabProps,
+        }: NetworkMapPanelProps,
         ref
     ) => {
         const networkMapRef = useRef<NetworkMapRef>(null); // hold the reference to the network map (from powsybl-network-viewer)
@@ -1055,8 +1055,7 @@ export const NetworkMapTab = forwardRef<NetworkMapTabRef, NetworkMapTabProps>(
             snackInfo({
                 messageId: 'generatedNADOpenedInTheGrid',
             });
-            leaveDrawingMode();
-        }, [leaveDrawingMode, snackInfo]);
+        }, [snackInfo]);
 
         const openSLDInTheGrid = useCallback(
             (equipmentId: string, diagramType: DiagramType) => {
@@ -1299,4 +1298,4 @@ export const NetworkMapTab = forwardRef<NetworkMapTabRef, NetworkMapTabProps>(
     }
 );
 
-export default NetworkMapTab;
+export default NetworkMapPanel;

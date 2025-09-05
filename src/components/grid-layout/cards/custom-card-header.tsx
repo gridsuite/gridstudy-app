@@ -38,20 +38,24 @@ const styles = {
             },
         },
     }),
+    tooltip: {
+        maxWidth: '720px',
+    },
 };
 
-interface CardHeaderProps {
+interface CustomCardHeaderProps {
     title?: React.ReactNode;
     onClose?: () => void;
     blinking?: boolean;
 }
 
-const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => {
+const CustomCardHeader: React.FC<CustomCardHeaderProps> = ({ title, onClose, blinking }) => {
     return (
         <Box sx={mergeSx(styles.header, blinking ? styles.blink : undefined)}>
             <OverflowableText
                 className="react-grid-dragHandle"
                 sx={{ flexGrow: '1', paddingBottom: '2px' }}
+                tooltipSx={styles.tooltip}
                 text={<Typography variant="caption">{title}</Typography>}
             />
             <Box>
@@ -70,4 +74,4 @@ const CardHeader: React.FC<CardHeaderProps> = ({ title, onClose, blinking }) => 
     );
 };
 
-export default CardHeader;
+export default CustomCardHeader;

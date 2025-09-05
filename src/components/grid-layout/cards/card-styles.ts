@@ -25,7 +25,7 @@ export const cardStyles = {
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
                 : `1px solid ${theme.palette.grey[800]}`,
-        borderTop: 'none', // remove the top border to avoid double border with CardHeader
+        borderTop: 'none', // remove the top border to avoid double border with CustomCardHeader
         borderBottom: 'none',
     }),
     diagramContainer: (theme: Theme) => ({
@@ -38,6 +38,6 @@ export const cardStyles = {
             theme.palette.mode === 'light'
                 ? `1px solid ${theme.palette.grey[500]}`
                 : `1px solid ${theme.palette.grey[800]}`,
-        borderTop: 'none', // remove the top border to avoid double border with CardHeader
+        borderTop: 'none', // remove the top border to avoid double border with CustomCardHeader
     }),
 };

@@ -37,7 +37,8 @@ export function startShortCircuitAnalysis(
     studyUuid: string,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: UUID | null,
-    busId: string
+    busId: string,
+    debug?: boolean
 ): Promise<void> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
@@ -45,10 +46,11 @@ export function startShortCircuitAnalysis(
     const urlSearchParams = new URLSearchParams();
     busId && urlSearchParams.append('busId', busId);
 
-    const startShortCircuitAnalysisUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/shortcircuit/run?' +
-        urlSearchParams.toString();
+    if (debug) {
+        urlSearchParams.append('debug', `${debug}`);
+    }
+
+    const startShortCircuitAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/shortcircuit/run?${urlSearchParams}`;
     console.debug(startShortCircuitAnalysisUrl);
     return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
