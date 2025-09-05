@@ -7,6 +7,7 @@
 import {
     CONTINGENCY_LIST_EQUIPMENTS,
     ElementType,
+    EquipmentType,
     FILTER_EQUIPMENTS,
     SelectInput,
     UniqueNameInput,
@@ -18,6 +19,8 @@ import { SELECTION_TYPES } from '../selection-types';
 import { SelectionCreationPanelDirectorySelector } from './contingency-filter-creation-directory-selector';
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { useWatch } from 'react-hook-form';
+import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
@@ -38,16 +41,29 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
         name: `${DESTINATION_FOLDER}`,
     });
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    const EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE = [EquipmentType.DANGLING_LINE, EquipmentType.THREE_WINDINGS_TRANSFORMER];
+
+    const CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE = Object.fromEntries(
+        Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(
+            ([key]) => !EQUIPMENTS_EXCLUDED_IN_NON_DEV_MODE.includes(key as EquipmentType)
+        )
+    );
+
+    const filteredContingencyEquipments = enableDeveloperMode
+        ? CONTINGENCY_LIST_EQUIPMENTS
+        : CONTINGENCY_EQUIPMENTS_FOR_NON_DEV_MODE;
     const equipmentTypesOptions = useMemo(() => {
         return Object.values(
-            selectionType === SELECTION_TYPES.FILTER ? FILTER_EQUIPMENTS : CONTINGENCY_LIST_EQUIPMENTS
+            selectionType === SELECTION_TYPES.FILTER ? FILTER_EQUIPMENTS : filteredContingencyEquipments
         ).map((equipment: { id: string; label: string }) => {
             return {
                 id: equipment.id,
                 label: equipment.label,
             };
         });
-    }, [selectionType]);
+    }, [filteredContingencyEquipments, selectionType]);
 
     return (
         <>
