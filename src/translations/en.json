@@ -448,8 +448,8 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart with vertical compaction",
     "openSubstation": "Open the substation",
 
-    "ConstraintsFromContingencies": "Contingencies -> constraints",
-    "ContingenciesFromConstraints": "Constraints -> contingencies",
+    "ConstraintsFromContingencies": "Contingencies -> violations",
+    "ContingenciesFromConstraints": "Violations -> contingencies",
 
     "Equipment": "Equipment",
     "EquipmentType": "Equipment type",
