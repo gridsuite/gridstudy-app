@@ -28,10 +28,10 @@ import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane';
 import { UUID } from 'crypto';
-import { FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 
 interface MoveVoltageLevelFeederBaysFormProps {
-    feederBaysInfos: FeederBaysInfos[];
+    feederBaysInfos: FeederBaysFormInfos[];
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
@@ -214,6 +214,8 @@ export function MoveVoltageLevelFeederBaysForm({
                                             },
                                         },
                                     }}
+                                    inputTransform={(value) => String(value ?? 0)}
+                                    outputTransform={(value) => (value === '0' ? null : Number(value))}
                                 />
                             </div>
                         );

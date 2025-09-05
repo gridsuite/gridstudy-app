@@ -6,7 +6,7 @@
  */
 
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -29,7 +29,6 @@ import { MoveVoltageLevelFeederBaysForm } from './move-voltage-level-feeder-bays
 import {
     ConnectablePositionModificationInfos,
     MoveVoltageLevelFeederBaysInfos,
-    TopologyVoltageLevelModificationInfos,
 } from '../../../../services/network-modification-types';
 import { fetchNetworkElementInfos } from '../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
@@ -38,6 +37,7 @@ import { DeepNullable } from '../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../services/study/network-modifications';
 import { AnyObject, TestFunction } from 'yup';
+import { toModificationOperation } from '../../../utils/utils';
 
 const checkConnectionPositionField: TestFunction<any, AnyObject> = (value, context) => {
     if (!value) {
@@ -85,7 +85,7 @@ const emptyFormData = {
 };
 
 export type MoveVoltageLevelFeederBaysDialogProps = EquipmentModificationDialogProps & {
-    editData: TopologyVoltageLevelModificationInfos;
+    editData: MoveVoltageLevelFeederBaysInfos;
 };
 export type MoveVoltageLevelFeederBaysFormSchemaType = yup.InferType<typeof formSchema>;
 
@@ -124,8 +124,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const { reset, getValues } = formMethods;
 
     useEffect(() => {
-        if (editData?.equipmentId) {
-            setSelectedId(editData.equipmentId);
+        if (editData?.voltageLevelId) {
+            setSelectedId(editData.voltageLevelId);
         }
     }, [editData]);
 
@@ -198,16 +198,18 @@ export default function MoveVoltageLevelFeederBaysDialog({
                               row?.connectionDirection
                       )
                       .map((row) => ({
-                          connectableId: row?.voltageLevelId!,
-                          busbarSectionId: row?.busbarSectionId!,
-                          connectionPosition: row?.connectionPosition != null ? String(row.connectionPosition) : '0',
-                          connectionName: row?.connectionName!,
-                          connectionDirection: row?.connectionDirection!,
+                          connectableId: toModificationOperation(row?.voltageLevelId!),
+                          busbarSectionId: toModificationOperation(row?.busbarSectionId!),
+                          connectionPosition: toModificationOperation(
+                              row?.connectionPosition != null ? String(row.connectionPosition) : '0'
+                          ),
+                          connectionName: toModificationOperation(row?.connectionName!),
+                          connectionDirection: toModificationOperation(row?.connectionDirection!),
                       }))
                 : [];
         const moveVoltageLevelFeederBaysInfos = {
             voltageLevelId: selectedId,
-            feederBaysAttributeList,
+            ...feederBaysAttributeList,
             type: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
             uuid: editData?.uuid,
         } satisfies MoveVoltageLevelFeederBaysInfos;
@@ -236,6 +238,90 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
+
+    const mergedRowData = useMemo((): {
+        voltageLevelId: string;
+        busbarId: string | null;
+        connectionName: string | null;
+        connectionDirection: string | null;
+        connectionPosition: string | null;
+        type: string;
+    }[] => {
+        const SEPARATOR_TYPE = 'SEPARATOR';
+        const FEEDER_BAY_TYPE = 'FEEDER_BAY';
+        const FEEDER_BAY_REMOVED_TYPE = 'FEEDER_BAY';
+        const result = [];
+
+        if (!editData?.uuid && feederBaysInfos && feederBaysInfos?.length > 0) {
+            return feederBaysInfos
+                .filter((bay) => bay != null)
+                .map((bay) => ({
+                    voltageLevelId: bay.voltageLevelId || '',
+                    busbarId: bay.busbarId || null,
+                    connectionName: bay.connectablePositionInfos.connectionName || null,
+                    connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
+                    connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
+                    type: FEEDER_BAY_TYPE,
+                }));
+        }
+
+        if (editData?.uuid) {
+            const feederBaysEditData = editData?.feederBaysAttributeList;
+            if (
+                feederBaysEditData &&
+                feederBaysEditData?.length > 0 &&
+                feederBaysInfos &&
+                feederBaysInfos?.length > 0
+            ) {
+                const deletedFeederBays = feederBaysEditData.filter(
+                    (bay) =>
+                        bay &&
+                        bay.connectableId &&
+                        !feederBaysInfos.some((formBay) => {
+                            const formBayId = formBay?.[VOLTAGE_LEVEL_ID];
+                            const bayId = bay.connectableId?.value || bay.connectableId;
+                            return formBayId === bayId;
+                        })
+                );
+                feederBaysInfos
+                    .filter((bay) => bay != null)
+                    .forEach((bay) => {
+                        result.push({
+                            voltageLevelId: bay.voltageLevelId,
+                            busbarId: bay.busbarId,
+                            connectionName: bay.connectablePositionInfos.connectionName,
+                            connectionDirection: bay.connectablePositionInfos.connectionDirection,
+                            connectionPosition: bay.connectablePositionInfos.connectionPosition,
+                            type: FEEDER_BAY_TYPE,
+                        });
+                    });
+                if (deletedFeederBays.length > 0) {
+                    result.push({
+                        type: SEPARATOR_TYPE,
+                        voltageLevelId: '',
+                        busbarId: '',
+                        connectionName: '',
+                        connectionDirection: '',
+                        connectionPosition: '',
+                    });
+
+                    deletedFeederBays.forEach((bay) => {
+                        result.push({
+                            voltageLevelId: bay.connectableId,
+                            busbarId: bay.busbarSectionId,
+                            connectionName: bay.connectionName,
+                            connectionDirection: bay.connectionDirection,
+                            connectionPosition: bay.connectionPosition,
+                            type: FEEDER_BAY_REMOVED_TYPE,
+                        });
+                    });
+                }
+                return result;
+            }
+        }
+
+        return [];
+    }, [editData?.feederBaysAttributeList, editData?.uuid, feederBaysInfos]);
 
     return (
         <CustomFormProvider
@@ -276,7 +362,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 )}
                 {selectedId != null && (
                     <MoveVoltageLevelFeederBaysForm
-                        feederBaysInfos={feederBaysInfos}
+                        feederBaysInfos={mergedRowData}
                         currentNode={currentNode}
                         selectedId={selectedId}
                         isUpdate={isUpdate}

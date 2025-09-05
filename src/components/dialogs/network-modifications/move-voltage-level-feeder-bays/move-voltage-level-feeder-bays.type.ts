@@ -6,6 +6,15 @@
  */
 import { ConnectablePositionInfos } from '../../connectivity/connectivity.type';
 
+export type FeederBaysFormInfos = {
+    voltageLevelId: string;
+    busbarId: string | null;
+    connectionName: string | null;
+    connectionDirection: string | null;
+    connectionPosition: string | null;
+    type: string;
+};
+
 export type FeederBayInfos = {
     busbarId: string;
     connectablePositionInfos: ConnectablePositionInfos;

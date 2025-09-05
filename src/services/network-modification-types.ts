@@ -875,9 +875,9 @@ export interface MoveVoltageLevelFeederBaysInfos {
 }
 
 export interface ConnectablePositionModificationInfos {
-    connectableId: string;
-    busbarSectionId: string;
-    connectionPosition: string;
-    connectionName: string;
-    connectionDirection: string;
+    connectableId: AttributeModification<string> | null;
+    busbarSectionId: AttributeModification<string> | null;
+    connectionPosition: AttributeModification<string> | null;
+    connectionName: AttributeModification<string> | null;
+    connectionDirection: AttributeModification<string> | null;
 }
