@@ -7,12 +7,10 @@
 import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLogsResultPagination } from 'redux/actions';
-import { AppState } from 'redux/reducer';
+import { AppState, DEFAULT_LOGS_PAGE_COUNT } from 'redux/reducer';
 import { LogsPaginationConfig } from 'types/custom-aggrid-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 import { LOGS_PAGINATION_STORE_FIELD } from 'utils/store-sort-filter-fields';
-
-export const DEFAULT_LOGS_PAGE_COUNT = 30;
 
 export const useLogsPagination = (reportType: ComputingAndNetworkModificationType) => {
     const dispatch = useDispatch();

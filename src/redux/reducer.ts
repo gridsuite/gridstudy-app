@@ -324,7 +324,6 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
-import { DEFAULT_LOGS_PAGE_COUNT } from 'components/report-viewer/use-logs-pagination';
 
 // Redux state
 export type StudyUpdated = {
@@ -399,6 +398,8 @@ export const DEFAULT_PAGINATION: PaginationConfig = {
     page: 0,
     rowsPerPage: 25,
 };
+
+export const DEFAULT_LOGS_PAGE_COUNT = 30;
 
 export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
     page: 0,
