@@ -4,11 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ConnectablePositionInfos } from '../../connectivity/connectivity.type';
+import { ConnectablePositionInfos } from '../../../connectivity/connectivity.type';
 
 export type FeederBaysFormInfos = {
-    voltageLevelId: string;
-    busbarId: string | null;
+    equipmentId: string;
+    busbarSectionId: string | null;
+    connectionSide: string | null;
     connectionName: string | null;
     connectionDirection: string | null;
     connectionPosition: string | null;
@@ -16,10 +17,11 @@ export type FeederBaysFormInfos = {
 };
 
 export type FeederBayInfos = {
-    busbarId: string;
+    busbarSectionId: string;
+    connectionSide: string | null;
     connectablePositionInfos: ConnectablePositionInfos;
 };
 
 export type FeederBaysInfos = FeederBayInfos & {
-    voltageLevelId: string;
+    equipmentId: string;
 };

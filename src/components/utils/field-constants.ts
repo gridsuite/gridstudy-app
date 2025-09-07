@@ -501,5 +501,4 @@ export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustm
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
 export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
-export const TARGET_BUSBAR_SECTION_ID = 'targetBusbarSectionId';
-export const CONNECTABLE_ID = 'connectableId';
+export const CONNECTION_SIDE = 'connectionSide';
