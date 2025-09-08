@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,6 +37,7 @@ export const useSpreadsheetEquipments = (
     nodeAliases: NodeAlias[] | undefined,
     active: boolean = false
 ) => {
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
@@ -102,7 +103,7 @@ export const useSpreadsheetEquipments = (
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!equipments || !builtAliasedNodesIds?.length || !currentNode?.id) {
+        if (!equipments || !builtAliasedNodesIds || !currentNode?.id) {
             return;
         }
         const currentNodeId = currentNode.id;
@@ -186,13 +187,29 @@ export const useSpreadsheetEquipments = (
                     Promise.allSettled(promises).then((results) => {
                         const updates: UpdateEquipmentsAction['equipments'] = {};
                         if (results[0].status === 'rejected') {
-                            //TODO show snackbar error?
+                            console.error(
+                                `(re)loading of spreadsheet data of type ${type} ${results[0].status}`,
+                                results[0].reason
+                            );
+                            snackError({
+                                headerId: 'spreadsheet/loading/error_fetching_type_title',
+                                headerValues: { type },
+                                messageTxt: `Details: ${results[0].reason}`,
+                            });
                         } else {
                             updates[type] = results[0].value;
                         }
                         if (results.length > 1) {
                             if (results[1].status === 'rejected') {
-                                //TODO show snackbar error?
+                                console.error(
+                                    `(re)loading of spreadsheet data of type ${type} ${results[1].status}`,
+                                    results[1].reason
+                                );
+                                snackError({
+                                    headerId: 'spreadsheet/loading/error_fetching_type_title',
+                                    headerValues: { type: SpreadsheetEquipmentType.BRANCH },
+                                    messageTxt: `Details: ${results[1].reason}`,
+                                });
                             } else {
                                 updates[SpreadsheetEquipmentType.BRANCH] = results[1].value;
                             }
@@ -238,6 +255,7 @@ export const useSpreadsheetEquipments = (
             allEquipments,
             equipmentToUpdateId,
             highlightUpdatedEquipment,
+            snackError,
         ]
     );
 

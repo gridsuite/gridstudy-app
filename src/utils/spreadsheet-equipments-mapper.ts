@@ -115,8 +115,12 @@ export const mapSpreadsheetEquipments = (
     equipmentType: SpreadsheetEquipmentType,
     equipments: Identifiable[] //TODO + `| null | undefined`
 ) => {
-    if (equipments && equipments?.length > 0) {
-        return equipments.map((equipment) => mapSpreadsheetEquipment(equipmentType, equipment));
-    }
-    return equipments;
+    return equipments?.reduce(
+        (acc, equipment) => {
+            const eq = mapSpreadsheetEquipment(equipmentType, equipment);
+            acc[eq.id] = eq;
+            return acc;
+        },
+        {} as Record<string, Identifiable>
+    );
 };

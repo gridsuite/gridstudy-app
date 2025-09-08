@@ -48,6 +48,7 @@ export const SPREADSHEET_SORT_STORE = 'spreadsheet';
 
 //logs store fields
 export const LOGS_STORE_FIELD = 'logsFilter';
+export const LOGS_PAGINATION_STORE_FIELD = 'logsPagination';
 
 //table sort store field
 export const TABLE_SORT_STORE = 'tableSort';
