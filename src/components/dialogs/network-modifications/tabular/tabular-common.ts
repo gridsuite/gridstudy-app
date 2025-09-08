@@ -34,7 +34,6 @@ import {
     PredefinedProperties,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { UUID } from 'crypto';
 
 type TabularModificationCommonType = {
@@ -71,11 +70,13 @@ export const tabularFormSchema = yup
 
 export type TabularFormType = yup.InferType<typeof tabularFormSchema>;
 
-export const emptyTabularFormData: TabularFormType = {
-    [TYPE]: EQUIPMENT_TYPES.GENERATOR,
-    [MODIFICATIONS_TABLE]: [],
-    [TABULAR_PROPERTIES]: [],
-    [CSV_FILENAME]: undefined,
+export const getEmptyTabularFormData = (equipmentType: string) => {
+    return {
+        [TYPE]: equipmentType,
+        [MODIFICATIONS_TABLE]: [],
+        [TABULAR_PROPERTIES]: [],
+        [CSV_FILENAME]: undefined,
+    };
 };
 
 export interface Modification {

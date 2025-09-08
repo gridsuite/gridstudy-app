@@ -46,12 +46,9 @@ export const useRootNetworkSearchNotifications = ({
             const nodeSubTreeCreated = isNodSubTreeCreatedNotification(eventData);
 
             if (nodesStatus || rootNetworksStatus || networkModificationsStatus) {
-                console.log(' inside thez modification node');
-
                 resetModificationsSearch();
             }
             if (nodeDeleted || nodeCreated || nodeEdited || nodeSubTreeCreated) {
-                console.log(' inside thez delete node');
                 resetNodesSearch();
             }
         },
