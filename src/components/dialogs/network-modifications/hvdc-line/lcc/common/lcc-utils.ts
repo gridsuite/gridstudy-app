@@ -189,7 +189,6 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
             connectionName: lccConverterStationFormInfos.connectablePosition?.connectionName,
             terminalConnected: lccConverterStationFormInfos?.terminalConnected,
             connectionPosition: undefined,
-            busbarSectionName: undefined,
         }),
     };
 }
@@ -298,7 +297,6 @@ export function getLccConverterStationFromEditData(lccConverterStationCreationIn
             connectionName: lccConverterStationCreationInfos?.connectionName,
             terminalConnected: lccConverterStationCreationInfos?.terminalConnected,
             connectionPosition: lccConverterStationCreationInfos?.connectionPosition,
-            busbarSectionName: undefined,
         }),
     };
 }
@@ -345,6 +343,7 @@ export const getShuntCompensatorOnSideModificationData = (
         })) ?? []
     );
 };
+
 export function getLccConverterStationCreationData(converterStation: {
     converterStationId: string;
     converterStationName?: string;
