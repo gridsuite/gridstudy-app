@@ -15,8 +15,11 @@ export const lightThemeCssVars = {
     '.nad-label-box': {
         backgroundColor: '#9c9c9c20',
     },
-    '.nad-busnode-highlight, .nad-textnode-highlight': {
-        filter: 'drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3))',
+    '.nad-busnode-highlight': {
+        filter: 'drop-shadow(0px 5px 4px rgba(0, 0, 0, 0.2))',
+    },
+    '.nad-textnode-highlight': {
+        backgroundColor: '#f0f0f0cc', // same displayed color as #9c9c9c20 but with 0.8 opacity
     },
     '.sld-vl0to30, .nad-vl0to30': {
         '--vl-color': '#ABAE28',

@@ -68,6 +68,7 @@ foreignObject.nad-text-nodes {
     padding: 10px;
     border-radius: 10px;
     cursor: grab;
+    border: 2px solid rgba(0,0,0,0);
 }
 .nad-legend-square {
     display: inline-block;
@@ -270,6 +271,17 @@ g.nad-disconnected > g.nad-disconnected {
     display: none;
 }
 
-.nad-textnode-highlight  {
-    transform: scale(1.1);
+/* Help visibility when hovering over a NAD's VL or label */
+.nad-textnode-highlight {
+    z-index: 99999;
+    border: 2px solid #90929477;
+}
+:is(.nad-zoom-0) .nad-busnode-highlight {
+    transform: scale(1.12);
+}
+:is(.nad-zoom-2000) .nad-busnode-highlight {
+    transform: scale(1.2);
+}
+:is(.nad-zoom-2000) .nad-textnode-highlight {
+    transform: scale(1.3);
 }
