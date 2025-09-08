@@ -29,7 +29,7 @@ const styles = {
     card: (theme: Theme) => ({
         position: 'absolute',
         left: theme.spacing(1.25),
-        bottom: theme.spacing(18.75),
+        bottom: theme.spacing(10.75),
         maxWidth: theme.spacing(25),
     }),
     header: (theme: Theme) => ({

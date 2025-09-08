@@ -5,6 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { GridApi } from 'ag-grid-community';
+import {
+    ALL_BUSES,
+    ONE_BUS,
+    SECURITY_ANALYSIS_RESULT_N,
+    SECURITY_ANALYSIS_RESULT_N_K,
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+} from 'utils/store-sort-filter-fields';
 
 export type SortConfig = {
     colId: string;
@@ -48,3 +60,38 @@ export type FilterParams = {
     debounceMs?: number;
     updateFilterCallback?: (api?: GridApi, filters?: FilterConfig[]) => void;
 };
+
+export type PaginationConfig = {
+    page: number;
+    rowsPerPage: number | { value: number; label: string };
+};
+
+export type LogsPaginationConfig = {
+    page: number;
+    rowsPerPage: number;
+};
+
+export enum PaginationType {
+    SecurityAnalysis = 'SecurityAnalysis',
+    SensitivityAnalysis = 'SensitivityAnalysis',
+    ShortcircuitAnalysis = 'ShortcircuitAnalysis',
+}
+
+export const SECURITY_ANALYSIS_TABS = [SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K] as const;
+
+export const SENSITIVITY_ANALYSIS_TABS = [
+    SENSITIVITY_IN_DELTA_MW_N,
+    SENSITIVITY_IN_DELTA_MW_N_K,
+    SENSITIVITY_IN_DELTA_A_N,
+    SENSITIVITY_IN_DELTA_A_N_K,
+    SENSITIVITY_AT_NODE_N,
+    SENSITIVITY_AT_NODE_N_K,
+] as const;
+
+export const SHORTCIRCUIT_ANALYSIS_TABS = [ONE_BUS, ALL_BUSES] as const;
+
+export type SecurityAnalysisTab = (typeof SECURITY_ANALYSIS_TABS)[number];
+export type SensitivityAnalysisTab = (typeof SENSITIVITY_ANALYSIS_TABS)[number];
+export type ShortcircuitAnalysisTab = (typeof SHORTCIRCUIT_ANALYSIS_TABS)[number];
+
+export type PaginationTab = SecurityAnalysisTab | SensitivityAnalysisTab | ShortcircuitAnalysisTab;
