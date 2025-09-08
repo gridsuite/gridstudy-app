@@ -170,12 +170,12 @@ const mapOperationalLimitGroupBackToFront = (
     let row: ModificationRow = {};
     row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
     row[IS_ACTIVE] =
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1].value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
             group.applicability === APPLICABILITY.SIDE1.id) ||
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2].value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
             group.applicability === APPLICABILITY.SIDE2.id) ||
-        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2].value === group.id &&
-            modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1].value === group.id &&
+        (modification[SELECTED_OPERATIONAL_LIMITS_GROUP_2]?.value === group.id &&
+            modification[SELECTED_OPERATIONAL_LIMITS_GROUP_1]?.value === group.id &&
             group.applicability === APPLICABILITY.EQUIPMENT.id);
     row[SIDE] = group[APPLICABIlITY];
     row[LIMIT_GROUP_NAME] = group.id;
