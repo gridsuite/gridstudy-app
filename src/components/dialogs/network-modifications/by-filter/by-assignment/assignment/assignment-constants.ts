@@ -33,6 +33,7 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'RatedNominalPowerText',
         unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     MINIMUM_ACTIVE_POWER: {
         id: FieldType.MINIMUM_ACTIVE_POWER,
@@ -96,12 +97,14 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'TransientReactanceForm',
         unit: OHM,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     STEP_UP_TRANSFORMER_REACTANCE: {
         id: FieldType.STEP_UP_TRANSFORMER_REACTANCE,
         label: 'TransformerReactanceForm',
         unit: OHM,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     Q_PERCENT: {
         id: FieldType.Q_PERCENT,
@@ -205,12 +208,14 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'ShuntConductanceText1',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     G2: {
         id: FieldType.G2,
         label: 'ShuntConductanceText2',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     B: {
         id: FieldType.B,
@@ -223,12 +228,14 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'ShuntSusceptanceText1',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     B2: {
         id: FieldType.B2,
         label: 'ShuntSusceptanceText2',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     RATED_U1: {
         id: FieldType.RATED_U1,
@@ -247,6 +254,7 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'RatedNominalPowerText',
         unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
+        settable_to_none: true,
     },
     TARGET_V: {
         id: FieldType.TARGET_V,
@@ -300,11 +308,13 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
         label: 'selectedOperationalLimitsGroup1',
         dataType: DataType.STRING,
+        settable_to_none: true,
     },
     SELECTED_OPERATIONAL_LIMITS_GROUP_2: {
         id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
         label: 'selectedOperationalLimitsGroup2',
         dataType: DataType.STRING,
+        settable_to_none: true,
     },
 } as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 

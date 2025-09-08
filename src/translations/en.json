@@ -81,6 +81,7 @@
     "images": "Images",
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
+    "NumericValueOrNone": "Numeric value or None",
     "NoneUpcomingOverload": "None",
     "Feeders": "Feeder",
     "NominalVoltage": "Nominal voltage",

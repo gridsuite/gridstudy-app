@@ -81,6 +81,7 @@
     "images": "Images",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
+    "NumericValueOrNone": "Valeur numérique ou Aucun",
     "NoneUpcomingOverload": "Aucune",
     "Feeders": "Départs",
     "NominalVoltage": "Tension nominale",

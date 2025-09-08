@@ -151,8 +151,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         if (dataType === DataType.DOUBLE && settable_to_none) {
             return (
                 <AutocompleteInput
+                    // TODO : saisie uniquement numérique OU "Aucun"
                     name={`${name}.${index}.${VALUE_FIELD}`}
-                    label={'Value ou Aucun'}
+                    label={'NumericValueOrNone'}
                     options={[intl.formatMessage({ id: 'None' })]}
                     size={'small'}
                     getOptionLabel={(value) => value.toString()}
