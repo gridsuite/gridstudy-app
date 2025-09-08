@@ -41,7 +41,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
 import { DiagramType } from '../diagram.type';
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
-import useComputationDebug from '../../../hooks/use-computation-debug';
+import useComputationDebug from '../../../../../hooks/use-computation-debug';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
