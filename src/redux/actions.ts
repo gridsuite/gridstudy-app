@@ -782,12 +782,14 @@ export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction
 
 export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
 export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
+    name: string;
     ids: string[];
 };
 
-export function openNadList(ids: string[]): OpenNadListAction {
+export function openNadList(name: string, ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
+        name: name,
         ids: ids,
     };
 }

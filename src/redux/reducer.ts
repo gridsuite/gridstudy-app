@@ -1389,7 +1389,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
-            name: '',
+            name: action.name,
             nadConfigUuid: undefined,
             filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
