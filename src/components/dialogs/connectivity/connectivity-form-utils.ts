@@ -20,7 +20,10 @@ import {
 import yup from '../../utils/yup-config';
 import { VoltageLevelFormInfos } from '../network-modifications/voltage-level/voltage-level.type';
 
-const getVlAndBbsFieldSchema = (isEquipmentModification: boolean, relatedFieldName: string) => {
+const getVoltageLevelAndBusOrBusBarSectionFieldsSchema = (
+    isEquipmentModification: boolean,
+    relatedFieldName: string
+) => {
     return yup
         .object()
         .nullable()
@@ -35,22 +38,22 @@ const getVlAndBbsFieldSchema = (isEquipmentModification: boolean, relatedFieldNa
             }),
         })
         .test('YupRequired', 'YupRequired', (value, context) => {
-            if (!isEquipmentModification) {
-                return true;
-            }
-
             const isEmpty = value?.id === null || value?.id === undefined || value?.id === '';
-
             const isNotEmptyRelatedField = context.parent?.[relatedFieldName] !== null;
-
             return !(isEmpty && isNotEmptyRelatedField);
         });
 };
 
 export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
-        [VOLTAGE_LEVEL]: getVlAndBbsFieldSchema(isEquipmentModification, 'busOrBusbarSection'),
-        [BUS_OR_BUSBAR_SECTION]: getVlAndBbsFieldSchema(isEquipmentModification, 'voltageLevel'),
+        [VOLTAGE_LEVEL]: getVoltageLevelAndBusOrBusBarSectionFieldsSchema(
+            isEquipmentModification,
+            'busOrBusbarSection'
+        ),
+        [BUS_OR_BUSBAR_SECTION]: getVoltageLevelAndBusOrBusBarSectionFieldsSchema(
+            isEquipmentModification,
+            'voltageLevel'
+        ),
     };
 };
 
