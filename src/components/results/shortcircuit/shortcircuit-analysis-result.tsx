@@ -19,7 +19,6 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     convertFilterValues,
-    DEFAULT_PAGE_COUNT,
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     mappingTabs,
@@ -35,9 +34,10 @@ import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType } from '../../../types/custom-aggrid-types';
+import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../types/custom-aggrid-types';
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { usePaginationSelector } from 'hooks/use-pagination-selector';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -61,9 +61,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT as number);
     const [count, setCount] = useState<number>(0);
-    const [page, setPage] = useState<number>(0);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [filterEnums, setFilterEnums] = useState<FilterEnumsType>({});
 
@@ -77,30 +75,35 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
 
-    const memoizedSetPageCallback = useCallback(() => {
-        setPage(0);
-    }, []);
-
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][mappingTabs(analysisType)]
     );
 
     const { filters } = useFilterSelector(FilterType.ShortcircuitAnalysis, mappingTabs(analysisType));
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.ShortcircuitAnalysis,
+        mappingTabs(analysisType) as ShortcircuitAnalysisTab
+    );
+    const { page, rowsPerPage } = pagination;
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
-            setPage(newPage);
+            dispatchPagination({ ...pagination, page: newPage });
         },
-        [setPage]
+        [pagination, dispatchPagination]
     );
 
     const handleChangeRowsPerPage = useCallback(
         (event: any) => {
-            setRowsPerPage(parseInt(event.target.value, 10));
-            setPage(0);
+            const newRowsPerPage = parseInt(event.target.value, 10);
+            dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
         },
-        [setPage]
+        [dispatchPagination]
     );
+
+    const memoizedSetPageCallback = useCallback(() => {
+        dispatchPagination({ ...pagination, page: 0 });
+    }, [pagination, dispatchPagination]);
 
     // Effects
     useEffect(() => {
@@ -123,7 +126,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
 
         const selector = {
             page,
-            size: rowsPerPage,
+            size: rowsPerPage as number,
             filter: updatedFilters ? mapFieldsToColumnsFilter(updatedFilters, fromFrontColumnToBackKeys) : null,
             sort: backSortConfig,
         };

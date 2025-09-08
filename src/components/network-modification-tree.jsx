@@ -6,22 +6,15 @@
  */
 
 import { Box } from '@mui/material';
-import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
-import MapIcon from '@mui/icons-material/Map';
+import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import {
-    reorderNetworkModificationTreeNodes,
-    setCurrentTreeNode,
-    setModificationsDrawerOpen,
-    setToggleOptions,
-} from '../redux/actions';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
-import { BUILD_STATUS } from './network/constants';
 import {
     getAbsolutePosition,
     getFirstAncestorWithSibling,
@@ -36,6 +29,8 @@ import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -57,41 +52,16 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     const toggleOptions = useSelector((state) => state.toggleOptions);
 
-    const [isMinimapOpen, setIsMinimapOpen] = useState(false);
-
     const { fitView, setCenter, getZoom } = useReactFlow();
 
     const draggedBranchIdRef = useRef(null);
 
-    const nodeColor = useCallback(
-        (node) => {
-            if (!node) {
-                return '#9196a1';
-            }
-            if (node.type === 'ROOT') {
-                return 'rgba(0, 0, 0, 0.0)';
-            }
-            if (node.id === currentNode?.id) {
-                return '#4287f5';
-            }
-            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT) {
-                return '#70d136';
-            }
-            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_WARNING) {
-                return '#FFA500';
-            }
-            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_ERROR) {
-                return '#DC143C';
-            }
-            return '#9196a1';
-        },
-        [currentNode]
-    );
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -125,29 +95,27 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         );
     }, []);
 
+    // close modifications/ event scenario when current node is root
+    useEffect(() => {
+        if (currentNode?.type === NodeType.ROOT) {
+            const newOptions = handleRootNodeClick(toggleOptions);
+            if (newOptions !== toggleOptions) {
+                dispatch(setToggleOptions(newOptions));
+            }
+        }
+    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
+
     const onNodeClick = useCallback(
         (event, node) => {
-            if (node.type === 'NETWORK_MODIFICATION') {
+            if (node.type === NodeType.NETWORK_MODIFICATION) {
                 dispatch(setModificationsDrawerOpen());
             }
-            if (node.type === 'ROOT') {
-                handleRootNodeClick(toggleOptions, dispatch);
-
-                const newOptions = handleRootNodeClick(toggleOptions);
-                if (newOptions !== toggleOptions) {
-                    dispatch(setToggleOptions(newOptions));
-                }
-            }
             if (!isSameNode(currentNode, node)) {
-                dispatch(setCurrentTreeNode(node));
+                setCurrentTreeNodeWithSync(node);
             }
         },
-        [currentNode, dispatch, handleRootNodeClick, toggleOptions]
+        [currentNode, dispatch, setCurrentTreeNodeWithSync]
     );
-
-    const toggleMinimap = useCallback(() => {
-        setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
-    }, []);
 
     /**
      * When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
@@ -370,8 +338,8 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                 }}
             >
                 <Controls
-                    style={{ margin: '10px' }} // This component uses "style" instead of "sx"
-                    position="top-right"
+                    position="bottom-right"
+                    style={{ margin: '10px', marginBottom: '30px' }}
                     showZoom={false}
                     showInteractive={false}
                     showFitView={false}
@@ -382,14 +350,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                     <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
                         <CenterFocusIcon />
                     </TreeControlButton>
-                    <TreeControlButton
-                        titleId={isMinimapOpen ? 'HideMinimap' : 'DisplayMinimap'}
-                        onClick={toggleMinimap}
-                    >
-                        <MapIcon />
-                    </TreeControlButton>
                 </Controls>
-                {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
                 <RootNetworkPanel />
             </ReactFlow>
         </Box>

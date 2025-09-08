@@ -23,9 +23,10 @@ import { RunButtonContainer } from './run-button-container';
 import { useComputationResultsCount } from '../hooks/use-computation-results-count';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { STUDY_VIEWS, StudyView } from './utils/utils';
+import StudyNavigationSyncToggle from './study-navigation-sync-toggle';
 
 const styles = {
-    boxContent: (theme) => ({ display: 'flex', width: '100%', marginLeft: theme.spacing(4) }),
+    boxContent: (theme) => ({ display: 'flex', overflow: 'hidden', width: '100%', marginLeft: theme.spacing(4) }),
     tabs: {},
     searchButton: {
         marginTop: 'auto',
@@ -38,7 +39,12 @@ const styles = {
         marginBottom: 'auto',
         marginRight: '10%',
         marginLeft: 'auto',
-        flexShrink: 0,
+    },
+    syncToggleContainer: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        marginLeft: -4,
+        marginRight: 1,
     },
 };
 
@@ -125,6 +131,9 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
                             currentRootNetworkUuid={currentRootNetworkUuid}
                             disabled={!isNodeBuilt(currentNode) || isNodeReadOnly(currentNode)}
                         />
+                    </Box>
+                    <Box sx={styles.syncToggleContainer}>
+                        <StudyNavigationSyncToggle />
                     </Box>
                 </Box>
             )}

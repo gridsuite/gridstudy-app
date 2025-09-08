@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TextInput } from '@gridsuite/commons-ui';
+import { TableTextInput } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 
@@ -23,12 +23,13 @@ export default function ColumnNameEditor({ name, rowIndex, generateColumnId }: C
     }, [columnName, rowIndex, generateColumnId]);
 
     return (
-        <TextInput
+        <TableTextInput
             name={name}
-            formProps={{
+            inputProps={{
                 autoFocus: true,
                 onBlur: onBlurColumnName,
             }}
+            showErrorMsg={true}
         />
     );
 }
