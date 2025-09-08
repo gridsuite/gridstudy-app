@@ -20,7 +20,7 @@ import {
 import yup from '../../utils/yup-config';
 import { VoltageLevelFormInfos } from '../network-modifications/voltage-level/voltage-level.type';
 
-const createConnectivityFieldSchema = (isEquipmentModification: boolean, relatedFieldName: string) => {
+const getVlAndBbsFieldSchema = (isEquipmentModification: boolean, relatedFieldName: string) => {
     return yup
         .object()
         .nullable()
@@ -49,8 +49,8 @@ const createConnectivityFieldSchema = (isEquipmentModification: boolean, related
 
 export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
-        [VOLTAGE_LEVEL]: createConnectivityFieldSchema(isEquipmentModification, 'busOrBusbarSection'),
-        [BUS_OR_BUSBAR_SECTION]: createConnectivityFieldSchema(isEquipmentModification, 'voltageLevel'),
+        [VOLTAGE_LEVEL]: getVlAndBbsFieldSchema(isEquipmentModification, 'busOrBusbarSection'),
+        [BUS_OR_BUSBAR_SECTION]: getVlAndBbsFieldSchema(isEquipmentModification, 'voltageLevel'),
     };
 };
 
