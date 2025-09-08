@@ -7,11 +7,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid, TextField, Tooltip } from '@mui/material';
+import { Box, Grid, TextField, Tooltip, Typography } from '@mui/material';
 import { filledTextField } from '../../../dialog-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
-import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
 import HeaderWithTooltip from '../topology-modification/header-with-tooltip';
 import { AutocompleteInput, CustomAGGrid, IntegerInput, TextInput } from '@gridsuite/commons-ui';
 import {
@@ -29,6 +28,7 @@ import { InfoOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { RowClassParams, RowStyle } from 'ag-grid-community';
 
 interface MoveVoltageLevelFeederBaysFormProps {
     feederBaysInfos: FeederBaysFormInfos[];
@@ -92,9 +92,20 @@ export function MoveVoltageLevelFeederBaysForm({
                 flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
-                        return SeparatorCellRenderer({
-                            value: data.title,
-                        });
+                        return (
+                            <Typography
+                                variant="subtitle1"
+                                color="primary"
+                                sx={{
+                                    gridColumn: `span ${10}`,
+                                    textAlign: 'center',
+                                    width: '100%',
+                                }}
+                            >
+                                {intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' })}
+                                {intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' })}
+                            </Typography>
+                        );
                     } else {
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
@@ -103,6 +114,7 @@ export function MoveVoltageLevelFeederBaysForm({
                                 <TextInput
                                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
                                     formProps={{
+                                        disabled: data.type === 'FEEDER_BAY_REMOVED',
                                         size: 'small',
                                         variant: 'filled',
                                         sx: {
@@ -133,9 +145,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
-                        return SeparatorCellRenderer({
-                            value: data.title,
-                        });
+                        return '';
                     } else {
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
@@ -148,6 +158,7 @@ export function MoveVoltageLevelFeederBaysForm({
                                 options={busBarSectionIds}
                                 size="small"
                                 sx={{ padding: '8px 0' }}
+                                disabled={data.type === 'FEEDER_BAY_REMOVED'}
                                 disableClearable
                             />
                         );
@@ -169,9 +180,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
-                        return SeparatorCellRenderer({
-                            value: data.title,
-                        });
+                        return '';
                     } else {
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
@@ -205,6 +214,7 @@ export function MoveVoltageLevelFeederBaysForm({
                                 <IntegerInput
                                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
                                     formProps={{
+                                        disabled: data.type === 'FEEDER_BAY_REMOVED',
                                         size: 'small',
                                         variant: 'filled',
                                         sx: {
@@ -235,6 +245,14 @@ export function MoveVoltageLevelFeederBaysForm({
         [currentNode, intl, isUpdate, getValues]
     );
 
+    const getRowStyle = useCallback((params: RowClassParams): RowStyle | undefined => {
+        if (params.data?.type === 'SEPARATOR') {
+            return {
+                fontWeight: 'inherit',
+            };
+        }
+    }, []);
+
     const diagramToolTip = useMemo(
         () => (
             <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
@@ -264,6 +282,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     rowData={feederBaysInfos}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
+                    getRowStyle={getRowStyle}
                     suppressMovableColumns={true}
                     animateRows={false}
                     domLayout="normal"

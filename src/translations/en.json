@@ -1605,5 +1605,6 @@
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
     "TOP": "TOP",
     "BOTTOM": "BOTTOM",
-    "DuplicatedPositionsError": "Duplicated position error"
+    "DuplicatedPositionsError": "Duplicated position error",
+    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level"
 }

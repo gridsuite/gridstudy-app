@@ -38,6 +38,7 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import { AnyObject, TestFunction } from 'yup';
+import { useIntl } from 'react-intl';
 
 const checkConnectionPositionField: TestFunction<any, AnyObject> = (value, context) => {
     if (!value) {
@@ -61,7 +62,7 @@ const formSchema = yup.object().shape({
         yup.object().shape({
             [EQUIPMENT_ID]: yup.string().required(),
             [BUSBAR_SECTION_ID]: yup.string().required(),
-            [CONNECTION_SIDE]: yup.string().required(),
+            [CONNECTION_SIDE]: yup.string().nullable(),
             [BUSBAR_SECTION_IDS]: yup.array().of(yup.string()).required(),
             [CONNECTION_NAME]: yup.string().required(),
             [CONNECTION_DIRECTION]: yup.string().required(),
@@ -114,6 +115,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
 }: Readonly<MoveVoltageLevelFeederBaysDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const [feederBaysInfos, setFeederBaysInfos] = useState<FeederBaysInfos[]>([]);
@@ -212,7 +214,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 : [];
         const moveVoltageLevelFeederBaysInfos = {
             voltageLevelId: selectedId,
-            ...feederBaysAttributeList,
+            feederBaysAttributeList,
             type: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
             uuid: editData?.uuid,
         } satisfies MoveVoltageLevelFeederBaysInfos;
@@ -253,7 +255,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     }[] => {
         const SEPARATOR_TYPE = 'SEPARATOR';
         const FEEDER_BAY_TYPE = 'FEEDER_BAY';
-        const FEEDER_BAY_REMOVED_TYPE = 'FEEDER_BAY';
+        const FEEDER_BAY_REMOVED_TYPE = 'FEEDER_BAY_REMOVED';
         const result = [];
 
         if (!editData?.uuid && feederBaysInfos && feederBaysInfos?.length > 0) {
@@ -278,11 +280,13 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 feederBaysInfos &&
                 feederBaysInfos?.length > 0
             ) {
+                console.log('================feederBaysInfos', feederBaysInfos);
+                console.log('================feederBaysEditData', feederBaysEditData);
                 const deletedFeederBays = feederBaysEditData.filter(
                     (bay) =>
                         bay &&
                         bay.equipmentId &&
-                        !feederBaysInfos.some((formBay) => {
+                        feederBaysInfos.some((formBay) => {
                             const formBayId = formBay?.equipmentId;
                             const bayId = bay.equipmentId;
                             return formBayId === bayId;
@@ -310,6 +314,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         connectionName: '',
                         connectionDirection: '',
                         connectionPosition: '',
+                        title: intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' }),
                     });
 
                     deletedFeederBays.forEach((bay) => {
@@ -331,6 +336,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
         return [];
     }, [editData?.feederBaysAttributeList, editData?.uuid, feederBaysInfos]);
 
+    const onValidationError = useCallback((errors: any) => {
+        console.log('=====', errors);
+    }, []);
+
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -346,6 +355,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 maxWidth={'md'}
                 titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
+                onValidationError={onValidationError}
                 keepMounted={true}
                 PaperProps={{
                     sx: {

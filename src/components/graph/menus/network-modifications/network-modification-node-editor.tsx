@@ -318,6 +318,7 @@ const NetworkModificationNodeEditor = () => {
                         {
                             id: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
                             label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
+                            hide: !enableDeveloperMode,
                             action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
                         {
