@@ -185,6 +185,7 @@ export function exportSensitivityResultsAsCsv(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     csvConfig: CsvConfig,
+    selector: any,
     filters: FilterConfig[],
     globalFilters: GlobalFilters | undefined
 ) {
@@ -192,6 +193,7 @@ export function exportSensitivityResultsAsCsv(
         `Exporting sensitivity analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} as CSV ...`
     );
     const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('selector', JSON.stringify(selector));
     if (filters?.length) {
         urlSearchParams.append('filters', JSON.stringify(filters));
     }

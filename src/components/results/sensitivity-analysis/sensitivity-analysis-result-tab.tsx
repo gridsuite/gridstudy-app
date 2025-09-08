@@ -12,6 +12,7 @@ import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result'
 import {
     DATA_KEY_TO_FILTER_KEY_N,
     DATA_KEY_TO_FILTER_KEY_NK,
+    DATA_KEY_TO_SORT_KEY,
     FUNCTION_TYPES,
     isSensiKind,
     mappingTabs,
@@ -40,7 +41,8 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
+import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -68,6 +70,10 @@ function SensitivityAnalysisResultTab({
     const { filters } = useFilterSelector(
         AgGridFilterType.SensitivityAnalysis,
         mappingTabs(sensiTab as SensiKind, nOrNkIndex)
+    );
+    const sortConfig = useSelector(
+        (state: AppState) =>
+            state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiTab as SensiKind, nOrNkIndex)]
     );
 
     const initTable = () => {
@@ -100,6 +106,25 @@ function SensitivityAnalysisResultTab({
             const newColumn = keyMap[elem.column as keyof typeof keyMap];
             return { ...elem, column: newColumn };
         });
+        const sortSelector = sortConfig?.length
+            ? {
+                  sortKeysWithWeightAndDirection: Object.fromEntries(
+                      sortConfig.map((value) => [
+                          DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
+                          value.sort === SortWay.DESC ? -1 : 1,
+                      ])
+                  ),
+              }
+            : {};
+        const selector = {
+            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
+            functionType: FUNCTION_TYPES[sensiTab as SensiKind],
+            offset: 0,
+            pageNumber: 0,
+            pageSize: -1, // meaning 'All'
+            ...sortSelector,
+        };
+
         exportSensitivityResultsAsCsv(
             studyUuid,
             nodeUuid,
@@ -110,6 +135,7 @@ function SensitivityAnalysisResultTab({
                 sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
                 language: language,
             },
+            selector,
             mappedFilters,
             getGlobalFilterParameter(globalFilters)
         )
@@ -128,17 +154,18 @@ function SensitivityAnalysisResultTab({
             })
             .finally(() => setIsCsvExportLoading(false));
     }, [
-        snackError,
+        filters,
+        sortConfig,
+        nOrNkIndex,
+        sensiTab,
         studyUuid,
         nodeUuid,
         currentRootNetworkUuid,
-        filters,
+        csvHeaders,
+        language,
         getGlobalFilterParameter,
         globalFilters,
-        language,
-        nOrNkIndex,
-        sensiTab,
-        csvHeaders,
+        snackError,
     ]);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
