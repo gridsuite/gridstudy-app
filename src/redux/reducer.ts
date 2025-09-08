@@ -1587,10 +1587,8 @@ export const reducer = createReducer(initialState, (builder) => {
                 : {
                       operationalLimitsGroup1: undefined,
                       operationalLimitsGroup1Names: undefined,
-                      selectedOperationalLimitsGroup1: undefined,
                       operationalLimitsGroup2: undefined,
                       operationalLimitsGroup2Names: undefined,
-                      selectedOperationalLimitsGroup2: undefined,
                   };
         state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
             state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
