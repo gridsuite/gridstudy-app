@@ -312,7 +312,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                         errorMessage =
                             diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
                     } else if (error.status === 403) {
-                        errorMessage = 'tooManyVoltageLevels';
+                        errorMessage = error.message;
                         snackError({
                             headerId: errorMessage,
                         });

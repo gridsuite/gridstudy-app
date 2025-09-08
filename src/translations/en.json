@@ -1137,7 +1137,7 @@
     "NetworkEquipmentNotFound": "The equipment \"{equipmentId}\" does not exist in this network",
     "SLDOpenedInTheGrid": "The {diagramType} \"{equipmentId}\" was opened in the image grid",
     "NADOpenedInTheGrid": "The network area diagram \"{elementId}\" was opened in the image grid",
-    "generatedNADOpenedInTheGrid": "The generated network area diagram was opened in the image grid",
+    "generatedNADOpenedInTheGrid": "The generated network area diagram is being opened in the image grid",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",
@@ -1547,7 +1547,6 @@
     "expand": "Expand",
     "expandAllVoltageLevels": "Expand all voltage levels",
     "addVoltageLevel": "Add a voltage level",
-    "tooManyVoltageLevels": "Too many voltage levels",
     "hide": "Hide",
     "hideLabels": "Hide labels in edit mode",
     "showLabels": "Show labels",
