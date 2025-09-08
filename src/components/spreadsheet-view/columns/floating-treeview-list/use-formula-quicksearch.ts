@@ -5,25 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TreeNode } from './utils/json-schema-parser';
 
 export const useFormulaQuickSearch = (treeData: TreeNode[], setExpandedItems: Dispatch<SetStateAction<string[]>>) => {
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const itemRefs = useRef<Record<string, HTMLLIElement | null>>({});
-    const parentMap = useRef<Record<string, string | null>>({});
 
     const [matches, setMatches] = useState<TreeNode[]>([]);
     const [filter, setFilter] = useState('');
 
-    const buildParentMap = useCallback((nodes: TreeNode[], parent: string | null = null) => {
-        nodes.forEach((node) => {
-            parentMap.current[node.id] = parent;
-            if (node.children) {
-                buildParentMap(node.children, node.id);
-            }
-        });
-    }, []);
+    const parentMap = useMemo(() => {
+        const map: Record<string, string | null> = {};
+        const build = (nodes: TreeNode[], parent: string | null = null) => {
+            nodes.forEach((node) => {
+                map[node.id] = parent;
+                if (node.children) {
+                    build(node.children, node.id);
+                }
+            });
+        };
+        build(treeData);
+        return map;
+    }, [treeData]);
 
     // collect all matches (flat list for navigation)
     const collectMatches = useCallback((nodes: TreeNode[], query: string, results: TreeNode[] = []): TreeNode[] => {
@@ -39,24 +43,18 @@ export const useFormulaQuickSearch = (treeData: TreeNode[], setExpandedItems: Di
     }, []);
 
     useEffect(() => {
-        parentMap.current = {};
-        buildParentMap(treeData);
-    }, [buildParentMap, treeData]);
-
-    useEffect(() => {
-        if (currentResultIndex >= 0 && matches[currentResultIndex]) {
-            const activeId = matches[currentResultIndex].id;
-            const ancestors: string[] = [];
-            let parent = parentMap.current[activeId];
-
-            while (parent) {
-                ancestors.push(parent);
-                parent = parentMap.current[parent];
-            }
-
-            setExpandedItems((prev) => Array.from(new Set([...prev, ...ancestors])));
+        const active = matches[currentResultIndex];
+        if (!active) {
+            return;
         }
-    }, [currentResultIndex, matches, setExpandedItems]);
+        const ancestors: string[] = [];
+        let parent = parentMap[active.id];
+        while (parent) {
+            ancestors.push(parent);
+            parent = parentMap[parent];
+        }
+        setExpandedItems((prev) => Array.from(new Set([...prev, ...ancestors])));
+    }, [currentResultIndex, matches, parentMap, setExpandedItems]);
 
     useEffect(() => {
         if (filter) {
@@ -79,10 +77,6 @@ export const useFormulaQuickSearch = (treeData: TreeNode[], setExpandedItems: Di
         }
     }, [currentResultIndex, matches]);
 
-    const handleSearch = (searchTerm: string) => {
-        setFilter(searchTerm);
-    };
-
     const handleNavigate = (direction: 'next' | 'previous') => {
         if (matches.length === 0) {
             return;
@@ -98,5 +92,5 @@ export const useFormulaQuickSearch = (treeData: TreeNode[], setExpandedItems: Di
         setCurrentResultIndex(-1);
     };
 
-    return { currentResultIndex, matches, handleSearch, handleNavigate, handleResetSearch, filter, itemRefs };
+    return { currentResultIndex, matches, setFilter, handleNavigate, handleResetSearch, filter, itemRefs };
 };
