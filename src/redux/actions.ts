@@ -157,7 +157,8 @@ export type AppActions =
     | ResetSensitivityAnalysisPaginationAction
     | ResetShortcircuitAnalysisPaginationAction
     | LogsResultPaginationAction
-    | ResetLogsPaginationAction;
+    | ResetLogsPaginationAction
+    | SetActiveSpreadsheetTabAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -1228,6 +1229,18 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     type: UPDATE_TABLE_DEFINITION,
     newTableDefinition,
 });
+
+export const SET_ACTIVE_SPREADSHEET_TAB = 'SET_ACTIVE_SPREADSHEET_TAB';
+export type SetActiveSpreadsheetTabAction = Readonly<Action<typeof SET_ACTIVE_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setActiveSpreadsheetTab(tabUuid: UUID | null): SetActiveSpreadsheetTabAction {
+    return {
+        type: SET_ACTIVE_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
 
 export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 

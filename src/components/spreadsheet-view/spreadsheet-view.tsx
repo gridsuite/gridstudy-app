@@ -19,7 +19,7 @@ import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { Spreadsheet } from './spreadsheet/spreadsheet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
-import { initTableDefinitions } from 'redux/actions';
+import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
@@ -52,40 +52,30 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const [activeTabUuid, setActiveTabUuid] = useState<UUID | null>(null);
-
     const { nodeAliases, updateNodeAliases, resetNodeAliases } = useNodeAliases();
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
+    const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
 
-    // Initialize activeTabUuid with the first tab's UUID if not already set
-    useEffect(() => {
-        if (tablesDefinitions.length === 0) {
-            setActiveTabUuid(null);
-        } else if (
-            (!activeTabUuid && tablesDefinitions.length > 0) ||
-            (activeTabUuid && !tablesDefinitions.some((def) => def.uuid === activeTabUuid))
-        ) {
-            setActiveTabUuid(tablesDefinitions[0].uuid);
-        }
-    }, [activeTabUuid, tablesDefinitions]);
-
-    const handleSwitchTab = useCallback((tabUuid: UUID) => {
-        setActiveTabUuid(tabUuid);
-    }, []);
+    const handleSwitchTab = useCallback(
+        (tabUuid: UUID) => {
+            dispatch(setActiveSpreadsheetTab(tabUuid));
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         // Find all tabs of the current equipmentType
         const matchingTabs = tablesDefinitions.filter((def) => def.type === equipmentType);
 
         // If the active tab is not of the right type, switch to the first matching tab
-        const activeTab = tablesDefinitions.find((def) => def.uuid === activeTabUuid);
+        const activeTab = tablesDefinitions.find((def) => def.uuid === activeSpreadsheetTabUuid);
         if (matchingTabs.length > 0 && (!activeTab || activeTab.type !== equipmentType)) {
-            setActiveTabUuid(matchingTabs[0].uuid);
+            dispatch(setActiveSpreadsheetTab(matchingTabs[0].uuid));
         }
-    }, [activeTabUuid, equipmentId, equipmentType, tablesDefinitions]);
+    }, [dispatch, activeSpreadsheetTabUuid, equipmentId, equipmentType, tablesDefinitions]);
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
         if (!studyUuid) {
@@ -96,12 +86,9 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
             const { tablesFilters, tableGlobalFilters, tableDefinitions } =
                 processSpreadsheetsCollectionData(collectionData);
             dispatch(initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters));
-            if (tableDefinitions.length > 0) {
-                handleSwitchTab(tableDefinitions[0].uuid);
-            }
             resetNodeAliases(false, collectionData.nodeAliases);
         });
-    }, [studyUuid, dispatch, handleSwitchTab, resetNodeAliases]);
+    }, [studyUuid, dispatch, resetNodeAliases]);
 
     // Reset the collection to the default one defined in the user profile
     const resetSpreadsheetCollection = useCallback(() => {
@@ -135,7 +122,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
         <Paper style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}>
             <SpreadsheetTabs
                 disabled={disabled}
-                selectedTabUuid={activeTabUuid}
+                selectedTabUuid={activeSpreadsheetTabUuid}
                 handleSwitchTab={handleSwitchTab}
                 resetNodeAliases={resetNodeAliases}
                 handleResetCollectionClick={handleResetCollectionClick}
@@ -149,7 +136,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                 </Alert>
             ) : (
                 tablesDefinitions.map((tabDef) => {
-                    const isActive = activeTabUuid === tabDef.uuid;
+                    const isActive = activeSpreadsheetTabUuid === tabDef.uuid;
                     const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;
                     return (
                         <TabPanelLazy key={tabDef.uuid} selected={isActive}>

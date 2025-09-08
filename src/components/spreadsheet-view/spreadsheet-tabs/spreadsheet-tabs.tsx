@@ -23,7 +23,7 @@ import { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import { UUID } from 'crypto';
-import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
+import { ColumnDefinitionDto, SpreadsheetConfig } from '../types/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import SpreadsheetTabLabel from './spreadsheet-tab-label';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
@@ -230,15 +230,6 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
         [editDialogOpen]
     );
 
-    const resetTabSelection = useCallback(
-        (newTablesDefinitions: SpreadsheetTabDefinition[]) => {
-            if (newTablesDefinitions.length > 0) {
-                handleSwitchTab(newTablesDefinitions[0].uuid);
-            }
-        },
-        [handleSwitchTab]
-    );
-
     const handleDragEnd = useCallback(
         (result: DropResult) => {
             if (!studyUuid || !result.destination || result.destination.index === result.source.index) {
@@ -323,11 +314,7 @@ export const SpreadsheetTabs: FunctionComponent<SpreadsheetTabsProps> = ({
         <>
             <Grid container direction="row" wrap="nowrap" item>
                 <Grid item padding={1}>
-                    <AddSpreadsheetButton
-                        disabled={disabled}
-                        resetTabIndex={resetTabSelection}
-                        resetNodeAliases={resetNodeAliases}
-                    />
+                    <AddSpreadsheetButton disabled={disabled} resetNodeAliases={resetNodeAliases} />
                 </Grid>
                 <Grid item sx={{ overflow: 'hidden', flexGrow: 1 }}>
                     <DroppableTabs

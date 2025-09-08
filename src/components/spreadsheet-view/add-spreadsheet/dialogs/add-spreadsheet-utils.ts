@@ -20,6 +20,7 @@ import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
     saveSpreadsheetGlobalFilters,
+    setActiveSpreadsheetTab,
     updateTableDefinition,
 } from 'redux/actions';
 import { FilterConfig, SortWay } from 'types/custom-aggrid-types';
@@ -126,6 +127,7 @@ const handleSuccess = (
             const columnsFilters = extractColumnsFilters(model.columns);
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
+            dispatch(setActiveSpreadsheetTab(uuid));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
             dispatch(saveSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));

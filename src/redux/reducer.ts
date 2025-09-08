@@ -217,6 +217,8 @@ import {
     LogsResultPaginationAction,
     RESET_LOGS_PAGINATION,
     ResetLogsPaginationAction,
+    SET_ACTIVE_SPREADSHEET_TAB,
+    SetActiveSpreadsheetTabAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -694,11 +696,13 @@ export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
+    activeTabUuid: UUID | null;
 }
 
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
+    activeTabUuid: null,
 };
 
 const initialState: AppState = {
@@ -979,7 +983,15 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.assign(existingTableDefinition, newTableDefinition);
         } else {
             state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+            // Set as active if it's the unique tab or no tab is currently active
+            if (state.tables.definitions.length === 1 || !state.tables.activeTabUuid) {
+                state.tables.activeTabUuid = newTableDefinition.uuid;
+            }
         }
+    });
+
+    builder.addCase(SET_ACTIVE_SPREADSHEET_TAB, (state, action: SetActiveSpreadsheetTabAction) => {
+        state.tables.activeTabUuid = action.tabUuid;
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
@@ -1017,6 +1029,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 locked: false,
             })),
         }));
+        state.tables.activeTabUuid = action.tableDefinitions.length > 0 ? action.tableDefinitions[0].uuid : null;
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce(
