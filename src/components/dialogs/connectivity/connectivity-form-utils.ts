@@ -41,7 +41,7 @@ const createConnectivityFieldSchema = (isEquipmentModification: boolean, related
 
             const isEmpty = value?.id === null || value?.id === undefined || value?.id === '';
 
-            const isNotEmptyRelatedField = context.parent?.[relatedFieldName] !== null;
+            const isNotEmptyRelatedField = context.parent?.relatedFieldName !== null;
 
             return !(isEmpty && isNotEmptyRelatedField);
         });
