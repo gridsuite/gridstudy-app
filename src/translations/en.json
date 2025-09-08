@@ -1546,6 +1546,8 @@
     "expandAllVoltageLevels": "Expand all voltage levels",
     "addVoltageLevel": "Add a voltage level",
     "hide": "Hide",
+    "hideLabels": "Hide labels in edit mode",
+    "showLabels": "Show labels",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
     "labeledGroupSecurity": "Security",
     "selectedOperationalLimitsGroup1": "Active limit set on side 1",
