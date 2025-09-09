@@ -14,6 +14,7 @@ declare module '@mui/material/styles' {
     interface PaletteExtension {
         cancelButtonColor: { main: string };
         tabBackground: string;
+        toolbarBackground: string;
     }
     export interface Palette extends MuiPalette, Required<PaletteExtension> {}
     export interface PaletteOptions extends MuiPaletteOptions, Partial<PaletteExtension> {}
@@ -35,6 +36,13 @@ declare module '@mui/material/styles' {
                 backgroundColor: string;
                 borderColor: string;
             };
+            edge: {
+                stroke: string;
+            };
+            handle: {
+                border: string;
+                background: string;
+            };
         };
         aggridValueChangeHighlightBackgroundColor: string;
         selectedRow: {
@@ -50,9 +58,32 @@ declare module '@mui/material/styles' {
             tabBackground: string;
         };
         node: {
-            background: string;
-            hover: string;
-            border: string;
+            common: {
+                background: string;
+                activeBackground: string;
+                selectedBackground: string;
+            };
+            modification: {
+                border: string;
+                selectedBorder: string;
+                hoverBorderColor: string;
+                activeBorderColor: string;
+            };
+            root: {
+                border: string;
+                hoverBorderColor: string;
+                activeBorderColor: string;
+                icon: {
+                    fill: string;
+                    background: string;
+                };
+            };
+            buildStatus: {
+                error: string;
+                warning: string;
+                success: string;
+                notBuilt: string;
+            };
         };
         searchedText: {
             highlightColor: string;

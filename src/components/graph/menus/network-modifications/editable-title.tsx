@@ -11,12 +11,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import { lighten, darken } from '@mui/material/styles';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { RootNetworkSelection } from './root-network-selection';
 import NodeNameEditDialog from '../node-name-edit-dialog';
 
 const styles = {
     header: (theme: Theme) => ({
-        backgroundColor: theme.networkModificationPanel.backgroundColor,
+        backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(1),
         color: theme.palette.getContrastText(
             theme.palette.mode === 'light'
@@ -36,10 +35,9 @@ interface EditableTitleProps {
     name: string;
     onClose: () => void;
     onChange?: (value: string) => void;
-    showRootNetworkSelection?: boolean;
 }
 
-export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelection }: EditableTitleProps) => {
+export const EditableTitle = ({ name, onClose, onChange }: EditableTitleProps) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
 
     return (
@@ -48,7 +46,6 @@ export const EditableTitle = ({ name, onClose, onChange, showRootNetworkSelectio
                 <EditIcon />
             </IconButton>
             <OverflowableText text={name} sx={styles.nodeNameTitle} />
-            {showRootNetworkSelection && <RootNetworkSelection />}
             <IconButton size="small" onClick={onClose}>
                 <CloseIcon />
             </IconButton>

@@ -11,11 +11,11 @@ import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/util
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import { LimitsPane } from '../../../../limits/limits-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
+import { LimitsPaneCreation } from '../../../../limits/creation/limits-pane-creation.tsx';
 
 const styles = {
     h3: {
@@ -78,7 +78,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <TwoWindingsTransformerCharacteristicsPane />
             </Box>
             <Box hidden={tabIndex !== TwoWindingsTransformerCreationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPane />
+                <LimitsPaneCreation />
             </Box>
             <Box hidden={tabIndex !== TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB} p={1}>
                 <RatioTapChangerPane

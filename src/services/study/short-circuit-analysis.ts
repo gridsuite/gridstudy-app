@@ -13,6 +13,7 @@ import {
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GsLang } from '@gridsuite/commons-ui';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -34,7 +35,8 @@ export function startShortCircuitAnalysis(
     studyUuid: string,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: UUID | null,
-    busId: string
+    busId: string,
+    debug?: boolean
 ): Promise<void> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
@@ -42,10 +44,11 @@ export function startShortCircuitAnalysis(
     const urlSearchParams = new URLSearchParams();
     busId && urlSearchParams.append('busId', busId);
 
-    const startShortCircuitAnalysisUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/shortcircuit/run?' +
-        urlSearchParams.toString();
+    if (debug) {
+        urlSearchParams.append('debug', `${debug}`);
+    }
+
+    const startShortCircuitAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/shortcircuit/run?${urlSearchParams}`;
     console.debug(startShortCircuitAnalysisUrl);
     return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
@@ -173,7 +176,8 @@ export function downloadShortCircuitResultZippedCsv(
     currentRootNetworkUuid: UUID,
     analysisType: number,
     headersCsv: string[] | undefined,
-    enumValueTranslations: Record<string, string>
+    enumValueTranslations: Record<string, string>,
+    language: GsLang
 ) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
@@ -196,6 +200,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations }),
+        body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
     });
 }

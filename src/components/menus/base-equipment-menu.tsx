@@ -16,9 +16,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
+import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { isNodeReadOnly } from '../graph/util/model-functions';
-import { Equipment, EquipmentType, CustomMenuItem, CustomNestedMenuItem } from '@gridsuite/commons-ui';
+import {
+    Equipment,
+    EquipmentType,
+    CustomMenuItem,
+    CustomNestedMenuItem,
+    ExtendedEquipmentType,
+} from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
 const styles = {
@@ -32,7 +38,11 @@ const styles = {
 
 type HandleViewInSpreadsheet = (equipmentType: EquipmentType, equipmentId: string) => void;
 type HandleDeleteEquipment = (equipmentType: EquipmentType | null, equipmentId: string) => void;
-type HandleOpenModificationDialog = (equipmentId: string, equipmentType: EquipmentType | null) => void;
+type HandleOpenModificationDialog = (
+    equipmentId: string,
+    equipmentType: EquipmentType | null,
+    equipmentSubtype: ExtendedEquipmentType | null
+) => void;
 
 const ViewInSpreadsheetItem = ({
     equipmentType,
@@ -90,11 +100,13 @@ const DeleteEquipmentItem = ({
 };
 const ModifyEquipmentItem = ({
     equipmentType,
+    equipmentSubtype,
     equipmentId,
     itemText,
     handleOpenModificationDialog,
 }: {
     equipmentType: EquipmentType;
+    equipmentSubtype: ExtendedEquipmentType | null;
     equipmentId: string;
     itemText: string;
     handleOpenModificationDialog: HandleOpenModificationDialog;
@@ -104,7 +116,9 @@ const ModifyEquipmentItem = ({
     return (
         <CustomMenuItem
             sx={styles.menuItem}
-            onClick={() => handleOpenModificationDialog(equipmentId, getCommonEquipmentType(equipmentType))}
+            onClick={() =>
+                handleOpenModificationDialog(equipmentId, getCommonEquipmentType(equipmentType), equipmentSubtype)
+            }
             selected={false}
             disabled={isNodeReadOnly(currentNode)}
         >
@@ -119,21 +133,27 @@ const ModifyEquipmentItem = ({
 
 const ItemViewInForm = ({
     equipmentType,
+    equipmentSubtype,
     equipmentId,
     itemText,
     handleOpenModificationDialog,
 }: {
     equipmentType: EquipmentType;
+    equipmentSubtype: ExtendedEquipmentType | null;
     equipmentId: string;
     itemText: string;
-    handleOpenModificationDialog: (equipmentId: string, equipmentType: EquipmentType) => void;
+    handleOpenModificationDialog: (
+        equipmentId: string,
+        equipmentType: EquipmentType,
+        equipmentSubstype: ExtendedEquipmentType | null
+    ) => void;
 }) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     return (
         <CustomMenuItem
             sx={styles.menuItem}
-            onClick={() => handleOpenModificationDialog(equipmentId, equipmentType)}
+            onClick={() => handleOpenModificationDialog(equipmentId, equipmentType, equipmentSubtype)}
             disabled={isNodeReadOnly(currentNode)}
         >
             <ListItemIcon>
@@ -153,6 +173,7 @@ export type MapEquipment = Equipment & {
 export type BaseEquipmentMenuProps = {
     equipment: MapEquipment;
     equipmentType: EquipmentType;
+    equipmentSubtype: ExtendedEquipmentType | null;
     handleViewInSpreadsheet: HandleViewInSpreadsheet;
     handleDeleteEquipment: HandleDeleteEquipment;
     handleOpenModificationDialog: HandleOpenModificationDialog;
@@ -161,6 +182,7 @@ export type BaseEquipmentMenuProps = {
 const BaseEquipmentMenu = ({
     equipment,
     equipmentType,
+    equipmentSubtype,
     handleViewInSpreadsheet,
     handleDeleteEquipment,
     handleOpenModificationDialog,
@@ -221,6 +243,7 @@ const BaseEquipmentMenu = ({
                 <ItemViewInForm
                     equipmentId={equipment?.id}
                     equipmentType={equipmentType}
+                    equipmentSubtype={equipmentSubtype}
                     itemText={intl.formatMessage({
                         id: 'ModifyFromMenu',
                     })}
@@ -276,6 +299,7 @@ const BaseEquipmentMenu = ({
                         <ModifyEquipmentItem
                             key={equipment.id}
                             equipmentType={equipmentType}
+                            equipmentSubtype={equipmentSubtype}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
                             handleOpenModificationDialog={handleOpenModificationDialog}
@@ -286,6 +310,7 @@ const BaseEquipmentMenu = ({
                             <ModifyEquipmentItem
                                 key={voltageLevel.id}
                                 equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                                equipmentSubtype={equipmentSubtype}
                                 equipmentId={voltageLevel.id}
                                 itemText={getNameOrId(voltageLevel)}
                                 handleOpenModificationDialog={handleOpenModificationDialog}
@@ -348,6 +373,7 @@ const BaseEquipmentMenu = ({
                         <ModifyEquipmentItem
                             key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
+                            equipmentSubtype={equipmentSubtype}
                             equipmentId={equipment.substationId}
                             itemText={getNameOrId({
                                 name: equipment.substationName,
@@ -359,6 +385,7 @@ const BaseEquipmentMenu = ({
                         <ModifyEquipmentItem
                             key={equipment.id}
                             equipmentType={EquipmentType.VOLTAGE_LEVEL}
+                            equipmentSubtype={equipmentSubtype}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
                             handleOpenModificationDialog={handleOpenModificationDialog}

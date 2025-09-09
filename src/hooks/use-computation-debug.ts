@@ -23,10 +23,14 @@ import { downloadDebugFileDynamicSecurityAnalysis } from '../services/dynamic-se
 import { NotificationType } from '../types/notification-types';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
+import { downloadDebugFileVoltageInit } from '../services/voltage-init';
+import { downloadDebugFileShortCircuitAnalysis } from '../services/short-circuit-analysis';
 
 const downloadDebugFileFetchers = {
     [ComputingType.DYNAMIC_SIMULATION]: downloadDebugFileDynamicSimulation,
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: downloadDebugFileDynamicSecurityAnalysis,
+    [ComputingType.VOLTAGE_INITIALIZATION]: downloadDebugFileVoltageInit,
+    [ComputingType.SHORT_CIRCUIT]: downloadDebugFileShortCircuitAnalysis,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
 export function buildDebugIdentifier({

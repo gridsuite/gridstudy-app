@@ -7,6 +7,7 @@
 import { Box, Grid, SxProps, Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { InfoOutlined } from '@mui/icons-material';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 export interface GridSectionProps {
     title: string;
@@ -15,8 +16,8 @@ export interface GridSectionProps {
     customStyle?: SxProps<Theme>;
     tooltipEnabled?: boolean;
     tooltipMessage?: string;
+    isLiteralText?: boolean;
 }
-
 export default function GridSection({
     title,
     heading = 3,
@@ -24,13 +25,20 @@ export default function GridSection({
     customStyle,
     tooltipEnabled = false,
     tooltipMessage,
+    isLiteralText,
 }: Readonly<GridSectionProps>) {
     const intl = useIntl();
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
-                <Box sx={customStyle} component={`h${heading}`}>
-                    <FormattedMessage id={title} />
+                <Box
+                    sx={mergeSx(customStyle, {
+                        display: 'flex',
+                        alignItems: 'center',
+                    })}
+                    component={`h${heading}`}
+                >
+                    {isLiteralText ? title : <FormattedMessage id={title} />}
                     {tooltipEnabled && (
                         <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: tooltipMessage })}>
                             <InfoOutlined color="info" fontSize="medium" />

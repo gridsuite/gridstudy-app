@@ -14,7 +14,7 @@ import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { AppState } from 'redux/reducer';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { BaseEquipmentMenuProps } from './base-equipment-menu';
 import { MenuBranchProps } from './operating-status-menu';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -28,7 +28,12 @@ const styles = {
 };
 
 const withEquipmentMenu =
-    (BaseMenu: React.ComponentType<BaseEquipmentMenuProps>, equipmentType: EquipmentType, menuId: string) =>
+    (
+        BaseMenu: React.ComponentType<BaseEquipmentMenuProps>,
+        equipmentType: EquipmentType,
+        equipmentSubtype: ExtendedEquipmentType | null,
+        menuId: string
+    ) =>
     ({
         equipment,
         position,
@@ -75,6 +80,7 @@ const withEquipmentMenu =
                     <BaseMenu
                         equipment={equipment}
                         equipmentType={equipmentType}
+                        equipmentSubtype={equipmentSubtype}
                         handleViewInSpreadsheet={handleViewInSpreadsheet}
                         handleDeleteEquipment={handleDeleteEquipment}
                         handleOpenModificationDialog={handleOpenModificationDialog}

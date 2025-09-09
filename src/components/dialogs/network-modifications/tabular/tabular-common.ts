@@ -6,8 +6,9 @@
  */
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import { createPropertyModification, Property } from '../common/properties/property-utils';
-import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX } from './properties/property-utils';
+import { propertiesSchema, PROPERTY_CSV_COLUMN_PREFIX, TabularProperty } from './properties/property-utils';
 import {
+    CSV_FILENAME,
     MODIFICATIONS_TABLE,
     REACTIVE_CAPABILITY_CURVE,
     REACTIVE_CAPABILITY_CURVE_P_0,
@@ -29,9 +30,28 @@ import {
     EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
     LANG_FRENCH,
+    ModificationType,
     PredefinedProperties,
 } from '@gridsuite/commons-ui';
 import yup from 'components/utils/yup-config';
+import { UUID } from 'crypto';
+
+type TabularModificationCommonType = {
+    uuid: UUID;
+    properties: TabularProperty[];
+    csvFilename: string;
+};
+export type TabularModificationModificationType = TabularModificationCommonType & {
+    type: 'TABULAR_MODIFICATION';
+    modificationType: ModificationType;
+    modifications: Modification[];
+};
+export type TabularModificationCreationType = TabularModificationCommonType & {
+    type: 'TABULAR_CREATION';
+    creationType: ModificationType;
+    creations: Modification[];
+};
+export type TabularModificationEditDataType = TabularModificationModificationType | TabularModificationCreationType;
 
 export enum TabularModificationType {
     CREATION = 'creation',
@@ -43,14 +63,20 @@ export const tabularFormSchema = yup
     .shape({
         [TYPE]: yup.string().nullable().required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [CSV_FILENAME]: yup.string(),
     })
     .concat(propertiesSchema)
     .required();
 
-export const emptyTabularFormData = {
-    [TYPE]: null,
-    [MODIFICATIONS_TABLE]: [],
-    [TABULAR_PROPERTIES]: [],
+export type TabularFormType = yup.InferType<typeof tabularFormSchema>;
+
+export const getEmptyTabularFormData = (equipmentType: string) => {
+    return {
+        [TYPE]: equipmentType,
+        [MODIFICATIONS_TABLE]: [],
+        [TABULAR_PROPERTIES]: [],
+        [CSV_FILENAME]: undefined,
+    };
 };
 
 export interface Modification {
@@ -288,8 +314,8 @@ export const generateCommentLines = ({
             if (networkEquipmentType && predefinedEquipmentProperties?.[networkEquipmentType]) {
                 if (secondCommentLine.length === 0) {
                     // create an empty row without property columns
-                    const nbSepatator = csvTranslatedColumns.length - 1 - selectedProperties.length;
-                    secondCommentLine = separator.repeat(nbSepatator);
+                    const nbSeparator = csvTranslatedColumns.length - 1 - selectedProperties.length;
+                    secondCommentLine = separator.repeat(nbSeparator);
                 }
                 selectedProperties.forEach((propertyName) => {
                     const possibleValues =
@@ -303,7 +329,7 @@ export const generateCommentLines = ({
                 });
             }
         }
-        if (secondCommentLine.length > 0) {
+        if (secondCommentLine.length > 0 && secondCommentLine.replaceAll(separator, '').length > 0) {
             commentData.push([secondCommentLine]);
         }
     }

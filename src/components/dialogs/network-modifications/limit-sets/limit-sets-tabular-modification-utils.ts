@@ -6,13 +6,18 @@
  */
 import {
     AMOUNT_TEMPORARY_LIMITS,
+    CSV_FILENAME,
     EQUIPMENT_ID,
+    IS_ACTIVE,
     LIMIT_GROUP_NAME,
+    LIMIT_SETS_MODIFICATION_TYPE,
     MODIFICATION_TYPE,
     MODIFICATIONS_TABLE,
     PERMANENT_LIMIT,
+    SELECTED_OPERATIONAL_LIMITS_GROUP_ID,
     SIDE,
     TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS_MODIFICATION_TYPE,
@@ -22,6 +27,7 @@ import { BranchSide } from '../../../utils/constants';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import yup from '../../../utils/yup-config';
 import { UUID } from 'crypto';
+import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 
 type TemporaryLimit = {
     name: string;
@@ -38,6 +44,7 @@ type OperationalLimitGroup = {
     id: string;
     modificationType: string;
     temporaryLimitsModificationType: string;
+    selectedOperationalLimitsGroupId: string;
     side: string;
     currentLimits: CurrentLimits;
     type: string;
@@ -62,6 +69,7 @@ export type LimitSetModificationMetadata = {
     stashed: boolean;
     type: string;
     uuid: UUID;
+    csvFilename: string;
 };
 
 const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
@@ -87,7 +95,11 @@ const formatTemporaryLimitsFrontToBack = (modification: ModificationRow, amountM
                 name: modification[TEMPORARY_LIMIT_NAME + i],
                 value: modification[TEMPORARY_LIMIT_VALUE + i],
                 acceptableDuration: modification[TEMPORARY_LIMIT_DURATION + i],
-                modificationType: modification[TEMPORARY_LIMITS_MODIFICATION_TYPE],
+                //If we aren't modifying an existing limit set, temporary limits modification is necessarily of ADDED type
+                modificationType:
+                    modification[MODIFICATION_TYPE] === LIMIT_SETS_MODIFICATION_TYPE.MODIFY
+                        ? modification[TEMPORARY_LIMITS_MODIFICATION_TYPE]
+                        : TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD,
             });
         }
     }
@@ -101,6 +113,7 @@ export const formatOperationalLimitGroupsFrontToBack = (
     return {
         id: modification[LIMIT_GROUP_NAME],
         side: side,
+        selectedOperationalLimitsGroupId: modification[IS_ACTIVE] ? modification[LIMIT_GROUP_NAME] : null,
         modificationType: modification[MODIFICATION_TYPE],
         temporaryLimitsModificationType: modification[TEMPORARY_LIMITS_MODIFICATION_TYPE],
         currentLimits: {
@@ -121,13 +134,20 @@ const formatTemporaryLimitsBackToFront = (temporaryLimits: TemporaryLimit[]) => 
     }
     return modification;
 };
+
+const getEquipmentTypeFromLimitSetModificationType = (type: string) => {
+    return Object.keys(LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS).find(
+        (key) => LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS[key] === type
+    );
+};
+
 export const formatBackToFront = (editData: LimitSetModificationMetadata) => {
     const operationalLimitGroups = formatOperationalLimitGroupsBackToFront(editData);
-    const type = operationalLimitGroups.find((operationalLimitGroup) => operationalLimitGroup.type !== undefined)?.type;
     return {
-        [TYPE]: type,
+        [TYPE]: getEquipmentTypeFromLimitSetModificationType(editData.modificationType),
         [AMOUNT_TEMPORARY_LIMITS]: getAmountTemporaryLimits(editData),
         [MODIFICATIONS_TABLE]: operationalLimitGroups,
+        [CSV_FILENAME]: editData.csvFilename,
     };
 };
 
@@ -137,6 +157,7 @@ const mapOperationalLimitGroupBackToFront = (
 ): ModificationRow => {
     let row: ModificationRow = {};
     row[EQUIPMENT_ID] = modification[EQUIPMENT_ID];
+    row[IS_ACTIVE] = group[SELECTED_OPERATIONAL_LIMITS_GROUP_ID] === group.id;
     row[SIDE] = group[SIDE];
     row[LIMIT_GROUP_NAME] = group.id;
     row[MODIFICATION_TYPE] = group.modificationType;
@@ -167,8 +188,13 @@ export const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [AMOUNT_TEMPORARY_LIMITS]: yup.number().positive().max(50).required(),
+        [AMOUNT_TEMPORARY_LIMITS]: yup
+            .number()
+            .min(1, 'amountTemporaryLimitsError')
+            .max(50, 'amountTemporaryLimitsError')
+            .required(),
         [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
+        [CSV_FILENAME]: yup.string().nullable().required(),
     })
     .required();
 export type SchemaType = yup.InferType<typeof formSchema>;
@@ -178,4 +204,5 @@ export const emptyFormData: SchemaType = {
     [TYPE]: EQUIPMENT_TYPES.LINE,
     [AMOUNT_TEMPORARY_LIMITS]: 1,
     [MODIFICATIONS_TABLE]: [],
+    [CSV_FILENAME]: '',
 };

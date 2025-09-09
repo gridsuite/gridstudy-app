@@ -12,8 +12,7 @@ import {
     CURRENT_LIMITS_2,
     ID,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
+    OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
@@ -22,15 +21,20 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
+    APPLICABIlITY,
+    NAME,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { OperationalLimitsGroup, TemporaryLimit } from '../../../services/network-modification-types';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
+    [NAME]: yup.string().nonNullable().required(),
+    [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
 });
 
@@ -49,20 +53,9 @@ const temporaryLimitsValidationSchema = () => {
 };
 
 const currentLimitsValidationSchema = (isModification = false) => ({
-    [PERMANENT_LIMIT]: yup
-        .number()
-        .nullable()
-        .positive('permanentCurrentLimitMustBeGreaterThanZero')
-        // if there are valid (named) temporary limits, permanent limit is mandatory
-        .when([TEMPORARY_LIMITS], {
-            is: (temporaryLimits: TemporaryLimit[]) =>
-                temporaryLimits?.length > 0 && temporaryLimits.find((limit) => limit.name) && !isModification,
-            then: () =>
-                yup
-                    .number()
-                    .required('permanentCurrentLimitMandatory')
-                    .positive('permanentCurrentLimitMustBeGreaterThanZero'),
-        }),
+    [PERMANENT_LIMIT]: isModification
+        ? yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero')
+        : yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
@@ -78,35 +71,36 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         }),
 });
 
-const limitsValidationSchema = (id: string, isModification: boolean = false) => {
+const limitsValidationSchema = (id: string) => {
     const selectedCurrentLimitsSchema = {
-        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(isModification)),
-        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+        [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema(true)),
+        [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema(true)),
     };
+    return { [id]: yup.object().shape(selectedCurrentLimitsSchema) };
+};
 
+const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
-        [OPERATIONAL_LIMITS_GROUPS_1]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
-            .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
-                const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
-                return areArrayElementsUnique(namesArray);
-            }),
-        [OPERATIONAL_LIMITS_GROUPS_2]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
-            .test('distinctNames', 'LimitSetCreationDuplicateError', (array) => {
-                const namesArray = !array ? [] : array.filter((o) => !!o[ID]).map((o) => sanitizeString(o[ID]));
-                return areArrayElementsUnique(namesArray);
+        [OPERATIONAL_LIMITS_GROUPS]: yup
+            .array(yup.object().shape(limitsGroupValidationSchema(false)))
+            .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
+                const namesArray: OperationalLimitsId[] = !array
+                    ? []
+                    : array
+                          .filter((o) => !!sanitizeString(o[NAME]))
+                          .map((o) => {
+                              return { name: sanitizeString(o.name) ?? '', applicability: o.applicability };
+                          });
+                return areOperationalLimitsGroupUnique(namesArray);
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
     };
-    // for now modifications only use the selected limits set while the creations use complete limits sets
-    // => this is temporary and will be removed once the modification use complete limit sets
-    return { [id]: yup.object().shape(isModification ? selectedCurrentLimitsSchema : completeLimitsGroupSchema) };
+    return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
 
 export const getLimitsValidationSchema = (isModification: boolean = false, id: string = LIMITS) => {
-    return limitsValidationSchema(id, isModification);
+    return isModification ? limitsValidationSchema(id) : limitsValidationSchemaCreation(id);
 };
 
 const limitsEmptyFormData = (id: string, onlySelectedLimits = true) => {
@@ -121,8 +115,7 @@ const limitsEmptyFormData = (id: string, onlySelectedLimits = true) => {
         },
     };
     const limitsGroup = {
-        [OPERATIONAL_LIMITS_GROUPS_1]: [],
-        [OPERATIONAL_LIMITS_GROUPS_2]: [],
+        [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
     };
@@ -157,18 +150,12 @@ export const getSelectedLimitsFormData = (
  * used when the limit set data contain all the limit sets data, including the not selected
  */
 export const getAllLimitsFormData = (
-    {
-        operationalLimitsGroups1 = [],
-        operationalLimitsGroups2 = [],
-        selectedOperationalLimitsGroup1 = null,
-        selectedOperationalLimitsGroup2 = null,
-    },
+    { operationalLimitsGroups = [], selectedOperationalLimitsGroup1 = null, selectedOperationalLimitsGroup2 = null },
     id = LIMITS
 ) => {
     return {
         [id]: {
-            [OPERATIONAL_LIMITS_GROUPS_1]: operationalLimitsGroups1,
-            [OPERATIONAL_LIMITS_GROUPS_2]: operationalLimitsGroups2,
+            [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
         },
@@ -181,6 +168,7 @@ export const getAllLimitsFormData = (
 export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]) =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
+        id: baseData.name,
         currentLimits: !currentLimits
             ? null
             : {
@@ -225,10 +213,10 @@ export const updateTemporaryLimits = (
     //remove deleted temporary limits from current and previous modifications
     updatedTemporaryLimits = updatedTemporaryLimits?.filter(
         (limit: TemporaryLimit) =>
-            limit.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED &&
+            limit.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE &&
             !(
                 (limit.modificationType === null ||
-                    limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED) &&
+                    limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY) &&
                 findTemporaryLimit(temporaryLimitsToModify, limit) === undefined
             )
     );
@@ -258,9 +246,9 @@ export const addModificationTypeToTemporaryLimits = (
                 limitWithSameName
             );
             if (
-                (currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                (currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY &&
                     isNodeBuilt(currentNode)) ||
-                currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
             ) {
                 return {
                     ...limit,
@@ -274,13 +262,13 @@ export const addModificationTypeToTemporaryLimits = (
                       }
                     : {
                           ...limit,
-                          modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                          modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY,
                       };
             }
         } else {
             return {
                 ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD,
             };
         }
     });
@@ -289,7 +277,7 @@ export const addModificationTypeToTemporaryLimits = (
         if (!findTemporaryLimit(temporaryLimits, limit)) {
             updatedTemporaryLimits.push({
                 ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
             });
         }
     });
@@ -297,11 +285,11 @@ export const addModificationTypeToTemporaryLimits = (
     formattedCurrentModifiedTemporaryLimits?.forEach((limit) => {
         if (
             !findTemporaryLimit(updatedTemporaryLimits, limit) &&
-            limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED
+            limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
         ) {
             updatedTemporaryLimits.push({
                 ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
             });
         }
     });

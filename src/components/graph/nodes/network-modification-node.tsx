@@ -5,121 +5,69 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Button from '@mui/material/Button';
-import { Handle, NodeProps, Position } from '@xyflow/react';
+import { NodeProps, Position } from '@xyflow/react';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
-import CircularProgress from '@mui/material/CircularProgress';
-import LockIcon from '@mui/icons-material/Lock';
+import Box from '@mui/material/Box';
 import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
-import { Box, Theme } from '@mui/material';
+import { Theme } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
-
-const BUILT_NODE_BANNER_COLOR = '#74a358';
-const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
-const BUILT_WITH_ERROR_NODE_BANNER_COLOR = '#DC143C';
-const NOT_BUILT_NODE_BANNER_COLOR = '#9196a1';
-
-const buildBanner = {
-    display: 'flex',
-    height: '100%',
-    width: '15%',
-    position: 'absolute',
-    top: '0px',
-    left: '0px',
-};
-
-const bottomBuildBanner = {
-    display: 'flex',
-    height: '25%',
-    width: '15%',
-    position: 'absolute',
-    bottom: '0px',
-    left: '0px',
-};
+import NodeHandle from './node-handle';
+import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
+import NodeOverlaySpinner from './node-overlay-spinner';
+import BuildStatusChip from './build-status-chip';
+import React from 'react';
+import { BuildButton } from './build-button';
 
 const styles = {
     networkModificationSelected: (theme: Theme) => ({
-        position: 'relative',
-        variant: 'contained',
-        background: theme.node.background,
-        textTransform: 'none',
-        color: theme.palette.primary.contrastText,
-        '&:hover': {
-            background: theme.node.background,
-        },
-        overflow: 'hidden',
-        boxShadow:
-            theme.node.border +
-            ' 0px 0px 3px 3px,' +
-            theme.node.border +
-            ' 0px 0px 25px,' +
-            theme.node.border +
-            ' 0px 0px 5px 1px',
+        ...selectedBaseNodeStyles(theme, 'column'),
+        border: theme.node.modification.selectedBorder,
+        boxShadow: theme.shadows[6],
+        ...interactiveNodeStyles(theme, 'modification'),
     }),
     networkModification: (theme: Theme) => ({
-        background: theme.palette.text.secondary,
-        textTransform: 'none',
-        color: theme.palette.primary.contrastText,
-        '&:hover': {
-            background: theme.node.hover,
-        },
-        overflow: 'hidden',
+        ...baseNodeStyles(theme, 'column'),
+        border: theme.node.modification.border,
+        ...interactiveNodeStyles(theme, 'modification'),
     }),
-    outOfBoundIcons: {
+    contentBox: (theme: Theme) => ({
+        flexGrow: 1,
         display: 'flex',
-        flexDirection: 'column',
-        position: 'absolute',
-        right: '-30px',
-        top: '18px',
-    },
-    labelWrapper: {
-        display: 'flex',
-        width: '85%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-end',
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    }),
+    overflowText: (theme: Theme) => ({
+        color: theme.palette.text.primary,
+        fontSize: '20px',
+        fontWeight: 400,
         lineHeight: 'normal',
-        marginLeft: 'auto',
-    },
-    buildBannerOK: {
-        ...buildBanner,
-        background: BUILT_NODE_BANNER_COLOR,
-    },
-    buildBannerWarning: {
-        ...buildBanner,
-        background: BUILT_WITH_WARNING_NODE_BANNER_COLOR,
-    },
-    buildBannerError: {
-        ...buildBanner,
-        background: BUILT_WITH_ERROR_NODE_BANNER_COLOR,
-    },
-    buildBannerNotBuilt: {
-        ...buildBanner,
-        background: NOT_BUILT_NODE_BANNER_COLOR,
-    },
-    bottomBuildBannerOK: {
-        ...bottomBuildBanner,
-        background: BUILT_NODE_BANNER_COLOR,
-    },
-    bottomBuildBannerWarning: {
-        ...bottomBuildBanner,
-        background: BUILT_WITH_WARNING_NODE_BANNER_COLOR,
-    },
-    bottomBuildBannerError: {
-        ...bottomBuildBanner,
-        background: BUILT_WITH_ERROR_NODE_BANNER_COLOR,
-    },
-    bottomBuildBannerNotBuilt: {
-        ...bottomBuildBanner,
-        background: NOT_BUILT_NODE_BANNER_COLOR,
-    },
-
-    margin: (theme: Theme) => ({
-        marginLeft: theme.spacing(1.25),
+        textAlign: 'left',
+    }),
+    footerBox: (theme: Theme) => ({
+        display: 'flex',
+        justifyContent: 'flex-start',
+        marginLeft: theme.spacing(1),
+        height: '35%',
+    }),
+    buildBox: (theme: Theme) => ({
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginTop: theme.spacing(-5),
+        marginRight: theme.spacing(0),
+        height: '35%',
+    }),
+    chipFloating: (theme: Theme) => ({
+        position: 'absolute',
+        top: theme.spacing(-4),
+        left: theme.spacing(1),
+        zIndex: 2,
     }),
     tooltip: {
         maxWidth: '720px',
@@ -129,6 +77,8 @@ const styles = {
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.nodeSelectionForCopy);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -147,69 +97,54 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
     };
 
-    function getStyleForBanner(buildStatus: BUILD_STATUS | undefined) {
-        switch (buildStatus) {
-            case BUILD_STATUS.BUILT:
-                return styles.buildBannerOK;
-            case BUILD_STATUS.BUILT_WITH_ERROR:
-                return styles.buildBannerError;
-            case BUILD_STATUS.BUILT_WITH_WARNING:
-                return styles.buildBannerWarning;
-            default:
-                return styles.buildBannerNotBuilt;
-        }
-    }
-
-    function getStyleForBottomBanner(buildStatus: BUILD_STATUS | undefined) {
-        switch (buildStatus) {
-            case BUILD_STATUS.BUILT:
-                return styles.bottomBuildBannerOK;
-            case BUILD_STATUS.BUILT_WITH_ERROR:
-                return styles.bottomBuildBannerError;
-            case BUILD_STATUS.BUILT_WITH_WARNING:
-                return styles.bottomBuildBannerWarning;
-            default:
-                return styles.bottomBuildBannerNotBuilt;
-        }
-    }
     return (
         <>
-            <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />
-            <Handle type="target" position={Position.Top} style={{ background: '#555' }} isConnectable={false} />
-            <Button
-                style={{
-                    opacity: getNodeOpacity(),
-                }}
-                sx={isSelectedNode() ? styles.networkModificationSelected : styles.networkModification}
+            <NodeHandle type={'source'} position={Position.Bottom} />
+            <NodeHandle type={'target'} position={Position.Top} />
+
+            {props.data.globalBuildStatus !== props.data.localBuildStatus && (
+                <BuildStatusChip
+                    buildStatus={props.data.globalBuildStatus}
+                    sx={styles.chipFloating}
+                    icon={<ArrowUpwardIcon style={{ fontSize: '14px' }} color="inherit" />}
+                    onClick={(e) => e.stopPropagation()}
+                />
+            )}
+
+            <Box
+                sx={[
+                    isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
+                    { opacity: getNodeOpacity() },
+                ]}
             >
-                <Box sx={getStyleForBanner(props.data.localBuildStatus)}>
-                    {props.data.localBuildStatus === BUILD_STATUS.BUILDING && (
-                        <CircularProgress size={20} color="primary" style={{ margin: 'auto' }} />
+                <Box sx={styles.contentBox}>
+                    <OverflowableText
+                        text={props.data.label}
+                        sx={styles.overflowText}
+                        tooltipSx={styles.tooltip}
+                        maxLineCount={2}
+                    />
+                </Box>
+
+                <Box sx={styles.footerBox}>
+                    {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
+                        <BuildStatusChip buildStatus={props.data.localBuildStatus} />
                     )}
                 </Box>
-                <Box sx={getStyleForBottomBanner(props.data.globalBuildStatus)}></Box>
 
-                <Box sx={styles.labelWrapper}>
-                    <span
-                        style={{
-                            overflow: 'hidden',
-                            display: '-webkit-box',
-                            WebkitLineClamp: '3',
-                            //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future
-                            WebkitBoxOrient: 'vertical',
-                        }}
-                    >
-                        <OverflowableText
-                            text={props.data.label}
-                            sx={{ width: '100%' }}
-                            tooltipSx={styles.tooltip}
-                            maxLineCount={3}
+                <Box sx={styles.buildBox}>
+                    {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
+                        <BuildButton
+                            buildStatus={props.data.localBuildStatus}
+                            studyUuid={studyUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            nodeUuid={props.id}
                         />
-                    </span>
+                    )}
                 </Box>
-            </Button>
 
-            <Box sx={styles.outOfBoundIcons}>{props.data.readOnly && <LockIcon />}</Box>
+                {props.data.localBuildStatus === BUILD_STATUS.BUILDING && <NodeOverlaySpinner />}
+            </Box>
         </>
     );
 };

@@ -43,6 +43,9 @@ import { startDynamicSecurityAnalysis, stopDynamicSecurityAnalysis } from '../se
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { isSecurityModificationNode } from './graph/tree-node.type';
 import useComputationDebug from '../hooks/use-computation-debug';
+import { PaginationType } from 'types/custom-aggrid-types';
+import { usePaginationReset } from 'hooks/use-pagination-selector';
+import { useLogsPaginationResetByType } from './report-viewer/use-logs-pagination';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -53,6 +56,13 @@ const checkDynamicSimulationParameters = (studyUuid) => {
         return isMappingValid;
     });
 };
+
+const COMPUTATIONS_WITH_PAGINATION = [
+    ComputingType.SECURITY_ANALYSIS,
+    ComputingType.SENSITIVITY_ANALYSIS,
+    ComputingType.SHORT_CIRCUIT,
+];
+
 export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkUuid, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const loadFlowStatusInfos = useSelector((state) => state.computingStatusParameters[ComputingType.LOAD_FLOW]);
@@ -112,6 +122,40 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
+    const resetSecurityAnalysisPagination = usePaginationReset(PaginationType.SecurityAnalysis);
+    const resetSensitivityAnalysisPagination = usePaginationReset(PaginationType.SensitivityAnalysis);
+    const resetShortCircuitAnalysisPagination = usePaginationReset(PaginationType.ShortcircuitAnalysis);
+
+    const resetLogsPaginationByType = useLogsPaginationResetByType();
+
+    const resetPaginationForComputingType = useCallback(
+        (computingType) => {
+            if (COMPUTATIONS_WITH_PAGINATION.includes(computingType)) {
+                switch (computingType) {
+                    case ComputingType.SECURITY_ANALYSIS:
+                        resetSecurityAnalysisPagination();
+                        break;
+                    case ComputingType.SENSITIVITY_ANALYSIS:
+                        resetSensitivityAnalysisPagination();
+                        break;
+                    case ComputingType.SHORT_CIRCUIT:
+                        resetShortCircuitAnalysisPagination();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            resetLogsPaginationByType(computingType);
+        },
+        [
+            resetLogsPaginationByType,
+            resetSecurityAnalysisPagination,
+            resetSensitivityAnalysisPagination,
+            resetShortCircuitAnalysisPagination,
+        ]
+    );
+
     // --- for running in debug mode --- //
     const subscribeDebug = useComputationDebug({
         studyUuid: studyUuid,
@@ -143,11 +187,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 })
                 .finally(() => {
                     dispatch(setComputationStarting(false));
+                    resetPaginationForComputingType(computingType);
                     // we clear the computation logs filter when a new computation is started
                     dispatch(setLogsFilter(computingType, []));
                 });
         },
-        [dispatch, snackError]
+        [dispatch, snackError, resetPaginationForComputingType]
     );
     //In DynaFlow, we need to verify that the current node is a security node before starting the computation.
     const checkLoadFlowProvider = useCallback(
@@ -294,12 +339,19 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.SHORT_CIRCUIT]: {
                 messageId: 'ShortCircuitAnalysis',
-                startComputation() {
+                startComputation(debug) {
                     startComputationAsync(
                         ComputingType.SHORT_CIRCUIT,
                         null,
-                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid),
-                        () => {},
+                        () =>
+                            startShortCircuitAnalysis(
+                                studyUuid,
+                                currentNode?.id,
+                                currentRootNetworkUuid,
+                                undefined,
+                                debug
+                            ),
+                        () => debug && subscribeDebug(ComputingType.SHORT_CIRCUIT),
                         null,
                         'startShortCircuitError'
                     );
@@ -371,12 +423,12 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
             [ComputingType.VOLTAGE_INITIALIZATION]: {
                 messageId: 'VoltageInit',
-                startComputation() {
+                startComputation(debug) {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INITIALIZATION,
                         null,
-                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid),
-                        () => {},
+                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                        () => debug && subscribeDebug(ComputingType.VOLTAGE_INITIALIZATION),
                         null,
                         'startVoltageInitError'
                     );

@@ -346,7 +346,6 @@ const EventModificationScenarioEditor = () => {
                 <IconButton
                     onClick={doDeleteEvent}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={selectedItems.length === 0 || isAnyNodeBuilding || !currentNode}
                 >
                     <DeleteIcon />

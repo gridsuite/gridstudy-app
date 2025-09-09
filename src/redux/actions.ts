@@ -13,39 +13,42 @@ import {
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
-import { Action } from 'redux';
+import type { Action } from 'redux';
 import {
-    GsLang,
-    GsLangUser,
-    GsTheme,
-    Identifiable,
-    NetworkVisualizationParameters,
     ComputingType,
+    type GsLang,
+    type GsLangUser,
+    type GsTheme,
+    type Identifiable,
+    type NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 import type { UnknownArray } from 'type-fest';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import type {
     AppState,
-    EquipmentUpdateType,
+    ComputingStatusParameters,
+    DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
     TableSortKeysType,
-    ComputingStatusParameters,
-    DiagramGridLayoutConfig,
 } from './reducer';
-import { RunningStatus } from '../components/utils/running-status';
-import { IOptionalService } from '../components/utils/optional-services';
-import { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { RunningStatus } from '../components/utils/running-status';
+import type { IOptionalService } from '../components/utils/optional-services';
+import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
+    LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
+    SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
     STATEESTIMATION_RESULT_STORE_FIELD,
@@ -54,15 +57,24 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import type GSMapEquipments from 'components/network/gs-map-equipments';
 import {
-    SpreadsheetEquipmentsByNodes,
-    ColumnDefinition,
+    type ColumnDefinition,
+    type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
-    SpreadsheetTabDefinition,
+    type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
-import { FilterConfig, SortConfig } from '../types/custom-aggrid-types';
-import type { DiagramType } from '../components/diagrams/diagram.type';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
-import { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import {
+    FilterConfig,
+    LogsPaginationConfig,
+    PaginationConfig,
+    SecurityAnalysisTab,
+    SensitivityAnalysisTab,
+    ShortcircuitAnalysisTab,
+    SortConfig,
+} from '../types/custom-aggrid-types';
+import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
+import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -99,12 +111,10 @@ export type AppActions =
     | CurrentTreeNodeAction
     | NodeSelectionForCopyAction
     | SetModificationsDrawerOpenAction
-    | SetEventScenarioDrawerOpenAction
     | CenterOnSubstationAction
     | AddNotificationAction
     | RemoveNotificationByNodeAction
     | SetModificationsInProgressAction
-    | SetStudyDisplayModeAction
     | OpenDiagramAction
     | OpenNadListAction
     | SetComputingStatusAction
@@ -138,7 +148,16 @@ export type AppActions =
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
     | DeletedOrRenamedNodesAction
-    | RemoveEquipmentDataAction;
+    | RemoveEquipmentDataAction
+    | SetOpenMapAction
+    | SecurityAnalysisResultPaginationAction
+    | SensitivityAnalysisResultPaginationAction
+    | ShortcircuitAnalysisResultPaginationAction
+    | ResetSecurityAnalysisPaginationAction
+    | ResetSensitivityAnalysisPaginationAction
+    | ResetShortcircuitAnalysisPaginationAction
+    | LogsResultPaginationAction
+    | ResetLogsPaginationAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -225,13 +244,13 @@ export function removeEquipmentData(equipmentType: SpreadsheetEquipmentType): Re
 
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>;
+    equipments: Partial<Record<SpreadsheetEquipmentType, Identifiable[]>>;
     nodeId: UUID;
 };
 
 export function updateEquipments(
-    equipments: Partial<Record<EquipmentUpdateType, Identifiable[]>>,
-    nodeId: UUID
+    equipments: UpdateEquipmentsAction['equipments'],
+    nodeId: UpdateEquipmentsAction['nodeId']
 ): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
@@ -320,6 +339,18 @@ export type ResetMapEquipmentsAction = Readonly<Action<typeof RESET_MAP_EQUIPMEN
 export function resetMapEquipment(): ResetMapEquipmentsAction {
     return {
         type: RESET_MAP_EQUIPMENTS,
+    };
+}
+
+export const SET_OPEN_MAP = 'SET_OPEN_MAP';
+export type SetOpenMapAction = Readonly<Action<typeof SET_OPEN_MAP>> & {
+    mapOpen: boolean;
+};
+
+export function setOpenMap(mapOpen: boolean): SetOpenMapAction {
+    return {
+        type: SET_OPEN_MAP,
+        mapOpen,
     };
 }
 
@@ -656,14 +687,22 @@ export function setNodeSelectionForCopy(
 }
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
-export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>> & {
-    isModificationsDrawerOpen: boolean;
-};
-
-export function setModificationsDrawerOpen(isModificationsDrawerOpen: boolean): SetModificationsDrawerOpenAction {
+export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
+export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
-        isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const SET_TOGGLE_OPTIONS = 'SET_TOGGLE_OPTIONS';
+export type SetToggleOptionsAction = Readonly<Action<typeof SET_TOGGLE_OPTIONS>> & {
+    toggleOptions: StudyDisplayMode[];
+};
+
+export function setToggleOptions(toggleOptions: StudyDisplayMode[]): SetToggleOptionsAction {
+    return {
+        type: SET_TOGGLE_OPTIONS,
+        toggleOptions: toggleOptions,
     };
 }
 
@@ -676,18 +715,6 @@ export function setMonoRootStudy(isMonoRootStudy: boolean): SetMonoRootStudyActi
     return {
         type: SET_MONO_ROOT_STUDY,
         isMonoRootStudy: isMonoRootStudy,
-    };
-}
-
-export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
-export type SetEventScenarioDrawerOpenAction = Readonly<Action<typeof SET_EVENT_SCENARIO_DRAWER_OPEN>> & {
-    isEventScenarioDrawerOpen: boolean;
-};
-
-export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): SetEventScenarioDrawerOpenAction {
-    return {
-        type: SET_EVENT_SCENARIO_DRAWER_OPEN,
-        isEventScenarioDrawerOpen: isEventScenarioDrawerOpen,
     };
 }
 
@@ -736,18 +763,6 @@ export function setModificationsInProgress(isModificationsInProgress: boolean): 
     return {
         type: SET_MODIFICATIONS_IN_PROGRESS,
         isModificationsInProgress: isModificationsInProgress,
-    };
-}
-
-export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
-export type SetStudyDisplayModeAction = Readonly<Action<typeof SET_STUDY_DISPLAY_MODE>> & {
-    studyDisplayMode: StudyDisplayMode;
-};
-
-export function setStudyDisplayMode(studyDisplayMode: StudyDisplayMode): SetStudyDisplayModeAction {
-    return {
-        type: SET_STUDY_DISPLAY_MODE,
-        studyDisplayMode: studyDisplayMode,
     };
 }
 
@@ -999,6 +1014,88 @@ export function setDynamicSimulationResultFilter(
     };
 }
 
+export const SECURITY_ANALYSIS_RESULT_PAGINATION = 'SECURITY_ANALYSIS_RESULT_PAGINATION';
+export type SecurityAnalysisResultPaginationAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_PAGINATION>> & {
+    paginationTab: SecurityAnalysisTab;
+    [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setSecurityAnalysisResultPagination(
+    paginationTab: SecurityAnalysisTab,
+    securityAnalysisPagination: PaginationConfig
+): SecurityAnalysisResultPaginationAction {
+    return {
+        type: SECURITY_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: securityAnalysisPagination,
+    };
+}
+
+export const RESET_SECURITY_ANALYSIS_PAGINATION = 'RESET_SECURITY_ANALYSIS_PAGINATION';
+export type ResetSecurityAnalysisPaginationAction = Readonly<Action<typeof RESET_SECURITY_ANALYSIS_PAGINATION>>;
+
+export function resetSecurityAnalysisPagination(): ResetSecurityAnalysisPaginationAction {
+    return {
+        type: RESET_SECURITY_ANALYSIS_PAGINATION,
+    };
+}
+
+export const SENSITIVITY_ANALYSIS_RESULT_PAGINATION = 'SENSITIVITY_ANALYSIS_RESULT_PAGINATION';
+export type SensitivityAnalysisResultPaginationAction = Readonly<
+    Action<typeof SENSITIVITY_ANALYSIS_RESULT_PAGINATION>
+> & {
+    paginationTab: SensitivityAnalysisTab;
+    [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setSensitivityAnalysisResultPagination(
+    paginationTab: SensitivityAnalysisTab,
+    sensitivityAnalysisPagination: PaginationConfig
+): SensitivityAnalysisResultPaginationAction {
+    return {
+        type: SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: sensitivityAnalysisPagination,
+    };
+}
+
+export const RESET_SENSITIVITY_ANALYSIS_PAGINATION = 'RESET_SENSITIVITY_ANALYSIS_PAGINATION';
+export type ResetSensitivityAnalysisPaginationAction = Readonly<Action<typeof RESET_SENSITIVITY_ANALYSIS_PAGINATION>>;
+
+export function resetSensitivityAnalysisPagination(): ResetSensitivityAnalysisPaginationAction {
+    return {
+        type: RESET_SENSITIVITY_ANALYSIS_PAGINATION,
+    };
+}
+
+export const SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION = 'SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION';
+export type ShortcircuitAnalysisResultPaginationAction = Readonly<
+    Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION>
+> & {
+    paginationTab: ShortcircuitAnalysisTab;
+    [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setShortcircuitAnalysisResultPagination(
+    paginationTab: ShortcircuitAnalysisTab,
+    shortcircuitAnalysisPagination: PaginationConfig
+): ShortcircuitAnalysisResultPaginationAction {
+    return {
+        type: SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: shortcircuitAnalysisPagination,
+    };
+}
+
+export const RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION = 'RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION';
+export type ResetShortcircuitAnalysisPaginationAction = Readonly<Action<typeof RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION>>;
+
+export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysisPaginationAction {
+    return {
+        type: RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+    };
+}
+
 export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
 export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
     filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
@@ -1039,6 +1136,32 @@ export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 export function resetLogsFilter(): ResetLogsFilterAction {
     return {
         type: RESET_LOGS_FILTER,
+    };
+}
+
+export const LOGS_RESULT_PAGINATION = 'LOGS_RESULT_PAGINATION';
+export type LogsResultPaginationAction = Readonly<Action<typeof LOGS_RESULT_PAGINATION>> & {
+    paginationTab: ComputingAndNetworkModificationType;
+    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationConfig;
+};
+
+export function setLogsResultPagination(
+    paginationTab: ComputingAndNetworkModificationType,
+    logsPagination: LogsPaginationConfig
+): LogsResultPaginationAction {
+    return {
+        type: LOGS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [LOGS_PAGINATION_STORE_FIELD]: logsPagination,
+    };
+}
+
+export const RESET_LOGS_PAGINATION = 'RESET_LOGS_PAGINATION';
+export type ResetLogsPaginationAction = Readonly<Action<typeof RESET_LOGS_PAGINATION>>;
+
+export function resetLogsPagination(): ResetLogsPaginationAction {
+    return {
+        type: RESET_LOGS_PAGINATION,
     };
 }
 
@@ -1288,5 +1411,17 @@ export function setDiagramGridLayout(diagramGridLayout: DiagramGridLayoutConfig)
     return {
         type: SET_DIAGRAM_GRID_LAYOUT,
         diagramGridLayout: diagramGridLayout,
+    };
+}
+
+export const SELECT_SYNC_ENABLED = 'SELECT_SYNC_ENABLED';
+export type SelectSyncEnabledAction = Readonly<Action<typeof SELECT_SYNC_ENABLED>> & {
+    syncEnabled: boolean;
+};
+
+export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction {
+    return {
+        type: SELECT_SYNC_ENABLED,
+        syncEnabled,
     };
 }

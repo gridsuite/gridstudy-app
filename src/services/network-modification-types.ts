@@ -264,6 +264,8 @@ export interface TwoWindingsTransformerModificationInfo {
 
 export interface OperationalLimitsGroup {
     id: string;
+    name: string;
+    applicability?: string;
     currentLimits: CurrentLimits;
 }
 
@@ -280,6 +282,7 @@ export interface TemporaryLimit extends Limit {
 
 export interface CurrentLimits {
     id?: string;
+    applicability?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
 }
@@ -518,10 +521,7 @@ export interface LineCreationInfo {
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
     busOrBusbarSectionId2: string;
-    permanentCurrentLimit1: number;
-    permanentCurrentLimit2: number;
-    limitsGroups1: OperationalLimitsGroup[];
-    limitsGroups2: OperationalLimitsGroup[];
+    limitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
     isUpdate: boolean;
@@ -588,8 +588,7 @@ export interface TwoWindingsTransformerCreationInfo {
     ratedS: number | null;
     ratedU1: number;
     ratedU2: number;
-    limitsGroups1: OperationalLimitsGroup[];
-    limitsGroups2: OperationalLimitsGroup[];
+    limitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
     voltageLevelId1: string;
@@ -801,6 +800,27 @@ export interface CreateCouplingDeviceInfos {
     uuid?: string;
     voltageLevelId: string;
     couplingDeviceInfos: CouplingDeviceInfos;
+}
+
+export interface CreateVoltageLevelTopologyInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    sectionCount?: number | null;
+    switchKinds?: string[] | null;
+}
+
+export interface CreateVoltageLevelSectionInfos {
+    type: ModificationType;
+    uuid?: string;
+    voltageLevelId: string;
+    busbarIndex: string | null;
+    busbarSectionId: string | null;
+    allBusbars: boolean;
+    afterBusbarSectionId: boolean;
+    leftSwitchKind: string | null;
+    rightSwitchKind: string | null;
+    switchOpen: boolean;
 }
 
 export type NetworkModificationRequestInfos = {

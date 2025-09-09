@@ -70,6 +70,12 @@ export const SIDE = {
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
 } as const;
 
+export const APPLICABILITY = {
+    EQUIPMENT: { id: 'EQUIPMENT', label: 'BothSides' },
+    SIDE1: { id: 'SIDE1', label: 'Side1' },
+    SIDE2: { id: 'SIDE2', label: 'Side2' },
+};
+
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },
@@ -162,10 +168,16 @@ export const SWITCH_TYPE = {
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 } as const;
 
+export const POSITION_NEW_SECTION_SIDE = {
+    BEFORE: { id: 'BEFORE', label: 'Before' },
+    AFTER: { id: 'AFTER', label: 'After' },
+} as const;
+
 export enum VscConverterMode {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
     SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
 }
+
 export interface VscConverterModeValue {
     id: string;
     label: string;

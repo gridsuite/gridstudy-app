@@ -4,21 +4,39 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Typography, TextField, InputAdornment, IconButton, Tabs, Tab, Theme, Tooltip } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { useState } from 'react';
+import { Box, Typography, Tabs, Tab, Tooltip, Theme } from '@mui/material';
 import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
-import { RootNetworkSearchResults } from './root-network-search-results';
-import { UUID } from 'crypto';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
-import { getModifications } from '../../../../services/root-network';
+import { RootNetworkModificationsSearchResults } from './root-network-modifications-search-results';
+
 import { useRootNetworkSearchNotifications } from './use-root-network-search-notifications';
+import SearchBar from './root-network-search-bar';
+import { RootNetworkNodesSearchResults } from './root-network-nodes-search-results';
+import { useRootNetworkNodeSearch } from './use-root-network-node-search';
+import { useRootNetworkModificationSearch } from './use-root-network-modification-search';
+
+enum TAB_VALUES {
+    modifications = 'MODIFICATIONS',
+    nodes = 'NODES',
+}
+interface RootNetworkSearchPanelProps {
+    setIsSearchActive: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function getModificationResultsCount(results: ModificationsSearchResult[]): number {
+    return results.reduce((sum, r) => sum + r.modifications.length, 0);
+}
+
+function getNodeResultsCount(results: string[]): number {
+    return results.length;
+}
+
+function isNodeTab(tabValue: TAB_VALUES): boolean {
+    return tabValue === TAB_VALUES.nodes;
+}
 
 const styles = {
     root: (theme: Theme) => ({
@@ -39,175 +57,100 @@ const styles = {
     header: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 };
 
-interface ModificationsPanelProps {
-    setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
-}
-
-const ModificationsPanel: React.FC<ModificationsPanelProps> = ({ setIsSearchActive }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [results, setResults] = useState<ModificationsSearchResult[]>([]);
-
+const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSearchActive }) => {
     const intl = useIntl();
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const { snackError } = useSnackMessage();
+    const [tabValue, setTabValue] = useState<TAB_VALUES>(TAB_VALUES.nodes);
 
-    const resetSearch = useCallback(() => {
-        setResults([]);
-        setSearchTerm('');
-    }, []);
+    const nodesSearch = useRootNetworkNodeSearch();
+    const modificationsSearch = useRootNetworkModificationSearch();
 
-    const leaveSearch = useCallback(() => {
-        resetSearch();
+    const isLoading = isNodeTab(tabValue) ? nodesSearch.isLoading : modificationsSearch.isLoading;
+    const searchTerm = isNodeTab(tabValue) ? nodesSearch.searchTerm : modificationsSearch.searchTerm;
+
+    const leaveSearch = () => {
+        nodesSearch.reset();
+        modificationsSearch.reset();
         setIsSearchActive(false);
-    }, [resetSearch, setIsSearchActive]);
-
-    useRootNetworkSearchNotifications({
-        resetSearch,
-    });
-
-    const reOrderSearchResults = (results: ModificationsSearchResult[], currentNodeUuid?: UUID) => {
-        if (results.length === 0) {
-            return [];
-        }
-
-        const foundCurrentNodeResults = results.find((result) => result.nodeUuid === currentNodeUuid);
-
-        if (!foundCurrentNodeResults) {
-            return results;
-        }
-
-        const otherNodesResults = results.filter((result) => result.nodeUuid !== currentNodeUuid);
-
-        return [foundCurrentNodeResults, ...otherNodesResults];
     };
 
-    const searchMatchingElements = useCallback(
-        (newSearchTerm: string) => {
-            if (newSearchTerm === '' || newSearchTerm?.length === 0) {
-                setIsLoading(false);
-                setResults([]);
-                return;
-            }
-            if (studyUuid && currentRootNetworkUuid) {
-                getModifications(studyUuid, currentRootNetworkUuid, newSearchTerm)
-                    .then((results: ModificationsSearchResult[]) => {
-                        setResults(results);
-                    })
-                    .catch((errmsg) => {
-                        snackError({
-                            messageTxt: errmsg,
-                            headerId: 'equipmentsSearchingError',
-                        });
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
-            }
-        },
-        [currentRootNetworkUuid, snackError, studyUuid]
-    );
-
-    const reorderedResults = useMemo(() => reOrderSearchResults(results, currentNode?.id), [results, currentNode?.id]);
-
-    useEffect(() => {
-        // We need to reset the search results when changing the root network.
-        if (currentRootNetworkUuid) {
-            resetSearch();
+    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (isNodeTab(tabValue)) {
+            nodesSearch.search(value);
+        } else {
+            modificationsSearch.search(value);
         }
-    }, [currentRootNetworkUuid, resetSearch]);
+    };
 
-    const getResultsCount = useCallback((results: ModificationsSearchResult[]): number => {
-        return results.reduce((totalModifications, currentResult) => {
-            return totalModifications + currentResult.modifications.length;
-        }, 0);
-    }, []);
-
-    const debouncedHandleChange = useDebounce(searchMatchingElements, 700);
-
-    const handleOnChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value;
-            setIsLoading(true);
-            debouncedHandleChange(value);
-            setSearchTerm(value);
-        },
-        [debouncedHandleChange, setSearchTerm]
-    );
+    useRootNetworkSearchNotifications({
+        resetNodesSearch: nodesSearch.reset,
+        resetModificationsSearch: modificationsSearch.reset,
+    });
+    const showResultsCount = !isLoading && searchTerm.trim() !== '';
 
     return (
         <Box sx={styles.root}>
             <Box sx={styles.header}>
                 <Box sx={styles.tabs}>
-                    <Tabs value={0} indicatorColor="primary">
+                    <Tabs value={tabValue} onChange={(_e, newValue) => setTabValue(newValue)} indicatorColor="primary">
+                        <Tab value={TAB_VALUES.nodes} label={intl.formatMessage({ id: 'rootNetwork.nodeTab' })} />
                         <Tab
-                            label={intl.formatMessage({
-                                id: 'rootNetwork.modificationTab',
-                            })}
+                            value={TAB_VALUES.modifications}
+                            label={intl.formatMessage({ id: 'rootNetwork.modificationTab' })}
                         />
                     </Tabs>
 
                     <Tooltip
-                        title={intl.formatMessage({
-                            id: 'rootNetwork.modificationsInfos',
-                        })}
+                        sx={{ visibility: !isNodeTab(tabValue) ? 'visible' : 'hidden' }}
+                        title={intl.formatMessage({ id: 'rootNetwork.modificationsInfos' })}
                         placement="left-start"
                     >
                         <InfoIcon color="primary" />
                     </Tooltip>
                 </Box>
-
-                <RootNetworkMinimizedPanelContent />
+                <RootNetworkMinimizedPanelContent isRootNetworkPanelMinimized={false} />
             </Box>
 
             <Box sx={styles.searchField}>
-                <TextField
-                    fullWidth
-                    variant="outlined"
+                <SearchBar
                     placeholder={intl.formatMessage({
-                        id: 'rootNetwork.searchPlaceholder',
+                        id: isNodeTab(tabValue)
+                            ? 'rootNetwork.searchPlaceholder.nodes'
+                            : 'rootNetwork.searchPlaceholder.modifications',
                     })}
                     value={searchTerm}
                     onChange={handleOnChange}
-                    size="small"
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                    }}
+                    onClear={leaveSearch}
                 />
-                <IconButton size="small" onClick={leaveSearch}>
-                    <CloseIcon />
-                </IconButton>
             </Box>
-            {!isLoading && searchTerm.trim() !== '' && (
+
+            {isLoading && (
+                <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
+                    {intl.formatMessage({ id: 'rootNetwork.loading' })}
+                </Typography>
+            )}
+            {showResultsCount && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
                     <FormattedMessage
-                        id={'rootNetwork.results'}
+                        id="rootNetwork.results"
                         values={{
-                            count: getResultsCount(results),
+                            count: isNodeTab(tabValue)
+                                ? getNodeResultsCount(nodesSearch.results)
+                                : getModificationResultsCount(modificationsSearch.results),
                         }}
                     />
                 </Typography>
             )}
-            {isLoading && (
-                <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {intl.formatMessage({
-                        id: 'rootNetwork.loading',
-                    })}
-                </Typography>
-            )}
-            <RootNetworkSearchResults results={reorderedResults} />
+
+            {!isNodeTab(tabValue) && <RootNetworkModificationsSearchResults results={modificationsSearch.results} />}
+            {isNodeTab(tabValue) && <RootNetworkNodesSearchResults results={nodesSearch.results} />}
         </Box>
     );
 };
 
-export default ModificationsPanel;
+export default RootNetworkSearchPanel;

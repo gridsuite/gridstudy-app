@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 import { KilometerAdornment } from '../dialog-utils';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,10 +13,10 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
 import {
     SEGMENT_DISTANCE_VALUE,
-    SEGMENT_TYPE_VALUE,
-    SEGMENT_RESISTANCE,
     SEGMENT_REACTANCE,
+    SEGMENT_RESISTANCE,
     SEGMENT_SUSCEPTANCE,
+    SEGMENT_TYPE_VALUE,
 } from '../../utils/field-constants';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
@@ -29,12 +29,12 @@ export interface LineTypeSegmentCreationProps {
     onSegmentDistanceChange: (index: number) => void;
 }
 
-const LineTypeSegmentCreation: FunctionComponent<LineTypeSegmentCreationProps> = ({
+export default function LineTypeSegmentCreation({
     name,
     index,
     onEditButtonClick,
     onSegmentDistanceChange,
-}) => {
+}: Readonly<LineTypeSegmentCreationProps>) {
     const watchDistance = useWatch({
         name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
@@ -79,6 +79,4 @@ const LineTypeSegmentCreation: FunctionComponent<LineTypeSegmentCreationProps> =
             <GridItem size={2}>{segmentSusceptanceField}</GridItem>
         </>
     );
-};
-
-export default LineTypeSegmentCreation;
+}

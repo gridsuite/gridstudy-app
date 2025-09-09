@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -17,14 +17,13 @@ import {
     resetLogsFilter,
     reorderNetworkModificationTreeNodes,
     deletedOrRenamedNodes,
+    resetLogsPagination,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import NetworkModificationTree from './network-modification-tree';
-import NodeEditor from './graph/menus/network-modifications/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useStore } from '@xyflow/react';
 import { ExportNetworkDialog } from './dialogs/export-network-dialog';
 import { BUILD_STATUS } from './network/constants';
 import {
@@ -42,22 +41,8 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
-import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
-import { StudyDisplayMode, CopyType } from './network-modification.type';
-import { NetworkModificationTreePanePanels } from './network-modification-tree-pane-panels';
+import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
-
-// We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
-// But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
-const usePreviousTreeDisplay = (display, width) => {
-    const ref = useRef();
-    useEffect(() => {
-        if (display !== StudyDisplayMode.MAP) {
-            ref.current = { display, width };
-        }
-    }, [display, width]);
-    return ref.current;
-};
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
@@ -67,9 +52,14 @@ const noNodeSelectionForCopy = {
     allChildrenIds: null,
 };
 
-const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
+export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
-export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, currentRootNetworkUuid }) => {
+export const NetworkModificationTreePane = ({
+    studyUuid,
+    studyMapTreeDisplay,
+    currentRootNetworkUuid,
+    onTreePanelResize,
+}) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
@@ -136,13 +126,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     const nodeSelectionForCopyRef = useRef();
     nodeSelectionForCopyRef.current = selectionForCopy;
 
-    const isModificationsDrawerOpen = useSelector((state) => state.isModificationsDrawerOpen);
-    const isEventScenarioDrawerOpen = useSelector((state) => state.isEventScenarioDrawerOpen);
-    const isStudyDrawerOpen = isModificationsDrawerOpen || isEventScenarioDrawerOpen;
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
-    const width = useStore((state) => state.width);
-    const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -309,7 +293,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                 ) {
                     resetNodeClipboard();
                 }
-            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_RENAMED) {
+            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_EDITED) {
                 updateNodes([studyUpdatedForce.eventData.headers.node]);
             } else if (
                 studyUpdatedForce.eventData.headers.updateType === NotificationType.NODE_BUILD_STATUS_UPDATED &&
@@ -320,6 +304,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     // when the current node is updated, we need to reset the logs filter
                     dispatch(resetLogsFilter());
+                    dispatch(resetLogsPagination());
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (
@@ -573,35 +558,13 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         [studyUuid, dispatch, snackError]
     );
 
-    const networkModificationTreeComponent = useMemo(
-        () => (
+    return (
+        <>
             <NetworkModificationTree
                 onNodeContextMenu={onNodeContextMenu}
                 studyUuid={studyUuid}
                 studyMapTreeDisplay={studyMapTreeDisplay}
-                isStudyDrawerOpen={isStudyDrawerOpen}
-                prevTreeDisplay={prevTreeDisplay}
-            />
-        ),
-        [studyUuid, onNodeContextMenu, studyMapTreeDisplay, isStudyDrawerOpen, prevTreeDisplay]
-    );
-
-    const networkModificationPanelComponent = useMemo(
-        () => (
-            <>
-                {isModificationsDrawerOpen && <NodeEditor />}
-                {isEventScenarioDrawerOpen && <ScenarioEditor />}
-            </>
-        ),
-        [isModificationsDrawerOpen, isEventScenarioDrawerOpen]
-    );
-
-    return (
-        <>
-            <NetworkModificationTreePanePanels
-                leftComponent={networkModificationTreeComponent}
-                rightComponent={networkModificationPanelComponent}
-                showRightPanel={isModificationsDrawerOpen || isEventScenarioDrawerOpen}
+                onTreePanelResize={onTreePanelResize}
             />
             {createNodeMenu.display && (
                 <CreateNodeMenu

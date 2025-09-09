@@ -12,7 +12,6 @@ import {
     DirectoryItemsInput,
     ElementType,
     TextInput,
-    UseStateBooleanReturn,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
@@ -20,22 +19,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import {
-    SPREADSHEET_MODEL,
-    SPREADSHEET_NAME,
     getSpreadsheetFromModelFormSchema,
     initialSpreadsheetFromModelForm,
+    SPREADSHEET_MODEL,
+    SPREADSHEET_NAME,
 } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
 import { UUID } from 'crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
-import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
+import type { DialogComponentProps } from '../types';
 
-interface AddSpreadsheetFromModelDialogProps {
-    open: UseStateBooleanReturn;
-    resetNodeAliases: ResetNodeAliasCallback;
-}
+export type AddSpreadsheetFromModelDialogProps = Pick<DialogComponentProps, 'open' | 'resetNodeAliases'>;
 
 /**
  * Dialog for creating a spreadsheet from an existing model
@@ -43,7 +39,6 @@ interface AddSpreadsheetFromModelDialogProps {
 export default function AddSpreadsheetFromModelDialog({
     open,
     resetNodeAliases,
-    ...dialogProps
 }: Readonly<AddSpreadsheetFromModelDialogProps>) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
@@ -126,7 +121,6 @@ export default function AddSpreadsheetFromModelDialog({
                 onSave={onSubmit}
                 onClear={() => null}
                 PaperProps={{ sx: dialogStyles.dialogContent }}
-                {...dialogProps}
             >
                 <Grid container spacing={2} direction="column" marginTop="auto">
                     <Grid item xs>

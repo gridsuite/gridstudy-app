@@ -9,7 +9,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState, StudyUpdated } from '../redux/reducer';
-import { identity } from '@gridsuite/commons-ui';
+import { identity, useDebounce } from '@gridsuite/commons-ui';
 import { StudyUpdatedEventData } from 'types/notification-types';
 
 export type ResultFetcher<T> = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<T | null>;
@@ -133,6 +133,9 @@ export function useNodeData<T, R = T>({
             .finally(() => setIsLoading(false));
     }, [nodeUuid, fetcher, rootNetworkUuid, studyUuid, resultConverter]);
 
+    // Debounce the update to avoid excessive calls
+    const debouncedUpdate = useDebounce(update, 1000);
+
     /* initial fetch and update */
     useEffect(() => {
         if (!studyUuid || !nodeUuid || !rootNetworkUuid || !fetcher) {
@@ -150,9 +153,9 @@ export function useNodeData<T, R = T>({
         });
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (nodeUuidRef.current !== nodeUuid || rootNetworkUuidRef.current !== rootNetworkUuid || isUpdateForUs) {
-            update();
+            debouncedUpdate();
         }
-    }, [update, fetcher, nodeUuid, invalidations, rootNetworkUuid, studyUpdatedForce, studyUuid]);
+    }, [debouncedUpdate, fetcher, nodeUuid, invalidations, rootNetworkUuid, studyUpdatedForce, studyUuid]);
 
     return { result, isLoading, setResult, errorMessage, update };
 }

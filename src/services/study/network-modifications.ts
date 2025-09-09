@@ -25,6 +25,8 @@ import {
     BatteryCreationInfos,
     BatteryModificationInfos,
     CreateCouplingDeviceInfos,
+    CreateVoltageLevelSectionInfos,
+    CreateVoltageLevelTopologyInfos,
     DeleteAttachingLineInfo,
     DivideLineInfo,
     GenerationDispatchInfo,
@@ -55,6 +57,7 @@ import {
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
+import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -760,8 +763,7 @@ export function createLine({
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    limitsGroups1,
-    limitsGroups2,
+    limitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
     isUpdate = false,
@@ -805,8 +807,7 @@ export function createLine({
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            operationalLimitsGroups1: limitsGroups1,
-            operationalLimitsGroups2: limitsGroups2,
+            operationalLimitsGroups: limitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             connectionName1: connectionName1,
@@ -922,8 +923,7 @@ export function createTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    limitsGroups1,
-    limitsGroups2,
+    limitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
     voltageLevelId1,
@@ -970,8 +970,7 @@ export function createTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            operationalLimitsGroups1: limitsGroups1,
-            operationalLimitsGroups2: limitsGroups2,
+            operationalLimitsGroups: limitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             voltageLevelId1: voltageLevelId1,
@@ -1092,15 +1091,27 @@ export function modifyTwoWindingsTransformer({
     });
 }
 
-export function createTabularModification(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationType: string,
-    modifications: any,
-    modificationUuid: UUID,
-    type: ModificationType,
-    properties?: TabularProperty[]
-) {
+export interface CreateTabularModificationProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationType: string;
+    modifications: Modification[];
+    modificationUuid: UUID;
+    type: ModificationType;
+    csvFilename?: string;
+    properties?: TabularProperty[];
+}
+
+export function createTabularModification({
+    studyUuid,
+    nodeUuid,
+    modificationType,
+    modifications,
+    modificationUuid,
+    type,
+    csvFilename,
+    properties,
+}: CreateTabularModificationProps) {
     let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
@@ -1121,6 +1132,7 @@ export function createTabularModification(
             modificationType: modificationType,
             modifications: modifications,
             properties: properties,
+            csvFilename: csvFilename,
         }),
     });
 }
@@ -1474,6 +1486,36 @@ export function attachLine({
             'Content-Type': 'application/json',
         },
         body,
+    });
+}
+
+export function createVoltageLevelSection({
+    voltageLevelSectionInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    voltageLevelSectionInfos: CreateVoltageLevelSectionInfos;
+    studyUuid: UUID;
+    nodeUuid?: UUID;
+    modificationUuid: string | null;
+    isUpdate: boolean;
+}) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    if (modificationUuid) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology modification');
+    } else {
+        console.info('Creating voltage level topology modification');
+    }
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(voltageLevelSectionInfos),
     });
 }
 
@@ -1998,17 +2040,27 @@ export function modifyByAssignment(
     });
 }
 
-export function createTabularCreation(
-    studyUuid: string,
-    nodeUuid: UUID,
-    creationType: string,
-    creations: any,
-    properties: TabularProperty[],
-    isUpdate: boolean,
-    modificationUuid: UUID
-) {
-    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+export interface CreateTabularCreationProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    creationType: string;
+    creations: Modification[];
+    modificationUuid: UUID;
+    csvFilename?: string;
+    properties?: TabularProperty[];
+}
 
+export function createTabularCreation({
+    studyUuid,
+    nodeUuid,
+    creationType,
+    creations,
+    modificationUuid,
+    csvFilename,
+    properties,
+}: CreateTabularCreationProps) {
+    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    const isUpdate = !!modificationUuid;
     if (isUpdate) {
         createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating tabular creation');
@@ -2027,6 +2079,7 @@ export function createTabularCreation(
             creationType: creationType,
             creations: creations,
             properties: properties,
+            csvFilename: csvFilename,
         }),
     });
 }
@@ -2089,5 +2142,37 @@ export function balancesAdjustment({
             'Content-Type': 'application/json',
         },
         body,
+    });
+}
+
+export function createVoltageLevelTopology({
+    createVoltageLevelTopologyInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    createVoltageLevelTopologyInfos: CreateVoltageLevelTopologyInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology');
+    } else {
+        console.info('Creating voltage level topology');
+    }
+    console.log('test', createVoltageLevelTopologyInfos);
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createVoltageLevelTopologyInfos),
     });
 }

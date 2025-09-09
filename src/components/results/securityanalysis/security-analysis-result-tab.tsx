@@ -22,14 +22,17 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { QueryParamsType, SecurityAnalysisTabProps } from './security-analysis.type';
 import {
     convertFilterValues,
-    DEFAULT_PAGE_COUNT,
     getStoreFields,
     mappingColumnToField,
     NMK_TYPE,
     RESULT_TYPE,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import {
+    FilterType as AgGridFilterType,
+    PaginationType,
+    SecurityAnalysisTab,
+} from '../../../types/custom-aggrid-types';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
@@ -45,6 +48,7 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { usePaginationSelector } from 'hooks/use-pagination-selector';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -88,9 +92,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const tabIndexRef = useRef<number>();
     tabIndexRef.current = tabIndex;
     const [nmkType, setNmkType] = useState(NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES);
-    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT as number);
     const [count, setCount] = useState<number>(0);
-    const [page, setPage] = useState<number>(0);
 
     useEffect(() => {
         if (!enableDeveloperMode && tabIndexRef.current === N_RESULTS_TAB_INDEX) {
@@ -117,6 +119,11 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
 
     const { filters } = useFilterSelector(AgGridFilterType.SecurityAnalysis, getStoreFields(tabIndex));
+    const { pagination, dispatchPagination } = usePaginationSelector(
+        PaginationType.SecurityAnalysis,
+        getStoreFields(tabIndex) as SecurityAnalysisTab
+    );
+    const { page, rowsPerPage } = pagination;
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
@@ -126,8 +133,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     );
 
     const memoizedSetPageCallback = useCallback(() => {
-        setPage(0);
-    }, []);
+        dispatchPagination({ ...pagination, page: 0 });
+    }, [pagination, dispatchPagination]);
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
@@ -141,7 +148,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
 
             if (tabIndex === NMK_RESULTS_TAB_INDEX) {
                 queryParams['page'] = page;
-                queryParams['size'] = rowsPerPage;
+                queryParams['size'] = rowsPerPage as number;
             }
 
             if (sortConfig?.length) {
@@ -194,10 +201,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     const resetResultStates = useCallback(() => {
         setResult(null);
         setCount(0);
-        setPage(0);
     }, [setResult]);
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {
+        dispatchPagination({ page: 0, rowsPerPage });
         resetResultStates();
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
@@ -212,14 +219,20 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
     };
 
     // Pagination, sort and filter
-    const handleChangePage = useCallback((_: React.MouseEvent<HTMLButtonElement> | null, selectedPage: number) => {
-        setPage(selectedPage);
-    }, []);
+    const handleChangePage = useCallback(
+        (_: React.MouseEvent<HTMLButtonElement> | null, selectedPage: number) => {
+            dispatchPagination({ ...pagination, page: selectedPage });
+        },
+        [pagination, dispatchPagination]
+    );
 
-    const handleChangeRowsPerPage = useCallback((event: React.ChangeEvent<{ value: string }>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    }, []);
+    const handleChangeRowsPerPage = useCallback(
+        (event: React.ChangeEvent<{ value: string }>) => {
+            const newRowsPerPage = parseInt(event.target.value, 10);
+            dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
+        },
+        [dispatchPagination]
+    );
 
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
@@ -256,11 +269,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         result.length === 0;
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
-        switch (tabIndex) {
-            case NMK_RESULTS_TAB_INDEX:
-                return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.VOLTAGE_LEVEL];
-            case N_RESULTS_TAB_INDEX:
-                return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+        if (tabIndex === NMK_RESULTS_TAB_INDEX) {
+            return [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
         }
         return [];
     }, [tabIndex]);
@@ -281,6 +291,8 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                             onChange={handleGlobalFilterChange}
                             filters={globalFilterOptions}
                             filterableEquipmentTypes={filterableEquipmentTypes}
+                            disableGenericFilters={tabIndex === N_RESULTS_TAB_INDEX}
+                            genericFiltersStrictMode={true}
                         />
                     </Box>
                 )}
@@ -330,7 +342,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         isFromContingency={nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES}
                         paginationProps={{
                             count,
-                            rowsPerPage,
+                            rowsPerPage: rowsPerPage as number,
                             page,
                             onPageChange: handleChangePage,
                             onRowsPerPageChange: handleChangeRowsPerPage,

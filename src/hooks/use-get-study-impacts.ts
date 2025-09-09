@@ -59,10 +59,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                     impactedSubstationsIds: substationsIds,
                     deletedEquipments,
                     impactedElementTypes,
-                } = JSON.parse(
-                    // @ts-ignore
-                    eventData.payload
-                ) as NetworkImpactsInfos;
+                } = JSON.parse(eventData.payload) as NetworkImpactsInfos;
 
                 if (impactedElementTypes?.length > 0) {
                     setImpactedElementTypes(impactedElementTypes);

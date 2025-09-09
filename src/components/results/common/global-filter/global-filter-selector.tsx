@@ -15,6 +15,7 @@ export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
     preloadedGlobalFilters?: GlobalFilter[];
     genericFiltersStrictMode?: boolean;
+    disableGenericFilters?: boolean;
 };
 export default function GlobalFilterSelector({
     onChange,
@@ -23,15 +24,16 @@ export default function GlobalFilterSelector({
     filters,
     //If this parameter is enabled, only generic filters of the same type as those provided in filterableEquipmentTypes will be available
     genericFiltersStrictMode = false,
+    disableGenericFilters = false,
 }: Readonly<GlobalFilterSelectorProps>) {
     // Global filter autocomplete displayed categories are dynamically provided from the on hand filters, GENERIC_FILTER gets manually added
     const filterCategories = useMemo(() => {
         let categories: string[] = filters.map((filter) => filter.filterType);
-        if (!categories.includes(FilterType.GENERIC_FILTER)) {
+        if (!categories.includes(FilterType.GENERIC_FILTER) && !disableGenericFilters) {
             categories.push(FilterType.GENERIC_FILTER);
         }
         return categories;
-    }, [filters]);
+    }, [filters, disableGenericFilters]);
 
     return (
         <GlobalFilterProvider

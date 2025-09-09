@@ -10,10 +10,7 @@ import { Actions, AppState, reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
 
-export const store = createStore(
-    reducer,
-    (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
-);
+export const store = createStore(reducer);
 setCommonStore(store);
 setUserStore(store);
 export type AppDispatch = Store<AppState, Actions>['dispatch'];

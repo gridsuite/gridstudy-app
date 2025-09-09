@@ -24,4 +24,6 @@ export interface Connectivity {
     connectionName?: string;
     connectionPosition?: number;
     terminalConnected?: boolean;
+    isVoltageLevelModification?: boolean;
+    isBusOrBusbarSectionModification?: boolean;
 }
