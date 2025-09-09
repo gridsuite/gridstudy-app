@@ -15,6 +15,9 @@ export const darkThemeCssVars = {
     '.nad-label-box': {
         backgroundColor: '#6c6c6c20',
     },
+    '.nad-textnode-highlight': {
+        backgroundColor: '#32373bd9', // same displayed color as #6c6c6c20 but with 0.85 opacity
+    },
     '.sld-vl0to30, .nad-vl0to30': {
         '--vl-color': '#AAAE50',
     },
