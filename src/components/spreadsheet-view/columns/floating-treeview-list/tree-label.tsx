@@ -26,15 +26,15 @@ function highlightText(text: string, query?: string, active?: boolean) {
     if (!query) {
         return text;
     }
-    return text
-        .split(new RegExp(`(${query})`, 'gi'))
-        .map((part) =>
-            part.toLowerCase() === query.toLowerCase() ? (
-                <span style={{ backgroundColor: active ? 'orange' : 'yellow' }}>{part}</span>
-            ) : (
-                part
-            )
-        );
+    return text.split(new RegExp(`(${query})`, 'gi')).map((part, index) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+            <span key={index} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
+                {part}
+            </span>
+        ) : (
+            part
+        )
+    );
 }
 
 export function TreeLabel({ text, type, highlight, active }: Readonly<TreeLabelProps>) {
@@ -89,9 +89,9 @@ export function TreeLabel({ text, type, highlight, active }: Readonly<TreeLabelP
     }
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Box style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
             <Box sx={{ px: 1 }}>{highlightText(text, highlight, active)}</Box>
             {icon && <span>{icon}</span>}
-        </div>
+        </Box>
     );
 }
