@@ -16,6 +16,7 @@ import { GlobalFilters } from '../common/global-filter/global-filter-types';
 export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
+    upcomingAcceptableDuration?: number;
     limit?: number;
     patlLimit?: number;
     limitName?: string;
