@@ -92,5 +92,13 @@ export const useFormulaQuickSearch = (treeData: TreeNode[], setExpandedItems: Di
         setCurrentResultIndex(-1);
     };
 
-    return { currentResultIndex, matches, setFilter, handleNavigate, handleResetSearch, filter, itemRefs };
+    return {
+        currentResultIndex,
+        matches,
+        handleSearch: setFilter,
+        handleNavigate,
+        handleResetSearch,
+        filter,
+        itemRefs,
+    };
 };
