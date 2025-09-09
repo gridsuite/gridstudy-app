@@ -89,7 +89,7 @@ export function TreeLabel({ text, type, highlight, active }: Readonly<TreeLabelP
     }
 
     return (
-        <Box style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
             <Box sx={{ px: 1 }}>{highlightText(text, highlight, active)}</Box>
             {icon && <span>{icon}</span>}
         </Box>
