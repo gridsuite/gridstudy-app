@@ -17,7 +17,6 @@ export interface LoadFormInfos {
     voltageLevelId: string;
     connectablePosition: ConnectablePositionFormInfos;
     busOrBusbarSectionId: string;
-    busbarSectionName: string;
     terminalConnected?: boolean | null;
     measurementP: MeasurementInfo | undefined;
     measurementQ: MeasurementInfo | undefined;
