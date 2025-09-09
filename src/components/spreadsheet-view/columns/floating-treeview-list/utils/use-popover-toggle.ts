@@ -10,7 +10,7 @@ import { JSONSchema4 } from 'json-schema';
 
 export const usePopoverToggle = (
     properties: JSONSchema4 | null,
-    setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>,
+    setAnchorEl: Dispatch<SetStateAction<Element | null>>,
     handleConfirm?: () => void
 ) => {
     const lastShiftTime = useRef(0);

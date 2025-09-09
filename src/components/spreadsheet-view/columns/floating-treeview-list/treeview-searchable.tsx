@@ -23,7 +23,7 @@ import { useIntl } from 'react-intl';
 interface TreeviewSearchableProps {
     properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
-    setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
+    setAnchorEl: Dispatch<SetStateAction<Element | null>>;
 }
 
 const MOUSE_EVENT_DETAIL_DOUBLE_CLICK = 2;

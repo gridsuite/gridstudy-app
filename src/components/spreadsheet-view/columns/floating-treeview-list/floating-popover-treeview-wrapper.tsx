@@ -29,7 +29,7 @@ export function FloatingPopoverTreeviewWrapper({
     formMethods,
     spreadsheetEquipmentType,
 }: Readonly<FormulaAutocompleteFieldProps>) {
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [anchorEl, setAnchorEl] = useState<Element | null>(null);
     const [properties, setProperties] = useState<JSONSchema4 | null>(null);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -51,7 +51,7 @@ export function FloatingPopoverTreeviewWrapper({
                     <Box sx={{ position: 'absolute', left: '-3rem', top: 0 }}>
                         <Button
                             onClick={(e) =>
-                                setAnchorEl(e.currentTarget.closest('[data-popover-anchor]') as HTMLElement)
+                                setAnchorEl(e.currentTarget.closest('[data-popover-anchor]'))
                             }
                             disabled={properties === null}
                         >
