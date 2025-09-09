@@ -21,7 +21,7 @@ export function renderTreeData(
         const isActive = matches[currentResultIndex]?.id === node.id;
         return (
             <TreeItem
-                key={index}
+                key={`${index}${node.id}`}
                 itemId={node.id}
                 ref={(el) => (itemRefs.current[node.id] = el)}
                 label={<TreeLabel text={node.label} type={node.type} highlight={query} active={isActive} />}

@@ -26,19 +26,19 @@ function collectSchemas(schema: JSONSchema4, registry: Map<string, JSONSchema4>)
     }
 
     if (schema.properties) {
-        Object.values(schema.properties).forEach((v) => collectSchemas(v as JSONSchema4, registry));
+        Object.values(schema.properties).forEach((v) => collectSchemas(v, registry));
     }
 
     if (schema.items) {
         if (Array.isArray(schema.items)) {
-            schema.items.forEach((s) => collectSchemas(s as JSONSchema4, registry));
+            schema.items.forEach((s) => collectSchemas(s, registry));
         } else {
-            collectSchemas(schema.items as JSONSchema4, registry);
+            collectSchemas(schema.items, registry);
         }
     }
 
     if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
-        collectSchemas(schema.additionalProperties as JSONSchema4, registry);
+        collectSchemas(schema.additionalProperties, registry);
     }
 }
 
