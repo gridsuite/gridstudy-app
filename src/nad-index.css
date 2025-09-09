@@ -288,3 +288,44 @@ g.nad-disconnected > g.nad-disconnected {
     filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
     transform: scale(1.4);
 }
+
+.sld-voltage-level:has(.sld-bus-0:hover)  .sld-bus-0:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-1:hover)  .sld-bus-1:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-2:hover)  .sld-bus-2:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-3:hover)  .sld-bus-3:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-4:hover)  .sld-bus-4:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-5:hover)  .sld-bus-5:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-6:hover)  .sld-bus-6:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-7:hover)  .sld-bus-7:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-8:hover)  .sld-bus-8:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
+.sld-voltage-level:has(.sld-bus-9:hover)  .sld-bus-9:not(.sld-breaker):not(.sld-disconnector) {
+    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+    stroke-width: 3px
+}
