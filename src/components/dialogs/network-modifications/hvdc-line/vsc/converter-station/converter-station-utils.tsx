@@ -62,7 +62,6 @@ export interface ConverterStationInterfaceEditData {
     voltageSetpoint?: number | null;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: number | null;
@@ -82,7 +81,6 @@ export interface ConverterStationModificationInterfaceEditData {
     voltageSetpoint?: AttributeModification<number> | null;
     voltageLevelId: AttributeModification<string> | null;
     busOrBusbarSectionId: AttributeModification<string> | null;
-    busbarSectionName?: AttributeModification<string> | null;
     connectionDirection: AttributeModification<string> | null;
     connectionName?: AttributeModification<string> | null;
     connectionPosition?: AttributeModification<number> | null;
@@ -222,7 +220,6 @@ export function getConverterStationFormEditData(id: string, converterStation: Co
                 connectionDirection: converterStation?.connectionDirection,
                 connectionName: converterStation?.connectionName,
                 connectionPosition: converterStation?.connectionPosition,
-                busbarSectionName: converterStation?.busbarSectionName,
                 terminalConnected: converterStation?.terminalConnected,
             }),
             ...getConverterStationReactiveLimits(converterStation),
@@ -248,13 +245,13 @@ export function getConverterStationModificationFormEditData(
                 connectionDirection: converterStation?.connectionDirection?.value ?? null,
                 connectionName: converterStation?.connectionName?.value ?? null,
                 connectionPosition: converterStation?.connectionPosition?.value ?? null,
-                busbarSectionName: converterStation?.busbarSectionName?.value ?? null,
                 terminalConnected: converterStation?.terminalConnected?.value ?? null,
             }),
             ...getConverterStationModificationReactiveLimits(converterStation),
         },
     };
 }
+
 function getConverterStationReactiveLimits(converterStation: ConverterStationInterfaceEditData) {
     return converterStation.reactiveCapabilityCurve
         ? getReactiveLimitsFormData({
@@ -285,6 +282,7 @@ function getConverterStationModificationReactiveLimits(
         }),
     };
 }
+
 export function getConverterStationFromSearchCopy(id: string, converterStation: ConverterStationElementInfos) {
     return {
         [id]: {
@@ -300,7 +298,6 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
                 connectionDirection: converterStation?.connectablePosition?.connectionDirection,
                 connectionName: converterStation?.connectablePosition?.connectionName,
                 connectionPosition: null,
-                busbarSectionName: null,
                 terminalConnected: true,
             }),
             ...getReactiveLimitsFormData({
