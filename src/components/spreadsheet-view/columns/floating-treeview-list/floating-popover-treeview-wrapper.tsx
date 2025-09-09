@@ -50,9 +50,7 @@ export function FloatingPopoverTreeviewWrapper({
                 <Tooltip title={intl.formatMessage({ id: 'EquipmentSchemaPopoverSchema' })}>
                     <Box sx={{ position: 'absolute', left: '-3rem', top: 0 }}>
                         <Button
-                            onClick={(e) =>
-                                setAnchorEl(e.currentTarget.closest('[data-popover-anchor]'))
-                            }
+                            onClick={(e) => setAnchorEl(e.currentTarget.closest('[data-popover-anchor]'))}
                             disabled={properties === null}
                         >
                             <LoupeIcon />
