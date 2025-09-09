@@ -280,8 +280,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 feederBaysInfos &&
                 feederBaysInfos?.length > 0
             ) {
-                console.log('================feederBaysInfos', feederBaysInfos);
-                console.log('================feederBaysEditData', feederBaysEditData);
                 const deletedFeederBays = feederBaysEditData.filter(
                     (bay) =>
                         bay &&
@@ -315,6 +313,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         connectionDirection: '',
                         connectionPosition: '',
                         title: intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' }),
+                        helperMessage: intl.formatMessage({ id: 'ConnectionsRemovedFromList' }),
                     });
 
                     deletedFeederBays.forEach((bay) => {
@@ -334,11 +333,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
         }
 
         return [];
-    }, [editData?.feederBaysAttributeList, editData?.uuid, feederBaysInfos]);
-
-    const onValidationError = useCallback((errors: any) => {
-        console.log('=====', errors);
-    }, []);
+    }, [editData?.feederBaysAttributeList, editData?.uuid, feederBaysInfos, intl]);
 
     return (
         <CustomFormProvider
@@ -355,7 +350,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 maxWidth={'md'}
                 titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
-                onValidationError={onValidationError}
                 keepMounted={true}
                 PaperProps={{
                     sx: {

@@ -93,18 +93,43 @@ export function MoveVoltageLevelFeederBaysForm({
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
                         return (
-                            <Typography
-                                variant="subtitle1"
-                                color="primary"
-                                sx={{
-                                    gridColumn: `span ${10}`,
-                                    textAlign: 'center',
+                            <div
+                                style={{
+                                    gridColumn: '2 / span 100',
                                     width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    padding: '16px',
                                 }}
                             >
-                                {intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' })}
-                                {intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' })}
-                            </Typography>
+                                <Typography
+                                    variant="body1"
+                                    color="primary"
+                                    sx={{
+                                        textAlign: 'center',
+                                        fontWeight: 'bold',
+                                        width: '100%',
+                                        padding: '8px 0',
+                                    }}
+                                >
+                                    {data.title}
+                                </Typography>
+
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{
+                                        color: 'red',
+                                        marginBottom: 1,
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    {data.helperMessage}
+                                </Typography>
+                            </div>
                         );
                     } else {
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
@@ -186,6 +211,7 @@ export function MoveVoltageLevelFeederBaysForm({
                         const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
                         return FeederBayDirectionCellRenderer({
                             name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
+                            disabled: data.type === 'FEEDER_BAY_REMOVED',
                         });
                     }
                 },
@@ -202,10 +228,10 @@ export function MoveVoltageLevelFeederBaysForm({
             {
                 field: CONNECTION_POSITION,
                 filter: true,
-                flex: 1,
+                flex: 2,
                 cellRenderer: ({ data }: { data?: any }) => {
                     if (data.type === 'SEPARATOR') {
-                        return null;
+                        return '';
                     } else {
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
@@ -248,7 +274,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const getRowStyle = useCallback((params: RowClassParams): RowStyle | undefined => {
         if (params.data?.type === 'SEPARATOR') {
             return {
-                fontWeight: 'inherit',
+                fontWeight: 'bold',
             };
         }
     }, []);
@@ -263,7 +289,7 @@ export function MoveVoltageLevelFeederBaysForm({
     );
 
     return (
-        <Grid container sx={{ height: '100%' }} direction="column">
+        <Grid container sx={{ height: '100%', width: 'auto' }} direction="column">
             <Grid container item spacing={2}>
                 <Grid item xs={4}>
                     {voltageLevelIdField}
@@ -288,6 +314,9 @@ export function MoveVoltageLevelFeederBaysForm({
                     domLayout="normal"
                     headerHeight={48}
                     rowHeight={60}
+                    getRowHeight={(params) => {
+                        return params.data?.type === 'SEPARATOR' ? 80 : 60;
+                    }}
                 />
             </Grid>
             <Box>

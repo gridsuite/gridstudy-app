@@ -1606,5 +1606,6 @@
     "TOP": "TOP",
     "BOTTOM": "BOTTOM",
     "DuplicatedPositionsError": "Duplicated position error",
-    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level"
+    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level",
+    "ConnectionsRemovedFromList": "Connections removed from list on validation"
 }

@@ -20,9 +20,13 @@ const CONNECTION_DIRECTIONS_VALUES = {
 
 type FeederBayDirectionCellRendererProps = {
     name: string;
+    disabled: boolean;
 };
 
-export default function FeederBayDirectionCellRenderer({ name }: Readonly<FeederBayDirectionCellRendererProps>) {
+export default function FeederBayDirectionCellRenderer({
+    name,
+    disabled,
+}: Readonly<FeederBayDirectionCellRendererProps>) {
     const { setValue } = useFormContext();
     const {
         field: { value },
@@ -57,9 +61,10 @@ export default function FeederBayDirectionCellRenderer({ name }: Readonly<Feeder
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
+                pointerEvents: disabled ? 'none' : 'auto',
             }}
         >
-            <IconButton onClick={handleClick} size="small">
+            <IconButton onClick={handleClick} size="small" disabled={disabled}>
                 {value === CONNECTION_DIRECTIONS_VALUES.TOP.id ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
             </IconButton>
             <TextField
@@ -77,6 +82,7 @@ export default function FeederBayDirectionCellRenderer({ name }: Readonly<Feeder
                         textAlign: 'center',
                     },
                 }}
+                disabled={disabled}
             />
             <div style={{ display: 'none' }}>
                 <TextInput name={name} />

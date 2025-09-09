@@ -1602,5 +1602,6 @@
     "TOP": "HAUT",
     "BOTTOM": "BAS",
     "DuplicatedPositionsError": "Duplicated position erreur",
-    "MissingConnectionsInVoltageLevel": "Départs absents du poste"
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste",
+    "ConnectionsRemovedFromList": "Départs supprimés de la liste à la validation"
 }
