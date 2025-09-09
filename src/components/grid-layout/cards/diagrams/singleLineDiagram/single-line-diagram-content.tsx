@@ -391,7 +391,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
-                    // TODO - lock and strip are hidden on map temporarly
+                    // TODO - lock and strip are hidden on single line diagram temporarly
                     !enableDeveloperMode ? styles.divSingleLineDiagramHideLockAndBolt : undefined
                 )}
                 style={{ height: '100%' }}
