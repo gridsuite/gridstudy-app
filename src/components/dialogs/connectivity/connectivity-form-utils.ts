@@ -38,9 +38,12 @@ const getVoltageLevelAndBusOrBusBarSectionFieldsSchema = (
             }),
         })
         .test('YupRequired', 'YupRequired', (value, context) => {
-            const isEmpty = value?.id === null || value?.id === undefined || value?.id === '';
-            const isNotEmptyRelatedField = context.parent?.[relatedFieldName] !== null;
-            return !(isEmpty && isNotEmptyRelatedField);
+            const isEmpty = value?.[ID] === null || value?.[ID] === undefined || value?.[ID] === '';
+            const isEmptyRelatedField =
+                context.parent?.[relatedFieldName] === null ||
+                context.parent?.[relatedFieldName]?.[ID] === '' ||
+                context.parent?.[relatedFieldName]?.[ID] === undefined;
+            return !(isEmpty && !isEmptyRelatedField);
         });
 };
 
@@ -48,11 +51,11 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
     return {
         [VOLTAGE_LEVEL]: getVoltageLevelAndBusOrBusBarSectionFieldsSchema(
             isEquipmentModification,
-            'busOrBusbarSection'
+            BUS_OR_BUSBAR_SECTION
         ),
         [BUS_OR_BUSBAR_SECTION]: getVoltageLevelAndBusOrBusBarSectionFieldsSchema(
             isEquipmentModification,
-            'voltageLevel'
+            VOLTAGE_LEVEL
         ),
     };
 };
