@@ -49,6 +49,7 @@ export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
     locationId?: string;
     acceptableDuration?: number | null;
+    upcomingAcceptableDuration?: number | null;
     status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;
