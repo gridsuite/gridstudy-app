@@ -1039,12 +1039,19 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errCutModificationMsg',
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
+                .then(() => {
+                    if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
+                        setCopyInfos(null);
+                        setCopiedModifications([]);
+                    }
+                })
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errCutModificationMsg',
+                    });
                 });
-            });
         } else {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
                 snackError({
