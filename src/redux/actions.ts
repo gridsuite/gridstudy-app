@@ -61,6 +61,7 @@ import {
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
+    type SpreadsheetOptionalLoadingParameters,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
@@ -132,11 +133,13 @@ export type AppActions =
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
+    | UpdateSpreadsheetPartialDataAction
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
+    | AddFilterForNewSpreadsheetAction
     | SaveSpreadSheetGlobalFilterAction
     | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
@@ -305,6 +308,18 @@ export type ResetEquipmentsPostComputationAction = Readonly<Action<typeof RESET_
 export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputationAction {
     return {
         type: RESET_EQUIPMENTS_POST_COMPUTATION,
+    };
+}
+
+export const CLEAN_EQUIPMENTS = 'CLEAN_EQUIPMENTS';
+export type CleanEquipmentsAction = Readonly<Action<typeof CLEAN_EQUIPMENTS>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanEquipmentsAction {
+    return {
+        type: CLEAN_EQUIPMENTS,
+        equipmentType,
     };
 }
 
@@ -1163,6 +1178,20 @@ export type ResetLogsPaginationAction = Readonly<Action<typeof RESET_LOGS_PAGINA
 export function resetLogsPagination(): ResetLogsPaginationAction {
     return {
         type: RESET_LOGS_PAGINATION,
+    };
+}
+
+export const UPDATE_SPREADSHEET_PARTIAL_DATA = 'UPDATE_SPREADSHEET_PARTIAL_DATA';
+export type UpdateSpreadsheetPartialDataAction = Readonly<Action<typeof UPDATE_SPREADSHEET_PARTIAL_DATA>> & {
+    newOptions: SpreadsheetOptionalLoadingParameters;
+};
+
+export function updateSpreadsheetPartialData(
+    options: SpreadsheetOptionalLoadingParameters
+): UpdateSpreadsheetPartialDataAction {
+    return {
+        type: UPDATE_SPREADSHEET_PARTIAL_DATA,
+        newOptions: options,
     };
 }
 
