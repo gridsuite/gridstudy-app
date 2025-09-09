@@ -10,25 +10,26 @@ import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
 
+// The order of the enum values is important, do not change it without checking the usage (e.g. in select options in AddEmptySpreadsheetDialog)
 export enum SpreadsheetEquipmentType {
-    BATTERY = 'BATTERY',
+    SUBSTATION = 'SUBSTATION',
+    VOLTAGE_LEVEL = 'VOLTAGE_LEVEL',
     BRANCH = 'BRANCH', // LINE + TWO_WINDINGS_TRANSFORMER
-    BUS = 'BUS',
-    BUSBAR_SECTION = 'BUSBAR_SECTION',
-    DANGLING_LINE = 'DANGLING_LINE',
-    GENERATOR = 'GENERATOR',
-    HVDC_LINE = 'HVDC_LINE',
-    LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     LINE = 'LINE',
+    TWO_WINDINGS_TRANSFORMER = 'TWO_WINDINGS_TRANSFORMER',
+    THREE_WINDINGS_TRANSFORMER = 'THREE_WINDINGS_TRANSFORMER',
+    GENERATOR = 'GENERATOR',
     LOAD = 'LOAD',
     SHUNT_COMPENSATOR = 'SHUNT_COMPENSATOR',
     STATIC_VAR_COMPENSATOR = 'STATIC_VAR_COMPENSATOR',
-    SUBSTATION = 'SUBSTATION',
-    THREE_WINDINGS_TRANSFORMER = 'THREE_WINDINGS_TRANSFORMER',
-    TIE_LINE = 'TIE_LINE',
-    TWO_WINDINGS_TRANSFORMER = 'TWO_WINDINGS_TRANSFORMER',
-    VOLTAGE_LEVEL = 'VOLTAGE_LEVEL',
+    BATTERY = 'BATTERY',
+    HVDC_LINE = 'HVDC_LINE',
+    LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
+    TIE_LINE = 'TIE_LINE',
+    DANGLING_LINE = 'DANGLING_LINE',
+    BUS = 'BUS',
+    BUSBAR_SECTION = 'BUSBAR_SECTION',
 }
 
 export function isSpreadsheetEquipmentType(type: string): type is SpreadsheetEquipmentType {
