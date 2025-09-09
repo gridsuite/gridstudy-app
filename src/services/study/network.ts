@@ -218,6 +218,7 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     }
     urlSearchParams.append('infoType', infoType);
     urlSearchParams.append('elementType', elementType);
+    // the `partialObject` parameter will be injected by the study-server who hold this parameter in database
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
