@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, RefObject } from 'react';
 import { TextField, InputAdornment, IconButton, Box, SxProps } from '@mui/material';
 import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
@@ -17,6 +17,7 @@ interface QuickSearchProps {
     resultCount: number;
     resetSearch: () => void;
     placeholder?: string;
+    inputRef: RefObject<HTMLDivElement>;
     sx?: SxProps;
 }
 
@@ -33,11 +34,11 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     resultCount,
     resetSearch,
     placeholder,
+    inputRef,
     sx,
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
     const intl = useIntl();
     const debounceSearch = useDebounce(onSearch, 300);
 
@@ -82,7 +83,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
         if (inputRef.current) {
             inputRef.current.focus();
         }
-    }, [resetSearch]);
+    }, [inputRef, resetSearch]);
 
     return (
         <TextField

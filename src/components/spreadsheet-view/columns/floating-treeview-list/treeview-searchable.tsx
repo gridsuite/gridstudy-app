@@ -10,7 +10,7 @@ import { QuickSearch } from '../../../report-viewer/QuickSearch';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { ChevronRight, ExpandMore } from '@mui/icons-material';
 import Button from '@mui/material/Button';
-import { MouseEvent, Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import { Dispatch, MouseEvent, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { FORMULA } from '../column-creation-form';
 import { useFormulaQuickSearch } from './use-formula-quicksearch';
 import { buildTreeData } from './utils/json-schema-parser';
@@ -24,11 +24,12 @@ interface TreeviewSearchableProps {
     properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
     setAnchorEl: Dispatch<SetStateAction<Element | null>>;
+    inputRef: RefObject<HTMLInputElement>;
 }
 
 const MOUSE_EVENT_DETAIL_DOUBLE_CLICK = 2;
 
-export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: TreeviewSearchableProps) => {
+export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl, inputRef }: TreeviewSearchableProps) => {
     const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -70,6 +71,7 @@ export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl }: Tre
                     resetSearch={handleResetSearch}
                     placeholder={'LookForEquipmentField'}
                     sx={{ width: '100%' }}
+                    inputRef={inputRef}
                 />
             </Box>
             <Box sx={{ overflow: 'auto', maxHeight: '45vh', px: 1 }} onKeyDown={handleKeyDown}>

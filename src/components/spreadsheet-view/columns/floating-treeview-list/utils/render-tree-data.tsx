@@ -21,10 +21,17 @@ export function renderTreeData(
         const isActive = matches[currentResultIndex]?.id === node.id;
         return (
             <TreeItem
-                key={`${index}${node.id}`}
                 itemId={node.id}
                 ref={(el) => (itemRefs.current[node.id] = el)}
-                label={<TreeLabel text={node.label} type={node.type} highlight={query} active={isActive} />}
+                label={
+                    <TreeLabel
+                        key={`${index}${node.id}`}
+                        text={node.label}
+                        type={node.type}
+                        highlight={query}
+                        active={isActive}
+                    />
+                }
             >
                 {node.children && renderTreeData(node.children, query, itemRefs, matches, currentResultIndex)}
             </TreeItem>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Box, Popover, Slide, Tooltip } from '@mui/material';
 import { UseFormReturn } from 'react-hook-form';
 import Button from '@mui/material/Button';
@@ -31,6 +31,7 @@ export function FloatingPopoverTreeviewWrapper({
 }: Readonly<FormulaAutocompleteFieldProps>) {
     const [anchorEl, setAnchorEl] = useState<Element | null>(null);
     const [properties, setProperties] = useState<JSONSchema4 | null>(null);
+    const quickSearchRef = useRef<HTMLInputElement>(null);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
@@ -64,13 +65,23 @@ export function FloatingPopoverTreeviewWrapper({
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 TransitionComponent={Slide}
+                TransitionProps={{
+                    onEntered: () => {
+                        quickSearchRef.current?.focus();
+                    },
+                }}
                 sx={{
                     position: 'absolute',
                     left: '2vh',
                     minHeight: 400,
                 }}
             >
-                <TreeviewSearchable properties={properties} formMethods={formMethods} setAnchorEl={setAnchorEl} />
+                <TreeviewSearchable
+                    properties={properties}
+                    formMethods={formMethods}
+                    setAnchorEl={setAnchorEl}
+                    inputRef={quickSearchRef}
+                />
             </Popover>
         </>
     );
