@@ -159,7 +159,12 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, getValues } = formMethods;
+    const {
+        reset,
+        setValue,
+        getValues,
+        formState: { isDirty },
+    } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (lineModification) => {
@@ -330,16 +335,19 @@ const LineModificationDialog = ({
                                 formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
                                 formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
-                            reset((formValues) => ({
-                                ...formValues,
-                                ...getSelectedLimitsFormData({
-                                    permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
-                                    permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
-                                    temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
-                                    temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    ...getSelectedLimitsFormData({
+                                        permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
+                                        permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
+                                        temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
+                                        temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
+                                    }),
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
-                            }));
+                                { keepDefaultValues: isDirty }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -355,7 +363,16 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, getValues, reset, editData?.equipmentId, emptyFormData]
+        [
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            getValues,
+            reset,
+            isDirty,
+            editData?.equipmentId,
+            emptyFormData,
+        ]
     );
 
     useEffect(() => {

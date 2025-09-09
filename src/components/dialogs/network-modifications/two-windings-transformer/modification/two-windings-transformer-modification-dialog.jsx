@@ -210,7 +210,11 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, getValues } = formMethods;
+    const {
+        reset,
+        getValues,
+        formState: { isDirty },
+    } = formMethods;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
@@ -693,57 +697,60 @@ const TwoWindingsTransformerModificationDialog = ({
                                 formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
                             );
 
-                            reset((formValues) => ({
-                                ...formValues,
-                                ...getSelectedLimitsFormData({
-                                    permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
-                                    permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
-                                    temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
-                                    temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    ...getSelectedLimitsFormData({
+                                        permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
+                                        permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
+                                        temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
+                                        temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
+                                    }),
+                                    ...getRatioTapChangerFormData({
+                                        enabled: isRatioTapChangerEnabled(twt),
+                                        hasLoadTapChangingCapabilities: getValues(
+                                            `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
+                                        ),
+                                        regulationMode:
+                                            getValues(`${RATIO_TAP_CHANGER}.${REGULATING}`) === false
+                                                ? PHASE_REGULATION_MODES.OFF.id
+                                                : getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
+                                        regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
+                                        regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
+                                        targetV: getValues(`${RATIO_TAP_CHANGER}.${TARGET_V}`),
+                                        targetDeadband: getValues(`${RATIO_TAP_CHANGER}.${TARGET_DEADBAND}`),
+                                        lowTapPosition: getValues(`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`),
+                                        highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
+                                        tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
+                                        steps: addSelectedFieldToRows(getRatioTapChangerSteps(twt)),
+                                        equipmentId: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
+                                        equipmentType: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
+                                        voltageLevelId: getValues(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
+                                    }),
+                                    ...getPhaseTapChangerFormData({
+                                        enabled: isPhaseTapChangerEnabled(twt),
+                                        regulationMode: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_MODE}`),
+                                        regulationType: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_TYPE}`),
+                                        regulationSide: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_SIDE}`),
+                                        currentLimiterRegulatingValue: getValues(
+                                            `${PHASE_TAP_CHANGER}.${CURRENT_LIMITER_REGULATING_VALUE}`
+                                        ),
+                                        flowSetpointRegulatingValue: getValues(
+                                            `${PHASE_TAP_CHANGER}.${FLOW_SET_POINT_REGULATING_VALUE}`
+                                        ),
+                                        targetDeadband: getValues(`${PHASE_TAP_CHANGER}.${TARGET_DEADBAND}`),
+                                        lowTapPosition: getValues(`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`),
+                                        highTapPosition: getValues(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
+                                        tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
+                                        steps: addSelectedFieldToRows(getPhaseTapChangerSteps(twt)),
+                                        equipmentId: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
+                                        equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
+                                        voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
+                                    }),
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt, getValues),
                                 }),
-                                ...getRatioTapChangerFormData({
-                                    enabled: isRatioTapChangerEnabled(twt),
-                                    hasLoadTapChangingCapabilities: getValues(
-                                        `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`
-                                    ),
-                                    regulationMode:
-                                        getValues(`${RATIO_TAP_CHANGER}.${REGULATING}`) === false
-                                            ? PHASE_REGULATION_MODES.OFF.id
-                                            : getValues(`${RATIO_TAP_CHANGER}.${REGULATION_MODE}`),
-                                    regulationType: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_TYPE}`),
-                                    regulationSide: getValues(`${RATIO_TAP_CHANGER}.${REGULATION_SIDE}`),
-                                    targetV: getValues(`${RATIO_TAP_CHANGER}.${TARGET_V}`),
-                                    targetDeadband: getValues(`${RATIO_TAP_CHANGER}.${TARGET_DEADBAND}`),
-                                    lowTapPosition: getValues(`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`),
-                                    highTapPosition: getValues(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
-                                    tapPosition: getValues(`${RATIO_TAP_CHANGER}.${TAP_POSITION}`),
-                                    steps: addSelectedFieldToRows(getRatioTapChangerSteps(twt)),
-                                    equipmentId: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
-                                    equipmentType: getValues(`${RATIO_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
-                                    voltageLevelId: getValues(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
-                                }),
-                                ...getPhaseTapChangerFormData({
-                                    enabled: isPhaseTapChangerEnabled(twt),
-                                    regulationMode: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_MODE}`),
-                                    regulationType: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_TYPE}`),
-                                    regulationSide: getValues(`${PHASE_TAP_CHANGER}.${REGULATION_SIDE}`),
-                                    currentLimiterRegulatingValue: getValues(
-                                        `${PHASE_TAP_CHANGER}.${CURRENT_LIMITER_REGULATING_VALUE}`
-                                    ),
-                                    flowSetpointRegulatingValue: getValues(
-                                        `${PHASE_TAP_CHANGER}.${FLOW_SET_POINT_REGULATING_VALUE}`
-                                    ),
-                                    targetDeadband: getValues(`${PHASE_TAP_CHANGER}.${TARGET_DEADBAND}`),
-                                    lowTapPosition: getValues(`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`),
-                                    highTapPosition: getValues(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
-                                    tapPosition: getValues(`${PHASE_TAP_CHANGER}.${TAP_POSITION}`),
-                                    steps: addSelectedFieldToRows(getPhaseTapChangerSteps(twt)),
-                                    equipmentId: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${ID}`),
-                                    equipmentType: getValues(`${PHASE_TAP_CHANGER}.${EQUIPMENT}.${TYPE}`),
-                                    voltageLevelId: getValues(`${PHASE_TAP_CHANGER}.${VOLTAGE_LEVEL}.${ID}`),
-                                }),
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt, getValues),
-                            }));
+                                { keepDefaultValues: isDirty }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -765,6 +772,7 @@ const TwoWindingsTransformerModificationDialog = ({
             currentRootNetworkUuid,
             getValues,
             reset,
+            isDirty,
             isRatioTapChangerEnabled,
             getRatioTapChangerSteps,
             isPhaseTapChangerEnabled,

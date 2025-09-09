@@ -116,7 +116,11 @@ export default function LoadModificationDialog({
         resolver: yupResolver<DeepNullable<LoadModificationSchemaForm>>(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const {
+        reset,
+        getValues,
+        formState: { isDirty },
+    } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (load: LoadModificationInfos) => {
@@ -169,10 +173,13 @@ export default function LoadModificationDialog({
                     .then((load: LoadFormInfos) => {
                         if (load) {
                             setLoadToModify(load);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
+                                }),
+                                { keepDefaultValues: isDirty }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -185,7 +192,7 @@ export default function LoadModificationDialog({
                     });
             }
         },
-        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
+        [reset, studyUuid, currentNodeUuid, currentRootNetworkUuid, isDirty, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {

@@ -117,7 +117,13 @@ const VscModificationDialog: React.FC<any> = ({
         resolver: yupResolver(formSchema),
     });
     const { snackError } = useSnackMessage();
-    const { reset, getValues, setValue, handleSubmit } = formMethods;
+    const {
+        reset,
+        getValues,
+        setValue,
+        handleSubmit,
+        formState: { isDirty },
+    } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -216,10 +222,15 @@ const VscModificationDialog: React.FC<any> = ({
                                     reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable2,
                                 },
                             });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                }),
+                                {
+                                    keepDefaultValues: isDirty,
+                                }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -234,11 +245,12 @@ const VscModificationDialog: React.FC<any> = ({
         },
         [
             setValuesAndEmptyOthers,
-            currentRootNetworkUuid,
             studyUuid,
-            currentNode,
+            currentNode.id,
+            currentRootNetworkUuid,
             setValue,
             reset,
+            isDirty,
             getValues,
             editData?.equipmentId,
         ]
