@@ -64,6 +64,7 @@ foreignObject.nad-text-nodes {
     color: black;
 }
 .nad-label-box {
+    background-color: #6c6c6c20;
     width: max-content;
     padding: 10px;
     border-radius: 10px;
@@ -287,25 +288,3 @@ g.nad-disconnected > g.nad-disconnected {
     filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
     transform: scale(1.4);
 }
-
-/* SLD Highlight Classes */
-.sld-busbar-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-}
-
-.sld-switch-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-}
-
-.sld-feeder-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-}
-
-.sld-wire-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-}
-
-.sld-legend-highlight {
-    filter:  drop-shadow(0 0 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
-}
-
