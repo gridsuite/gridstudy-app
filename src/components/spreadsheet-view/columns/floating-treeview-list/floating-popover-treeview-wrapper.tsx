@@ -48,7 +48,7 @@ export function FloatingPopoverTreeviewWrapper({
             <Box onKeyDown={handleKeyDown} sx={{ position: 'relative' }}>
                 {children}
                 <Tooltip title={intl.formatMessage({ id: 'EquipmentSchemaPopoverSchema' })}>
-                    <Box sx={{ position: 'absolute', left: '-5vh', top: 0 }}>
+                    <Box sx={{ position: 'absolute', left: '-3rem', top: 0 }}>
                         <Button
                             onClick={(e) =>
                                 setAnchorEl(e.currentTarget.closest('[data-popover-anchor]') as HTMLElement)
@@ -66,7 +66,11 @@ export function FloatingPopoverTreeviewWrapper({
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 TransitionComponent={Slide}
-                sx={{ position: 'absolute', left: '2vh', maxHeight: '60vh' }}
+                sx={{
+                    position: 'absolute',
+                    left: '2vh',
+                    minHeight: 400,
+                }}
             >
                 <TreeviewSearchable properties={properties} formMethods={formMethods} setAnchorEl={setAnchorEl} />
             </Popover>

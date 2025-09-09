@@ -17,11 +17,11 @@ export function renderTreeData(
     matches: TreeNode[],
     currentResultIndex: number
 ) {
-    return nodes.map((node) => {
+    return nodes.map((node, index) => {
         const isActive = matches[currentResultIndex]?.id === node.id;
         return (
             <TreeItem
-                key={node.id}
+                key={index}
                 itemId={node.id}
                 ref={(el) => (itemRefs.current[node.id] = el)}
                 label={<TreeLabel text={node.label} type={node.type} highlight={query} active={isActive} />}
