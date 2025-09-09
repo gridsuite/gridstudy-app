@@ -110,3 +110,16 @@ export type SpreadsheetCollectionDto = {
     spreadsheetConfigs: SpreadsheetConfigDto[];
     nodeAliases?: string[];
 };
+
+type BranchOptionalLoadingParameters = {
+    operationalLimitsGroups: boolean;
+};
+
+export type SpreadsheetOptionalLoadingParameters = {
+    [SpreadsheetEquipmentType.BRANCH]: BranchOptionalLoadingParameters;
+    [SpreadsheetEquipmentType.LINE]: BranchOptionalLoadingParameters;
+    [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
+    [SpreadsheetEquipmentType.GENERATOR]: {
+        regulatingTerminal: boolean;
+    };
+};
