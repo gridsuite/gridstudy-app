@@ -87,6 +87,7 @@ export enum NotificationType {
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
+    SPREADSHEET_PARAMETERS_UPDATED = 'spreadsheetParametersUpdated',
 }
 
 export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
@@ -309,6 +310,10 @@ interface ModificationProgressionEventDataHeaders extends CommonStudyEventDataHe
     parentNode: UUID;
     nodes: UUID[];
     rootNetworkUuid?: UUID;
+}
+
+interface SpreadsheetParametersUpdatedDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
@@ -848,6 +853,15 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
+    headers: SpreadsheetParametersUpdatedDataHeaders;
+    /**
+     * stringified of <code>PartialDeep<SpreadsheetOptionalLoadingParameters></code>
+     * @see SpreadsheetOptionalLoadingParameters
+     */
+    payload: string;
+}
+
 export function isComputationParametersUpdatedNotification(
     notif: unknown
 ): notif is ComputationParametersUpdatedEventData {
@@ -1054,6 +1068,12 @@ export function isMetadataUpdatedNotification(notif: unknown): notif is Metadata
 
 export function isSpreadsheetNodeAliasesUpdatedNotification(notif: unknown): notif is CommonStudyEventData {
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED;
+}
+
+export function isSpreadsheetParametersUpdatedNotification(
+    notif: unknown
+): notif is SpreadsheetParametersUpdatedEventData {
+    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
 // Notification types
