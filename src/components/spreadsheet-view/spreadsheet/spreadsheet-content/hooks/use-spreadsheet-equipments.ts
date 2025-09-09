@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    cleanEquipments,
     deleteEquipments,
     type EquipmentToDelete,
     removeNodeData,
@@ -29,6 +30,7 @@ import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
+import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -37,6 +39,7 @@ export const useSpreadsheetEquipments = (
     nodeAliases: NodeAlias[] | undefined,
     active: boolean = false
 ) => {
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
@@ -47,9 +50,24 @@ export const useSpreadsheetEquipments = (
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
-    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>([]);
+    const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
+
+    const {
+        shouldLoadOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsLoaded,
+        shouldCleanOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsCleaned,
+    } = useOptionalLoadingParametersForEquipments(type);
+
+    useEffect(() => {
+        if (shouldCleanOptionalLoadingParameters) {
+            dispatch(cleanEquipments(type));
+            equipmentsWithLoadingOptionsCleaned();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shouldCleanOptionalLoadingParameters, type]);
 
     // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
     useEffect(() => {
@@ -61,20 +79,25 @@ export const useSpreadsheetEquipments = (
             .filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
         if (aliasedNodesIds.length > 0) {
-            computedIds =
-                treeNodes
-                    ?.filter(
-                        (treeNode) =>
-                            aliasedNodesIds.includes(treeNode.id) &&
-                            (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
-                    )
-                    .map((treeNode) => treeNode.id) ?? [];
+            treeNodes?.forEach((treeNode) => {
+                if (
+                    aliasedNodesIds.includes(treeNode.id) &&
+                    (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
+                ) {
+                    computedIds.push(treeNode.id);
+                }
+            });
         }
-        computedIds.sort((a, b) => a.localeCompare(b));
         // Because of treeNodes: update the state only on real values changes (to avoid multiple effects for the watchers)
-        setBuiltAliasedNodesIds((prevState) =>
-            JSON.stringify(prevState) !== JSON.stringify(computedIds) ? computedIds : prevState
-        );
+        setBuiltAliasedNodesIds((prevState) => {
+            const currentIds = prevState;
+            currentIds?.sort((a, b) => a.localeCompare(b));
+            computedIds.sort((a, b) => a.localeCompare(b));
+            if (JSON.stringify(currentIds) !== JSON.stringify(computedIds)) {
+                return computedIds;
+            }
+            return prevState;
+        });
     }, [nodeAliases, treeNodes]);
 
     const nodesIdToFetch = useMemo(() => {
@@ -82,6 +105,16 @@ export const useSpreadsheetEquipments = (
         if (!equipments.nodesId || !builtAliasedNodesIds || !currentNode?.id) {
             return nodesIdToFetch;
         }
+
+        // If optional loading parameters changed we should refetch all nodes
+        if (shouldLoadOptionalLoadingParameters) {
+            nodesIdToFetch.add(currentNode.id);
+            for (const builtAliasNodeId of builtAliasedNodesIds) {
+                nodesIdToFetch.add(builtAliasNodeId);
+            }
+            return nodesIdToFetch;
+        }
+
         // We check if we have the data for the currentNode and if we don't, we save the fact that we need to fetch it
         if (equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             nodesIdToFetch.add(currentNode.id);
@@ -93,11 +126,11 @@ export const useSpreadsheetEquipments = (
             }
         }
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments.nodesId, builtAliasedNodesIds]);
+    }, [currentNode?.id, equipments.nodesId, builtAliasedNodesIds, shouldLoadOptionalLoadingParameters]);
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (!equipments || !builtAliasedNodesIds.length || !currentNode?.id) {
+        if (!equipments || !builtAliasedNodesIds || !currentNode?.id) {
             return;
         }
         const currentNodeId = currentNode.id;
@@ -110,7 +143,7 @@ export const useSpreadsheetEquipments = (
         }
     }, [builtAliasedNodesIds, currentNode?.id, dispatch, equipments]);
 
-    const deleteEquipmentsLocal = useCallback(
+    const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: UUID[], deletedEquipments: DeletedEquipment[], impactedElementTypes: string[]) => {
             if (!type) {
                 return;
@@ -181,13 +214,29 @@ export const useSpreadsheetEquipments = (
                     Promise.allSettled(promises).then((results) => {
                         const updates: UpdateEquipmentsAction['equipments'] = {};
                         if (results[0].status === 'rejected') {
-                            //TODO show snackbar error?
+                            console.error(
+                                `(re)loading of spreadsheet data of type ${type} ${results[0].status}`,
+                                results[0].reason
+                            );
+                            snackError({
+                                headerId: 'spreadsheet/loading/error_fetching_type_title',
+                                headerValues: { type },
+                                messageTxt: `Details: ${results[0].reason}`,
+                            });
                         } else {
                             updates[type] = results[0].value;
                         }
                         if (results.length > 1) {
                             if (results[1].status === 'rejected') {
-                                //TODO show snackbar error?
+                                console.error(
+                                    `(re)loading of spreadsheet data of type ${type} ${results[1].status}`,
+                                    results[1].reason
+                                );
+                                snackError({
+                                    headerId: 'spreadsheet/loading/error_fetching_type_title',
+                                    headerValues: { type: SpreadsheetEquipmentType.BRANCH },
+                                    messageTxt: `Details: ${results[1].reason}`,
+                                });
                             } else {
                                 updates[SpreadsheetEquipmentType.BRANCH] = results[1].value;
                             }
@@ -233,6 +282,7 @@ export const useSpreadsheetEquipments = (
             allEquipments,
             equipmentToUpdateId,
             highlightUpdatedEquipment,
+            snackError,
         ]
     );
 
@@ -252,11 +302,11 @@ export const useSpreadsheetEquipments = (
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
                     const impactedElementTypes = payload.impactedElementTypes ?? [];
-                    deleteEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
+                    updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
                 }
             }
         },
-        [currentNode?.id, currentRootNetworkUuid, studyUuid, deleteEquipmentsLocal]
+        [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: listenerUpdateEquipmentsLocal });
@@ -273,6 +323,7 @@ export const useSpreadsheetEquipments = (
             (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data.globalBuildStatus))
         ) {
             setIsFetching(true);
+            equipmentsWithLoadingOptionsLoaded();
             fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, () => setIsFetching(false));
         }
     }, [
@@ -284,6 +335,7 @@ export const useSpreadsheetEquipments = (
         currentRootNetworkUuid,
         fetchNodesEquipmentData,
         nodesIdToFetch,
+        equipmentsWithLoadingOptionsLoaded,
     ]);
 
     return { equipments, isFetching };
