@@ -49,7 +49,7 @@ export function FloatingPopoverTreeviewWrapper({
             <Box onKeyDown={handleKeyDown} sx={{ position: 'relative' }}>
                 {children}
                 <Tooltip title={intl.formatMessage({ id: 'EquipmentSchemaPopoverSchema' })}>
-                    <Box sx={{ position: 'absolute', left: '-1.5rem', top: 0 }}>
+                    <Box sx={{ position: 'absolute', left: '-2.5rem', top: 0 }}>
                         <Button
                             onClick={(e) => setAnchorEl(e.currentTarget.closest('[data-popover-anchor]'))}
                             disabled={properties === null}
