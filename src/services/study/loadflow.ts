@@ -155,6 +155,18 @@ export function fetchLoadFlowResult(
     return backendFetchJson(urlWithParams);
 }
 
+export function fetchLoadFlowModifications(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching loadflow modifications on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/modifications';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchLimitViolations(
     studyUuid: UUID,
     currentNodeUuid: UUID,

@@ -46,8 +46,6 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
-export const IS_VOLTAGE_LEVEL_MODIFICATION = 'isVoltageLevelModification';
-export const IS_BUS_OR_BUSBAR_SECTION_MODIFICATION = 'isBusOrBusbarSectionModification';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';

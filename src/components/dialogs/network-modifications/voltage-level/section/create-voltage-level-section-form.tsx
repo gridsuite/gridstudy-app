@@ -23,7 +23,7 @@ import { AutocompleteInput, Option, SelectInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from 'components/diagrams/singleLineDiagram/position-diagram-pane';
+import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { UUID } from 'crypto';
 import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -77,7 +77,7 @@ export function CreateVoltageLevelSectionForm({
     const [isNotRequiredSwitchBefore, setIsNotRequiredSwitchBefore] = useState(false);
     const [isNotRequiredSwitchAfter, setIsNotRequiredSwitchAfter] = useState(false);
     const { setValue } = useFormContext();
-    const sectionCount = useWatch({ name: BUS_BAR_INDEX });
+    const busbarIndex = useWatch({ name: BUS_BAR_INDEX });
     const selectedOption = useWatch({ name: BUSBAR_SECTION_ID });
     const selectedPositionOption = useWatch({ name: IS_AFTER_BUSBAR_SECTION_ID });
     const voltageLevelIdField = (
@@ -95,8 +95,9 @@ export function CreateVoltageLevelSectionForm({
     );
 
     useEffect(() => {
-        if (busBarSectionInfos && sectionCount) {
-            const selectedKey = sectionCount?.id;
+        if (busBarSectionInfos && busbarIndex) {
+            const selectedKey = busbarIndex?.id;
+            setValue(ALL_BUS_BAR_SECTIONS, false);
             if (selectedKey === 'all') {
                 setValue(ALL_BUS_BAR_SECTIONS, true);
                 if (allBusbarSectionsList && Array.isArray(allBusbarSectionsList)) {
@@ -127,7 +128,7 @@ export function CreateVoltageLevelSectionForm({
         } else {
             setBusBarSectionsIdOptions([]);
         }
-    }, [allBusbarSectionsList, busBarSectionInfos, intl, sectionCount, setValue]);
+    }, [allBusbarSectionsList, busBarSectionInfos, intl, busbarIndex, setValue]);
 
     const arrayPosition = useMemo(
         () => busBarSectionInfos && getArrayPosition(busBarSectionInfos, selectedOption?.id),
@@ -247,7 +248,7 @@ export function CreateVoltageLevelSectionForm({
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
-            disabled={!sectionCount || isNotFoundOrNotSupported}
+            disabled={!busbarIndex || isNotFoundOrNotSupported}
         />
     );
 
@@ -257,7 +258,7 @@ export function CreateVoltageLevelSectionForm({
             label="isAfterBusBarSectionId"
             options={Object.values(POSITION_NEW_SECTION_SIDE)}
             size={'small'}
-            disabled={!sectionCount || isNotFoundOrNotSupported}
+            disabled={!busbarIndex || isNotFoundOrNotSupported}
         />
     );
 
@@ -267,7 +268,7 @@ export function CreateVoltageLevelSectionForm({
             label={'switchesBeforeSections'}
             options={Object.values(SWITCH_TYPE)}
             size={'small'}
-            disabled={!sectionCount || isNotRequiredSwitchBefore || isNotFoundOrNotSupported}
+            disabled={!busbarIndex || isNotRequiredSwitchBefore || isNotFoundOrNotSupported}
         />
     );
     const switchAfterField = (
@@ -276,7 +277,7 @@ export function CreateVoltageLevelSectionForm({
             label={'switchesAfterSections'}
             options={Object.values(SWITCH_TYPE)}
             size={'small'}
-            disabled={!sectionCount || isNotRequiredSwitchAfter || isNotFoundOrNotSupported}
+            disabled={!busbarIndex || isNotRequiredSwitchAfter || isNotFoundOrNotSupported}
         />
     );
     const getLabelDescription = useCallback(() => {
