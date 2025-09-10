@@ -66,9 +66,7 @@ const formSchema = yup.object().shape({
             [BUSBAR_SECTION_IDS]: yup.array().of(yup.string()).required(),
             [CONNECTION_NAME]: yup.string().required(),
             [CONNECTION_DIRECTION]: yup.string().required(),
-            [CONNECTION_POSITION]: yup
-                .string()
-                .test('checkUniquePositions', 'DuplicatedPositionsError', checkConnectionPositionField),
+            [CONNECTION_POSITION]: yup.string().test('checkUniquePositions', '', checkConnectionPositionField),
         })
     ),
 });

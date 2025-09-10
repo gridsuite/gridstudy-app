@@ -1601,7 +1601,7 @@
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
     "TOP": "HAUT",
     "BOTTOM": "BAS",
-    "DuplicatedPositionsError": "Duplicated position erreur",
+    "DuplicatedPositionsError": "Numéro en doublon",
     "MissingConnectionsInVoltageLevel": "Départs absents du poste",
     "ConnectionsRemovedFromList": "Départs supprimés de la liste à la validation"
 }

@@ -48,7 +48,10 @@ export function MoveVoltageLevelFeederBaysForm({
     studyUuid,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
-    const { getValues } = useFormContext();
+    const {
+        getValues,
+        formState: { errors },
+    } = useFormContext();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
 
     const handleCloseDiagramPane = useCallback(() => {
@@ -95,14 +98,19 @@ export function MoveVoltageLevelFeederBaysForm({
                         return (
                             <div
                                 style={{
-                                    gridColumn: '2 / span 100',
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    top: 0,
+                                    bottom: 0,
                                     width: '100%',
                                     height: '100%',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    padding: '16px',
+                                    padding: '40px',
+                                    zIndex: 1,
                                 }}
                             >
                                 <Typography
@@ -110,7 +118,6 @@ export function MoveVoltageLevelFeederBaysForm({
                                     color="primary"
                                     sx={{
                                         textAlign: 'center',
-                                        fontWeight: 'bold',
                                         width: '100%',
                                         padding: '8px 0',
                                     }}
@@ -120,11 +127,12 @@ export function MoveVoltageLevelFeederBaysForm({
 
                                 <Typography
                                     variant="body2"
-                                    color="text.secondary"
                                     sx={{
+                                        fontSize: '10px',
                                         color: 'red',
-                                        marginBottom: 1,
                                         textAlign: 'center',
+                                        width: '100%',
+                                        padding: '8px 0',
                                     }}
                                 >
                                     {data.helperMessage}
@@ -235,24 +243,56 @@ export function MoveVoltageLevelFeederBaysForm({
                     } else {
                         const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
                         const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
+                        const fieldError = (errors[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE] as any)?.[formIndex]?.[
+                            CONNECTION_POSITION
+                        ];
                         return (
-                            <div>
+                            <div style={{ position: 'relative' }}>
                                 <IntegerInput
                                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
                                     formProps={{
                                         disabled: data.type === 'FEEDER_BAY_REMOVED',
                                         size: 'small',
-                                        variant: 'filled',
+                                        variant: fieldError ? 'outlined' : 'filled',
                                         sx: {
                                             padding: '8px',
                                             '& input': {
                                                 textAlign: 'center',
                                             },
+                                            ...(fieldError && {
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: 'red',
+                                                        borderWidth: '2px',
+                                                    },
+                                                },
+                                            }),
                                         },
                                     }}
                                     inputTransform={(value) => String(value ?? 0)}
                                     outputTransform={(value) => (value === '0' ? null : Number(value))}
                                 />
+                                {fieldError && (
+                                    <span
+                                        style={{
+                                            position: 'absolute',
+                                            top: '100%',
+                                            left: '0',
+                                            right: '0',
+                                            fontSize: '9px',
+                                            color: 'red',
+                                            textAlign: 'center',
+                                            backgroundColor: 'white',
+                                            border: '1px solid red',
+                                            borderRadius: '2px',
+                                            padding: '1px',
+                                            zIndex: 1000,
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {intl.formatMessage({ id: 'DuplicatedPositionsError' })}
+                                    </span>
+                                )}
                             </div>
                         );
                     }
@@ -268,7 +308,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 },
             },
         ],
-        [currentNode, intl, isUpdate, getValues]
+        [intl, currentNode, isUpdate, getValues, errors]
     );
 
     const getRowStyle = useCallback((params: RowClassParams): RowStyle | undefined => {
