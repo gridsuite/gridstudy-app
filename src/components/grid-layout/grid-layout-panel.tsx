@@ -322,7 +322,14 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         }
         const { bottom } = container.getBoundingClientRect();
         if (event.clientY > bottom) {
-            container.scrollTop = container.scrollHeight;
+            // Smooth step-based scrolling
+            const scrollStep = 30; // smaller = slower
+            const maxScroll = container.scrollHeight - container.clientHeight;
+
+            // Only scroll if not already at the bottom
+            if (container.scrollTop < maxScroll) {
+                container.scrollTop = Math.min(container.scrollTop + scrollStep, maxScroll);
+            }
         }
     }, []);
 

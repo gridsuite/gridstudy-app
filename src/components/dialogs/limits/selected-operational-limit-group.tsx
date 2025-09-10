@@ -10,12 +10,15 @@ import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { APPLICABILITY } from '../../network/constants';
+import { useIntl } from 'react-intl';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
     optionsFormName: string;
     label?: string;
     filteredApplicability?: string;
+    previousValue?: string;
+    isABranchModif: boolean; // if false, this is a branch creation
 }
 
 export const SelectedOperationalLimitGroup = ({
@@ -23,13 +26,16 @@ export const SelectedOperationalLimitGroup = ({
     optionsFormName,
     label,
     filteredApplicability,
+    previousValue,
+    isABranchModif,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
     });
+    const intl = useIntl();
 
-    const opLimitsGroupsNames: string[] = useMemo(() => {
-        return optionsValues
+    const opLimitsGroupsNames: string[] = useMemo((): string[] => {
+        const finalOptions: string[] = optionsValues
             ? optionsValues
                   .filter(
                       (optionObj: OperationalLimitsGroup) =>
@@ -40,7 +46,15 @@ export const SelectedOperationalLimitGroup = ({
                   .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
                   .filter((id: string) => id != null)
             : [];
-    }, [filteredApplicability, optionsValues]);
+        if (isABranchModif) {
+            finalOptions.push(
+                intl.formatMessage({
+                    id: 'None',
+                })
+            );
+        }
+        return finalOptions;
+    }, [filteredApplicability, intl, isABranchModif, optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
@@ -49,6 +63,8 @@ export const SelectedOperationalLimitGroup = ({
                 options={opLimitsGroupsNames}
                 label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
+                previousValue={previousValue}
+                allowNewValue={isABranchModif}
             />
         </Box>
     );
