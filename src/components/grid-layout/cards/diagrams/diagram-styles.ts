@@ -90,6 +90,11 @@ export const styles = {
                 animation: 'none !important',
             },
     },
+    hideLabels: {
+        '& .nad-text-nodes': {
+            display: 'none',
+        },
+    },
     paperBorders: (theme: Theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,

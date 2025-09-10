@@ -189,7 +189,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     ...getConnectivityFormData({
                         voltageLevelId: staticCompensator.voltageLevelId ?? null,
                         busbarSectionId: staticCompensator.busOrBusbarSectionId ?? null,
-                        busbarSectionName: undefined,
                         connectionDirection: staticCompensator.connectablePosition.connectionDirection ?? null,
                         connectionName: staticCompensator.connectablePosition.connectionName ?? null,
                         connectionPosition: undefined,
@@ -244,7 +243,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 ...getConnectivityFormData({
                     voltageLevelId: staticCompensator.voltageLevelId,
                     busbarSectionId: staticCompensator.busOrBusbarSectionId,
-                    busbarSectionName: undefined,
                     connectionDirection: staticCompensator.connectionDirection,
                     connectionName: staticCompensator.connectionName,
                     connectionPosition: staticCompensator.connectionPosition,
