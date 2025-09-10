@@ -96,7 +96,9 @@ export function SpreadsheetModelGlobalEditorTable() {
                         inputTransform: (value) => value ?? '',
                         outputTransform: (value) => value,
                         size: 'small',
-                        inputFontSize: 'small',
+                        sx: {
+                            '& input': { fontSize: 'small' },
+                        },
                     }),
             },
             {
