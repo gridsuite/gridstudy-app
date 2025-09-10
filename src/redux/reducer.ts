@@ -45,6 +45,8 @@ import {
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     type CenterOnSubstationAction,
+    CLEAN_EQUIPMENTS,
+    CleanEquipmentsAction,
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
@@ -71,7 +73,9 @@ import {
     type LoadflowResultFilterAction,
     type LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
+    LOGS_RESULT_PAGINATION,
     type LogsFilterAction,
+    LogsResultPaginationAction,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
@@ -121,6 +125,7 @@ import {
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
+    RESET_LOGS_PAGINATION,
     RESET_MAP_EQUIPMENTS,
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
@@ -131,6 +136,7 @@ import {
     type ResetEquipmentsByTypesAction,
     type ResetEquipmentsPostComputationAction,
     type ResetLogsFilterAction,
+    ResetLogsPaginationAction,
     type ResetMapEquipmentsAction,
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
@@ -143,12 +149,12 @@ import {
     SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
+    SELECT_SYNC_ENABLED,
     SELECT_THEME,
     type SelectComputedLanguageAction,
     type SelectLanguageAction,
-    type SelectThemeAction,
-    SELECT_SYNC_ENABLED,
     type SelectSyncEnabledAction,
+    type SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
@@ -204,11 +210,13 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
+    type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
     USE_NAME,
@@ -251,6 +259,7 @@ import {
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     ONE_BUS,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -296,10 +305,12 @@ import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
+    type SpreadsheetOptionalLoadingParameters,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    LogsPaginationConfig,
     PaginationConfig,
     SECURITY_ANALYSIS_TABS,
     SecurityAnalysisTab,
@@ -387,6 +398,18 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): Spread
             return;
     }
 }
+
+export const DEFAULT_PAGINATION: PaginationConfig = {
+    page: 0,
+    rowsPerPage: 25,
+};
+
+export const DEFAULT_LOGS_PAGE_COUNT = 30;
+
+export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
+    page: 0,
+    rowsPerPage: DEFAULT_LOGS_PAGE_COUNT,
+};
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
@@ -520,6 +543,8 @@ export interface DiagramGridLayoutConfig {
     params: DiagramParams[];
 }
 
+export type LogsPaginationState = Record<string, LogsPaginationConfig>;
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -566,6 +591,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
+    spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     syncEnabled: boolean;
@@ -604,6 +630,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
+    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
     deletedOrRenamedNodes: UUID[];
@@ -625,6 +652,20 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
+};
+
+const initialLogsPaginationState: LogsPaginationState = {
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SENSITIVITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
 };
 
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
@@ -664,11 +705,6 @@ interface TablesState {
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
-};
-
-export const DEFAULT_PAGINATION: PaginationConfig = {
-    page: 0,
-    rowsPerPage: 25,
 };
 
 const initialState: AppState = {
@@ -717,6 +753,20 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: {},
+    spreadsheetOptionalLoadingParameters: {
+        [SpreadsheetEquipmentType.BRANCH]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.LINE]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.GENERATOR]: {
+            regulatingTerminal: false,
+        },
+    },
     diagramGridLayout: {
         gridLayouts: {},
         params: [],
@@ -808,6 +858,7 @@ const initialState: AppState = {
     [SPREADSHEET_STORE_FIELD]: {},
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
+    [LOGS_PAGINATION_STORE_FIELD]: { ...initialLogsPaginationState },
 
     [TABLE_SORT_STORE]: {
         [SPREADSHEET_SORT_STORE]: {},
@@ -1436,7 +1487,7 @@ export const reducer = createReducer(initialState, (builder) => {
             if (!equipmentType) {
                 continue;
             }
-            const currentEquipment: Identifiable[] | undefined =
+            const currentEquipment: Record<string, Identifiable> | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
             // Format the updated equipments to match the table format
@@ -1449,9 +1500,9 @@ export const reducer = createReducer(initialState, (builder) => {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
-                        ] as Substation[],
+                        ] as Record<string, Substation>,
                         state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL].equipmentsByNodeId[action.nodeId],
-                        formattedEquipments
+                        formattedEquipments as Record<string, Substation>
                     );
 
                     if (updatedSubstations != null) {
@@ -1480,7 +1531,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
                 if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
                     const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
-                        .equipmentsByNodeId[action.nodeId] as Substation[] | null;
+                        .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
                     if (currentSubstations != null) {
                         state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
                             action.nodeId
@@ -1514,6 +1565,45 @@ export const reducer = createReducer(initialState, (builder) => {
             [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
             [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
         };
+    });
+
+    builder.addCase(CLEAN_EQUIPMENTS, (state, action: CleanEquipmentsAction) => {
+        if (
+            action.equipmentType !== SpreadsheetEquipmentType.BRANCH &&
+            action.equipmentType !== SpreadsheetEquipmentType.LINE &&
+            action.equipmentType !== SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
+            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR
+        ) {
+            return;
+        }
+        const propsToClean =
+            action.equipmentType === SpreadsheetEquipmentType.GENERATOR
+                ? {
+                      regulatingTerminalVlName: undefined,
+                      regulatingTerminalConnectableId: undefined,
+                      regulatingTerminalConnectableType: undefined,
+                      regulatingTerminalVlId: undefined,
+                  }
+                : {
+                      operationalLimitsGroup1: undefined,
+                      operationalLimitsGroup1Names: undefined,
+                      operationalLimitsGroup2: undefined,
+                      operationalLimitsGroup2Names: undefined,
+                  };
+        state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
+            state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
+            ).reduce(
+                (acc, eq) => {
+                    acc[eq.id] = {
+                        ...eq,
+                        ...propsToClean,
+                    };
+                    return acc;
+                },
+                {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
+            );
+        });
     });
 
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
@@ -1684,6 +1774,27 @@ export const reducer = createReducer(initialState, (builder) => {
         };
     });
 
+    builder.addCase(LOGS_RESULT_PAGINATION, (state, action: LogsResultPaginationAction) => {
+        state[LOGS_PAGINATION_STORE_FIELD][action.paginationTab] = action[LOGS_PAGINATION_STORE_FIELD];
+    });
+
+    builder.addCase(RESET_LOGS_PAGINATION, (state, _action: ResetLogsPaginationAction) => {
+        // Reset all logs tabs to page 0 but keep their rowsPerPage
+        Object.keys(COMPUTING_AND_NETWORK_MODIFICATION_TYPE).forEach((key) => {
+            const reportType =
+                COMPUTING_AND_NETWORK_MODIFICATION_TYPE[key as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE];
+            const currentPagination = state[LOGS_PAGINATION_STORE_FIELD][reportType];
+            state[LOGS_PAGINATION_STORE_FIELD][reportType] = {
+                page: 0,
+                rowsPerPage: currentPagination.rowsPerPage,
+            };
+        });
+    });
+
+    builder.addCase(UPDATE_SPREADSHEET_PARTIAL_DATA, (state, action: UpdateSpreadsheetPartialDataAction) => {
+        state.spreadsheetOptionalLoadingParameters = action.newOptions;
+    });
+
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
     });
@@ -1768,24 +1879,24 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 });
 
-function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToDeleteId: string): Substation[] {
-    const substationToUpdateIndex = currentSubstations.findIndex((sub) =>
+function updateSubstationAfterVLDeletion(
+    currentSubstations: Record<string, Substation>,
+    VLToDeleteId: string
+): Record<string, Substation> {
+    const substationToUpdateId = Object.values(currentSubstations).find((sub) =>
         sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
-    );
-    if (substationToUpdateIndex >= 0) {
-        currentSubstations[substationToUpdateIndex].voltageLevels = currentSubstations[
-            substationToUpdateIndex
+    )?.id;
+    if (substationToUpdateId) {
+        currentSubstations[substationToUpdateId].voltageLevels = currentSubstations[
+            substationToUpdateId
         ].voltageLevels.filter((vl) => vl.id !== VLToDeleteId);
     }
 
     return currentSubstations;
 }
 
-function deleteEquipment(currentEquipments: Identifiable[], equipmentToDeleteId: string) {
-    const equipmentToDeleteIndex = currentEquipments.findIndex((eq) => eq.id === equipmentToDeleteId);
-    if (equipmentToDeleteIndex >= 0) {
-        currentEquipments.splice(equipmentToDeleteIndex, 1);
-    }
+function deleteEquipment(currentEquipments: Record<string, Identifiable>, equipmentToDeleteId: string) {
+    delete currentEquipments[equipmentToDeleteId];
     return currentEquipments;
 }
 
@@ -1794,9 +1905,9 @@ export type Substation = Identifiable & {
 };
 
 function updateSubstationsAndVoltageLevels(
-    currentSubstations: Substation[],
-    currentVoltageLevels: Identifiable[],
-    newOrUpdatedSubstations: Substation[]
+    currentSubstations: Record<string, Substation>,
+    currentVoltageLevels: Record<string, Identifiable>,
+    newOrUpdatedSubstations: Record<string, Substation>
 ) {
     const updatedSubstations = updateEquipments(currentSubstations, newOrUpdatedSubstations);
 
@@ -1804,9 +1915,15 @@ function updateSubstationsAndVoltageLevels(
 
     // if voltage levels are not loaded yet, we don't need to update them
     if (currentVoltageLevels != null) {
-        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce((acc, currentSub) => {
-            return acc.concat([...currentSub.voltageLevels]);
-        }, [] as Identifiable[]);
+        const newOrUpdatedVoltageLevels = Object.values(newOrUpdatedSubstations).reduce(
+            (acc, currentSub) => {
+                currentSub.voltageLevels.forEach((vl) => {
+                    acc[vl.id] = vl;
+                });
+                return acc;
+            },
+            {} as Record<string, Identifiable>
+        );
 
         updatedVoltageLevels = updateEquipments(currentVoltageLevels, newOrUpdatedVoltageLevels);
     }
@@ -1814,17 +1931,13 @@ function updateSubstationsAndVoltageLevels(
     return [updatedSubstations, updatedVoltageLevels];
 }
 
-function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipments: Identifiable[]) {
-    newOrUpdatedEquipments.forEach((equipment) => {
-        const existingEquipmentIndex = currentEquipments.findIndex((equip) => equip.id === equipment.id);
-
-        if (existingEquipmentIndex >= 0) {
-            currentEquipments[existingEquipmentIndex] = equipment;
-        } else {
-            currentEquipments.push(equipment);
-        }
+function updateEquipments(
+    currentEquipments: Record<string, Identifiable>,
+    newOrUpdatedEquipments: Record<string, Identifiable>
+) {
+    Object.entries(newOrUpdatedEquipments).forEach(([id, equipment]) => {
+        currentEquipments[id] = equipment;
     });
-
     return currentEquipments;
 }
 

@@ -66,6 +66,11 @@ export type PaginationConfig = {
     rowsPerPage: number | { value: number; label: string };
 };
 
+export type LogsPaginationConfig = {
+    page: number;
+    rowsPerPage: number;
+};
+
 export enum PaginationType {
     SecurityAnalysis = 'SecurityAnalysis',
     SensitivityAnalysis = 'SensitivityAnalysis',
