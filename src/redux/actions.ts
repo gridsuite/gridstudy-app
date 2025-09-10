@@ -204,6 +204,30 @@ export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
     };
 }
 
+export const ATTEMPT_LAUNCH_COMPUTATION = 'ATTEMPT_LAUNCH_COMPUTATION';
+export type AttemptLaunchComputationAction = Readonly<Action<typeof ATTEMPT_LAUNCH_COMPUTATION>> & {
+    startComputation: (() => void) | null;
+};
+
+export function attemptLaunchComputation(startComputation: (() => void) | null): AttemptLaunchComputationAction {
+    return {
+        type: ATTEMPT_LAUNCH_COMPUTATION,
+        startComputation,
+    };
+}
+
+export const SET_DIRTY_COMPUTATION_PARAMETERS = 'SET_DIRTY_COMPUTATION_PARAMETERS';
+export type SetDirtyComputationParametersAction = Readonly<Action<typeof SET_DIRTY_COMPUTATION_PARAMETERS>> & {
+    isDirty: boolean;
+};
+
+export function setDirtyComputationParameters(isDirty: boolean): SetDirtyComputationParametersAction {
+    return {
+        type: SET_DIRTY_COMPUTATION_PARAMETERS,
+        isDirty,
+    };
+}
+
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
@@ -703,6 +727,7 @@ export function setNodeSelectionForCopy(
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
+
 export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,

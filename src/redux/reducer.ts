@@ -40,7 +40,9 @@ import {
     type AddSortForNewSpreadsheetAction,
     type AddToRecentGlobalFiltersAction,
     type AppActions,
+    ATTEMPT_LAUNCH_COMPUTATION,
     ATTEMPT_LEAVE_PARAMETERS_TAB,
+    AttemptLaunchComputationAction,
     type AttemptLeaveParametersTabAction,
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
@@ -165,6 +167,7 @@ import {
     SET_COMPUTING_STATUS,
     SET_COMPUTING_STATUS_INFOS,
     SET_DIAGRAM_GRID_LAYOUT,
+    SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -183,6 +186,7 @@ import {
     type SetComputingStatusAction,
     type SetComputingStatusParametersAction,
     type SetDiagramGridLayoutAction,
+    SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
     type SetModificationsDrawerOpenAction,
     type SetModificationsInProgressAction,
@@ -549,10 +553,10 @@ export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
-
     appTabIndex: number;
     attemptedLeaveParametersTabIndex: number | null;
-
+    dirtyComputationParameters: boolean;
+    attemptedLaunchComputation: (() => void) | null;
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -711,6 +715,8 @@ const initialState: AppState = {
     syncEnabled: false,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
+    dirtyComputationParameters: false,
+    attemptedLaunchComputation: null,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -944,11 +950,18 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.attemptedLeaveParametersTabIndex !== null) {
             state.appTabIndex = state.attemptedLeaveParametersTabIndex;
             state.attemptedLeaveParametersTabIndex = null;
+            state.dirtyComputationParameters = false;
         }
     });
 
     builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
         state.attemptedLeaveParametersTabIndex = null;
+    });
+    builder.addCase(ATTEMPT_LAUNCH_COMPUTATION, (state, action: AttemptLaunchComputationAction) => {
+        state.attemptedLaunchComputation = action.startComputation;
+    });
+    builder.addCase(SET_DIRTY_COMPUTATION_PARAMETERS, (state, action: SetDirtyComputationParametersAction) => {
+        state.dirtyComputationParameters = action.isDirty;
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];

@@ -12,9 +12,13 @@ import { useIntl } from 'react-intl';
 import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import { ComputingType } from '@gridsuite/commons-ui';
+import { useDispatch, useSelector } from 'react-redux';
+import {attemptLaunchComputation, setDirtyComputationParameters} from '../redux/actions.js';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
+    const dispatch = useDispatch();
+    const dirtyComputationParameters = useSelector((state) => state.dirtyComputationParameters);
 
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
@@ -76,12 +80,20 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         return getRunningStatus() === RunningStatus.RUNNING;
     }
 
+    const attemptStartComputation = useCallback(() => {
+        if (dirtyComputationParameters) {
+            dispatch(attemptLaunchComputation(runnables[selectedRunnable].startComputation));
+        } else {
+            runnables[selectedRunnable].startComputation();
+        }
+    }, [dirtyComputationParameters, dispatch, runnables, selectedRunnable]);
+
     return (
         <SplitButton
             options={getOptions()}
             selectedIndex={activeRunnables.indexOf(selectedRunnable)}
             onSelectionChange={(index) => setSelectedRunnable(activeRunnables[index])}
-            onClick={runnables[selectedRunnable].startComputation}
+            onClick={attemptStartComputation}
             runningStatus={getRunningStatus()}
             buttonDisabled={disabled || isButtonDisable()}
             selectionDisabled={disabled}

@@ -53,19 +53,24 @@ import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-eva
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
-import { cancelLeaveParametersTab, confirmLeaveParametersTab } from 'redux/actions';
+import {
+    attemptLaunchComputation,
+    cancelLeaveParametersTab,
+    confirmLeaveParametersTab,
+    setDirtyComputationParameters
+} from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
 import {
+    ComputingType,
+    fetchSecurityAnalysisProviders,
+    getSecurityAnalysisDefaultLimitReductions,
     LoadFlowParametersInline,
     NetworkVisualizationParametersInline,
     SecurityAnalysisParametersInline,
     SensitivityAnalysisParametersInline,
     ShortCircuitParametersInLine,
     useParametersBackend,
-    ComputingType,
     VoltageInitParametersInLine,
-    fetchSecurityAnalysisProviders,
-    getSecurityAnalysisDefaultLimitReductions,
 } from '@gridsuite/commons-ui';
 import { useParametersNotification } from './dialogs/parameters/use-parameters-notification';
 import { useGetVoltageInitParameters } from './dialogs/parameters/use-get-voltage-init-parameters';
@@ -98,8 +103,10 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
+    const attemptedLaunchComputation = useSelector((state: AppState) => state.attemptedLaunchComputation);
 
-    const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+    const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
+    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState<boolean>(false);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -127,6 +134,32 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             (tabValue === TAB_VALUES.shortCircuitParamsTabValue && shortCircuitOneBusStatus === RunningStatus.RUNNING)
         );
     }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
+
+    useEffect(() => {
+        dispatch(setDirtyComputationParameters(haveDirtyFields));
+    }, [dispatch, haveDirtyFields]);
+
+    useEffect(() => {
+        if (attemptedLaunchComputation !== null) {
+            setIsLaunchingPopupOpen(true);
+        }
+    }, [attemptedLaunchComputation]);
+
+    const handleLaunchingPopupClose = useCallback(() => {
+        setIsLaunchingPopupOpen(false);
+        if (attemptedLaunchComputation !== null) {
+            dispatch(attemptLaunchComputation(null));
+        }
+    }, [attemptedLaunchComputation, dispatch]);
+
+    const handleLaunchingPopup = useCallback(() => {
+        setIsLaunchingPopupOpen(false);
+        console.log(attemptedLaunchComputation);
+        if (attemptedLaunchComputation !== null) {
+            attemptedLaunchComputation();
+            dispatch(attemptLaunchComputation(null));
+        }
+    }, [attemptedLaunchComputation, dispatch]);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -201,7 +234,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
             if (haveDirtyFields) {
-                setIsPopupOpen(true);
+                setIsLeavingPopupOpen(true);
             } else {
                 dispatch(confirmLeaveParametersTab());
             }
@@ -211,7 +244,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const handleChangeTab = (newValue: string) => {
         if (haveDirtyFields) {
             setNextTabValue(newValue);
-            setIsPopupOpen(true);
+            setIsLeavingPopupOpen(true);
         } else {
             setTabValue(newValue);
         }
@@ -225,11 +258,11 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             dispatch(confirmLeaveParametersTab());
         }
         setHaveDirtyFields(false);
-        setIsPopupOpen(false);
+        setIsLeavingPopupOpen(false);
     }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
 
-    const handlePopupClose = useCallback(() => {
-        setIsPopupOpen(false);
+    const handleLeavingPopupClose = useCallback(() => {
+        setIsLeavingPopupOpen(false);
         setNextTabValue(undefined);
 
         if (attemptedLeaveParametersTabIndex !== null) {
@@ -448,8 +481,8 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             </Grid>
             <SelectOptionsDialog
                 title={''}
-                open={isPopupOpen}
-                onClose={handlePopupClose}
+                open={isLeavingPopupOpen}
+                onClose={handleLeavingPopupClose}
                 onClick={handlePopupChangeTab}
                 child={
                     <DialogContentText>
@@ -457,6 +490,18 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                     </DialogContentText>
                 }
                 validateKey={'dialog.button.leave'}
+            />
+            <SelectOptionsDialog
+                title={''}
+                open={isLaunchingPopupOpen}
+                onClose={handleLaunchingPopupClose}
+                onClick={handleLaunchingPopup}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="launchComputationConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey={'dialog.button.launch'}
             />
         </>
     );
