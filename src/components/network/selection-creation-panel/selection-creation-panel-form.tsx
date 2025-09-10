@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SelectInput } from '@gridsuite/commons-ui';
+import { SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { SELECTION_TYPE } from 'components/utils/field-constants';
+import { NAME, SELECTION_TYPE } from 'components/utils/field-constants';
 
 import { FC } from 'react';
 import { useWatch } from 'react-hook-form';
@@ -28,6 +28,7 @@ export const SelectionCreationPanelForm: FC<SelectionCreationPanelFormProps> = (
 
     const isFilterOrContingenciesSelected =
         watchSelectionType === SELECTION_TYPES.FILTER || watchSelectionType === SELECTION_TYPES.CONTIGENCY_LIST;
+    const isNadSelected = watchSelectionType === SELECTION_TYPES.NAD;
 
     return (
         <Grid container rowGap={2}>
@@ -48,6 +49,18 @@ export const SelectionCreationPanelForm: FC<SelectionCreationPanelFormProps> = (
             </Grid>
             {isFilterOrContingenciesSelected && (
                 <ContingencyFilterCreationFields selectionType={watchSelectionType} pendingState={pendingState} />
+            )}
+            {isNadSelected && (
+                <Grid container>
+                    <TextInput
+                        name={NAME}
+                        label={'Name'}
+                        formProps={{
+                            variant: 'standard',
+                            disabled: pendingState,
+                        }}
+                    />
+                </Grid>
             )}
         </Grid>
     );
