@@ -55,7 +55,7 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     flood-color: #90a4aeaa;
 }
 .nad-text-nodes {
-    font: 25px serif;
+    font-size: 25px;
     fill: black;
     dominant-baseline: central;
 }
@@ -78,7 +78,7 @@ foreignObject.nad-text-nodes {
     background: var(--vl-color, black);
 }
 .nad-edge-infos text {
-    font: 20px sans-serif;
+    font-size: 20px;
     dominant-baseline: middle;
     stroke-width: 10;
     stroke-linejoin: round;
