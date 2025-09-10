@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { SELECTED } from '../../../../utils/field-constants';
-import { DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
+import { AutocompleteInput, DndColumn, DndColumnType, DndTable } from '@gridsuite/commons-ui';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import {
@@ -81,12 +81,24 @@ export function SpreadsheetModelGlobalEditorTable() {
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_type' }),
                 dataKey: COLUMN_TYPE,
-                type: DndColumnType.AUTOCOMPLETE,
+                type: DndColumnType.CUSTOM,
                 initialValue: COLUMN_TYPES.TEXT,
                 editable: true,
-                options: Object.values(COLUMN_TYPES),
                 width: '11%',
                 maxWidth: '11%',
+                component: (rowIndex: number) =>
+                    AutocompleteInput({
+                        forcePopupIcon: true,
+                        freeSolo: true,
+                        name: `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_TYPE}`,
+                        options: Object.values(COLUMN_TYPES),
+                        inputTransform: (value) => value ?? '',
+                        outputTransform: (value) => value,
+                        size: 'small',
+                        sx: {
+                            '& input': { fontSize: 'small' },
+                        },
+                    }),
             },
             {
                 label: intl.formatMessage({ id: 'spreadsheet/global-model-edition/column_precision' }),
