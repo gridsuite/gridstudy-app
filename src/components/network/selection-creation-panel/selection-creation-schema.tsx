@@ -23,10 +23,7 @@ export type DestinationFolder = {
 
 const formSchema = yup.object().shape({
     [SELECTION_TYPE]: yup.mixed<SELECTION_TYPES>().oneOf(Object.values(SELECTION_TYPES)).nullable().required(),
-    [NAME]: yup.string().when([SELECTION_TYPE], {
-        is: (value: SELECTION_TYPES) => value === SELECTION_TYPES.CONTIGENCY_LIST || value === SELECTION_TYPES.FILTER,
-        then: (schema) => schema.required(),
-    }),
+    [NAME]: yup.string().required(),
     [EQUIPMENT_TYPE_FIELD]: yup
         .mixed<EquipmentType>()
         .oneOf(Object.values(EquipmentType))
@@ -57,6 +54,7 @@ export type SelectionCreationPanelFormSchema = yup.InferType<typeof formSchema>;
 
 export type SelectionCreationPanelNadFields = SelectionCreationPanelFormSchema & {
     [SELECTION_TYPE]: SELECTION_TYPES.NAD;
+    [NAME]: string;
 };
 
 export type SelectionCreationPanelNotNadFields = SelectionCreationPanelFormSchema & {
