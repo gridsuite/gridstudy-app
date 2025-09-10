@@ -179,8 +179,8 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     const getTapSideForEdit = (twt, tap) => {
-        return tap?.regulatingTerminalId === twt.equipmentId
-            ? tap?.regulatingTerminalVlId === twt?.voltageLevelId1
+        return tap?.terminalRefConnectableId === twt.equipmentId
+            ? tap?.terminalRefConnectableVlId === twt?.voltageLevelId1
                 ? SIDE.SIDE1.id
                 : SIDE.SIDE2.id
             : null;
@@ -188,15 +188,15 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const getTapSideForCopy = (twt, tap) => {
         return tap?.regulatingTerminalConnectableId === twt.id
-            ? tap?.regulatingTerminalVlId === twt?.voltageLevelId1
+            ? tap?.terminalRefConnectableVlId === twt?.voltageLevelId1
                 ? SIDE.SIDE1.id
                 : SIDE.SIDE2.id
             : null;
     };
 
     const getRegulationTypeForEdit = (twt, tap) => {
-        return tap?.regulatingTerminalId != null
-            ? tap?.regulatingTerminalId === twt.equipmentId
+        return tap?.terminalRefConnectableId != null
+            ? tap?.terminalRefConnectableId === twt.equipmentId
                 ? REGULATION_TYPES.LOCAL.id
                 : REGULATION_TYPES.DISTANT.id
             : null;
@@ -357,7 +357,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
                         equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableType,
-                        voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
+                        voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.terminalRefConnectableVlId,
                     }),
                     ...getPhaseTapChangerFormData({
                         enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -382,7 +382,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
                         tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
                         steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                        voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
+                        voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.terminalRefConnectableVlId,
                         equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId,
                         equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableType,
                     }),
