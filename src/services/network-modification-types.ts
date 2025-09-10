@@ -97,7 +97,7 @@ export interface LoadCreationInfo {
     connectionName?: string | null;
     connectionPosition?: number | null;
     terminalConnected?: boolean;
-    properties?: Property[];
+    properties?: Property[] | null;
 }
 
 export interface LoadModificationInfo {
@@ -217,7 +217,7 @@ export interface StaticVarCompensatorCreationInfo {
     q0: number | null;
     isUpdate?: boolean;
     modificationUuid: string;
-    properties?: Property[];
+    properties?: Property[] | null;
 }
 
 export interface TwoWindingsTransformerModificationInfo {
@@ -233,8 +233,9 @@ export interface TwoWindingsTransformerModificationInfo {
     ratedS: AttributeModification<number> | null;
     ratedU1: AttributeModification<number> | null;
     ratedU2: AttributeModification<number> | null;
-    currentLimit1?: CurrentLimits;
-    currentLimit2?: CurrentLimits;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
     voltageLevelId1?: string;
     busOrBusbarSectionId1?: string;
     voltageLevelId2?: string;
@@ -267,6 +268,7 @@ export interface OperationalLimitsGroup {
     name: string;
     applicability?: string;
     currentLimits: CurrentLimits;
+    modificationType?: string | null; // only needed when the data is used for a branch modification
 }
 
 export interface Limit {
@@ -281,7 +283,7 @@ export interface TemporaryLimit extends Limit {
 }
 
 export interface CurrentLimits {
-    id?: string;
+    id: string;
     applicability?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
@@ -336,8 +338,7 @@ export interface AttachmentLine {
     b1: number;
     g2: number;
     b2: number;
-    currentLimits1: CurrentLimits;
-    currentLimits2: CurrentLimits;
+    currentLimits: CurrentLimits;
 }
 
 type VariationFilter = {
@@ -549,8 +550,9 @@ export interface LineModificationInfo {
     b1: number;
     g2: number;
     b2: number;
-    currentLimit1: CurrentLimits;
-    currentLimit2: CurrentLimits;
+    operationalLimitsGroups: OperationalLimitsGroup[];
+    selectedLimitsGroup1: AttributeModification<string> | null;
+    selectedLimitsGroup2: AttributeModification<string> | null;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
@@ -712,7 +714,7 @@ export interface LCCCreationInfo {
     activePowerSetpoint: number;
     converterStation1: LCCCreationConverterStation;
     converterStation2: LCCCreationConverterStation;
-    properties?: Property[];
+    properties?: Property[] | null;
     isUpdate: boolean;
     modificationUuid?: string;
 }
@@ -738,7 +740,7 @@ export interface LccModificationInfos {
     activePowerSetpoint: AttributeModification<number> | null;
     converterStation1: LccConverterStationModificationInfos;
     converterStation2: LccConverterStationModificationInfos;
-    properties?: Property[];
+    properties?: Property[] | null;
 }
 
 export interface VSCModificationInfo {
@@ -758,7 +760,7 @@ export interface VSCModificationInfo {
     droop: number | null;
     converterStation1: VSCModificationConverterStation;
     converterStation2: VSCModificationConverterStation;
-    properties?: Property[];
+    properties?: Property[] | null;
     isUpdate: boolean;
     modificationUuid: UUID;
 }
