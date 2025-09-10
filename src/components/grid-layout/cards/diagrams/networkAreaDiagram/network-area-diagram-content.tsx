@@ -136,6 +136,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
+            // Do not show the hover in edit mode
+            if (isEditNadMode) {
+                return;
+            }
             if (mousePosition) {
                 const anchorPosition = {
                     top: mousePosition.y + 10,
@@ -156,7 +160,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             }
         },
 
-        [setShouldDisplayTooltip, setAnchorPosition]
+        [setShouldDisplayTooltip, setAnchorPosition, isEditNadMode]
     );
 
     const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
@@ -299,7 +303,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 isEditNadMode,
                 true,
                 NAD_ZOOM_LEVELS,
-                isEditNadMode ? null : OnToggleHoverCallback,
+                OnToggleHoverCallback,
                 showEquipmentMenu,
                 false
             );
