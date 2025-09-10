@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl';
 import DroppableTabs from '../../utils/draggable-tab/droppable-tabs';
 import DraggableTab from '../../utils/draggable-tab/draggable-tab';
 import VisibilityBox from './common/visibility-box';
-import TooltipIconButton from './common/tooltip-icon-button';
+import TooltipIconButton from '../../common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';

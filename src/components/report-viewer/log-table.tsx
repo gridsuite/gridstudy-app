@@ -120,6 +120,7 @@ const LogTable = ({
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
     const [count, setCount] = useState<number>(0);
@@ -422,6 +423,7 @@ const LogTable = ({
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
                     placeholder="searchPlaceholderLog"
+                    inputRef={inputRef}
                 />
                 <Box sx={styles.chipContainer}>
                     {severities?.map((severity) => (
