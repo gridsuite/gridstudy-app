@@ -390,46 +390,47 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.DYNAMIC_SIMULATION]: {
                 messageId: 'DynamicSimulation',
-                startComputation(debug) {
-                    checkForbiddenProvider(
-                        studyUuid,
-                        ComputingType.DYNAMIC_SIMULATION,
-                        fetchDynamicSimulationProvider,
-                        [PARAM_PROVIDER_DYNAWO]
-                    ).then((isValid) => {
-                        if (isValid) {
-                            checkDynamicSimulationParameters(studyUuid)
-                                .then((isValid) => {
-                                    if (!isValid) {
-                                        // open parameters selector to configure mandatory params
-                                        setShowDynamicSimulationParametersSelector(true);
-                                        setRunWithDebug(debug);
-                                    } else {
-                                        // start server side dynamic simulation directly
-                                        startComputationAsync(
-                                            ComputingType.DYNAMIC_SIMULATION,
-                                            null,
-                                            () =>
-                                                startDynamicSimulation({
-                                                    studyUuid,
-                                                    currentNodeUuid: currentNode?.id,
-                                                    currentRootNetworkUuid,
-                                                    debug,
-                                                }),
-                                            () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
-                                            null,
-                                            'DynamicSimulationRunError'
-                                        );
-                                    }
-                                })
-                                .catch((error) => {
-                                    snackError({
-                                        messageTxt: error.message,
-                                        headerId: 'DynamicSimulationRunError',
-                                    });
-                                });
+                async startComputation(debug) {
+                    try {
+                        const isProviderValid = await checkForbiddenProvider(
+                            studyUuid,
+                            ComputingType.DYNAMIC_SIMULATION,
+                            fetchDynamicSimulationProvider,
+                            [PARAM_PROVIDER_DYNAWO]
+                        );
+                        if (!isProviderValid) {
+                            return;
                         }
-                    });
+
+                        const isParametersValid = await checkDynamicSimulationParameters(studyUuid);
+                        if (!isParametersValid) {
+                            // open parameters selector to configure mandatory params
+                            setShowDynamicSimulationParametersSelector(true);
+                            setRunWithDebug(debug);
+                            return;
+                        }
+
+                        // start server side dynamic simulation directly
+                        startComputationAsync(
+                            ComputingType.DYNAMIC_SIMULATION,
+                            null,
+                            () =>
+                                startDynamicSimulation({
+                                    studyUuid,
+                                    currentNodeUuid: currentNode?.id,
+                                    currentRootNetworkUuid,
+                                    debug,
+                                }),
+                            () => debug && subscribeDebug(ComputingType.DYNAMIC_SIMULATION),
+                            null,
+                            'DynamicSimulationRunError'
+                        );
+                    } catch (error) {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'DynamicSimulationRunError',
+                        });
+                    }
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.DYNAMIC_SIMULATION, () =>
