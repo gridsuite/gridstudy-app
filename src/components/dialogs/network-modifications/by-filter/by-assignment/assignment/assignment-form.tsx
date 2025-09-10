@@ -12,6 +12,7 @@ import {
     ElementType,
     FloatInput,
     IntegerInput,
+    Option,
     SelectInput,
     SwitchInput,
     TextInput,
@@ -43,7 +44,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     equipmentFields,
     equipmentType,
 }) => {
-    const { setValue } = useFormContext();
+    const { setError, setValue } = useFormContext();
     const intl = useIntl();
 
     const watchEditedField = useWatch({
@@ -80,6 +81,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     if (prevDataType && prevDataType !== dataType) {
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
+
+    const noneStr = useMemo(() => {
+        return intl.formatMessage({ id: 'None' });
+    }, [intl]);
 
     const formatLabelWithUnit = useFormatLabelWithUnit();
 
@@ -151,10 +156,22 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         if (dataType === DataType.DOUBLE && settable_to_none) {
             return (
                 <AutocompleteInput
-                    // TODO : saisie uniquement numérique OU "Aucun"
                     name={`${name}.${index}.${VALUE_FIELD}`}
                     label={'NumericValueOrNone'}
-                    options={[intl.formatMessage({ id: 'None' })]}
+                    options={[noneStr]}
+                    onCheckNewValue={(option: Option | null) => {
+                        if (option) {
+                            if (option.toString() !== noneStr && Number.isNaN(Number(option.toString()))) {
+                                setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                    message: 'NumericValueOrNone',
+                                });
+                            }
+                        }
+                        setError(`${name}.${index}.${VALUE_FIELD}`, {
+                            message: '',
+                        });
+                        return true;
+                    }}
                     size={'small'}
                     getOptionLabel={(value) => value.toString()}
                     allowNewValue

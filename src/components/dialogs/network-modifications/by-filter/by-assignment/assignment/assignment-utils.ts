@@ -37,7 +37,7 @@ export const getAssignmentInitialValue = () => ({
     [VALUE_FIELD]: null,
 });
 
-export function getAssignmentsSchema() {
+export function getAssignmentsSchema(noneStr: string) {
     return yup
         .array()
         .of(
@@ -65,7 +65,7 @@ export function getAssignmentsSchema() {
                     .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
                         const unsettable = getUnsettable(editedField);
-                        return getValueSchema(dataType, unsettable);
+                        return getValueSchema(noneStr, dataType, unsettable);
                     })
                     .required(),
             })
@@ -73,18 +73,15 @@ export function getAssignmentsSchema() {
         .required();
 }
 
-function getValueSchema(dataType?: DataType, unsettable?: boolean) {
+function getValueSchema(noneStr: string, dataType?: DataType, settable_to_none?: boolean) {
     let schema: Schema;
     // set type
     switch (dataType) {
         case DataType.DOUBLE:
-            schema = unsettable
-                ? yup
-                      .string()
-                      .test('is-number-or-aucune', "Le champ doit être un nombre ou égal à 'Aucun'", (value) => {
-                          // Vérifie si la valeur est "Aucune" ou un nombre valide
-                          return value === 'Aucun' || !isNaN(Number(value));
-                      })
+            schema = settable_to_none
+                ? yup.string().test('is-number-or-none', 'NumericValueOrNone', (value) => {
+                      return value === noneStr || !isNaN(Number(value));
+                  })
                 : yup.number();
             break;
         case DataType.INTEGER:
@@ -98,7 +95,7 @@ function getValueSchema(dataType?: DataType, unsettable?: boolean) {
             schema = yup.boolean();
             break;
         case DataType.STRING:
-            return yup.string().nullable();
+            return settable_to_none ? yup.string().nullable() : yup.string().required();
         default:
             schema = yup.number();
     }

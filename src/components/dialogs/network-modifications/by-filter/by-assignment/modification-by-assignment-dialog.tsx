@@ -14,7 +14,7 @@ import {
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -33,14 +33,6 @@ import { Assignment, ModificationByAssignment } from './assignment/assignment.ty
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { useIntl } from 'react-intl';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        [ASSIGNMENTS]: getAssignmentsSchema(),
-    })
-    .required();
-
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
     [ASSIGNMENTS]: [getAssignmentInitialValue()],
@@ -57,6 +49,17 @@ const ModificationByAssignmentDialog: FC<any> = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const intl = useIntl();
+
+    const noneStr = useMemo(() => {
+        return intl.formatMessage({ id: 'None' });
+    }, [intl]);
+    const formSchema = yup
+        .object()
+        .shape({
+            [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
+            [ASSIGNMENTS]: getAssignmentsSchema(noneStr),
+        })
+        .required();
 
     // "DeepNullable" to allow deeply null values as default values for required values
     // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
@@ -81,7 +84,10 @@ const ModificationByAssignmentDialog: FC<any> = ({
                     const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
                     const field = FieldType[fieldKey];
                     const value = assignment[VALUE_FIELD];
-                    const valueConverted = convertInputValue(field, value);
+                    let valueConverted = convertInputValue(field, value);
+                    if (!valueConverted || valueConverted === '') {
+                        valueConverted = noneStr;
+                    }
                     return {
                         ...assignment,
                         [VALUE_FIELD]: valueConverted,
@@ -92,7 +98,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 [ASSIGNMENTS]: assignments,
             });
         }
-    }, [editData, reset]);
+    }, [editData, intl, noneStr, reset]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -106,7 +112,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 const field: FieldType = FieldType[fieldKey];
                 let value = assignment[VALUE_FIELD];
                 // None values have to be set to an empty string :
-                if (value === intl.formatMessage({ id: 'None' })) {
+                if (value === noneStr) {
                     // put this in convertOutputValue ??
                     value = '';
                 }
@@ -131,7 +137,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 });
             });
         },
-        [currentNodeUuid, editData, intl, snackError, studyUuid]
+        [currentNodeUuid, editData, noneStr, snackError, studyUuid]
     );
 
     return (
