@@ -67,6 +67,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
         [dispatch]
     );
 
+    // Handle tab switching when equipment is shown in spreadsheet (triggered by showInSpreadsheet action from TreeTab)
     useEffect(() => {
         // Find all tabs of the current equipmentType
         const matchingTabs = tablesDefinitions.filter((def) => def.type === equipmentType);
