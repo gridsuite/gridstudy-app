@@ -500,8 +500,6 @@
     "OnlyMin": "Min:\u202F{min}",
     "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Center on selected node",
-    "DisplayMinimap": "Display minimap",
-    "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
@@ -1049,6 +1047,10 @@
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",
     "NoSpreadsheets": "You have no spreadsheets, please create one",
+
+    "LookForEquipmentField": "Look for a field",
+    "EquipmentSchemaPopoverSchema": "Opens the list of fields for the equipment associated with the sheet. The list can also be opened by pressing the Shift key on the keyboard twice.",
+    "FetchingEquipmentSchemaError": "An error occurred while fetching equipment schema",
 
     "depth": "Depth: ",
 
@@ -1602,5 +1604,12 @@
     "loadflowModifications": "Loadflow modification",
     "loadFlowModificationDetails":"Details",
     "PHASE_TAP": "Phase",
-    "RATIO_TAP": "Ratio"
+    "RATIO_TAP": "Ratio",
+    "Insert": "Insert",
+    "String": "String",
+    "Number": "Number",
+    "Object": "Object",
+    "Array": "Array",
+    "Boolean": "Boolean",
+    "Enum": "Enumeration"
 }

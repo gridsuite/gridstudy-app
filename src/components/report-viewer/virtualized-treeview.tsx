@@ -45,6 +45,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const onExpandItem = useCallback(
         (node: ReportItem) => {
@@ -167,6 +168,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                 resultCount={searchResults.length}
                 resetSearch={resetSearch}
                 placeholder="searchPlaceholderLogsTreeStructure"
+                inputRef={inputRef}
             />
             <Box sx={{ flex: 1 }}>
                 <AutoSizer>

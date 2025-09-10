@@ -15,6 +15,7 @@ import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
 
 export interface LimitsGraphProps {
     limitsGroupFormName: string;
+    previousPermanentLimit?: number | null; // back value when there are no permanent value in the current form
 }
 const colorPermanentLimit = '#58d058';
 const colors: string[] = ['#ffc019', '#e47400', '#cc5500', '#ff5757', '#ff0000'];
@@ -41,9 +42,10 @@ const formatTempo = (tempo: number | null) => {
     return `${min}min${sec}s`;
 };
 
-export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGraphProps>) {
+export default function LimitsChart({ limitsGroupFormName, previousPermanentLimit }: Readonly<LimitsGraphProps>) {
     const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
+    const permanentLimit: number | null = currentLimits.permanentLimit ?? previousPermanentLimit ?? null;
 
     const isIncoherent = useCallback(
         (maxValuePermanentLimit: number, item: Limit, previousItem?: Limit) => {
@@ -52,12 +54,10 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             //  threshold with biggest tempo and biggest value than the previous threshold
             //  more than one threshold without value
             const isPermanentLimit =
-                (item.name === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                (!currentLimits.permanentLimit && !item.acceptableDuration);
+                (item.name === intl.formatMessage({ id: 'IST' }) && permanentLimit) ||
+                (!permanentLimit && !item.acceptableDuration);
 
-            const permanentLimitValue = currentLimits.permanentLimit
-                ? currentLimits.permanentLimit
-                : maxValuePermanentLimit;
+            const permanentLimitValue = permanentLimit || maxValuePermanentLimit;
 
             const itemTempoGreaterThanPrevious: boolean =
                 (item?.acceptableDuration &&
@@ -69,14 +69,14 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
                 (previousItem?.acceptableDuration && !item.acceptableDuration) || false;
 
             return (
-                (!item.acceptableDuration && currentLimits.permanentLimit && !isPermanentLimit) ||
+                (!item.acceptableDuration && permanentLimit && !isPermanentLimit) ||
                 (!isPermanentLimit && item.value && item.value < permanentLimitValue) ||
                 itemTempoGreaterThanPrevious ||
                 atLeastTwoItemsWithNotempo ||
                 false
             );
         },
-        [currentLimits, intl]
+        [intl, permanentLimit]
     );
 
     const { series, ticks } = useMemo(() => {
@@ -84,13 +84,13 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         let noValueThresholdFound = false;
         let maxValuePermanentLimit: number = 0;
 
-        if (currentLimits?.permanentLimit) {
+        if (permanentLimit) {
             thresholds.push({
                 name: intl.formatMessage({ id: 'IST' }),
-                value: currentLimits.permanentLimit ? +currentLimits.permanentLimit : currentLimits.permanentLimit,
+                value: permanentLimit ? +permanentLimit : permanentLimit,
                 acceptableDuration: null,
             });
-            maxValuePermanentLimit = currentLimits.permanentLimit ?? 0;
+            maxValuePermanentLimit = permanentLimit ?? 0;
         }
 
         if (currentLimits?.temporaryLimits) {
@@ -135,10 +135,8 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
         return thresholds.reduce<{ series: BarSeriesType[]; ticks: Ticks[] }>(
             (acc, item, index) => {
                 const isPermanentLimit =
-                    (item.name === intl.formatMessage({ id: 'IST' }) && currentLimits.permanentLimit) ||
-                    (!currentLimits.permanentLimit &&
-                        !item.acceptableDuration &&
-                        item.value === maxValuePermanentLimit);
+                    (item.name === intl.formatMessage({ id: 'IST' }) && permanentLimit) ||
+                    (!permanentLimit && !item.acceptableDuration && item.value === maxValuePermanentLimit);
                 const difference = item.value ? item.value - previousSum : undefined;
 
                 const color =
@@ -202,11 +200,11 @@ export default function LimitsChart({ limitsGroupFormName }: Readonly<LimitsGrap
             },
             { series: [], ticks: [] }
         );
-    }, [currentLimits, intl, isIncoherent]);
+    }, [currentLimits.temporaryLimits, intl, isIncoherent, permanentLimit]);
 
     const config = {
         id: 'topAxis',
-        valueFormatter: (value: number, context: AxisValueFormatterContext) =>
+        valueFormatter: (value: number, _context: AxisValueFormatterContext) =>
             ticks.find((item: Ticks) => item.position === value)?.label,
     };
 

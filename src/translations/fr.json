@@ -499,8 +499,6 @@
     "OnlyMin": "Min:\u202F{min}",
     "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Centrer sur le nœud sélectionné",
-    "DisplayMinimap": "Afficher la mini-carte",
-    "HideMinimap": "Masquer la mini-carte",
     "DisplayTheWholeTree": "Visualiser l'arbre en entier",
 
     "Logs": "Logs",
@@ -888,7 +886,7 @@
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
-    "SelectedOperationalLimitGroup": "Set de limites actif",
+    "SelectedOperationalLimitGroup": "Jeu de limites actif",
     "SelectedOperationalLimitGroups": "Jeux de limites actifs",
     "Applicability": "Applicable sur",
 
@@ -1045,6 +1043,10 @@
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
     "NoSpreadsheets": "Vous n'avez pas de feuille de calcul, veuillez en créer une",
+
+    "LookForEquipmentField": "Rechercher un champ",
+    "EquipmentSchemaPopoverSchema": "Ouvre la liste des champs pour l'équipement associé à la feuille, la liste peut également être ouverte via une double pression de la touche Shift du clavier.",
+    "FetchingEquipmentSchemaError": "Une erreur est survenue lors de la récupération du schéma d'un équipement",
 
     "depth": "Profondeur : ",
 
@@ -1598,5 +1600,12 @@
     "loadflowModifications": "Modification calcul de répartition",
     "loadFlowModificationDetails": "Détails",
     "PHASE_TAP": "Déphaseur",
-    "RATIO_TAP": "Régleur"
+    "RATIO_TAP": "Régleur",
+    "Insert": "Insérer",
+    "String": "Chaîne de caractère",
+    "Number": "Nombre",
+    "Object": "Objet",
+    "Array": "Tableau",
+    "Boolean": "Booléen",
+    "Enum": "Énumération"
 }

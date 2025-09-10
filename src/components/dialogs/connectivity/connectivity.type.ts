@@ -19,11 +19,9 @@ export interface ConnectablePositionInfos {
 
 export interface Connectivity {
     voltageLevel: { id?: string };
-    busOrBusbarSection: { id?: string; name?: string };
+    busOrBusbarSection: { id?: string };
     connectionDirection?: string;
     connectionName?: string;
     connectionPosition?: number;
     terminalConnected?: boolean;
-    isVoltageLevelModification?: boolean;
-    isBusOrBusbarSectionModification?: boolean;
 }
