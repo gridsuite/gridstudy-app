@@ -117,6 +117,9 @@ export const getLimitsEmptyFormData = (id = LIMITS) => {
 };
 
 export const formatOpLimitGroups = (limitGroups: OperationalLimitsGroup[]): OperationalLimitsGroup[] => {
+    if (!limitGroups) {
+        return [];
+    }
     return limitGroups.map((opLimitGroup: OperationalLimitsGroup) => {
         return {
             id: opLimitGroup.id + opLimitGroup.applicability,
