@@ -172,7 +172,12 @@ export default function GeneratorModificationDialog({
         resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const {
+        reset,
+        getValues,
+        setValue,
+        formState: { isDirty },
+    } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData: GeneratorModificationInfos) => {
@@ -293,10 +298,13 @@ export default function GeneratorModificationDialog({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
                             });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                }),
+                                { keepDefaultValues: isDirty }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -312,7 +320,17 @@ export default function GeneratorModificationDialog({
                 setGeneratorToModify(null);
             }
         },
-        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
+        [
+            studyUuid,
+            currentNode.id,
+            currentRootNetworkUuid,
+            reset,
+            isDirty,
+            setValue,
+            getValues,
+            editData?.equipmentId,
+            setValuesAndEmptyOthers,
+        ]
     );
 
     useEffect(() => {

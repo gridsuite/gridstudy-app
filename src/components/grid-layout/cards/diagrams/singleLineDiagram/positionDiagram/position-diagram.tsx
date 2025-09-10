@@ -69,6 +69,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
                         });
                     } else {
                         setSvg(NoSvg);
+                        props.onClose();
                     }
                     updateLoadingState(false);
                 })
@@ -89,7 +90,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, snackError, intlRef]);
+    }, [props.svgUrl, snackError, intlRef, props]);
 
     useLayoutEffect(() => {
         if (disabled) {

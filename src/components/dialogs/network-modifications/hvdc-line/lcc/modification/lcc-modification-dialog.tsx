@@ -97,7 +97,11 @@ export const LccModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LccModificationSchemaForm>>(formSchema),
     });
-    const { reset, getValues } = formMethods;
+    const {
+        reset,
+        getValues,
+        formState: { isDirty },
+    } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -202,27 +206,34 @@ export const LccModificationDialog = ({
                     .then((value: LccFormInfos | null) => {
                         if (value) {
                             setLccToModify({ ...value });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [HVDC_LINE_TAB]: {
+                            reset(
+                                (formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues, HVDC_LINE_TAB),
-                                },
-                                [CONVERTER_STATION_1]: {
-                                    ...formValues,
-                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getConcatenatedShuntCompensatorOnSideInfos(
-                                        editData?.converterStation1.shuntCompensatorsOnSide,
-                                        value.lccConverterStation1.shuntCompensatorsOnSide
-                                    ),
-                                },
-                                [CONVERTER_STATION_2]: {
-                                    ...formValues,
-                                    [FILTERS_SHUNT_COMPENSATOR_TABLE]: getConcatenatedShuntCompensatorOnSideInfos(
-                                        editData?.converterStation2.shuntCompensatorsOnSide,
-                                        value.lccConverterStation2.shuntCompensatorsOnSide
-                                    ),
-                                },
-                            }));
+                                    [HVDC_LINE_TAB]: {
+                                        ...formValues,
+                                        [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
+                                            value,
+                                            getValues,
+                                            HVDC_LINE_TAB
+                                        ),
+                                    },
+                                    [CONVERTER_STATION_1]: {
+                                        ...formValues,
+                                        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getConcatenatedShuntCompensatorOnSideInfos(
+                                            editData?.converterStation1.shuntCompensatorsOnSide,
+                                            value.lccConverterStation1.shuntCompensatorsOnSide
+                                        ),
+                                    },
+                                    [CONVERTER_STATION_2]: {
+                                        ...formValues,
+                                        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getConcatenatedShuntCompensatorOnSideInfos(
+                                            editData?.converterStation2.shuntCompensatorsOnSide,
+                                            value.lccConverterStation2.shuntCompensatorsOnSide
+                                        ),
+                                    },
+                                }),
+                                { keepDefaultValues: isDirty }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -235,7 +246,18 @@ export const LccModificationDialog = ({
                     });
             }
         },
-        [clear, currentNode.id, currentRootNetworkUuid, editData, getValues, reset, studyUuid]
+        [
+            clear,
+            currentNode.id,
+            currentRootNetworkUuid,
+            editData?.converterStation1.shuntCompensatorsOnSide,
+            editData?.converterStation2.shuntCompensatorsOnSide,
+            editData?.equipmentId,
+            getValues,
+            isDirty,
+            reset,
+            studyUuid,
+        ]
     );
 
     useEffect(() => {
