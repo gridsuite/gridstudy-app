@@ -42,6 +42,7 @@ import type { GlobalFilter } from '../components/results/common/global-filter/gl
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
+    LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
@@ -60,9 +61,11 @@ import {
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
+    type SpreadsheetOptionalLoadingParameters,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
+    LogsPaginationConfig,
     PaginationConfig,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
@@ -72,6 +75,7 @@ import {
 import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
+import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -129,11 +133,13 @@ export type AppActions =
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
+    | UpdateSpreadsheetPartialDataAction
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
+    | AddFilterForNewSpreadsheetAction
     | SaveSpreadSheetGlobalFilterAction
     | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
@@ -152,7 +158,9 @@ export type AppActions =
     | ShortcircuitAnalysisResultPaginationAction
     | ResetSecurityAnalysisPaginationAction
     | ResetSensitivityAnalysisPaginationAction
-    | ResetShortcircuitAnalysisPaginationAction;
+    | ResetShortcircuitAnalysisPaginationAction
+    | LogsResultPaginationAction
+    | ResetLogsPaginationAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -299,6 +307,18 @@ export type ResetEquipmentsPostComputationAction = Readonly<Action<typeof RESET_
 export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputationAction {
     return {
         type: RESET_EQUIPMENTS_POST_COMPUTATION,
+    };
+}
+
+export const CLEAN_EQUIPMENTS = 'CLEAN_EQUIPMENTS';
+export type CleanEquipmentsAction = Readonly<Action<typeof CLEAN_EQUIPMENTS>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanEquipmentsAction {
+    return {
+        type: CLEAN_EQUIPMENTS,
+        equipmentType,
     };
 }
 
@@ -777,12 +797,14 @@ export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction
 
 export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
 export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
+    name: string;
     ids: string[];
 };
 
-export function openNadList(ids: string[]): OpenNadListAction {
+export function openNadList(name: string, ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
+        name: name,
         ids: ids,
     };
 }
@@ -1131,6 +1153,46 @@ export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
 export function resetLogsFilter(): ResetLogsFilterAction {
     return {
         type: RESET_LOGS_FILTER,
+    };
+}
+
+export const LOGS_RESULT_PAGINATION = 'LOGS_RESULT_PAGINATION';
+export type LogsResultPaginationAction = Readonly<Action<typeof LOGS_RESULT_PAGINATION>> & {
+    paginationTab: ComputingAndNetworkModificationType;
+    [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationConfig;
+};
+
+export function setLogsResultPagination(
+    paginationTab: ComputingAndNetworkModificationType,
+    logsPagination: LogsPaginationConfig
+): LogsResultPaginationAction {
+    return {
+        type: LOGS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [LOGS_PAGINATION_STORE_FIELD]: logsPagination,
+    };
+}
+
+export const RESET_LOGS_PAGINATION = 'RESET_LOGS_PAGINATION';
+export type ResetLogsPaginationAction = Readonly<Action<typeof RESET_LOGS_PAGINATION>>;
+
+export function resetLogsPagination(): ResetLogsPaginationAction {
+    return {
+        type: RESET_LOGS_PAGINATION,
+    };
+}
+
+export const UPDATE_SPREADSHEET_PARTIAL_DATA = 'UPDATE_SPREADSHEET_PARTIAL_DATA';
+export type UpdateSpreadsheetPartialDataAction = Readonly<Action<typeof UPDATE_SPREADSHEET_PARTIAL_DATA>> & {
+    newOptions: SpreadsheetOptionalLoadingParameters;
+};
+
+export function updateSpreadsheetPartialData(
+    options: SpreadsheetOptionalLoadingParameters
+): UpdateSpreadsheetPartialDataAction {
+    return {
+        type: UPDATE_SPREADSHEET_PARTIAL_DATA,
+        newOptions: options,
     };
 }
 

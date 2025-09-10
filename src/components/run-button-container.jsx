@@ -48,6 +48,7 @@ import { isSecurityModificationNode } from './graph/tree-node.type';
 import useComputationDebug from '../hooks/use-computation-debug';
 import { PaginationType } from 'types/custom-aggrid-types';
 import { usePaginationReset } from 'hooks/use-pagination-selector';
+import { useLogsPaginationResetByType } from './report-viewer/use-logs-pagination';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -129,6 +130,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const resetSensitivityAnalysisPagination = usePaginationReset(PaginationType.SensitivityAnalysis);
     const resetShortCircuitAnalysisPagination = usePaginationReset(PaginationType.ShortcircuitAnalysis);
 
+    const resetLogsPaginationByType = useLogsPaginationResetByType();
+
     const resetPaginationForComputingType = useCallback(
         (computingType) => {
             if (COMPUTATIONS_WITH_PAGINATION.includes(computingType)) {
@@ -146,8 +149,15 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                         break;
                 }
             }
+
+            resetLogsPaginationByType(computingType);
         },
-        [resetSecurityAnalysisPagination, resetSensitivityAnalysisPagination, resetShortCircuitAnalysisPagination]
+        [
+            resetLogsPaginationByType,
+            resetSecurityAnalysisPagination,
+            resetSensitivityAnalysisPagination,
+            resetShortCircuitAnalysisPagination,
+        ]
     );
 
     // --- for running in debug mode --- //

@@ -59,7 +59,6 @@ export interface LoadModificationInfos {
     q0: AttributeModification<number>;
     voltageLevelId: AttributeModification<string>;
     busOrBusbarSectionId: AttributeModification<string>;
-    busbarSectionName?: string;
     connectionDirection: AttributeModification<string>;
     connectionName?: AttributeModification<string>;
     connectionPosition?: AttributeModification<number>;

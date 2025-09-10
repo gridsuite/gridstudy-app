@@ -17,6 +17,7 @@ import {
     resetLogsFilter,
     reorderNetworkModificationTreeNodes,
     deletedOrRenamedNodes,
+    resetLogsPagination,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -53,12 +54,7 @@ const noNodeSelectionForCopy = {
 
 export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
-export const NetworkModificationTreePane = ({
-    studyUuid,
-    studyMapTreeDisplay,
-    currentRootNetworkUuid,
-    onTreePanelResize,
-}) => {
+export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid, onTreePanelResize }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
@@ -303,6 +299,7 @@ export const NetworkModificationTreePane = ({
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
                     // when the current node is updated, we need to reset the logs filter
                     dispatch(resetLogsFilter());
+                    dispatch(resetLogsPagination());
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (
@@ -561,7 +558,6 @@ export const NetworkModificationTreePane = ({
             <NetworkModificationTree
                 onNodeContextMenu={onNodeContextMenu}
                 studyUuid={studyUuid}
-                studyMapTreeDisplay={studyMapTreeDisplay}
                 onTreePanelResize={onTreePanelResize}
             />
             {createNodeMenu.display && (
@@ -614,6 +610,6 @@ export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
-    studyMapTreeDisplay: PropTypes.string.isRequired,
     currentRootNetworkUuid: PropTypes.string.isRequired,
+    onTreePanelResize: PropTypes.object.isRequired,
 };

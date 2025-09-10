@@ -61,6 +61,7 @@ import {
     addNotification,
     removeNotificationByNode,
     resetLogsFilter,
+    resetLogsPagination,
     setModificationsInProgress,
 } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
@@ -819,6 +820,7 @@ const NetworkModificationNodeEditor = () => {
             // reset the network modification and computing logs filter when the user changes the current node
             if (hasNodeChanged) {
                 dispatch(resetLogsFilter());
+                dispatch(resetLogsPagination());
             }
         }
     }, [
@@ -924,7 +926,7 @@ const NetworkModificationNodeEditor = () => {
         setCreateCompositeModificationDialogOpen(true);
     }, []);
 
-    const doDeleteModification = useCallback(() => {
+    const doStashModification = useCallback(() => {
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
         stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
             .then(() => {
@@ -1313,7 +1315,7 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip title={<FormattedMessage id={'delete'} />}>
                     <span>
                         <IconButton
-                            onClick={doDeleteModification}
+                            onClick={doStashModification}
                             size={'small'}
                             disabled={
                                 selectedNetworkModifications.length === 0 ||

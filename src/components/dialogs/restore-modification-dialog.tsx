@@ -16,7 +16,7 @@ import {
     DialogTitle,
     Theme,
 } from '@mui/material';
-import { CancelButton, CheckBoxList, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import { CancelButton, CheckBoxList, useModificationLabelComputer, useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
@@ -64,6 +64,7 @@ interface RestoreModificationDialogProps {
 
 const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreModificationDialogProps) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -82,7 +83,12 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
     const handleDelete = () => {
         const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
         setOpenDeleteConfirmationPopup(false);
-        deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete);
+        deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete).catch((errmsg) => {
+            snackError({
+                messageTxt: errmsg,
+                headerId: 'errDeleteModificationMsg',
+            });
+        });
         handleClose();
     };
 

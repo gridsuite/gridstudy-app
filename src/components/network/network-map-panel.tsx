@@ -1055,8 +1055,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             snackInfo({
                 messageId: 'generatedNADOpenedInTheGrid',
             });
-            leaveDrawingMode();
-        }, [leaveDrawingMode, snackInfo]);
+        }, [snackInfo]);
 
         const openSLDInTheGrid = useCallback(
             (equipmentId: string, diagramType: DiagramType) => {
