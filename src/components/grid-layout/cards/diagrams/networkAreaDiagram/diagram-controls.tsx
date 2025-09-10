@@ -236,35 +236,41 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleClickExpandAllVoltageLevelsIcon}
-                                    disabled={isDiagramLoading}
-                                >
-                                    <ArrowsOutputIcon sx={styles.icon} />
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickExpandAllVoltageLevelsIcon}
+                                        disabled={isDiagramLoading}
+                                    >
+                                        <ArrowsOutputIcon sx={styles.icon} />
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'addVoltageLevel'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleClickAddVoltageLevelIcon}
-                                    disabled={isDiagramLoading}
-                                >
-                                    <AddLocationOutlined sx={styles.icon} />
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickAddVoltageLevelIcon}
+                                        disabled={isDiagramLoading}
+                                    >
+                                        <AddLocationOutlined sx={styles.icon} />
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={isShowLabels ? 'hideLabels' : 'showLabels'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleToggleShowLabels}
-                                    disabled={isDiagramLoading}
-                                >
-                                    {isShowLabels ? (
-                                        <SpeakerNotesOutlinedIcon sx={styles.icon} />
-                                    ) : (
-                                        <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
-                                    )}
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleToggleShowLabels}
+                                        disabled={isDiagramLoading}
+                                    >
+                                        {isShowLabels ? (
+                                            <SpeakerNotesOutlinedIcon sx={styles.icon} />
+                                        ) : (
+                                            <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
+                                        )}
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                         </>
                     )}
