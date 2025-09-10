@@ -84,7 +84,6 @@ export function SpreadsheetModelGlobalEditorTable() {
                 type: DndColumnType.CUSTOM,
                 initialValue: COLUMN_TYPES.TEXT,
                 editable: true,
-                options: Object.values(COLUMN_TYPES),
                 width: '11%',
                 maxWidth: '11%',
                 component: (rowIndex: number) =>
