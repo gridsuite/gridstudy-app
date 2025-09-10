@@ -20,7 +20,7 @@ import {
     addFilterForNewSpreadsheet,
     addSortForNewSpreadsheet,
     saveSpreadsheetGlobalFilters,
-    setActiveSpreadsheetTab,
+    setAddedSpreadsheetTab,
     updateTableDefinition,
 } from 'redux/actions';
 import { FilterConfig, SortWay } from 'types/custom-aggrid-types';
@@ -127,7 +127,6 @@ const handleSuccess = (
             const columnsFilters = extractColumnsFilters(model.columns);
             const formattedGlobalFilters = model.globalFilters ?? [];
             dispatch(updateTableDefinition(newTableDefinition));
-            dispatch(setActiveSpreadsheetTab(uuid));
             dispatch(addFilterForNewSpreadsheet(uuid, columnsFilters));
             dispatch(saveSpreadsheetGlobalFilters(uuid, formattedGlobalFilters));
             dispatch(addSortForNewSpreadsheet(uuid, [{ colId: 'id', sort: SortWay.ASC }]));
@@ -177,9 +176,10 @@ export const addNewSpreadsheet = ({
     const spreadsheetConfig = createSpreadsheetConfig(columnsDefinition, globalFilters, sheetType, tabName);
 
     addSpreadsheetConfigToCollection(studyUuid, spreadsheetsCollectionUuid, spreadsheetConfig)
-        .then((uuid: UUID) =>
-            handleSuccess(uuid, newTableDefinition, dispatch, snackError, open, nodeAliases, resetNodeAliases)
-        )
+        .then((uuid: UUID) => {
+            dispatch(setAddedSpreadsheetTab(uuid));
+            handleSuccess(uuid, newTableDefinition, dispatch, snackError, open, nodeAliases, resetNodeAliases);
+        })
         .catch((error) => {
             snackError({
                 messageTxt: error,

@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
-import { initTableDefinitions } from 'redux/actions';
+import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { UUID } from 'crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
@@ -83,6 +83,8 @@ export default function AddSpreadsheetsFromCollectionDialog({
                     dispatch(
                         initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
                     );
+                    const newActiveTabUuid = tableDefinitions.length > 0 ? tableDefinitions[0].uuid : null;
+                    dispatch(setActiveSpreadsheetTab(newActiveTabUuid));
                 })
                 .catch((error) => {
                     snackError({
