@@ -133,6 +133,7 @@ export const useSpreadsheetGlobalFilter = (
                     )
                 ).then(
                     (values) => {
+                        // we don't do a set because as equipment types are different/don't overlap, there isn't common id between types
                         setFilterIds(values.flatMap((ias) => ias.map((ia) => ia.id)));
                     },
                     (reason) => {
