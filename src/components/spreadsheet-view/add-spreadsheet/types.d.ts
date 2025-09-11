@@ -7,12 +7,10 @@
 
 import type { ComponentType } from 'react';
 import type { UseStateBooleanReturn } from '@gridsuite/commons-ui';
-import type { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import type { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 
 export type DialogComponentProps = {
     open: UseStateBooleanReturn;
-    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
     resetNodeAliases: ResetNodeAliasCallback;
 };
 
