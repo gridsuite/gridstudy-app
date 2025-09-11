@@ -16,6 +16,33 @@ import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
+import type { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+
+async function buildAndEvaluateFilter(
+    equipmentType: EQUIPMENT_TYPES,
+    countries: string[],
+    nominalVoltages: number[],
+    substationProperties: Record<string, string[]>,
+    idsByEqType: Record<string, string[]>,
+    studyUuid: UUID,
+    currentNodeId: UUID,
+    currentRootNetworkUuid: UUID
+) {
+    const computedFilter = buildExpertFilter(
+        equipmentType,
+        undefined,
+        countries,
+        nominalVoltages,
+        substationProperties,
+        idsByEqType
+    );
+    if (computedFilter.rules.rules && computedFilter.rules.rules.length > 0) {
+        return await evaluateJsonFilter(studyUuid, currentNodeId, currentRootNetworkUuid, computedFilter);
+    } else {
+        return [] as Awaited<ReturnType<typeof evaluateJsonFilter>>;
+    }
+}
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {
     event.api.refreshCells({ columns: [ROW_INDEX_COLUMN_ID], force: true });
@@ -26,6 +53,7 @@ export const useSpreadsheetGlobalFilter = (
     tabUuid: UUID,
     equipmentType: SpreadsheetEquipmentType
 ) => {
+    const { snackError } = useSnackMessage();
     const [filterIds, setFilterIds] = useState<string[]>([]);
     const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
 
@@ -87,31 +115,34 @@ export const useSpreadsheetGlobalFilter = (
                         }
                     });
                 }
-
-                const computedFilter = buildExpertFilter(
-                    //@ts-expect-error TODO: what to do with BRANCH type?
-                    equipmentType,
-                    undefined,
-                    countries,
-                    nominalVoltages,
-                    substationProperties,
-                    idsByEqType
+                Promise.all(
+                    (equipmentType === SpreadsheetEquipmentType.BRANCH
+                        ? [SpreadsheetEquipmentType.LINE, SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
+                        : [equipmentType]
+                    ).map((eType) =>
+                        buildAndEvaluateFilter(
+                            eType as unknown as EQUIPMENT_TYPES,
+                            countries,
+                            nominalVoltages,
+                            substationProperties,
+                            idsByEqType,
+                            studyUuid,
+                            currentNode.id,
+                            currentRootNetworkUuid
+                        )
+                    )
+                ).then(
+                    (values) => {
+                        setFilterIds(values.flatMap((ias) => ias.map((ia) => ia.id)));
+                    },
+                    (reason) => {
+                        console.error('Error while evaluating the filter(s) in the spreadsheet:', reason);
+                        snackError({ headerId: 'FilterEvaluationError', messageTxt: reason.message });
+                    }
                 );
-
-                if (computedFilter.rules.rules && computedFilter.rules.rules.length > 0) {
-                    const identifiables = await evaluateJsonFilter(
-                        studyUuid,
-                        currentNode?.id,
-                        currentRootNetworkUuid,
-                        computedFilter
-                    );
-                    setFilterIds(identifiables.map((identifiable) => identifiable.id));
-                } else {
-                    setFilterIds([]);
-                }
             }
         },
-        [currentNode, currentRootNetworkUuid, equipmentType, studyUuid]
+        [currentNode, currentRootNetworkUuid, equipmentType, snackError, studyUuid]
     );
 
     useEffect(() => {
