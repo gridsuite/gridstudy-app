@@ -75,9 +75,9 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
         // If the active tab is not of the right type, switch to the first matching tab
         const activeTab = tablesDefinitions.find((def) => def.uuid === activeSpreadsheetTabUuid);
         if (matchingTabs.length > 0 && (!activeTab || activeTab.type !== equipmentType)) {
-            dispatch(setActiveSpreadsheetTab(matchingTabs[0].uuid));
+            handleSwitchTab(matchingTabs[0].uuid);
         }
-    }, [dispatch, activeSpreadsheetTabUuid, equipmentId, equipmentType, tablesDefinitions]);
+    }, [handleSwitchTab, activeSpreadsheetTabUuid, equipmentId, equipmentType, tablesDefinitions]);
 
     const getStudySpreadsheetConfigCollection = useCallback(() => {
         if (!studyUuid) {
