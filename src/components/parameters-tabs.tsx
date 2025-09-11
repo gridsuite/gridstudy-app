@@ -54,7 +54,7 @@ import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
 import {
-    attemptLaunchComputation,
+    setPendingComputation,
     cancelLeaveParametersTab,
     confirmLeaveParametersTab,
     setDirtyComputationParameters,
@@ -103,7 +103,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
-    const attemptedLaunchComputation = useSelector((state: AppState) => state.attemptedLaunchComputation);
+    const pendingComputation = useSelector((state: AppState) => state.pendingComputation);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState<boolean>(false);
@@ -140,26 +140,25 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
     }, [dispatch, haveDirtyFields]);
 
     useEffect(() => {
-        if (attemptedLaunchComputation !== null) {
+        if (pendingComputation !== null) {
             setIsLaunchingPopupOpen(true);
         }
-    }, [attemptedLaunchComputation]);
+    }, [pendingComputation]);
 
     const handleLaunchingPopupClose = useCallback(() => {
         setIsLaunchingPopupOpen(false);
-        if (attemptedLaunchComputation !== null) {
-            dispatch(attemptLaunchComputation(null));
+        if (pendingComputation !== null) {
+            dispatch(setPendingComputation(null));
         }
-    }, [attemptedLaunchComputation, dispatch]);
+    }, [pendingComputation, dispatch]);
 
     const handleLaunchingPopup = useCallback(() => {
         setIsLaunchingPopupOpen(false);
-        console.log(attemptedLaunchComputation);
-        if (attemptedLaunchComputation !== null) {
-            attemptedLaunchComputation();
-            dispatch(attemptLaunchComputation(null));
+        if (pendingComputation !== null) {
+            pendingComputation();
+            dispatch(setPendingComputation(null));
         }
-    }, [attemptedLaunchComputation, dispatch]);
+    }, [pendingComputation, dispatch]);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,

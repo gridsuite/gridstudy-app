@@ -40,9 +40,9 @@ import {
     type AddSortForNewSpreadsheetAction,
     type AddToRecentGlobalFiltersAction,
     type AppActions,
-    ATTEMPT_LAUNCH_COMPUTATION,
+    SET_PENDING_COMPUTATION,
     ATTEMPT_LEAVE_PARAMETERS_TAB,
-    type AttemptLaunchComputationAction,
+    type SetPendingComputationAction,
     type AttemptLeaveParametersTabAction,
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
@@ -559,8 +559,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     showAuthenticationRouterLogin: boolean;
     appTabIndex: number;
     attemptedLeaveParametersTabIndex: number | null;
-    dirtyComputationParameters: boolean;
-    attemptedLaunchComputation: (() => void) | null;
+    isDirtyComputationParameters: boolean;
+    pendingComputation: (() => void) | null;
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -723,8 +723,8 @@ const initialState: AppState = {
     syncEnabled: false,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
-    dirtyComputationParameters: false,
-    attemptedLaunchComputation: null,
+    isDirtyComputationParameters: false,
+    pendingComputation: null,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -958,18 +958,17 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.attemptedLeaveParametersTabIndex !== null) {
             state.appTabIndex = state.attemptedLeaveParametersTabIndex;
             state.attemptedLeaveParametersTabIndex = null;
-            state.dirtyComputationParameters = false;
         }
     });
 
     builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
         state.attemptedLeaveParametersTabIndex = null;
     });
-    builder.addCase(ATTEMPT_LAUNCH_COMPUTATION, (state, action: AttemptLaunchComputationAction) => {
-        state.attemptedLaunchComputation = action.startComputation;
+    builder.addCase(SET_PENDING_COMPUTATION, (state, action: SetPendingComputationAction) => {
+        state.pendingComputation = action.startFn;
     });
     builder.addCase(SET_DIRTY_COMPUTATION_PARAMETERS, (state, action: SetDirtyComputationParametersAction) => {
-        state.dirtyComputationParameters = action.isDirty;
+        state.isDirtyComputationParameters = action.isDirty;
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];

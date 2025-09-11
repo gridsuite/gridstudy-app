@@ -13,12 +13,12 @@ import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { attemptLaunchComputation } from '../redux/actions';
+import { setPendingComputation } from '../redux/actions';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const dirtyComputationParameters = useSelector((state) => state.dirtyComputationParameters);
+    const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
 
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
@@ -81,12 +81,13 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }
 
     const attemptStartComputation = useCallback(() => {
-        if (dirtyComputationParameters) {
-            dispatch(attemptLaunchComputation(runnables[selectedRunnable].startComputation));
+        const startFn = runnables[selectedRunnable].startComputation;
+        if (isDirtyComputationParameters) {
+            dispatch(setPendingComputation(startFn));
         } else {
-            runnables[selectedRunnable].startComputation();
+            startFn();
         }
-    }, [dirtyComputationParameters, dispatch, runnables, selectedRunnable]);
+    }, [isDirtyComputationParameters, dispatch, runnables, selectedRunnable]);
 
     return (
         <SplitButton

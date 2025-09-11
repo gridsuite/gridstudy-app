@@ -206,15 +206,15 @@ export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
     };
 }
 
-export const ATTEMPT_LAUNCH_COMPUTATION = 'ATTEMPT_LAUNCH_COMPUTATION';
-export type AttemptLaunchComputationAction = Readonly<Action<typeof ATTEMPT_LAUNCH_COMPUTATION>> & {
-    startComputation: (() => void) | null;
+export const SET_PENDING_COMPUTATION = 'SET_PENDING_COMPUTATION';
+export type SetPendingComputationAction = Readonly<Action<typeof SET_PENDING_COMPUTATION>> & {
+    startFn: (() => void) | null;
 };
 
-export function attemptLaunchComputation(startComputation: (() => void) | null): AttemptLaunchComputationAction {
+export function setPendingComputation(startFn: (() => void) | null): SetPendingComputationAction {
     return {
-        type: ATTEMPT_LAUNCH_COMPUTATION,
-        startComputation,
+        type: SET_PENDING_COMPUTATION,
+        startFn,
     };
 }
 
