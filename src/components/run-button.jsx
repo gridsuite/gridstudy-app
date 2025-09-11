@@ -13,7 +13,7 @@ import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import {attemptLaunchComputation, setDirtyComputationParameters} from '../redux/actions.js';
+import { attemptLaunchComputation, setDirtyComputationParameters } from '../redux/actions.js';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
