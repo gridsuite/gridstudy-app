@@ -38,6 +38,7 @@ import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../ty
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
+import { GlobalFilters } from '../common/global-filter/global-filter-types';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -47,6 +48,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     customTablePaginationProps: any;
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    globalFilters?: GlobalFilters;
     openVoltageLevelDiagram: (id: string) => void;
 }
 
@@ -58,6 +60,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     customTablePaginationProps,
     onGridColumnsChanged,
     onRowDataUpdated,
+    globalFilters,
     openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
@@ -139,6 +142,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             currentRootNetworkUuid,
             type: analysisType,
             selector,
+            globalFilters,
         })
             .then((result: SCAPagedResults | null) => {
                 if (active) {
@@ -176,6 +180,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         filters,
         sortConfig,
         fromFrontColumnToBackKeys,
+        globalFilters,
     ]);
 
     useEffect(() => {

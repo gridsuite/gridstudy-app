@@ -34,7 +34,7 @@ import { UUID } from 'crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     actionIcon: (theme: Theme) => ({
@@ -236,35 +236,41 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                         <>
                             <Divider orientation="vertical" flexItem sx={styles.divider} />
                             <Tooltip title={<FormattedMessage id={'expandAllVoltageLevels'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleClickExpandAllVoltageLevelsIcon}
-                                    disabled={isDiagramLoading}
-                                >
-                                    <ArrowsOutputIcon sx={styles.icon} />
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickExpandAllVoltageLevelsIcon}
+                                        disabled={isDiagramLoading}
+                                    >
+                                        <ArrowsOutputIcon sx={styles.icon} />
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'addVoltageLevel'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleClickAddVoltageLevelIcon}
-                                    disabled={isDiagramLoading}
-                                >
-                                    <AddLocationOutlined sx={styles.icon} />
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleClickAddVoltageLevelIcon}
+                                        disabled={isDiagramLoading}
+                                    >
+                                        <AddLocationOutlined sx={styles.icon} />
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={isShowLabels ? 'hideLabels' : 'showLabels'} />}>
-                                <IconButton
-                                    sx={styles.actionIcon}
-                                    onClick={handleToggleShowLabels}
-                                    disabled={isDiagramLoading}
-                                >
-                                    {isShowLabels ? (
-                                        <SpeakerNotesOutlinedIcon sx={styles.icon} />
-                                    ) : (
-                                        <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
-                                    )}
-                                </IconButton>
+                                <span>
+                                    <IconButton
+                                        sx={styles.actionIcon}
+                                        onClick={handleToggleShowLabels}
+                                        disabled={isDiagramLoading}
+                                    >
+                                        {isShowLabels ? (
+                                            <SpeakerNotesOutlinedIcon sx={styles.icon} />
+                                        ) : (
+                                            <SpeakerNotesOffOutlinedIcon sx={styles.icon} />
+                                        )}
+                                    </IconButton>
+                                </span>
                             </Tooltip>
                         </>
                     )}
@@ -296,6 +302,7 @@ const DiagramControls: React.FC<DiagramControlsProps> = ({
                             open={isLoadSelectorOpen}
                             onClose={selectElement}
                             types={[ElementType.DIAGRAM_CONFIG, ElementType.FILTER]}
+                            equipmentTypes={[EQUIPMENT_TYPES.VOLTAGE_LEVEL]}
                             title={intl.formatMessage({
                                 id: 'elementSelection',
                             })}
