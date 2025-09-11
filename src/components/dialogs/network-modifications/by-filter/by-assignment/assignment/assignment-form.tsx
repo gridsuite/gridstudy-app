@@ -165,6 +165,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
                                 setError(`${name}.${index}.${VALUE_FIELD}`, {
                                     message: 'NumericValueOrNone',
                                 });
+                                return true;
                             }
                         }
                         setError(`${name}.${index}.${VALUE_FIELD}`, {
@@ -181,7 +182,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, intl]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, noneStr, setError]);
 
     return (
         <>
