@@ -12,6 +12,46 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ExcludedNetworkModifications, RootNetworkMetadata } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
+import { UUID } from 'crypto';
+
+function getUpdatedExcludedModifications(
+    prev: ExcludedNetworkModifications[],
+    rootNetworkUuid: UUID,
+    modificationUuid: UUID,
+    updateStatus: (isExcluded: boolean) => void
+): ExcludedNetworkModifications[] {
+    const exists = prev.some((item) => item.rootNetworkUuid === rootNetworkUuid);
+
+    if (exists) {
+        return prev.map((modif) => {
+            if (modif.rootNetworkUuid !== rootNetworkUuid) {
+                return modif;
+            }
+
+            const isExcluded = modif.modificationUuidsToExclude.includes(modificationUuid);
+            const newModificationUuidsToExclude = isExcluded
+                ? modif.modificationUuidsToExclude.filter((id) => id !== modificationUuid)
+                : [...modif.modificationUuidsToExclude, modificationUuid];
+
+            // If previously excluded, now it is activated (true), else deactivated (false)
+            updateStatus(isExcluded);
+
+            return {
+                ...modif,
+                modificationUuidsToExclude: newModificationUuidsToExclude,
+            };
+        });
+    } else {
+        updateStatus(false);
+        return [
+            ...prev,
+            {
+                rootNetworkUuid: rootNetworkUuid,
+                modificationUuidsToExclude: [modificationUuid],
+            },
+        ];
+    }
+}
 
 interface RootNetworkChipCellRendererProps {
     data?: NetworkModificationMetadata;
@@ -80,41 +120,9 @@ const RootNetworkChipCellRenderer = ({
 
         setIsLoading(true);
 
-        setModificationsToExclude((prev) => {
-            const exists = prev.some((item) => item.rootNetworkUuid === rootNetwork.rootNetworkUuid);
-
-            if (exists) {
-                const updatedExcludedModifications = prev.map((modif) => {
-                    if (modif.rootNetworkUuid !== rootNetwork.rootNetworkUuid) {
-                        return modif;
-                    }
-
-                    const isExcluded = modif.modificationUuidsToExclude.includes(modificationUuid);
-                    const newModificationUuidsToExclude = isExcluded
-                        ? modif.modificationUuidsToExclude.filter((id) => id !== modificationUuid)
-                        : [...modif.modificationUuidsToExclude, modificationUuid];
-
-                    // If previously excluded, now it is activated (true), else deactivated (false)
-                    updateStatus(isExcluded);
-
-                    return {
-                        ...modif,
-                        modificationUuidsToExclude: newModificationUuidsToExclude,
-                    };
-                });
-
-                return updatedExcludedModifications;
-            } else {
-                updateStatus(false);
-                return [
-                    ...prev,
-                    {
-                        rootNetworkUuid: rootNetwork.rootNetworkUuid,
-                        modificationUuidsToExclude: [modificationUuid],
-                    },
-                ];
-            }
-        });
+        setModificationsToExclude((prev) =>
+            getUpdatedExcludedModifications(prev, rootNetwork.rootNetworkUuid, modificationUuid, updateStatus)
+        );
     }, [modificationUuid, rootNetwork.rootNetworkUuid, setModificationsToExclude, updateStatus]);
 
     return (
