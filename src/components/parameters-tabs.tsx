@@ -57,7 +57,7 @@ import {
     attemptLaunchComputation,
     cancelLeaveParametersTab,
     confirmLeaveParametersTab,
-    setDirtyComputationParameters
+    setDirtyComputationParameters,
 } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
 import {
