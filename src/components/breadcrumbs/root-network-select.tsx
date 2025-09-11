@@ -9,8 +9,8 @@ import { Box, ListItemText, MenuItem, Select, Theme } from '@mui/material';
 import { UUID } from 'crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
-import { useMemo } from 'react';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { mergeSx } from '@gridsuite/commons-ui';
 
 const styles = {
     selectRoot: (theme: Theme) => ({
@@ -21,6 +21,7 @@ const styles = {
     }),
     selectInput: { display: 'flex', gap: 1, alignItems: 'center' },
     selectItem: { gap: 1 },
+    hiddenItem: { display: 'none' },
 };
 
 interface RootNetworkSelectProps {
@@ -30,10 +31,6 @@ interface RootNetworkSelectProps {
 
 export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks }: Readonly<RootNetworkSelectProps>) {
     const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
-
-    const filteredRootNetworks = useMemo(() => {
-        return rootNetworks.filter((item) => item.rootNetworkUuid !== currentRootNetworkUuid);
-    }, [rootNetworks, currentRootNetworkUuid]);
 
     return (
         <Select
@@ -54,8 +51,15 @@ export default function RootNetworkSelect({ currentRootNetworkUuid, rootNetworks
                 );
             }}
         >
-            {filteredRootNetworks.map((item: RootNetworkMetadata) => (
-                <MenuItem key={item.rootNetworkUuid} value={item.rootNetworkUuid} sx={styles.selectItem}>
+            {rootNetworks.map((item: RootNetworkMetadata) => (
+                <MenuItem
+                    key={item.rootNetworkUuid}
+                    value={item.rootNetworkUuid}
+                    sx={mergeSx(
+                        styles.selectItem,
+                        item.rootNetworkUuid === currentRootNetworkUuid ? styles.hiddenItem : undefined
+                    )}
+                >
                     <VisibilityOff />
                     <ListItemText primary={item.tag} />
                 </MenuItem>

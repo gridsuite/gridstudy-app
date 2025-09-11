@@ -246,16 +246,17 @@ const darkTheme = createTheme({
         common: {
             background: '#2C2E2E',
             activeBackground: '#263238',
-            selectedBackground: '#212121',
         },
         modification: {
             border: 'solid 1px #BDBDBD',
-            selectedBorder: 'solid 1px #29B6F6',
+            selectedBackground: '#37474F',
+            selectedBorder: 'solid 3px #29B6F6',
             hoverBorderColor: '#B3E5FC',
             activeBorderColor: '#00A6D9',
         },
         root: {
             border: 'solid 1px #3CEC96',
+            selectedBackground: '#212121',
             hoverBorderColor: '#00C853',
             activeBorderColor: '#00E676',
             icon: {

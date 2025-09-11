@@ -360,7 +360,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
-    studyMapTreeDisplay: PropTypes.string.isRequired,
     prevTreeDisplay: PropTypes.object,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,

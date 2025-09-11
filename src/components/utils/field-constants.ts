@@ -53,6 +53,7 @@ export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
 export const MODIFICATION_TYPE = 'modificationType';
 export const LIMIT_SETS_MODIFICATION_TYPE = {
     MODIFY: 'MODIFY',
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     ADD: 'ADD',
     REPLACE: 'REPLACE',
 } as const;
@@ -60,7 +61,8 @@ export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationTy
 export const SIDE = 'side';
 export const LIMIT_GROUP_NAME = 'limitGroupName';
 export const IS_ACTIVE = 'isActive';
-export const SELECTED_OPERATIONAL_LIMITS_GROUP_ID = 'selectedOperationalLimitsGroupId';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
 export const CSV_FILENAME = 'csvFilename';
 
@@ -75,8 +77,6 @@ export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
-export const CURRENT_LIMITS_1 = 'currentLimits1';
-export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
