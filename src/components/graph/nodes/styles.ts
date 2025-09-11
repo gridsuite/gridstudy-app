@@ -25,7 +25,6 @@ export const baseNodeStyles = (theme: Theme, direction: 'row' | 'column') => ({
 
 export const selectedBaseNodeStyles = (theme: Theme, direction: 'row' | 'column') => ({
     ...baseNodeStyles(theme, direction),
-    background: theme.node.common.selectedBackground,
 });
 
 export const interactiveNodeStyles = (theme: Theme, nodeKey: 'modification' | 'root') => ({
