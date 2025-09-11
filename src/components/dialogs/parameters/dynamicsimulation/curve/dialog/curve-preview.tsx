@@ -38,6 +38,16 @@ export interface CurveHandler {
     };
 }
 
+function isCurveAlreadyAdded(curves: Curve[], curve: Curve): boolean {
+    return curves.some((elem) => elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId);
+}
+
+function isRowSelected(elem: Curve, selectedRows: Curve[]): boolean {
+    return selectedRows.some(
+        (selectedElem) => elem.equipmentId === selectedElem.equipmentId && elem.variableId === selectedElem.variableId
+    );
+}
+
 const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact<any>>(null);
@@ -88,50 +98,41 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
         setSelectedRowsLength(selectedRows.length);
     }, []);
 
+    const addCurves = useCallback((curves: Curve[]) => {
+        setRowData((prev) => {
+            const notYetAddedCurves = curves.filter((curve) => !isCurveAlreadyAdded(prev, curve));
+            return [...prev, ...notYetAddedCurves];
+        });
+    }, []);
+
+    const removeCurves = useCallback(() => {
+        if (!gridRef.current) {
+            return;
+        }
+        const selectedRows = gridRef.current.api.getSelectedRows();
+
+        // reset selected rows length
+        setSelectedRowsLength(0);
+
+        setRowData((prev) => {
+            const remainingRows = prev.filter((elem) => !isRowSelected(elem, selectedRows));
+            return remainingRows;
+        });
+    }, []);
+
     // expose some api for the component by using ref
     useImperativeHandle(
         ref,
         () => ({
             api: {
-                addCurves: (curves) => {
-                    setRowData((prev) => {
-                        const notYetAddedCurves = curves.filter(
-                            (curve) =>
-                                !prev.find(
-                                    (elem) =>
-                                        elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId
-                                )
-                        );
-                        return [...prev, ...notYetAddedCurves];
-                    });
-                },
-                removeCurves: () => {
-                    if (!gridRef.current) {
-                        return;
-                    }
-                    const selectedRows = gridRef.current.api.getSelectedRows();
-
-                    // reset selected rows length
-                    setSelectedRowsLength(0);
-
-                    setRowData((prev) => {
-                        const remainingRows = prev.filter(
-                            (elem) =>
-                                !selectedRows.find(
-                                    (selectedElem) =>
-                                        elem.equipmentId === selectedElem.equipmentId &&
-                                        elem.variableId === selectedElem.variableId
-                                )
-                        );
-                        return remainingRows;
-                    });
-                },
+                addCurves,
+                removeCurves,
                 getCurves: () => {
                     return rowData;
                 },
             },
         }),
-        [rowData]
+        [addCurves, removeCurves, rowData]
     );
 
     return (
