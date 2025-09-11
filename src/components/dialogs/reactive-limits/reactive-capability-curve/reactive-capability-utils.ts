@@ -65,6 +65,14 @@ function checkAllPValuesBetweenMinMax(values: ReactiveCapabilityCurve) {
     }
 }
 
+function hasAtLeastOneNegativeP(values: ReactiveCapabilityCurve) {
+    return values?.some((value) => value.p < 0);
+}
+
+function hasAtLeastOnePositiveP(values: ReactiveCapabilityCurve) {
+    return values?.some((value) => value.p >= 0);
+}
+
 export const getReactiveCapabilityCurveValidationSchema = (
     id = REACTIVE_CAPABILITY_CURVE_TABLE,
     positiveAndNegativePExist = false
@@ -74,31 +82,34 @@ export const getReactiveCapabilityCurveValidationSchema = (
         .nullable()
         .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
             is: 'CURVE',
-            then: (schema) =>
-                schema
-                    .of(getCreationRowSchema())
-                    .when([], {
-                        is: () => positiveAndNegativePExist,
-                        then: (schema) =>
-                            schema
-                                .test(
-                                    'checkATLeastThereIsOneNegativeP',
-                                    'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
-                                    (values) => values?.some((value) => value.p < 0)
-                                )
-                                .test(
-                                    'checkATLeastThereIsOnePositiveP',
-                                    'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
-                                    (values) => values?.some((value) => value.p >= 0)
-                                ),
-                    })
+            then: (schema) => {
+                let resultSchema = schema.of(getCreationRowSchema());
+                if (positiveAndNegativePExist) {
+                    resultSchema = resultSchema
+                        .test(
+                            'checkATLeastThereIsOneNegativeP',
+                            'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
+                            hasAtLeastOneNegativeP
+                        )
+                        .test(
+                            'checkATLeastThereIsOnePositiveP',
+                            'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
+                            hasAtLeastOnePositiveP
+                        );
+                }
+                return resultSchema
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
-                    .test('checkAllValuesAreUnique', 'ReactiveCapabilityCurveCreationErrorPInvalid', (values) =>
-                        checkAllPValuesAreUnique(values)
+                    .test(
+                        'checkAllValuesAreUnique',
+                        'ReactiveCapabilityCurveCreationErrorPInvalid',
+                        checkAllPValuesAreUnique
                     )
-                    .test('checkAllValuesBetweenMinMax', 'ReactiveCapabilityCurveCreationErrorPOutOfRange', (values) =>
-                        checkAllPValuesBetweenMinMax(values)
-                    ),
+                    .test(
+                        'checkAllValuesBetweenMinMax',
+                        'ReactiveCapabilityCurveCreationErrorPOutOfRange',
+                        checkAllPValuesBetweenMinMax
+                    );
+            },
         }),
 });
 
