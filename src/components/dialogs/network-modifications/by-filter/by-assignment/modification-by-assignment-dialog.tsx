@@ -51,7 +51,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
     const intl = useIntl();
 
     const noneStr = useMemo(() => {
-        return intl.formatMessage({ id: 'None' });
+        return intl.formatMessage({ id: 'EmptyField' });
     }, [intl]);
     const formSchema = yup
         .object()

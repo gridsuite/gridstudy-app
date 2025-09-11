@@ -95,7 +95,8 @@ function getValueSchema(noneStr: string, dataType?: DataType, settable_to_none?:
             schema = yup.boolean();
             break;
         case DataType.STRING:
-            return settable_to_none ? yup.string().nullable() : yup.string().required();
+            schema = yup.string();
+            break;
         default:
             schema = yup.number();
     }

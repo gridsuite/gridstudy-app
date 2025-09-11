@@ -83,7 +83,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     }
 
     const noneStr = useMemo(() => {
-        return intl.formatMessage({ id: 'None' });
+        return intl.formatMessage({ id: 'EmptyField' });
     }, [intl]);
 
     const formatLabelWithUnit = useFormatLabelWithUnit();
@@ -150,20 +150,33 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         }
 
         if (dataType === DataType.STRING) {
-            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
+            if (settable_to_none) {
+                return (
+                    <AutocompleteInput
+                        name={`${name}.${index}.${VALUE_FIELD}`}
+                        label={'ValueOrEmptyField'}
+                        options={[noneStr]}
+                        size={'small'}
+                        getOptionLabel={(value) => value.toString()}
+                        allowNewValue
+                    />
+                );
+            } else {
+                return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
+            }
         }
 
         if (dataType === DataType.DOUBLE && settable_to_none) {
             return (
                 <AutocompleteInput
                     name={`${name}.${index}.${VALUE_FIELD}`}
-                    label={'NumericValueOrNone'}
+                    label={'ValueOrEmptyField'}
                     options={[noneStr]}
                     onCheckNewValue={(option: Option | null) => {
                         if (option) {
                             if (option.toString() !== noneStr && Number.isNaN(Number(option.toString()))) {
                                 setError(`${name}.${index}.${VALUE_FIELD}`, {
-                                    message: 'NumericValueOrNone',
+                                    message: 'ValueOrEmptyField',
                                 });
                                 return true;
                             }
