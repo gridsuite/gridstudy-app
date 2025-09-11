@@ -477,7 +477,7 @@
     "LossFactor": "Loss Factor",
     "StopComputation": "Stop computation",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
-    "launchComputationConfirmQuestion": "Vous êtes sur le point de lancer un calcul alors qu'une modification des paramètres de calcul est en cours.",
+    "launchComputationConfirmQuestion": "You are about to start a computation although a change to the computation parameters is in progress.",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
