@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
-import { Identifiable } from '@gridsuite/commons-ui';
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
-import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AgGridReact } from 'ag-grid-react';
-import { Alert, Box, Theme } from '@mui/material';
+import { type Identifiable } from '@gridsuite/commons-ui';
+import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { type CurrentTreeNode } from 'components/graph/tree-node.type';
+import { type AgGridReact } from 'ag-grid-react';
+import { Alert, Box, type Theme } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { NodeAlias } from '../../types/node-alias.type';
+import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
@@ -23,8 +23,8 @@ import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { type RowDataUpdatedEvent } from 'ag-grid-community';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -43,12 +43,8 @@ const styles = {
     },
 };
 
-interface RecursiveIdentifiable extends Identifiable {
-    [alias: string]: Identifiable | string | undefined;
-}
-
 interface SpreadsheetContentProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact>;
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
@@ -56,11 +52,12 @@ interface SpreadsheetContentProps {
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
+    registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
-export const SpreadsheetContent = React.memo(
+export const SpreadsheetContent = memo(
     ({
         gridRef,
         currentNode,
@@ -70,6 +67,7 @@ export const SpreadsheetContent = React.memo(
         disabled,
         equipmentId,
         onEquipmentScrolled,
+        registerRowCounterEvents,
         openDiagram,
         active,
     }: SpreadsheetContentProps) => {
@@ -89,6 +87,7 @@ export const SpreadsheetContent = React.memo(
                     rowNodes: [rowNode],
                     flashDuration: 1000,
                 });
+                api.setNodesSelected({ nodes: [rowNode], newValue: false });
             }
 
             setEquipmentToUpdateId(null);
@@ -145,6 +144,13 @@ export const SpreadsheetContent = React.memo(
             setIsGridReady(true);
         }, [updateLockedColumnsConfig]);
 
+        const onRowDataUpdated = useCallback(
+            (params: RowDataUpdatedEvent) => {
+                registerRowCounterEvents(params);
+            },
+            [registerRowCounterEvents]
+        );
+
         const transformedRowData = useMemo(() => {
             if (
                 !nodeAliases ||
@@ -154,17 +160,27 @@ export const SpreadsheetContent = React.memo(
                 return undefined;
             }
 
-            return equipments.equipmentsByNodeId[currentNode.id].map((equipment) => {
-                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
-                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, nodeEquipments]) => {
-                    let matchingEquipment = nodeEquipments.find((eq) => eq.id === equipment.id);
-                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
-                    if (nodeAlias && matchingEquipment) {
-                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
-                    }
-                });
-                return equipmentToAdd;
-            });
+            const currentNodeData: Record<string, Identifiable> = equipments.equipmentsByNodeId[currentNode.id];
+            return Object.values(
+                Object.entries(equipments.equipmentsByNodeId).reduce(
+                    (prev, [nodeId, nodeEquipments]) => {
+                        if (nodeId === currentNode.id) {
+                            return prev;
+                        }
+                        const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
+                        if (nodeAlias) {
+                            Object.values(nodeEquipments).forEach((eq) => {
+                                prev[eq.id] = {
+                                    ...prev[eq.id],
+                                    [nodeAlias.alias]: eq,
+                                };
+                            });
+                        }
+                        return prev;
+                    },
+                    { ...currentNodeData }
+                )
+            );
         }, [equipments, currentNode.id, nodeAliases]);
 
         useEffect(() => {
@@ -203,7 +219,7 @@ export const SpreadsheetContent = React.memo(
         const handleOpenDiagram = useCallback(
             (equipmentId: string) => {
                 const diagramType =
-                    tableDefinition?.type === EQUIPMENT_TYPES.SUBSTATION
+                    tableDefinition?.type === SpreadsheetEquipmentType.SUBSTATION
                         ? DiagramType.SUBSTATION
                         : DiagramType.VOLTAGE_LEVEL;
                 openDiagram?.(equipmentId, diagramType);
@@ -232,6 +248,7 @@ export const SpreadsheetContent = React.memo(
                             onModelUpdated={onModelUpdated}
                             onFirstDataRendered={onFirstDataRendered}
                             onGridReady={onGridReady}
+                            onRowDataUpdated={onRowDataUpdated}
                             handleModify={handleModify}
                             handleOpenDiagram={handleOpenDiagram}
                             equipmentType={tableDefinition?.type}

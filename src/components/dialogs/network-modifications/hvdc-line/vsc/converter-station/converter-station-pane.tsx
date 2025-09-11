@@ -103,6 +103,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             isEquipmentModification={isModification}
             previousValues={{
                 connectablePosition: previousValues?.connectablePosition,
+                voltageLevelId: previousValues?.voltageLevelId,
+                busOrBusbarSectionId: previousValues?.busOrBusbarSectionId,
                 terminalConnected: previousValues?.terminalConnected,
             }}
         />

@@ -1,39 +1,37 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
+    OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from 'components/utils/field-constants';
-import { FormattedMessage } from 'react-intl';
 import { LimitsSidePane } from './limits-side-pane';
-import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
-import { useState } from 'react';
+import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
+import { useCallback, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
+import IconButton from '@mui/material/IconButton';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
+import GridSection from '../commons/grid-section';
+import { styles } from '../dialog-utils';
+import AddIcon from '@mui/icons-material/ControlPoint';
+import { APPLICABILITY } from '../../network/constants';
 
 export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
     equipmentToModify?: any;
     clearableFields?: boolean;
-    // temporary value because creation interfaces uses complete limits groups while modification still uses the old system with only the selected current limits
-    // will become obsolete once the modification interfaces use complete limits groups
-    onlySelectedLimitsGroup?: boolean;
 }
 
 export function LimitsPane({
@@ -41,137 +39,141 @@ export function LimitsPane({
     currentNode,
     equipmentToModify,
     clearableFields,
-    onlySelectedLimitsGroup = false,
 }: Readonly<LimitsPaneProps>) {
-    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number | null>(null);
-    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | null>(null);
+    const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
 
-    const limitsGroups1: OperationalLimitsGroup[] = useWatch({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-    });
-    const limitsGroups2: OperationalLimitsGroup[] = useWatch({
-        name: `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
+    const myRef: any = useRef<any>(null);
+
+    const limitsGroups: OperationalLimitsGroup[] = useWatch({
+        name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
 
-    const renderTitle = (id: string, selectedFormName: string, optionsFormName: string) => (
-        <>
-            <Grid item xs={onlySelectedLimitsGroup ? 4 : 1}>
-                <Typography variant="h5">
-                    <FormattedMessage id={id} />
-                </Typography>
-            </Grid>
-            {!onlySelectedLimitsGroup && (
-                <Grid item xs={3}>
-                    <SelectedOperationalLimitGroup
-                        selectedFormName={selectedFormName}
-                        optionsFormName={optionsFormName}
-                    />
-                </Grid>
-            )}
-        </>
+    const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
+
+    const getCurrentLimits = (equipmentToModify: any, operationalLimitsGroupId: string): CurrentLimits | null => {
+        if (equipmentToModify?.currentLimits) {
+            return equipmentToModify.currentLimits.find(
+                (currentLimit: CurrentLimits) =>
+                    currentLimit.id + currentLimit.applicability === operationalLimitsGroupId
+            );
+        }
+        return null;
+    };
+
+    /**
+     * returns an error message id if :
+     * - there are more than 2 limit sets with the same name
+     * - there are exactly 2 limit set with this name but they have the same applicability side
+     */
+    const checkLimitSetUnicity = useCallback(
+        (editedLimitGroupName: string, newSelectedApplicability: string): string => {
+            if (indexSelectedLimitSet == null) {
+                return '';
+            }
+
+            // checks if limit sets with that name already exist
+            const sameNameInLs: OperationalLimitsGroup[] = limitsGroups
+                .filter((_ls, index: number) => index !== indexSelectedLimitSet)
+                .filter(
+                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.name.trim() === editedLimitGroupName.trim()
+                );
+
+            // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
+            if (sameNameInLs.length > 0) {
+                if (sameNameInLs.length > 1) {
+                    return 'LimitSetNamingError';
+                }
+
+                if (
+                    sameNameInLs[0].applicability === newSelectedApplicability ||
+                    sameNameInLs[0].applicability === APPLICABILITY.EQUIPMENT.id ||
+                    newSelectedApplicability === APPLICABILITY.EQUIPMENT.id
+                ) {
+                    // only one limit set with this name exist => their applicability has to be different
+                    return 'LimitSetApplicabilityError';
+                }
+            }
+            return '';
+        },
+        [indexSelectedLimitSet, limitsGroups]
     );
 
-    const renderSidePaneAccordingToTabs = (
-        id: string,
-        limitsGroups: OperationalLimitsGroup[],
-        selectedTabIndex: number | null,
-        formName: string,
-        previousCurrentLimits: CurrentLimits | null
-    ) =>
-        indexSelectedLimitSet1 !== null &&
-        limitsGroups.map(
-            (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
-                selectedTabIndex != null &&
-                index === selectedTabIndex &&
-                renderSidePane(
-                    operationalLimitsGroup.id + id,
-                    `${formName}[${index}].${CURRENT_LIMITS}`,
-                    previousCurrentLimits
-                )
-        );
-
-    const renderSidePane = (id: string, formName: string, previousCurrentLimits: CurrentLimits | null) => {
-        return (
-            <LimitsSidePane
-                key={id}
-                limitsGroupFormName={formName}
-                clearableFields={clearableFields}
-                permanentCurrentLimitPreviousValue={previousCurrentLimits?.permanentLimit}
-                temporaryLimitsPreviousValues={previousCurrentLimits?.temporaryLimits ?? []}
-                currentNode={currentNode}
-                onlySelectedLimitsGroup={onlySelectedLimitsGroup}
-            />
-        );
-    };
-
-    const getCurrentLimits1 = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits1) {
-            return equipmentToModify.currentLimits1.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup1
-            );
-        }
-        return null;
-    };
-    const getCurrentLimits2 = (equipmentToModify: any): CurrentLimits | null => {
-        if (equipmentToModify?.currentLimits2) {
-            return equipmentToModify.currentLimits2.find(
-                (currentLimit: CurrentLimits) => currentLimit.id === equipmentToModify.selectedOperationalLimitsGroup2
-            );
-        }
-        return null;
-    };
-
     return (
-        <Grid container spacing={2}>
-            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25} spacing={2}>
-                {!onlySelectedLimitsGroup && <Grid item xs={1.9} />}
-                {renderTitle('Side1', `${id}.${SELECTED_LIMITS_GROUP_1}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`)}
-                {!onlySelectedLimitsGroup && <Grid item xs={0.25} />}
-                {renderTitle('Side2', `${id}.${SELECTED_LIMITS_GROUP_2}`, `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`)}
+        <>
+            {/* active limit sets */}
+            <GridSection title="SelectedOperationalLimitGroups" />
+            <Grid container item xs={8} columns={10.25} spacing={0}>
+                <Grid item xs={3}>
+                    <SelectedOperationalLimitGroup
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
+                        label="Side1"
+                        filteredApplicability={APPLICABILITY.SIDE1.id}
+                        previousValue={equipmentToModify?.selectedOperationalLimitsGroup1}
+                        isABranchModif={!!equipmentToModify}
+                    />
+                </Grid>
+                <Grid item xs={3}>
+                    <SelectedOperationalLimitGroup
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
+                        optionsFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}`}
+                        label="Side2"
+                        filteredApplicability={APPLICABILITY.SIDE2.id}
+                        previousValue={equipmentToModify?.selectedOperationalLimitsGroup2}
+                        isABranchModif={!!equipmentToModify}
+                    />
+                </Grid>
             </Grid>
+
             {/* limits */}
-            <Grid container item xs={12} columns={onlySelectedLimitsGroup ? 8 : 10.25}>
-                {!onlySelectedLimitsGroup && (
-                    <Grid item xs={1.8}>
-                        <OperationalLimitsGroupsTabs
-                            parentFormName={id}
-                            limitsGroups1={limitsGroups1}
-                            limitsGroups2={limitsGroups2}
-                            indexSelectedLimitSet1={indexSelectedLimitSet1}
-                            indexSelectedLimitSet2={indexSelectedLimitSet2}
-                            setIndexSelectedLimitSet1={setIndexSelectedLimitSet1}
-                            setIndexSelectedLimitSet2={setIndexSelectedLimitSet2}
-                        />
-                    </Grid>
-                )}
-                <Grid item xs={4} sx={tabStyles.parametersBox}>
-                    {onlySelectedLimitsGroup
-                        ? renderSidePane('leftPanel', `${id}.${CURRENT_LIMITS_1}`, getCurrentLimits1(equipmentToModify))
-                        : renderSidePaneAccordingToTabs(
-                              'leftPanel',
-                              limitsGroups1,
-                              indexSelectedLimitSet1,
-                              `${id}.${OPERATIONAL_LIMITS_GROUPS_1}`,
-                              getCurrentLimits1(equipmentToModify)
-                          )}
+            <Grid container item xs={4.9} display="flex" flexDirection="row">
+                <Grid container item xs={3}>
+                    <GridSection title="LimitSets" />
                 </Grid>
-                {!onlySelectedLimitsGroup && <Grid item xs={0.25} />}
-                <Grid item xs={4} sx={tabStyles.parametersBox}>
-                    {onlySelectedLimitsGroup
-                        ? renderSidePane(
-                              'rightPanel',
-                              `${id}.${CURRENT_LIMITS_2}`,
-                              getCurrentLimits2(equipmentToModify)
-                          )
-                        : renderSidePaneAccordingToTabs(
-                              'rightPanel',
-                              limitsGroups2,
-                              indexSelectedLimitSet2,
-                              `${id}.${OPERATIONAL_LIMITS_GROUPS_2}`,
-                              getCurrentLimits2(equipmentToModify)
-                          )}
+                <Grid container item xs={0.5}>
+                    <IconButton color="primary" sx={styles.button} onClick={onAddClick}>
+                        <AddIcon />
+                    </IconButton>
                 </Grid>
             </Grid>
-        </Grid>
+            <Grid container item xs={12} columns={10.25}>
+                <Grid item xs={4}>
+                    <OperationalLimitsGroupsTabs
+                        ref={myRef}
+                        parentFormName={id}
+                        limitsGroups={limitsGroups}
+                        indexSelectedLimitSet={indexSelectedLimitSet}
+                        setIndexSelectedLimitSet={setIndexSelectedLimitSet}
+                        checkLimitSetUnicity={checkLimitSetUnicity}
+                        isAModification={!!equipmentToModify}
+                    />
+                </Grid>
+                <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
+                    {indexSelectedLimitSet !== null &&
+                        limitsGroups.map(
+                            (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
+                                index === indexSelectedLimitSet && (
+                                    <LimitsSidePane
+                                        key={operationalLimitsGroup.id}
+                                        limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}`}
+                                        limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
+                                        clearableFields={clearableFields}
+                                        permanentCurrentLimitPreviousValue={
+                                            getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
+                                                ?.permanentLimit
+                                        }
+                                        temporaryLimitsPreviousValues={
+                                            getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
+                                                ?.temporaryLimits ?? []
+                                        }
+                                        currentNode={currentNode}
+                                        selectedLimitSetName={operationalLimitsGroup.name}
+                                        checkLimitSetUnicity={checkLimitSetUnicity}
+                                    />
+                                )
+                        )}
+                </Grid>
+            </Grid>
+        </>
     );
 }

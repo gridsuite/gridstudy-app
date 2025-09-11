@@ -18,6 +18,7 @@
 }
 .nad-vl-nodes .nad-busnode {
     fill: var(--vl-color, lightgrey);
+    cursor: pointer;
 }
 .nad-vl-nodes circle.nad-unknown-busnode {
     stroke: var(--vl-color, #808080);
@@ -42,7 +43,7 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     visibility: hidden;
 }
 .nad-active {
-    fill: #546e7a;
+    fill: #787F81;
 }
 .nad-reactive {
     fill: #0277bd;
@@ -58,26 +59,28 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     fill: black;
     dominant-baseline: central;
 }
-.nad-text-nodes foreignObject {
+foreignObject.nad-text-nodes {
     overflow: visible;
     color: black;
 }
 .nad-label-box {
-    background-color: #6c6c6c20;
     width: max-content;
     padding: 10px;
     border-radius: 10px;
+    cursor: grab;
+    border: 2px solid rgba(0,0,0,0);
 }
 .nad-legend-square {
+    display: inline-block;
+    margin-right: 10px;
     width: 20px;
     height: 20px;
     background: var(--vl-color, black);
 }
 .nad-edge-infos text {
-    font: 20px serif;
+    font: 20px sans-serif;
     dominant-baseline: middle;
-    stroke: #ffffffaa;
-    stroke-width: 8;
+    stroke-width: 10;
     stroke-linejoin: round;
     paint-order: stroke;
 }
@@ -89,62 +92,95 @@ g.nad-disconnected > g.nad-disconnected {
     --vl-color: #808080;
 }
 
-.nad-branch-edges .nad-overload .nad-edge-path {
-    animation: line-blink 3s infinite;
-}
-.nad-vl-nodes .nad-overvoltage {
-    animation: node-over-blink 3s infinite;
-}
-.nad-vl-nodes .nad-undervoltage {
-    animation: node-under-blink 3s infinite;
-}
 
 @keyframes line-blink {
-    0%,
-    80%,
-    100% {
-        stroke: var(--vl-color, black);
-        stroke-width: 0.25%;
+    50% {
+        stroke: #F50057;
+        stroke-width: 0.6%;
     }
-    40% {
-        stroke: #ffeb3b;
-        stroke-width: 0.75%;
+}
+@keyframes line-blink-nad-zoom-0 {
+    50% {
+        stroke: #F50057;
+        stroke-width: 8;
+    }
+}
+@keyframes line-blink-nad-zoom-9000 {
+    50% {
+        stroke: #F50057;
+        stroke-width: 0.5%;
+    }
+}
+@keyframes line-blink-nad-zoom-12000-15000 {
+    50% {
+        stroke: #F50057;
+        stroke-width: 0.3%;
     }
 }
 @keyframes node-over-blink {
-    0%,
-    80%,
-    100% {
-        stroke: white;
-        stroke-width: 0.25%;
-    }
-    40% {
-        stroke: #ff5722;
-        stroke-width: 0.75%;
+    50% {
+        fill: #D500F9;
     }
 }
 @keyframes node-under-blink {
-    0%,
-    80%,
-    100% {
-        stroke: white;
-        stroke-width: 0.25%;
+    50% {
+        fill: #2979FF;
     }
-    40% {
-        stroke: #00bcd4;
-        stroke-width: 0.75%;
+}
+@keyframes node-over-blink-nad-zoom-9000 {
+    50% {
+        fill: #D500F9;
+        stroke: #D500F9;
+        stroke-width: 24px;
     }
+}
+@keyframes node-under-blink-nad-zoom-9000 {
+    50% {
+        fill: #2979FF;
+        stroke: #2979FF;
+        stroke-width: 24px;
+    }
+}
+@keyframes node-over-blink-nad-zoom-12000-15000 {
+    50% {
+        fill: #D500F9;
+        stroke: #D500F9;
+        stroke-width: 32px;
+    }
+}
+@keyframes node-under-blink-nad-zoom-12000-15000 {
+    50% {
+        fill: #2979FF;
+        stroke: #2979FF;
+        stroke-width: 32px;
+    }
+}
+.nad-branch-edges .nad-overload .nad-edge-path {
+    animation: line-blink 0.75s infinite steps(1, start);
+}
+.nad-vl-nodes .nad-overvoltage {
+    animation: node-over-blink 0.75s infinite steps(1, start);
+}
+.nad-vl-nodes .nad-undervoltage {
+    animation: node-under-blink 0.75s infinite steps(1, start);
 }
 
 /* NETWORK AREA DIAGRAM LEVEL OF DETAIL */
 
 /* Makes the nodes' edges thicker when zooming a lot */
-.nad-zoom-0 :is(
-    .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
-    .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-    .nad-vl-nodes circle.nad-unknown-busnode
-    ) {
-    stroke-width: 3;
+.nad-zoom-0 {
+    :is(
+        .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
+        .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
+        .nad-vl-nodes circle.nad-unknown-busnode
+        ) {
+        stroke-width: 3;
+    }
+    :is(
+        .nad-branch-edges .nad-overload .nad-edge-path
+        ) {
+        animation: line-blink-nad-zoom-0 0.75s infinite steps(1, start);
+    }
 }
 
 /* Makes the dashed lines' spaces consistent when zooming */
@@ -156,21 +192,55 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Between zoom 2000 and 9000, edges use the default 0.25% width.
    We gradually narrow these lines when zooming out, to prevent thick lines when fully zoomed out. */
-.nad-zoom-9000 :is(
-    .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
-    .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-    .nad-vl-nodes circle.nad-unknown-busnode
-    ) {
-    stroke-width: 0.2%;
+.nad-zoom-9000 {
+    :is(
+        .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
+        .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
+        .nad-vl-nodes circle.nad-unknown-busnode
+        ) {
+        stroke-width: 0.2%;
+    }
+    :is(
+        .nad-branch-edges .nad-overload .nad-edge-path
+        ) {
+        animation: line-blink-nad-zoom-9000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-overvoltage
+        ) {
+        animation: node-over-blink-nad-zoom-9000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-undervoltage
+        ) {
+        animation: node-under-blink-nad-zoom-9000 0.75s infinite steps(1, start);
+    }
 }
 
 /* Gradually narrows the edges when zooming out, to prevent thick lines when fully zoomed out. */
-:is(.nad-zoom-12000, .nad-zoom-15000) :is(
-    .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
-    .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-    .nad-vl-nodes circle.nad-unknown-busnode
-    ) {
-    stroke-width: 0.1%;
+:is(.nad-zoom-12000, .nad-zoom-15000) {
+    :is(
+        .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
+        .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
+        .nad-vl-nodes circle.nad-unknown-busnode
+        ) {
+        stroke-width: 0.1%;
+    }
+    :is(
+        .nad-branch-edges .nad-overload .nad-edge-path
+        ) {
+        animation: line-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-overvoltage
+        ) {
+        animation: node-over-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
+    }
+    :is(
+        .nad-vl-nodes .nad-undervoltage
+        ) {
+        animation: node-under-blink-nad-zoom-12000-15000 0.75s infinite steps(1, start);
+    }
 }
 
 /* Hides the data on the lines until sufficiently zoomed in. */
@@ -189,16 +259,29 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Hides the voltage levels 0 to 50 when zoomed out. */
 :is(.nad-zoom-6000, .nad-zoom-9000, .nad-zoom-12000, .nad-zoom-15000) :is(
-    [class^="nad-vl0to30"], [class*=" nad-vl0to30"],
-    [class^="nad-vl30to50"], [class*=" nad-vl30to50"]
+    .nad-vl0to30, .nad-vl30to50
     ) {
     display: none;
 }
 
 /* Hides the voltage levels 50 to 120 when zoomed out. */
 .nad-zoom-15000 :is(
-    [class^="nad-vl50to70"], [class*=" nad-vl50to70"],
-    [class^="nad-vl70to120"], [class*=" nad-vl70to120"]
+    .nad-vl50to70, .nad-vl70to120
     ) {
     display: none;
+}
+
+/* Help visibility when hovering over a NAD's VL or label */
+.nad-textnode-highlight {
+    z-index: 99999;
+    border: 2px solid #90929477;
+}
+:is(.nad-zoom-0) .nad-busnode-highlight {
+    transform: scale(1.12);
+}
+:is(.nad-zoom-2000) .nad-busnode-highlight {
+    transform: scale(1.2);
+}
+:is(.nad-zoom-2000) .nad-textnode-highlight {
+    transform: scale(1.3);
 }

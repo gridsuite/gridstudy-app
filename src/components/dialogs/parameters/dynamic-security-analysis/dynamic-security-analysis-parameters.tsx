@@ -14,7 +14,6 @@ import ScenarioParameters, { SCENARIO_DURATION } from './scenario-parameters';
 import {
     fetchDefaultDynamicSecurityAnalysisProvider,
     fetchDynamicSecurityAnalysisParameters,
-    fetchDynamicSecurityAnalysisProviders,
     updateDynamicSecurityAnalysisParameters,
     updateDynamicSecurityAnalysisProvider,
 } from '../../../../services/study/dynamic-security-analysis';
@@ -24,8 +23,8 @@ import {
     CustomFormProvider,
     isObjectEmpty,
     mergeSx,
-    SubmitButton,
     ProviderParam,
+    SubmitButton,
     useParametersBackend,
     ComputingType,
     PopupConfirmationDialog,
@@ -42,6 +41,7 @@ import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
 import { useParametersNotification } from '../use-parameters-notification';
 import { parametersStyles } from '../util/styles';
+import { fetchDynamicSecurityAnalysisProviders } from '../../../../services/dynamic-security-analysis';
 
 const scenarioFormSchema = yup
     .object()

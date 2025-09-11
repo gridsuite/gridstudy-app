@@ -5,34 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, MouseEvent, useCallback, useState } from 'react';
-import { Button, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
+import { useCallback, useState } from 'react';
+import { Button, type ButtonProps, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useStateBoolean, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
 import AddSpreadsheetFromModelDialog from './dialogs/add-spreadsheet-from-model-dialog';
 import AddSpreadsheetsFromCollectionDialog from './dialogs/add-spreadsheets-from-collection-dialog';
+import type { DialogComponent } from './types';
 
-interface AddSpreadsheetButtonProps {
+export type AddSpreadsheetButtonProps = {
     disabled: boolean;
-    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
     resetNodeAliases: ResetNodeAliasCallback;
-}
+};
 
 const styles = {
     addButton: (theme: Theme) => ({
         color: theme.palette.primary.main,
+        minWidth: '100%',
     }),
 };
-
-type DialogComponent = FC<{
-    open: UseStateBooleanReturn;
-    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
-    resetNodeAliases: ResetNodeAliasCallback;
-}>;
 
 export interface SpreadsheetOption {
     id: string;
@@ -43,7 +37,7 @@ export interface SpreadsheetOption {
 /**
  * Constants for spreadsheet creation options with associated dialog components
  */
-const NEW_SPREADSHEET_CREATION_OPTIONS: Record<string, SpreadsheetOption> = {
+const NEW_SPREADSHEET_CREATION_OPTIONS = {
     EMPTY: {
         id: 'EMPTY',
         label: 'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option',
@@ -59,20 +53,19 @@ const NEW_SPREADSHEET_CREATION_OPTIONS: Record<string, SpreadsheetOption> = {
         label: 'spreadsheet/create_new_spreadsheet/apply_collection_option',
         dialog: AddSpreadsheetsFromCollectionDialog,
     },
-};
+} as const satisfies Record<string, SpreadsheetOption>;
 
-const AddSpreadsheetButton: React.FC<AddSpreadsheetButtonProps> = ({ disabled, resetTabIndex, resetNodeAliases }) => {
+export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Readonly<AddSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
 
-    const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    }, []);
+    const handleClick = useCallback<NonNullable<ButtonProps['onClick']>>(
+        (event) => setAnchorEl(event.currentTarget),
+        []
+    );
 
-    const handleClose = useCallback(() => {
-        setAnchorEl(null);
-    }, []);
+    const handleClose = useCallback(() => setAnchorEl(null), []);
 
     const handleMenuItemClick = useCallback(
         (option: SpreadsheetOption) => {
@@ -89,7 +82,7 @@ const AddSpreadsheetButton: React.FC<AddSpreadsheetButtonProps> = ({ disabled, r
         <>
             <Tooltip title={<FormattedMessage id="spreadsheet/create_new_spreadsheet/add_button_tooltip" />}>
                 <span>
-                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton}>
+                    <Button onClick={handleClick} disabled={disabled} sx={styles.addButton} size={'small'}>
                         <AddIcon />
                     </Button>
                 </span>
@@ -101,12 +94,7 @@ const AddSpreadsheetButton: React.FC<AddSpreadsheetButtonProps> = ({ disabled, r
                     </MenuItem>
                 ))}
             </Menu>
-
-            {SelectedDialog && (
-                <SelectedDialog open={dialogOpen} resetTabIndex={resetTabIndex} resetNodeAliases={resetNodeAliases} />
-            )}
+            {SelectedDialog && <SelectedDialog open={dialogOpen} resetNodeAliases={resetNodeAliases} />}
         </>
     );
-};
-
-export default AddSpreadsheetButton;
+}

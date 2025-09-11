@@ -21,7 +21,6 @@ import {
     LOAD_TYPE,
     MEASUREMENT_P,
     MEASUREMENT_Q,
-    NAME,
     REACTIVE_POWER_SET_POINT,
     STATE_ESTIMATION,
     VOLTAGE_LEVEL,
@@ -36,7 +35,7 @@ export type LoadModificationSchemaForm = {
     [REACTIVE_POWER_SET_POINT]?: number | null;
     [CONNECTIVITY]: {
         [VOLTAGE_LEVEL]: { [ID]?: string };
-        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+        [BUS_OR_BUSBAR_SECTION]: { [ID]?: string };
         [CONNECTION_DIRECTION]?: string;
         [CONNECTION_NAME]?: string;
         [CONNECTION_POSITION]?: number;
@@ -60,7 +59,6 @@ export interface LoadModificationInfos {
     q0: AttributeModification<number>;
     voltageLevelId: AttributeModification<string>;
     busOrBusbarSectionId: AttributeModification<string>;
-    busbarSectionName?: string;
     connectionDirection: AttributeModification<string>;
     connectionName?: AttributeModification<string>;
     connectionPosition?: AttributeModification<number>;

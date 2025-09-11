@@ -13,27 +13,29 @@ import {
     AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
+    COMMON_APP_NAME,
+    fetchConfigParameter,
+    fetchConfigParameters,
     getPreLoginPath,
     initializeAuthenticationProd,
+    LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
+    getComputedLanguage,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 import {
     APP_NAME,
-    COMMON_APP_NAME,
     PARAM_DEVELOPER_MODE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
-import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study/index';
 import {
@@ -66,6 +68,8 @@ import {
     mapColumnsDto,
     processSpreadsheetsCollectionData,
 } from './spreadsheet-view/add-spreadsheet/dialogs/add-spreadsheet-utils';
+import useStudyNavigationSync from 'hooks/use-study-navigation-sync';
+import { useOptionalLoadingParameters } from '../hooks/use-optional-loading-parameters';
 
 const noUserManager = { instance: null, error: null };
 
@@ -86,6 +90,8 @@ const App = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
+
+    useOptionalLoadingParameters(studyUuid);
 
     const updateNetworkVisualizationsParams = useCallback(
         (params) => {
@@ -130,6 +136,9 @@ const App = () => {
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
                         break;
+                    case LAST_SELECTED_DIRECTORY:
+                        localStorage.setItem(LAST_SELECTED_DIRECTORY, param.value);
+                        break;
                     default:
                         console.error('unsupported UI parameters : ', param.name);
                 }
@@ -142,7 +151,7 @@ const App = () => {
         (event) => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
-                fetchConfigParameter(eventData.headers['parameterName'])
+                fetchConfigParameter(APP_NAME, eventData.headers['parameterName'])
                     .then((param) => {
                         updateParams([param]);
                     })
@@ -160,6 +169,8 @@ const App = () => {
     useNotificationsListener(NotificationsUrlKeys.CONFIG, {
         listenerCallbackMessage: updateConfig,
     });
+
+    useStudyNavigationSync();
 
     const networkVisuParamsUpdated = useCallback(
         (event) => {

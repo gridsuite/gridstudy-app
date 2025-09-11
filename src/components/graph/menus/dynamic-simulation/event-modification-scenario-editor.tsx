@@ -16,7 +16,6 @@ import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
 import { UUID } from 'crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
-import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
 import { isChecked, isPartial, styles } from '../network-modifications/network-modification-node-editor-utils';
@@ -33,6 +32,10 @@ import {
     isEventNotification,
     NotificationType,
 } from 'types/notification-types';
+import {
+    deleteDynamicSimulationEvents,
+    fetchDynamicSimulationEvents,
+} from '../../../../services/study/dynamic-simulation';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -343,7 +346,6 @@ const EventModificationScenarioEditor = () => {
                 <IconButton
                     onClick={doDeleteEvent}
                     size={'small'}
-                    sx={styles.toolbarIcon}
                     disabled={selectedItems.length === 0 || isAnyNodeBuilding || !currentNode}
                 >
                     <DeleteIcon />

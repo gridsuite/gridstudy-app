@@ -15,6 +15,7 @@ import {
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
 import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
+import { DiagramGridLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {
     console.info('get network visualization parameters');
@@ -105,6 +106,16 @@ export function deleteSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: U
     });
 }
 
+export function duplicateSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, columnUuid: UUID) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns/${columnUuid}/duplicate`;
+    return backendFetchJson(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: UUID, column: any) {
     const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/columns`;
     return backendFetchJson(url, {
@@ -113,6 +124,21 @@ export function createSpreadsheetColumn(studyUuid: UUID, spreadsheetModelUuid: U
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(column),
+    });
+}
+
+export function updateSpreadsheetModel(
+    studyUuid: UUID,
+    spreadsheetModelUuid: UUID,
+    spreadsheetConfig: SpreadsheetConfig
+) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(spreadsheetConfig),
     });
 }
 
@@ -179,5 +205,33 @@ export function reorderSpreadsheetConfigs(studyUuid: UUID, collectionUuid: UUID,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newOrder),
+    });
+}
+
+export function getDiagramGridLayout(studyUuid: UUID) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
+    console.debug(fetchUrl);
+    return backendFetchJson(fetchUrl);
+}
+
+export function saveDiagramGridLayout(studyUuid: UUID, diagramGridLayout: DiagramGridLayoutDto) {
+    const fetchUrl = `${getStudyUrl(studyUuid)}/diagram-grid-layout`;
+    console.debug(fetchUrl);
+    return backendFetchJson(fetchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(diagramGridLayout),
+    });
+}
+
+export function resetSpreadsheetColumnsFilters(studyUuid: UUID, spreadsheetModelUuid: UUID) {
+    const url = `${getStudyUrl(studyUuid)}/spreadsheet-config/${spreadsheetModelUuid}/reset-filters`;
+    return backendFetchJson(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 }

@@ -6,19 +6,15 @@
  */
 
 import { Box } from '@mui/material';
-import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from '@xyflow/react';
-import MapIcon from '@mui/icons-material/Map';
+import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { reorderNetworkModificationTreeNodes, setCurrentTreeNode, setModificationsDrawerOpen } from '../redux/actions';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
-import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
-import { BUILD_STATUS } from './network/constants';
-import { StudyDisplayMode } from './network-modification.type';
 import {
     getAbsolutePosition,
     getFirstAncestorWithSibling,
@@ -32,11 +28,17 @@ import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
+import { StudyDisplayMode } from './network-modification.type';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
+import { NodeType } from './graph/tree-node.type';
 
 const styles = (theme) => ({
     flexGrow: 1,
     height: '100%',
     backgroundColor: theme.reactflow.backgroundColor,
+    '.react-flow': {
+        '--xy-edge-stroke': theme.reactflow.edge.stroke,
+    },
     '.react-flow__attribution a': {
         color: theme.palette.text.primary,
     },
@@ -45,50 +47,21 @@ const styles = (theme) => ({
     },
 });
 
-const NetworkModificationTree = ({
-    studyMapTreeDisplay,
-    prevTreeDisplay,
-    onNodeContextMenu,
-    studyUuid,
-    isStudyDrawerOpen,
-}) => {
+const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const { setCurrentTreeNodeWithSync } = useSyncNavigationActions();
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
-    const [isMinimapOpen, setIsMinimapOpen] = useState(false);
+    const toggleOptions = useSelector((state) => state.toggleOptions);
 
-    const { setViewport, fitView, setCenter, getZoom } = useReactFlow();
+    const { fitView, setCenter, getZoom } = useReactFlow();
 
     const draggedBranchIdRef = useRef(null);
 
-    const nodeColor = useCallback(
-        (node) => {
-            if (!node) {
-                return '#9196a1';
-            }
-            if (node.type === 'ROOT') {
-                return 'rgba(0, 0, 0, 0.0)';
-            }
-            if (node.id === currentNode?.id) {
-                return '#4287f5';
-            }
-            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT) {
-                return '#70d136';
-            }
-            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_WARNING) {
-                return '#FFA500';
-            }
-            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_ERROR) {
-                return '#DC143C';
-            }
-            return '#9196a1';
-        },
-        [currentNode]
-    );
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -108,72 +81,41 @@ const NetworkModificationTree = ({
         updateNodePositions();
     }, [updateNodePositions]);
 
-    const onNodeClick = useCallback(
-        (event, node) => {
-            dispatch(setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION'));
-            if (!isSameNode(currentNode, node)) {
-                dispatch(setCurrentTreeNode(node));
-            }
-        },
-        [dispatch, currentNode]
-    );
+    const handleRootNodeClick = useCallback((toggleOptions) => {
+        const hasRemovableOptions =
+            toggleOptions.includes(StudyDisplayMode.MODIFICATIONS) ||
+            toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO);
 
-    const toggleMinimap = useCallback(() => {
-        setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
+        if (!hasRemovableOptions) {
+            return toggleOptions;
+        }
+
+        return toggleOptions.filter(
+            (opt) => opt !== StudyDisplayMode.MODIFICATIONS && opt !== StudyDisplayMode.EVENT_SCENARIO
+        );
     }, []);
 
-    const [x, y, zoom] = useStore((state) => state.transform);
-
-    //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
-    //So we use this useRef to avoid to trigger on those depedencies.
-    const focusParams = useRef();
-    focusParams.current = {
-        x,
-        y,
-        zoom,
-        setViewport,
-        prevTreeDisplay,
-    };
-
+    // close modifications/ event scenario when current node is root
     useEffect(() => {
-        const nodeEditorShift = isStudyDrawerOpen ? DRAWER_NODE_EDITOR_WIDTH : 0;
-        const { x, y, zoom, setViewport, prevTreeDisplay } = focusParams.current;
-        if (prevTreeDisplay) {
-            if (prevTreeDisplay.display === StudyDisplayMode.TREE && studyMapTreeDisplay === StudyDisplayMode.HYBRID) {
-                setViewport({
-                    x: x - (prevTreeDisplay.width + nodeEditorShift) / 4,
-                    y: y,
-                    zoom: zoom,
-                });
-            } else if (
-                prevTreeDisplay.display === StudyDisplayMode.HYBRID &&
-                studyMapTreeDisplay === StudyDisplayMode.TREE
-            ) {
-                setViewport({
-                    x: x + (prevTreeDisplay.width + nodeEditorShift) / 2,
-                    y: y,
-                    zoom: zoom,
-                });
+        if (currentNode?.type === NodeType.ROOT) {
+            const newOptions = handleRootNodeClick(toggleOptions);
+            if (newOptions !== toggleOptions) {
+                dispatch(setToggleOptions(newOptions));
             }
         }
-    }, [studyMapTreeDisplay, isStudyDrawerOpen]);
+    }, [currentNode, dispatch, handleRootNodeClick, toggleOptions]);
 
-    useEffect(() => {
-        const { x, y, zoom, setViewport } = focusParams.current;
-        if (isStudyDrawerOpen) {
-            setViewport({
-                x: x - DRAWER_NODE_EDITOR_WIDTH / 2,
-                y: y,
-                zoom: zoom,
-            });
-        } else {
-            setViewport({
-                x: x + DRAWER_NODE_EDITOR_WIDTH / 2,
-                y: y,
-                zoom: zoom,
-            });
-        }
-    }, [isStudyDrawerOpen]);
+    const onNodeClick = useCallback(
+        (event, node) => {
+            if (node.type === NodeType.NETWORK_MODIFICATION) {
+                dispatch(setModificationsDrawerOpen());
+            }
+            if (!isSameNode(currentNode, node)) {
+                setCurrentTreeNodeWithSync(node);
+            }
+        },
+        [currentNode, dispatch, setCurrentTreeNodeWithSync]
+    );
 
     /**
      * When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
@@ -335,12 +277,32 @@ const NetworkModificationTree = ({
         [handleNodeDragging, handleEndNodeDragging, onNodesChange]
     );
 
-    const handleFocusNode = () => {
-        const currentNodeAbsolutePosition = getAbsolutePosition(nodes, currentNode);
-        const x = currentNodeAbsolutePosition.x + nodeWidth * 0.5;
-        const y = currentNodeAbsolutePosition.y + nodeHeight * 0.5;
-        setCenter(x, y, { zoom: getZoom() });
-    };
+    const handleFocusNode = useCallback(() => {
+        if (!currentNode) {
+            return;
+        }
+
+        // Get the current node from the nodes array (with updated position)
+        const nodeInFlow = nodes.find((n) => n.id === currentNode.id);
+        if (!nodeInFlow) {
+            return;
+        }
+
+        const absolutePosition = getAbsolutePosition(nodes, nodeInFlow);
+
+        // Center on the middle of the node
+        const centerX = absolutePosition.x + nodeWidth / 2;
+        const centerY = absolutePosition.y + nodeHeight / 2;
+
+        // Use current zoom level to maintain zoom while centering
+        setCenter(centerX, centerY, { zoom: getZoom() });
+    }, [currentNode, nodes, setCenter, getZoom]);
+
+    useEffect(() => {
+        if (onTreePanelResize) {
+            onTreePanelResize.current = handleFocusNode;
+        }
+    }, [onTreePanelResize, handleFocusNode]);
 
     return (
         <Box sx={styles}>
@@ -376,8 +338,8 @@ const NetworkModificationTree = ({
                 }}
             >
                 <Controls
-                    style={{ margin: '10px' }} // This component uses "style" instead of "sx"
-                    position="top-right"
+                    position="bottom-right"
+                    style={{ margin: '10px', marginBottom: '30px' }}
                     showZoom={false}
                     showInteractive={false}
                     showFitView={false}
@@ -388,14 +350,7 @@ const NetworkModificationTree = ({
                     <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
                         <CenterFocusIcon />
                     </TreeControlButton>
-                    <TreeControlButton
-                        titleId={isMinimapOpen ? 'HideMinimap' : 'DisplayMinimap'}
-                        onClick={toggleMinimap}
-                    >
-                        <MapIcon />
-                    </TreeControlButton>
                 </Controls>
-                {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
                 <RootNetworkPanel />
             </ReactFlow>
         </Box>
@@ -405,9 +360,7 @@ const NetworkModificationTree = ({
 export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
-    studyMapTreeDisplay: PropTypes.string.isRequired,
     prevTreeDisplay: PropTypes.object,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,
-    isStudyDrawerOpen: PropTypes.bool.isRequired,
 };

@@ -244,6 +244,7 @@ export default class NetworkModificationTreeModel {
                     data: {
                         ...this.treeNodes[indexModifiedNode].data,
                         label: node.name,
+                        description: node.description,
                         globalBuildStatus: globalBuildStatus,
                         ...(!isReactFlowRootNodeData(nodeToUpdate) && { localBuildStatus }), // Only include the attribute if node is a modification node (localBuildStatus is not defined for root node)
                         readOnly: node.readOnly,
@@ -273,21 +274,5 @@ export default class NetworkModificationTreeModel {
     setBuildingStatus() {
         this.isAnyNodeBuilding =
             this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
-    }
-
-    setCaseName(newCaseName: string) {
-        if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
-            const nodeWithOldName = this.treeNodes[0];
-            //check if the node we are modifying is a ROOT node
-            if (isReactFlowRootNodeData(nodeWithOldName)) {
-                this.treeNodes[0] = {
-                    ...nodeWithOldName,
-                    data: {
-                        ...nodeWithOldName.data,
-                        caseName: newCaseName,
-                    },
-                };
-            }
-        }
     }
 }

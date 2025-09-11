@@ -14,15 +14,19 @@ import { centerOnSubstation, openDiagram } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
 import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
-import { DiagramType } from '../diagrams/diagram.type';
+import { DiagramType } from '../grid-layout/cards/diagrams/diagram.type';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
+    disablCenterSubstation: boolean;
+    onOpenNetworkAreaDiagram?: (elementId?: string) => void;
 }
 
 export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> = ({
     element,
     onClose,
+    disablCenterSubstation,
+    onOpenNetworkAreaDiagram,
     ...tagRendererProps
 }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -62,8 +66,9 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
             dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
             onClose?.();
             e.stopPropagation();
+            onOpenNetworkAreaDiagram?.(element.id);
         },
-        [dispatch, element.id, onClose]
+        [dispatch, element.id, onClose, onOpenNetworkAreaDiagram]
     );
 
     if (
@@ -79,13 +84,15 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
                         <TimelineIcon fontSize="small" />
                     </IconButton>
                 )}
-                <IconButton
-                    disabled={(!studyUuid || !currentNode) && element.type !== EQUIPMENT_TYPES.SUBSTATION}
-                    onClick={centerOnSubstationCB}
-                    size="small"
-                >
-                    <GpsFixedIcon fontSize="small" />
-                </IconButton>
+                {!disablCenterSubstation && (
+                    <IconButton
+                        disabled={(!studyUuid || !currentNode) && element.type !== EQUIPMENT_TYPES.SUBSTATION}
+                        onClick={centerOnSubstationCB}
+                        size="small"
+                    >
+                        <GpsFixedIcon fontSize="small" />
+                    </IconButton>
+                )}
             </>
         );
     } else {

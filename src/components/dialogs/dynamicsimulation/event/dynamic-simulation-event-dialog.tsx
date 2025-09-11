@@ -17,12 +17,12 @@ import { Event, EventProperty, EventPropertyName, PrimitiveTypes } from './types
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../../../services/dynamic-simulation';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../../../services/study/dynamic-simulation';
 
 export type DynamicSimulationEventDialogProps = {
     equipmentId: string;

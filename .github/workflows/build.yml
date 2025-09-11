@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    uses: powsybl/github-ci/.github/workflows/build-frontend-app-generic.yml@69b162754c0728d9aeb2ea568eaf47f28f60fafb
+    uses: powsybl/github-ci/.github/workflows/build-frontend-app-generic.yml@aaae75875296657028f2805e7a3fbdb1418b8b95
     with:
       dockerImage: gridsuite/gridstudy-app
       dockerUsername: gridsuiteci

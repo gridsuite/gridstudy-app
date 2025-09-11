@@ -16,6 +16,12 @@ export const LOAD_TYPES = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
+// For load tabular creations/modifications, we allow the UNDEFINED value
+export const LOAD_TYPES_FOR_LOAD_TABULAR_CREATION_MODIFICATION = [
+    ...LOAD_TYPES,
+    { id: UNDEFINED_LOAD_TYPE, label: 'Undefined' },
+] as const;
+
 // Relevant EnergySource Powsybl enum values
 export const ENERGY_SOURCES = [
     { id: 'HYDRO', label: 'Hydro' },
@@ -37,20 +43,23 @@ export const REGULATION_TYPES = {
 } as const;
 
 export const PHASE_REGULATION_MODES = {
-    FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
         id: 'ACTIVE_POWER_CONTROL',
         label: 'PhaseActivePowerControl',
     },
+    OFF: { id: 'OFF', label: 'Off' }, // used for the ui but doesn't exist in powsybl => should not be sent to the back
 } as const;
 
+// only useful for the ui, in order to set isRegulating, should not be sent to the back
 export const RATIO_REGULATION_MODES = {
     FIXED_RATIO: {
+        // isRegulating false
         id: 'FIXED_RATIO',
         label: 'FixedRatio',
     },
     VOLTAGE_REGULATION: {
+        // isRegulating true
         id: 'VOLTAGE_REGULATION',
         label: 'VoltageRegulation',
     },
@@ -60,6 +69,12 @@ export const SIDE = {
     SIDE1: { id: 'SIDE1', label: 'RegulatedSide1' },
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
 } as const;
+
+export const APPLICABILITY = {
+    EQUIPMENT: { id: 'EQUIPMENT', label: 'BothSides' },
+    SIDE1: { id: 'SIDE1', label: 'Side1' },
+    SIDE2: { id: 'SIDE2', label: 'Side2' },
+};
 
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
@@ -153,10 +168,16 @@ export const SWITCH_TYPE = {
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 } as const;
 
+export const POSITION_NEW_SECTION_SIDE = {
+    BEFORE: { id: 'BEFORE', label: 'Before' },
+    AFTER: { id: 'AFTER', label: 'After' },
+} as const;
+
 export enum VscConverterMode {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER = 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
     SIDE_1_INVERTER_SIDE_2_RECTIFIER = 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
 }
+
 export interface VscConverterModeValue {
     id: string;
     label: string;

@@ -13,6 +13,9 @@ export const FetchStatus = {
     IDLE: 'IDLE',
     RUNNING: 'RUNNING',
 };
+
+export const MAX_INT32: number = 2147483647;
+
 type ErrorType = Error & {
     status?: number;
 };
@@ -103,8 +106,9 @@ const downloadFile = (blob: Blob, filename: string, type: string) => {
     link.href = href;
     link.setAttribute('download', filename);
     document.body.appendChild(link);
-    link.click();
+    link.click(); // start download
     document.body.removeChild(link);
+    window.URL.revokeObjectURL(href); // tell browser we are done with this url
 };
 
 function fetchEnv() {

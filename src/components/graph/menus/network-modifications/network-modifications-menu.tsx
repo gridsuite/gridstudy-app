@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Menu from '@mui/material/Menu';
+import { Divider, Menu } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { MenuDefinition, MenuSection } from './network-modification-menu.type';
 import ChildMenuItem from '../create-child-menu-item';
 import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
-import { MenuDefinition } from './network-modification-menu.type';
 
 interface NetworkModificationMenuProps {
     open: boolean;
     onClose: () => void;
     onItemClick: (id: string) => void;
-    menuDefinition: MenuDefinition[];
+    menuSections: MenuSection[];
     anchorEl?: HTMLElement | null;
 }
 
@@ -31,16 +31,31 @@ const NetworkModificationsMenu = ({
     open,
     onClose,
     onItemClick,
-    menuDefinition,
+    menuSections,
     anchorEl,
 }: NetworkModificationMenuProps) => {
     const intl = useIntl();
-    const renderMenuItems = (menuItems: MenuDefinition[]) => {
-        return menuItems.map((menuItem) => {
-            if (menuItem?.hide) {
-                return undefined;
-            }
-            return !('subItems' in menuItem) ? (
+
+    const renderMenuItem = (menuItem: MenuDefinition) => {
+        if ('subItems' in menuItem) {
+            return (
+                <CustomNestedMenuItem key={menuItem.id} label={intl.formatMessage({ id: menuItem.label })}>
+                    {menuItem.subItems
+                        .filter((subItem) => !subItem.hide)
+                        .map((subItem) => (
+                            <ChildMenuItem
+                                key={subItem.id}
+                                item={{
+                                    id: subItem.label,
+                                    action: () => onItemClick(subItem.id),
+                                    disabled: false,
+                                }}
+                            />
+                        ))}
+                </CustomNestedMenuItem>
+            );
+        } else {
+            return (
                 <ChildMenuItem
                     key={menuItem.id}
                     item={{
@@ -49,11 +64,25 @@ const NetworkModificationsMenu = ({
                         disabled: false,
                     }}
                 />
-            ) : (
-                <CustomNestedMenuItem key={menuItem.id} label={intl.formatMessage({ id: menuItem.label })}>
-                    {renderMenuItems(menuItem.subItems)}
-                </CustomNestedMenuItem>
             );
+        }
+    };
+
+    const renderMenuSections = (sections: MenuSection[]) => {
+        return sections.flatMap((section, sectionIndex) => {
+            const visibleItems = section.items.filter((item) => !item.hide);
+
+            if (visibleItems.length === 0) {
+                return [];
+            }
+
+            const sectionElements = visibleItems.map((menuItem) => renderMenuItem(menuItem));
+
+            if (sectionIndex < sections.length - 1) {
+                sectionElements.push(<Divider key={`section-divider-${section.id}`} />);
+            }
+
+            return sectionElements;
         });
     };
 
@@ -71,7 +100,7 @@ const NetworkModificationsMenu = ({
                 horizontal: 'left',
             }}
         >
-            <div>{renderMenuItems(menuDefinition)}</div>
+            <div>{renderMenuSections(menuSections)}</div>
         </Menu>
     );
 };

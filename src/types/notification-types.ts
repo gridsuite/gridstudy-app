@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
-import { ComputingType } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
+import type { ComputingType } from '@gridsuite/commons-ui';
+import type { UUID } from 'crypto';
 
 export enum NotificationType {
     // Study status
@@ -14,6 +14,7 @@ export enum NotificationType {
     STUDY_NETWORK_RECREATION_DONE = 'study_network_recreation_done',
     METADATA_UPDATED = 'metadata_updated',
     STUDY_ALERT = 'STUDY_ALERT',
+    COMPUTATION_DEBUG_FILE_STATUS = 'computationDebugFileStatus',
     // Build
     STUDY = 'study',
     NODE_BUILD_COMPLETED = 'buildCompleted',
@@ -24,13 +25,13 @@ export enum NotificationType {
     // Root networks
     ROOT_NETWORKS_UPDATED = 'rootNetworksUpdated',
     ROOT_NETWORKS_UPDATE_FAILED = 'rootNetworksUpdateFailed',
-    ROOT_NETWORK_DELETION_STARTED = 'rootNetworkDeletionStarted',
+    ROOT_NETWORKS_DELETION_STARTED = 'rootNetworksDeletionStarted',
     // Nodes and tree
     NODE_CREATED = 'nodeCreated',
     NODES_DELETED = 'nodeDeleted',
     NODE_MOVED = 'nodeMoved',
     NODES_UPDATED = 'nodeUpdated',
-    NODE_RENAMED = 'nodeRenamed',
+    NODE_EDITED = 'nodeEdited',
     NODE_BUILD_STATUS_UPDATED = 'nodeBuildStatusUpdated',
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
@@ -86,6 +87,7 @@ export enum NotificationType {
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
     SPREADSHEET_TAB_UPDATED = 'spreadsheetTabUpdated',
     SPREADSHEET_COLLECTION_UPDATED = 'spreadsheetCollectionUpdated',
+    SPREADSHEET_PARAMETERS_UPDATED = 'spreadsheetParametersUpdated',
 }
 
 export const PENDING_MODIFICATION_NOTIFICATION_TYPES = [
@@ -122,7 +124,7 @@ export const MODIFYING_NODES_NOTIFICATION_TYPES = [
 export const MODIFYING_NODE_NOTIFICATION_TYPES = [
     NotificationType.STUDY, // contains 'node' header
     NotificationType.STUDY_ALERT,
-    NotificationType.NODE_RENAMED, // TODO don not manage this one ?
+    NotificationType.NODE_EDITED, // TODO don not manage this one ?
     NotificationType.NODE_BUILD_COMPLETED,
     NotificationType.NODE_BUILD_FAILED,
 ] as NotificationType[];
@@ -200,7 +202,7 @@ interface RootNetworkUpdateFailedEventDataHeaders extends CommonStudyEventDataHe
 }
 
 interface RootNetworkDeletionStartedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.ROOT_NETWORK_DELETION_STARTED;
+    updateType: NotificationType.ROOT_NETWORKS_DELETION_STARTED;
     rootNetworksUuids: UUID[];
 }
 
@@ -262,8 +264,8 @@ interface NodesUpdatedEventDataHeaders extends CommonStudyEventDataHeaders {
     nodes: UUID[];
 }
 
-interface NodeRenamedEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.NODE_RENAMED;
+interface NodeEditedEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NODE_EDITED;
     node: UUID;
 }
 
@@ -308,6 +310,10 @@ interface ModificationProgressionEventDataHeaders extends CommonStudyEventDataHe
     parentNode: UUID;
     nodes: UUID[];
     rootNetworkUuid?: UUID;
+}
+
+interface SpreadsheetParametersUpdatedDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
 }
 
 interface ModificationsCreationInProgressEventDataHeaders extends ModificationProgressionEventDataHeaders {
@@ -539,7 +545,8 @@ interface CommonStudyEventData {
 
 export interface StudyEventData {
     headers: StudyEventDataHeaders;
-    payload: NetworkImpactsInfos;
+    /** @see NetworkImpactsInfos */
+    payload: string;
 }
 
 export interface ComputationParametersUpdatedEventData {
@@ -584,7 +591,8 @@ export interface MetadataUpdatedEventData {
 
 export interface StudyAlertEventData {
     headers: StudyAlertEventDataHeaders;
-    payload: StudyAlert;
+    /** @see StudyAlert */
+    payload: string;
 }
 
 export interface NodeCreatedEventData {
@@ -607,8 +615,8 @@ export interface NodesUpdatedEventData {
     payload: undefined;
 }
 
-export interface NodeRenamedEventData {
-    headers: NodeRenamedEventDataHeaders;
+export interface NodeEditedEventData {
+    headers: NodeEditedEventDataHeaders;
     payload: undefined;
 }
 
@@ -639,7 +647,8 @@ export interface SubtreeCreatedEventData {
 
 export interface NodesColumnPositionsChangedEventData {
     headers: NodesColumnPositionsChangedEventDataHeaders;
-    payload: UUID[];
+    /** JSON of <code>{@link UUID}[]</code> */
+    payload: string;
 }
 
 export interface ModificationsCreationInProgressEventData extends CommonStudyEventData {
@@ -844,6 +853,15 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
+    headers: SpreadsheetParametersUpdatedDataHeaders;
+    /**
+     * stringified of <code>PartialDeep<SpreadsheetOptionalLoadingParameters></code>
+     * @see SpreadsheetOptionalLoadingParameters
+     */
+    payload: string;
+}
+
 export function isComputationParametersUpdatedNotification(
     notif: unknown
 ): notif is ComputationParametersUpdatedEventData {
@@ -861,10 +879,14 @@ export function isLoadflowResultNotification(notif: unknown): notif is LoadflowR
     return (notif as LoadflowResultEventData).headers?.updateType === NotificationType.LOADFLOW_RESULT;
 }
 
+export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
+    return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
+}
+
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
     return (
         (notif as RootNetworkDeletionStartedEventData).headers?.updateType ===
-        NotificationType.ROOT_NETWORK_DELETION_STARTED
+        NotificationType.ROOT_NETWORKS_DELETION_STARTED
     );
 }
 
@@ -928,6 +950,16 @@ export function isEventCrudFinishedNotification(notif: unknown): notif is EventC
 export function isNodeDeletedNotification(notif: unknown): notif is NodesDeletedEventData {
     return (notif as NodesDeletedEventData).headers?.updateType === NotificationType.NODES_DELETED;
 }
+export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedEventData {
+    return (notif as NodeCreatedEventData).headers?.updateType === NotificationType.NODE_CREATED;
+}
+
+export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEventData {
+    return (notif as NodeEditedEventData).headers?.updateType === NotificationType.NODE_EDITED;
+}
+export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
+    return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+}
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
     | EventCrudFinishedEventData // contains 'nodes' header
@@ -950,7 +982,7 @@ export function isContainingNodesInformationNotification(notif: unknown): notif 
 export function isContainingNodeInformationNotification(notif: unknown): notif is
     | StudyEventData // contains 'node' header
     | StudyAlertEventData
-    | NodeRenamedEventData // TODO don not manage this one ?
+    | NodeEditedEventData // TODO don not manage this one ?
     | NodeBuildCompletedEventData
     | NodeBuildFailedEventData {
     return MODIFYING_NODE_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
@@ -1038,6 +1070,12 @@ export function isSpreadsheetNodeAliasesUpdatedNotification(notif: unknown): not
     return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_NODE_ALIASES_UPDATED;
 }
 
+export function isSpreadsheetParametersUpdatedNotification(
+    notif: unknown
+): notif is SpreadsheetParametersUpdatedEventData {
+    return (notif as CommonStudyEventData).headers?.updateType === NotificationType.SPREADSHEET_PARAMETERS_UPDATED;
+}
+
 // Notification types
 export type StudyUpdateEventData =
     | StudyEventData
@@ -1053,7 +1091,7 @@ export type StudyUpdateEventData =
     | NodesDeletedEventData
     | NodeMovedEventData
     | NodesUpdatedEventData
-    | NodeRenamedEventData
+    | NodeEditedEventData
     | NodesBuildStatusUpdatedEventData
     | NodeBuildCompletedEventData
     | NodeBuildFailedEventData
@@ -1132,6 +1170,7 @@ export interface StudyUpdatedEventDataHeader {
  */
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
+    /** @see NetworkImpactsInfos */
+    payload: string;
 }
 /******************* TO REMOVE LATER ****************/

@@ -5,315 +5,257 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useRef, useMemo, useEffect, useState, FunctionComponent } from 'react';
-import { BasicModificationDialog } from '../commons/basicModificationDialog';
-import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { suppressEventsToPreventEditMode } from '../commons/utils';
+import { useCallback, useRef, useState } from 'react';
+import { CustomFormProvider, Option, useSnackMessage } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef } from 'ag-grid-community';
-import { LineTypeInfo } from './line-catalog.type';
-import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { CATEGORIES_TABS, CurrentLimitsInfo, LineTypeInfo } from './line-catalog.type';
+import {
+    AERIAL_AREAS,
+    AERIAL_TEMPERATURES,
+    ID,
+    SELECTED_CATEGORIES_TAB,
+    UNDERGROUND_AREAS,
+    UNDERGROUND_SHAPE_FACTORS,
+} from '../../utils/field-constants';
+import { useForm } from 'react-hook-form';
+import { getLineTypeWithLimits } from '../../../services/network-modification';
+import { ModificationDialog } from '../commons/modificationDialog';
+import yup from '../../utils/yup-config';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { DeepNullable } from 'components/utils/ts-utils';
+import LineTypesCatalogSelectorForm from './line-types-catalog-selector-form';
 
-const LineTypesCatalogSelectorDialogTabs = {
-    AERIAL_TAB: 0,
-    UNDERGROUND_TAB: 1,
+const formSchema = yup
+    .object()
+    .shape({
+        [AERIAL_AREAS]: yup
+            .object()
+            .nullable()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.AERIAL.id,
+                then: (schema) => schema.required(),
+            })
+            .shape({
+                [ID]: yup.string(),
+            }),
+        [AERIAL_TEMPERATURES]: yup
+            .object()
+            .nullable()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.AERIAL.id,
+                then: (schema) => schema.required(),
+            })
+            .shape({
+                [ID]: yup.string(),
+            }),
+        [UNDERGROUND_AREAS]: yup
+            .object()
+            .nullable()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.UNDERGROUND.id,
+                then: (schema) => schema.required(),
+            })
+            .shape({
+                [ID]: yup.string(),
+            }),
+        [UNDERGROUND_SHAPE_FACTORS]: yup
+            .object()
+            .nullable()
+            .when([SELECTED_CATEGORIES_TAB], {
+                is: (selectedCategoryTab: number) => selectedCategoryTab === CATEGORIES_TABS.UNDERGROUND.id,
+                then: (schema) => schema.required(),
+            })
+            .shape({
+                [ID]: yup.string(),
+            }),
+        [SELECTED_CATEGORIES_TAB]: yup.number().nullable(),
+    })
+    .required();
+
+const emptyFormData = {
+    [AERIAL_AREAS]: null,
+    [AERIAL_TEMPERATURES]: null,
+    [UNDERGROUND_AREAS]: null,
+    [UNDERGROUND_SHAPE_FACTORS]: null,
+    [SELECTED_CATEGORIES_TAB]: null,
 };
 
-const defaultColDef = {
-    filter: true,
-    sortable: true,
-    resizable: false,
-    lockPinned: true,
-    wrapHeaderText: true,
-    autoHeaderHeight: true,
-    suppressKeyboardEvent: suppressEventsToPreventEditMode,
-};
+export type LineTypesCatalogSelectorDialogSchemaForm = yup.InferType<typeof formSchema>;
 
-export interface LineTypesCatalogSelectorDialogProps {
+export type LineTypesCatalogSelectorDialogProps = {
     onSelectLine: (selectedLine: LineTypeInfo) => void;
     preselectedRowId: string;
     rowData: LineTypeInfo[];
     onClose: () => void;
-}
+};
 
-const LineTypesCatalogSelectorDialog: FunctionComponent<LineTypesCatalogSelectorDialogProps> = ({
+export default function LineTypesCatalogSelectorDialog({
     onSelectLine,
     preselectedRowId,
     rowData,
     onClose,
     ...dialogProps
-}) => {
-    const intl = useIntl();
+}: Readonly<LineTypesCatalogSelectorDialogProps>) {
+    const { snackError } = useSnackMessage();
     const gridRef = useRef<AgGridReact>(null);
-    const [tabIndex, setTabIndex] = useState<number>(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
     const [selectedRow, setSelectedRow] = useState<LineTypeInfo | null>(null);
+    const [areasOptions, setAreasOptions] = useState<Option[]>([]);
+    const [aerialTemperatures, setAerialTemperatures] = useState<Option[]>([]);
+    const [undergroundShapeFactors, setUndergroundShapeFactors] = useState<Option[]>([]);
 
-    const rowDataAerialTab = useMemo(() => {
-        if (rowData) {
-            return rowData.filter((row) => row.category === 'AERIAL');
+    const formMethods = useForm<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>({
+        defaultValues: emptyFormData,
+        resolver: yupResolver<DeepNullable<LineTypesCatalogSelectorDialogSchemaForm>>(formSchema),
+    });
+    const { setValue, getValues } = formMethods;
+
+    const handleSelectedAerial = useCallback(
+        (selectedAerialRow: LineTypeInfo) => {
+            const selectedArea = getValues(AERIAL_AREAS);
+            const selectedTemperature = getValues(AERIAL_TEMPERATURES);
+
+            if (areasOptions?.length > 0 && aerialTemperatures?.length > 0) {
+                const filteredLimits = selectedAerialRow?.limitsForLineType?.filter(
+                    (limit) => limit?.area === selectedArea?.id && limit?.temperature === selectedTemperature?.id
+                );
+                selectedAerialRow.limitsForLineType = filteredLimits ? filteredLimits : [];
+            }
+        },
+        [getValues, areasOptions?.length, aerialTemperatures?.length]
+    );
+
+    const handleSelectedUnderground = useCallback(
+        (selectedUndergroundRow: LineTypeInfo) => {
+            const selectedArea = getValues(UNDERGROUND_AREAS);
+            const selectedShapeFactor = getValues(UNDERGROUND_SHAPE_FACTORS);
+
+            const areaId = selectedArea?.id;
+            const shapeFactorId = selectedShapeFactor?.id;
+
+            if (areasOptions.length > 0 && areaId && shapeFactorId) {
+                const filteredLimits = selectedUndergroundRow?.limitsForLineType?.filter(
+                    (limit) => limit?.area === areaId
+                );
+
+                if (filteredLimits) {
+                    const shapeFactorValue = parseFloat(shapeFactorId);
+                    if (!isNaN(shapeFactorValue) && shapeFactorValue !== 0) {
+                        filteredLimits.forEach((limit) => {
+                            limit.permanentLimit = Math.floor(limit.permanentLimit / shapeFactorValue);
+                        });
+                        selectedUndergroundRow.limitsForLineType = filteredLimits;
+                    }
+                } else {
+                    selectedUndergroundRow.limitsForLineType = [];
+                }
+            }
+        },
+        [getValues, areasOptions]
+    );
+
+    const onSubmit = useCallback(() => {
+        if (selectedRow?.category === CATEGORIES_TABS.AERIAL.name) {
+            handleSelectedAerial(selectedRow);
+        } else if (selectedRow?.category === CATEGORIES_TABS.UNDERGROUND.name) {
+            handleSelectedUnderground(selectedRow);
         }
-        return [];
-    }, [rowData]);
 
-    const rowDataUndergroundTab = useMemo(() => {
-        if (rowData) {
-            return rowData.filter((row) => row.category === 'UNDERGROUND');
+        selectedRow && onSelectLine?.(selectedRow);
+    }, [selectedRow, handleSelectedAerial, handleSelectedUnderground, onSelectLine]);
+
+    const createOptionsFromAreas = (limitsData?: CurrentLimitsInfo[]) => {
+        if (!limitsData?.length) {
+            return [];
         }
-        return [];
-    }, [rowData]);
 
-    const handleClear = useCallback(() => onClose && onClose(), [onClose]);
+        return [...new Set(limitsData.map((limit) => limit.area))]
+            .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+            .map((area) => ({ id: area, label: area }));
+    };
 
-    const handleSubmit = useCallback(() => {
-        onSelectLine && selectedRow && onSelectLine(selectedRow);
-    }, [onSelectLine, selectedRow]);
+    const createOptionsFromTemperatures = (limitsData?: CurrentLimitsInfo[]) => {
+        if (!limitsData?.length) {
+            return [];
+        }
 
-    const handleTabChange = useCallback((newValue: number) => {
-        setTabIndex(newValue);
-    }, []);
+        return [...new Set(limitsData.map((limit) => limit.temperature))]
+            .toSorted((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+            .map((temp) => ({ id: temp, label: temp }));
+    };
+
+    const createOptionsFromUndergroundShapeFactors = (lineInfo: LineTypeInfo): Option[] => {
+        return lineInfo.shapeFactors
+            .toSorted((a, b) => a - b)
+            .map((shapeFactor) => ({ id: String(shapeFactor), label: String(shapeFactor) }));
+    };
+
+    const handleSelectedRowData = useCallback(
+        async (selectedData: LineTypeInfo) => {
+            try {
+                const lineTypeWithLimits = await getLineTypeWithLimits(selectedData.id);
+                selectedData.limitsForLineType = lineTypeWithLimits.limitsForLineType;
+                selectedData.shapeFactors = lineTypeWithLimits.shapeFactors;
+                setSelectedRow(selectedData);
+                const newTabIndex =
+                    selectedData.category === CATEGORIES_TABS.AERIAL.name
+                        ? CATEGORIES_TABS.AERIAL.id
+                        : CATEGORIES_TABS.UNDERGROUND.id;
+
+                setValue(SELECTED_CATEGORIES_TAB, newTabIndex);
+                if (selectedData.category === CATEGORIES_TABS.AERIAL.name) {
+                    setAreasOptions(createOptionsFromAreas(selectedData.limitsForLineType));
+                    setAerialTemperatures(createOptionsFromTemperatures(selectedData.limitsForLineType));
+                } else if (selectedData.category === CATEGORIES_TABS.UNDERGROUND.name) {
+                    setAreasOptions(createOptionsFromAreas(selectedData.limitsForLineType));
+                    setUndergroundShapeFactors(createOptionsFromUndergroundShapeFactors(selectedData));
+                }
+            } catch (error) {
+                snackError({
+                    messageTxt: (error as Error).message,
+                    headerId: 'LineTypesCatalogFetchingError',
+                });
+            }
+        },
+        [setValue, snackError]
+    );
 
     const onSelectionChanged = useCallback(() => {
-        // We extract the selected row from AGGrid
-        const selectedRow = gridRef.current?.api?.getSelectedRows();
-        if (selectedRow?.length) {
-            setSelectedRow(selectedRow[0] ?? null);
+        const selectedRows = gridRef.current?.api?.getSelectedRows();
+        if (selectedRows?.length) {
+            setValue(AERIAL_AREAS, null);
+            setValue(AERIAL_TEMPERATURES, null);
+            setValue(UNDERGROUND_AREAS, null);
+            setValue(UNDERGROUND_SHAPE_FACTORS, null);
+            handleSelectedRowData(selectedRows[0]).then();
         }
-    }, []);
-
-    const aerialColumnDefs = useMemo((): ColDef[] => {
-        return [
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.type' }),
-                field: 'type',
-                pinned: 'left',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
-                field: 'voltage',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.conductorType',
-                }),
-                field: 'conductorType',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.section' }),
-                field: 'section',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.conductorsNumber',
-                }),
-                field: 'conductorsNumber',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.circuitsNumber',
-                }),
-                field: 'circuitsNumber',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.groundWiresNumber',
-                }),
-                field: 'groundWiresNumber',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.linearResistance',
-                }),
-                field: 'linearResistance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.linearReactance',
-                }),
-                field: 'linearReactance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.linearCapacity',
-                }),
-                field: 'linearCapacity',
-                cellRenderer: DefaultCellRenderer,
-            },
-        ];
-    }, [intl]);
-
-    const undergroundColumnDefs = useMemo((): ColDef[] => {
-        return [
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.type' }),
-                field: 'type',
-                pinned: 'left',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
-                field: 'voltage',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.conductorType',
-                }),
-                field: 'conductorType',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'lineTypes.section' }),
-                field: 'section',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.insulator',
-                }),
-                field: 'insulator',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.screen',
-                }),
-                field: 'screen',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.linearResistance',
-                }),
-                field: 'linearResistance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.linearReactance',
-                }),
-                field: 'linearReactance',
-                cellRenderer: DefaultCellRenderer,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'lineTypes.linearCapacity',
-                }),
-                field: 'linearCapacity',
-                cellRenderer: DefaultCellRenderer,
-            },
-        ];
-    }, [intl]);
-
-    // Tries to find the selected row to highlight it
-    const highlightSelectedRow = useCallback(() => {
-        const rowIdToHighlight = selectedRow?.id ?? preselectedRowId;
-        if (rowIdToHighlight && rowData) {
-            gridRef.current?.api?.forEachNode(function (node) {
-                node.setSelected(node.data?.id === rowIdToHighlight);
-            });
-        }
-    }, [selectedRow, preselectedRowId, rowData]);
-
-    const scrollToPreselectedElement = useCallback(() => {
-        const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
-        preselectedRow && gridRef.current?.api?.ensureNodeVisible(preselectedRow, 'middle');
-        highlightSelectedRow();
-    }, [preselectedRowId, highlightSelectedRow, rowData]);
-
-    // Select the correct tab when opening the dialog, if a row is preselected
-    useEffect(() => {
-        if (preselectedRowId && rowData) {
-            const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
-            const newTabIndex =
-                preselectedRow?.category === 'UNDERGROUND'
-                    ? LineTypesCatalogSelectorDialogTabs.UNDERGROUND_TAB
-                    : LineTypesCatalogSelectorDialogTabs.AERIAL_TAB;
-            setTabIndex(newTabIndex);
-        }
-    }, [rowData, preselectedRowId]);
-
-    // Tries to highlight the preselected row when changing tabs
-    useEffect(() => {
-        highlightSelectedRow();
-    }, [highlightSelectedRow, tabIndex]);
-
-    const headerAndTabs = (
-        <Box
-            sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '15px',
-            }}
-        >
-            <Grid container>
-                <Tabs value={tabIndex} variant="scrollable" onChange={(_event, newValue) => handleTabChange(newValue)}>
-                    <Tab label={<FormattedMessage id="lineTypes.category.aerial" />} />
-                    <Tab label={<FormattedMessage id="lineTypes.category.underground" />} />
-                </Tabs>
-            </Grid>
-        </Box>
-    );
-
-    const displayTable = useCallback(
-        (currentTab: number) => {
-            let rowData, columnDefs;
-            if (currentTab === LineTypesCatalogSelectorDialogTabs.AERIAL_TAB) {
-                rowData = rowDataAerialTab;
-                columnDefs = aerialColumnDefs;
-            } else {
-                rowData = rowDataUndergroundTab;
-                columnDefs = undergroundColumnDefs;
-            }
-            return (
-                <CustomAGGrid
-                    ref={gridRef}
-                    rowData={rowData}
-                    defaultColDef={defaultColDef}
-                    columnDefs={columnDefs}
-                    rowSelection="single"
-                    onSelectionChanged={onSelectionChanged}
-                    onGridReady={scrollToPreselectedElement} // Highlights the preselected row when AGGrid is ready
-                    overrideLocales={AGGRID_LOCALES}
-                />
-            );
-        },
-        [
-            aerialColumnDefs,
-            undergroundColumnDefs,
-            scrollToPreselectedElement,
-            onSelectionChanged,
-            rowDataAerialTab,
-            rowDataUndergroundTab,
-        ]
-    );
+    }, [handleSelectedRowData, setValue]);
 
     return (
-        <BasicModificationDialog
-            disabledSave={!selectedRow}
-            fullWidth
-            maxWidth="xl"
-            onClear={handleClear}
-            onClose={onClose}
-            onSave={handleSubmit}
-            open={true}
-            PaperProps={{
-                sx: {
-                    height: '95vh', // we want the dialog height to be fixed even when switching tabs
-                },
-            }}
-            subtitle={headerAndTabs}
-            titleId={'SelectType'}
-            {...dialogProps}
-        >
-            <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
-        </BasicModificationDialog>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+            <ModificationDialog
+                fullWidth
+                maxWidth="xl"
+                onClear={onClose}
+                onClose={onClose}
+                onSave={onSubmit}
+                open={true}
+                PaperProps={{
+                    sx: { height: '95vh' },
+                }}
+                titleId="SelectType"
+                {...dialogProps}
+            >
+                <LineTypesCatalogSelectorForm
+                    gridRef={gridRef}
+                    selectedRow={selectedRow}
+                    preselectedRowId={preselectedRowId}
+                    rowData={rowData}
+                    onSelectionChanged={onSelectionChanged}
+                    areasOptions={areasOptions}
+                    aerialTemperatures={aerialTemperatures}
+                    undergroundShapeFactor={undergroundShapeFactors}
+                />
+            </ModificationDialog>
+        </CustomFormProvider>
     );
-};
-
-export default LineTypesCatalogSelectorDialog;
+}

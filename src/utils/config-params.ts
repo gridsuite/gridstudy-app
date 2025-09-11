@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const COMMON_APP_NAME = 'common';
 export const APP_NAME = 'study';
 
 // Commons config names
@@ -33,9 +32,3 @@ export const PARAM_PROVIDER_OPENLOADFLOW = 'OpenLoadFlow';
 export const PARAM_PROVIDER_DYNAFLOW = 'DynaFlow';
 
 export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';
-
-const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
-
-export function getAppName(paramName: string) {
-    return COMMON_CONFIG_PARAMS_NAMES.has(paramName) ? COMMON_APP_NAME : APP_NAME;
-}

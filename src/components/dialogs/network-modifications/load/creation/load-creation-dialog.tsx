@@ -116,7 +116,6 @@ export function LoadCreationDialog({
         ...getConnectivityFormData({
             voltageLevelId: load.voltageLevelId,
             busbarSectionId: load.busOrBusbarSectionId,
-            busbarSectionName: undefined,
             connectionDirection: load.connectablePosition.connectionDirection,
             connectionName: load.connectablePosition.connectionName,
             connectionPosition: undefined,
@@ -138,7 +137,6 @@ export function LoadCreationDialog({
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     busbarSectionId: load.busOrBusbarSectionId,
-                    busbarSectionName: undefined,
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
                     connectionPosition: load.connectionPosition,

@@ -12,6 +12,8 @@ import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEn
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 import { SwitchInfos } from './network-map.type';
+import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
+import { JSONSchema4 } from 'json-schema';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -38,6 +40,8 @@ interface SubstationSingleLineDiagram {
     componentLibrary: string;
     language: GsLang;
 }
+
+export const PREFIX_SCHEMAS_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-map';
 
 /* voltage-levels */
 export function getVoltageLevelSingleLineDiagram({
@@ -214,6 +218,7 @@ export async function fetchNetworkElementsInfos<T extends Identifiable[] = Ident
     }
     urlSearchParams.append('infoType', infoType);
     urlSearchParams.append('elementType', elementType);
+    // the `partialObject` parameter will be injected by the study-server who hold this parameter in database
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -234,7 +239,7 @@ export function fetchNetworkElementInfos(
     studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: string | undefined | null,
-    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES,
+    elementType: EquipmentType | ExtendedEquipmentType | EQUIPMENT_TYPES | SpreadsheetEquipmentType,
     infoType: string,
     elementId: string,
     inUpstreamBuiltParentNode: boolean
@@ -332,54 +337,6 @@ export function fetchHvdcLinesMapInfos(
     );
 }
 
-export function fetchSubstations(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.SUBSTATION,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchLines(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchVoltageLevels(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
 export function fetchVoltageLevelsListInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
@@ -414,230 +371,6 @@ export function fetchVoltageLevelsMapInfos(
     );
 }
 
-export function fetchTwoWindingsTransformers(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchThreeWindingsTransformers(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchGenerators(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.GENERATOR,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchLoads(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.LOAD,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchDanglingLines(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.DANGLING_LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchBatteries(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.BATTERY,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchHvdcLines(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.HVDC_LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchLccConverterStations(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchVscConverterStations(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchShuntCompensators(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchStaticVarCompensators(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchBuses(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.BUS,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchBusbarSections(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.BUSBAR_SECTION,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
-export function fetchTieLines(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.TIE_LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
-}
-
 export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
@@ -663,4 +396,12 @@ export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: U
         '/export-network/' +
         exportFormat;
     return getUrlWithToken(url);
+}
+
+export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
+    const fetchEquipmentTypeSchemaUrl = `${PREFIX_SCHEMAS_QUERIES}/v1/schemas/${type}/${EQUIPMENT_INFOS_TYPES.TAB.type}`;
+    return backendFetchJson(fetchEquipmentTypeSchemaUrl, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+    });
 }

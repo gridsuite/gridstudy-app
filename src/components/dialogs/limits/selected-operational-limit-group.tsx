@@ -9,38 +9,62 @@ import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { APPLICABILITY } from '../../network/constants';
+import { useIntl } from 'react-intl';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
     optionsFormName: string;
+    label?: string;
+    filteredApplicability?: string;
+    previousValue?: string;
+    isABranchModif: boolean; // if false, this is a branch creation
 }
 
 export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,
+    label,
+    filteredApplicability,
+    previousValue,
+    isABranchModif,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
     });
+    const intl = useIntl();
 
-    const opLimitsGroupsNames: string[] = useMemo(
-        () =>
-            optionsValues
-                ? optionsValues
-                      .map((optionObj: OperationalLimitsGroup) => optionObj.id)
-                      .filter((id: string) => id != null)
-                : [],
-        [optionsValues]
-    );
+    const opLimitsGroupsNames: string[] = useMemo((): string[] => {
+        const finalOptions: string[] = optionsValues
+            ? optionsValues
+                  .filter(
+                      (optionObj: OperationalLimitsGroup) =>
+                          optionObj.applicability &&
+                          (optionObj.applicability === filteredApplicability ||
+                              optionObj.applicability === APPLICABILITY.EQUIPMENT.id)
+                  )
+                  .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
+                  .filter((id: string) => id != null)
+            : [];
+        if (isABranchModif) {
+            finalOptions.push(
+                intl.formatMessage({
+                    id: 'None',
+                })
+            );
+        }
+        return finalOptions;
+    }, [filteredApplicability, intl, isABranchModif, optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
             <AutocompleteInput
                 name={selectedFormName}
                 options={opLimitsGroupsNames}
-                label={'SelectedOperationalLimitGroup'}
+                label={label ?? 'SelectedOperationalLimitGroup'}
                 size={'small'}
-                allowNewValue
+                previousValue={previousValue}
+                allowNewValue={isABranchModif}
             />
         </Box>
     );

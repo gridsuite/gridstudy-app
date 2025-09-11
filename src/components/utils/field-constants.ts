@@ -19,6 +19,8 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const PREDEFINED = 'predefined';
+export const TABULAR_PROPERTIES = 'properties';
 export const TAG = 'tag';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
@@ -47,8 +49,22 @@ export const CONNECTION_POSITION2 = 'connectionPosition2';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
+export const AMOUNT_TEMPORARY_LIMITS = 'amountTemporaryLimits';
+export const MODIFICATION_TYPE = 'modificationType';
+export const LIMIT_SETS_MODIFICATION_TYPE = {
+    MODIFY: 'MODIFY',
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
+    ADD: 'ADD',
+    REPLACE: 'REPLACE',
+} as const;
+export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
+export const SIDE = 'side';
+export const LIMIT_GROUP_NAME = 'limitGroupName';
+export const IS_ACTIVE = 'isActive';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
+export const SELECTED_OPERATIONAL_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const MODIFICATIONS_TABLE = 'modificationsTable';
-export const CREATIONS_TABLE = 'creationsTable';
+export const CSV_FILENAME = 'csvFilename';
 
 export const CHARACTERISTICS = 'characteristics';
 export const R = 'r';
@@ -59,11 +75,8 @@ export const RATED_S = 'ratedS';
 
 export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
-export const OPERATIONAL_LIMITS_GROUPS_1 = 'operationalLimitsGroups1';
-export const OPERATIONAL_LIMITS_GROUPS_2 = 'operationalLimitsGroups2';
+export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
-export const CURRENT_LIMITS_1 = 'currentLimits1';
-export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -73,8 +86,6 @@ export const CONNECTIVITY_2 = 'connectivity2';
 export const ENERGY_SOURCE = 'energySource';
 export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
 export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
-export const MAX_ACTIVE_POWER = 'maxActivePower';
-export const MIN_ACTIVE_POWER = 'minActivePower';
 export const MAX_P = 'maxP';
 export const MIN_P = 'minP';
 export const RATED_NOMINAL_POWER = 'ratedNominalPower';
@@ -129,6 +140,10 @@ export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
 export const REGULATION_SIDE = 'regulationSide';
 
+// Tabular modifications twt ratio tap changer values
+export const RATIO_TAP_CHANGER_LOAD_TAP_CHANGING_CAPABILITIES = 'ratioTapChangerLoadTapChangingCapabilities';
+export const RATIO_TAP_CHANGER_REGULATION_SIDE = 'ratioTapChangerRegulationSide';
+
 //tap-changer-pane-taps
 export const STEPS = 'steps';
 export const STEPS_TAP = 'index';
@@ -161,6 +176,7 @@ export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
     REACTIVE_POWER: { id: 'REACTIVE_POWER', label: 'ReactivePowerRegulationText' },
+    // used in order to set regulating to false but doesn't exist in powsybl => should not be sent to the back
     OFF: { id: 'OFF', label: 'Off' },
 } as const;
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
@@ -180,14 +196,17 @@ export const G2 = 'g2';
 export const B2 = 'b2';
 export const LIMITS = 'limits';
 export const TAB_HEADER = 'tabHeader';
+export const LIMIT_SET_NAME = 'limitSetName';
+export const TEMPORARY_LIMIT = 'temporaryLimit';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
 export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
-    MODIFIED: 'MODIFIED',
-    ADDED: 'ADDED',
-    DELETED: 'DELETED',
+    MODIFY: 'MODIFY',
+    ADD: 'ADD',
+    DELETE: 'DELETE',
+    REPLACE: 'REPLACE',
 } as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
@@ -195,10 +214,18 @@ export const SEGMENT_TYPE_ID = 'segmentTypeId';
 export const SEGMENT_RESISTANCE = 'segmentResistance';
 export const SEGMENT_REACTANCE = 'segmentReactance';
 export const SEGMENT_SUSCEPTANCE = 'segmentSusceptance';
+export const SEGMENT_CURRENT_LIMITS = 'segmentCurrentLimits';
 export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
 export const SEGMENTS = 'segments';
+export const AERIAL_AREAS = 'aerialAreas';
+export const AERIAL_TEMPERATURES = 'aerialTemperatures';
+export const UNDERGROUND_AREAS = 'undergroundAreas';
+export const UNDERGROUND_SHAPE_FACTORS = 'undergroundShapeFactors';
+export const FINAL_CURRENT_LIMITS = 'finalCurrentLimits';
+export const APPLICABIlITY = 'applicability';
+export const SELECTED_CATEGORIES_TAB = 'selectedCategoryTab';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
@@ -212,26 +239,30 @@ export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
 export const BUS_BAR_COUNT = 'busbarCount';
 export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
+export const SWITCHES_BEFORE_SECTIONS = 'switchesBeforeSections';
+export const SWITCHES_AFTER_SECTIONS = 'switchesAfterSections';
+export const NEW_SWITCH_STATES = 'newSwitchStates';
+export const BUSBAR_SECTION_ID = 'busbarSectionId';
+export const IS_AFTER_BUSBAR_SECTION_ID = 'isAfterBusBarSectionId';
+export const BUS_BAR_INDEX = 'busbarIndex';
+export const SWITCH_BEFORE_NOT_REQUIRED = 'switchBeforeNotRequired';
+export const SWITCH_AFTER_NOT_REQUIRED = 'switchAfterNotRequired';
+export const ALL_BUS_BAR_SECTIONS = 'allBusbarSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 export const IP_MIN = 'ipMin';
 export const IP_MAX = 'ipMax';
 // dnd table
 export const SELECTED = 'selected';
-
-export const COUNT = 'count';
-
 export const ACTIVATED = 'activated';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
 export const STEP_UP_TRANSFORMER_REACTANCE = 'stepUpTransformerX';
-export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const REGULATING_TERMINAL_ID = 'regulatingTerminalId';
 export const REGULATING_TERMINAL_VOLTAGE_LEVEL_ID = 'regulatingTerminalVlId';
 export const REGULATING_TERMINAL_TYPE = 'regulatingTerminalType';
 
-export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
 export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
@@ -244,7 +275,6 @@ export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
 
 //percentage-area
-export const PERCENTAGE_AREA = 'percentageArea';
 export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
 export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
 export const SLIDER_PERCENTAGE = 'sliderPercentage';
@@ -259,8 +289,6 @@ export const FILTERS = 'filters';
 export const VARIATION_TYPE = 'variationType';
 export const VARIATION_VALUE = 'variationValue';
 export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
-
-export const MONITORED_BRANCHES_EQUIPMENT = 'monitoredBranchesEquipment';
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
 
@@ -311,25 +339,8 @@ export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const SHUNT_COMPENSATOR_SELECTED = 'connectedToHvdc';
 export const PREVIOUS_SHUNT_COMPENSATOR_SELECTED = 'previousConnectedToHvdc';
 export const PROVIDER = 'provider';
-export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'flowFlowSensitivityValueThreshold';
-export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'angleFlowSensitivityValueThreshold';
-export const FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD = 'flowVoltageSensitivityValueThreshold';
-export const PARAMETER_SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
-export const SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
-export const SENSI_INJECTION = 'sensiInjection';
-export const PARAMETER_SENSI_INJECTION = 'sensitivityInjection';
-export const PARAMETER_SENSI_HVDC = 'sensitivityHVDC';
-export const PARAMETER_SENSI_PST = 'sensitivityPST';
-export const PARAMETER_SENSI_NODES = 'sensitivityNodes';
 export const CONTINGENCIES = 'contingencies';
-export const EQUIPMENTS_IN_VOLTAGE_REGULATION = 'equipmentsInVoltageRegulation';
-export const SUPERVISED_VOLTAGE_LEVELS = 'monitoredVoltageLevels';
 export const MONITORED_BRANCHES = 'monitoredBranches';
-export const HVDC_LINES = 'hvdcs';
-export const SENSITIVITY_TYPE = 'sensitivityType';
-export const INJECTIONS = 'injections';
-export const DISTRIBUTION_TYPE = 'distributionType';
-export const PSTS = 'psts';
 
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
@@ -400,7 +411,6 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const FILTERS_SHUNT_COMPENSATOR_TABLE = 'shuntCompensatorInfos';
-export const SPREADSHEET_GS_FILTER = 'SpreadsheetGlobalFilter';
 
 /* State estimation parameters fields */
 /* General */
@@ -483,3 +493,4 @@ export const BALANCES_ADJUSTMENT_COUNTRIES_TO_BALANCE = 'balancesAdjustmentCount
 export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
 export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
+export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';

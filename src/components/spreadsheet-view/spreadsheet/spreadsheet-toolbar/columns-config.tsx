@@ -75,23 +75,37 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         setLocalColumns(tableDefinition?.columns);
     }, [tableDefinition?.columns]);
 
-    // Restore AG Grid column state to match the original tableDefinition.columns
-    const resetColumnState = useCallback(() => {
-        if (gridRef.current?.api) {
-            gridRef.current.api.applyColumnState({
-                state: [
-                    ROW_INDEX_COLUMN_STATE,
-                    ...tableDefinition.columns.map((col) => ({
-                        colId: col.id || col.uuid,
-                        hide: !col.visible,
-                        pinned: col.locked ? ('left' as const) : null,
-                    })),
-                ],
+    const applyColumnState = useCallback(
+        (columns: typeof localColumns) => {
+            const api = gridRef.current?.api;
+            if (!api) {
+                return;
+            }
+
+            const columnStates: ColumnState[] = [
+                ROW_INDEX_COLUMN_STATE,
+                ...columns.map((col) => ({
+                    colId: col.id || col.uuid,
+                    hide: !col.visible,
+                    pinned: col.locked && col.visible ? ('left' as const) : null,
+                })),
+            ];
+
+            api.applyColumnState({
+                state: columnStates,
                 applyOrder: true,
                 defaultState: { pinned: null, hide: false },
             });
+        },
+        [gridRef]
+    );
+
+    // Restore AG Grid column state to match the original tableDefinition.columns
+    const resetColumnState = useCallback(() => {
+        if (gridRef.current?.api) {
+            applyColumnState(tableDefinition.columns);
         }
-    }, [gridRef, tableDefinition.columns]);
+    }, [applyColumnState, gridRef, tableDefinition.columns]);
 
     const handleCancelPopupSelectColumnNames = useCallback(() => {
         setLocalColumns(tableDefinition?.columns);
@@ -124,6 +138,8 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                         columns: localColumns,
                     })
                 );
+                // Apply the final state to AG Grid
+                applyColumnState(localColumns);
             })
             .catch((error) => {
                 resetColumnState();
@@ -137,9 +153,10 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
     }, [
         tableDefinition,
         studyUuid,
-        localColumns,
         handleCloseColumnsSettingDialog,
+        localColumns,
         dispatch,
+        applyColumnState,
         resetColumnState,
         snackError,
     ]);
@@ -157,6 +174,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             return col;
         });
         setLocalColumns(newLocalColumns);
+        applyColumnState(newLocalColumns);
     };
 
     const handleToggleAll = () => {
@@ -169,20 +187,8 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                 locked: col.locked && !col.visible,
             };
         });
-
-        const userLockedColumns =
-            newLocalColumns.map((column) => {
-                return {
-                    colId: column.id,
-                    hide: isAllChecked,
-                    pinned: 'left',
-                } as ColumnState;
-            }) || [];
-        gridRef.current?.api?.applyColumnState({
-            state: [ROW_INDEX_COLUMN_STATE, ...userLockedColumns],
-            defaultState: { pinned: null },
-        });
         setLocalColumns(newLocalColumns);
+        applyColumnState(newLocalColumns);
     };
 
     const handleClickOnLock = (value: UUID) => () => {
@@ -211,20 +217,8 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
             return col;
         });
 
-        const userLockedColumns =
-            newLocalColumns
-                ?.filter((column) => column.visible && column.locked)
-                ?.map((column) => {
-                    return {
-                        colId: column.id,
-                        pinned: 'left',
-                    } as ColumnState;
-                }) || [];
-        gridRef.current?.api?.applyColumnState({
-            state: [ROW_INDEX_COLUMN_STATE, ...userLockedColumns],
-            defaultState: { pinned: null },
-        });
         setLocalColumns(newLocalColumns);
+        applyColumnState(newLocalColumns);
     };
 
     const handleDrag = useCallback(
@@ -240,9 +234,10 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
                     applyOrder: true,
                 });
                 setLocalColumns(reorderedTableDefinitionIndexesTemp);
+                applyColumnState(reorderedTableDefinitionIndexesTemp);
             }
         },
-        [gridRef, localColumns]
+        [applyColumnState, gridRef, localColumns]
     );
 
     const renderColumnConfigLockIcon = (value: UUID) => {

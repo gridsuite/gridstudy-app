@@ -9,13 +9,14 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QU
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
+import { GsLang } from '@gridsuite/commons-ui';
 
 export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     contingencyListUuids: UUID[]
-) {
+): Promise<void> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
@@ -55,7 +56,7 @@ export function fetchSecurityAnalysisResult(
         currentRootNetworkUuid
     )}/security-analysis/result`;
 
-    const { resultType, page, size, sort, filters } = queryParams || {};
+    const { resultType, page, size, sort, filters, globalFilters } = queryParams || {};
 
     const params = new URLSearchParams({ resultType });
 
@@ -63,6 +64,9 @@ export function fetchSecurityAnalysisResult(
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     if (typeof page === 'number') {
@@ -81,7 +85,8 @@ export function downloadSecurityAnalysisResultZippedCsv(
     currentRootNetworkUuid: UUID,
     queryParams: { resultType: RESULT_TYPE },
     headers: string[] | undefined,
-    enumValueTranslations: Record<string, string>
+    enumValueTranslations: Record<string, string>,
+    language: GsLang
 ) {
     console.info(
         `Fetching security analysis zipped csv on ${studyUuid} on root network  ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
@@ -107,6 +112,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
         body: JSON.stringify({
             headers,
             enumValueTranslations: enumValueTranslations,
+            language: language,
         }),
     });
 }

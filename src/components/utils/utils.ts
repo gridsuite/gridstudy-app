@@ -16,7 +16,7 @@ import {
 } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
-import { CURRENT_LIMITS, ID, SELECTED } from './field-constants';
+import { APPLICABIlITY, CURRENT_LIMITS, ID, NAME, SELECTED } from './field-constants';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -118,8 +118,8 @@ export function toModificationUnsetOperation<T>(
         : { op: OperationType.UNSET };
 }
 
-export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]) =>
-    temporaryLimits?.map((limit) => {
+export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): TemporaryLimit[] =>
+    temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             name: limit?.name ?? '',
             value: limit?.value ?? null,
@@ -134,8 +134,11 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimits[]
         completeLimitsGroups.forEach((elt) => {
             if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
-                    [ID]: elt.id,
+                    [ID]: elt.id + elt.applicability,
+                    [NAME]: elt.id,
+                    [APPLICABIlITY]: elt.applicability,
                     [CURRENT_LIMITS]: {
+                        [ID]: elt.id,
                         permanentLimit: elt.permanentLimit,
                         temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt.temporaryLimits)),
                     },

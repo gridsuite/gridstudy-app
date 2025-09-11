@@ -20,7 +20,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { EquipmentInfos, EquipmentType, OperatingStatus, useSnackMessage, CustomMenuItem } from '@gridsuite/commons-ui';
+import {
+    CustomMenuItem,
+    EquipmentInfos,
+    EquipmentType,
+    ExtendedEquipmentType,
+    OperatingStatus,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
@@ -37,7 +44,7 @@ import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.mod
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
-import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
+import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { UUID } from 'crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { CurrentTreeNode } from '../graph/tree-node.type';
@@ -53,11 +60,16 @@ const styles = {
 export type MenuBranchProps = {
     equipment: MapEquipment;
     equipmentType: EquipmentType;
+    equipmentSubtype: ExtendedEquipmentType | null;
     position: [number, number] | null;
     handleClose: () => void;
     handleViewInSpreadsheet: (type: EquipmentType, id: string) => void;
     handleDeleteEquipment: (type: EquipmentType | null, id: string) => void;
-    handleOpenModificationDialog: (id: string, type: EquipmentType | null) => void;
+    handleOpenModificationDialog: (
+        id: string,
+        type: EquipmentType | null,
+        subtype: ExtendedEquipmentType | null
+    ) => void;
     onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType | null, dialogTitle: string) => void;
     currentNode?: CurrentTreeNode;
     studyUuid?: UUID;
@@ -72,6 +84,7 @@ const withOperatingStatusMenu =
     ({
         equipment,
         equipmentType,
+        equipmentSubtype,
         position,
         handleClose,
         handleViewInSpreadsheet,
@@ -198,6 +211,7 @@ const withOperatingStatusMenu =
                     <BaseMenu
                         equipment={equipment}
                         equipmentType={equipmentType}
+                        equipmentSubtype={equipmentSubtype}
                         handleViewInSpreadsheet={handleViewInSpreadsheet}
                         handleDeleteEquipment={handleDeleteEquipment}
                         handleOpenModificationDialog={handleOpenModificationDialog}
@@ -367,10 +381,11 @@ const withOperatingStatusMenu =
                         />
                     </CustomMenuItem>
                     {(equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER ||
-                        equipmentType === EquipmentType.LINE) && (
+                        equipmentType === EquipmentType.LINE ||
+                        (equipmentType === EquipmentType.HVDC_LINE && equipmentSubtype !== null)) && (
                         <CustomMenuItem
                             sx={styles.menuItem}
-                            onClick={() => handleOpenModificationDialog(equipment.id, equipmentType)}
+                            onClick={() => handleOpenModificationDialog(equipment.id, equipmentType, equipmentSubtype)}
                             disabled={!isNodeEditable}
                         >
                             <ListItemIcon>

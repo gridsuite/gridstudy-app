@@ -6,7 +6,7 @@
  */
 
 const spreadsheetEn = {
-    'spreadsheet/column/button': 'Show / hide columns',
+    'spreadsheet/column/button': 'Columns display',
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/collection/save/title': 'Spreadsheets list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',
@@ -24,8 +24,10 @@ const spreadsheetEn = {
         'Column ID must not contain spaces, special characters or start with a number',
     'spreadsheet/custom_column/error/id_le_60': 'Column ID must be at most 60 characters',
     'spreadsheet/custom_column/error/name_le_60': 'Column name must be at most 60 characters',
-    'spreadsheet/custom_column/update_custom_column': 'Update column',
-    'spreadsheet/custom_column/delete_custom_column': 'Delete column',
+    'spreadsheet/custom_column/update_custom_column': 'Update',
+    'spreadsheet/custom_column/delete_custom_column': 'Delete',
+    'spreadsheet/custom_column/duplicate_custom_column': 'Duplicate',
+    'spreadsheet/custom_column/duplicate_column_error': 'Error while duplicating column',
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Are you sure you want to delete the column "{columnName}"?',
     'spreadsheet/custom_column/delete_column_error': 'Error while deleting column',
@@ -33,10 +35,6 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_name_already_exist': 'Column name already exists',
     'spreadsheet/custom_column/dependencies': 'The formula is linked to other columns',
     'spreadsheet/custom_column/nodes': 'Nodes',
-    'spreadsheet/custom_column/option/parameter': 'Configure',
-    'spreadsheet/custom_column/option/refresh': 'Reload',
-    'spreadsheet/custom_column/option/refresh/tooltip':
-        'Reload data for current sheet for other built and configured nodes ({aliases})',
     'spreadsheet/custom_column/parameter_nodes': 'Configure nodes aliases',
     'spreadsheet/custom_column/add_alias': 'Add an alias',
     'spreadsheet/custom_column/creates_cyclic_dependency': 'Column dependencies create a cyclic dependency',
@@ -48,6 +46,7 @@ const spreadsheetEn = {
     'spreadsheet/save/options/csv': 'Export CSV',
     'spreadsheet/save/dialog_title': 'Save a spreadsheet model',
     'spreadsheet/collection/save/collection_name_dialog_title': 'Save a spreadsheet collection',
+    'spreadsheet/collection/save/button_tooltip': 'Save collection',
     'spreadsheet/save/error_message': 'Spreadsheet model creation error',
     'spreadsheet/save/update_error_message': 'Error while updating spreadsheet model {item}',
     'spreadsheet/collection/save/error': 'Spreadsheet collection creation error',
@@ -97,6 +96,7 @@ const spreadsheetEn = {
     'spreadsheet/reset_spreadsheet_collection/error_resetting_collection':
         'Error while resetting spreadsheet collection',
     'spreadsheet/reset_spreadsheet_collection/button_tooltip': 'Reset spreadsheet collection',
+    'spreadsheet/parameter_aliases/button_tooltip': 'Configure nodes',
     'spreadsheet/parameter_aliases/node_name': 'Node name',
     'spreadsheet/parameter_aliases/node_alias': 'Node alias',
     'spreadsheet/parameter_aliases/max_characters_reached': 'Cannot exceed 10 characters',
@@ -104,17 +104,34 @@ const spreadsheetEn = {
     'spreadsheet/parameter_aliases/node_doesnt_exist': 'No node with this name',
     'spreadsheet/parameter_aliases/unique_aliases': 'Aliases should be unique',
     'spreadsheet/parameter_aliases/unique_node_names': 'Each node can only have one alias',
+    'spreadsheet/parameter_aliases/maximum_row_number_error': 'The number of rows must not exceed the value 5',
     'spreadsheet/filter/config': 'Gridsuite filters',
     'spreadsheet/remove_spreadsheet_confirmation':
         'Are you sure you want to remove the spreadsheet "{spreadsheetName}"?',
     'spreadsheet/remove_spreadsheet_error': 'Error while removing spreadsheet',
     'spreadsheet/reorder_columns/error': 'Error while reordering columns',
     'spreadsheet/reorder_tabs_error': 'Error while reordering tabs',
+    'spreadsheet/reset_filters_error': 'Error while resetting spreadsheet filters',
     'spreadsheet/rename/label': 'Rename',
     'spreadsheet/delete/label': 'Delete',
+    'spreadsheet/edit/label': 'Edit',
     'spreadsheet/rename_spreadsheet_error': 'Error while renaming spreadsheet',
     'spreadsheet/rename_dialog_title': 'Rename spreadsheet',
     'spreadsheet/spreadsheet_name_le_60': 'Spreadsheet name must be at most 60 characters',
+    'spreadsheet/loading/error_fetching_type_title': 'Error during (re)load of spreadsheet(s) of type {type}',
+    'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Include additional data',
+    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Inactive limit sets',
+    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Regulated terminals',
+
+    'spreadsheet/global-model-edition/edit': 'Model edition',
+    'spreadsheet/global-model-edition/column_id': 'ID',
+    'spreadsheet/global-model-edition/column_name': 'Name',
+    'spreadsheet/global-model-edition/column_type': 'Type',
+    'spreadsheet/global-model-edition/column_precision': 'Precision',
+    'spreadsheet/global-model-edition/column_formula': 'Formula',
+    'spreadsheet/global-model-edition/column_dependencies': 'Dependencies',
+    'spreadsheet/global-model-edition/update_confirmation_message': 'Spreadsheet model updated',
+    'spreadsheet/global-model-edition/update_error_message': 'Error while updating spreadsheet model',
 
     // calculations
     'spreadsheet/calculation/sum': 'Sum',

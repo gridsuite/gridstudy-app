@@ -27,8 +27,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
-import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
-import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const styles = {
     headerPanel: (theme: Theme) => ({
@@ -57,6 +55,7 @@ interface RootNetworkPanelHeaderProps {
     setIsSearchActive: React.Dispatch<SetStateAction<boolean>>;
     closeSearchPanel: () => void;
 }
+const MAX_ROOT_NETWORKS_NUMBER = 4;
 
 const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     isRootNetworksProcessing,
@@ -70,7 +69,6 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const dispatch = useDispatch();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const intl = useIntl();
 
@@ -153,7 +151,7 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
         );
     };
 
-    const doCreateRootNetwork = ({ name, tag, caseName, caseId }: FormData) => {
+    const doCreateRootNetwork = ({ name, tag, description, caseName, caseId }: FormData) => {
         if (!studyUuid) {
             return;
         }
@@ -164,7 +162,17 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
-                createRootNetwork(caseId as UUID, params.formatName, name, tag, studyUuid, customizedCurrentParameters);
+                createRootNetwork(studyUuid, {
+                    name,
+                    tag,
+                    description,
+                    importParametersRaw: customizedCurrentParameters,
+                    caseInfos: {
+                        originalCaseUuid: caseId as UUID,
+                        caseFormat: params.formatName,
+                    },
+                });
+
                 if (isMonoRootStudy && rootNetworks.length === 1) {
                     dispatch(setMonoRootStudy(false));
                 }
@@ -200,17 +208,15 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
                                 onClick={openRootNetworkCreationDialog}
                                 size={'small'}
                                 sx={styles.uploadButton}
-                                disabled={rootNetworks.length >= 3 || isRootNetworksProcessing}
+                                disabled={rootNetworks.length >= MAX_ROOT_NETWORKS_NUMBER || isRootNetworksProcessing}
                             >
                                 <FileUpload />
                             </IconButton>
                         </span>
                     </Tooltip>
-                    {enableDeveloperMode && (
-                        <IconButton size={'small'} onClick={openSearch}>
-                            <SearchIcon />
-                        </IconButton>
-                    )}
+                    <IconButton size={'small'} onClick={openSearch}>
+                        <SearchIcon />
+                    </IconButton>
                 </Box>
                 <IconButton onClick={minimizeRootNetworkPanel} size={'small'}>
                     {isRootNetworkPanelMinimized ? <LeftPanelOpenIcon /> : <LeftPanelCloseIcon />}

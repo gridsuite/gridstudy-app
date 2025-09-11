@@ -13,12 +13,15 @@ import {
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
+import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
+import { GsLang } from '@gridsuite/commons-ui';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
     currentNodeUuid?: UUID;
     currentRootNetworkUuid?: UUID;
     type: ShortCircuitAnalysisType;
+    globalFilters?: GlobalFilters;
 }
 interface Selector {
     page: number;
@@ -34,18 +37,20 @@ export function startShortCircuitAnalysis(
     studyUuid: string,
     currentNodeUuid: UUID | undefined,
     currentRootNetworkUuid: UUID | null,
-    busId: string
-) {
+    busId: string,
+    debug?: boolean
+): Promise<void> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const urlSearchParams = new URLSearchParams();
     busId && urlSearchParams.append('busId', busId);
 
-    const startShortCircuitAnalysisUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
-        '/shortcircuit/run?' +
-        urlSearchParams.toString();
+    if (debug) {
+        urlSearchParams.append('debug', `${debug}`);
+    }
+
+    const startShortCircuitAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/shortcircuit/run?${urlSearchParams}`;
     console.debug(startShortCircuitAnalysisUrl);
     return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
@@ -105,6 +110,7 @@ export function fetchShortCircuitAnalysisResult({
     currentNodeUuid,
     currentRootNetworkUuid,
     type,
+    globalFilters,
 }: ShortCircuitAnalysisResult) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
@@ -114,6 +120,9 @@ export function fetchShortCircuitAnalysisResult({
     const urlSearchParams = new URLSearchParams();
     if (analysisType) {
         urlSearchParams.append('type', analysisType);
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
     }
 
     const url =
@@ -130,6 +139,7 @@ export function fetchShortCircuitAnalysisPagedResults({
     currentRootNetworkUuid,
     selector = {},
     type = ShortCircuitAnalysisType.ALL_BUSES,
+    globalFilters,
 }: ShortCircuitAnalysisPagedResults) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
@@ -159,6 +169,10 @@ export function fetchShortCircuitAnalysisPagedResults({
         urlSearchParams.append('filters', JSON.stringify(filter));
     }
 
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/shortcircuit/result?' +
@@ -173,7 +187,8 @@ export function downloadShortCircuitResultZippedCsv(
     currentRootNetworkUuid: UUID,
     analysisType: number,
     headersCsv: string[] | undefined,
-    enumValueTranslations: Record<string, string>
+    enumValueTranslations: Record<string, string>,
+    language: GsLang
 ) {
     console.info(
         `Fetching short-circuit analysis export csv on ${studyUuid} , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
@@ -196,6 +211,6 @@ export function downloadShortCircuitResultZippedCsv(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ headersCsv, enumValueTranslations }),
+        body: JSON.stringify({ headersCsv, enumValueTranslations, language }),
     });
 }

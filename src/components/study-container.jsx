@@ -16,7 +16,7 @@ import {
     loadNetworkModificationTreeSuccess,
     openStudy,
     resetEquipments,
-    resetEquipmentsPostLoadflow,
+    resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
     setMonoRootStudy,
@@ -29,10 +29,9 @@ import { fetchRootNetworks } from 'services/root-network';
 import WaitingLoader from './utils/waiting-loader';
 import { NotificationsUrlKeys, useIntlRef, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeBuilt, isNodeEdited, isSameNode } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchCaseName } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchRootNetworkIndexationStatus } from '../services/study/network';
 import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'services/study/study';
@@ -42,10 +41,12 @@ import { NodeType } from './graph/tree-node.type';
 import {
     isIndexationStatusNotification,
     isLoadflowResultNotification,
+    isStateEstimationResultNotification,
     isStudyNetworkRecreationNotification,
     NotificationType,
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
+import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -135,6 +136,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentRootNetworkUuidRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
+
+    useDiagramGridLayout();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -289,19 +292,8 @@ export function StudyContainer({ view, onChangeTab }) {
                 .then((tree) => {
                     const networkModificationTreeModel = new NetworkModificationTreeModel();
                     networkModificationTreeModel.setTreeElements(tree);
+                    dispatch(loadNetworkModificationTreeSuccess(networkModificationTreeModel));
 
-                    fetchCaseName(studyUuid, currentRootNetworkUuid)
-                        .then((res) => {
-                            if (res) {
-                                networkModificationTreeModel.setCaseName(res);
-                                dispatch(loadNetworkModificationTreeSuccess(networkModificationTreeModel));
-                            }
-                        })
-                        .catch((err) => {
-                            snackWarning({
-                                headerId: 'CaseNameLoadError',
-                            });
-                        });
                     // If a current node is already defined then override it cause it could have diferent status in different root networks
                     if (currentNodeRef.current) {
                         // Find the updated current node in the tree model
@@ -344,7 +336,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 .finally(() => console.debug('Network modification tree loading finished'));
             // Note: studyUuid and dispatch don't change
         },
-        [studyUuid, currentRootNetworkUuid, dispatch, snackError, snackWarning]
+        [studyUuid, currentRootNetworkUuid, dispatch, snackError]
     );
 
     const checkRootNetworkIndexation = useCallback(() => {
@@ -483,10 +475,13 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUpdatedForce, checkNetworkExistenceAndRecreateIfNotFound, snackInfo, snackWarning, dispatch]);
 
     useEffect(() => {
-        if (isLoadflowResultNotification(studyUpdatedForce.eventData)) {
+        if (
+            isLoadflowResultNotification(studyUpdatedForce.eventData) ||
+            isStateEstimationResultNotification(studyUpdatedForce.eventData)
+        ) {
             const rootNetworkUuidFromNotif = studyUpdatedForce.eventData.headers.rootNetworkUuid;
             if (rootNetworkUuidFromNotif === currentRootNetworkUuidRef.current) {
-                dispatch(resetEquipmentsPostLoadflow());
+                dispatch(resetEquipmentsPostComputation());
             }
         }
     }, [studyUpdatedForce, dispatch]);
@@ -500,7 +495,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // then we can update the currentRootNetworkUuidRef.current
         currentRootNetworkUuidRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
-        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+        if (isNodeEdited(previousCurrentNode, currentNode)) {
             return;
         }
         if (!isNodeBuilt(currentNode)) {

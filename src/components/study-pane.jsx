@@ -14,12 +14,13 @@ import TabPanelLazy from './results/common/tab-panel-lazy';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { SpreadsheetView } from './spreadsheet-view/spreadsheet-view';
 import ParametersTabs from './parameters-tabs';
-import MapViewer from './map-viewer';
+import TreeTab from './tree-tab';
 import { StudyView } from './utils/utils';
-import { DiagramType } from './diagrams/diagram.type';
+import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
-import { openDiagram } from '../redux/actions.js';
-import { useDispatch } from 'react-redux';
+import { openDiagram, setToggleOptions } from '../redux/actions.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { StudyDisplayMode } from './network-modification.type';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -54,6 +55,7 @@ const StudyPane = ({
     onChangeTab,
     ...props
 }) => {
+    const toggleOptions = useSelector((state) => state.toggleOptions);
     const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -61,20 +63,31 @@ const StudyPane = ({
     });
 
     const disabled = !isNodeBuilt(currentNode);
+    const showGrid = useCallback(() => {
+        // switch to tree view
+        onChangeTab(0);
+        // toggle diagram grid layout
+        if (!toggleOptions.includes(StudyDisplayMode.GRID_LAYOUT_PANEL)) {
+            dispatch(setToggleOptions([...toggleOptions, StudyDisplayMode.GRID_LAYOUT_PANEL]));
+        }
+    }, [dispatch, onChangeTab, toggleOptions]);
+
     const openVoltageLevelDiagram = useCallback(
         (equipmentId, diagramType = DiagramType.VOLTAGE_LEVEL) => {
             // TODO code factorization for displaying a VL via a hook
             if (equipmentId) {
-                onChangeTab(0); // switch to map view
+                showGrid();
                 dispatch(openDiagram(equipmentId, diagramType));
             }
         },
-        [dispatch, onChangeTab]
+        [dispatch, showGrid]
     );
 
     const unsetTableEquipment = useCallback(() => {
         setTableEquipment({ id: null, type: null });
     }, []);
+
+    const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
 
     return (
         <Box sx={styles.paneContainer}>
@@ -87,15 +100,14 @@ const StudyPane = ({
                         display: view === StudyView.TREE ? null : 'none',
                     }}
                 >
-                    <MapViewer
+                    <TreeTab
                         studyUuid={studyUuid}
-                        currentNode={currentNode}
                         currentRootNetworkUuid={currentRootNetworkUuid}
-                        view={view}
                         tableEquipment={tableEquipment}
-                        onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
+                        onTableEquipementChanged={handleTableEquipmentChanged}
                         onChangeTab={onChangeTab}
-                    ></MapViewer>
+                        showGrid={showGrid}
+                    />
                 </div>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
                 <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>

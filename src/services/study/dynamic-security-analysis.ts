@@ -15,27 +15,27 @@ import {
 } from './dynamic-security-analysis.type';
 import { fetchContingencyAndFiltersLists } from '../directory';
 
-const PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-security-analysis';
+export function startDynamicSecurityAnalysis(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    debug: boolean
+): Promise<void> {
+    console.info(
+        `Running dynamic security analysis on study '${studyUuid}', on root network '${currentRootNetworkUuid}'  and node '${currentNodeUuid}' ...`
+    );
 
-function getDynamicSecurityAnalysisUrl() {
-    return `${PREFIX_DYNAMIC_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
-}
+    const urlParams = new URLSearchParams();
 
-export function fetchDynamicSecurityAnalysisProviders() {
-    console.info('fetch dynamic simulation providers');
-    const url = getDynamicSecurityAnalysisUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info(`Running dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    if (debug) {
+        urlParams.append('debug', `${debug}`);
+    }
 
     const startDynamicSecurityAnalysisUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/dynamic-security-analysis/run`;
+    )}/dynamic-security-analysis/run?${urlParams}`;
 
     console.debug({ startDynamicSecurityAnalysisUrl });
 
@@ -49,7 +49,9 @@ export function startDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: U
 }
 
 export function stopDynamicSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
-    console.info(`Stopping dynamic security analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Stopping dynamic security analysis  on study '${studyUuid}', on root network '${currentRootNetworkUuid}'  and node '${currentNodeUuid}' ...`
+    );
     const stopDynamicSecurityAnalysisUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-security-analysis/stop';
@@ -62,7 +64,9 @@ export function fetchDynamicSecurityAnalysisStatus(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
 ): Promise<string | null> {
-    console.info(`Fetching dynamic security analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching dynamic security analysis status on study '${studyUuid}', on root network '${currentRootNetworkUuid}'  and node '${currentNodeUuid}' ...`
+    );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-security-analysis/status';
@@ -71,14 +75,14 @@ export function fetchDynamicSecurityAnalysisStatus(
 }
 
 export function fetchDefaultDynamicSecurityAnalysisProvider() {
-    console.info('fetch default dynamic security analysis provider');
+    console.info('Fetching default dynamic security analysis provider');
     const url = PREFIX_STUDY_QUERIES + '/v1/dynamic-security-analysis-default-provider';
     console.debug(url);
     return backendFetchText(url);
 }
 
 export function updateDynamicSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
-    console.info('update dynamic security analysis provider');
+    console.info(`Updating dynamic security analysis provider on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
     console.debug(url);
     return backendFetch(url, {
@@ -94,7 +98,7 @@ export function updateDynamicSecurityAnalysisProvider(studyUuid: UUID, newProvid
 export function fetchDynamicSecurityAnalysisParameters(
     studyUuid: UUID
 ): Promise<DynamicSecurityAnalysisParametersFetchReturn> {
-    console.info(`Fetching dynamic security analysis parameters on '${studyUuid}' ...`);
+    console.info(`Fetching dynamic security analysis parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters';
     console.debug(url);
     const parametersPromise: Promise<DynamicSecurityAnalysisParametersInfos> = backendFetchJson(url);
@@ -125,7 +129,7 @@ export function updateDynamicSecurityAnalysisParameters(
     studyUuid: UUID,
     newParams: DynamicSecurityAnalysisParametersFetchReturn | null
 ): Promise<void> {
-    console.info('set dynamic security analysis parameters');
+    console.info(`Setting dynamic security analysis parameters on study '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/parameters';
     console.debug(url);
 

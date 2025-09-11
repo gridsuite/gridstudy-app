@@ -33,10 +33,9 @@ import {
     G,
     ID,
     LIMITS,
-    OPERATIONAL_LIMITS_GROUPS_1,
-    OPERATIONAL_LIMITS_GROUPS_2,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
+    OPERATIONAL_LIMITS_GROUPS,
     PHASE_TAP_CHANGER,
     R,
     RATED_S,
@@ -93,8 +92,8 @@ import {
     getTwoWindingsTransformerValidationSchema,
 } from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
 import {
-    getLimitsEmptyFormData,
     getAllLimitsFormData,
+    getLimitsEmptyFormData,
     getLimitsValidationSchema,
     sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
@@ -126,7 +125,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(false),
+    ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -224,8 +223,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,
@@ -249,15 +246,20 @@ const TwoWindingsTransformerCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getAllLimitsFormData({
-                    [OPERATIONAL_LIMITS_GROUPS_1]: twt.operationalLimitsGroups1,
-                    [OPERATIONAL_LIMITS_GROUPS_2]: twt.operationalLimitsGroups2,
-                    selectedOperationalLimitsGroup1: twt.selectedOperationalLimitsGroup1 ?? null,
-                    selectedOperationalLimitsGroup2: twt.selectedOperationalLimitsGroup2 ?? null,
-                }),
+                ...getAllLimitsFormData(
+                    twt?.operationalLimitsGroups?.map(({ id, ...baseData }) => ({
+                        ...baseData,
+                        name: id,
+                        id: id + baseData.applicability,
+                    })),
+                    twt?.selectedOperationalLimitsGroup1 ?? null,
+                    twt?.selectedOperationalLimitsGroup2 ?? null
+                ),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
+                        ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
+                        : PHASE_REGULATION_MODES.OFF.id,
                     regulationType: getRegulationTypeForEdit(twt, twt?.[PHASE_TAP_CHANGER]),
                     regulationSide: getTapSideForEdit(twt, twt?.[PHASE_TAP_CHANGER]),
                     currentLimiterRegulatingValue:
@@ -313,8 +315,6 @@ const TwoWindingsTransformerCreationDialog = ({
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
-                        permanentLimit1: twt.permanentLimit1,
-                        permanentLimit2: twt.permanentLimit2,
                         ...getConnectivityFormData(
                             {
                                 busbarSectionId: twt.busOrBusbarSectionId1,
@@ -334,12 +334,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             CONNECTIVITY_2
                         ),
                     }),
-                    ...getAllLimitsFormData({
-                        [OPERATIONAL_LIMITS_GROUPS_1]: formatCompleteCurrentLimit(twt.currentLimits1),
-                        [OPERATIONAL_LIMITS_GROUPS_2]: formatCompleteCurrentLimit(twt.currentLimits2),
-                        [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroup1 ?? null,
-                        [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroup2 ?? null,
-                    }),
+                    ...getAllLimitsFormData(
+                        formatCompleteCurrentLimit(twt.currentLimits),
+                        twt.selectedOperationalLimitsGroup1 ?? null,
+                        twt.selectedOperationalLimitsGroup2 ?? null
+                    ),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                         hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],
@@ -362,7 +361,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                         regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
                             ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
-                            : PHASE_REGULATION_MODES.FIXED_TAP.id,
+                            : PHASE_REGULATION_MODES.OFF.id,
                         regulationType: getRegulationTypeForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
                         regulationSide: getTapSideForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
                         currentLimiterRegulatingValue:
@@ -422,6 +421,14 @@ const TwoWindingsTransformerCreationDialog = ({
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
             phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
         );
+    };
+
+    const computeRegulationModeValue = (phaseTapChangerFormValues) => {
+        if (phaseTapChangerFormValues?.[REGULATION_MODE] === PHASE_REGULATION_MODES.OFF.id) {
+            return null;
+        }
+
+        return phaseTapChangerFormValues?.[REGULATION_MODE];
     };
 
     const computePhaseTapChangerRegulationValue = (phaseTapChangerFormValues) => {
@@ -510,7 +517,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     targetV: getValueOrDefault(TARGET_V),
                     targetDeadband: getValueOrDefault(TARGET_DEADBAND),
-                    regulationMode: getValueOrDefault(REGULATION_MODE),
                     regulationType: getValueOrDefault(REGULATION_TYPE),
                 };
             }
@@ -518,6 +524,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
+                    hasLoadTapChangingCapabilities: true,
                     isRegulating: computePhaseTapChangerRegulating(phaseTapChangerFormValues),
                     regulationValue: computePhaseTapChangerRegulationValue(phaseTapChangerFormValues),
                     regulatingTerminalId: computeRegulatingTerminalId(phaseTapChangerFormValues, twt[EQUIPMENT_ID]),
@@ -528,6 +535,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         characteristics[CONNECTIVITY_2]
                     ),
                     ...twt[PHASE_TAP_CHANGER],
+                    regulationMode: computeRegulationModeValue(phaseTapChangerFormValues),
                 };
             }
 
@@ -543,8 +551,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratedS: characteristics[RATED_S] ?? '',
                 ratedU1: characteristics[RATED_U1],
                 ratedU2: characteristics[RATED_U2],
-                limitsGroups1: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_1]),
-                limitsGroups2: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS_2]),
+                limitsGroups: sanitizeLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: limits[SELECTED_LIMITS_GROUP_1],
                 selectedLimitsGroup2: limits[SELECTED_LIMITS_GROUP_2],
                 voltageLevelId1: characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],

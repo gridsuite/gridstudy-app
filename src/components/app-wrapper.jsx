@@ -124,15 +124,40 @@ const lightTheme = createTheme({
     },
     palette: {
         mode: 'light',
+        toolbarBackground: '#EEE',
     },
     link: {
         color: 'blue',
     },
     node: {
-        background: '#1976d2',
-        hover: '#84adce',
-        border: '#0f3d68',
+        common: {
+            background: '#F5F5F5',
+            activeBackground: '#BBDEFB',
+            selectedBackground: '#E1F5FE',
+        },
+        modification: {
+            border: 'solid 1px #999FA1',
+            selectedBorder: 'solid 1px #0288D1',
+            hoverBorderColor: '#03A9F4',
+            activeBorderColor: '#29B6F6',
+        },
+        root: {
+            border: 'solid 1px #3CEC96',
+            hoverBorderColor: '#3CEC96',
+            activeBorderColor: '#64B5F6',
+            icon: {
+                fill: '#0B556F',
+                background: '#3CEC96',
+            },
+        },
+        buildStatus: {
+            error: '#F44336',
+            warning: '#FFA726',
+            success: '#66BB6A',
+            notBuilt: '#E0E0E0',
+        },
     },
+
     selectedRow: {
         background: '#8E9C9B',
     },
@@ -182,6 +207,13 @@ const lightTheme = createTheme({
             backgroundColor: 'white',
             borderColor: '#11161A',
         },
+        edge: {
+            stroke: '#6F767B',
+        },
+        handle: {
+            border: '2px solid #6F767B',
+            background: '#F5F5F5',
+        },
     },
 });
 
@@ -205,14 +237,39 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         tabBackground: '#1e1e1e',
+        toolbarBackground: '#424242',
     },
     link: {
         color: 'green',
     },
     node: {
-        background: '#1976d2',
-        hover: '#90caf9',
-        border: '#cce3f9',
+        common: {
+            background: '#2C2E2E',
+            activeBackground: '#263238',
+        },
+        modification: {
+            border: 'solid 1px #BDBDBD',
+            selectedBackground: '#37474F',
+            selectedBorder: 'solid 3px #29B6F6',
+            hoverBorderColor: '#B3E5FC',
+            activeBorderColor: '#00A6D9',
+        },
+        root: {
+            border: 'solid 1px #3CEC96',
+            selectedBackground: '#212121',
+            hoverBorderColor: '#00C853',
+            activeBorderColor: '#00E676',
+            icon: {
+                fill: '#0B556F',
+                background: '#3CEC96',
+            },
+        },
+        buildStatus: {
+            error: '#D32F2F',
+            warning: '#ED6C02',
+            success: '#2E7D32',
+            notBuilt: '#E0E0E0',
+        },
     },
     selectedRow: {
         background: '#545C5B',
@@ -261,6 +318,13 @@ const darkTheme = createTheme({
         labeledGroup: {
             backgroundColor: '#11161A',
             borderColor: '#D9D9D9',
+        },
+        edge: {
+            stroke: '#D9D9D9',
+        },
+        handle: {
+            border: '2px solid #D9D9D9',
+            background: '#121212',
         },
     },
 });

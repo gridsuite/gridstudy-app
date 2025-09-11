@@ -17,7 +17,6 @@ import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/a
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
-import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
@@ -32,6 +31,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
+import { fetchDynamicSimulationResultTimeline } from '../../../services/study/dynamic-simulation';
 
 const styles = {
     loader: {

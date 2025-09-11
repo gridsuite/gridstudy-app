@@ -44,9 +44,6 @@ export const styles = {
         margin: 0,
         flexShrink: 0,
     }),
-    toolbarIcon: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-    }),
     toolbarCheckbox: (theme: Theme) => ({
         marginLeft: theme.spacing(1.5),
     }),

@@ -242,51 +242,31 @@ code {
 }
 
 @keyframes sld-overload-blink-animation {
-    0%,
-    80%,
-    100% {
-        stroke-width: 1;
-    }
-    40% {
-        stroke: #ffeb3b;
-        stroke-width: 2;
+    50% {
+        stroke: #F50057;
+        stroke-width: 4;
     }
 }
-
 @keyframes sld-overvoltage-blink-animation {
-    0%,
-    80%,
-    100% {
-        stroke-width: 1;
-    }
-    40% {
-        stroke: #ff5722;
-        stroke-width: 2;
+    50% {
+        stroke: #D500F9;
+        stroke-width: 4;
     }
 }
-
 @keyframes sld-undervoltage-blink-animation {
-    0%,
-    80%,
-    100% {
-        stroke-width: 1;
-    }
-    40% {
-        stroke: #00bcd4;
-        stroke-width: 2;
+    50% {
+        stroke: #2979FF;
+        stroke-width: 4;
     }
 }
-
 .sld-overload {
-    animation: sld-overload-blink-animation 3s infinite;
+    animation: sld-overload-blink-animation 0.75s infinite steps(1, start);
 }
-
 .sld-vl-overvoltage {
-    animation: sld-overvoltage-blink-animation 3s infinite;
+    animation: sld-overvoltage-blink-animation 0.75s infinite steps(1, start);
 }
-
 .sld-vl-undervoltage {
-    animation: sld-undervoltage-blink-animation 3s infinite;
+    animation: sld-undervoltage-blink-animation 0.75s infinite steps(1, start);
 }
 
 /* topologicalBaseVoltages.css */
@@ -311,25 +291,18 @@ code {
 /* Network modification tree */
 
 .react-flow__node-ROOT {
-    width: 180px;
-    height: 40px;
-    margin-top: 20px;
-    display: flex;
-    align-content: center;
-    justify-content: center;
+    width: 230px;
+    height: 110px;
 }
 
 .react-flow__node-NETWORK_MODIFICATION {
-    width: 180px;
-    height: 60px;
-    display: flex;
-    align-content: center;
-    justify-content: center;
+    width: 230px;
+    height: 110px;
 }
 
 .react-flow__node > .MuiButton-root {
     width: 100%;
 }
 .react-flow {
-    --xy-edge-stroke-width-default: 2;
+    --xy-edge-stroke-width-default: 1;
 }

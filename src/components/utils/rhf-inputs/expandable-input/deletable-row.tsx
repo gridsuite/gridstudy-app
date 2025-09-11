@@ -14,9 +14,16 @@ export interface DeletableRowProps extends PropsWithChildren {
     alignItems: string;
     onClick: () => void;
     deletionMark?: boolean | null;
+    disabledDeletion?: boolean | null;
 }
 
-export function DeletableRow({ alignItems, onClick, deletionMark, children }: Readonly<DeletableRowProps>) {
+export function DeletableRow({
+    alignItems,
+    onClick,
+    deletionMark,
+    disabledDeletion,
+    children,
+}: Readonly<DeletableRowProps>) {
     const intl = useIntl();
     const [isMouseHover, setIsMouseHover] = useState(false);
 
@@ -31,7 +38,7 @@ export function DeletableRow({ alignItems, onClick, deletionMark, children }: Re
         >
             {children}
             <Grid item xs={1}>
-                {isMouseHover && (
+                {isMouseHover && !disabledDeletion && (
                     <Tooltip
                         title={intl.formatMessage({
                             id: deletionMark ? 'button.restore' : 'DeleteRows',

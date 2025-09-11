@@ -6,25 +6,45 @@
  */
 
 import type { UUID } from 'crypto';
-import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { Identifiable } from '@gridsuite/commons-ui';
+import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
-import { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
 
-export type EquipmentFetcher = (
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    currentRootNetworkUuid: UUID,
-    substationsIds?: string[]
-) => Promise<any>;
+// The order of the enum values is important, do not change it without checking the usage (e.g. in select options in AddEmptySpreadsheetDialog)
+export enum SpreadsheetEquipmentType {
+    SUBSTATION = 'SUBSTATION',
+    VOLTAGE_LEVEL = 'VOLTAGE_LEVEL',
+    BRANCH = 'BRANCH', // LINE + TWO_WINDINGS_TRANSFORMER
+    LINE = 'LINE',
+    TWO_WINDINGS_TRANSFORMER = 'TWO_WINDINGS_TRANSFORMER',
+    THREE_WINDINGS_TRANSFORMER = 'THREE_WINDINGS_TRANSFORMER',
+    GENERATOR = 'GENERATOR',
+    LOAD = 'LOAD',
+    SHUNT_COMPENSATOR = 'SHUNT_COMPENSATOR',
+    STATIC_VAR_COMPENSATOR = 'STATIC_VAR_COMPENSATOR',
+    BATTERY = 'BATTERY',
+    HVDC_LINE = 'HVDC_LINE',
+    LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
+    VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
+    TIE_LINE = 'TIE_LINE',
+    DANGLING_LINE = 'DANGLING_LINE',
+    BUS = 'BUS',
+    BUSBAR_SECTION = 'BUSBAR_SECTION',
+}
 
-export type SpreadsheetEquipmentType = Exclude<
-    EQUIPMENT_TYPES,
-    | EQUIPMENT_TYPES.HVDC_CONVERTER_STATION
-    | EQUIPMENT_TYPES.SWITCH
-    | EQUIPMENT_TYPES.BREAKER
-    | EQUIPMENT_TYPES.DISCONNECTOR
->;
+export function isSpreadsheetEquipmentType(type: string): type is SpreadsheetEquipmentType {
+    return type in SpreadsheetEquipmentType;
+}
+
+export type EditableEquipmentType =
+    | SpreadsheetEquipmentType.SUBSTATION
+    | SpreadsheetEquipmentType.VOLTAGE_LEVEL
+    | SpreadsheetEquipmentType.LINE
+    | SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER
+    | SpreadsheetEquipmentType.GENERATOR
+    | SpreadsheetEquipmentType.LOAD
+    | SpreadsheetEquipmentType.BATTERY
+    | SpreadsheetEquipmentType.SHUNT_COMPENSATOR;
 
 export interface SpreadsheetTabDefinition {
     uuid: UUID;
@@ -62,8 +82,8 @@ export type ColumnStateDto = {
 };
 
 export type SpreadsheetEquipmentsByNodes = {
-    nodesId: string[];
-    equipmentsByNodeId: Record<string, Identifiable[]>;
+    nodesId: UUID[];
+    equipmentsByNodeId: Record<UUID, Record<string, Identifiable>>;
 };
 
 export type SpreadsheetConfig = {
@@ -89,4 +109,17 @@ export type SpreadsheetCollectionDto = {
     name: string;
     spreadsheetConfigs: SpreadsheetConfigDto[];
     nodeAliases?: string[];
+};
+
+type BranchOptionalLoadingParameters = {
+    operationalLimitsGroups: boolean;
+};
+
+export type SpreadsheetOptionalLoadingParameters = {
+    [SpreadsheetEquipmentType.BRANCH]: BranchOptionalLoadingParameters;
+    [SpreadsheetEquipmentType.LINE]: BranchOptionalLoadingParameters;
+    [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
+    [SpreadsheetEquipmentType.GENERATOR]: {
+        regulatingTerminal: boolean;
+    };
 };

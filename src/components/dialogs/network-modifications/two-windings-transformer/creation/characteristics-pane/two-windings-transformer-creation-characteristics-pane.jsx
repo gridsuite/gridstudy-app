@@ -11,11 +11,11 @@ import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/util
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import { LimitsPane } from '../../../../limits/limits-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import { TwoWindingsTransformerCreationDialogTab } from '../../two-windings-transformer-utils';
+import { LimitsPane } from '../../../../limits/limits-pane.tsx';
 
 const styles = {
     h3: {

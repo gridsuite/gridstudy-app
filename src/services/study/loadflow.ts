@@ -74,11 +74,11 @@ export function startLoadFlow(
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     withRatioTapChangers: boolean
-) {
+): Promise<void> {
     console.info(
-        'Running loadflow on ' +
+        'Running loadflow on study ' +
             studyUuid +
-            ' on root network ' +
+            ', on root network ' +
             currentRootNetworkUuid +
             ' and node ' +
             currentNodeUuid
@@ -98,7 +98,7 @@ export function stopLoadFlow(
     withRatioTapChangers: boolean
 ) {
     console.info(
-        `Stopping loadFlow on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Stopping loadFlow on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const stopLoadFlowUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -110,7 +110,7 @@ export function stopLoadFlow(
 
 export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Fetching loadFlow status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching loadFlow status on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -137,7 +137,7 @@ export function fetchLoadFlowResult(
     queryParams: ResultsQueryParams
 ) {
     console.info(
-        `Fetching loadflow result on '${studyUuid}', node '${currentNodeUuid}' and current root network '${currentRootNetworkUuid}' ...`
+        `Fetching loadflow result on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});
@@ -153,6 +153,18 @@ export function fetchLoadFlowResult(
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
+}
+
+export function fetchLoadFlowModifications(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching loadflow modifications on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/modifications';
+    console.debug(url);
+    return backendFetchJson(url);
 }
 
 export function fetchLimitViolations(

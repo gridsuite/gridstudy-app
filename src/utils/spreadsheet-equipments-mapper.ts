@@ -17,8 +17,8 @@ import {
     getComputedPhaseTapChangerRegulationMode,
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { Identifiable } from '@gridsuite/commons-ui';
+import { type Identifiable } from '@gridsuite/commons-ui';
+import { SpreadsheetEquipmentType } from '../components/spreadsheet-view/types/spreadsheet.type';
 
 /*
  * This function is used to format the data of the table to be able to display it in the table
@@ -72,12 +72,7 @@ const mapPhaseTapChanger = (twt: any) => {
     };
 };
 
-const mapTwtDataForTable = (twt: any) => {
-    let formattedTwt = mapRatioTapChanger(twt);
-    formattedTwt = mapPhaseTapChanger(formattedTwt);
-
-    return formattedTwt;
-};
+const mapTwtDataForTable = (twt: any) => mapPhaseTapChanger(mapRatioTapChanger(twt));
 
 const mapGeneratorDataForTable = (generator: any) => {
     const formattedGenerator = { ...generator };
@@ -102,24 +97,30 @@ const mapShuntCompensatorDataForTable = (shuntCompensator: any) => {
     return formattedCompensator;
 };
 
-const mapSpreadsheetEquipment = (equipmentType: EQUIPMENT_TYPES, equipment: Identifiable) => {
+const mapSpreadsheetEquipment = (equipmentType: SpreadsheetEquipmentType, equipment: Identifiable) => {
     switch (equipmentType) {
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
+        case SpreadsheetEquipmentType.BRANCH: // can do it because mappers test if field present before modifying
             return mapTwtDataForTable(equipment);
-        case EQUIPMENT_TYPES.GENERATOR:
+        case SpreadsheetEquipmentType.GENERATOR:
             return mapGeneratorDataForTable(equipment);
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+        case SpreadsheetEquipmentType.SHUNT_COMPENSATOR:
             return mapShuntCompensatorDataForTable(equipment);
         default:
             return equipment;
     }
 };
 
-export const mapSpreadsheetEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: Identifiable[]) => {
-    if (equipments && equipments?.length > 0) {
-        return equipments.map((equipment) => {
-            return mapSpreadsheetEquipment(equipmentType, equipment);
-        });
-    }
-    return equipments;
+export const mapSpreadsheetEquipments = (
+    equipmentType: SpreadsheetEquipmentType,
+    equipments: Identifiable[] //TODO + `| null | undefined`
+) => {
+    return equipments?.reduce(
+        (acc, equipment) => {
+            const eq = mapSpreadsheetEquipment(equipmentType, equipment);
+            acc[eq.id] = eq;
+            return acc;
+        },
+        {} as Record<string, Identifiable>
+    );
 };

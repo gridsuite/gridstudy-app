@@ -286,8 +286,8 @@ export const getInitialTwtRatioRegulationModeId = (twt) => {
 };
 
 export const getComputedPreviousRatioRegulationType = (previousValues) => {
-    const previousReulationType = getComputedRegulationType(previousValues);
-    return previousReulationType?.id || null;
+    const previousRegulationType = getComputedRegulationType(previousValues);
+    return previousRegulationType?.id || null;
 };
 
 export const getComputedTapSideId = (twt) => {

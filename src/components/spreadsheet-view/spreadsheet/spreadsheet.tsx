@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
@@ -15,27 +15,26 @@ import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
 import { NodeAlias } from '../types/node-alias.type';
 import { mapColumns } from '../columns/utils/column-mapper';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
     nodeAliases: NodeAlias[] | undefined;
-    updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
     active: boolean;
 }
 
-export const Spreadsheet = React.memo(
+export const Spreadsheet = memo(
     ({
         currentNode,
         tableDefinition,
         disabled,
         nodeAliases,
-        updateNodeAliases,
         equipmentId,
         onEquipmentScrolled,
         openDiagram,
@@ -44,6 +43,11 @@ export const Spreadsheet = React.memo(
         const gridRef = useRef<AgGridReact>(null);
 
         const columnsDefinitions = useMemo(() => mapColumns(tableDefinition), [tableDefinition]);
+        const rowCounterInfos = useFilteredRowCounterInfo({
+            gridRef,
+            tableDefinition,
+            disabled,
+        });
 
         const displayedColsDefs = useMemo(() => {
             const columns = tableDefinition?.columns;
@@ -67,9 +71,9 @@ export const Spreadsheet = React.memo(
                 <SpreadsheetToolbar
                     gridRef={gridRef}
                     tableDefinition={tableDefinition}
+                    rowCounterInfos={rowCounterInfos}
                     columns={displayedColsDefs}
                     nodeAliases={nodeAliases}
-                    updateNodeAliases={updateNodeAliases}
                     disabled={disabled}
                 />
 
@@ -82,6 +86,7 @@ export const Spreadsheet = React.memo(
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}
+                    registerRowCounterEvents={rowCounterInfos.registerRowCounterEvents}
                     openDiagram={openDiagram}
                     active={active}
                 />
