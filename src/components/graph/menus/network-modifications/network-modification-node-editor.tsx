@@ -926,7 +926,7 @@ const NetworkModificationNodeEditor = () => {
         setCreateCompositeModificationDialogOpen(true);
     }, []);
 
-    const doDeleteModification = useCallback(() => {
+    const doStashModification = useCallback(() => {
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
         stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
             .then(() => {
@@ -1315,7 +1315,7 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip title={<FormattedMessage id={'delete'} />}>
                     <span>
                         <IconButton
-                            onClick={doDeleteModification}
+                            onClick={doStashModification}
                             size={'small'}
                             disabled={
                                 selectedNetworkModifications.length === 0 ||
