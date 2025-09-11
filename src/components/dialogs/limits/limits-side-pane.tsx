@@ -7,7 +7,6 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    DndTable,
     DndColumnType,
     ColumnNumeric,
     ColumnText,
@@ -27,7 +26,7 @@ import {
 } from 'components/utils/field-constants';
 import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useMemo } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { TemporaryLimit } from '../../../services/network-modification-types';
@@ -45,7 +44,6 @@ export interface LimitsSidePaneProps {
     applicabilityPreviousValue?: string;
     clearableFields: boolean | undefined;
     currentNode?: CurrentTreeNode;
-    onlySelectedLimitsGroup: boolean;
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
 }
@@ -58,15 +56,11 @@ export function LimitsSidePane({
     applicabilityPreviousValue,
     clearableFields,
     currentNode,
-    onlySelectedLimitsGroup,
     selectedLimitSetName,
     checkLimitSetUnicity,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
-    const useFieldArrayOutputTemporaryLimits = useFieldArray({
-        name: `${limitsGroupFormName}.${TEMPORARY_LIMITS}`,
-    });
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -113,7 +107,7 @@ export function LimitsSidePane({
             }
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l) =>
+                    (l: TemporaryLimit) =>
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
@@ -170,14 +164,26 @@ export function LimitsSidePane({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex: number, column: DndColumn, arrayFormName: string, temporaryLimits?: TemporaryLimit[]) => {
+        (
+            rowIndex: number,
+            column: ColumnText | ColumnNumeric,
+            arrayFormName: string,
+            temporaryLimits?: TemporaryLimit[]
+        ) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
-            return getValues(arrayFormName) &&
+            let disable: boolean =
+                temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
+                column.dataKey !== TEMPORARY_LIMIT_VALUE;
+
+            if (
+                getValues(arrayFormName) &&
                 getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-                ? false
-                : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                      column.dataKey !== TEMPORARY_LIMIT_VALUE;
+            ) {
+                disable = false;
+            }
+
+            return disable;
         },
         [getValues, temporaryLimitHasPreviousValue]
     );
@@ -213,7 +219,7 @@ export function LimitsSidePane({
 
     return (
         <Box sx={{ p: 2 }}>
-            {!onlySelectedLimitsGroup && limitsGroupApplicabilityName && (
+            {limitsGroupApplicabilityName && (
                 <>
                     <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
@@ -246,36 +252,24 @@ export function LimitsSidePane({
                 </>
             )}
             <Box>
-                <LimitsChart limitsGroupFormName={limitsGroupFormName} />
+                <LimitsChart
+                    limitsGroupFormName={limitsGroupFormName}
+                    previousPermanentLimit={permanentCurrentLimitPreviousValue}
+                />
             </Box>
             <Box sx={{ maxWidth: 300, paddingTop: 2 }}>{PermanentLimitBox}</Box>
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            {onlySelectedLimitsGroup ? (
-                <DndTable
-                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
-                    createRows={createRows}
-                    columnsDefinition={columnsDefinition}
-                    tableHeight={270}
-                    withAddRowsDialog={false}
-                    previousValues={temporaryLimitsPreviousValues}
-                    disableTableCell={disableTableCell}
-                    getPreviousValue={getPreviousValue}
-                    isValueModified={isValueModified}
-                />
-            ) : (
-                <TemporaryLimitsTable
-                    arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
-                    createRow={createRows}
-                    columnsDefinition={columnsDefinition}
-                    previousValues={temporaryLimitsPreviousValues}
-                    disableTableCell={disableTableCell}
-                    getPreviousValue={getPreviousValue}
-                    isValueModified={isValueModified}
-                />
-            )}
+            <TemporaryLimitsTable
+                arrayFormName={`${limitsGroupFormName}.${TEMPORARY_LIMITS}`}
+                createRow={createRows}
+                columnsDefinition={columnsDefinition}
+                previousValues={temporaryLimitsPreviousValues}
+                disableTableCell={disableTableCell}
+                getPreviousValue={getPreviousValue}
+                isValueModified={isValueModified}
+            />
         </Box>
     );
 }
