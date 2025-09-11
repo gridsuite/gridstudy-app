@@ -440,30 +440,34 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             },
             [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: {
                 messageId: 'DynamicSecurityAnalysis',
-                startComputation(debug) {
-                    checkForbiddenProvider(
-                        studyUuid,
-                        ComputingType.DYNAMIC_SECURITY_ANALYSIS,
-                        fetchDynamicSecurityAnalysisProvider,
-                        [PARAM_PROVIDER_DYNAWO]
-                    ).then((isValid) => {
-                        if (isValid) {
-                            startComputationAsync(
-                                ComputingType.DYNAMIC_SECURITY_ANALYSIS,
-                                null,
-                                () =>
-                                    startDynamicSecurityAnalysis(
-                                        studyUuid,
-                                        currentNode?.id,
-                                        currentRootNetworkUuid,
-                                        debug
-                                    ),
-                                () => debug && subscribeDebug(ComputingType.DYNAMIC_SECURITY_ANALYSIS),
-                                null,
-                                'startDynamicSecurityAnalysisError'
-                            );
+                async startComputation(debug) {
+                    try {
+                        const isProviderValid = await checkForbiddenProvider(
+                            studyUuid,
+                            ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+                            fetchDynamicSecurityAnalysisProvider,
+                            [PARAM_PROVIDER_DYNAWO]
+                        );
+
+                        if (!isProviderValid) {
+                            return;
                         }
-                    });
+
+                        startComputationAsync(
+                            ComputingType.DYNAMIC_SECURITY_ANALYSIS,
+                            null,
+                            () =>
+                                startDynamicSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, debug),
+                            () => debug && subscribeDebug(ComputingType.DYNAMIC_SECURITY_ANALYSIS),
+                            null,
+                            'startDynamicSecurityAnalysisError'
+                        );
+                    } catch (error) {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'startDynamicSecurityAnalysisError',
+                        });
+                    }
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.DYNAMIC_SECURITY_ANALYSIS, () =>
