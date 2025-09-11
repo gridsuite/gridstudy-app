@@ -1041,10 +1041,8 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
                 .then(() => {
-                    if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-                        setCopyInfos(null);
-                        setCopiedModifications([]);
-                    }
+                    setCopyInfos(null);
+                    setCopiedModifications([]);
                 })
                 .catch((errmsg) => {
                     snackError({
