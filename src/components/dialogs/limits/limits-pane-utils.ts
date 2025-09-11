@@ -29,6 +29,7 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import {
     AttributeModification,
     CurrentLimits,
+    LineModificationInfo,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -36,7 +37,7 @@ import {
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import { BranchInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
-import { LineModificationEditData } from '../network-modifications/line/modification/line-modification-type';
+import { LineModificationForm } from '../network-modifications/line/modification/line-modification-type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
@@ -225,10 +226,10 @@ export const updateTemporaryLimits = (
 };
 
 /**
- * extract data loaded from the map server and merge it with local data in order to fill the operaitonal liits groups modification interface
+ * extract data loaded from the map server and merge it with local data in order to fill the operational limits groups modification interface
  */
 export const updateOpLimitsGroups = (
-    formBranchModification: LineModificationEditData,
+    formBranchModification: LineModificationForm,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroup[] => {
     let updatedOpLG: OperationalLimitsGroup[] = formBranchModification.limits.operationalLimitsGroups ?? [];
@@ -367,7 +368,7 @@ export function addOperationTypeToSelectedOpLG(
 export const addModificationTypeToOpLimitsGroups = (
     limitsGroups: OperationalLimitsGroup[],
     networkLine: BranchInfos | null,
-    editData: LineModificationEditData | null | undefined,
+    editData: LineModificationInfo | null | undefined,
     currentNode: CurrentTreeNode
 ) => {
     let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);

@@ -101,11 +101,13 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LineModificationEditData } from './line-modification-type';
+import { LineModificationForm } from './line-modification-type';
+import { LineModificationInfo } from '../../../../../services/network-modification-types';
+import { toModificationOperation } from '../../../../utils/utils';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
-    editData: LineModificationEditData | null | undefined;
+    editData: LineModificationInfo | null | undefined;
     // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     defaultIdValue: string;
     studyUuid: UUID;
@@ -183,7 +185,7 @@ const LineModificationDialog = ({
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (lineModification: LineModificationEditData) => {
+        (lineModification: LineModificationInfo) => {
             if (lineModification?.equipmentId) {
                 setSelectedId(lineModification.equipmentId);
             }
@@ -220,7 +222,7 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationEditData) => {
+        (line: LineModificationForm) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
@@ -232,7 +234,7 @@ const LineModificationDialog = ({
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid ?? '',
                 lineId: selectedId,
-                lineName: sanitizeString(line[EQUIPMENT_NAME]?.value) ?? '',
+                equipmentName: toModificationOperation(sanitizeString(line[EQUIPMENT_NAME]) ?? ''),
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
@@ -245,13 +247,13 @@ const LineModificationDialog = ({
                     editData,
                     currentNode
                 ),
-                selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
+                selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
                         id: 'None',
                     })
                 ),
-                selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
+                selectedOperationalLimitsGroup2: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_2],
                     intl.formatMessage({
                         id: 'None',
@@ -308,7 +310,7 @@ const LineModificationDialog = ({
                     .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            reset((formValues: LineModificationEditData) => ({
+                            reset((formValues: LineModificationForm) => ({
                                 ...formValues,
                                 ...{
                                     [LIMITS]: {
@@ -341,7 +343,7 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors: FieldErrors<LineModificationEditData>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationForm>) => {
         let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);

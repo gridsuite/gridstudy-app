@@ -539,20 +539,22 @@ export interface LineCreationInfo {
 }
 
 export interface LineModificationInfo {
+    uuid?: string | null;
     studyUuid: string;
+    equipmentId?: string;
+    equipmentName?: AttributeModification<string> | null;
     nodeUuid: UUID;
     modificationUuid: string;
     lineId: string;
-    lineName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
+    r: AttributeModification<number> | null;
+    x: AttributeModification<number> | null;
+    g1: AttributeModification<number> | null;
+    b1: AttributeModification<number> | null;
+    g2: AttributeModification<number> | null;
+    b2: AttributeModification<number> | null;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedLimitsGroup1: AttributeModification<string> | null;
-    selectedLimitsGroup2: AttributeModification<string> | null;
+    selectedOperationalLimitsGroup1: AttributeModification<string> | null;
+    selectedOperationalLimitsGroup2: AttributeModification<string> | null;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
