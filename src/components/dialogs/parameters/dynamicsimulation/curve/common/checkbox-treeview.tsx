@@ -176,20 +176,21 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             [itemStates]
         );
 
+        const getSelectedItems = useCallback(() => {
+            return items.filter(
+                (item) => getState(item.id) === CheckState.CHECKED && !items.find((elem) => elem.parentId === item.id) // no children
+            );
+        }, [items, getState]);
+
         // expose some api for the component by using ref
         useImperativeHandle(
             ref,
             () => ({
                 api: {
-                    getSelectedItems: () =>
-                        items.filter(
-                            (item) =>
-                                getState(item.id) === CheckState.CHECKED &&
-                                !items.find((elem) => elem.parentId === item.id) // no children
-                        ),
+                    getSelectedItems,
                 },
             }),
-            [items, getState]
+            [getSelectedItems]
         );
 
         // render functions (recursive rendering)
