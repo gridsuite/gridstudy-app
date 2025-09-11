@@ -67,6 +67,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onAddVoltageLevel: (vlId: string) => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
+    readonly onMoveTextnode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
     readonly onVoltageLevelClick: (vlId: string) => void;
 };
@@ -85,6 +86,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onHideVoltageLevel,
         onVoltageLevelClick,
         onMoveNode,
+        onMoveTextnode,
     } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -125,9 +127,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             connectionShiftXOrig: number,
             connectionShiftYOrig: number
         ) => {
-            // TODO Not implemented yet
+            if (onMoveTextnode) {
+                onMoveTextnode(equipmentId, shiftX, shiftY);
+            }
         },
-        []
+        [onMoveTextnode]
     );
 
     const handleToggleShowLabels = useCallback(() => {
