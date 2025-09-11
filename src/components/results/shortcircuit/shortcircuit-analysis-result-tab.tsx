@@ -6,7 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,
@@ -27,6 +27,10 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
 import { UUID } from 'crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import useGlobalFilters from '../common/global-filter/use-global-filters';
+import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -87,6 +91,9 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
+    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
+
     const handleSubTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
             setResultOrLogIndex(newIndex);
@@ -128,6 +135,20 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         }
     }, []);
 
+    const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
+        return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
+    }, []);
+
+    useEffect(() => {
+        // Clear the globalfilter when tab changes
+        handleGlobalFilterChange([]);
+    }, [handleGlobalFilterChange, tabIndex]);
+
+    const globalFilterOptions = useMemo(
+        () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
+        [voltageLevelsFilter, countriesFilter, propertiesFilter]
+    );
+
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
@@ -145,6 +166,15 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <Tab label={<FormattedMessage id={'Results'} />} />
                     <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
+                {resultOrLogIndex === RESULTS_TAB_INDEX && tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES && (
+                    <GlobalFilterSelector
+                        onChange={handleGlobalFilterChange}
+                        filters={globalFilterOptions}
+                        filterableEquipmentTypes={filterableEquipmentTypes}
+                        genericFiltersStrictMode={true}
+                    />
+                )}
+                <Box sx={{ flexGrow: 1 }}></Box>
                 {resultOrLogIndex === RESULTS_TAB_INDEX &&
                     (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ||
                         tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS) && (
@@ -163,6 +193,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                     <ShortCircuitAnalysisAllBusesResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        globalFilters={getGlobalFilterParameter(globalFilters)}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
