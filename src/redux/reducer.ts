@@ -221,6 +221,10 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    SET_ACTIVE_SPREADSHEET_TAB,
+    SetActiveSpreadsheetTabAction,
+    SET_ADDED_SPREADSHEET_TAB,
+    SetAddedSpreadsheetTabAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -700,11 +704,15 @@ export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
+    activeTabUuid: UUID | null;
+    addedTable: UUID | null; // to track the last added table for setting the focus on it
 }
 
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
+    activeTabUuid: null,
+    addedTable: null,
 };
 
 const initialState: AppState = {
@@ -999,7 +1007,19 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.assign(existingTableDefinition, newTableDefinition);
         } else {
             state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+            // Set as active if it's the unique tab or no tab is currently active
+            if (state.tables.definitions.length === 1 || !state.tables.activeTabUuid) {
+                state.tables.activeTabUuid = newTableDefinition.uuid;
+            }
         }
+    });
+
+    builder.addCase(SET_ACTIVE_SPREADSHEET_TAB, (state, action: SetActiveSpreadsheetTabAction) => {
+        state.tables.activeTabUuid = action.tabUuid;
+    });
+
+    builder.addCase(SET_ADDED_SPREADSHEET_TAB, (state, action: SetAddedSpreadsheetTabAction) => {
+        state.tables.addedTable = action.tabUuid;
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
@@ -1037,6 +1057,21 @@ export const reducer = createReducer(initialState, (builder) => {
                 locked: false,
             })),
         }));
+        const isValidAddedTable = state.tables.addedTable
+            ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.addedTable)
+            : false;
+        if (isValidAddedTable) {
+            state.tables.activeTabUuid = state.tables.addedTable;
+        } else {
+            const isValidActiveTab = state.tables.activeTabUuid
+                ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.activeTabUuid)
+                : false;
+            if (!isValidActiveTab) {
+                state.tables.activeTabUuid =
+                    action.tableDefinitions.length > 0 ? action.tableDefinitions[0].uuid : null;
+            }
+        }
+        state.tables.addedTable = null;
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce(
@@ -1409,7 +1444,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
-            name: '',
+            name: action.name,
             nadConfigUuid: undefined,
             filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],

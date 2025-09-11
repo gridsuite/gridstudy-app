@@ -105,6 +105,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             onNADCreation();
             dispatch(
                 openNadList(
+                    formData.name,
                     selectedSubstationsWithVl
                         .flatMap((selectedSubstation) =>
                             selectedSubstation.voltageLevels

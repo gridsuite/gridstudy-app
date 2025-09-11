@@ -160,7 +160,9 @@ export type AppActions =
     | ResetSensitivityAnalysisPaginationAction
     | ResetShortcircuitAnalysisPaginationAction
     | LogsResultPaginationAction
-    | ResetLogsPaginationAction;
+    | ResetLogsPaginationAction
+    | SetActiveSpreadsheetTabAction
+    | SetAddedSpreadsheetTabAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -797,12 +799,14 @@ export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction
 
 export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
 export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
+    name: string;
     ids: string[];
 };
 
-export function openNadList(ids: string[]): OpenNadListAction {
+export function openNadList(name: string, ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
+        name: name,
         ids: ids,
     };
 }
@@ -1257,6 +1261,30 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     type: UPDATE_TABLE_DEFINITION,
     newTableDefinition,
 });
+
+export const SET_ACTIVE_SPREADSHEET_TAB = 'SET_ACTIVE_SPREADSHEET_TAB';
+export type SetActiveSpreadsheetTabAction = Readonly<Action<typeof SET_ACTIVE_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setActiveSpreadsheetTab(tabUuid: UUID | null): SetActiveSpreadsheetTabAction {
+    return {
+        type: SET_ACTIVE_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
+
+export const SET_ADDED_SPREADSHEET_TAB = 'SET_ADDED_SPREADSHEET_TAB';
+export type SetAddedSpreadsheetTabAction = Readonly<Action<typeof SET_ADDED_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setAddedSpreadsheetTab(tabUuid: UUID | null): SetAddedSpreadsheetTabAction {
+    return {
+        type: SET_ADDED_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
 
 export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 
