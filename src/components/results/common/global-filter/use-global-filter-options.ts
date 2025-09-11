@@ -27,53 +27,63 @@ export const useGlobalFilterOptions = () => {
 
     useEffect(() => {
         if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
+            const controller = new AbortController();
+
+            fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid, controller.signal)
                 .then((countryCodes) => {
                     setCountriesFilter(
-                        countryCodes.map((countryCode: string) => ({
+                        countryCodes.map((countryCode) => ({
                             label: countryCode,
                             filterType: FilterType.COUNTRY,
                         }))
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchCountryError',
-                    });
+                    if (!controller.signal.aborted) {
+                        snackError({ messageTxt: error.message, headerId: 'FetchCountryError' });
+                    }
                 });
 
-            fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
+            fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid, controller.signal)
                 .then((nominalVoltages) => {
                     setVoltageLevelsFilter(
-                        nominalVoltages.map((nominalV: number) => ({
+                        nominalVoltages.map((nominalV) => ({
                             label: nominalV.toString(),
                             filterType: FilterType.VOLTAGE_LEVEL,
                         }))
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchNominalVoltagesError',
-                    });
+                    if (!controller.signal.aborted) {
+                        snackError({ messageTxt: error.message, headerId: 'FetchNominalVoltagesError' });
+                    }
                 });
 
-            fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
-                const propertiesGlobalFilters: GlobalFilter[] = [];
-                if (substationPropertiesGlobalFilters) {
-                    for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
-                        propertyValues.forEach((propertyValue) => {
-                            propertiesGlobalFilters.push({
-                                label: propertyValue,
-                                filterType: FilterType.SUBSTATION_PROPERTY,
-                                filterSubtype: propertyName,
+            fetchSubstationPropertiesGlobalFilters(controller.signal)
+                .then(({ substationPropertiesGlobalFilters }) => {
+                    const propertiesGlobalFilters: GlobalFilter[] = [];
+                    if (substationPropertiesGlobalFilters) {
+                        for (const [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
+                            propertyValues.forEach((propertyValue) => {
+                                propertiesGlobalFilters.push({
+                                    label: propertyValue,
+                                    filterType: FilterType.SUBSTATION_PROPERTY,
+                                    filterSubtype: propertyName,
+                                });
                             });
-                        });
+                        }
                     }
-                }
-                setPropertiesFilter(propertiesGlobalFilters);
-            });
+                    setPropertiesFilter(propertiesGlobalFilters);
+                })
+                .catch((error) => {
+                    if (!controller.signal.aborted) {
+                        snackError({ messageTxt: error.message, headerId: 'FetchSubstationPropertiesError' });
+                    }
+                });
+
+            return () => {
+                controller.abort('Request too old');
+            };
         }
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
 
