@@ -180,17 +180,20 @@ const NetworkModificationNodeEditor = () => {
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const cleanClipboard = useCallback(() => {
-        setCopyInfos(null);
-        setCopiedModifications((oldCopiedModifications) => {
-            if (oldCopiedModifications.length) {
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessage',
-                });
-            }
-            return [];
-        });
-    }, [snackInfo]);
+    const cleanClipboard = useCallback(
+        (showSnackInfo: boolean = true) => {
+            setCopyInfos(null);
+            setCopiedModifications((oldCopiedModifications) => {
+                if (oldCopiedModifications.length && showSnackInfo) {
+                    snackInfo({
+                        messageId: 'CopiedModificationInvalidationMessage',
+                    });
+                }
+                return [];
+            });
+        },
+        [snackInfo]
+    );
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -1041,8 +1044,7 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
                 .then(() => {
-                    setCopyInfos(null);
-                    setCopiedModifications([]);
+                    cleanClipboard(false);
                 })
                 .catch((errmsg) => {
                     snackError({
@@ -1058,7 +1060,7 @@ const NetworkModificationNodeEditor = () => {
                 });
             });
         }
-    }, [copiedModifications, currentNode?.id, copyInfos, snackError, studyUuid]);
+    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanClipboard, snackError]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
