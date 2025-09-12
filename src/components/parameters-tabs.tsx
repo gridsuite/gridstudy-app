@@ -53,12 +53,7 @@ import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-eva
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
-import {
-    setPendingComputation,
-    cancelLeaveParametersTab,
-    confirmLeaveParametersTab,
-    setDirtyComputationParameters,
-} from 'redux/actions';
+import { cancelLeaveParametersTab, confirmLeaveParametersTab, setDirtyComputationParameters } from 'redux/actions';
 import { StudyView, StudyViewType } from './utils/utils';
 import {
     ComputingType,
@@ -102,11 +97,9 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
-    const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
-    const pendingComputation = useSelector((state: AppState) => state.pendingComputation);
+    const isDirtyComputationParameters = useSelector((state: AppState) => state.isDirtyComputationParameters);
 
     const [isLeavingPopupOpen, setIsLeavingPopupOpen] = useState<boolean>(false);
-    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState<boolean>(false);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -128,37 +121,19 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
+    const setDirtyFields = useCallback(
+        (isDirty: boolean) => {
+            dispatch(setDirtyComputationParameters(isDirty));
+        },
+        [dispatch]
+    );
+
     const shouldDisplayGlassPane = useMemo(() => {
         return (
             computationStatus === RunningStatus.RUNNING ||
             (tabValue === TAB_VALUES.shortCircuitParamsTabValue && shortCircuitOneBusStatus === RunningStatus.RUNNING)
         );
     }, [computationStatus, shortCircuitOneBusStatus, tabValue]);
-
-    useEffect(() => {
-        dispatch(setDirtyComputationParameters(haveDirtyFields));
-    }, [dispatch, haveDirtyFields]);
-
-    useEffect(() => {
-        if (pendingComputation !== null) {
-            setIsLaunchingPopupOpen(true);
-        }
-    }, [pendingComputation]);
-
-    const handleLaunchingPopupClose = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
-        if (pendingComputation !== null) {
-            dispatch(setPendingComputation(null));
-        }
-    }, [pendingComputation, dispatch]);
-
-    const handleLaunchingPopup = useCallback(() => {
-        setIsLaunchingPopupOpen(false);
-        if (pendingComputation !== null) {
-            pendingComputation();
-            dispatch(setPendingComputation(null));
-        }
-    }, [pendingComputation, dispatch]);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -232,16 +207,16 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     useEffect(() => {
         if (attemptedLeaveParametersTabIndex !== null) {
-            if (haveDirtyFields) {
+            if (isDirtyComputationParameters) {
                 setIsLeavingPopupOpen(true);
             } else {
                 dispatch(confirmLeaveParametersTab());
             }
         }
-    }, [attemptedLeaveParametersTabIndex, haveDirtyFields, dispatch]);
+    }, [attemptedLeaveParametersTabIndex, isDirtyComputationParameters, dispatch]);
 
     const handleChangeTab = (newValue: string) => {
-        if (haveDirtyFields) {
+        if (isDirtyComputationParameters) {
             setNextTabValue(newValue);
             setIsLeavingPopupOpen(true);
         } else {
@@ -256,7 +231,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         } else if (attemptedLeaveParametersTabIndex !== null) {
             dispatch(confirmLeaveParametersTab());
         }
-        setHaveDirtyFields(false);
+        dispatch(setDirtyComputationParameters(false));
         setIsLeavingPopupOpen(false);
     }, [nextTabValue, attemptedLeaveParametersTabIndex, dispatch]);
 
@@ -301,7 +276,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                         studyUuid={studyUuid}
                         language={languageLocal}
                         parametersBackend={loadFlowParametersBackend}
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
@@ -310,7 +285,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                     <SecurityAnalysisParametersInline
                         studyUuid={studyUuid}
                         parametersBackend={securityAnalysisParametersBackend}
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
@@ -321,7 +296,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                         currentNodeUuid={currentNodeUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         parametersBackend={sensitivityAnalysisBackend}
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         enableDeveloperMode={enableDeveloperMode}
                     />
                 );
@@ -336,26 +311,26 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 return (
                     <ShortCircuitParametersInLine
                         studyUuid={studyUuid}
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         shortCircuitParameters={shortCircuitParameters}
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
-                return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
+                return <DynamicSimulationParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.dynamicSecurityAnalysisParamsTabValue:
-                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
+                return <DynamicSecurityAnalysisParameters user={user} setHaveDirtyFields={setDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
                 return (
                     <VoltageInitParametersInLine
                         studyUuid={studyUuid}
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         voltageInitParameters={voltageInitParameters}
                     />
                 );
             case TAB_VALUES.stateEstimationTabValue:
                 return (
                     <StateEstimationParameters
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         useStateEstimationParameters={useStateEstimationParameters}
                     />
                 );
@@ -363,7 +338,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                 return (
                     <NetworkVisualizationParametersInline
                         studyUuid={studyUuid}
-                        setHaveDirtyFields={setHaveDirtyFields}
+                        setHaveDirtyFields={setDirtyFields}
                         user={user}
                         parameters={networkVisualizationsParameters}
                     />
@@ -375,6 +350,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         studyUuid,
         languageLocal,
         loadFlowParametersBackend,
+        setDirtyFields,
         enableDeveloperMode,
         securityAnalysisParametersBackend,
         currentNodeUuid,
@@ -384,9 +360,9 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         useNonEvacuatedEnergyParameters,
         shortCircuitParameters,
         user,
+        voltageInitParameters,
         useStateEstimationParameters,
         networkVisualizationsParameters,
-        voltageInitParameters,
     ]);
 
     return (
@@ -489,18 +465,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                     </DialogContentText>
                 }
                 validateKey={'dialog.button.leave'}
-            />
-            <SelectOptionsDialog
-                title={''}
-                open={isLaunchingPopupOpen}
-                onClose={handleLaunchingPopupClose}
-                onClick={handleLaunchingPopup}
-                child={
-                    <DialogContentText>
-                        <FormattedMessage id="launchComputationConfirmQuestion" />
-                    </DialogContentText>
-                }
-                validateKey={'dialog.button.launch'}
             />
         </>
     );

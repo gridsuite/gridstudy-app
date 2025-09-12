@@ -560,7 +560,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     appTabIndex: number;
     attemptedLeaveParametersTabIndex: number | null;
     isDirtyComputationParameters: boolean;
-    pendingComputation: (() => void) | null;
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -724,7 +723,6 @@ const initialState: AppState = {
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
     isDirtyComputationParameters: false,
-    pendingComputation: null,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -963,9 +961,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
         state.attemptedLeaveParametersTabIndex = null;
-    });
-    builder.addCase(SET_PENDING_COMPUTATION, (state, action: SetPendingComputationAction) => {
-        state.pendingComputation = action.startFn;
     });
     builder.addCase(SET_DIRTY_COMPUTATION_PARAMETERS, (state, action: SetDirtyComputationParametersAction) => {
         state.isDirtyComputationParameters = action.isDirty;

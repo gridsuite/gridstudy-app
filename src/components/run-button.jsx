@@ -7,18 +7,19 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import { ComputingType } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
-import { setPendingComputation } from '../redux/actions';
+import { useSelector } from 'react-redux';
+import { SelectOptionsDialog } from '../utils/dialogs.js';
+import { DialogContentText } from '@mui/material';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
-    const dispatch = useDispatch();
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
+    const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
 
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
@@ -81,27 +82,49 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }
 
     const attemptStartComputation = useCallback(() => {
-        const startFn = runnables[selectedRunnable].startComputation;
         if (isDirtyComputationParameters) {
-            dispatch(setPendingComputation(startFn));
+            setIsLaunchingPopupOpen(true);
         } else {
-            startFn();
+            runnables[selectedRunnable].startComputation();
         }
-    }, [isDirtyComputationParameters, dispatch, runnables, selectedRunnable]);
+    }, [isDirtyComputationParameters, runnables, selectedRunnable]);
+
+    const handleLaunchingPopupClose = useCallback(() => {
+        setIsLaunchingPopupOpen(false);
+    }, []);
+
+    const handleLaunchingPopup = useCallback(() => {
+        setIsLaunchingPopupOpen(false);
+        runnables[selectedRunnable].startComputation();
+    }, [runnables, selectedRunnable]);
 
     return (
-        <SplitButton
-            options={getOptions()}
-            selectedIndex={activeRunnables.indexOf(selectedRunnable)}
-            onSelectionChange={(index) => setSelectedRunnable(activeRunnables[index])}
-            onClick={attemptStartComputation}
-            runningStatus={getRunningStatus()}
-            buttonDisabled={disabled || isButtonDisable()}
-            selectionDisabled={disabled}
-            text={runnablesText[selectedRunnable] || ''}
-            actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
-            computationStopped={computationStopped}
-        />
+        <>
+            <SplitButton
+                options={getOptions()}
+                selectedIndex={activeRunnables.indexOf(selectedRunnable)}
+                onSelectionChange={(index) => setSelectedRunnable(activeRunnables[index])}
+                onClick={attemptStartComputation}
+                runningStatus={getRunningStatus()}
+                buttonDisabled={disabled || isButtonDisable()}
+                selectionDisabled={disabled}
+                text={runnablesText[selectedRunnable] || ''}
+                actionOnRunnable={runnables[selectedRunnable].actionOnRunnable}
+                computationStopped={computationStopped}
+            />
+            <SelectOptionsDialog
+                title={''}
+                open={isLaunchingPopupOpen}
+                onClose={handleLaunchingPopupClose}
+                onClick={handleLaunchingPopup}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage id="launchComputationConfirmQuestion" />
+                    </DialogContentText>
+                }
+                validateKey={'dialog.button.launch'}
+            />
+        </>
     );
 };
 

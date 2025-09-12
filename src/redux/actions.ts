@@ -206,18 +206,6 @@ export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
     };
 }
 
-export const SET_PENDING_COMPUTATION = 'SET_PENDING_COMPUTATION';
-export type SetPendingComputationAction = Readonly<Action<typeof SET_PENDING_COMPUTATION>> & {
-    startFn: (() => void) | null;
-};
-
-export function setPendingComputation(startFn: (() => void) | null): SetPendingComputationAction {
-    return {
-        type: SET_PENDING_COMPUTATION,
-        startFn,
-    };
-}
-
 export const SET_DIRTY_COMPUTATION_PARAMETERS = 'SET_DIRTY_COMPUTATION_PARAMETERS';
 export type SetDirtyComputationParametersAction = Readonly<Action<typeof SET_DIRTY_COMPUTATION_PARAMETERS>> & {
     isDirty: boolean;
