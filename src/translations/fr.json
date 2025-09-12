@@ -354,7 +354,7 @@
     "SensitivityInDeltaA": "Sensibilité au niveau des quadripôles en ΔA",
     "SensitivityAtNode": "Nœuds",
     "LoadFlowError": "Une erreur est survenue lors de l'exécution du calcul de répartition",
-    "LoadFlowDynaFlowError": "Vous devez lancer DynaFlow à partir d'un noeud de type sécurité",
+    "ForbiddenProviderError": "Vous devez lancer {provider} à partir d'un noeud de type sécurité",
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
