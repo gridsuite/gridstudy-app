@@ -54,7 +54,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
-        const [isFetching, setIsFetching] = useState<boolean>();
+        const [isFetching, setIsFetching] = useState(false);
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -84,8 +84,8 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState<number[]>([]);
 
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
-        const [countries, setCountries] = useState([]);
-        const [selectedCountries, setSelectedCountries] = useState([]);
+        const [countries, setCountries] = useState<string[]>([]);
+        const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
         const { translate } = useLocalizedCountries();
 
         // fetching options in different criterias
