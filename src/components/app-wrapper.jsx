@@ -133,16 +133,17 @@ const lightTheme = createTheme({
         common: {
             background: '#F5F5F5',
             activeBackground: '#BBDEFB',
-            selectedBackground: '#E1F5FE',
         },
         modification: {
             border: 'solid 1px #999FA1',
+            selectedBackground: '#E1F5FE',
             selectedBorder: 'solid 1px #0288D1',
             hoverBorderColor: '#03A9F4',
             activeBorderColor: '#29B6F6',
         },
         root: {
             border: 'solid 1px #3CEC96',
+            selectedBackground: '#E1F5FE',
             hoverBorderColor: '#3CEC96',
             activeBorderColor: '#64B5F6',
             icon: {
