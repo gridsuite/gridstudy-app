@@ -107,7 +107,7 @@ export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayout
         )
             .then(() => {
                 snackInfo({
-                    headerId: 'GridLayoutPanelSaveSuccess',
+                    headerId: 'DiagramLayoutStoreSuccess',
                 });
             })
             .catch(() => {
