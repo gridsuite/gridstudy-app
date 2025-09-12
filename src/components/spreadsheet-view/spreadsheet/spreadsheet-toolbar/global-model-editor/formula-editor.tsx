@@ -5,11 +5,68 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ExpandingTextField, ExpandingTextFieldProps } from '@gridsuite/commons-ui';
+import { Box } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormulaSearch } from './formula-search-context';
+import { useMemo } from 'react';
 
 const styles = {
-    flexGrow: 1,
+    container: {
+        position: 'relative',
+        flexGrow: 1,
+    },
+    overlay: {
+        position: 'absolute' as const,
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        whiteSpace: 'pre-wrap' as const,
+        color: 'transparent',
+        pointerEvents: 'none' as const,
+        // mimic default MUI TextField padding
+        padding: '16.5px 14px',
+        boxSizing: 'border-box' as const,
+    },
+    textField: {
+        position: 'relative' as const,
+        backgroundColor: 'transparent',
+    },
 };
 
 export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps>) {
-    return <ExpandingTextField name={name} label="" minRows={3} rows={3} sx={styles} />;
+    const theme = useTheme();
+    const { control } = useFormContext();
+    const value = useWatch({ name, control }) as string | undefined;
+    const { searchTerm } = useFormulaSearch();
+
+    const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    const highlighted = useMemo(() => {
+        const formula = value ?? '';
+        if (!searchTerm) {
+            return formula;
+        }
+        const escaped = escapeRegExp(searchTerm);
+        const parts = formula.split(new RegExp(`(${escaped})`, 'gi'));
+        return parts.map((part, idx) =>
+            part.toLowerCase() === searchTerm.toLowerCase() ? (
+                <span key={idx} style={{ backgroundColor: theme.searchedText.highlightColor }}>
+                    {part}
+                </span>
+            ) : (
+                part
+            )
+        );
+    }, [searchTerm, theme.searchedText.highlightColor, value]);
+
+    return (
+        <Box sx={styles.container}>
+            <Box aria-hidden sx={styles.overlay}>
+                {highlighted}
+            </Box>
+            <ExpandingTextField name={name} label="" minRows={3} rows={3} sx={styles.textField} />
+        </Box>
+    );
 }
