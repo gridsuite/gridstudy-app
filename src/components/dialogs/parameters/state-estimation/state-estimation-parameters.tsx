@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
     CustomFormProvider,
     mergeSx,
@@ -40,7 +40,7 @@ export const StateEstimationParameters = ({
     setHaveDirtyFields,
 }: {
     useStateEstimationParameters: UseGetStateEstimationParametersProps;
-    setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
+    setHaveDirtyFields: (isDirty: boolean) => void;
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [stateEstimationParams, setStateEstimationParams] = useStateEstimationParameters;
