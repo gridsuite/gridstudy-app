@@ -13,7 +13,7 @@ import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { SelectOptionsDialog } from '../utils/dialogs.js';
+import { SelectOptionsDialog } from '../utils/dialogs';
 import { DialogContentText } from '@mui/material';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
