@@ -82,7 +82,7 @@
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
     "EmptyField": "Vider le champs",
-    "NumericValueOrNone": "Valeur numérique ou Aucun",
+    "NumericValueOrEmptyField": "Valeur numérique ou Vider le champs",
     "ValueOrEmptyField": "Valeur ou Vider le champs",
     "NoneUpcomingOverload": "Aucune",
     "Feeders": "Départs",

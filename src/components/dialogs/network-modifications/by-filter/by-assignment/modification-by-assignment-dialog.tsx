@@ -50,14 +50,15 @@ const ModificationByAssignmentDialog: FC<any> = ({
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
-    const noneStr = useMemo(() => {
+    const emptyValueStr = useMemo(() => {
         return intl.formatMessage({ id: 'EmptyField' });
     }, [intl]);
+
     const formSchema = yup
         .object()
         .shape({
             [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-            [ASSIGNMENTS]: getAssignmentsSchema(noneStr),
+            [ASSIGNMENTS]: getAssignmentsSchema(emptyValueStr),
         })
         .required();
 
@@ -86,7 +87,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                     const value = assignment[VALUE_FIELD];
                     let valueConverted = convertInputValue(field, value);
                     if (!valueConverted || valueConverted === '') {
-                        valueConverted = noneStr;
+                        valueConverted = emptyValueStr;
                     }
                     return {
                         ...assignment,
@@ -98,7 +99,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 [ASSIGNMENTS]: assignments,
             });
         }
-    }, [editData, intl, noneStr, reset]);
+    }, [editData, intl, emptyValueStr, reset]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -111,9 +112,8 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
                 const field: FieldType = FieldType[fieldKey];
                 let value = assignment[VALUE_FIELD];
-                // None values have to be set to an empty string :
-                if (value === noneStr) {
-                    // put this in convertOutputValue ??
+                // "Empty" values have to be set to an empty string for the back :
+                if (value === emptyValueStr) {
                     value = '';
                 }
                 const valueConverted = convertOutputValue(field, value);
@@ -137,7 +137,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 });
             });
         },
-        [currentNodeUuid, editData, noneStr, snackError, studyUuid]
+        [currentNodeUuid, editData, emptyValueStr, snackError, studyUuid]
     );
 
     return (

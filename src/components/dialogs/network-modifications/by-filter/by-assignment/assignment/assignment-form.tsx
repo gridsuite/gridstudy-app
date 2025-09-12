@@ -82,7 +82,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
-    const noneStr = useMemo(() => {
+    const emptyValueStr = useMemo(() => {
         return intl.formatMessage({ id: 'EmptyField' });
     }, [intl]);
 
@@ -155,9 +155,11 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
                     <AutocompleteInput
                         name={`${name}.${index}.${VALUE_FIELD}`}
                         label={'ValueOrEmptyField'}
-                        options={[noneStr]}
+                        options={[emptyValueStr]}
                         size={'small'}
-                        getOptionLabel={(value) => value.toString()}
+                        getOptionLabel={(option: Option) =>
+                            typeof option !== 'string' ? (option?.label ?? option) : option
+                        }
                         allowNewValue
                     />
                 );
@@ -171,23 +173,23 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
                 <AutocompleteInput
                     name={`${name}.${index}.${VALUE_FIELD}`}
                     label={'ValueOrEmptyField'}
-                    options={[noneStr]}
+                    options={[emptyValueStr]}
                     onCheckNewValue={(option: Option | null) => {
-                        if (option) {
-                            if (option.toString() !== noneStr && Number.isNaN(Number(option.toString()))) {
-                                setError(`${name}.${index}.${VALUE_FIELD}`, {
-                                    message: 'ValueOrEmptyField',
-                                });
-                                return true;
-                            }
+                        if (option && option !== emptyValueStr && Number.isNaN(Number(option))) {
+                            setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                message: 'NumericValueOrEmptyField',
+                            });
+                        } else {
+                            setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                message: '',
+                            });
                         }
-                        setError(`${name}.${index}.${VALUE_FIELD}`, {
-                            message: '',
-                        });
                         return true;
                     }}
                     size={'small'}
-                    getOptionLabel={(value) => value.toString()}
+                    getOptionLabel={(option: Option) =>
+                        typeof option !== 'string' ? (option?.label ?? option) : option
+                    }
                     allowNewValue
                 />
             );
@@ -195,7 +197,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, noneStr, setError]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, emptyValueStr, setError]);
 
     return (
         <>

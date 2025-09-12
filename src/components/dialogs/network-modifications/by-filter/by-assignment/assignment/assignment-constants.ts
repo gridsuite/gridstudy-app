@@ -208,14 +208,12 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'ShuntConductanceText1',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
     },
     G2: {
         id: FieldType.G2,
         label: 'ShuntConductanceText2',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
     },
     B: {
         id: FieldType.B,
@@ -228,14 +226,12 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'ShuntSusceptanceText1',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
     },
     B2: {
         id: FieldType.B2,
         label: 'ShuntSusceptanceText2',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
     },
     RATED_U1: {
         id: FieldType.RATED_U1,

@@ -82,7 +82,7 @@
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
     "EmptyField": "Empty the field",
-    "NumericValueOrNone": "Numeric value or None",
+    "NumericValueOrEmptyField": "Numeric value or Empty the field",
     "ValueOrEmptyField": "Value or empty the field",
     "NoneUpcomingOverload": "None",
     "Feeders": "Feeder",

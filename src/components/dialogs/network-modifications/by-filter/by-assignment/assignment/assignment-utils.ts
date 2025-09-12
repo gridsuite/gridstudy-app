@@ -37,7 +37,7 @@ export const getAssignmentInitialValue = () => ({
     [VALUE_FIELD]: null,
 });
 
-export function getAssignmentsSchema(noneStr: string) {
+export function getAssignmentsSchema(emptyValueStr: string) {
     return yup
         .array()
         .of(
@@ -65,7 +65,7 @@ export function getAssignmentsSchema(noneStr: string) {
                     .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
                         const unsettable = getUnsettable(editedField);
-                        return getValueSchema(noneStr, dataType, unsettable);
+                        return getValueSchema(emptyValueStr, dataType, unsettable);
                     })
                     .required(),
             })
@@ -73,14 +73,14 @@ export function getAssignmentsSchema(noneStr: string) {
         .required();
 }
 
-function getValueSchema(noneStr: string, dataType?: DataType, settable_to_none?: boolean) {
+function getValueSchema(emptyValueStr: string, dataType?: DataType, settable_to_none?: boolean) {
     let schema: Schema;
     // set type
     switch (dataType) {
         case DataType.DOUBLE:
             schema = settable_to_none
-                ? yup.string().test('is-number-or-none', 'NumericValueOrNone', (value) => {
-                      return value === noneStr || !isNaN(Number(value));
+                ? yup.string().test('is-number-or-none', 'NumericValueOrEmptyField', (value) => {
+                      return value === emptyValueStr || !isNaN(Number(value));
                   })
                 : yup.number();
             break;
