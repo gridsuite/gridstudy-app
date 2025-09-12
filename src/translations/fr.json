@@ -1607,5 +1607,11 @@
     "Object": "Objet",
     "Array": "Tableau",
     "Boolean": "Booléen",
-    "Enum": "Énumération"
+    "Enum": "Énumération",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
+    "TOP": "HAUT",
+    "BOTTOM": "BAS",
+    "DuplicatedPositionsError": "Numéro en doublon",
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste",
+    "ConnectionsRemovedFromList": "Départs supprimés de la liste à la validation"
 }

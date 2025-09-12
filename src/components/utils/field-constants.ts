@@ -18,6 +18,7 @@ export const AUTOMATON = 'automaton';
 export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
+export const LABEL = 'label';
 export const NAME = 'name';
 export const PREDEFINED = 'predefined';
 export const TABULAR_PROPERTIES = 'properties';
@@ -494,3 +495,8 @@ export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
 export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
 export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';
+
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
+export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
+export const CONNECTION_SIDE = 'connectionSide';
