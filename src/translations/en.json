@@ -179,7 +179,7 @@
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "FilterEvaluationError": "An error occurred while evaluating the filter",
-    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
+    "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
 
     "SelectAll": "All",
