@@ -31,6 +31,7 @@ const downloadDebugFileFetchers = {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: downloadDebugFileDynamicSecurityAnalysis,
     [ComputingType.VOLTAGE_INITIALIZATION]: downloadDebugFileVoltageInit,
     [ComputingType.SHORT_CIRCUIT]: downloadDebugFileShortCircuitAnalysis,
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: downloadDebugFileShortCircuitAnalysis,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
 export function buildDebugIdentifier({

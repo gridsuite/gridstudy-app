@@ -41,6 +41,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
 import { DiagramType } from '../diagram.type';
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
+import useComputationDebug from '../../../../../hooks/use-computation-debug';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -160,12 +161,22 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         });
     }, []);
 
+    // --- for running in debug mode --- //
+    const subscribeDebug = useComputationDebug({
+        studyUuid: studyUuid,
+        nodeUuid: currentNode?.id!,
+        rootNetworkUuid: currentRootNetworkUuid!,
+    });
+
     const handleRunShortcircuitAnalysis = useCallback(
-        (busId: string) => {
+        (busId: string, debug: boolean) => {
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
-            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId)
+            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId, debug)
+                .then(() => {
+                    debug && subscribeDebug(ComputingType.SHORT_CIRCUIT_ONE_BUS);
+                })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -188,6 +199,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             currentRootNetworkUuid,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
+            subscribeDebug,
         ]
     );
 
