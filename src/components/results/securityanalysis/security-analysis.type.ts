@@ -16,6 +16,7 @@ import { GlobalFilters } from '../common/global-filter/global-filter-types';
 export interface LimitViolation {
     subjectId?: string;
     acceptableDuration?: number;
+    upcomingAcceptableDuration?: number;
     limit?: number;
     patlLimit?: number;
     limitName?: string;
@@ -49,6 +50,7 @@ export interface SecurityAnalysisNmkTableRow {
     subjectId?: string;
     locationId?: string;
     acceptableDuration?: number | null;
+    upcomingAcceptableDuration?: number | null;
     status?: string;
     contingencyEquipmentsIds?: (string | undefined)[];
     contingencyId?: string;

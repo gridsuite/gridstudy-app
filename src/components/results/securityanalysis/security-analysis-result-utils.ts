@@ -91,6 +91,10 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
                 // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                 acceptableDuration:
                     limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                upcomingAcceptableDuration:
+                    limitViolation?.upcomingAcceptableDuration === MAX_INT32
+                        ? null
+                        : limitViolation?.upcomingAcceptableDuration,
             });
         });
     });
@@ -125,6 +129,10 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                     acceptableDuration:
                         limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                    upcomingAcceptableDuration:
+                        limitViolation?.upcomingAcceptableDuration === MAX_INT32
+                            ? null
+                            : limitViolation?.upcomingAcceptableDuration,
                     limit: limitViolation.limit,
                     patlLimit: limitViolation.patlLimit,
                     value: limitViolation.value,
@@ -199,6 +207,34 @@ const makeAgGridFloatColumn = (
     };
 };
 
+const makeAgGridDurationColumn = (
+    intlId: string,
+    fieldId: string,
+    intl: IntlShape,
+    filterParams: AgGridFilterParams,
+    sortParams: ColumnContext['sortParams']
+) => {
+    return {
+        headerName: intl.formatMessage({
+            id: intlId,
+        }),
+        colId: fieldId,
+        field: fieldId,
+        valueFormatter: (param: ValueFormatterParams) => convertDuration(param.value),
+        context: {
+            sortParams,
+            filterComponent: CustomAggridDurationFilter,
+            filterComponentParams: {
+                filterParams: {
+                    dataType: FILTER_DATA_TYPES.NUMBER,
+                    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterParams,
+                },
+            },
+        },
+    };
+};
+
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
@@ -246,25 +282,9 @@ export const securityAnalysisTableNColumnsDefinition = (
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'loading', intl, filterParams, sortParams)),
 
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({
-                id: 'Overload',
-            }),
-            colId: 'acceptableDuration',
-            field: 'acceptableDuration',
-            valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
-            context: {
-                sortParams,
-                filterComponent: CustomAggridDurationFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.NUMBER,
-                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn('Overload', 'acceptableDuration', intl, filterParams, sortParams)
+        ),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -381,25 +401,19 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             })
         ),
 
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({
-                id: 'actualOverloadDuration',
-            }),
-            colId: 'acceptableDuration',
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridDurationFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.NUMBER,
-                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn('actualOverloadDuration', 'acceptableDuration', intl, filterParams, sortParams)
+        ),
+
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn(
+                'upComingOverloadDuration',
+                'upcomingAcceptableDuration',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
 
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn(
@@ -551,25 +565,18 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 isChildren: true,
             })
         ),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({
-                id: 'actualOverloadDuration',
-            }),
-            colId: 'acceptableDuration',
-            field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
-            context: {
-                sortParams: { ...sortParams, isChildren: true },
-                filterComponent: CustomAggridDurationFilter,
-                filterComponentParams: {
-                    filterParams: {
-                        dataType: FILTER_DATA_TYPES.NUMBER,
-                        comparators: Object.values(FILTER_NUMBER_COMPARATORS),
-                        ...filterParams,
-                    },
-                },
-            },
-        }),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn('actualOverloadDuration', 'acceptableDuration', intl, filterParams, sortParams)
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn(
+                'upComingOverloadDuration',
+                'upcomingAcceptableDuration',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn(
                 'NextLimitNameCurrentViolation',
@@ -783,6 +790,7 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     nextLimitName: 'contingencyLimitViolations.nextLimitName',
     side: 'contingencyLimitViolations.side',
     acceptableDuration: 'contingencyLimitViolations.acceptableDuration',
+    upcomingAcceptableDuration: 'contingencyLimitViolations.upcomingAcceptableDuration',
     limit: 'contingencyLimitViolations.limit',
     patlLimit: 'contingencyLimitViolations.patlLimit',
     value: 'contingencyLimitViolations.value',
@@ -800,6 +808,7 @@ export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
     nextLimitName: 'contingencyLimitViolations.nextLimitName',
     side: 'contingencyLimitViolations.side',
     acceptableDuration: 'contingencyLimitViolations.acceptableDuration',
+    upcomingAcceptableDuration: 'contingencyLimitViolations.upcomingAcceptableDuration',
     limit: 'contingencyLimitViolations.limit',
     patlLimit: 'contingencyLimitViolations.patlLimit',
     value: 'contingencyLimitViolations.value',
