@@ -184,17 +184,27 @@ export function exportSensitivityResultsAsCsv(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
-    csvConfig: CsvConfig
+    csvConfig: CsvConfig,
+    selector: any,
+    filters: FilterConfig[],
+    globalFilters: GlobalFilters | undefined
 ) {
     console.info(
         `Exporting sensitivity analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} as CSV ...`
     );
-
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('selector', JSON.stringify(selector));
+    if (filters?.length) {
+        urlSearchParams.append('filters', JSON.stringify(filters));
+    }
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
         currentRootNetworkUuid
-    )}/sensitivity-analysis/result/csv`;
+    )}/sensitivity-analysis/result/csv?${urlSearchParams}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',
