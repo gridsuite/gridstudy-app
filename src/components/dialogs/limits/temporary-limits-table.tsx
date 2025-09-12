@@ -9,11 +9,12 @@ import { useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
-    ColumnNumeric,
-    ColumnText,
+    type ColumnNumeric,
+    type ColumnText,
     DndColumnType,
     ErrorInput,
     FieldErrorAlert,
+    type MuiStyles,
     TableNumericalInput,
     TableTextInput,
 } from '@gridsuite/commons-ui';
@@ -31,7 +32,7 @@ const styles = {
         margin: 1,
         textTransform: 'none',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomTableCellProps {
     name: string;

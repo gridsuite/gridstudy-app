@@ -8,14 +8,14 @@ import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/reducer';
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
-import { Box, Button, CircularProgress, Fade, Theme, Tooltip } from '@mui/material';
+import { Box, Button, CircularProgress, Fade, Tooltip } from '@mui/material';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { resetSpreadsheetColumnsFilters } from '../../../../../services/study/study-config';
 import { UseFilteredRowCounterInfoReturn } from './use-filtered-row-counter';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
-    getContainer: (theme: Theme) => ({
+    getContainer: (theme) => ({
         minWidth: theme.spacing(18),
         paddingRight: '10px',
         paddingLeft: '10px',
@@ -29,7 +29,7 @@ const styles = {
     restoreButton: {
         paddingRight: '3px',
     },
-};
+} as const satisfies MuiStyles;
 
 export type SpreadsheetFilteredRowCountProps = {
     rowCounterInfos: UseFilteredRowCounterInfoReturn;

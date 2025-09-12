@@ -11,7 +11,7 @@ import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Tooltip } from '@mui/material';
 import {
     RESULT_TYPE,
@@ -27,7 +27,7 @@ const styles = {
     button: {
         color: 'node.background',
     },
-};
+} as const satisfies MuiStyles;
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;

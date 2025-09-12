@@ -13,9 +13,10 @@ import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
-    EquipmentInfos,
+    type EquipmentInfos,
+    type MuiStyles,
     OverflowableText,
-    TreeViewFinderNodeProps,
+    type TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -32,7 +33,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-};
+} as const satisfies MuiStyles;
 
 interface DiagramGridHeaderProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;

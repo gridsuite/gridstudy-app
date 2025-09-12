@@ -21,6 +21,7 @@ import {
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { RowClassParams } from 'ag-grid-community';
 import { Box, useTheme } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 
 const styles = {
@@ -32,7 +33,7 @@ const styles = {
     button: {
         color: 'node.background',
     },
-};
+} as const satisfies MuiStyles;
 
 export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResultNmkProps> = ({
     result,

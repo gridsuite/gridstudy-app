@@ -7,10 +7,10 @@
 
 import * as React from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
-import { alpha, Checkbox, SxProps, Theme, useTheme } from '@mui/material';
+import { alpha, Checkbox, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { treeItemClasses, SimpleTreeView, TreeItem } from '@mui/x-tree-view';
-
+import { SimpleTreeView, TreeItem, treeItemClasses } from '@mui/x-tree-view';
+import { type SxStyle } from '@gridsuite/commons-ui';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
 enum CheckState {
@@ -55,7 +55,7 @@ interface CheckBoxTreeViewProps {
     checkAll: boolean;
     onSelectionChanged?: (newSelection: ModelVariable[]) => void;
     getLabel: (element: ModelVariable) => string;
-    sx: SxProps<Theme>;
+    sx: SxStyle;
 }
 
 interface ItemState {

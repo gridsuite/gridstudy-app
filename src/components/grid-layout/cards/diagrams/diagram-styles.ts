@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 
 export const styles = {
@@ -24,14 +24,14 @@ export const styles = {
         },
         overflow: 'hidden',
     },
-    divNetworkAreaDiagram: (theme: Theme) => ({
+    divNetworkAreaDiagram: (theme) => ({
         height: '100%',
         '& .nad-label-box': {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,
         },
     }),
-    divSingleLineDiagram: (theme: Theme) => ({
+    divSingleLineDiagram: (theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
@@ -51,11 +51,11 @@ export const styles = {
             fill: theme.palette.text.primary,
         },
     }),
-    divSingleLineDiagramHideLockAndBolt: (_theme: Theme) => ({
+    divSingleLineDiagramHideLockAndBolt: {
         '& .sld-flash, .sld-lock': {
             display: 'none',
         },
-    }),
+    },
     divDiagramReadOnly: {
         '& .sld-in .sld-label': {
             display: 'none',
@@ -100,9 +100,9 @@ export const styles = {
             display: 'none',
         },
     },
-    paperBorders: (theme: Theme) => ({
+    paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
         borderRight: '1px solid ' + theme.palette.action.hover,
     }),
-};
+} as const satisfies MuiStyles;

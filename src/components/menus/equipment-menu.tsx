@@ -14,7 +14,7 @@ import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { AppState } from 'redux/reducer';
-import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
+import { type EquipmentType, type ExtendedEquipmentType, type MuiStyles } from '@gridsuite/commons-ui';
 import { BaseEquipmentMenuProps } from './base-equipment-menu';
 import { MenuBranchProps } from './operating-status-menu';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
@@ -25,7 +25,7 @@ const styles = {
         maxHeight: '800px',
         overflowY: 'visible',
     },
-};
+} as const satisfies MuiStyles;
 
 const withEquipmentMenu =
     (

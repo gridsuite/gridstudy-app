@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { BooleanFilterValue } from './utils/aggrid-filters-utils';
 import { CustomAggridFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from './custom-aggrid-filter.type';
 
@@ -22,7 +22,7 @@ const styles = {
         maxWidth: '40%',
         paddingRight: '0px',
     },
-};
+} as const satisfies MuiStyles;
 
 export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({
     api,

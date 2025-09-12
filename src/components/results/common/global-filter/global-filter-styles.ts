@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme } from '@mui/material';
 import { cyan } from '@mui/material/colors';
 import { FilterType } from '../utils';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 export const getResultsGlobalFiltersChipStyle = (filterType: FilterType) => {
     let chipStyle;
@@ -35,7 +34,7 @@ export const GLOBAL_FILTERS_CELL_HEIGHT: number = 400;
 export const IMPORT_FILTER_HEIGHT: number = 40;
 
 export const resultsGlobalFilterStyles = {
-    autocomplete: (theme: Theme) => ({
+    autocomplete: (theme) => ({
         width: AUTOCOMPLETE_WIDTH + 'px',
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
@@ -57,23 +56,23 @@ export const resultsGlobalFilterStyles = {
         },
     }),
     // from the expanded part :
-    dropdown: () => ({
+    dropdown: {
         position: 'relative',
         left: `0px`,
         width: `${AUTOCOMPLETE_WIDTH + POPPER_EXTRA_WIDTH}px`,
-    }),
-    cellHeader: (theme: Theme) => ({
+    },
+    cellHeader: (theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '1em',
         padding: 1,
         border: '1px solid',
         borderColor: theme.palette.divider,
     }),
-    cell: (theme: Theme) => ({
+    cell: (theme) => ({
         borderLeft: '1px solid',
         borderColor: theme.palette.divider,
     }),
-    list: (theme: Theme) => ({
+    list: (theme) => ({
         display: 'flex',
         flexDirection: 'column',
         color: theme.palette.text.secondary,
@@ -81,7 +80,7 @@ export const resultsGlobalFilterStyles = {
         width: '100%',
         maxHeight: `${GLOBAL_FILTERS_CELL_HEIGHT}px`,
     }),
-    importFilterButton: (theme: Theme) => ({
+    importFilterButton: (theme) => ({
         color: theme.palette.text.secondary,
         fontSize: '0.8em',
         borderTop: '1px solid',
@@ -90,7 +89,7 @@ export const resultsGlobalFilterStyles = {
         justifyContent: 'flex-start',
         paddingLeft: '24px',
     }),
-    miniButton: (theme: Theme) => ({
+    miniButton: (theme) => ({
         color: theme.palette.text.primary,
         border: '1px solid',
         borderColor: theme.palette.text.primary,
@@ -122,7 +121,7 @@ export const resultsGlobalFilterStyles = {
             position: 'relative',
         },
     },
-    chipCountry: (theme: Theme) => ({
+    chipCountry: (theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.info.main}!important`,
         },
@@ -130,7 +129,7 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${theme.palette.info.dark}!important`,
         },
     }),
-    chipVoltageLevel: (theme: Theme) => ({
+    chipVoltageLevel: (theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.secondary.main}!important`,
         },
@@ -138,15 +137,15 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${theme.palette.secondary.dark}!important`,
         },
     }),
-    chipGenericFilter: () => ({
+    chipGenericFilter: {
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${cyan['500']}!important`,
         },
         '&.MuiChip-root:hover, &.MuiChip-root:focus': {
             backgroundColor: `${cyan['700']}!important`,
         },
-    }),
-    chipSubstationProperty: (theme: Theme) => ({
+    },
+    chipSubstationProperty: (theme) => ({
         '&.MuiChip-root, &.MuiChip-root[aria-selected="true"]': {
             backgroundColor: `${theme.palette.success.main}!important`,
         },
@@ -154,4 +153,4 @@ export const resultsGlobalFilterStyles = {
             backgroundColor: `${theme.palette.success.dark}!important`,
         },
     }),
-};
+} as const satisfies MuiStyles;
