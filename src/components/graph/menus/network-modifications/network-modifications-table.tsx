@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, SetStateAction } from 'react';
+import React, { useCallback, useMemo, SetStateAction, useRef, useEffect, useState } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
@@ -20,7 +20,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge, Box, Theme } from '@mui/material';
+import { Badge, Box, Theme, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
@@ -33,6 +33,7 @@ import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
 import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
     container: (theme: Theme) => ({
@@ -78,8 +79,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     setModificationsToExclude,
     ...nameHeaderProps
 }) => {
+    const gridRef = useRef<AgGridReact>(null);
+    const theme = useTheme();
+
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const hightlightedModificationUuid = useSelector((state: AppState) => state.hightlightedModificationUuid);
+    const [isGridReady, setIsGridReady] = useState(false);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -194,17 +200,53 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 
     const getRowId = (params: GetRowIdParams<NetworkModificationMetadata>) => params.data.uuid;
 
-    const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationMetadata, unknown>) => {
-        const style: RowStyle = {};
-        if (!cellData?.data?.activated) {
-            style.opacity = 0.4;
-        }
-        return style;
+    const getRowStyle = useCallback(
+        (cellData: RowClassParams<NetworkModificationMetadata, unknown>) => {
+            const style: RowStyle = {};
+            if (!cellData?.data?.activated) {
+                style.opacity = 0.4;
+            }
+
+            // Highlight the selected modification
+            if (cellData?.data?.uuid === hightlightedModificationUuid) {
+                style.backgroundColor = theme.aggrid.highlightColor;
+            }
+            return style;
+        },
+        [hightlightedModificationUuid, theme]
+    );
+
+    const onGridReady = useCallback(() => {
+        setIsGridReady(true);
     }, []);
+
+    useEffect(() => {
+        if (!gridRef.current?.api) {
+            return;
+        }
+        const gridApi = gridRef.current.api;
+
+        const tryHighlight = () => {
+            let node = undefined;
+            if (hightlightedModificationUuid) {
+                node = gridApi.getRowNode(hightlightedModificationUuid);
+            }
+
+            if (node) {
+                gridApi.ensureNodeVisible(node, 'middle');
+            }
+            gridApi.removeEventListener('modelUpdated', tryHighlight);
+        };
+
+        tryHighlight();
+
+        gridApi.addEventListener('modelUpdated', tryHighlight);
+    }, [isGridReady, hightlightedModificationUuid]);
 
     return (
         <Box sx={styles.container}>
             <CustomAGGrid
+                ref={gridRef}
                 rowData={modifications}
                 getRowId={getRowId}
                 rowSelection={{
@@ -224,6 +266,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
                 overrideLocales={AGGRID_LOCALES}
+                onGridReady={onGridReady}
             />
         </Box>
     );

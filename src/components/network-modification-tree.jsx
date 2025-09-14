@@ -62,6 +62,8 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     const toggleOptions = useSelector((state) => state.toggleOptions);
 
+    const centeredNode = useSelector((state) => state.centeredNode);
+
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
     const { fitView, setCenter, getZoom } = useReactFlow();
@@ -329,6 +331,12 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         // Use current zoom level to maintain zoom while centering
         setCenter(centerX, centerY, { zoom: getZoom() });
     }, [currentNode, nodes, setCenter, getZoom]);
+
+    useEffect(() => {
+        if (centeredNode) {
+            handleFocusNode();
+        }
+    }, [centeredNode, handleFocusNode]);
 
     useEffect(() => {
         if (onTreePanelResize) {

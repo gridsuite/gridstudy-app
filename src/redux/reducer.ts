@@ -1,3 +1,4 @@
+import { CENTER_NODE, CenterNodeAction } from './actions';
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -62,6 +63,8 @@ import {
     type EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     type FavoriteContingencyListsAction,
+    HIGHLIGHT_MODIFICATION,
+    HighlightModificationAction,
     INIT_TABLE_DEFINITIONS,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
@@ -513,6 +516,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
     toggleOptions: StudyDisplayMode[];
+    hightlightedModificationUuid: UUID | null;
+    centeredNode: CurrentTreeNode | null;
     mapOpen: boolean;
 }
 
@@ -621,6 +626,8 @@ const initialState: AppState = {
         params: [],
     },
     toggleOptions: [StudyDisplayMode.TREE],
+    hightlightedModificationUuid: null,
+    centeredNode: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1135,6 +1142,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
         state.reloadMapNeeded = true;
+    });
+
+    builder.addCase(HIGHLIGHT_MODIFICATION, (state, action: HighlightModificationAction) => {
+        state.hightlightedModificationUuid = action.hightlightedModificationUuid;
+    });
+    builder.addCase(CENTER_NODE, (state, action: CenterNodeAction) => {
+        state.centeredNode = action.centeredNode;
     });
 
     builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {

@@ -628,6 +628,30 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
+export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
+export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
+    hightlightedModificationUuid: UUID | null;
+};
+
+export function setHighlightModification(modifficationUuid: UUID | null): HighlightModificationAction {
+    return {
+        type: HIGHLIGHT_MODIFICATION,
+        hightlightedModificationUuid: modifficationUuid,
+    };
+}
+
+export const CENTER_NODE = 'CENTER_NODE';
+export type CenterNodeAction = Readonly<Action<typeof CENTER_NODE>> & {
+    centeredNode: CurrentTreeNode;
+};
+
+export function setCentedNode(centeredNode: CurrentTreeNode): CenterNodeAction {
+    return {
+        type: CENTER_NODE,
+        centeredNode: centeredNode,
+    };
+}
+
 export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
 export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
     currentRootNetworkUuid: UUID;

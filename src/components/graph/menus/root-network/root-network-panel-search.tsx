@@ -17,6 +17,8 @@ import SearchBar from './root-network-search-bar';
 import { RootNetworkNodesSearchResults } from './root-network-nodes-search-results';
 import { useRootNetworkNodeSearch } from './use-root-network-node-search';
 import { useRootNetworkModificationSearch } from './use-root-network-modification-search';
+import { setHighlightModification } from 'redux/actions';
+import { useDispatch } from 'react-redux';
 
 enum TAB_VALUES {
     modifications = 'MODIFICATIONS',
@@ -71,11 +73,12 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
 
     const isLoading = isNodeTab(tabValue) ? nodesSearch.isLoading : modificationsSearch.isLoading;
     const searchTerm = isNodeTab(tabValue) ? nodesSearch.searchTerm : modificationsSearch.searchTerm;
-
+    const dispatch = useDispatch();
     const leaveSearch = () => {
         nodesSearch.reset();
         modificationsSearch.reset();
         setIsSearchActive(false);
+        dispatch(setHighlightModification(null));
     };
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
