@@ -61,6 +61,9 @@ export function MoveVoltageLevelFeederBaysForm({
         setIsDiagramPaneOpen(true);
     }, []);
 
+    const isNodeBuiltValue = useMemo(() => isNodeBuilt(currentNode), [currentNode]);
+    const shouldDisableTooltip = useMemo(() => !isUpdate && isNodeBuiltValue, [isUpdate, isNodeBuiltValue]);
+
     const defaultColDef = useMemo(
         () => ({
             sortable: false,
@@ -87,236 +90,228 @@ export function MoveVoltageLevelFeederBaysForm({
         [selectedId]
     );
 
+    const commonHeaderParams = useMemo(
+        () => ({
+            tooltipTitle: intl.formatMessage({
+                id: isNodeBuiltValue ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
+            }),
+            isNodeBuilt: isNodeBuiltValue,
+            disabledTooltip: shouldDisableTooltip,
+        }),
+        [intl, isNodeBuiltValue, shouldDisableTooltip]
+    );
+
+    const renderSeparatorCell = useCallback((data: any, content: React.ReactNode = '') => {
+        if (data.type === 'SEPARATOR') {
+            return content;
+        }
+        return null;
+    }, []);
+
+    const renderConnectionNameCell = useCallback(
+        ({ data }: { data?: any }) => {
+            if (data.type === 'SEPARATOR') {
+                return (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '40px',
+                            zIndex: 1,
+                        }}
+                    >
+                        <Typography
+                            variant="body1"
+                            color="primary"
+                            sx={{ textAlign: 'center', width: '100%', padding: '8px 0' }}
+                        >
+                            {data.title}
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                fontSize: '10px',
+                                color: 'red',
+                                textAlign: 'center',
+                                width: '100%',
+                                padding: '8px 0',
+                            }}
+                        >
+                            {data.helperMessage}
+                        </Typography>
+                    </div>
+                );
+            }
+
+            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
+
+            return (
+                <TextInput
+                    name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
+                    formProps={{
+                        disabled: data.type === 'FEEDER_BAY_REMOVED',
+                        size: 'small',
+                        variant: 'filled',
+                        sx: {
+                            padding: '8px',
+                            '& input': { textAlign: 'center' },
+                        },
+                    }}
+                />
+            );
+        },
+        [getValues]
+    );
+
+    const renderBusbarSectionCell = useCallback(
+        ({ data }: { data?: any }) => {
+            const separatorContent = renderSeparatorCell(data, '');
+            if (separatorContent !== null) {
+                return separatorContent;
+            }
+
+            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
+            const busBarSectionIds = getValues(
+                `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_IDS}`
+            );
+
+            return (
+                <AutocompleteInput
+                    name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_ID}`}
+                    options={busBarSectionIds}
+                    size="small"
+                    sx={{ padding: '8px 0' }}
+                    disabled={data.type === 'FEEDER_BAY_REMOVED'}
+                    disableClearable
+                />
+            );
+        },
+        [getValues, renderSeparatorCell]
+    );
+
+    const renderConnectionDirectionCell = useCallback(
+        ({ data }: { data?: any }) => {
+            const separatorContent = renderSeparatorCell(data, '');
+            if (separatorContent !== null) {
+                return separatorContent;
+            }
+
+            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
+
+            return FeederBayDirectionCellRenderer({
+                name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
+                disabled: data.type === 'FEEDER_BAY_REMOVED',
+            });
+        },
+        [getValues, renderSeparatorCell]
+    );
+
+    const renderConnectionPositionCell = useCallback(
+        ({ data }: { data?: any }) => {
+            const separatorContent = renderSeparatorCell(data, '');
+            if (separatorContent !== null) {
+                return separatorContent;
+            }
+
+            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
+            const fieldError = (errors[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE] as any)?.[formIndex]?.[
+                CONNECTION_POSITION
+            ];
+
+            return (
+                <div style={{ position: 'relative' }}>
+                    <IntegerInput
+                        name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
+                        formProps={{
+                            disabled: data.type === 'FEEDER_BAY_REMOVED',
+                            size: 'small',
+                            variant: fieldError ? 'outlined' : 'filled',
+                            sx: {
+                                padding: '8px',
+                                '& input': { textAlign: 'center' },
+                            },
+                        }}
+                        inputTransform={(value) => String(value ?? 0)}
+                        outputTransform={(value) => (value === '0' ? null : Number(value))}
+                    />
+                </div>
+            );
+        },
+        [getValues, errors, renderSeparatorCell]
+    );
+
     const columnDefs = useMemo(
         () => [
             {
                 field: CONNECTION_NAME,
                 filter: true,
                 flex: 2,
-                cellRenderer: ({ data }: { data?: any }) => {
-                    if (data.type === 'SEPARATOR') {
-                        return (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    top: 0,
-                                    bottom: 0,
-                                    width: '100%',
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    padding: '40px',
-                                    zIndex: 1,
-                                }}
-                            >
-                                <Typography
-                                    variant="body1"
-                                    color="primary"
-                                    sx={{
-                                        textAlign: 'center',
-                                        width: '100%',
-                                        padding: '8px 0',
-                                    }}
-                                >
-                                    {data.title}
-                                </Typography>
-
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: '10px',
-                                        color: 'red',
-                                        textAlign: 'center',
-                                        width: '100%',
-                                        padding: '8px 0',
-                                    }}
-                                >
-                                    {data.helperMessage}
-                                </Typography>
-                            </div>
-                        );
-                    } else {
-                        const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-                        const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
-                        return (
-                            <div>
-                                <TextInput
-                                    name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
-                                    formProps={{
-                                        disabled: data.type === 'FEEDER_BAY_REMOVED',
-                                        size: 'small',
-                                        variant: 'filled',
-                                        sx: {
-                                            padding: '8px',
-                                            '& input': {
-                                                textAlign: 'center',
-                                            },
-                                        },
-                                    }}
-                                />
-                            </div>
-                        );
-                    }
-                },
+                cellRenderer: renderConnectionNameCell,
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'Feeders' }),
-                    tooltipTitle: intl.formatMessage({
-                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
-                    }),
-                    isNodeBuilt: isNodeBuilt(currentNode),
-                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                    ...commonHeaderParams,
                 },
             },
             {
                 field: BUSBAR_SECTION_ID,
                 filter: true,
                 flex: 2,
-                cellRenderer: ({ data }: { data?: any }) => {
-                    if (data.type === 'SEPARATOR') {
-                        return '';
-                    } else {
-                        const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-                        const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
-                        const busBarSectionIds = getValues(
-                            `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_IDS}`
-                        );
-                        return (
-                            <AutocompleteInput
-                                name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_ID}`}
-                                options={busBarSectionIds}
-                                size="small"
-                                sx={{ padding: '8px 0' }}
-                                disabled={data.type === 'FEEDER_BAY_REMOVED'}
-                                disableClearable
-                            />
-                        );
-                    }
-                },
+                cellRenderer: renderBusbarSectionCell,
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'BusBarBus' }),
-                    tooltipTitle: intl.formatMessage({
-                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
-                    }),
-                    isNodeBuilt: isNodeBuilt(currentNode),
-                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                    ...commonHeaderParams,
                 },
             },
             {
                 field: CONNECTION_DIRECTION,
                 filter: true,
                 flex: 2,
-                cellRenderer: ({ data }: { data?: any }) => {
-                    if (data.type === 'SEPARATOR') {
-                        return '';
-                    } else {
-                        const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-                        const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
-                        return FeederBayDirectionCellRenderer({
-                            name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
-                            disabled: data.type === 'FEEDER_BAY_REMOVED',
-                        });
-                    }
-                },
+                cellRenderer: renderConnectionDirectionCell,
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: 'connectionDirection' }),
-                    tooltipTitle: intl.formatMessage({
-                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
-                    }),
-                    isNodeBuilt: isNodeBuilt(currentNode),
-                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                    ...commonHeaderParams,
                 },
             },
             {
                 field: CONNECTION_POSITION,
                 filter: true,
                 flex: 2,
-                cellRenderer: ({ data }: { data?: any }) => {
-                    if (data.type === 'SEPARATOR') {
-                        return '';
-                    } else {
-                        const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-                        const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
-                        const fieldError = (errors[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE] as any)?.[formIndex]?.[
-                            CONNECTION_POSITION
-                        ];
-                        return (
-                            <div style={{ position: 'relative' }}>
-                                <IntegerInput
-                                    name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
-                                    formProps={{
-                                        disabled: data.type === 'FEEDER_BAY_REMOVED',
-                                        size: 'small',
-                                        variant: fieldError ? 'outlined' : 'filled',
-                                        sx: {
-                                            padding: '8px',
-                                            '& input': {
-                                                textAlign: 'center',
-                                            },
-                                            ...(fieldError && {
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: 'red',
-                                                        borderWidth: '2px',
-                                                    },
-                                                },
-                                            }),
-                                        },
-                                    }}
-                                    inputTransform={(value) => String(value ?? 0)}
-                                    outputTransform={(value) => (value === '0' ? null : Number(value))}
-                                />
-                                {fieldError && (
-                                    <span
-                                        style={{
-                                            position: 'absolute',
-                                            top: '100%',
-                                            left: '0',
-                                            right: '0',
-                                            fontSize: '9px',
-                                            color: 'red',
-                                            textAlign: 'center',
-                                            backgroundColor: 'white',
-                                            border: '1px solid red',
-                                            borderRadius: '2px',
-                                            padding: '1px',
-                                            zIndex: 1000,
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        {intl.formatMessage({ id: 'DuplicatedPositionsError' })}
-                                    </span>
-                                )}
-                            </div>
-                        );
-                    }
-                },
+                cellRenderer: renderConnectionPositionCell,
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
                     displayName: intl.formatMessage({ id: CONNECTION_POSITION }),
-                    tooltipTitle: intl.formatMessage({
-                        id: isNodeBuilt(currentNode) ? 'builtNodeTooltipVlTopoModif' : 'notBuiltNodeTooltipVlTopoModif',
-                    }),
-                    isNodeBuilt: isNodeBuilt(currentNode),
-                    disabledTooltip: !isUpdate && isNodeBuilt(currentNode),
+                    ...commonHeaderParams,
                 },
             },
         ],
-        [intl, currentNode, isUpdate, getValues, errors]
+        [
+            intl,
+            commonHeaderParams,
+            renderConnectionNameCell,
+            renderBusbarSectionCell,
+            renderConnectionDirectionCell,
+            renderConnectionPositionCell,
+        ]
     );
 
     const getRowStyle = useCallback((params: RowClassParams): RowStyle | undefined => {
-        if (params.data?.type === 'SEPARATOR') {
-            return {
-                fontWeight: 'bold',
-            };
-        }
+        return params.data?.type === 'SEPARATOR' ? { fontWeight: 'bold' } : undefined;
     }, []);
 
     const diagramToolTip = useMemo(
@@ -334,7 +329,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 <Grid item xs={4}>
                     {voltageLevelIdField}
                 </Grid>
-                {isNodeBuilt(currentNode) && (
+                {isNodeBuiltValue && (
                     <GridItem size={3}>
                         <Button onClick={handleClickOpenDiagramPane} variant="outlined">
                             <FormattedMessage id={'CreateCouplingDeviceDiagramButton'} />
@@ -353,10 +348,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}
-                    rowHeight={60}
-                    getRowHeight={(params) => {
-                        return params.data?.type === 'SEPARATOR' ? 80 : 60;
-                    }}
+                    rowHeight={80}
                 />
             </Grid>
             <Box>

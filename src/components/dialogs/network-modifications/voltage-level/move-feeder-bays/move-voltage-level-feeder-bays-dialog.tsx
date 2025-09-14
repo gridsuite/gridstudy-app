@@ -66,7 +66,9 @@ const formSchema = yup.object().shape({
             [BUSBAR_SECTION_IDS]: yup.array().of(yup.string()).required(),
             [CONNECTION_NAME]: yup.string().required(),
             [CONNECTION_DIRECTION]: yup.string().required(),
-            [CONNECTION_POSITION]: yup.string().test('checkUniquePositions', '', checkConnectionPositionField),
+            [CONNECTION_POSITION]: yup
+                .string()
+                .test('checkUniquePositions', 'DuplicatedPositionsError', checkConnectionPositionField),
         })
     ),
 });
@@ -148,12 +150,17 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         if (voltageLevel) {
                             const feederBaysInfos = (
                                 Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
-                            ).flatMap(([equipmentId, feederBayInfos]) =>
-                                feederBayInfos.map((feederBay) => ({
-                                    equipmentId,
-                                    ...feederBay,
-                                }))
-                            );
+                            )
+                                .flatMap(([equipmentId, feederBayInfos]) =>
+                                    feederBayInfos.map((feederBay) => ({
+                                        equipmentId,
+                                        ...feederBay,
+                                    }))
+                                )
+                                .filter(
+                                    (item, index, arr) =>
+                                        arr.findIndex((x) => x.equipmentId === item.equipmentId) === index
+                                );
                             setFeederBaysInfos(feederBaysInfos);
                             reset(
                                 {
