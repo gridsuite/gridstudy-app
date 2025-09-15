@@ -21,6 +21,7 @@ const styles = {
     // full node container styles
     rootSelected: (theme: Theme) => ({
         ...selectedBaseNodeStyles(theme, 'row'),
+        background: theme.node.root.selectedBackground,
         border: theme.node.root.border,
         boxShadow: theme.shadows[10],
         ...interactiveNodeStyles(theme, 'root'),
