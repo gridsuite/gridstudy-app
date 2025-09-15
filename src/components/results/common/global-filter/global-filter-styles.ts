@@ -9,7 +9,7 @@ import { cyan } from '@mui/material/colors';
 import { FilterType } from '../utils';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
-export const getResultsGlobalFiltersChipStyle = (filterType: FilterType) => {
+export const getResultsGlobalFiltersChipStyle = (filterType: string) => {
     let chipStyle;
     switch (filterType) {
         case FilterType.COUNTRY:

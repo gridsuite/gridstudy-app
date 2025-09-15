@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type BaseTextFieldProps, type FilledTextFieldProps, type StandardTextFieldProps } from '@mui/material';
+import { FilledTextFieldProps, StandardTextFieldProps } from '@mui/material';
 import {
     AMPERE,
     KILO_AMPERE,
@@ -19,7 +19,6 @@ import {
     OHM,
     PERCENTAGE,
     SIEMENS,
-    type TextInputProps,
 } from '@gridsuite/commons-ui';
 
 export const styles = {
@@ -69,76 +68,74 @@ export const styles = {
     },
 } as const satisfies MuiStyles;
 
-type Adornment = NonNullable<TextInputProps['adornment']>;
 export const MicroSusceptanceAdornment = {
     position: 'end',
     text: MICRO_SIEMENS,
-} as const satisfies Adornment;
+};
 
 export const SusceptanceAdornment = {
     position: 'end',
     text: SIEMENS,
-} as const satisfies Adornment;
+};
 export const OhmAdornment = {
     position: 'end',
     text: OHM,
-} as const satisfies Adornment;
+};
 export const AmpereAdornment = {
     position: 'end',
     text: AMPERE,
-} as const satisfies Adornment;
+};
 
 export const KiloAmpereAdornment = {
     position: 'end',
     text: KILO_AMPERE,
-} as const satisfies Adornment;
+};
 
 export const ActivePowerAdornment = {
     position: 'end',
     text: MEGA_WATT,
-} as const satisfies Adornment;
+};
 export const ReactivePowerAdornment = {
     position: 'end',
     text: MEGA_VAR,
-} as const satisfies Adornment;
+};
 export const MVAPowerAdornment = {
     position: 'end',
     text: MEGA_VOLT_AMPERE,
-} as const satisfies Adornment;
+};
 export const VoltageAdornment = {
     position: 'end',
     text: KILO_VOLT,
-} as const satisfies Adornment;
+};
 export const KilometerAdornment = {
     position: 'end',
     text: KILO_METER,
-} as const satisfies Adornment;
-export const filledTextField = {
+};
+export const filledTextField: FilledTextFieldProps = {
     variant: 'filled',
-} as const satisfies FilledTextFieldProps;
+};
 
-export const standardTextField = {
+export const standardTextField: StandardTextFieldProps = {
     variant: 'standard',
-} as const satisfies StandardTextFieldProps;
+};
 
 export const italicFontTextField = {
     style: { fontStyle: 'italic' },
-} as const satisfies BaseTextFieldProps;
+};
 
 export const percentageTextField = {
     position: 'end',
     text: PERCENTAGE,
-} as const satisfies Adornment;
+};
 
 export function parseIntData(val: string, defaultValue: string) {
     const intValue = parseInt(val);
     return isNaN(intValue) ? defaultValue : intValue;
 }
 
-export function sanitizeString(val: string | null | undefined) {
+export function sanitizeString(val: string | null | undefined): string | null {
     const trimedValue = val?.trim();
     return trimedValue === undefined || trimedValue === '' ? null : trimedValue;
 }
 
-export type IdOrSelf<T> = T extends { id: infer I } ? I : T;
-export const getIdOrSelf = <T>(e: T): IdOrSelf<T> => ((e as any)?.id ?? e) as IdOrSelf<T>;
+export const getIdOrSelf = (e: any) => e?.id ?? e;
