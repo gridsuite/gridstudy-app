@@ -264,9 +264,9 @@ const TwoWindingsTransformerModificationDialog = ({
                     highTapPosition: computeHighTapPosition(twtModification?.[RATIO_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twtModification?.[RATIO_TAP_CHANGER]?.[TAP_POSITION]?.value,
                     steps: addSelectedFieldToRows(twtModification?.[RATIO_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twtModification?.[RATIO_TAP_CHANGER]?.regulatingTerminalId?.value,
-                    equipmentType: twtModification?.[RATIO_TAP_CHANGER]?.regulatingTerminalType?.value,
-                    voltageLevelId: twtModification?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
+                    equipmentId: twtModification?.[RATIO_TAP_CHANGER]?.terminalRefConnectableId?.value,
+                    equipmentType: twtModification?.[RATIO_TAP_CHANGER]?.terminalRefConnectableType?.value,
+                    voltageLevelId: twtModification?.[RATIO_TAP_CHANGER]?.terminalRefConnectableVlId?.value,
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twtModification?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
@@ -290,9 +290,9 @@ const TwoWindingsTransformerModificationDialog = ({
                     highTapPosition: computeHighTapPosition(twtModification?.[PHASE_TAP_CHANGER]?.[STEPS]),
                     tapPosition: twtModification?.[PHASE_TAP_CHANGER]?.[TAP_POSITION]?.value,
                     steps: addSelectedFieldToRows(twtModification?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twtModification?.[PHASE_TAP_CHANGER]?.regulatingTerminalId?.value,
-                    equipmentType: twtModification?.[PHASE_TAP_CHANGER]?.regulatingTerminalType?.value,
-                    voltageLevelId: twtModification?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId?.value,
+                    equipmentId: twtModification?.[PHASE_TAP_CHANGER]?.terminalRefConnectableId?.value,
+                    equipmentType: twtModification?.[PHASE_TAP_CHANGER]?.terminalRefConnectableType?.value,
+                    voltageLevelId: twtModification?.[PHASE_TAP_CHANGER]?.terminalRefConnectableVlId?.value,
                 }),
                 ...getPropertiesFromModification(twtModification.properties),
             });
@@ -334,9 +334,11 @@ const TwoWindingsTransformerModificationDialog = ({
             if (regulationType === REGULATION_TYPES.LOCAL.id) {
                 phaseTap.regulationSide = toModificationOperation(phaseTapChangerFormValues?.[REGULATION_SIDE]);
             } else if (regulationType === REGULATION_TYPES.DISTANT.id) {
-                phaseTap.regulatingTerminalId = toModificationOperation(phaseTapChangerFormValues?.[EQUIPMENT]?.id);
-                phaseTap.regulatingTerminalType = toModificationOperation(phaseTapChangerFormValues?.[EQUIPMENT]?.type);
-                phaseTap.regulatingTerminalVlId = toModificationOperation(
+                phaseTap.terminalRefConnectableId = toModificationOperation(phaseTapChangerFormValues?.[EQUIPMENT]?.id);
+                phaseTap.terminalRefConnectableType = toModificationOperation(
+                    phaseTapChangerFormValues?.[EQUIPMENT]?.type
+                );
+                phaseTap.terminalRefConnectableVlId = toModificationOperation(
                     phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID]
                 );
             }
@@ -366,9 +368,11 @@ const TwoWindingsTransformerModificationDialog = ({
             if (regulationType === REGULATION_TYPES.LOCAL.id) {
                 ratioTap.regulationSide = toModificationOperation(ratioTapChangerFormValues?.[REGULATION_SIDE]);
             } else if (regulationType === REGULATION_TYPES.DISTANT.id) {
-                ratioTap.regulatingTerminalId = toModificationOperation(ratioTapChangerFormValues?.[EQUIPMENT]?.id);
-                ratioTap.regulatingTerminalType = toModificationOperation(ratioTapChangerFormValues?.[EQUIPMENT]?.type);
-                ratioTap.regulatingTerminalVlId = toModificationOperation(
+                ratioTap.terminalRefConnectableId = toModificationOperation(ratioTapChangerFormValues?.[EQUIPMENT]?.id);
+                ratioTap.terminalRefConnectableType = toModificationOperation(
+                    ratioTapChangerFormValues?.[EQUIPMENT]?.type
+                );
+                ratioTap.terminalRefConnectableVlId = toModificationOperation(
                     ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID]
                 );
             }
