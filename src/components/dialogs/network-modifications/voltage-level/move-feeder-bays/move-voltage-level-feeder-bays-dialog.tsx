@@ -119,6 +119,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const [feederBaysInfos, setFeederBaysInfos] = useState<FeederBaysInfos[]>([]);
+    const [busBarSectionInfos, setBusBarSectionInfos] = useState<string[]>([]);
 
     const formMethods = useForm<DeepNullable<MoveVoltageLevelFeederBaysFormSchemaType>>({
         defaultValues: emptyFormData,
@@ -149,6 +150,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
+                            setBusBarSectionInfos(
+                                Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[]
+                            );
                             const feederBaysInfos = (
                                 Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
                             )
@@ -344,7 +348,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         [EQUIPMENT_ID]: row.equipmentId,
                         [BUSBAR_SECTION_ID]: row.busbarSectionId,
                         [CONNECTION_SIDE]: row.connectionSide,
-                        [BUSBAR_SECTION_IDS]: feederBaysInfos.map((bay) => bay?.busbarSectionId).filter(Boolean),
+                        [BUSBAR_SECTION_IDS]: busBarSectionInfos ?? null,
                         [CONNECTION_NAME]: row.connectionName,
                         [CONNECTION_DIRECTION]: row.connectionDirection,
                         [CONNECTION_POSITION]: row.connectionPosition,
@@ -353,7 +357,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 reset(formData, { keepDirty: true });
             }
         }
-    }, [mergedRowData, reset, feederBaysInfos]);
+    }, [mergedRowData, reset, feederBaysInfos, busBarSectionInfos]);
 
     return (
         <CustomFormProvider
