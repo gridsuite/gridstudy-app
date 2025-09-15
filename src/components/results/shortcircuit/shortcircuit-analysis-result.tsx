@@ -49,6 +49,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     globalFilters?: GlobalFilters;
+    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
@@ -60,6 +61,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     onGridColumnsChanged,
     onRowDataUpdated,
     globalFilters,
+    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -252,6 +254,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}
+                openVoltageLevelDiagram={openVoltageLevelDiagram}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
