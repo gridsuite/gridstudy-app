@@ -67,6 +67,7 @@ type NetworkAreaDiagramContentProps = {
     readonly onAddVoltageLevel: (vlId: string) => void;
     readonly onHideVoltageLevel: (vlId: string) => void;
     readonly onMoveNode: (vlId: string, x: number, y: number) => void;
+    readonly onMoveTextnode: (vlId: string, x: number, y: number) => void;
     readonly customPositions: DiagramConfigPosition[];
     readonly onVoltageLevelClick: (vlId: string) => void;
 };
@@ -85,12 +86,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         onHideVoltageLevel,
         onVoltageLevelClick,
         onMoveNode,
+        onMoveTextnode,
     } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
+    const [showLabels, setShowLabels] = useState(true);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
@@ -124,10 +127,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             connectionShiftXOrig: number,
             connectionShiftYOrig: number
         ) => {
-            // TODO Not implemented yet
+            if (onMoveTextnode) {
+                onMoveTextnode(equipmentId, shiftX, shiftY);
+            }
         },
-        []
+        [onMoveTextnode]
     );
+
+    const handleToggleShowLabels = useCallback(() => {
+        setShowLabels((oldShowLabels) => !oldShowLabels);
+    }, []);
 
     const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
@@ -379,7 +388,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined
+                    loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
+                    isEditNadMode && !showLabels ? styles.hideLabels : undefined
                 )}
             />
             <DiagramControls
@@ -390,6 +400,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
                 onAddVoltageLevel={onAddVoltageLevel}
+                onToggleShowLabels={handleToggleShowLabels}
+                isShowLabels={showLabels}
                 isDiagramLoading={props.loadingState}
             />
             {renderEquipmentMenu()}

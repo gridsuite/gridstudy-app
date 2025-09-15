@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { RefObject } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid, Theme } from '@mui/material';
 import { ColumnsConfig } from './columns-config';
@@ -32,7 +33,7 @@ const styles = {
 };
 
 interface SpreadsheetToolbarProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact>;
     tableDefinition: SpreadsheetTabDefinition;
     rowCounterInfos: UseFilteredRowCounterInfoReturn;
     columns: CustomColDef[];

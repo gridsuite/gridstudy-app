@@ -587,7 +587,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             Promise.all([substationPositionsDone, linePositionsDone])
                 .then(() => {
                     temporaryGeoDataIdsRef.current = new Set();
-                    networkMapRef.current?.resetZoomAndPosition();
                     setIsRootNodeGeoDataLoaded(true);
                 })
                 .catch(function (error) {
@@ -602,7 +601,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         dispatch(setMapDataLoading(false));
                     } // otherwise loadMissingGeoData will stop the loading
                 });
-        }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError, networkMapRef]);
+        }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError]);
 
         const loadGeoData = useCallback(() => {
             if (studyUuid && currentNodeRef.current) {
@@ -1055,8 +1054,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             snackInfo({
                 messageId: 'generatedNADOpenedInTheGrid',
             });
-            leaveDrawingMode();
-        }, [leaveDrawingMode, snackInfo]);
+        }, [snackInfo]);
 
         const openSLDInTheGrid = useCallback(
             (equipmentId: string, diagramType: DiagramType) => {

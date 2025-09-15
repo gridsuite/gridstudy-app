@@ -86,7 +86,7 @@
     "NominalVoltage": "Nominal voltage",
     "I_(A)": "I (A)",
     "limit": "limit",
-    "Limit": "Limit value (A or kV)",
+    "LimitLabelAOrKv": "Limit (A or kV)",
     "LimitLabel": "Limit (A)",
     "upComingOverloadDuration": "Upcoming overload",
     "actualOverloadDuration": "Actual overload",
@@ -179,7 +179,7 @@
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "FilterEvaluationError": "An error occurred while evaluating the filter",
-    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
+    "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
 
     "SelectAll": "All",
@@ -366,7 +366,8 @@
     "ShortCircuitAnalysisTabAllBuses": "All buses",
     "OneBusShortCircuitAnalysis": "One bus short circuit analysis",
     "startSensitivityAnalysisError": "An error occurred while executing the sensitivity analysis",
-    "IDNode": "ID bus",
+    "IDNode": "Bus",
+    "busVoltageLevel": "Voltage level",
     "IscKA": "Isc (kA)",
     "IscMinKA": "Isc min (kA)",
     "IscMaxKA": "Isc max (kA)",
@@ -378,7 +379,6 @@
     "ViolationType": "Violation type",
     "Bus": "Bus",
     "LimitSide": "Side",
-    "LimitName": "Limit name",
     "LimitNameCurrentViolation": "Limit name",
     "NextLimitNameCurrentViolation": "Next limit name",
     "Limit_name": "Limit name",
@@ -393,6 +393,7 @@
     "Key": "Key",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
+    "Contingency": "Contingency",
     "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
@@ -447,11 +448,10 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart with vertical compaction",
     "openSubstation": "Open the substation",
 
-    "ConstraintsFromContingencies": "Contingencies -> constraints",
-    "ContingenciesFromConstraints": "Constraints -> contingencies",
+    "ConstraintsFromContingencies": "Contingencies -> violations",
+    "ContingenciesFromConstraints": "Violations -> contingencies",
 
     "Equipment": "Equipment",
-    "Constraint": "Constraint",
     "EquipmentType": "Equipment type",
     "selectionType": "Selection type",
 
@@ -501,8 +501,6 @@
     "OnlyMin": "Min:\u202F{min}",
     "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Center on selected node",
-    "DisplayMinimap": "Display minimap",
-    "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
@@ -1051,6 +1049,10 @@
     "InvalidNode": "Node not built",
     "NoSpreadsheets": "You have no spreadsheets, please create one",
 
+    "LookForEquipmentField": "Look for a field",
+    "EquipmentSchemaPopoverSchema": "Opens the list of fields for the equipment associated with the sheet. The list can also be opened by pressing the Shift key on the keyboard twice.",
+    "FetchingEquipmentSchemaError": "An error occurred while fetching equipment schema",
+
     "depth": "Depth: ",
 
     "root": "Root",
@@ -1548,6 +1550,8 @@
     "expandAllVoltageLevels": "Expand all voltage levels",
     "addVoltageLevel": "Add a voltage level",
     "hide": "Hide",
+    "hideLabels": "Hide labels in edit mode",
+    "showLabels": "Show labels",
     "CreateSubstationInVoltageLevelIdenticalId": "Voltage Level ID can not match Substation ID",
     "labeledGroupSecurity": "Security",
     "selectedOperationalLimitsGroup1": "Active limit set on side 1",
@@ -1601,5 +1605,12 @@
     "loadflowModifications": "Loadflow modification",
     "loadFlowModificationDetails":"Details",
     "PHASE_TAP": "Phase",
-    "RATIO_TAP": "Ratio"
+    "RATIO_TAP": "Ratio",
+    "Insert": "Insert",
+    "String": "String",
+    "Number": "Number",
+    "Object": "Object",
+    "Array": "Array",
+    "Boolean": "Boolean",
+    "Enum": "Enumeration"
 }

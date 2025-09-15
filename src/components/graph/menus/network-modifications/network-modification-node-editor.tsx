@@ -61,6 +61,7 @@ import {
     addNotification,
     removeNotificationByNode,
     resetLogsFilter,
+    resetLogsPagination,
     setModificationsInProgress,
 } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
@@ -179,17 +180,20 @@ const NetworkModificationNodeEditor = () => {
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const cleanClipboard = useCallback(() => {
-        setCopyInfos(null);
-        setCopiedModifications((oldCopiedModifications) => {
-            if (oldCopiedModifications.length) {
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessage',
-                });
-            }
-            return [];
-        });
-    }, [snackInfo]);
+    const cleanClipboard = useCallback(
+        (showSnackInfo: boolean = true) => {
+            setCopyInfos(null);
+            setCopiedModifications((oldCopiedModifications) => {
+                if (oldCopiedModifications.length && showSnackInfo) {
+                    snackInfo({
+                        messageId: 'CopiedModificationInvalidationMessage',
+                    });
+                }
+                return [];
+            });
+        },
+        [snackInfo]
+    );
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -819,6 +823,7 @@ const NetworkModificationNodeEditor = () => {
             // reset the network modification and computing logs filter when the user changes the current node
             if (hasNodeChanged) {
                 dispatch(resetLogsFilter());
+                dispatch(resetLogsPagination());
             }
         }
     }, [
@@ -924,7 +929,7 @@ const NetworkModificationNodeEditor = () => {
         setCreateCompositeModificationDialogOpen(true);
     }, []);
 
-    const doDeleteModification = useCallback(() => {
+    const doStashModification = useCallback(() => {
         const selectedModificationsUuid = selectedNetworkModifications.map((item) => item.uuid);
         stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
             .then(() => {
@@ -1037,12 +1042,16 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errCutModificationMsg',
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
+                .then(() => {
+                    cleanClipboard(false);
+                })
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errCutModificationMsg',
+                    });
                 });
-            });
         } else {
             copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
                 snackError({
@@ -1051,7 +1060,7 @@ const NetworkModificationNodeEditor = () => {
                 });
             });
         }
-    }, [copiedModifications, currentNode?.id, copyInfos, snackError, studyUuid]);
+    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanClipboard, snackError]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
@@ -1313,7 +1322,7 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip title={<FormattedMessage id={'delete'} />}>
                     <span>
                         <IconButton
-                            onClick={doDeleteModification}
+                            onClick={doStashModification}
                             size={'small'}
                             disabled={
                                 selectedNetworkModifications.length === 0 ||
