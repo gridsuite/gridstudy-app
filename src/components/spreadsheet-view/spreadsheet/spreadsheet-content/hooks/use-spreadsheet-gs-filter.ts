@@ -16,11 +16,11 @@ import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import type { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { FilterEquipmentType } from '../../../../../types/filter-lib';
 
 async function buildAndEvaluateFilter(
-    equipmentType: EQUIPMENT_TYPES,
+    equipmentType: FilterEquipmentType,
     countries: string[],
     nominalVoltages: number[],
     substationProperties: Record<string, string[]>,
@@ -117,11 +117,11 @@ export const useSpreadsheetGlobalFilter = (
                 }
                 Promise.all(
                     (equipmentType === SpreadsheetEquipmentType.BRANCH
-                        ? [SpreadsheetEquipmentType.LINE, SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
-                        : [equipmentType]
+                        ? [FilterEquipmentType.LINE, FilterEquipmentType.TWO_WINDINGS_TRANSFORMER]
+                        : [equipmentType as unknown as FilterEquipmentType]
                     ).map((eType) =>
                         buildAndEvaluateFilter(
-                            eType as unknown as EQUIPMENT_TYPES,
+                            eType,
                             countries,
                             nominalVoltages,
                             substationProperties,
