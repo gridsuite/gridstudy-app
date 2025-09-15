@@ -23,11 +23,13 @@ import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 interface ShortCircuitAnalysisOneBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    openVoltageLevelDiagram: (id: string) => void;
 }
 
 export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAnalysisOneBusResultProps> = ({
     onGridColumnsChanged,
     onRowDataUpdated,
+    openVoltageLevelDiagram,
 }) => {
     const { snackError } = useSnackMessage();
 
@@ -96,6 +98,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}
+            openVoltageLevelDiagram={openVoltageLevelDiagram}
         />
     );
 };
