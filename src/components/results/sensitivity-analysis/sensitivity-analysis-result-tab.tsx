@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
@@ -176,6 +176,14 @@ function SensitivityAnalysisResultTab({
         () => [...voltageLevelsFilter, ...countriesFilter, ...propertiesFilter],
         [voltageLevelsFilter, countriesFilter, propertiesFilter]
     );
+
+    useEffect(() => {
+        if (isCsvButtonDisabled) {
+            // reinit the success state when the button is disabled,
+            // for example when the calcul status change or results change
+            setIsCsvExportSuccessful(false);
+        }
+    }, [isCsvButtonDisabled]);
 
     return (
         <>
