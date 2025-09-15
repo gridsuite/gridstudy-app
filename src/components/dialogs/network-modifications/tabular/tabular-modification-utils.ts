@@ -101,6 +101,7 @@ import {
 import { toModificationOperation } from '../../../utils/utils';
 import { ReactiveCapabilityCurvePoints } from 'components/dialogs/reactive-limits/reactive-limits.type';
 import {
+    APPLICABILITY,
     BOOLEAN,
     CONNECTION_DIRECTIONS,
     ENERGY_SOURCES,
@@ -111,7 +112,6 @@ import {
     SHUNT_COMPENSATOR_TYPES,
     SIDE as SIDE_CONSTANTS,
 } from '../../../network/constants';
-import { BranchSide } from '../../../utils/constants';
 import {
     convertReactiveCapabilityCurvePointsFromBackToFront,
     convertReactiveCapabilityCurvePointsFromFrontToBack,
@@ -159,9 +159,14 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS: { [key: string]: string
 
 export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularField[] = [
     { id: EQUIPMENT_ID, required: true },
-    { id: SIDE, required: true, type: ENUM, options: Object.values(BranchSide) },
+    {
+        id: SIDE,
+        required: true,
+        type: ENUM,
+        options: Object.values(APPLICABILITY).map((applicability) => applicability.id),
+    },
     { id: LIMIT_GROUP_NAME, required: true },
-    { id: IS_ACTIVE, required: true, type: BOOLEAN },
+    { id: IS_ACTIVE, required: false, type: BOOLEAN },
     { id: PERMANENT_LIMIT, required: false, type: NUMBER },
     {
         id: MODIFICATION_TYPE,
