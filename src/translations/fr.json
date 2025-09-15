@@ -1559,7 +1559,7 @@
     "Display": "Affichage",
     "StoreDiagramLayout": "Mémoriser",
     "StoreButtonTooltip": "Mémoriser la disposition des images dans l'étude",
-    "GridLayoutPanelSaveError": "Une erreur est survenue lors de l'enregistrement de la grille du diagramme",
+    "DiagramLayoutStoreError": "Une erreur s'est produite lors de la mémorisation des images",
     "DiagramLayoutStoreSuccess": "Images mémorisées avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
     "NoMatch": "Pas de correspondance",

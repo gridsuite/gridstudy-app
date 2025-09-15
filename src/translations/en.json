@@ -1563,7 +1563,7 @@
     "Display": "Display",
     "StoreDiagramLayout": "Store",
     "StoreButtonTooltip": "Store diagram layout in the study",
-    "GridLayoutPanelSaveError": "An error occurred while saving the grid layout panel",
+    "DiagramLayoutStoreError": "An error occured when storing the diagrams",
     "DiagramLayoutStoreSuccess": "Diagrams successfully stored",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
     "NoMatch": "No match",
