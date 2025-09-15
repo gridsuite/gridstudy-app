@@ -39,7 +39,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [nodeUuid, resultType]);
+    }, [studyUuid, nodeUuid, rootNetworkUuid, resultType]);
 
     useEffect(() => {
         if (disabled) {

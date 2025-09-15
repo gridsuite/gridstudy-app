@@ -38,7 +38,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [nodeUuid, analysisType]);
+    }, [studyUuid, currentRootNetworkUuid, nodeUuid, analysisType]);
 
     useEffect(() => {
         if (disabled) {
