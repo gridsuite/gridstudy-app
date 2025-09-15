@@ -166,7 +166,7 @@ export const LIMIT_SETS_TABULAR_MODIFICATION_FIXED_FIELDS: TabularField[] = [
         options: Object.values(APPLICABILITY).map((applicability) => applicability.id),
     },
     { id: LIMIT_GROUP_NAME, required: true },
-    { id: IS_ACTIVE, required: true, type: BOOLEAN },
+    { id: IS_ACTIVE, required: false, type: BOOLEAN },
     { id: PERMANENT_LIMIT, required: false, type: NUMBER },
     {
         id: MODIFICATION_TYPE,
