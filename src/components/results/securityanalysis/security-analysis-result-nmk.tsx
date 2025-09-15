@@ -30,9 +30,6 @@ const styles = {
         flexDirection: 'column',
         height: '100%',
     },
-    button: {
-        color: 'node.background',
-    },
 } as const satisfies MuiStyles;
 
 export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResultNmkProps> = ({

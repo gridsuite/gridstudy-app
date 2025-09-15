@@ -7,7 +7,7 @@
 
 import type { RefObject } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
 import { Grid } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
@@ -53,9 +53,7 @@ export const SpreadsheetToolbar = ({
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
             <Grid item sx={styles.filterContainer}>
-                {tableDefinition.type !== SpreadsheetEquipmentType.BRANCH && (
-                    <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
-                )}
+                <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
                 <FilteredRowCounter rowCounterInfos={rowCounterInfos} tableDefinition={tableDefinition} />

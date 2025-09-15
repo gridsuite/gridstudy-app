@@ -14,12 +14,13 @@ import { Box } from '@mui/material';
 import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { DeviceHub } from '@mui/icons-material';
 import NodeHandle from './node-handle';
-import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
+import { baseNodeStyles, interactiveNodeStyles } from './styles';
 
 const styles = {
     // full node container styles
     rootSelected: (theme) => ({
-        ...selectedBaseNodeStyles(theme, 'row'),
+        ...baseNodeStyles(theme, 'row'),
+        background: theme.node.root.selectedBackground,
         border: theme.node.root.border,
         boxShadow: theme.shadows[10],
         ...interactiveNodeStyles(theme, 'root'),

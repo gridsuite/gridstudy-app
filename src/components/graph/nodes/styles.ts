@@ -24,12 +24,6 @@ export const baseNodeStyles = (theme: Theme, direction: 'row' | 'column') =>
         overflow: 'hidden',
     }) as const satisfies SxStyle;
 
-export const selectedBaseNodeStyles = (theme: Theme, direction: 'row' | 'column') =>
-    ({
-        ...baseNodeStyles(theme, direction),
-        background: theme.node.common.selectedBackground,
-    }) as const satisfies SxStyle;
-
 export const interactiveNodeStyles = (theme: Theme, nodeKey: 'modification' | 'root') =>
     ({
         '&:hover': {

@@ -16,7 +16,7 @@ import { AppState } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
-import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
+import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
 import React from 'react';
@@ -24,7 +24,8 @@ import { BuildButton } from './build-button';
 
 const styles = {
     networkModificationSelected: (theme) => ({
-        ...selectedBaseNodeStyles(theme, 'column'),
+        ...baseNodeStyles(theme, 'column'),
+        background: theme.node.modification.selectedBackground,
         border: theme.node.modification.selectedBorder,
         boxShadow: theme.shadows[6],
         ...interactiveNodeStyles(theme, 'modification'),

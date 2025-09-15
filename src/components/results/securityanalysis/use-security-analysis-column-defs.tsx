@@ -11,7 +11,7 @@ import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Tooltip } from '@mui/material';
 import {
     RESULT_TYPE,
@@ -21,13 +21,8 @@ import {
 } from './security-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { resultsStyles } from '../common/utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-
-const styles = {
-    button: {
-        color: 'node.background',
-    },
-} as const satisfies MuiStyles;
 
 export interface SecurityAnalysisFilterEnumsType {
     n: FilterEnumsType;
@@ -106,10 +101,8 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                                         equipmentId: row.subjectId || '',
                                     },
                                 });
-                            } else {
-                                if (openVoltageLevelDiagram) {
-                                    openVoltageLevelDiagram(vlId);
-                                }
+                            } else if (openVoltageLevelDiagram) {
+                                openVoltageLevelDiagram(vlId);
                             }
                         });
                 }
@@ -129,7 +122,7 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
             if (value) {
                 return (
                     <Tooltip title={value}>
-                        <Button sx={styles.button} onClick={onClick}>
+                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
                             {value}
                         </Button>
                     </Tooltip>
