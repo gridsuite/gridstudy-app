@@ -77,8 +77,11 @@ export type LimitSetModificationMetadata = {
     csvFilename: string;
 };
 
+const DEFAULT_TEMPORARY_LIMITS = 1;
+
 const getAmountTemporaryLimits = (editData: LimitSetModificationMetadata) => {
-    let maxLength = 0;
+    // We check all modifications to determine the max limits number.
+    let maxLength = DEFAULT_TEMPORARY_LIMITS;
     for (const mod of editData.modifications) {
         for (const limit of mod?.operationalLimitsGroups ?? []) {
             const temporaryLimitsLength = limit.currentLimits?.temporaryLimits?.length ?? 0;
@@ -218,7 +221,7 @@ export type ModificationRow = SchemaType[typeof MODIFICATIONS_TABLE][number];
 
 export const emptyFormData: SchemaType = {
     [TYPE]: EQUIPMENT_TYPES.LINE,
-    [AMOUNT_TEMPORARY_LIMITS]: 1,
+    [AMOUNT_TEMPORARY_LIMITS]: DEFAULT_TEMPORARY_LIMITS,
     [MODIFICATIONS_TABLE]: [],
     [CSV_FILENAME]: '',
 };
