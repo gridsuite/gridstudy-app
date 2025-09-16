@@ -477,6 +477,7 @@
     "LossFactor": "Facteur de perte",
     "StopComputation": "Arrêter le calcul",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
+    "launchComputationConfirmQuestion": "Vous êtes sur le point de lancer un calcul alors qu'une modification des paramètres de calcul est en cours.",
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
@@ -1138,6 +1139,7 @@
     "generatedNADOpenedInTheGrid": "L'image nodale de zone générée a été ouverte dans la grille des images",
 
     "dialog.button.leave": "Quitter",
+    "dialog.button.launch": "Lancer",
 
     "CatalogButtonTooltip": "Ouvrir le catalogue",
     "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
