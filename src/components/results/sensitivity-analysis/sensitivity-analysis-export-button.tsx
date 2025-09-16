@@ -6,8 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { ExportButton } from '../../utils/export-button';
-import { PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { downloadZipFile } from '../../../services/utils';
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
@@ -144,7 +143,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
     ]);
 
     return (
-        <ExportButton
+        <ExportCsvButton
             onClick={exportCsv}
             disabled={disabled}
             isDownloadLoading={isCsvExportLoading}
