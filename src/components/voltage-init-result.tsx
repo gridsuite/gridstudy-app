@@ -7,7 +7,6 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, Button, LinearProgress, Stack, Theme, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
@@ -34,11 +33,12 @@ import {
     VoltageInitResultProps,
     VoltageInitResultType,
 } from './voltage-init-result.type';
-import { AppState } from 'redux/reducer';
 import RunningStatus from './utils/running-status';
 import { GridReadyEvent, RowClassParams, RowStyle, ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 const styles = {
     container: {
@@ -85,21 +85,23 @@ const styles = {
 };
 
 export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
     result = null,
     status,
     handleGlobalFilterChange,
     globalFilterOptions,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
     const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState<EditData>();
+    // TODO remove after futur refactoring because we don't need more than the nodeUuid normally
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const intl = useIntl();
 
@@ -134,8 +136,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const applyModifications = () => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            cloneVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
+        if (studyUuid && nodeUuid && currentRootNetworkUuid) {
+            cloneVoltageInitModifications(studyUuid, nodeUuid, currentRootNetworkUuid)
                 .catch((errmsg) => {
                     snackError({
                         messageTxt: errmsg,
@@ -152,8 +154,8 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const previewModifications = useCallback(() => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
-        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
-            getVoltageInitModifications(studyUuid, currentNode.id, currentRootNetworkUuid)
+        if (studyUuid && nodeUuid && currentRootNetworkUuid) {
+            getVoltageInitModifications(studyUuid, nodeUuid, currentRootNetworkUuid)
                 .then((modificationList) => {
                     // this endpoint returns a list, but we are expecting a single modification here
                     setVoltageInitModification(modificationList.at(0));
@@ -171,7 +173,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 });
         }
     }, [
-        currentNode?.id,
+        nodeUuid,
         currentRootNetworkUuid,
         snackError,
         studyUuid,
@@ -190,11 +192,15 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     }, [studyUuid]);
 
     const renderPreviewModificationsDialog = () => {
+        if (!currentNode) {
+            return null;
+        }
         if (voltageInitModification) {
             return (
                 <VoltageInitModificationDialog
-                    currentNode={currentNode?.id}
                     studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     editData={voltageInitModification}
                     onClose={() => setPreviewModificationsDialogOpen(false)}
                     onPreviewModeSubmit={applyModifications}
@@ -277,6 +283,9 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
                 <RenderTableAndExportCsv
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     gridRef={gridRef}
                     columns={indicatorsColumnDefs}
                     defaultColDef={defaultColDef}
@@ -318,6 +327,9 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 {renderHeaderReactiveSlacks(result)}
 
                 <RenderTableAndExportCsv
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     gridRef={gridRef}
                     columns={reactiveSlacksColumnDefs}
                     defaultColDef={defaultColDef}
@@ -369,6 +381,9 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     function renderBusVoltagesTable(busVoltages: BusVoltages) {
         return (
             <RenderTableAndExportCsv
+                studyUuid={studyUuid}
+                nodeUuid={nodeUuid}
+                rootNetworkUuid={currentRootNetworkUuid}
                 gridRef={gridRef}
                 columns={busVoltagesColumnDefs}
                 defaultColDef={defaultColDef}

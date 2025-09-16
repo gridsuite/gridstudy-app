@@ -25,7 +25,14 @@ import { AgGridReact } from 'ag-grid-react';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
-export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
+export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+    result,
+    isLoadingResult,
+    columnDefs,
+}) => {
     const theme = useTheme();
     const intl = useIntl();
 
@@ -90,6 +97,9 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
             <>
                 <Box sx={{ height: '4px' }}>{openLoaderStatusTab && <LinearProgress />}</Box>
                 <RenderTableAndExportCsv
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     gridRef={gridRef}
                     columns={columnDefs}
                     defaultColDef={defaultColDef}

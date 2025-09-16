@@ -26,6 +26,9 @@ import { AgGridReact } from 'ag-grid-react';
 import { StateEstimationResultProps } from './state-estimation-result.type';
 
 export const StateEstimationQualityResult: FunctionComponent<StateEstimationResultProps> = ({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
     result,
     isLoadingResult,
     columnDefs,
@@ -106,6 +109,9 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             <>
                 <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
                 <RenderTableAndExportCsv
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     gridRef={gridRef}
                     columns={columnDefs}
                     defaultColDef={defaultColDef}

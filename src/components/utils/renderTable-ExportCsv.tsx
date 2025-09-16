@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, RefObject } from 'react';
+import { FunctionComponent, RefObject, useMemo } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid, CsvExport } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
@@ -13,6 +13,8 @@ import { Box } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
+import { UUID } from 'crypto';
+import { STUDY_VIEWS, StudyView } from './utils';
 
 const styles = {
     gridContainer: {
@@ -31,6 +33,9 @@ const styles = {
 };
 
 interface RenderTableAndExportCsvProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    rootNetworkUuid: UUID;
     gridRef: RefObject<AgGridReact>;
     columns: any[];
     defaultColDef: ColDef;
@@ -44,6 +49,9 @@ interface RenderTableAndExportCsvProps {
 }
 
 export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvProps> = ({
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
     gridRef,
     columns,
     defaultColDef,
@@ -55,17 +63,23 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     overlayNoRowsTemplate,
     skipColumnHeaders = false,
 }) => {
-    const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
+    const isExportCSVButtonDisabled = useMemo(() => {
+        return STUDY_VIEWS[appTabIndex] !== StudyView.RESULTS || !rows || rows.length === 0;
+    }, [appTabIndex, rows]);
     return (
         <Box sx={styles.gridContainer}>
             <Box sx={styles.csvExport}>
                 <Box style={{ flexGrow: 1 }}></Box>
                 <CsvExport
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={rootNetworkUuid}
                     columns={columns}
                     tableName={tableName}
-                    disabled={isRowsEmpty}
+                    disabled={isExportCSVButtonDisabled}
                     skipColumnHeaders={skipColumnHeaders}
                     language={language}
                     exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
