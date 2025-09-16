@@ -279,9 +279,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 },
             },
         }),
-        makeAgGridCustomHeaderColumn(
-            makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, { ...sortParams, isChildren: true })
-        ),
+        makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('LimitNameCurrentViolation', 'limitName', intl, filterParams, sortParams, [
                 FILTER_TEXT_COMPARATORS.EQUALS,
@@ -290,10 +288,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'loading', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, sortParams)
         ),
         makeAgGridCustomHeaderColumn(
             makeAgGridDurationColumn('actualOverloadDuration', 'acceptableDuration', intl, filterParams, sortParams)
@@ -313,10 +308,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 'nextLimitName',
                 intl,
                 filterParams,
-                {
-                    ...sortParams,
-                    isChildren: true,
-                },
+                sortParams,
                 [FILTER_TEXT_COMPARATORS.EQUALS]
             ),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
@@ -324,10 +316,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLabelAOrKv', 'limit', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn(
-            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, {
-                ...sortParams,
-                isChildren: true,
-            })
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, sortParams)
         ),
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('CalculatedValue', 'value', intl, filterParams, sortParams)),
