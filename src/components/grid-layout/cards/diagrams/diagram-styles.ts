@@ -51,6 +51,11 @@ export const styles = {
             fill: theme.palette.text.primary,
         },
     }),
+    divSingleLineDiagramHideLockAndBolt: (_theme: Theme) => ({
+        '& .sld-flash, .sld-lock': {
+            display: 'none',
+        },
+    }),
     divDiagramReadOnly: {
         '& .sld-in .sld-label': {
             display: 'none',
@@ -93,6 +98,10 @@ export const styles = {
     hideLabels: {
         '& .nad-text-nodes': {
             display: 'none',
+        },
+        '& .nad-busnode-highlight': {
+            filter: 'unset !important',
+            transform: 'unset !important',
         },
     },
     paperBorders: (theme: Theme) => ({

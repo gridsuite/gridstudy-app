@@ -56,6 +56,7 @@ import {
 } from './column-creation-form';
 import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
+import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -148,13 +149,15 @@ export default function ColumnCreationDialog({
     );
 
     const formulaField = (
-        <ExpandingTextField
-            name={FORMULA}
-            label="spreadsheet/custom_column/column_content"
-            minRows={3}
-            rows={3}
-            sx={{ flexGrow: 1 }}
-        />
+        <FloatingPopoverTreeviewWrapper formMethods={formMethods} spreadsheetEquipmentType={tableDefinition.type}>
+            <ExpandingTextField
+                name={FORMULA}
+                label="spreadsheet/custom_column/column_content"
+                minRows={3}
+                rows={3}
+                sx={{ flexGrow: 1 }}
+            />
+        </FloatingPopoverTreeviewWrapper>
     );
 
     const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
@@ -312,7 +315,7 @@ export default function ColumnCreationDialog({
                             : 'spreadsheet/custom_column/edit_columns',
                     })}
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent data-popover-anchor>
                     <Grid container spacing={2} direction="column" alignItems="center">
                         <Typography align={'justify'} sx={styles.columnDescription}>
                             <FormattedMessage

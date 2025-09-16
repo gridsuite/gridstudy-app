@@ -179,7 +179,7 @@
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "FilterEvaluationError": "An error occurred while evaluating the filter",
-    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
+    "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
 
     "SelectAll": "All",
@@ -366,7 +366,8 @@
     "ShortCircuitAnalysisTabAllBuses": "All buses",
     "OneBusShortCircuitAnalysis": "One bus short circuit analysis",
     "startSensitivityAnalysisError": "An error occurred while executing the sensitivity analysis",
-    "IDNode": "ID bus",
+    "IDNode": "Bus",
+    "busVoltageLevel": "Voltage level",
     "IscKA": "Isc (kA)",
     "IscMinKA": "Isc min (kA)",
     "IscMaxKA": "Isc max (kA)",
@@ -1048,6 +1049,10 @@
     "InvalidNode": "Node not built",
     "NoSpreadsheets": "You have no spreadsheets, please create one",
 
+    "LookForEquipmentField": "Look for a field",
+    "EquipmentSchemaPopoverSchema": "Opens the list of fields for the equipment associated with the sheet. The list can also be opened by pressing the Shift key on the keyboard twice.",
+    "FetchingEquipmentSchemaError": "An error occurred while fetching equipment schema",
+
     "depth": "Depth: ",
 
     "root": "Root",
@@ -1600,5 +1605,12 @@
     "loadflowModifications": "Loadflow modification",
     "loadFlowModificationDetails":"Details",
     "PHASE_TAP": "Phase",
-    "RATIO_TAP": "Ratio"
+    "RATIO_TAP": "Ratio",
+    "Insert": "Insert",
+    "String": "String",
+    "Number": "Number",
+    "Object": "Object",
+    "Array": "Array",
+    "Boolean": "Boolean",
+    "Enum": "Enumeration"
 }

@@ -32,6 +32,8 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
 import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
 
+const SPREADSHEET_EQUIPMENTS_LISTENER_ID = 'spreadsheet-equipments-listener';
+
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
     equipmentToUpdateId: string | null,
@@ -309,7 +311,10 @@ export const useSpreadsheetEquipments = (
         [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
     );
 
-    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: listenerUpdateEquipmentsLocal });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: listenerUpdateEquipmentsLocal,
+        propsId: SPREADSHEET_EQUIPMENTS_LISTENER_ID,
+    });
 
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.

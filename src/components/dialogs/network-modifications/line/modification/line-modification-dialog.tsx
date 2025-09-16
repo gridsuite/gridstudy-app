@@ -10,6 +10,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentType,
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -27,8 +28,6 @@ import {
     CONNECTIVITY,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     EQUIPMENT_NAME,
     G1,
     G2,
@@ -37,10 +36,8 @@ import {
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
-    PERMANENT_LIMIT,
     R,
     STATE_ESTIMATION,
-    TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -48,33 +45,34 @@ import {
     VALUE,
     VOLTAGE_LEVEL,
     X,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
+    OPERATIONAL_LIMITS_GROUPS,
 } from 'components/utils/field-constants';
-import { useForm } from 'react-hook-form';
+import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
-
 import {
-    addModificationTypeToTemporaryLimits,
-    completeCurrentLimitsGroupsToOnlySelected,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    getSelectedLimitsFormData,
-    sanitizeLimitNames,
-    updateTemporaryLimits,
+    addModificationTypeToOpLimitsGroups,
+    getAllLimitsFormData,
+    formatOpLimitGroups,
+    updateOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { addSelectedFieldToRows, formatTemporaryLimits } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -96,24 +94,46 @@ import {
     getBranchActiveReactivePowerEditData,
     getBranchActiveReactivePowerEmptyFormData,
     getBranchActiveReactivePowerValidationSchema,
-} from '../../common/measurements/branch-active-reactive-power-form-utils.ts';
+} from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
-import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { BranchInfos } from '../../../../../services/study/network-map.type';
+import { useIntl } from 'react-intl';
+import { LineModificationEditData } from './line-modification-type';
+
+export interface LineModificationDialogProps {
+    // contains data when we try to edit an existing hypothesis from the current node's list
+    editData: LineModificationEditData | null | undefined;
+    // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
+    defaultIdValue: string;
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
+    displayConnectivity?: boolean;
+    isUpdate: boolean;
+    editDataFetchStatus?: string;
+    open?: boolean;
+    onClose?: () => void;
+    //...dialogProps
+}
 
 /**
  * Dialog to modify a line in the network
- * @param studyUuid the study we are currently working on
- * @param defaultIdValue the default line id
- * @param currentNode The node we are currently working on
- * @param editData the data to edit
+ * @param studyUuid
+ * @param defaultIdValue the default line id, Used to pre-select an equipmentId when calling this dialog from the SLD or network map
+ * @param currentNode
+ * @param currentRootNetworkUuid
+ * @param editData the data to edit, contains data when we try to edit an existing hypothesis from the current node's list
  * @param displayConnectivity to display connectivity section or not
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param isUpdate check if edition form
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineModificationDialog = ({
-    editData, // contains data when we try to edit an existing hypothesis from the current node's list
-    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
+    editData,
+    defaultIdValue,
     studyUuid,
     currentNode,
     currentRootNetworkUuid,
@@ -121,16 +141,17 @@ const LineModificationDialog = ({
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<LineModificationDialogProps>) => {
     const currentNodeUuid = currentNode?.id;
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [lineToModify, setLineToModify] = useState(null);
-    const [tabIndex, setTabIndex] = useState(LineModificationDialogTab.CONNECTIVITY_TAB);
+    const [lineToModify, setLineToModify] = useState<BranchInfos | null>(null);
+    const [tabIndex, setTabIndex] = useState<number | null>(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
-    const emptyFormData = useMemo(
+    const emptyFormData: any = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
             ...getCont1Cont2WithPositionEmptyFormData(true),
@@ -167,7 +188,7 @@ const LineModificationDialog = ({
     } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (lineModification) => {
+        (lineModification: LineModificationEditData) => {
             if (lineModification?.equipmentId) {
                 setSelectedId(lineModification.equipmentId);
             }
@@ -186,16 +207,11 @@ const LineModificationDialog = ({
                     g2: convertInputValue(FieldType.G2, lineModification.g2?.value ?? null),
                     b2: convertInputValue(FieldType.B2, lineModification.b2?.value ?? null),
                 }),
-                ...getSelectedLimitsFormData({
-                    permanentLimit1: lineModification.currentLimits1?.permanentLimit,
-                    permanentLimit2: lineModification.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(lineModification.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(lineModification.currentLimits2?.temporaryLimits)
-                    ),
-                }),
+                ...getAllLimitsFormData(
+                    formatOpLimitGroups(lineModification.operationalLimitsGroups),
+                    lineModification.selectedOperationalLimitsGroup1?.value ?? null,
+                    lineModification.selectedOperationalLimitsGroup2?.value ?? null
+                ),
                 ...getPropertiesFromModification(lineModification.properties),
             });
         },
@@ -209,65 +225,43 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line) => {
+        (line: LineModificationEditData) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits = line[LIMITS];
-            const temporaryLimits1 = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-                completeCurrentLimitsGroupsToOnlySelected(
-                    lineToModify?.currentLimits1,
-                    lineToModify?.selectedOperationalLimitsGroup1
-                )?.temporaryLimits,
-                completeCurrentLimitsGroupsToOnlySelected(
-                    editData?.currentLimits1,
-                    editData?.selectedOperationalLimitsGroup1
-                )?.temporaryLimits,
-                currentNode
-            );
-            let currentLimits1 = null;
-            if (limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] || temporaryLimits1.length > 0) {
-                currentLimits1 = {
-                    permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                    temporaryLimits: temporaryLimits1,
-                };
-            }
-            const temporaryLimits2 = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
-                completeCurrentLimitsGroupsToOnlySelected(
-                    lineToModify?.currentLimits2,
-                    lineToModify?.selectedOperationalLimitsGroup2
-                )?.temporaryLimits,
-                completeCurrentLimitsGroupsToOnlySelected(
-                    editData?.currentLimits2,
-                    editData?.selectedOperationalLimitsGroup2
-                )?.temporaryLimits,
-                currentNode
-            );
-            let currentLimits2 = null;
-            if (limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] || temporaryLimits2.length > 0) {
-                currentLimits2 = {
-                    permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                    temporaryLimits: temporaryLimits2,
-                };
-            }
 
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
-                modificationUuid: editData?.uuid,
+                modificationUuid: editData?.uuid ?? '',
                 lineId: selectedId,
-                lineName: sanitizeString(line[EQUIPMENT_NAME]),
+                lineName: sanitizeString(line[EQUIPMENT_NAME]?.value) ?? '',
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                currentLimit1: currentLimits1,
-                currentLimit2: currentLimits2,
+                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(
+                    limits[OPERATIONAL_LIMITS_GROUPS],
+                    lineToModify,
+                    editData,
+                    currentNode
+                ),
+                selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_LIMITS_GROUP_1],
+                    intl.formatMessage({
+                        id: 'None',
+                    })
+                ),
+                selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
+                    limits[SELECTED_LIMITS_GROUP_2],
+                    intl.formatMessage({
+                        id: 'None',
+                    })
+                ),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
@@ -296,7 +290,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, selectedId, lineToModify, editData, currentNode, snackError]
+        [studyUuid, currentNodeUuid, editData, selectedId, lineToModify, currentNode, intl, snackError]
     );
 
     const clear = useCallback(() => {
@@ -304,46 +298,29 @@ const LineModificationDialog = ({
     }, [emptyFormData, reset]);
 
     const onEquipmentIdChange = useCallback(
-        (equipmentId) => {
+        (equipmentId: string) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.LINE,
+                    EquipmentType.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
-                    .then((line) => {
+                    .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            const selectedCurrentLimits1 = completeCurrentLimitsGroupsToOnlySelected(
-                                line?.currentLimits1,
-                                line?.selectedOperationalLimitsGroup1
-                            );
-                            const selectedCurrentLimits2 = completeCurrentLimitsGroupsToOnlySelected(
-                                line?.currentLimits2,
-                                line?.selectedOperationalLimitsGroup2
-                            );
-                            const updatedTemporaryLimits1 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(selectedCurrentLimits1?.temporaryLimits)
-                            );
-                            const updatedTemporaryLimits2 = updateTemporaryLimits(
-                                formatTemporaryLimits(getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)),
-                                formatTemporaryLimits(selectedCurrentLimits2?.temporaryLimits)
-                            );
                             reset(
-                                (formValues) => ({
+                                (formValues: LineModificationEditData) => ({
                                     ...formValues,
-                                    ...getSelectedLimitsFormData({
-                                        permanentLimit1: getValues(`${LIMITS}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`),
-                                        permanentLimit2: getValues(`${LIMITS}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`),
-                                        temporaryLimits1: addSelectedFieldToRows(updatedTemporaryLimits1),
-                                        temporaryLimits2: addSelectedFieldToRows(updatedTemporaryLimits2),
-                                    }),
+                                    ...{
+                                        [LIMITS]: {
+                                            [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, line),
+                                        },
+                                    },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
                                 { keepDefaultValues: isDirty }
@@ -367,9 +344,9 @@ const LineModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             currentRootNetworkUuid,
-            getValues,
             reset,
             isDirty,
+            getValues,
             editData?.equipmentId,
             emptyFormData,
         ]
@@ -381,8 +358,8 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors) => {
-        let tabsInError = [];
+    const onValidationError = (errors: FieldErrors<LineModificationEditData>) => {
+        let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);
         }
@@ -413,7 +390,7 @@ const LineModificationDialog = ({
         setOpenLineTypesCatalogDialog(false);
     };
 
-    const handleLineSegmentsBuildSubmit = (data) => {
+    const handleLineSegmentsBuildSubmit = (data: any) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
             shouldDirty: true,
         });
@@ -451,7 +428,7 @@ const LineModificationDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
-                maxWidth={'md'}
+                maxWidth={'xl'}
                 titleId="ModifyLine"
                 subtitle={selectedId != null ? headerAndTabs : undefined}
                 open={open}
@@ -471,7 +448,7 @@ const LineModificationDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.LINE}
+                        equipmentType={EquipmentType.LINE}
                     />
                 )}
                 {selectedId != null && (
