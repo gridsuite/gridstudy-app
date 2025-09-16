@@ -248,7 +248,7 @@ export const updateOpLimitsGroups = (
     });
 
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
-    mapServerBranch.currentLimits.forEach((currentLimit: CurrentLimits) => {
+    mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroup) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability

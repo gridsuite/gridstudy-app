@@ -100,11 +100,7 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        reset,
-        getValues,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -160,7 +156,7 @@ const VoltageLevelModificationDialog = ({
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(voltageLevel, getValues),
                                     [SUBSTATION_ID]: voltageLevel?.substationId,
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                     })
@@ -176,7 +172,7 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, isDirty, getValues, editData?.equipmentId]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

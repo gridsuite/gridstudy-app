@@ -172,12 +172,7 @@ export default function GeneratorModificationDialog({
         resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
     });
 
-    const {
-        reset,
-        getValues,
-        setValue,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData: GeneratorModificationInfos) => {
@@ -303,7 +298,7 @@ export default function GeneratorModificationDialog({
                                     ...formValues,
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -320,17 +315,7 @@ export default function GeneratorModificationDialog({
                 setGeneratorToModify(null);
             }
         },
-        [
-            studyUuid,
-            currentNode.id,
-            currentRootNetworkUuid,
-            reset,
-            isDirty,
-            setValue,
-            getValues,
-            editData?.equipmentId,
-            setValuesAndEmptyOthers,
-        ]
+        [studyUuid, currentNode, currentRootNetworkUuid, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
     );
 
     useEffect(() => {

@@ -180,12 +180,7 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        reset,
-        setValue,
-        getValues,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationEditData) => {
@@ -323,7 +318,7 @@ const LineModificationDialog = ({
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -340,16 +335,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            currentRootNetworkUuid,
-            reset,
-            isDirty,
-            getValues,
-            editData?.equipmentId,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData?.equipmentId, emptyFormData]
     );
 
     useEffect(() => {

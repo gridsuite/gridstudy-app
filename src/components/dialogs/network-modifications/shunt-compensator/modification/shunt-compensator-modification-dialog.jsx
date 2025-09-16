@@ -102,7 +102,7 @@ const ShuntCompensatorModificationDialog = ({
 
     const {
         reset,
-        formState: { dirtyFields, isDirty },
+        formState: { dirtyFields },
         getValues,
     } = formMethods;
 
@@ -186,7 +186,7 @@ const ShuntCompensatorModificationDialog = ({
                                         ...formValues,
                                         [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
                                     }),
-                                    { keepDefaultValues: isDirty }
+                                    { keepDirty: true }
                                 );
                             }
                         }
@@ -207,16 +207,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [
-            studyUuid,
-            currentNode?.id,
-            currentRootNetworkUuid,
-            snackError,
-            reset,
-            isDirty,
-            getValues,
-            editData?.equipmentId,
-        ]
+        [currentNode.id, currentRootNetworkUuid, snackError, studyUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

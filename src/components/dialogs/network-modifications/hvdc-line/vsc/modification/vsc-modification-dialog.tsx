@@ -117,13 +117,7 @@ const VscModificationDialog: React.FC<any> = ({
         resolver: yupResolver(formSchema),
     });
     const { snackError } = useSnackMessage();
-    const {
-        reset,
-        getValues,
-        setValue,
-        handleSubmit,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues, setValue, handleSubmit } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -228,7 +222,7 @@ const VscModificationDialog: React.FC<any> = ({
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
                                 {
-                                    keepDefaultValues: isDirty,
+                                    keepDirty: true,
                                 }
                             );
                         }
@@ -245,12 +239,11 @@ const VscModificationDialog: React.FC<any> = ({
         },
         [
             setValuesAndEmptyOthers,
-            studyUuid,
-            currentNode.id,
             currentRootNetworkUuid,
+            studyUuid,
+            currentNode,
             setValue,
             reset,
-            isDirty,
             getValues,
             editData?.equipmentId,
         ]

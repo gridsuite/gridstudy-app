@@ -97,11 +97,7 @@ export const LccModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LccModificationSchemaForm>>(formSchema),
     });
-    const {
-        reset,
-        getValues,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues } = formMethods;
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -232,7 +228,7 @@ export const LccModificationDialog = ({
                                         ),
                                     },
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -246,18 +242,7 @@ export const LccModificationDialog = ({
                     });
             }
         },
-        [
-            clear,
-            currentNode.id,
-            currentRootNetworkUuid,
-            editData?.converterStation1.shuntCompensatorsOnSide,
-            editData?.converterStation2.shuntCompensatorsOnSide,
-            editData?.equipmentId,
-            getValues,
-            isDirty,
-            reset,
-            studyUuid,
-        ]
+        [clear, currentNode.id, currentRootNetworkUuid, editData, getValues, reset, studyUuid]
     );
 
     useEffect(() => {

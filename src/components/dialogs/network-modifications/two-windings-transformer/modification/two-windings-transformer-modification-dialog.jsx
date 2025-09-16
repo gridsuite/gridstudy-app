@@ -211,11 +211,7 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const {
-        reset,
-        getValues,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues } = formMethods;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
@@ -710,7 +706,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     }),
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(twt, getValues),
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -733,7 +729,6 @@ const TwoWindingsTransformerModificationDialog = ({
             currentRootNetworkUuid,
             getValues,
             reset,
-            isDirty,
             isRatioTapChangerEnabled,
             getRatioTapChangerSteps,
             isPhaseTapChangerEnabled,

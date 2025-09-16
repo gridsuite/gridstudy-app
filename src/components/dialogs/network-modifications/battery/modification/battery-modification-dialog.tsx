@@ -132,12 +132,7 @@ export default function BatteryModificationDialog({
         resolver: yupResolver<DeepNullable<BatteryModificationDialogSchemaForm>>(formSchema),
     });
 
-    const {
-        reset,
-        getValues,
-        setValue,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData: BatteryModificationInfos) => {
@@ -244,7 +239,7 @@ export default function BatteryModificationDialog({
                                     ...formValues,
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -261,17 +256,7 @@ export default function BatteryModificationDialog({
                 setBatteryToModify(null);
             }
         },
-        [
-            studyUuid,
-            currentNode.id,
-            currentRootNetworkUuid,
-            setValue,
-            reset,
-            isDirty,
-            getValues,
-            editData?.equipmentId,
-            setValuesAndEmptyOthers,
-        ]
+        [studyUuid, currentNode, currentRootNetworkUuid, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
     );
 
     useEffect(() => {

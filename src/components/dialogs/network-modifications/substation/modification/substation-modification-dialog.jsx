@@ -74,11 +74,7 @@ const SubstationModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const {
-        reset,
-        getValues,
-        formState: { isDirty },
-    } = formMethods;
+    const { reset, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -121,7 +117,7 @@ const SubstationModificationDialog = ({
                                     ...formValues,
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(substation, getValues),
                                 }),
-                                { keepDefaultValues: isDirty }
+                                { keepDirty: true }
                             );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -135,7 +131,7 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [reset, studyUuid, currentNodeUuid, currentRootNetworkUuid, isDirty, getValues, editData?.equipmentId]
+        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, editData]
     );
 
     useEffect(() => {
