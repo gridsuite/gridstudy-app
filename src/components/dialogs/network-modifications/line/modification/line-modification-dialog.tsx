@@ -232,7 +232,7 @@ const LineModificationDialog = ({
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid ?? '',
                 lineId: selectedId,
-                lineName: sanitizeString(line[EQUIPMENT_NAME]?.value) ?? '',
+                lineName: sanitizeString(line[EQUIPMENT_NAME]) ?? '',
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
