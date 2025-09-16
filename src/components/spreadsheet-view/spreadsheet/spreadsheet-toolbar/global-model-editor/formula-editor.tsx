@@ -43,6 +43,18 @@ export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps
 
     const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+    const overlaySx = useMemo(() => {
+        const { fontFamily, body1 } = theme.typography;
+        return {
+            ...styles.overlay,
+            fontFamily,
+            fontSize: body1?.fontSize,
+            fontWeight: body1?.fontWeight,
+            lineHeight: '1.4375em',
+            letterSpacing: body1?.letterSpacing,
+        };
+    }, [theme]);
+
     const highlighted = useMemo(() => {
         const formula = value ?? '';
         if (!searchTerm) {
@@ -63,7 +75,7 @@ export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps
 
     return (
         <Box sx={styles.container}>
-            <Box aria-hidden sx={styles.overlay}>
+            <Box aria-hidden sx={overlaySx}>
                 {highlighted}
             </Box>
             <ExpandingTextField name={name} label="" minRows={3} rows={3} sx={styles.textField} />

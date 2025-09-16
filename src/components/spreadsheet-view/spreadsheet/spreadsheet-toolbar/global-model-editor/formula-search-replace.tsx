@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import FindReplaceIcon from '@mui/icons-material/FindReplace';
 import { useIntl } from 'react-intl';
@@ -124,6 +124,7 @@ export default function FormulaSearchReplace() {
         label: 'spreadsheet/global-model-edition/search_replace_button',
         icon: <FindReplaceIcon />,
     });
+    const inputRef = useRef<HTMLInputElement>(null);
 
     return (
         <>
@@ -138,6 +139,7 @@ export default function FormulaSearchReplace() {
                             resetSearch={() => performSearch('')}
                             placeholder="spreadsheet/global-model-edition/search"
                             sx={{ width: 280, maxWidth: 280 }}
+                            inputRef={inputRef}
                         />
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             <TextField
