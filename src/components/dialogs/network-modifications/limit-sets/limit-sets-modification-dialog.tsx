@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { AMOUNT_TEMPORARY_LIMITS, CSV_FILENAME, MODIFICATIONS_TABLE, SIDE, TYPE } from '../../../utils/field-constants';
+import { AMOUNT_TEMPORARY_LIMITS, CSV_FILENAME, MODIFICATIONS_TABLE, TYPE } from '../../../utils/field-constants';
 import { useIntl } from 'react-intl';
 import { CustomFormProvider, ModificationType, useSnackMessage } from '@gridsuite/commons-ui';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -20,11 +20,11 @@ import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modificat
 import { LIMIT_SETS_TABULAR_MODIFICATION_EQUIPMENTS } from '../tabular/tabular-modification-utils';
 import { formatModification } from '../tabular/tabular-common';
 import { createTabularModification } from '../../../../services/study/network-modifications';
-import { BranchSide } from '../../../utils/constants';
 import {
     emptyFormData,
     formatBackToFront,
     formatOperationalLimitGroupsFrontToBack,
+    formatSelectedOperationalGroupId,
     formSchema,
     LimitSetModificationMetadata,
     SchemaType,
@@ -86,17 +86,10 @@ export function LimitSetsModificationDialog({
                 Object.keys(modification).forEach((key) => {
                     modification[key] = row[key];
                 });
-
-                if (modification[SIDE] === BranchSide.ONE) {
-                    modification.operationalLimitsGroup1 = [
-                        formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.ONE),
-                    ];
-                } else if (modification[SIDE] === BranchSide.TWO) {
-                    modification.operationalLimitsGroup2 = [
-                        formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits, BranchSide.TWO),
-                    ];
-                }
-
+                modification.operationalLimitsGroups = [
+                    formatOperationalLimitGroupsFrontToBack(modification, amountMaxTemporaryLimits),
+                ];
+                formatSelectedOperationalGroupId(modification);
                 modification.type = modificationType;
                 return modification;
             });

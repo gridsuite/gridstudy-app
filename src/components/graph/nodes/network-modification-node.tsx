@@ -26,6 +26,7 @@ import { BuildButton } from './build-button';
 const styles = {
     networkModificationSelected: (theme: Theme) => ({
         ...selectedBaseNodeStyles(theme, 'column'),
+        background: theme.node.modification.selectedBackground,
         border: theme.node.modification.selectedBorder,
         boxShadow: theme.shadows[6],
         ...interactiveNodeStyles(theme, 'modification'),
