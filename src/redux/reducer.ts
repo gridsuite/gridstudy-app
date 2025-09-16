@@ -45,6 +45,8 @@ import {
     CANCEL_LEAVE_PARAMETERS_TAB,
     CENTER_ON_SUBSTATION,
     type CenterOnSubstationAction,
+    CLEAN_EQUIPMENTS,
+    CleanEquipmentsAction,
     CLOSE_STUDY,
     type CloseStudyAction,
     CONFIRM_LEAVE_PARAMETERS_TAB,
@@ -71,7 +73,9 @@ import {
     type LoadflowResultFilterAction,
     type LoadNetworkModificationTreeSuccessAction,
     LOGS_FILTER,
+    LOGS_RESULT_PAGINATION,
     type LogsFilterAction,
+    LogsResultPaginationAction,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
     MAP_EQUIPMENTS_INITIALIZED,
@@ -121,6 +125,7 @@ import {
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_COMPUTATION,
     RESET_LOGS_FILTER,
+    RESET_LOGS_PAGINATION,
     RESET_MAP_EQUIPMENTS,
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
@@ -131,6 +136,7 @@ import {
     type ResetEquipmentsByTypesAction,
     type ResetEquipmentsPostComputationAction,
     type ResetLogsFilterAction,
+    ResetLogsPaginationAction,
     type ResetMapEquipmentsAction,
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
@@ -143,12 +149,12 @@ import {
     SecurityAnalysisResultPaginationAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
+    SELECT_SYNC_ENABLED,
     SELECT_THEME,
     type SelectComputedLanguageAction,
     type SelectLanguageAction,
-    type SelectThemeAction,
-    SELECT_SYNC_ENABLED,
     type SelectSyncEnabledAction,
+    type SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
@@ -204,19 +210,21 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
+    type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    LOGS_RESULT_PAGINATION,
-    LogsResultPaginationAction,
-    RESET_LOGS_PAGINATION,
-    ResetLogsPaginationAction,
+    SET_ACTIVE_SPREADSHEET_TAB,
+    SetActiveSpreadsheetTabAction,
+    SET_ADDED_SPREADSHEET_TAB,
+    SetAddedSpreadsheetTabAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -301,6 +309,7 @@ import {
     type ColumnDefinition,
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
+    type SpreadsheetOptionalLoadingParameters,
     type SpreadsheetTabDefinition,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
@@ -586,6 +595,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
     globalFilterSpreadsheetState: GlobalFilterSpreadsheetState;
+    spreadsheetOptionalLoadingParameters: SpreadsheetOptionalLoadingParameters;
     networkVisualizationsParameters: NetworkVisualizationParameters;
 
     syncEnabled: boolean;
@@ -694,11 +704,15 @@ export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
+    activeTabUuid: UUID | null;
+    addedTable: UUID | null; // to track the last added table for setting the focus on it
 }
 
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
+    activeTabUuid: null,
+    addedTable: null,
 };
 
 const initialState: AppState = {
@@ -747,6 +761,20 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: {},
+    spreadsheetOptionalLoadingParameters: {
+        [SpreadsheetEquipmentType.BRANCH]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.LINE]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: {
+            operationalLimitsGroups: false,
+        },
+        [SpreadsheetEquipmentType.GENERATOR]: {
+            regulatingTerminal: false,
+        },
+    },
     diagramGridLayout: {
         gridLayouts: {},
         params: [],
@@ -979,7 +1007,19 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.assign(existingTableDefinition, newTableDefinition);
         } else {
             state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+            // Set as active if it's the unique tab or no tab is currently active
+            if (state.tables.definitions.length === 1 || !state.tables.activeTabUuid) {
+                state.tables.activeTabUuid = newTableDefinition.uuid;
+            }
         }
+    });
+
+    builder.addCase(SET_ACTIVE_SPREADSHEET_TAB, (state, action: SetActiveSpreadsheetTabAction) => {
+        state.tables.activeTabUuid = action.tabUuid;
+    });
+
+    builder.addCase(SET_ADDED_SPREADSHEET_TAB, (state, action: SetAddedSpreadsheetTabAction) => {
+        state.tables.addedTable = action.tabUuid;
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
@@ -1017,6 +1057,21 @@ export const reducer = createReducer(initialState, (builder) => {
                 locked: false,
             })),
         }));
+        const isValidAddedTable = state.tables.addedTable
+            ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.addedTable)
+            : false;
+        if (isValidAddedTable) {
+            state.tables.activeTabUuid = state.tables.addedTable;
+        } else {
+            const isValidActiveTab = state.tables.activeTabUuid
+                ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.activeTabUuid)
+                : false;
+            if (!isValidActiveTab) {
+                state.tables.activeTabUuid =
+                    action.tableDefinitions.length > 0 ? action.tableDefinitions[0].uuid : null;
+            }
+        }
+        state.tables.addedTable = null;
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce(
@@ -1389,7 +1444,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.latestDiagramEvent = {
             diagramType: DiagramType.NETWORK_AREA_DIAGRAM,
             eventType: DiagramEventType.CREATE,
-            name: '',
+            name: action.name,
             nadConfigUuid: undefined,
             filterUuid: undefined,
             voltageLevelIds: uniqueIds as UUID[],
@@ -1545,6 +1600,45 @@ export const reducer = createReducer(initialState, (builder) => {
             [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
             [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
         };
+    });
+
+    builder.addCase(CLEAN_EQUIPMENTS, (state, action: CleanEquipmentsAction) => {
+        if (
+            action.equipmentType !== SpreadsheetEquipmentType.BRANCH &&
+            action.equipmentType !== SpreadsheetEquipmentType.LINE &&
+            action.equipmentType !== SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
+            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR
+        ) {
+            return;
+        }
+        const propsToClean =
+            action.equipmentType === SpreadsheetEquipmentType.GENERATOR
+                ? {
+                      regulatingTerminalVlName: undefined,
+                      regulatingTerminalConnectableId: undefined,
+                      regulatingTerminalConnectableType: undefined,
+                      regulatingTerminalVlId: undefined,
+                  }
+                : {
+                      operationalLimitsGroup1: undefined,
+                      operationalLimitsGroup1Names: undefined,
+                      operationalLimitsGroup2: undefined,
+                      operationalLimitsGroup2Names: undefined,
+                  };
+        state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
+            state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
+                state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
+            ).reduce(
+                (acc, eq) => {
+                    acc[eq.id] = {
+                        ...eq,
+                        ...propsToClean,
+                    };
+                    return acc;
+                },
+                {} as Record<string, any> // Has to be typed as any until we define specific types for all DTOs
+            );
+        });
     });
 
     builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
@@ -1730,6 +1824,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 rowsPerPage: currentPagination.rowsPerPage,
             };
         });
+    });
+
+    builder.addCase(UPDATE_SPREADSHEET_PARTIAL_DATA, (state, action: UpdateSpreadsheetPartialDataAction) => {
+        state.spreadsheetOptionalLoadingParameters = action.newOptions;
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {

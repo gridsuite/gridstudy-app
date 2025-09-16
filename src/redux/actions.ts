@@ -61,6 +61,7 @@ import {
     type SpreadsheetEquipmentsByNodes,
     SpreadsheetEquipmentType,
     type SpreadsheetTabDefinition,
+    type SpreadsheetOptionalLoadingParameters,
 } from '../components/spreadsheet-view/types/spreadsheet.type';
 import {
     FilterConfig,
@@ -132,11 +133,13 @@ export type AppActions =
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
+    | UpdateSpreadsheetPartialDataAction
     | LogsFilterAction
     | UpdateColumnsDefinitionsAction
     | RemoveColumnDefinitionAction
     | UpdateNetworkVisualizationParametersAction
     | StateEstimationResultFilterAction
+    | AddFilterForNewSpreadsheetAction
     | SaveSpreadSheetGlobalFilterAction
     | ResetAllSpreadsheetGlobalFiltersAction
     | RemoveTableDefinitionAction
@@ -157,7 +160,9 @@ export type AppActions =
     | ResetSensitivityAnalysisPaginationAction
     | ResetShortcircuitAnalysisPaginationAction
     | LogsResultPaginationAction
-    | ResetLogsPaginationAction;
+    | ResetLogsPaginationAction
+    | SetActiveSpreadsheetTabAction
+    | SetAddedSpreadsheetTabAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -304,6 +309,18 @@ export type ResetEquipmentsPostComputationAction = Readonly<Action<typeof RESET_
 export function resetEquipmentsPostComputation(): ResetEquipmentsPostComputationAction {
     return {
         type: RESET_EQUIPMENTS_POST_COMPUTATION,
+    };
+}
+
+export const CLEAN_EQUIPMENTS = 'CLEAN_EQUIPMENTS';
+export type CleanEquipmentsAction = Readonly<Action<typeof CLEAN_EQUIPMENTS>> & {
+    equipmentType: SpreadsheetEquipmentType;
+};
+
+export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanEquipmentsAction {
+    return {
+        type: CLEAN_EQUIPMENTS,
+        equipmentType,
     };
 }
 
@@ -782,12 +799,14 @@ export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction
 
 export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
 export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
+    name: string;
     ids: string[];
 };
 
-export function openNadList(ids: string[]): OpenNadListAction {
+export function openNadList(name: string, ids: string[]): OpenNadListAction {
     return {
         type: OPEN_NAD_LIST,
+        name: name,
         ids: ids,
     };
 }
@@ -1165,6 +1184,20 @@ export function resetLogsPagination(): ResetLogsPaginationAction {
     };
 }
 
+export const UPDATE_SPREADSHEET_PARTIAL_DATA = 'UPDATE_SPREADSHEET_PARTIAL_DATA';
+export type UpdateSpreadsheetPartialDataAction = Readonly<Action<typeof UPDATE_SPREADSHEET_PARTIAL_DATA>> & {
+    newOptions: SpreadsheetOptionalLoadingParameters;
+};
+
+export function updateSpreadsheetPartialData(
+    options: SpreadsheetOptionalLoadingParameters
+): UpdateSpreadsheetPartialDataAction {
+    return {
+        type: UPDATE_SPREADSHEET_PARTIAL_DATA,
+        newOptions: options,
+    };
+}
+
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
     table: TableSortKeysType;
@@ -1228,6 +1261,30 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     type: UPDATE_TABLE_DEFINITION,
     newTableDefinition,
 });
+
+export const SET_ACTIVE_SPREADSHEET_TAB = 'SET_ACTIVE_SPREADSHEET_TAB';
+export type SetActiveSpreadsheetTabAction = Readonly<Action<typeof SET_ACTIVE_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setActiveSpreadsheetTab(tabUuid: UUID | null): SetActiveSpreadsheetTabAction {
+    return {
+        type: SET_ACTIVE_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
+
+export const SET_ADDED_SPREADSHEET_TAB = 'SET_ADDED_SPREADSHEET_TAB';
+export type SetAddedSpreadsheetTabAction = Readonly<Action<typeof SET_ADDED_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setAddedSpreadsheetTab(tabUuid: UUID | null): SetAddedSpreadsheetTabAction {
+    return {
+        type: SET_ADDED_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
 
 export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 

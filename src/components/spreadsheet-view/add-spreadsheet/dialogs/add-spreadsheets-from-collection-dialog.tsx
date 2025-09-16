@@ -42,7 +42,6 @@ import type { DialogComponentProps } from '../types';
  */
 export default function AddSpreadsheetsFromCollectionDialog({
     open,
-    resetTabIndex,
     resetNodeAliases,
 }: Readonly<DialogComponentProps>) {
     const dispatch = useDispatch();
@@ -84,7 +83,6 @@ export default function AddSpreadsheetsFromCollectionDialog({
                     dispatch(
                         initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
                     );
-                    resetTabIndex(tableDefinitions);
                 })
                 .catch((error) => {
                     snackError({
@@ -95,7 +93,7 @@ export default function AddSpreadsheetsFromCollectionDialog({
             setConfirmationDialogOpen(false);
             open.setFalse();
         },
-        [studyUuid, dispatch, resetTabIndex, open, snackError, resetNodeAliases]
+        [studyUuid, dispatch, open, snackError, resetNodeAliases]
     );
 
     const onSubmit = useCallback(

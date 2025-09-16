@@ -10,6 +10,7 @@ import type { UUID } from 'crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    cleanEquipments,
     deleteEquipments,
     type EquipmentToDelete,
     removeNodeData,
@@ -29,6 +30,9 @@ import { NodeType } from '../../../../graph/tree-node.type';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
+import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
+
+const SPREADSHEET_EQUIPMENTS_LISTENER_ID = 'spreadsheet-equipments-listener';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,
@@ -51,6 +55,21 @@ export const useSpreadsheetEquipments = (
     const [builtAliasedNodesIds, setBuiltAliasedNodesIds] = useState<UUID[]>();
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
+
+    const {
+        shouldLoadOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsLoaded,
+        shouldCleanOptionalLoadingParameters,
+        equipmentsWithLoadingOptionsCleaned,
+    } = useOptionalLoadingParametersForEquipments(type);
+
+    useEffect(() => {
+        if (shouldCleanOptionalLoadingParameters) {
+            dispatch(cleanEquipments(type));
+            equipmentsWithLoadingOptionsCleaned();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [shouldCleanOptionalLoadingParameters, type]);
 
     // effect to keep builtAliasedNodesIds up-to-date (when we add/remove an alias or build/unbuild an aliased node)
     useEffect(() => {
@@ -88,6 +107,16 @@ export const useSpreadsheetEquipments = (
         if (!equipments.nodesId || !builtAliasedNodesIds || !currentNode?.id) {
             return nodesIdToFetch;
         }
+
+        // If optional loading parameters changed we should refetch all nodes
+        if (shouldLoadOptionalLoadingParameters) {
+            nodesIdToFetch.add(currentNode.id);
+            for (const builtAliasNodeId of builtAliasedNodesIds) {
+                nodesIdToFetch.add(builtAliasNodeId);
+            }
+            return nodesIdToFetch;
+        }
+
         // We check if we have the data for the currentNode and if we don't, we save the fact that we need to fetch it
         if (equipments.nodesId.find((nodeId) => nodeId === currentNode.id) === undefined) {
             nodesIdToFetch.add(currentNode.id);
@@ -99,7 +128,7 @@ export const useSpreadsheetEquipments = (
             }
         }
         return nodesIdToFetch;
-    }, [currentNode?.id, equipments.nodesId, builtAliasedNodesIds]);
+    }, [currentNode?.id, equipments.nodesId, builtAliasedNodesIds, shouldLoadOptionalLoadingParameters]);
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
@@ -116,7 +145,7 @@ export const useSpreadsheetEquipments = (
         }
     }, [builtAliasedNodesIds, currentNode?.id, dispatch, equipments]);
 
-    const deleteEquipmentsLocal = useCallback(
+    const updateEquipmentsLocal = useCallback(
         (impactedSubstationsIds: UUID[], deletedEquipments: DeletedEquipment[], impactedElementTypes: string[]) => {
             if (!type) {
                 return;
@@ -275,14 +304,17 @@ export const useSpreadsheetEquipments = (
                     const impactedSubstationsIds = payload.impactedSubstationsIds;
                     const deletedEquipments = payload.deletedEquipments;
                     const impactedElementTypes = payload.impactedElementTypes ?? [];
-                    deleteEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
+                    updateEquipmentsLocal(impactedSubstationsIds, deletedEquipments, impactedElementTypes);
                 }
             }
         },
-        [currentNode?.id, currentRootNetworkUuid, studyUuid, deleteEquipmentsLocal]
+        [currentNode?.id, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
     );
 
-    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: listenerUpdateEquipmentsLocal });
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: listenerUpdateEquipmentsLocal,
+        propsId: SPREADSHEET_EQUIPMENTS_LISTENER_ID,
+    });
 
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
@@ -296,6 +328,7 @@ export const useSpreadsheetEquipments = (
             (currentNode?.type === NodeType.ROOT || isStatusBuilt(currentNode?.data.globalBuildStatus))
         ) {
             setIsFetching(true);
+            equipmentsWithLoadingOptionsLoaded();
             fetchNodesEquipmentData(nodesIdToFetch, currentNode.id, currentRootNetworkUuid, () => setIsFetching(false));
         }
     }, [
@@ -307,6 +340,7 @@ export const useSpreadsheetEquipments = (
         currentRootNetworkUuid,
         fetchNodesEquipmentData,
         nodesIdToFetch,
+        equipmentsWithLoadingOptionsLoaded,
     ]);
 
     return { equipments, isFetching };

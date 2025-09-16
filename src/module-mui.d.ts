@@ -61,16 +61,17 @@ declare module '@mui/material/styles' {
             common: {
                 background: string;
                 activeBackground: string;
-                selectedBackground: string;
             };
             modification: {
                 border: string;
                 selectedBorder: string;
                 hoverBorderColor: string;
                 activeBorderColor: string;
+                selectedBackground: string;
             };
             root: {
                 border: string;
+                selectedBackground: string;
                 hoverBorderColor: string;
                 activeBorderColor: string;
                 icon: {
