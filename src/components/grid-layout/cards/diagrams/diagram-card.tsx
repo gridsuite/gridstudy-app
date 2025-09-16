@@ -131,6 +131,21 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         [diagram, updateDiagramPositions]
     );
 
+    const handleMoveTextnode = useCallback(
+        (vlId: string, x: number, y: number) => {
+            if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                const updatedPositions = diagram.positions.map((position) =>
+                    position.voltageLevelId === vlId ? { ...position, xLabelPosition: x, yLabelPosition: y } : position
+                );
+
+                updateDiagramPositions({
+                    ...diagram,
+                    positions: updatedPositions,
+                });
+            }
+        },
+        [diagram, updateDiagramPositions]
+    );
     const handleReplaceNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -229,6 +244,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
                             onHideVoltageLevel={handleHideVoltageLevelId}
                             onMoveNode={handleMoveNode}
+                            onMoveTextnode={handleMoveTextnode}
                             onVoltageLevelClick={handleVoltageLevelClick}
                             customPositions={diagram.positions}
                         />

@@ -117,6 +117,9 @@ export const getLimitsEmptyFormData = (id = LIMITS) => {
 };
 
 export const formatOpLimitGroups = (limitGroups: OperationalLimitsGroup[]): OperationalLimitsGroup[] => {
+    if (!limitGroups) {
+        return [];
+    }
     return limitGroups.map((opLimitGroup: OperationalLimitsGroup) => {
         return {
             id: opLimitGroup.id + opLimitGroup.applicability,
@@ -232,7 +235,7 @@ export const updateOpLimitsGroups = (
 
     // updates limit values :
     updatedOpLG.forEach((opLG: OperationalLimitsGroup) => {
-        const equivalentFromMapServer = mapServerBranch.currentLimits.find(
+        const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
@@ -380,7 +383,7 @@ export const addModificationTypeToOpLimitsGroups = (
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(formLimitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
             networkCurrentLimits?.temporaryLimits ?? [],
-            editData?.operationalLimitsGroups.find(
+            editData?.operationalLimitsGroups?.find(
                 (editDataOpLimitGroup: OperationalLimitsGroup) =>
                     editDataOpLimitGroup.id === formLimitsGroup.name &&
                     editDataOpLimitGroup.applicability === formLimitsGroup.applicability
