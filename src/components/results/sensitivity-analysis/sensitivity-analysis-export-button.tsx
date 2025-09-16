@@ -56,6 +56,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
 
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
     const { filters } = useFilterSelector(AgGridFilterType.SensitivityAnalysis, mappingTabs(sensiKind, nOrNkIndex));
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiKind, nOrNkIndex)]
@@ -63,7 +64,7 @@ export const SensitivityExportButton: FunctionComponent<SensitivityExportButtonP
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [studyUuid, currentRootNetworkUuid, nodeUuid, nOrNkIndex, sensiKind, globalFilters]);
+    }, [studyUuid, currentRootNetworkUuid, nodeUuid, nOrNkIndex, sensiKind, globalFilters, sortConfig, appTabIndex]);
 
     useEffect(() => {
         if (disabled) {

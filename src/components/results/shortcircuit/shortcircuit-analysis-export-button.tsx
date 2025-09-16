@@ -35,10 +35,11 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
 
     const intl = useIntl();
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [studyUuid, currentRootNetworkUuid, nodeUuid, analysisType]);
+    }, [studyUuid, currentRootNetworkUuid, nodeUuid, analysisType, appTabIndex]);
 
     useEffect(() => {
         if (disabled) {

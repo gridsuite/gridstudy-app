@@ -34,12 +34,13 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     const intl = useIntl();
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [studyUuid, nodeUuid, rootNetworkUuid, resultType]);
+    }, [studyUuid, nodeUuid, rootNetworkUuid, resultType, appTabIndex]);
 
     useEffect(() => {
         if (disabled) {
