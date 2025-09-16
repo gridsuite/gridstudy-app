@@ -95,7 +95,7 @@ import {
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    updateOpLimitsGroups,
+    combineFormAndMapServerLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -483,12 +483,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(
-                    limits[OPERATIONAL_LIMITS_GROUPS],
-                    twtToModify,
-                    editData,
-                    currentNode
-                ),
+                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -538,8 +533,6 @@ const TwoWindingsTransformerModificationDialog = ({
             currentNodeUuid,
             editData,
             selectedId,
-            twtToModify,
-            currentNode,
             intl,
             computeRatioTapForSubmit,
             computePhaseTapForSubmit,
@@ -659,7 +652,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                 ...formValues,
                                 ...{
                                     [LIMITS]: {
-                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, twt),
+                                        [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
+                                            formValues,
+                                            twt
+                                        ),
                                     },
                                 },
                                 ...getRatioTapChangerFormData({

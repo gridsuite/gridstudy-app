@@ -16,7 +16,18 @@ import {
 } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
-import { APPLICABIlITY, CURRENT_LIMITS, ID, NAME, SELECTED } from './field-constants';
+import {
+    APPLICABIlITY,
+    CURRENT_LIMITS,
+    DELETION_MARK,
+    ID,
+    NAME,
+    SELECTED,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_VALUE,
+} from './field-constants';
+import { TemporaryLimitDialogForm } from '../dialogs/network-modifications/line/modification/line-modification-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -125,6 +136,16 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): Tempor
             value: limit?.value ?? null,
             acceptableDuration: limit?.acceptableDuration ?? null,
             modificationType: limit?.modificationType ?? null,
+        };
+    });
+
+export const formatToTemporaryLimitsDialogForm = (temporaryLimits: TemporaryLimit[]): TemporaryLimitDialogForm[] =>
+    temporaryLimits?.map((limit: TemporaryLimit) => {
+        return {
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [DELETION_MARK]: false,
         };
     });
 

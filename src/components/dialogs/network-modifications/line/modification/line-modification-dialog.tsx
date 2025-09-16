@@ -59,7 +59,7 @@ import {
     addModificationTypeToOpLimitsGroups,
     getAllLimitsFormData,
     formatOpLimitGroups,
-    updateOpLimitsGroups,
+    combineFormAndMapServerLimitsGroups,
     addOperationTypeToSelectedOpLG,
 } from '../../../limits/limits-pane-utils';
 import {
@@ -101,11 +101,11 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LineModificationEditData } from './line-modification-type';
+import { LimitsDialogForm, LineModificationDialogForm } from './line-modification-type';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
-    editData: LineModificationEditData | null | undefined;
+    editData: LineModificationDialogForm | null | undefined;
     // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     defaultIdValue: string;
     studyUuid: UUID;
@@ -183,7 +183,7 @@ const LineModificationDialog = ({
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (lineModification: LineModificationEditData) => {
+        (lineModification: LineModificationDialogForm) => {
             if (lineModification?.equipmentId) {
                 setSelectedId(lineModification.equipmentId);
             }
@@ -220,12 +220,12 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationEditData) => {
+        (line: LineModificationDialogForm) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
-            const limits = line[LIMITS];
+            const limits: LimitsDialogForm = line[LIMITS];
 
             modifyLine({
                 studyUuid: studyUuid,
@@ -239,12 +239,7 @@ const LineModificationDialog = ({
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(
-                    limits[OPERATIONAL_LIMITS_GROUPS],
-                    lineToModify,
-                    editData,
-                    currentNode
-                ),
+                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -285,7 +280,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData, selectedId, lineToModify, currentNode, intl, snackError]
+        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
     );
 
     const clear = useCallback(() => {
@@ -308,11 +303,14 @@ const LineModificationDialog = ({
                     .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            reset((formValues: LineModificationEditData) => ({
+                            reset((formValues: LineModificationDialogForm) => ({
                                 ...formValues,
                                 ...{
                                     [LIMITS]: {
-                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, line),
+                                        [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
+                                            formValues,
+                                            line
+                                        ),
                                     },
                                 },
                                 [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
@@ -341,7 +339,7 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors: FieldErrors<LineModificationEditData>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationDialogForm>) => {
         let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);

@@ -6,10 +6,29 @@
  */
 
 import { UUID } from 'crypto';
-import { AttributeModification, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import {
+    AttributeModification,
+    CurrentLimits,
+    OperationalLimitsGroup,
+} from '../../../../../services/network-modification-types';
 import { Property } from '../../common/properties/property-utils';
+import {
+    APPLICABIlITY,
+    CURRENT_LIMITS,
+    DELETION_MARK,
+    ID,
+    NAME,
+    OPERATIONAL_LIMITS_GROUPS,
+    PERMANENT_LIMIT,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_VALUE,
+    TEMPORARY_LIMITS,
+} from '../../../../utils/field-constants';
 
-export interface LineModificationEditData {
+export interface LineModificationDialogForm {
     uuid?: string;
     equipmentId?: string;
     equipmentName?: { value: string };
@@ -52,5 +71,32 @@ export interface LineModificationEditData {
     AdditionalProperties: any;
     characteristics: any;
     stateEstimation: any;
-    limits: any;
+    limits: LimitsDialogForm;
+}
+
+export interface LimitsDialogForm {
+    [SELECTED_LIMITS_GROUP_1]: string | null;
+    [SELECTED_LIMITS_GROUP_2]: string | null;
+    [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupDialogForm[];
+}
+
+export interface OperationalLimitsGroupDialogForm {
+    [ID]: string;
+    [NAME]: string;
+    [APPLICABIlITY]?: string;
+    [CURRENT_LIMITS]: CurrentLimitsDialogForm;
+}
+
+export interface CurrentLimitsDialogForm {
+    [ID]: string; // TODO : needed here or only in OperationalLimitsGroupDialogForm ??
+    [APPLICABIlITY]?: string; // TODO : needed here or only in OperationalLimitsGroupDialogForm ??
+    [PERMANENT_LIMIT]: number | null;
+    [TEMPORARY_LIMITS]: TemporaryLimitDialogForm[];
+}
+
+export interface TemporaryLimitDialogForm {
+    [TEMPORARY_LIMIT_NAME]: string;
+    [TEMPORARY_LIMIT_DURATION]: number | null;
+    [TEMPORARY_LIMIT_VALUE]: number | null;
+    [DELETION_MARK]: boolean;
 }

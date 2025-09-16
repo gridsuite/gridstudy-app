@@ -9,8 +9,12 @@ import { sanitizeString } from '../dialog-utils';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
+    DELETION_MARK,
     ID,
+    LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
+    MODIFICATION_TYPE,
+    NAME,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
@@ -20,12 +24,14 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-    NAME,
-    LIMIT_SETS_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import { areArrayElementsUnique, formatTemporaryLimits, toModificationOperation } from 'components/utils/utils';
+import {
+    areArrayElementsUnique,
+    formatTemporaryLimits,
+    formatToTemporaryLimitsDialogForm,
+    toModificationOperation,
+} from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
-import { isNodeBuilt } from '../../graph/util/model-functions';
 import {
     AttributeModification,
     CurrentLimits,
@@ -33,10 +39,13 @@ import {
     OperationType,
     TemporaryLimit,
 } from '../../../services/network-modification-types';
-import { CurrentTreeNode } from '../../graph/tree-node.type';
 import { BranchInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
-import { LineModificationEditData } from '../network-modifications/line/modification/line-modification-type';
+import {
+    LineModificationDialogForm,
+    OperationalLimitsGroupDialogForm,
+    TemporaryLimitDialogForm,
+} from '../network-modifications/line/modification/line-modification-type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
@@ -154,7 +163,9 @@ export const getAllLimitsFormData = (
 /**
  * sanitizes limit names and filters out the empty temporary limits lines
  */
-export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]): OperationalLimitsGroup[] =>
+export const sanitizeLimitsGroups = (
+    limitsGroups: OperationalLimitsGroupDialogForm[]
+): OperationalLimitsGroupDialogForm[] =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
         id: baseData.name,
@@ -179,69 +190,56 @@ export const sanitizeLimitsGroups = (limitsGroups: OperationalLimitsGroup[]): Op
               },
     }));
 
-export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimit[]): TemporaryLimit[] =>
+export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitDialogForm[]): TemporaryLimitDialogForm[] =>
     temporaryLimitList
-        ?.filter((limit: TemporaryLimit) => limit?.name?.trim())
+        ?.filter((limit: TemporaryLimitDialogForm) => limit?.name?.trim())
         .map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
             name: sanitizeString(name) ?? '',
         })) || [];
 
-const findTemporaryLimit = (temporaryLimits: TemporaryLimit[], limit: TemporaryLimit) =>
-    temporaryLimits?.find((l) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration);
+const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitDialogForm[], limit: TemporaryLimit) =>
+    temporaryLimits?.find(
+        (l: TemporaryLimitDialogForm) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
+    );
 
 export const updateTemporaryLimits = (
-    modifiedTemporaryLimits: TemporaryLimit[], // from the form (ie network modification values)
+    limitsDialogForm: TemporaryLimitDialogForm[],
     temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
-    let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
+    let updatedTemporaryLimits = limitsDialogForm ?? [];
     //add temporary limits from from map server that are not in the form values
     temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
-        if (findTemporaryLimit(updatedTemporaryLimits, limit) === undefined) {
-            updatedTemporaryLimits?.push({
-                ...limit,
-            });
+        if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
+            updatedTemporaryLimits?.push(temporaryLimitToTemporaryLimitDialogForm(limit));
         }
     });
 
     //remove deleted temporary limits from current and previous modifications
-    updatedTemporaryLimits = updatedTemporaryLimits?.filter(
-        (limit: TemporaryLimit) =>
-            limit.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE &&
-            !(
-                (limit.modificationType === null ||
-                    limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY) &&
-                findTemporaryLimit(temporaryLimitsToModify, limit) === undefined
-            )
-    );
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter((limit: TemporaryLimitDialogForm) => !limit[DELETION_MARK]);
 
-    //update temporary limits values
-    updatedTemporaryLimits?.forEach((limit: TemporaryLimit) => {
-        if (limit.modificationType === null) {
-            limit.value = findTemporaryLimit(temporaryLimitsToModify, limit)?.value ?? null;
-        }
-    });
     return updatedTemporaryLimits;
 };
 
 /**
- * extract data loaded from the map server and merge it with local data in order to fill the operaitonal liits groups modification interface
+ * extract data loaded from the map server and merge it with local data
+ * in order to fill the operational limits groups modification interface
  */
-export const updateOpLimitsGroups = (
-    formBranchModification: LineModificationEditData,
+export const combineFormAndMapServerLimitsGroups = (
+    formBranchModification: LineModificationDialogForm,
     mapServerBranch: BranchInfos
-): OperationalLimitsGroup[] => {
-    let updatedOpLG: OperationalLimitsGroup[] = formBranchModification.limits.operationalLimitsGroups ?? [];
+): OperationalLimitsGroupDialogForm[] => {
+    let updatedOpLG: OperationalLimitsGroupDialogForm[] = formBranchModification.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
-    updatedOpLG.forEach((opLG: OperationalLimitsGroup) => {
+    updatedOpLG.forEach((opLG: OperationalLimitsGroupDialogForm) => {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
         if (equivalentFromMapServer !== undefined) {
             opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
-                formatTemporaryLimits(opLG.currentLimits.temporaryLimits),
+                opLG.currentLimits.temporaryLimits,
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
             );
         }
@@ -250,7 +248,7 @@ export const updateOpLimitsGroups = (
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
     mapServerBranch.currentLimits.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
-            (opLG: OperationalLimitsGroup) =>
+            (opLG: OperationalLimitsGroupDialogForm) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
         if (equivalentFromNetMod === undefined) {
@@ -262,88 +260,29 @@ export const updateOpLimitsGroups = (
                     id: currentLimit.id,
                     applicability: currentLimit.applicability,
                     permanentLimit: null,
-                    temporaryLimits: formatTemporaryLimits(currentLimit.temporaryLimits),
+                    temporaryLimits: formatToTemporaryLimitsDialogForm(currentLimit.temporaryLimits),
                 },
             });
         }
     });
 
-    //remove deleted operational limits groups
-    updatedOpLG = updatedOpLG?.filter(
-        (opLG: OperationalLimitsGroup) => opLG.modificationType !== TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
-    );
-
     return updatedOpLG;
 };
 
 export const addModificationTypeToTemporaryLimits = (
-    temporaryLimits: TemporaryLimit[],
-    temporaryLimitsToModify: TemporaryLimit[],
-    networkTemporaryLimits: TemporaryLimit[],
-    currentNode: CurrentTreeNode
+    formTemporaryLimits: TemporaryLimitDialogForm[]
 ): TemporaryLimit[] => {
-    const formattedTemporaryLimitsToModify = formatTemporaryLimits(temporaryLimitsToModify);
-    const formattedNetworkTemporaryLimits = formatTemporaryLimits(networkTemporaryLimits);
-    const updatedTemporaryLimits: TemporaryLimit[] = temporaryLimits.map((limit) => {
-        const limitWithSameName = findTemporaryLimit(formattedTemporaryLimitsToModify, limit);
-        if (limitWithSameName) {
-            const currentLimitWithSameName: TemporaryLimit | undefined = findTemporaryLimit(
-                formattedNetworkTemporaryLimits,
-                limitWithSameName
-            );
-            if (
-                (currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY &&
-                    isNodeBuilt(currentNode)) ||
-                currentLimitWithSameName?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-            ) {
-                return {
-                    ...limit,
-                    modificationType: currentLimitWithSameName.modificationType,
-                };
-            } else {
-                return limitWithSameName.value === limit.value
-                    ? {
-                          ...limit,
-                          modificationType: null,
-                      }
-                    : {
-                          ...limit,
-                          modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY,
-                      };
-            }
-        } else {
-            return {
-                ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD,
-            };
-        }
+    return formTemporaryLimits.map((limit: TemporaryLimitDialogForm) => {
+        return {
+            ...limit,
+            modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            // TODO : add deleted limits if they are tagged
+        };
     });
-    //add deleted limits
-    formattedTemporaryLimitsToModify?.forEach((limit) => {
-        if (!findTemporaryLimit(temporaryLimits, limit)) {
-            updatedTemporaryLimits.push({
-                ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
-            });
-        }
-    });
-    //add previously deleted limits
-    formattedNetworkTemporaryLimits?.forEach((limit) => {
-        if (
-            !findTemporaryLimit(updatedTemporaryLimits, limit) &&
-            limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
-        ) {
-            updatedTemporaryLimits.push({
-                ...limit,
-                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
-            });
-        }
-    });
-    return updatedTemporaryLimits;
 };
 
 export function addOperationTypeToSelectedOpLG(
-    selectedOpLG: string,
+    selectedOpLG: string | null,
     noSelectionString: string
 ): AttributeModification<string> | null {
     return selectedOpLG === noSelectionString
@@ -357,53 +296,54 @@ export function addOperationTypeToSelectedOpLG(
 /**
  * converts the limits groups into a modification limits group
  * ie mostly add the ADD, MODIFY, MODIFY_OR_ADD, DELETE and REPLACE tags to the data using a delta between the form and the network values
- * note : for now only ADD and MODIFY_OR_ADD are handled, the others have been disabled for various reasons
+ * note : for now only MODIFY_OR_ADD are handled, the others have been disabled for various reasons
  *
- * @param limitsGroups current data from the form
- * @param networkLine data of the line modified by the network modification
- * @param editData data from the existing network modification, if the user is editing a netmod already stored in database
- * @param currentNode
+ * @param limitsGroupsForm current data from the form
  */
 export const addModificationTypeToOpLimitsGroups = (
-    limitsGroups: OperationalLimitsGroup[],
-    networkLine: BranchInfos | null,
-    editData: LineModificationEditData | null | undefined,
-    currentNode: CurrentTreeNode
-) => {
-    let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
+    limitsGroupsForm: OperationalLimitsGroupDialogForm[]
+): OperationalLimitsGroup[] => {
+    let modificationLimitsGroupsForm: OperationalLimitsGroupDialogForm[] = sanitizeLimitsGroups(limitsGroupsForm);
 
-    modificationLimitsGroups = modificationLimitsGroups.map((formLimitsGroup: OperationalLimitsGroup) => {
+    return modificationLimitsGroupsForm.map((limitsGroupForm: OperationalLimitsGroupDialogForm) => {
         const modificationType: string = LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD;
-        const networkCurrentLimits = networkLine?.currentLimits.find(
-            (lineOpLimitGroup: CurrentLimits) =>
-                lineOpLimitGroup.id === formLimitsGroup.name &&
-                lineOpLimitGroup.applicability === formLimitsGroup.applicability
-        );
 
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
-            sanitizeLimitNames(formLimitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
-            networkCurrentLimits?.temporaryLimits ?? [],
-            editData?.operationalLimitsGroups?.find(
-                (editDataOpLimitGroup: OperationalLimitsGroup) =>
-                    editDataOpLimitGroup.id === formLimitsGroup.name &&
-                    editDataOpLimitGroup.applicability === formLimitsGroup.applicability
-            )?.currentLimits?.temporaryLimits ?? [],
-            currentNode
+            sanitizeLimitNames(limitsGroupForm[CURRENT_LIMITS]?.[TEMPORARY_LIMITS])
         );
-        let currentLimits = formLimitsGroup.currentLimits;
-        if (formLimitsGroup.currentLimits?.[PERMANENT_LIMIT] || temporaryLimits.length > 0) {
-            currentLimits.permanentLimit = formLimitsGroup.currentLimits?.[PERMANENT_LIMIT];
-            currentLimits.temporaryLimits = temporaryLimits;
-        }
+        const currentLimits: CurrentLimits = {
+            id: limitsGroupForm[CURRENT_LIMITS][ID],
+            applicability: limitsGroupForm[CURRENT_LIMITS]?.[APPLICABIlITY],
+            permanentLimit: limitsGroupForm[CURRENT_LIMITS]?.[PERMANENT_LIMIT] ?? null,
+            temporaryLimits: temporaryLimits ?? [],
+        };
 
         return {
-            id: formLimitsGroup.id,
-            name: formLimitsGroup.name,
-            applicability: formLimitsGroup.applicability,
+            id: limitsGroupForm.id,
+            name: limitsGroupForm.name,
+            applicability: limitsGroupForm.applicability,
             currentLimits: currentLimits,
             modificationType: modificationType,
         };
     });
+};
 
-    return modificationLimitsGroups;
+export const temporaryLimitToTemporaryLimitDialogForm = (temporaryLimit: TemporaryLimit): TemporaryLimitDialogForm => {
+    return {
+        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
+        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
+        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
+        [DELETION_MARK]: false,
+    };
+};
+
+export const temporaryLimitDialogFormToTemporaryLimit = (temporaryLimit: TemporaryLimitDialogForm): TemporaryLimit => {
+    return {
+        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
+        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
+        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
+        [MODIFICATION_TYPE]: temporaryLimit[DELETION_MARK]
+            ? TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
+            : TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
+    };
 };
