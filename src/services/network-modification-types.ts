@@ -538,7 +538,7 @@ export interface LineCreationInfo {
     properties: Property[] | null;
 }
 
-export interface LineModificationInfo {
+export interface LineModificationInfos {
     uuid?: string | null;
     studyUuid: string;
     equipmentId?: string;

@@ -35,7 +35,7 @@ import {
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfo,
-    LineModificationInfo,
+    LineModificationInfos,
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
@@ -859,7 +859,7 @@ export function modifyLine({
     p2MeasurementValidity,
     q2MeasurementValue,
     q2MeasurementValidity,
-}: LineModificationInfo) {
+}: LineModificationInfos) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
