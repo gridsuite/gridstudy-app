@@ -33,7 +33,7 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'RatedNominalPowerText',
         unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
+        settableToNone: true,
     },
     MINIMUM_ACTIVE_POWER: {
         id: FieldType.MINIMUM_ACTIVE_POWER,
@@ -97,14 +97,14 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'TransientReactanceForm',
         unit: OHM,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
+        settableToNone: true,
     },
     STEP_UP_TRANSFORMER_REACTANCE: {
         id: FieldType.STEP_UP_TRANSFORMER_REACTANCE,
         label: 'TransformerReactanceForm',
         unit: OHM,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
+        settableToNone: true,
     },
     Q_PERCENT: {
         id: FieldType.Q_PERCENT,
@@ -149,28 +149,28 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         id: FieldType.LOW_VOLTAGE_LIMIT,
         label: 'LowVoltageLimit',
         unit: KILO_VOLT,
-        settable_to_none: true,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     HIGH_VOLTAGE_LIMIT: {
         id: FieldType.HIGH_VOLTAGE_LIMIT,
         label: 'HighVoltageLimit',
         unit: KILO_VOLT,
-        settable_to_none: true,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
-        settable_to_none: true,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
-        settable_to_none: true,
+        settableToNone: true,
         dataType: DataType.DOUBLE,
     },
     ACTIVE_POWER: {
@@ -250,7 +250,7 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'RatedNominalPowerText',
         unit: MEGA_VOLT_AMPERE,
         dataType: DataType.DOUBLE,
-        settable_to_none: true,
+        settableToNone: true,
     },
     TARGET_V: {
         id: FieldType.TARGET_V,
@@ -304,13 +304,13 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_1,
         label: 'selectedOperationalLimitsGroup1',
         dataType: DataType.STRING,
-        settable_to_none: true,
+        settableToNone: true,
     },
     SELECTED_OPERATIONAL_LIMITS_GROUP_2: {
         id: FieldType.SELECTED_OPERATIONAL_LIMITS_GROUP_2,
         label: 'selectedOperationalLimitsGroup2',
         dataType: DataType.STRING,
-        settable_to_none: true,
+        settableToNone: true,
     },
 } as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 

@@ -22,7 +22,7 @@ export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
 };
 export const getUnsettable = (fieldName?: string | null) => {
-    return getFieldOption(fieldName)?.settable_to_none;
+    return getFieldOption(fieldName)?.settableToNone;
 };
 
 export const getFieldOption = (fieldName?: string | null): FieldOptionType | undefined => {

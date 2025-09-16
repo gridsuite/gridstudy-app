@@ -34,7 +34,7 @@ export type FieldOptionType = {
     dataType: DataType;
     // if settable_to_none is true it is possible to save an empty value which means "unset".
     // undefined means false ie. cannot be set to empty/null/none
-    settable_to_none?: boolean;
+    settableToNone?: boolean;
     values?: Option[];
     outputConverter?: (value: number) => number | undefined;
     inputConverter?: (value: number) => number | undefined;

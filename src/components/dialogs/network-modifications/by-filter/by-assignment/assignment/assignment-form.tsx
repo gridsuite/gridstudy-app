@@ -56,7 +56,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     }, [watchEditedField, equipmentFields]);
 
     const settable_to_none: boolean = useMemo(() => {
-        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.settable_to_none ?? false;
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.settableToNone ?? false;
     }, [watchEditedField, equipmentFields]);
 
     const watchPropertyName = useWatch({
