@@ -137,13 +137,13 @@ export default function FormulaSearchReplace() {
                             resultCount={searchResults.length}
                             resetSearch={() => performSearch('')}
                             placeholder="spreadsheet/global-model-edition/search"
-                            sx={{ width: 280 }}
+                            sx={{ width: 280, maxWidth: 280 }}
                         />
                         <Box sx={{ display: 'flex', gap: 1 }}>
                             <TextField
                                 size="small"
                                 sx={{ width: 280 }}
-                                label={intl.formatMessage({ id: 'spreadsheet/global-model-edition/replace' })}
+                                placeholder={intl.formatMessage({ id: 'spreadsheet/global-model-edition/replace' })}
                                 value={replace}
                                 onChange={(e) => setReplace(e.target.value)}
                             />

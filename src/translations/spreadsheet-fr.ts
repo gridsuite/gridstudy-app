@@ -137,9 +137,9 @@ const spreadsheetFr = {
     'spreadsheet/global-model-edition/update_confirmation_message': 'Modèle de tableur mis à jour',
     'spreadsheet/global-model-edition/update_error_message':
         'Une erreur est survenue lors de la mise à jour du modèle de tableur',
-    'spreadsheet/global-model-edition/search_replace_button': 'Chercher et remplacer',
-    'spreadsheet/global-model-edition/search': 'Rechercher',
-    'spreadsheet/global-model-edition/replace': 'Remplacer',
+    'spreadsheet/global-model-edition/search_replace_button': 'Chercher et remplacer dans formule',
+    'spreadsheet/global-model-edition/search': 'Rechercher dans formule',
+    'spreadsheet/global-model-edition/replace': 'Remplacer dans formule',
     'spreadsheet/global-model-edition/replace_next': 'Remplacer',
     'spreadsheet/global-model-edition/replace_all': 'Tout remplacer',
 

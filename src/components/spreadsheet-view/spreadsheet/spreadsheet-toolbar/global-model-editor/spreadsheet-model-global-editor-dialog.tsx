@@ -84,16 +84,16 @@ export function SpreadsheetModelGlobalEditorDialog({
 
     return (
         <CustomFormProvider validationSchema={columnsModelFormSchema} {...formMethods}>
-            <FormulaSearchProvider>
-                <ModificationDialog
-                    titleId={'spreadsheet/global-model-edition/edit'}
-                    open={open.value}
-                    onClose={onClose}
-                    onSave={onSave}
-                    onClear={onClear}
-                    PaperProps={{ sx: styles.dialogContent }}
-                    {...dialogProps}
-                >
+            <ModificationDialog
+                titleId={'spreadsheet/global-model-edition/edit'}
+                open={open.value}
+                onClose={onClose}
+                onSave={onSave}
+                onClear={onClear}
+                PaperProps={{ sx: styles.dialogContent }}
+                {...dialogProps}
+            >
+                <FormulaSearchProvider>
                     <Grid container direction="column">
                         <Grid item container justifyContent="flex-end" sx={{ my: 2 }}>
                             <FormulaSearchReplace />
@@ -102,8 +102,8 @@ export function SpreadsheetModelGlobalEditorDialog({
                             <SpreadsheetModelGlobalEditorTable />
                         </Grid>
                     </Grid>
-                </ModificationDialog>
-            </FormulaSearchProvider>
+                </FormulaSearchProvider>
+            </ModificationDialog>
         </CustomFormProvider>
     );
 }
