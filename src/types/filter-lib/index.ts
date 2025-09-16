@@ -10,6 +10,7 @@ import type { IdentifierListFilter } from './identifier-list-filter';
 import type { ExpertFilter } from './expert-filter';
 import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
+import type { FilterEquipmentType } from './filter';
 
 export * from './filter';
 export * from './identifier-list-filter';
@@ -19,7 +20,7 @@ export type Filter = IdentifierListFilter | ExpertFilter;
 
 export type IdentifiableAttributes = {
     id: string;
-    type: EQUIPMENT_TYPES;
+    type: FilterEquipmentType;
     distributionKey: number;
 };
 

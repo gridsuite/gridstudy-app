@@ -35,11 +35,11 @@ export type AbstractExpertRule = {
     operator?: OperatorType; // restricted support depending on the datatype
     // following fields depends on the implementing type but are always present in server implementation
     combinator?: CombinatorType;
-    field?: FieldType;
+    field?: ExpertFilterFieldType;
     rules?: ExpertRule[];
 };
 
-export enum FieldType {
+export enum ExpertFilterFieldType {
     ID = 'ID',
     NAME = 'NAME',
     NOMINAL_VOLTAGE = 'NOMINAL_VOLTAGE',

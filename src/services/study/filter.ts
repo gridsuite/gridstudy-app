@@ -8,8 +8,8 @@
 import { backendFetchJson, getRequestParamFromList } from '../utils';
 import type { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import type { ExpertFilter } from '../../types/filter-lib/expert-filter';
 import type { FilterEquipments, IdentifiableAttributes } from '../../types/filter-lib';
+import type { ExpertFilter } from '../../types/filter-lib/expert-filter';
 
 export async function evaluateJsonFilter(
     studyUuid: UUID,
