@@ -15,7 +15,6 @@ import { DiagramGridLayoutDto, DiagramLayoutDto } from 'components/grid-layout/d
 import { MAX_INT32 } from 'services/utils';
 import { saveDiagramGridLayout } from 'services/study/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { v4 } from 'uuid';
 
 interface UseSaveDiagramLayoutProps {
     layouts: Layouts;
@@ -63,14 +62,6 @@ const frontendToBackendDiagramGridLayout = (diagram: DiagramGridLayoutConfig): D
             diagramLayouts.push(transformedParam);
         }
     });
-
-    // get the map from gridLayoutById
-    const transformedMapDTO: DiagramLayoutDto = {
-        diagramUuid: v4() as UUID,
-        type: 'map',
-        diagramPositions: gridLayoutById['MapCard'],
-    };
-    diagramLayouts.push(transformedMapDTO);
 
     return {
         diagramLayouts: diagramLayouts,

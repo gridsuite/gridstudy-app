@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useMemo } from 'react';
 import { Layout, Layouts, ItemCallback, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
@@ -22,6 +22,9 @@ import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
 import { isThereTooManyOpenedNadDiagrams } from './cards/diagrams/diagram-utils';
+import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 const styles = {
     container: {
@@ -159,8 +162,14 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     const responsiveGridLayoutRef = useRef<any>(null);
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
+    const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
+    const dispatch = useDispatch();
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const { snackInfo } = useSnackMessage();
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
+
+    const { snackInfo, snackError } = useSnackMessage();
 
     // Blinking diagrams management
     const stopDiagramBlinking = useCallback((diagramUuid: UUID) => {
@@ -181,12 +190,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     );
 
     // Grid operations
-    const isMapCardAdded = () => {
-        return Object.values(layouts).some((breakpointLayouts) =>
-            breakpointLayouts.some((layout) => layout.i === 'MapCard')
-        );
-    };
-
     const addLayoutItem = useCallback((diagram: Diagram) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
@@ -206,13 +209,25 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         });
     }, []);
 
-    const onAddMapCard = useCallback(() => {
-        setLayouts((currentLayouts) => createLayoutItem('MapCard', currentLayouts));
-    }, []);
+    const loadingMapError = useMemo(() => {
+        return !currentNode || !currentRootNetworkUuid;
+    }, [currentNode, currentRootNetworkUuid]);
 
-    const handleRemoveMapCard = useCallback(() => {
-        removeLayoutItem('MapCard');
-    }, [removeLayoutItem]);
+    const onOpenMap = useCallback(() => {
+        if (loadingMapError) {
+            snackError({ messageId: 'MapCardNotAvailable' });
+            return;
+        }
+        dispatch(resetMapEquipment());
+        dispatch(setMapDataLoading(false));
+        dispatch(setReloadMapNeeded(true));
+        dispatch(setOpenMap(true));
+        setIsMapOpen(true);
+    }, [dispatch, loadingMapError, snackError]);
+
+    const handleCloseMap = useCallback(() => {
+        setIsMapOpen(false);
+    }, []);
 
     const {
         diagrams,
@@ -425,14 +440,13 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     // Debounce the layout save function to avoid excessive calls
     const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
-
     return (
         <Box sx={styles.container}>
             <GridLayoutToolbar
                 onLoad={handleLoadNad}
                 onSearch={showVoltageLevelDiagram}
                 onOpenNetworkAreaDiagram={showGrid}
-                onMap={!isMapCardAdded() ? onAddMapCard : undefined}
+                onMap={onOpenMap}
                 onLayoutSave={debouncedGridLayoutSave}
             />
             <ResponsiveGridLayout
@@ -487,17 +501,19 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                         />
                     );
                 })}
-                {isMapCardAdded() && (
-                    <MapCard
-                        key={'MapCard'}
-                        studyUuid={studyUuid}
-                        onClose={handleRemoveMapCard}
-                        errorMessage={globalError}
-                        showInSpreadsheet={showInSpreadsheet}
-                        onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
-                    />
-                )}
             </ResponsiveGridLayout>
+            {isMapOpen && currentRootNetworkUuid && currentNode && (
+                <MapCard
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    networkVisuParams={networkVisuParams}
+                    onClose={handleCloseMap}
+                    errorMessage={'MapCardNotAvailable'}
+                    showInSpreadsheet={showInSpreadsheet}
+                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
+                />
+            )}
         </Box>
     );
 }
