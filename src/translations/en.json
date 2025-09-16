@@ -478,6 +478,7 @@
     "LossFactor": "Loss Factor",
     "StopComputation": "Stop computation",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
+    "launchComputationConfirmQuestion": "You are about to start a computation although a change to the computation parameters is in progress.",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1243,6 +1244,7 @@
     "marginalCost": "Startup cost",
 
     "dialog.button.leave": "Leave",
+    "dialog.button.launch": "Launch",
 
     "Connect": "Reconnect ?",
     "connected1": "Connected 1",
