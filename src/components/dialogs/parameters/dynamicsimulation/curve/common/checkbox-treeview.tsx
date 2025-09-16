@@ -224,7 +224,6 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             ));
         };
 
-        // @ts-expect-error: `sx` not the same because @mui/x-tree-view v7 use material-ui v7 type which isn't material-ui v5 file...
         return <SimpleTreeView sx={sx}>{renderItems(items)}</SimpleTreeView>;
     }
 );
