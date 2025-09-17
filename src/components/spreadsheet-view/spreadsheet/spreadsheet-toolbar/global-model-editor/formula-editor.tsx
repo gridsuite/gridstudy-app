@@ -60,17 +60,44 @@ export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps
         if (!searchTerm) {
             return formula;
         }
+
         const escaped = escapeRegExp(searchTerm);
-        const parts = formula.split(new RegExp(`(${escaped})`, 'gi'));
-        return parts.map((part, idx) =>
-            part.toLowerCase() === searchTerm.toLowerCase() ? (
-                <span key={idx} style={{ backgroundColor: theme.searchedText.highlightColor }}>
-                    {part}
+        const regex = new RegExp(escaped, 'gi');
+        const nodes: (string | JSX.Element)[] = [];
+        let lastIndex = 0;
+        let match: RegExpExecArray | null;
+        let occurrence = 0;
+
+        while ((match = regex.exec(formula)) !== null) {
+            const matchIndex = match.index;
+            const matchText = match[0];
+
+            if (matchIndex > lastIndex) {
+                nodes.push(formula.slice(lastIndex, matchIndex));
+            }
+
+            nodes.push(
+                <span
+                    key={`${matchIndex}-${occurrence}`}
+                    style={{ backgroundColor: theme.searchedText.highlightColor }}
+                >
+                    {matchText}
                 </span>
-            ) : (
-                part
-            )
-        );
+            );
+
+            lastIndex = matchIndex + matchText.length;
+            occurrence += 1;
+
+            if (matchText.length === 0) {
+                regex.lastIndex += 1;
+            }
+        }
+
+        if (lastIndex < formula.length) {
+            nodes.push(formula.slice(lastIndex));
+        }
+
+        return nodes.length > 0 ? nodes : formula;
     }, [searchTerm, theme.searchedText.highlightColor, value]);
 
     return (

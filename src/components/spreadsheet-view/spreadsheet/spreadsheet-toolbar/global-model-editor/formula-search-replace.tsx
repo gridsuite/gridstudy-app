@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import FindReplaceIcon from '@mui/icons-material/FindReplace';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -37,7 +37,35 @@ export default function FormulaSearchReplace() {
         setCurrentResultIndex(-1);
     }, [setCurrentResultIndex, setReplace, setSearchResults, setSearchTerm]);
 
-    const replaceInFormula = (formula: string) => formula.split(searchTerm).join(replace);
+    const escapeRegExp = useCallback((value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), []);
+
+    const escapedSearchTerm = useMemo(() => {
+        if (!searchTerm) {
+            return '';
+        }
+
+        return escapeRegExp(searchTerm);
+    }, [escapeRegExp, searchTerm]);
+
+    const searchRegex = useMemo(() => {
+        if (!escapedSearchTerm) {
+            return null;
+        }
+
+        return new RegExp(escapedSearchTerm, 'i');
+    }, [escapedSearchTerm]);
+
+    const replaceInFormula = useCallback(
+        (formula: string) => {
+            if (!escapedSearchTerm) {
+                return formula;
+            }
+
+            const regex = new RegExp(escapedSearchTerm, 'gi');
+            return formula.replace(regex, replace);
+        },
+        [escapedSearchTerm, replace]
+    );
 
     const focusFormula = useCallback(
         (rowIndex: number) => {
@@ -122,7 +150,7 @@ export default function FormulaSearchReplace() {
         const columns = getValues(COLUMNS_MODEL) as any[];
         columns.forEach((column, idx) => {
             const formula = column[COLUMN_FORMULA] || '';
-            if (searchTerm && formula.includes(searchTerm)) {
+            if (searchRegex?.test(formula)) {
                 const newFormula = replaceInFormula(formula);
                 setValue(`${COLUMNS_MODEL}[${idx}].${COLUMN_FORMULA}`, newFormula, { shouldDirty: true });
             }
