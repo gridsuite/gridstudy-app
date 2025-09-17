@@ -308,15 +308,18 @@ const LineModificationDialog = ({
                     .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            reset((formValues: LineModificationEditData) => ({
-                                ...formValues,
-                                ...{
-                                    [LIMITS]: {
-                                        [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, line),
+                            reset(
+                                (formValues: LineModificationEditData) => ({
+                                    ...formValues,
+                                    ...{
+                                        [LIMITS]: {
+                                            [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, line),
+                                        },
                                     },
-                                },
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
-                            }));
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
