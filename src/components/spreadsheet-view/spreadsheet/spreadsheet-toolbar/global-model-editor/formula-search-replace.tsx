@@ -7,6 +7,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import FindReplaceIcon from '@mui/icons-material/FindReplace';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useIntl } from 'react-intl';
 import { useFormContext } from 'react-hook-form';
 import { useButtonWithTooltip } from '../../../../utils/inputs/input-hooks';
@@ -23,10 +24,18 @@ export default function FormulaSearchReplace() {
     const [open, setOpen] = useState(false);
     const [replace, setReplace] = useState('');
 
-    const handleToggle = () => {
-        setOpen((prev) => !prev);
+    const handleOpen = useCallback(() => {
+        setOpen(true);
         setCurrentResultIndex(-1);
-    };
+    }, [setCurrentResultIndex]);
+
+    const handleClose = useCallback(() => {
+        setOpen(false);
+        setReplace('');
+        setSearchTerm('');
+        setSearchResults([]);
+        setCurrentResultIndex(-1);
+    }, [setCurrentResultIndex, setReplace, setSearchResults, setSearchTerm]);
 
     const replaceInFormula = (formula: string) => formula.split(searchTerm).join(replace);
 
@@ -96,7 +105,7 @@ export default function FormulaSearchReplace() {
     );
 
     const handleReplaceNext = () => {
-        if (searchResults.length === 0 || currentResultIndex < 0) {
+        if (!searchTerm || !replace || searchResults.length === 0 || currentResultIndex < 0) {
             return;
         }
         const rowIndex = searchResults[currentResultIndex];
@@ -108,6 +117,9 @@ export default function FormulaSearchReplace() {
     };
 
     const handleReplaceAll = () => {
+        if (!searchTerm || !replace) {
+            return;
+        }
         const columns = getValues(COLUMNS_MODEL) as any[];
         columns.forEach((column, idx) => {
             const formula = column[COLUMN_FORMULA] || '';
@@ -120,16 +132,22 @@ export default function FormulaSearchReplace() {
     };
 
     const searchReplaceButton = useButtonWithTooltip({
-        handleClick: handleToggle,
+        handleClick: handleOpen,
         label: 'spreadsheet/global-model-edition/search_replace_button',
         icon: <FindReplaceIcon />,
     });
-    const inputRef = useRef<HTMLInputElement>(null);
+
+    const closeSearchButton = useButtonWithTooltip({
+        handleClick: handleClose,
+        label: 'spreadsheet/global-model-edition/hide_search_button',
+        icon: <ChevronLeftIcon />,
+    });
+    const inputRef = useRef<HTMLDivElement>(null);
 
     return (
-        <>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1 }}>
-                {open && (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', py: 1 }}>
+            {open ? (
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         <QuickSearch
                             currentResultIndex={currentResultIndex}
@@ -149,17 +167,19 @@ export default function FormulaSearchReplace() {
                                 value={replace}
                                 onChange={(e) => setReplace(e.target.value)}
                             />
-                            <Button onClick={handleReplaceNext} disabled={!searchTerm}>
+                            <Button onClick={handleReplaceNext} disabled={!searchTerm || !replace}>
                                 {intl.formatMessage({ id: 'spreadsheet/global-model-edition/replace' })}
                             </Button>
-                            <Button onClick={handleReplaceAll} disabled={!searchTerm}>
+                            <Button onClick={handleReplaceAll} disabled={!searchTerm || !replace}>
                                 {intl.formatMessage({ id: 'spreadsheet/global-model-edition/replace_all' })}
                             </Button>
                         </Box>
                     </Box>
-                )}
-                {searchReplaceButton}
-            </Box>
-        </>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>{closeSearchButton}</Box>
+                </Box>
+            ) : (
+                searchReplaceButton
+            )}
+        </Box>
     );
 }
