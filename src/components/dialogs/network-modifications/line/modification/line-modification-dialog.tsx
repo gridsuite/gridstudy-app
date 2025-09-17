@@ -101,7 +101,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LineModificationDialogForm } from './line-modification-type';
+import { LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
 
@@ -222,7 +222,7 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationDialogForm) => {
+        (line: LineModificationFormInfos) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
@@ -234,7 +234,7 @@ const LineModificationDialog = ({
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid ?? '',
                 lineId: selectedId,
-                equipmentName: toModificationOperation(sanitizeString(line[EQUIPMENT_NAME]) ?? ''),
+                lineName: toModificationOperation(sanitizeString(line[EQUIPMENT_NAME]) ?? ''),
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
@@ -310,7 +310,7 @@ const LineModificationDialog = ({
                     .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            reset((formValues: LineModificationDialogForm) => ({
+                            reset((formValues: LineModificationFormInfos) => ({
                                 ...formValues,
                                 ...{
                                     [LIMITS]: {
@@ -343,7 +343,7 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors: FieldErrors<LineModificationDialogForm>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormInfos>) => {
         let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);

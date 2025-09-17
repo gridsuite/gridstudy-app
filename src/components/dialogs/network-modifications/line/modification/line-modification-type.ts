@@ -9,7 +9,7 @@ import { UUID } from 'crypto';
 import { OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import { Property } from '../../common/properties/property-utils';
 
-export interface LineModificationDialogForm {
+export interface LineModificationFormInfos {
     equipmentId?: string;
     equipmentName?: string;
     studyUuid: string;
