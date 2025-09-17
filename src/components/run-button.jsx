@@ -21,6 +21,9 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     const isDirtyComputationParameters = useSelector((state) => state.isDirtyComputationParameters);
     const [isLaunchingPopupOpen, setIsLaunchingPopupOpen] = useState(false);
 
+    // a transient state which is used only for a run with popup dialog
+    const [runWithDebug, setRunWithDebug] = useState(false);
+
     const runnablesText = useMemo(
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
         [intl, runnables, activeRunnables]
@@ -81,22 +84,27 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         return getRunningStatus() === RunningStatus.RUNNING;
     }
 
-    const attemptStartComputation = useCallback(() => {
-        if (isDirtyComputationParameters) {
-            setIsLaunchingPopupOpen(true);
-        } else {
-            runnables[selectedRunnable].startComputation();
-        }
-    }, [isDirtyComputationParameters, runnables, selectedRunnable]);
+    const attemptStartComputation = useCallback(
+        (debug) => {
+            if (isDirtyComputationParameters) {
+                setIsLaunchingPopupOpen(true);
+                setRunWithDebug(debug);
+            } else {
+                runnables[selectedRunnable].startComputation(debug);
+            }
+        },
+        [isDirtyComputationParameters, runnables, selectedRunnable]
+    );
 
     const handleLaunchingPopupClose = useCallback(() => {
         setIsLaunchingPopupOpen(false);
+        setRunWithDebug(false);
     }, []);
 
     const handleLaunchingPopup = useCallback(() => {
         setIsLaunchingPopupOpen(false);
-        runnables[selectedRunnable].startComputation();
-    }, [runnables, selectedRunnable]);
+        runnables[selectedRunnable].startComputation(runWithDebug);
+    }, [runnables, selectedRunnable, runWithDebug]);
 
     return (
         <>
