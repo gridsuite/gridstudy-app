@@ -98,7 +98,6 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
 
     const handleLaunchingPopupClose = useCallback(() => {
         setIsLaunchingPopupOpen(false);
-        setRunWithDebug(false);
     }, []);
 
     const handleLaunchingPopup = useCallback(() => {
