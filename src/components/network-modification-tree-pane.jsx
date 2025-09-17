@@ -7,17 +7,17 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+    deletedOrRenamedNodes,
+    networkModificationHandleSubtree,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
-    networkModificationHandleSubtree,
-    setNodeSelectionForCopy,
-    resetLogsFilter,
     reorderNetworkModificationTreeNodes,
-    deletedOrRenamedNodes,
+    resetLogsFilter,
     resetLogsPagination,
+    setNodeSelectionForCopy,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -29,20 +29,21 @@ import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
+    createNodeSequence,
     createTreeNode,
     cutSubtree,
     cutTreeNode,
-    stashSubtree,
-    stashTreeNode,
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
-    createNodeSequence,
+    stashSubtree,
+    stashTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
+import useExportSubscription from '../hooks/use-export-subscription.js';
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
@@ -122,6 +123,12 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
     nodeSelectionForCopyRef.current = selectionForCopy;
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
+    const { subscribeExport, handleExportNotification } = useExportSubscription({
+        studyUuid: studyUuid,
+        nodeUuid: currentNode?.id,
+        rootNetworkUuid: currentRootNetworkUuid,
+    });
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -311,6 +318,9 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
                 ) {
                     resetNodeClipboard();
                 }
+            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NETWORK_EXPORT_SUCCEEDED) {
+                console.log('Export notification studyUpdatedForce', studyUpdatedForce);
+                handleExportNotification(studyUpdatedForce.eventData.headers);
             }
         }
     }, [
@@ -324,6 +334,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
         currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
+        handleExportNotification,
     ]);
 
     const handleCreateNode = useCallback(
@@ -461,7 +472,8 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
-    const handleClickExportNodeNetwork = (url) => {
+    const handleClickExportNodeNetwork = (url, selectedFormat, fileName) => {
+        subscribeExport(selectedFormat, fileName);
         window.open(url, DownloadIframe);
         setOpenExportDialog(false);
     };
