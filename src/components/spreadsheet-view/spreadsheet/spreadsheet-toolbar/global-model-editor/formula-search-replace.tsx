@@ -46,10 +46,9 @@ export default function FormulaSearchReplace() {
             const fieldName = `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_FORMULA}`;
             setFocus(fieldName);
             setTimeout(() => {
-                const input = document.querySelector(`textarea[name="${fieldName}"], input[name="${fieldName}"]`) as
-                    | HTMLInputElement
-                    | HTMLTextAreaElement
-                    | null;
+                const input = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+                    `textarea[name="${fieldName}"], input[name="${fieldName}"]`
+                );
                 if (input && searchTerm) {
                     const index = formula.toLowerCase().indexOf(searchTerm.toLowerCase());
                     if (index >= 0) {
