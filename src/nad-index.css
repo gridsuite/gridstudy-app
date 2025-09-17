@@ -276,6 +276,9 @@ g.nad-disconnected > g.nad-disconnected {
     z-index: 99999;
     border: 2px solid #90929477;
 }
+.nad-busnode-highlight {
+    transform: scale(1.12);
+}
 :is(.nad-zoom-0) .nad-busnode-highlight {
     transform: scale(1.12);
 }
