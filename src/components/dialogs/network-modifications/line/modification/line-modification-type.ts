@@ -10,7 +10,6 @@ import { OperationalLimitsGroup } from '../../../../../services/network-modifica
 import { Property } from '../../common/properties/property-utils';
 
 export interface LineModificationDialogForm {
-    uuid?: string;
     equipmentId?: string;
     equipmentName?: string;
     studyUuid: string;
