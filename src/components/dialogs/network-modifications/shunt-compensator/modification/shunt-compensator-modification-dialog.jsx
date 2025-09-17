@@ -181,10 +181,13 @@ const ShuntCompensatorModificationDialog = ({
                             } else {
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
-                                reset((formValues) => ({
-                                    ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
-                                }));
+                                reset(
+                                    (formValues) => ({
+                                        ...formValues,
+                                        [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
+                                    }),
+                                    { keepDirty: true }
+                                );
                             }
                         }
                         setLoading(false);
