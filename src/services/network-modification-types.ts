@@ -543,7 +543,6 @@ export interface LineModificationInfos {
     studyUuid: string;
     equipmentId?: string;
     equipmentName?: AttributeModification<string> | null;
-    lineName?: AttributeModification<string> | null;
     nodeUuid: UUID;
     modificationUuid: string;
     lineId: string;

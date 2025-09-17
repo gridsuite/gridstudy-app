@@ -828,7 +828,7 @@ export function modifyLine({
     nodeUuid,
     modificationUuid,
     lineId,
-    lineName,
+    equipmentName,
     r,
     x,
     g1,
@@ -878,7 +878,7 @@ export function modifyLine({
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
             equipmentId: lineId,
-            equipmentName: lineName,
+            equipmentName: equipmentName,
             r: toModificationOperation(r),
             x: toModificationOperation(x),
             g1: toModificationOperation(g1),
