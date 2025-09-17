@@ -97,8 +97,8 @@ const RatioTapChangerPane = ({
 
     // we want to fill the empty fields with the previous values when 'on load' is enabled
     const fillRatioTapChangerRegulationAttributesWithPreviousValues = useCallback(
-        (newValue) => {
-            if (newValue === true) {
+        (newOnLoad) => {
+            if (newOnLoad === true) {
                 const curRatioTapChanger = getValues(id);
 
                 if (curRatioTapChanger[REGULATION_MODE] === null) {
@@ -118,7 +118,7 @@ const RatioTapChangerPane = ({
                 }
             }
         },
-        [id, previousValues, regulationType, setValue, getValues, intl]
+        [id, previousValues, setValue, getValues]
     );
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
