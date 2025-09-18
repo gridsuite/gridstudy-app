@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { Box, Grid } from '@mui/material';
-import { Theme, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { ReactNode } from 'react';
 
 const styles = {
-    filler: (theme: Theme) => ({
+    filler: (theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.formFiller.background,
     }),
-};
+} as const satisfies MuiStyles;
 
 interface FormFillerProps {
     size?: number;

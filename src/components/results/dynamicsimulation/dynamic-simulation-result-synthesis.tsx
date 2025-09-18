@@ -17,7 +17,7 @@ import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import { AppState } from '../../../redux/reducer';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { dynamicSimulationResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
@@ -26,7 +26,7 @@ const styles = {
     loader: {
         height: '4px',
     },
-};
+} as const satisfies MuiStyles;
 
 const defaultColDef = {
     filter: true,
