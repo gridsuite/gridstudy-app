@@ -119,15 +119,11 @@ export default function AddSpreadsheetsFromCollectionDialog({
             options={[
                 {
                     id: SpreadsheetCollectionImportMode.REPLACE,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
                 },
                 {
                     id: SpreadsheetCollectionImportMode.APPEND,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
                 },
             ]}
         />
