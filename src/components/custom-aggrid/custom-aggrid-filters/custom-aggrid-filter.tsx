@@ -6,6 +6,7 @@
  */
 import React, { ComponentType, MouseEvent, useMemo, useState } from 'react';
 import { Popover } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { useCustomAggridFilter } from './hooks/use-custom-aggrid-filter';
 import { CustomAggridAutocompleteFilterParams } from './custom-aggrid-autocomplete-filter';
@@ -19,7 +20,7 @@ const styles = {
     autoCompleteInput: {
         width: '30%',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomAggridFilterWrapperParams<F extends CustomAggridFilterParams> {
     filterComponent: ComponentType<F>;

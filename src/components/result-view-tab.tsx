@@ -26,7 +26,7 @@ import { useSelector } from 'react-redux';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
-import { usePrevious, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles, usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { IService } from './result-view-tab.type';
 import { CurrentTreeNode } from './graph/tree-node.type';
@@ -43,7 +43,7 @@ const styles = {
         flexDirection: 'column',
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 interface IResultViewTabProps {
     studyUuid: UUID;

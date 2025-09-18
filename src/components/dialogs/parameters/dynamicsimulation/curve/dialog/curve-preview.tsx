@@ -7,8 +7,8 @@
 
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Box, Typography, Theme } from '@mui/material';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { Box, Grid, Typography } from '@mui/material';
+import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -19,10 +19,10 @@ const styles = {
         width: 'auto',
         height: '100%',
     },
-    h6: (theme: Theme) => ({
+    h6: (theme) => ({
         marginBottom: theme.spacing(2),
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface Curve {
     equipmentType: EQUIPMENT_TYPES;

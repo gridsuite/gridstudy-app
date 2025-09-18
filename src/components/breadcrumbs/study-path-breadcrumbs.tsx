@@ -7,6 +7,7 @@
 
 import { MoreHoriz } from '@mui/icons-material';
 import { Box, Breadcrumbs as MuiBreadcrumbs, Tooltip } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CurrentTreeNode } from '../graph/tree-node.type';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
@@ -21,7 +22,7 @@ const styles = {
         alignItems: 'center',
         flexWrap: 'nowrap',
     },
-};
+} as const satisfies MuiStyles;
 
 export interface StudyPathBreadcrumbsProps {
     studyName: string | undefined;

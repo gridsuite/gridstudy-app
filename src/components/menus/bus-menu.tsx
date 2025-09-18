@@ -22,7 +22,13 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { ComputingType, CustomMenuItem, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ComputingType,
+    CustomMenuItem,
+    type EquipmentType,
+    type MuiStyles,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 
@@ -51,7 +57,7 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
 
 type EquipmentInfo = {
     id: string;

@@ -5,16 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Box from '@mui/material/Box';
-import { mergeSx, OverflowableText } from '@gridsuite/commons-ui';
-import IconButton from '@mui/material/IconButton';
+import { Box, IconButton, Typography } from '@mui/material';
+import { mergeSx, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme, Typography } from '@mui/material';
 
 export const BLINK_LENGTH_MS = 1800;
 
 const styles = {
-    header: (theme: Theme) => ({
+    header: (theme) => ({
         paddingLeft: theme.spacing(1),
         display: 'flex',
         alignItems: 'center',
@@ -26,7 +24,7 @@ const styles = {
         borderRadius: theme.spacing(2) + ' ' + theme.spacing(2) + ' 0 0',
         cursor: 'grab',
     }),
-    blink: (theme: Theme) => ({
+    blink: (theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
         '@keyframes diagramHeaderBlinkAnimation': {
             // This adds a global css rule, so we keep the rule's name specific.
@@ -41,7 +39,7 @@ const styles = {
     tooltip: {
         maxWidth: '720px',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomCardHeaderProps {
     title?: React.ReactNode;

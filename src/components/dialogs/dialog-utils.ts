@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FilledTextFieldProps, StandardTextFieldProps, Theme } from '@mui/material';
+import { FilledTextFieldProps, StandardTextFieldProps } from '@mui/material';
 import {
     AMPERE,
     KILO_AMPERE,
@@ -15,6 +15,7 @@ import {
     MEGA_VOLT_AMPERE,
     MEGA_WATT,
     MICRO_SIEMENS,
+    type MuiStyles,
     OHM,
     PERCENTAGE,
     SIEMENS,
@@ -29,12 +30,12 @@ export const styles = {
         fontSize: 18,
         maxWidth: 'none',
     },
-    button: (theme: Theme) => ({
+    button: (theme) => ({
         justifyContent: 'flex-start',
         fontSize: 'small',
         marginTop: theme.spacing(1),
     }),
-    paddingButton: (theme: Theme) => ({
+    paddingButton: (theme) => ({
         paddingLeft: theme.spacing(2),
     }),
     formDirectoryElements1: {
@@ -47,7 +48,7 @@ export const styles = {
         borderRadius: '4px',
         overflow: 'hidden',
     },
-    formDirectoryElementsError: (theme: Theme) => ({
+    formDirectoryElementsError: (theme) => ({
         borderColor: theme.palette.error.main,
     }),
     formDirectoryElements2: {
@@ -65,7 +66,7 @@ export const styles = {
     addDirectoryElements: {
         marginTop: '-5px',
     },
-};
+} as const satisfies MuiStyles;
 
 export const MicroSusceptanceAdornment = {
     position: 'end',
