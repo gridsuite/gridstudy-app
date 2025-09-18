@@ -6,17 +6,14 @@
  */
 import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import {
-    Button,
-    Box,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Theme,
-} from '@mui/material';
-import { CancelButton, CheckBoxList, useModificationLabelComputer, useSnackMessage } from '@gridsuite/commons-ui';
+    CancelButton,
+    CheckBoxList,
+    type MuiStyles,
+    useModificationLabelComputer,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useSelector } from 'react-redux';
@@ -25,27 +22,27 @@ import { NetworkModificationMetadata } from 'components/graph/menus/network-modi
 import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {
-    text: (theme: Theme) => ({
+    text: (theme) => ({
         padding: theme.spacing(1),
     }),
-    listContainer: (theme: Theme) => ({
+    listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    selectAll: (theme: Theme) => ({
+    selectAll: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(3),
         paddingBottom: theme.spacing(1),
     }),
-    list: (theme: Theme) => ({
+    list: (theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
     }),
-};
+} as const satisfies MuiStyles;
 
 interface RestoreModificationDialogProps {
     open: boolean;
