@@ -6,7 +6,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid, type MuiStyles } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
@@ -45,24 +45,25 @@ const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string):
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
-const chipStyle = (severity: string, severityFilter: string[], theme: Theme) => ({
-    backgroundColor: severityFilter.includes(severity)
-        ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
-        : theme.severityChip.disabledColor,
-    cursor: 'pointer',
-    border: `1px solid ${theme.palette.divider}`,
-    '&:hover': {
-        backgroundColor: alpha(REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode, 0.5),
-    },
-    '& .MuiChip-deleteIcon': {
-        color: theme.palette.text.primary,
-        fontSize: '1rem',
-    },
-    '& .MuiChip-deleteIcon:hover': {
-        color: theme.palette.text.primary,
-    },
-    padding: 0.5,
-});
+const chipStyle = (severity: string, severityFilter: string[], theme: Theme) =>
+    ({
+        backgroundColor: severityFilter.includes(severity)
+            ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
+            : theme.severityChip.disabledColor,
+        cursor: 'pointer',
+        border: `1px solid ${theme.palette.divider}`,
+        '&:hover': {
+            backgroundColor: alpha(REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode, 0.5),
+        },
+        '& .MuiChip-deleteIcon': {
+            color: theme.palette.text.primary,
+            fontSize: '1rem',
+        },
+        '& .MuiChip-deleteIcon:hover': {
+            color: theme.palette.text.primary,
+        },
+        padding: 0.5,
+    }) as const satisfies SxStyle;
 
 const styles = {
     chipContainer: (theme) => ({
