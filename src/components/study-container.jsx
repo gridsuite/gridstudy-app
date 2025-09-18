@@ -15,7 +15,6 @@ import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     openStudy,
-    resetEquipments,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
@@ -29,7 +28,7 @@ import { fetchRootNetworks } from 'services/root-network';
 import WaitingLoader from './utils/waiting-loader';
 import { NotificationsUrlKeys, useIntlRef, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt, isNodeEdited, isSameNode } from './graph/util/model-functions';
+import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
