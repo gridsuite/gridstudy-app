@@ -8,7 +8,7 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -34,7 +34,7 @@ import { useParameterState } from 'components/dialogs/parameters/use-parameters-
 
 interface BusMenuProps {
     busId: string;
-    handleRunShortcircuitAnalysis: (busId: string) => void;
+    handleRunShortcircuitAnalysis: (busId: string, debug: boolean) => void;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
         equipmentType: EquipmentType,
@@ -111,10 +111,13 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const handleClickRunShortcircuitAnalysis = useCallback(() => {
-        onClose();
-        handleRunShortcircuitAnalysis(busId);
-    }, [busId, onClose, handleRunShortcircuitAnalysis]);
+    const handleClickRunShortcircuitAnalysis = useCallback(
+        (event: ReactMouseEvent<HTMLLIElement>) => {
+            onClose();
+            handleRunShortcircuitAnalysis(busId, event.ctrlKey);
+        },
+        [busId, onClose, handleRunShortcircuitAnalysis]
+    );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
         (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {

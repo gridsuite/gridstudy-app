@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { Box, Button, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
-import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
+import { Search, Public, Upload } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
@@ -84,9 +84,9 @@ export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
                     </ToggleButtonGroup>
                 </Box>
                 <Box>
-                    <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
-                        <Button startIcon={<SaveOutlined />} sx={{ textTransform: 'uppercase' }} onClick={onLayoutSave}>
-                            <FormattedMessage id="SaveGridLayout" />
+                    <Tooltip title={<FormattedMessage id="StoreButtonTooltip" />}>
+                        <Button onClick={onLayoutSave}>
+                            <FormattedMessage id="StoreDiagramLayout" />
                         </Button>
                     </Tooltip>
                 </Box>

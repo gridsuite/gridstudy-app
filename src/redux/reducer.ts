@@ -165,6 +165,7 @@ import {
     SET_COMPUTING_STATUS,
     SET_COMPUTING_STATUS_INFOS,
     SET_DIAGRAM_GRID_LAYOUT,
+    SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -183,6 +184,7 @@ import {
     type SetComputingStatusAction,
     type SetComputingStatusParametersAction,
     type SetDiagramGridLayoutAction,
+    type SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
     type SetModificationsDrawerOpenAction,
     type SetModificationsInProgressAction,
@@ -553,10 +555,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
-
     appTabIndex: number;
     attemptedLeaveParametersTabIndex: number | null;
-
+    isDirtyComputationParameters: boolean;
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -719,6 +720,7 @@ const initialState: AppState = {
     syncEnabled: false,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
+    isDirtyComputationParameters: false,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -957,6 +959,9 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
         state.attemptedLeaveParametersTabIndex = null;
+    });
+    builder.addCase(SET_DIRTY_COMPUTATION_PARAMETERS, (state, action: SetDirtyComputationParametersAction) => {
+        state.isDirtyComputationParameters = action.isDirty;
     });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];

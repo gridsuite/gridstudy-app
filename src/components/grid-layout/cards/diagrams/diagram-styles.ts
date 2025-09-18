@@ -99,6 +99,10 @@ export const styles = {
         '& .nad-text-nodes': {
             display: 'none',
         },
+        '& .nad-busnode-highlight': {
+            filter: 'unset !important',
+            transform: 'unset !important',
+        },
     },
     paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,

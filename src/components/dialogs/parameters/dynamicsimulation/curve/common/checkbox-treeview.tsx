@@ -7,8 +7,7 @@
 
 import * as React from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
-import { alpha, Checkbox, useTheme } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { alpha, Checkbox, styled, useTheme } from '@mui/material';
 import { SimpleTreeView, TreeItem, treeItemClasses } from '@mui/x-tree-view';
 import { type SxStyle } from '@gridsuite/commons-ui';
 import { ModelVariable } from '../../dynamic-simulation.type';
@@ -64,7 +63,7 @@ interface ItemState {
 }
 
 const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProps>(
-    ({ data: items, checkAll, onSelectionChanged, getLabel, ...rest }, ref) => {
+    ({ data: items, checkAll, onSelectionChanged, getLabel, sx }, ref) => {
         const initialItemStates = useMemo(() => {
             return items.map((elem) => ({
                 id: elem.id,
@@ -226,7 +225,7 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             ));
         };
 
-        return <SimpleTreeView {...rest}>{renderItems(items)}</SimpleTreeView>;
+        return <SimpleTreeView sx={sx}>{renderItems(items)}</SimpleTreeView>;
     }
 );
 
