@@ -97,7 +97,6 @@ export const FIELD_OPTIONS: Record<string, FieldOptionType> = {
         label: 'TransientReactanceForm',
         unit: OHM,
         dataType: DataType.DOUBLE,
-        settableToNone: true,
     },
     STEP_UP_TRANSFORMER_REACTANCE: {
         id: FieldType.STEP_UP_TRANSFORMER_REACTANCE,
