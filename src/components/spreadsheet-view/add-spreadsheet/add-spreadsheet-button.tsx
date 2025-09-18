@@ -6,9 +6,9 @@
  */
 
 import { useCallback, useState } from 'react';
-import { Button, type ButtonProps, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
+import { Button, type ButtonProps, Menu, MenuItem, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
@@ -22,11 +22,11 @@ export type AddSpreadsheetButtonProps = {
 };
 
 const styles = {
-    addButton: (theme: Theme) => ({
+    addButton: (theme) => ({
         color: theme.palette.primary.main,
         minWidth: '100%',
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface SpreadsheetOption {
     id: string;

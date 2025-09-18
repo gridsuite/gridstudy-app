@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { Select, MenuItem } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+import { MenuItem, Select, type SelectChangeEvent } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     input: {
         minWidth: '250px',
         maxWidth: '40%',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomAggridComparatorSelectorProps {
     value: string;

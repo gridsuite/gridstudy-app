@@ -35,6 +35,7 @@ import yup from 'components/utils/yup-config';
 import {
     AttributeModification,
     CurrentLimits,
+    LineModificationInfos,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -42,7 +43,7 @@ import {
 import { BranchInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 import {
-    LineModificationDialogForm,
+    LineModificationFormInfos,
     OperationalLimitsGroupDialogForm,
     TemporaryLimitDialogForm,
 } from '../network-modifications/line/modification/line-modification-type';
@@ -226,7 +227,7 @@ export const updateTemporaryLimits = (
  * in order to fill the operational limits groups modification interface
  */
 export const combineFormAndMapServerLimitsGroups = (
-    formBranchModification: LineModificationDialogForm,
+    formBranchModification: LineModificationFormInfos,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupDialogForm[] => {
     let updatedOpLG: OperationalLimitsGroupDialogForm[] = formBranchModification.limits.operationalLimitsGroups ?? [];
@@ -246,7 +247,7 @@ export const combineFormAndMapServerLimitsGroups = (
     });
 
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
-    mapServerBranch.currentLimits.forEach((currentLimit: CurrentLimits) => {
+    mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroupDialogForm) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability

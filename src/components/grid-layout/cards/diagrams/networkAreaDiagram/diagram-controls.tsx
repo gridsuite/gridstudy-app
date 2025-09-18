@@ -14,11 +14,12 @@ import {
     DirectoryItemSelector,
     ElementSaveDialog,
     ElementType,
-    EquipmentInfos,
+    type EquipmentInfos,
     EquipmentType,
-    IElementCreationDialog,
-    IElementUpdateDialog,
-    TreeViewFinderNodeProps,
+    type IElementCreationDialog,
+    type IElementUpdateDialog,
+    type MuiStyles,
+    type TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
@@ -27,7 +28,7 @@ import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import SpeakerNotesOffOutlinedIcon from '@mui/icons-material/SpeakerNotesOffOutlined';
 import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
-import { Theme, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UUID } from 'crypto';
@@ -37,11 +38,11 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
-    actionIcon: (theme: Theme) => ({
+    actionIcon: (theme) => ({
         width: theme.spacing(3),
         height: theme.spacing(3),
     }),
-    panel: (theme: Theme) => ({
+    panel: (theme) => ({
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.background.default,
         borderRadius: theme.spacing(1),
         padding: theme.spacing(0.5),
@@ -50,7 +51,7 @@ const styles = {
         top: theme.spacing(1),
         left: theme.spacing(1),
     }),
-    buttonPanel: (theme: Theme) => ({
+    buttonPanel: (theme) => ({
         borderRadius: theme.spacing(1),
         padding: theme.spacing(0.5),
         display: 'block',
@@ -64,11 +65,11 @@ const styles = {
     button: {
         minWidth: 'auto',
     },
-    divider: (theme: Theme) => ({
+    divider: (theme) => ({
         borderColor: theme.palette.grey[600],
         margin: '2px 4px',
     }),
-};
+} as const satisfies MuiStyles;
 
 interface DiagramControlsProps {
     onSave?: (data: IElementCreationDialog) => void;

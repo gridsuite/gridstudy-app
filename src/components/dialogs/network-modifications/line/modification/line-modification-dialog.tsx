@@ -101,11 +101,12 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LimitsDialogForm, LineModificationDialogForm } from './line-modification-type';
+import { LimitsDialogForm, LineModificationFormInfos } from './line-modification-type';
+import { LineModificationInfos } from '../../../../../services/network-modification-types';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
-    editData: LineModificationDialogForm | null | undefined;
+    editData: LineModificationInfos | null | undefined;
     // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     defaultIdValue: string;
     studyUuid: UUID;
@@ -183,7 +184,7 @@ const LineModificationDialog = ({
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (lineModification: LineModificationDialogForm) => {
+        (lineModification: LineModificationInfos) => {
             if (lineModification?.equipmentId) {
                 setSelectedId(lineModification.equipmentId);
             }
@@ -220,7 +221,7 @@ const LineModificationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (line: LineModificationDialogForm) => {
+        (line: LineModificationFormInfos) => {
             const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
@@ -232,7 +233,7 @@ const LineModificationDialog = ({
                 nodeUuid: currentNodeUuid,
                 modificationUuid: editData?.uuid ?? '',
                 lineId: selectedId,
-                lineName: sanitizeString(line[EQUIPMENT_NAME]?.value) ?? '',
+                equipmentName: toModificationOperation(sanitizeString(line[EQUIPMENT_NAME]) ?? ''),
                 r: characteristics[R],
                 x: characteristics[X],
                 g1: convertOutputValue(FieldType.G1, characteristics[G1]),
@@ -240,13 +241,13 @@ const LineModificationDialog = ({
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
                 operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
-                selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
+                selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
                         id: 'None',
                     })
                 ),
-                selectedLimitsGroup2: addOperationTypeToSelectedOpLG(
+                selectedOperationalLimitsGroup2: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_2],
                     intl.formatMessage({
                         id: 'None',
@@ -303,18 +304,21 @@ const LineModificationDialog = ({
                     .then((line: BranchInfos) => {
                         if (line) {
                             setLineToModify(line);
-                            reset((formValues: LineModificationDialogForm) => ({
-                                ...formValues,
-                                ...{
-                                    [LIMITS]: {
-                                        [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                            formValues,
-                                            line
+                            reset(
+                                (formValues: LineModificationFormInfos) => ({
+                                    ...formValues,
+                                    ...{
+                                        [LIMITS]: {
+                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
+                                              formValues,
+                                              line
                                         ),
+                                      },
                                     },
-                                },
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
-                            }));
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -339,7 +343,7 @@ const LineModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const onValidationError = (errors: FieldErrors<LineModificationDialogForm>) => {
+    const onValidationError = (errors: FieldErrors<LineModificationFormInfos>) => {
         let tabsInError: number[] = [];
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(LineModificationDialogTab.LIMITS_TAB);

@@ -13,6 +13,7 @@ import { setCalculationSelections } from '../../redux/actions';
 import { AppState } from '../../redux/reducer';
 import { CustomCellRendererProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CalculationRowType, CalculationType } from '../spreadsheet-view/types/calculation.type';
 import { isCalculationRow } from '../spreadsheet-view/utils/calculation-utils';
 
@@ -29,7 +30,7 @@ const styles = {
         minWidth: 'auto',
         minHeight: 'auto',
     },
-};
+} as const satisfies MuiStyles;
 
 export const RowIndexCellRenderer = (props: CustomCellRendererProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

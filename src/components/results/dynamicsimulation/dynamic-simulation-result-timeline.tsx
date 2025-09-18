@@ -14,12 +14,11 @@ import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggri
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { updateFilters } from '../../custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
-
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE } from 'utils/store-sort-filter-fields';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { AgGridReact } from 'ag-grid-react';
 import { FilterType } from '../../../types/custom-aggrid-types';
@@ -37,7 +36,7 @@ const styles = {
     loader: {
         height: '4px',
     },
-};
+} as const satisfies MuiStyles;
 
 const COL_TIME: TimelineEventKeyType = 'time';
 const COL_MODEL_NAME: TimelineEventKeyType = 'modelName';

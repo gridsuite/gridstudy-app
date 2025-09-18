@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Divider } from '@mui/material';
-import { DeviceHubIcon, OverflowableText } from '@gridsuite/commons-ui';
+import { DeviceHubIcon, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { ModificationsSearchResult } from './root-network.types';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
@@ -31,7 +31,7 @@ const styles = {
     text: {
         marginLeft: '5px',
     },
-};
+} as const satisfies MuiStyles;
 
 interface RootNetworkModificationsSearchResultsProps {
     results: ModificationsSearchResult[];
