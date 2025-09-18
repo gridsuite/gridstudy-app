@@ -8,7 +8,7 @@
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import { CustomMenuItem } from '@gridsuite/commons-ui';
+import { CustomMenuItem, type MuiStyles } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
 
 const styles = {
@@ -18,7 +18,8 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
+
 interface ChildMenuItemProps {
     item: {
         id: string;

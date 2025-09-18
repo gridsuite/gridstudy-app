@@ -24,7 +24,7 @@ import {
     V,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { CustomAGGrid, CsvExport } from '@gridsuite/commons-ui';
+import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
 import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
@@ -49,7 +49,7 @@ const styles = {
     grid: {
         flexGrow: '1',
     },
-};
+} as const satisfies MuiStyles;
 
 const defaultColDef: ColDef = {
     filter: true,

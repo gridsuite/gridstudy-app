@@ -21,15 +21,16 @@ import {
 import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
 import { ImperativePanelGroupHandle, Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { Box, Theme } from '@mui/material';
+import { Box } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    panelHandlerContainer: (theme: Theme) => ({
+    panelHandlerContainer: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         borderRight: `1px solid ${theme.palette.divider}`,
     }),
-};
+} as const satisfies MuiStyles;
 
 type ReportViewerProps = {
     report: Report;

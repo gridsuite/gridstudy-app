@@ -7,32 +7,21 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    Box,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    Link,
-    SxProps,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Typography } from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
+    type MuiStyles,
     MultipleAutocompleteInput,
     SubmitButton,
     TextInput,
     useSnackMessage,
-    UseStateBooleanReturn,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
@@ -75,7 +64,7 @@ const styles = {
     columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
     field: { width: '70%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 const COLUMN_NAME_REGEX = /\W/g;
 

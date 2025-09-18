@@ -30,7 +30,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -64,7 +64,7 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,

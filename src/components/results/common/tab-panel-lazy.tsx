@@ -8,13 +8,13 @@
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { BoxProps } from '@mui/material/Box/Box';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     fullHeight: {
         height: '100%',
     },
-};
+} as const satisfies MuiStyles;
 
 export type TabPanelLazyProps = BoxProps & {
     selected?: boolean;

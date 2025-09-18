@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Menu, Typography, ListItemIcon, ListItemText } from '@mui/material';
-import { CustomMenuItem } from '@gridsuite/commons-ui';
+import { CustomMenuItem, type MuiStyles } from '@gridsuite/commons-ui';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useIntl } from 'react-intl';
 import { AddLocationOutlined } from '@mui/icons-material';
@@ -21,7 +21,7 @@ const styles = {
         paddingTop: '1px',
         paddingBottom: '1px',
     },
-};
+} as const satisfies MuiStyles;
 
 interface MenuAnchorPosition {
     mouseX: number;

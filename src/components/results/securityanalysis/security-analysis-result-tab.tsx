@@ -9,13 +9,12 @@ import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, use
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
-
 import { Box, LinearProgress, MenuItem, Select, Tab, Tabs } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -74,7 +73,8 @@ const styles = {
     resultContainer: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
+
 const N_RESULTS_TAB_INDEX = 0;
 const NMK_RESULTS_TAB_INDEX = 1;
 const LOGS_TAB_INDEX = 2;

@@ -6,6 +6,7 @@
  */
 import { ReactNode } from 'react';
 import { Box, Typography } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     overlay: {
@@ -14,7 +15,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center',
     },
-};
+} as const satisfies MuiStyles;
 
 export interface OverlayProps {
     children: ReactNode;
