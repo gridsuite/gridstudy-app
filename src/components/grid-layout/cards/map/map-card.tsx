@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Dialog, Fab, Theme, useTheme } from '@mui/material';
+import { Box, Dialog, Fab, useTheme } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useRef, useState } from 'react';
 import CustomCardHeader from '../custom-card-header';
 import { UUID } from 'crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
-import { EquipmentType, LineFlowMode, mergeSx, useStateBoolean } from '@gridsuite/commons-ui';
+import { type EquipmentType, type LineFlowMode, mergeSx, type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
@@ -20,12 +20,12 @@ import { Close } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 const styles = {
-    closeButton: (theme: Theme) => ({
+    closeButton: (theme) => ({
         alignSelf: 'center',
         margin: theme.spacing(1),
         padding: theme.spacing(2),
     }),
-};
+} as const satisfies MuiStyles;
 
 interface ReactGridLayoutCustomChildComponentProps {
     style?: React.CSSProperties;

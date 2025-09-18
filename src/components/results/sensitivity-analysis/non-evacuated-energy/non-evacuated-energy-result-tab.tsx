@@ -9,7 +9,6 @@ import { FunctionComponent, SyntheticEvent, useState } from 'react';
 import { NonEvacuatedEnergyTabProps } from './non-evacuated-energy-result.type';
 import { NonEvacuatedEnergyResult } from './non-evacuated-energy-result';
 import { fetchNonEvacuatedEnergyResult } from '../../../../services/study/non-evacuated-energy';
-
 import { useOpenLoaderShortWait } from '../../../dialogs/commons/handle-loader';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -17,7 +16,7 @@ import { RunningStatus } from '../../../utils/running-status';
 import { ComputationReportViewer } from '../../common/computation-report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
 import { nonEvacuatedEnergyResultInvalidations } from '../../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';
@@ -38,7 +37,7 @@ const styles = {
     resultContainer: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({
     studyUuid,

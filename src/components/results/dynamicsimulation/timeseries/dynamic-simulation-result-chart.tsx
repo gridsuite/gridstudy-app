@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, Paper, TextField, Theme, ToggleButton, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
@@ -20,7 +20,7 @@ import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import ResponsiveGridLayout from '../common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
-import { mergeSx, useDebounce } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles, useDebounce } from '@gridsuite/commons-ui';
 import { arrayFrom } from '../../../utils/utils';
 import { GridLayout, Plot, Series } from '../plot/plot-types';
 import { Layout, Layouts } from 'react-grid-layout';
@@ -33,7 +33,7 @@ const styles = {
         width: '100%',
         height: '100%',
     },
-    modal: (theme: Theme) => ({
+    modal: (theme) => ({
         position: 'fixed',
         top: 0,
         left: 0,
@@ -41,7 +41,7 @@ const styles = {
         zIndex: 1,
         background: lighten(theme.palette.background.paper, 0.05),
     }),
-    gridLayout: (theme: Theme) => ({
+    gridLayout: (theme) => ({
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
@@ -50,15 +50,15 @@ const styles = {
     menuCloseButton: {
         transform: 'scaleX(-1)',
     },
-    fullViewButton: (theme: Theme) => ({
+    fullViewButton: (theme) => ({
         marginRight: theme.spacing(2),
     }),
-    addButton: (theme: Theme) => ({
+    addButton: (theme) => ({
         borderRadius: '50%',
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
     }),
-    paperOptionsGroup: (theme: Theme) => ({
+    paperOptionsGroup: (theme) => ({
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
         display: 'flex',
@@ -67,17 +67,17 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
     }),
-    toolBar: (theme: Theme) => ({
+    toolBar: (theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
-    numColumnsLabel: (theme: Theme) => ({
+    numColumnsLabel: (theme) => ({
         marginLeft: theme.spacing(2),
     }),
-    numColumnsInput: (theme: Theme) => ({
+    numColumnsInput: (theme) => ({
         marginLeft: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 function getTimeseriesIndexes(metadata: TimeSeriesMetadata): number[] {
     if (metadata?.irregularIndex) {
