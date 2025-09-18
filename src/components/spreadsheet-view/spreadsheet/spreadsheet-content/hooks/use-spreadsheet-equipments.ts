@@ -13,7 +13,7 @@ import type { NodeAlias } from '../../../types/node-alias.type';
 import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { useFetchEquipment } from 'components/spreadsheet-view/hooks/use-fetch-equipment';
-import { useSpreadsheetNodes } from '../../../hooks/use-spreadsheet-nodes';
+import { useBuiltNodesIds } from '../../../hooks/use-built-nodes-ids';
 import { useStableComputedSet } from '../../../../../hooks/use-stable-computed-set';
 import type { UUID } from 'crypto';
 
@@ -27,7 +27,7 @@ export const useSpreadsheetEquipments = (
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
-    const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork[type].nodesId);
+    const loadedNodesIdsForType = useSelector((state: AppState) => state.spreadsheetNetwork[type].nodesId);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
@@ -46,36 +46,26 @@ export const useSpreadsheetEquipments = (
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shouldCleanOptionalLoadingParameters, type]);
 
-    const { builtNodesIds } = useSpreadsheetNodes(nodeAliases);
+    const builtNodesIds = useBuiltNodesIds(nodeAliases);
 
     const nodesIdsToRemove = useStableComputedSet(() => {
-        if (!currentNode?.id) {
-            return new Set<UUID>();
-        }
-        const currentNodeId = currentNode.id;
-        const unwantedFetchedNodes = new Set(nodesIds);
-        const usedNodesId = new Set(builtNodesIds);
-        usedNodesId.add(currentNodeId);
-        usedNodesId.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
+        const unwantedFetchedNodes = new Set(loadedNodesIdsForType);
+        builtNodesIds.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
         return unwantedFetchedNodes;
-    }, [currentNode?.id, builtNodesIds]);
+    }, [builtNodesIds]);
 
     const nodesIdsToFetch = useStableComputedSet(() => {
         if (shouldLoadOptionalLoadingParameters) {
-            return new Set<UUID>(builtNodesIds);
+            return builtNodesIds;
         }
-        const nodesIdToFetch = new Set<UUID>();
-        for (const builtAliasNodeId of builtNodesIds) {
-            if (nodesIds.find((nodeId) => nodeId === builtAliasNodeId) === undefined) {
-                nodesIdToFetch.add(builtAliasNodeId);
-            }
-        }
+        const nodesIdToFetch = new Set<UUID>(builtNodesIds);
+        loadedNodesIdsForType.forEach((nodeId) => nodesIdToFetch.delete(nodeId));
         return nodesIdToFetch;
-    }, [currentNode?.id, nodesIds, nodeAliases, treeNodes]);
+    }, [currentNode?.id, loadedNodesIdsForType, nodeAliases, treeNodes]);
 
     // effect to unload equipment data when we remove an alias or unbuild an aliased node
     useEffect(() => {
-        if (active && nodesIdsToRemove && nodesIdsToRemove.size !== 0) {
+        if (active && nodesIdsToRemove.size > 0) {
             dispatch(removeNodeData(Array.from(nodesIdsToRemove)));
         }
     }, [active, dispatch, nodesIdsToRemove]);

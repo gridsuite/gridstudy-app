@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
 import { NodeAlias } from '../types/node-alias.type';
-import { useSpreadsheetNodes } from './use-spreadsheet-nodes';
+import { useBuiltNodesIds } from './use-built-nodes-ids';
 
 const SPREADSHEET_EQUIPMENTS_LISTENER_ID = 'spreadsheet-equipments-listener';
 
@@ -31,7 +31,7 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const { builtNodesIds } = useSpreadsheetNodes(nodeAliases);
+    const builtNodesIds = useBuiltNodesIds(nodeAliases);
 
     const updateEquipmentsLocal = useCallback(
         (
@@ -54,6 +54,7 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
                         resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes.filter(isSpreadsheetEquipmentType))
                     );
                 }
+                return;
             }
 
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid) {
@@ -104,15 +105,12 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
                     currentRootNetworkUuid === eventRootNetworkUuid &&
                     builtNodesIds.has(eventNodeUuid)
                 ) {
-                    const payload = JSON.parse(eventData.payload) as NetworkImpactsInfos;
-                    const impactedSubstationsIds = payload.impactedSubstationsIds;
-                    const deletedEquipments = payload.deletedEquipments;
-                    const impactedElementTypes = payload.impactedElementTypes ?? [];
+                    const networkImpacts = JSON.parse(eventData.payload) as NetworkImpactsInfos;
                     updateEquipmentsLocal(
                         eventNodeUuid,
-                        impactedSubstationsIds,
-                        deletedEquipments,
-                        impactedElementTypes
+                        networkImpacts.impactedSubstationsIds,
+                        networkImpacts.deletedEquipments,
+                        networkImpacts.impactedElementTypes ?? []
                     );
                 }
             }

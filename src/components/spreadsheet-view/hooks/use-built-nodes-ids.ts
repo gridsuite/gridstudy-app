@@ -14,18 +14,19 @@ import { NodeType } from '../../graph/tree-node.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
 import type { NodeAlias } from '../types/node-alias.type';
 
-export function useSpreadsheetNodes(nodeAliases: NodeAlias[] | undefined) {
+export function useBuiltNodesIds(nodeAliases: NodeAlias[] | undefined) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
 
-    const builtNodesIds = useStableComputedSet(() => {
-        const ids: Set<UUID> = new Set<UUID>();
-        if (currentNode?.id) {
-            ids.add(currentNode.id);
-        }
+    return useStableComputedSet(() => {
         const aliasedNodesIds = nodeAliases
             ?.filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
+        if (currentNode?.id) {
+            aliasedNodesIds?.push(currentNode.id);
+        }
+
+        const ids = new Set<UUID>();
         if (aliasedNodesIds && aliasedNodesIds.length > 0) {
             treeNodes?.forEach((treeNode) => {
                 if (
@@ -38,6 +39,4 @@ export function useSpreadsheetNodes(nodeAliases: NodeAlias[] | undefined) {
         }
         return ids;
     }, [nodeAliases, treeNodes]);
-
-    return { builtNodesIds };
 }

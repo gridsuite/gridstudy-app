@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo, useRef } from 'react';
+import { DependencyList, useMemo, useRef } from 'react';
 
-export function useStableComputedSet<T>(compute: () => Iterable<T>, deps: React.DependencyList): Set<T> {
+export function useStableComputedSet<T>(compute: () => Iterable<T>, deps: DependencyList): Set<T> {
     const prevRef = useRef<Set<T>>(new Set());
 
     return useMemo(() => {
@@ -22,5 +22,6 @@ export function useStableComputedSet<T>(compute: () => Iterable<T>, deps: React.
         }
 
         return prevRef.current;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deps]);
 }

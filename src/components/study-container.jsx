@@ -486,33 +486,6 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, dispatch]);
 
-    //handles map automatic mode network reload
-    useEffect(() => {
-        let previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
-        let previousCurrentRootNetworkUuid = currentRootNetworkUuidRef.current;
-        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkUuidRef.current
-        // then we can update the currentRootNetworkUuidRef.current
-        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
-        // if only node renaming, do not reload network
-        if (isNodeEdited(previousCurrentNode, currentNode)) {
-            return;
-        }
-        if (!isNodeBuilt(currentNode)) {
-            return;
-        }
-        // A modification has been added to the currentNode and this one has been built incrementally.
-        // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
-        if (
-            previousCurrentRootNetworkUuid === currentRootNetworkUuid &&
-            isSameNode(previousCurrentNode, currentNode) &&
-            isNodeBuilt(previousCurrentNode)
-        ) {
-            return;
-        }
-        dispatch(resetEquipments());
-    }, [currentNode, currentRootNetworkUuid, dispatch]);
-
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
