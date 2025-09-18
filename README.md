@@ -6,6 +6,15 @@ To launch the app type `npm install` then `npm start` .
 
 If you are a developer and you want to update / enhance components used from the gridsuite commons-ui library
 click [here](https://github.com/gridsuite/commons-ui) and follow instructions.
+This app uses @powsybl/network-viewer library which released in the npmjs packages.
+
+If you are a developer and you want to update both source code of this project
+and the library, enoying HMR and lint throught those packages,
+You will need to :
+* Define the env variable POWSYBL_NETWORK_VIEWER_PATH with your local path
+* launch the app with `npm run start:dev`
+
+Modified code in the library will be instantly took in your app without further commands.
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
