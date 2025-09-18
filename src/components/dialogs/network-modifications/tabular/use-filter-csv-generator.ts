@@ -6,19 +6,20 @@
  */
 import { useCallback, useMemo } from 'react';
 import {
-    FilterType,
-    FILTER_EQUIPMENTS_ATTRIBUTES,
     fetchElementsInfos,
-    TreeViewFinderNodeProps,
+    FILTER_EQUIPMENTS_ATTRIBUTES,
+    FilterType,
     LANG_FRENCH,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { EquipmentsFilter, evaluateFilters } from 'services/study/filter';
+import { evaluateFilters } from 'services/study/filter';
 import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { TabularModificationType } from './tabular-common';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
+import type { IdentifierListFilterEquipmentAttributes } from '../../../../types/filter-lib';
 
 interface FileDownloadParams {
     content: string;
@@ -51,7 +52,9 @@ export const useFilterCsvGenerator = (props: UseFilterCsvGeneratorProps) => {
      * Extracts equipment IDs from explicit naming filter
      */
     const extractFromExplicitFilter = useCallback((filterMetadata: any): string[] => {
-        const equipments = filterMetadata.specificMetadata?.[FILTER_EQUIPMENTS_ATTRIBUTES] as EquipmentsFilter[];
+        const equipments = filterMetadata.specificMetadata?.[
+            FILTER_EQUIPMENTS_ATTRIBUTES
+        ] as IdentifierListFilterEquipmentAttributes[];
 
         if (!Array.isArray(equipments)) {
             return [];
