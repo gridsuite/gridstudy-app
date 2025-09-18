@@ -6,6 +6,7 @@
  */
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
+import type { MuiStyles } from '@gridsuite/commons-ui';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -42,4 +43,4 @@ export const resultsStyles = {
     sldLink: {
         color: 'node.background',
     },
-};
+} as const satisfies MuiStyles;

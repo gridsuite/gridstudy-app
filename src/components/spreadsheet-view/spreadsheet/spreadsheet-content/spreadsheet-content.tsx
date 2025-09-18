@@ -7,12 +7,12 @@
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { EquipmentTable } from './equipment-table';
-import { type Identifiable } from '@gridsuite/commons-ui';
+import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
 import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
-import { Alert, Box, type Theme } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
@@ -27,7 +27,7 @@ import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 
 const styles = {
-    table: (theme: Theme) => ({
+    table: (theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
@@ -41,7 +41,7 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-};
+} as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
     gridRef: RefObject<AgGridReact>;

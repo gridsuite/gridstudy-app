@@ -7,25 +7,25 @@
 
 import { useState } from 'react';
 import {
-    IconButton,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Box,
-    Theme,
     Button,
+    IconButton,
     Tooltip,
     Typography,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
-import { lighten, darken } from '@mui/material/styles';
+import { darken, lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import NetworkModificationNodeDialog from './network-modification-node-dialog';
 
 const styles = {
-    header: (theme: Theme) => ({
+    header: (theme) => ({
         padding: theme.spacing(1),
         color: theme.palette.getContrastText(
             theme.palette.mode === 'light'
@@ -56,14 +56,14 @@ const styles = {
         flexGrow: 1,
         overflow: 'hidden',
     },
-    accordion: (theme: Theme) => ({
+    accordion: (theme) => ({
         backgroundColor: theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[900],
         marginRight: theme.spacing(1),
         borderRadius: theme.shape.borderRadius,
         width: '100%',
         boxSizing: 'border-box',
     }),
-    accordionSummary: (theme: Theme) => ({
+    accordionSummary: (theme) => ({
         minHeight: 0,
         '&.Mui-expanded .MuiTypography-root': {
             color: theme.palette.text.secondary,
@@ -91,7 +91,7 @@ const styles = {
         maxHeight: 200,
         overflowY: 'auto',
     },
-};
+} as const satisfies MuiStyles;
 
 interface NodeEditorHeaderProps {
     onClose: () => void;

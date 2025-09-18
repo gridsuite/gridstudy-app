@@ -35,7 +35,7 @@ import {
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfo,
-    LineModificationInfo,
+    LineModificationInfos,
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
@@ -828,7 +828,7 @@ export function modifyLine({
     nodeUuid,
     modificationUuid,
     lineId,
-    lineName,
+    equipmentName,
     r,
     x,
     g1,
@@ -836,8 +836,8 @@ export function modifyLine({
     g2,
     b2,
     operationalLimitsGroups,
-    selectedLimitsGroup1,
-    selectedLimitsGroup2,
+    selectedOperationalLimitsGroup1,
+    selectedOperationalLimitsGroup2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -859,7 +859,7 @@ export function modifyLine({
     p2MeasurementValidity,
     q2MeasurementValue,
     q2MeasurementValidity,
-}: LineModificationInfo) {
+}: LineModificationInfos) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
@@ -878,7 +878,7 @@ export function modifyLine({
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
             equipmentId: lineId,
-            equipmentName: toModificationOperation(lineName),
+            equipmentName: equipmentName,
             r: toModificationOperation(r),
             x: toModificationOperation(x),
             g1: toModificationOperation(g1),
@@ -886,8 +886,8 @@ export function modifyLine({
             g2: toModificationOperation(g2),
             b2: toModificationOperation(b2),
             operationalLimitsGroups: operationalLimitsGroups,
-            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
-            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
             busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
             voltageLevelId2: toModificationOperation(voltageLevelId2),

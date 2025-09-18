@@ -7,13 +7,13 @@
 import React, { MouseEventHandler } from 'react';
 import { Badge, Grid, IconButton } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { isNonEmptyStringOrArray } from '../../../utils/types-utils';
 
 const styles = {
-    iconSize: {
-        fontSize: '1rem',
-    },
-};
+    iconSize: { fontSize: '1rem' },
+    gridRoot: { overflow: 'visible' },
+} as const satisfies MuiStyles;
 
 interface CustomFilterIconProps {
     handleShowFilter: MouseEventHandler<HTMLButtonElement> | undefined;
@@ -21,12 +21,7 @@ interface CustomFilterIconProps {
 }
 
 export const CustomFilterIcon = ({ handleShowFilter, selectedFilterData }: CustomFilterIconProps) => (
-    <Grid
-        item
-        sx={{
-            overflow: 'visible',
-        }}
-    >
+    <Grid item sx={styles.gridRoot}>
         <Grid item>
             <IconButton size={'small'} onClick={handleShowFilter}>
                 <Badge
