@@ -4,20 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Dialog, Fab, Theme, useTheme } from '@mui/material';
-import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useRef, useState } from 'react';
-import CustomCardHeader from '../custom-card-header';
+import { Box, Dialog, Fab, Theme } from '@mui/material';
+import { useCallback, useRef } from 'react';
 import { UUID } from 'crypto';
-import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
-import { EquipmentType, LineFlowMode, mergeSx, useStateBoolean } from '@gridsuite/commons-ui';
+import { EquipmentType, LineFlowMode, NetworkVisualizationParameters, useStateBoolean } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
-import WorldSvg from 'images/world.svg?react';
 import NetworkMapPanel, { NetworkMapPanelRef } from 'components/network/network-map-panel';
 import { cardStyles } from '../card-styles';
 import { Close } from '@mui/icons-material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 const styles = {
     closeButton: (theme: Theme) => ({
@@ -27,60 +25,31 @@ const styles = {
     }),
 };
 
-interface ReactGridLayoutCustomChildComponentProps {
-    style?: React.CSSProperties;
-    className?: string;
-    onMouseDown?: MouseEventHandler<HTMLElement>;
-    onMouseUp?: MouseEventHandler<HTMLElement>;
-    onTouchEnd?: TouchEventHandler<HTMLElement>;
-    children?: React.ReactNode;
-}
-
-interface MapCardProps extends ReactGridLayoutCustomChildComponentProps {
+interface MapCardProps {
     studyUuid: UUID;
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     onOpenNetworkAreaDiagram: (elementId?: string) => void;
-    key: string; // Required for React Grid Layout to identify the component
+    currentRootNetworkUuid: UUID;
+    networkVisuParams: NetworkVisualizationParameters;
+    currentNode: CurrentTreeNode;
 }
 
-export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>) => {
+export const MapCard = (props: MapCardProps) => {
     const {
         studyUuid,
         onClose,
-        errorMessage,
+        currentRootNetworkUuid,
+        networkVisuParams,
         showInSpreadsheet,
         onOpenNetworkAreaDiagram,
-        ...reactGridLayoutCustomChildComponentProps
+        currentNode,
     } = props;
-    const { style, children, ...otherProps } = reactGridLayoutCustomChildComponentProps;
-    const [isHover, setIsHover] = useState(false);
-    const intl = useIntl();
-
-    const handleMouseEnter = () => {
-        setIsHover(true);
-    };
-    const handleMouseLeave = () => {
-        setIsHover(false);
-    };
 
     const dispatch = useDispatch();
-    const theme = useTheme();
 
     const mapOpen = useSelector((state: AppState) => state.mapOpen);
-
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-    const clickable = !errorMessage;
-
-    const handleOpenMap = useCallback(() => {
-        dispatch(resetMapEquipment());
-        dispatch(setMapDataLoading(false));
-        dispatch(setReloadMapNeeded(true));
-        dispatch(setOpenMap(true));
-    }, [dispatch]);
 
     const isInDrawingMode = useStateBoolean(false);
     const networkMapPanelRef = useRef<NetworkMapPanelRef>(null);
@@ -97,77 +66,44 @@ export const MapCard = forwardRef((props: MapCardProps, ref: Ref<HTMLDivElement>
             dispatch(resetMapEquipment());
             dispatch(setMapDataLoading(false));
             dispatch(setReloadMapNeeded(true));
+            onClose();
         },
-        [dispatch, isInDrawingMode]
+        [dispatch, isInDrawingMode, onClose]
     );
-
-    if (!studyUuid || !currentNode || !currentRootNetworkUuid || !networkVisuParams) {
-        return (
-            <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-                <CustomCardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
-                <AlertCustomMessageNode message={'MapCardNotAvailable'} noMargin style={cardStyles.alertMessage} />
-                <Box sx={cardStyles.diagramContainer} /> {/* Empty container to keep the layout */}
-            </Box>
-        );
-    }
 
     return (
-        <Box sx={mergeSx(style, cardStyles.card)} ref={ref} {...otherProps}>
-            <CustomCardHeader title={intl.formatMessage({ id: 'MapCard' })} onClose={onClose} />
-            {errorMessage && <AlertCustomMessageNode message={errorMessage} noMargin style={cardStyles.alertMessage} />}
-            <Box sx={cardStyles.diagramContainer}>
-                <WorldSvg
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        cursor: clickable ? 'pointer' : 'default',
-                        backgroundColor: clickable && isHover ? 'rgba(0, 0, 0, 0.4)' : 'inherit',
+        <Box sx={cardStyles.diagramContainer}>
+            <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
+                <Fab
+                    onClick={handleCloseMap}
+                    size="small"
+                    aria-label="close"
+                    variant="extended"
+                    sx={styles.closeButton}
+                >
+                    <Close fontSize="small" />
+                    <FormattedMessage id="close" />
+                </Fab>
+                <NetworkMapPanel
+                    ref={networkMapPanelRef}
+                    studyUuid={studyUuid}
+                    visible={mapOpen}
+                    lineFullPath={networkVisuParams.mapParameters.lineFullPath}
+                    lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
+                    lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    showInSpreadsheet={(eq) => {
+                        handleCloseMap();
+                        showInSpreadsheet(eq);
                     }}
-                    fill={clickable && isHover ? theme.palette.grey[800] : theme.palette.grey[500]}
-                    onClick={
-                        clickable
-                            ? (e) => {
-                                  e.stopPropagation();
-                                  handleOpenMap();
-                              }
-                            : undefined
-                    }
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
+                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
+                    onPolygonChanged={() => {}}
+                    isInDrawingMode={isInDrawingMode}
                 />
-                <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
-                    <Fab
-                        onClick={handleCloseMap}
-                        size="small"
-                        aria-label="close"
-                        variant="extended"
-                        sx={styles.closeButton}
-                    >
-                        <Close fontSize="small" />
-                        <FormattedMessage id="close" />
-                    </Fab>
-                    <NetworkMapPanel
-                        ref={networkMapPanelRef}
-                        studyUuid={studyUuid}
-                        visible={mapOpen}
-                        lineFullPath={networkVisuParams.mapParameters.lineFullPath}
-                        lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
-                        lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
-                        currentNode={currentNode}
-                        currentRootNetworkUuid={currentRootNetworkUuid}
-                        showInSpreadsheet={(eq) => {
-                            handleCloseMap();
-                            showInSpreadsheet(eq);
-                        }}
-                        onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
-                        onPolygonChanged={() => {}}
-                        isInDrawingMode={isInDrawingMode}
-                    />
-                </Dialog>
-            </Box>
-            {children}
+            </Dialog>
         </Box>
     );
-});
+};
 
 export default MapCard;
