@@ -15,7 +15,7 @@ import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
-import { ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
 import GlassPane from '../common/glass-pane';
@@ -43,7 +43,7 @@ const styles = {
     emptySpace: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({
     studyUuid,

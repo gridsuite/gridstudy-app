@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import { ButtonBase, Box, Typography, Menu, MenuItem, Tooltip, Theme } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, ButtonBase, Menu, MenuItem, type Theme, Tooltip, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 // Menu action constants
 const RENAME = 'RENAME';
@@ -31,7 +32,7 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    getContainer: (theme: Theme) => ({
+    getContainer: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -46,17 +47,18 @@ const styles = {
             display: 'flex',
         },
     }),
-    getTabActionButton: (theme: Theme, disabled: boolean) => ({
-        color: disabled ? theme.palette.text.disabled : theme.palette.text.primary,
-        padding: 0.5,
-        borderRadius: '50%',
-        cursor: disabled ? 'default' : 'pointer',
-        opacity: disabled ? 0.5 : 1,
-        '&:hover': {
-            backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
-        },
-    }),
-};
+} as const satisfies MuiStyles;
+
+const getTabActionButton = (theme: Theme, disabled: boolean) => ({
+    color: disabled ? theme.palette.text.disabled : theme.palette.text.primary,
+    padding: 0.5,
+    borderRadius: '50%',
+    cursor: disabled ? 'default' : 'pointer',
+    opacity: disabled ? 0.5 : 1,
+    '&:hover': {
+        backgroundColor: disabled ? 'transparent' : theme.palette.action.hover,
+    },
+});
 
 interface SpreadsheetTabLabelProps {
     name: string;
@@ -116,7 +118,7 @@ export const SpreadsheetTabLabel: React.FC<SpreadsheetTabLabelProps> = ({
     );
 
     return (
-        <Box sx={(theme) => styles.getContainer(theme)}>
+        <Box sx={(theme) => styles.getContainer(theme) /*TODO memoize*/}>
             {isTextTruncated ? (
                 <Tooltip title={name} placement="bottom" arrow>
                     {typographyComponent}
@@ -127,7 +129,7 @@ export const SpreadsheetTabLabel: React.FC<SpreadsheetTabLabelProps> = ({
             <div className="tab-actions">
                 <ButtonBase
                     component="div"
-                    sx={(theme) => styles.getTabActionButton(theme, disabled)}
+                    sx={(theme) => getTabActionButton(theme, disabled)}
                     disabled={disabled}
                     onClick={disabled ? undefined : handleMenuOpen}
                 >

@@ -7,6 +7,7 @@
 
 import React, { ComponentType, useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
 import { SortParams, useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
@@ -19,7 +20,7 @@ const styles = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomHeaderComponentProps<F extends CustomAggridFilterParams, T> extends CustomHeaderProps {
     displayName: string;
