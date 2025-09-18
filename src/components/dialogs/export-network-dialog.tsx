@@ -25,7 +25,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    FlatParameters,
+    Parameter,
+    fetchDirectoryElementPath,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
@@ -55,6 +61,18 @@ interface ExportNetworkDialogProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     rootNetworkUuid: UUID;
+}
+
+// we check if the param is for extension, if it is, we select all possible values by default.
+// the only way for the moment to check if the param is for extension, is by checking his type is name.
+// TODO to be removed when extensions param default value corrected in backend to include all possible values
+function completeDefaultValuesForExtensionsParameters(parameters: Parameter[]): Parameter[] {
+    return parameters.map((parameter) => {
+        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
+            parameter.defaultValue = parameter.possibleValues;
+        }
+        return parameter;
+    });
 }
 
 export function ExportNetworkDialog({
@@ -102,16 +120,9 @@ export function ExportNetworkDialog({
                 const availableFormats = enableDeveloperMode
                     ? formats
                     : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
-                // we check if the param is for extension, if it is, we select all possible values by default.
-                // the only way for the moment to check if the param is for extension, is by checking his type is name.
-                //TODO to be removed when extensions param default value corrected in backend to include all possible values
+
                 Object.values(availableFormats).forEach((format) => {
-                    format.parameters = format.parameters.map((parameter) => {
-                        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
-                            parameter.defaultValue = parameter.possibleValues;
-                        }
-                        return parameter;
-                    });
+                    format.parameters = completeDefaultValuesForExtensionsParameters(format.parameters);
                 });
                 setFormatsWithParameters(availableFormats);
             });
