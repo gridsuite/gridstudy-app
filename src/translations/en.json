@@ -1615,5 +1615,11 @@
     "Object": "Object",
     "Array": "Array",
     "Boolean": "Boolean",
-    "Enum": "Enumeration"
+    "Enum": "Enumeration",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
+    "TOP": "TOP",
+    "BOTTOM": "BOTTOM",
+    "DuplicatedPositionsError": "Duplicate number",
+    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level",
+    "ConnectionsRemovedFromList": "Connections removed from list on validation"
 }

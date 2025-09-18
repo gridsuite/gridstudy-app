@@ -112,16 +112,17 @@ import {
     NotificationType,
 } from 'types/notification-types';
 import { LccModificationDialog } from '../../../dialogs/network-modifications/hvdc-line/lcc/modification/lcc-modification-dialog';
-import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level-topology-modification/voltage-level-topology-modification-dialog';
+import VoltageLevelTopologyModificationDialog from '../../../dialogs/network-modifications/voltage-level/topology-modification/voltage-level-topology-modification-dialog';
 import CreateCouplingDeviceDialog from '../../../dialogs/network-modifications/coupling-device/modification/create-coupling-device-dialog';
 import { BalancesAdjustmentDialog } from '../../../dialogs/network-modifications/balances-adjustment/balances-adjustment-dialog';
-import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level-topology-creation/create-voltage-level-topology-dialog';
+import CreateVoltageLevelTopologyDialog from '../../../dialogs/network-modifications/voltage-level/topology-creation/create-voltage-level-topology-dialog';
 import { NodeType } from 'components/graph/tree-node.type';
 import { LimitSetsModificationDialog } from '../../../dialogs/network-modifications/limit-sets/limit-sets-modification-dialog';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useParameterState } from '../../../dialogs/parameters/use-parameters-state';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CreateVoltageLevelSectionDialog from '../../../dialogs/network-modifications/voltage-level/section/create-voltage-level-section-dialog';
+import MoveVoltageLevelFeederBaysDialog from '../../../dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays-dialog';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -317,6 +318,12 @@ const NetworkModificationNodeEditor = () => {
                             id: MODIFICATION_TYPES.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION.type,
                             label: 'VOLTAGE_LEVEL_TOPOLOGY',
                             action: () => withDefaultParams(VoltageLevelTopologyModificationDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS.type,
+                            label: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
+                            hide: !enableDeveloperMode,
+                            action: () => withDefaultParams(MoveVoltageLevelFeederBaysDialog),
                         },
                         {
                             id: 'DELETE_VOLTAGE_LEVEL',
