@@ -203,7 +203,7 @@ const LineModificationDialog = ({
                     b2: convertInputValue(FieldType.B2, lineModification.b2?.value ?? null),
                 }),
                 ...getAllLimitsFormData(
-                    formatOpLimitGroups(lineModification.operationalLimitsGroups),
+                    formatOpLimitGroups(lineModification.operationalLimitsGroups), // TODO : aller typer tout ça plus proprement => doit donner un type form au fnal
                     lineModification.selectedOperationalLimitsGroup1?.value ?? null,
                     lineModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),

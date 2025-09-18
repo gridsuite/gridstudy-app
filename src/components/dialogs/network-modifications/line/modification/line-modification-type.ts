@@ -6,11 +6,7 @@
  */
 
 import { UUID } from 'crypto';
-import {
-    AttributeModification,
-    CurrentLimits,
-    OperationalLimitsGroup,
-} from '../../../../../services/network-modification-types';
+import { AttributeModification, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import { Property } from '../../common/properties/property-utils';
 import {
     APPLICABIlITY,

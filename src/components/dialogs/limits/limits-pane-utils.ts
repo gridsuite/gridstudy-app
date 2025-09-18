@@ -275,8 +275,9 @@ export const addModificationTypeToTemporaryLimits = (
     return formTemporaryLimits.map((limit: TemporaryLimitDialogForm) => {
         return {
             ...limit,
-            modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
-            // TODO : add deleted limits if they are tagged
+            modificationType: limit[DELETION_MARK]
+                ? TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE
+                : TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
 };
