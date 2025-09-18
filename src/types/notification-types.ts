@@ -515,6 +515,15 @@ interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDa
     updateType: NotificationType.STATE_ESTIMATION_STATUS;
 }
 
+interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NETWORK_EXPORT_SUCCEEDED;
+    rootNetworkUuid: UUID;
+    node: UUID;
+    fileName: string;
+    exportUuid: UUID;
+    format: string;
+}
+
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
@@ -855,6 +864,11 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface ExportNetworkEventData {
+    headers: ExportNetworkEventDataHeaders;
+    payload: undefined;
+}
+
 export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
@@ -963,6 +977,10 @@ export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEve
 
 export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
     return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+}
+
+export function isExportNetworkNotification(notif: unknown): notif is ExportNetworkEventData {
+    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_SUCCEEDED;
 }
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
@@ -1143,7 +1161,8 @@ export type StudyUpdateEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | ExportNetworkEventData;
 
 export type StudyUpdateNotification = {
     eventData: StudyUpdateEventData;

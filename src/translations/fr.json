@@ -3,6 +3,7 @@
     "debug.header.fileNotFound": "Données de calcul non trouvées",
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
     "export.message.subscribed": "Vous serez notifié lorsque l'export sera prêt.",
+    "export.message.downloadStarted": "Téléchargement en cours",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",

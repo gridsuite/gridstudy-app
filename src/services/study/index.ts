@@ -8,7 +8,7 @@
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
@@ -252,6 +252,11 @@ export function getAvailableExportFormats(): Promise<Record<string, ExportFormat
     const getExportFormatsUrl = PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl);
+}
+
+export function fetchExportNetworkFile(exportUuid: UUID) {
+    const url = PREFIX_STUDY_QUERIES + '/v1/download-network-file/' + exportUuid;
+    return backendFetch(url);
 }
 
 export function getAvailableComponentLibraries(): Promise<string[]> {

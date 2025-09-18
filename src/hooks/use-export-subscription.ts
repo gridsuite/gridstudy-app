@@ -10,9 +10,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
-import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
-import { fetchExportNetworkFile } from '../services/study/network';
+import { fetchExportNetworkFile } from '../services/study';
+import { downloadZipFile } from '../services/utils';
 
 export function buildExportIdentifier({
     studyUuid,
@@ -73,16 +73,15 @@ export default function useExportSubscription({
 
     const downloadExportNetworkFile = useCallback(
         (exportUuid: UUID) => {
-            console.log('exportUuid', exportUuid);
-            fetchExportNetworkFile(studyUuid, nodeUuid, rootNetworkUuid, exportUuid)
-                .then(async (response: Response) => {
+            fetchExportNetworkFile(exportUuid)
+                .then(async (response) => {
                     const contentDisposition = response.headers.get('Content-Disposition');
                     let filename = 'export.zip';
-
-                    if (contentDisposition) {
-                        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-                        if (filenameMatch && filenameMatch[1]) {
-                            filename = filenameMatch[1].replace(/['"]/g, '');
+                    if (contentDisposition?.includes('filename=')) {
+                        const regex = /filename="?([^"]+)"?/;
+                        const match = regex.exec(contentDisposition);
+                        if (match?.[1]) {
+                            filename = match[1];
                         }
                     }
 
@@ -105,12 +104,11 @@ export default function useExportSubscription({
                     }
                 });
         },
-        [studyUuid, nodeUuid, rootNetworkUuid, snackWarning, snackError]
+        [snackWarning, snackError]
     );
 
     const handleExportNotification = useCallback(
         (eventData: any) => {
-            console.log('Export notification', eventData);
             const { studyUuid, node, rootNetworkUuid, format, userId: useId, exportUuid, fileName, error } = eventData;
 
             const exportIdentifierNotif = buildExportIdentifier({
@@ -120,10 +118,7 @@ export default function useExportSubscription({
                 format,
                 fileName,
             });
-            console.log('exportIdentifierNotif', exportIdentifierNotif);
             const isSubscribed = isExportSubscribed(exportIdentifierNotif);
-            console.log('isSubscribed', isSubscribed);
-            console.log('useId', useId);
             if (isSubscribed && useId === userId) {
                 unsetExportSubscription(exportIdentifierNotif);
 
@@ -162,6 +157,13 @@ export default function useExportSubscription({
                     fileName,
                 })
             );
+            const exportKey = `${studyUuid}-${nodeUuid}-${rootNetworkUuid}`;
+            const exportInfo = {
+                format,
+                fileName,
+                timestamp: Date.now(),
+            };
+            sessionStorage.setItem(`export-${exportKey}`, JSON.stringify(exportInfo));
             snackInfo({
                 headerTxt: intl.formatMessage({ id: 'exportNetwork' }),
                 messageTxt: intl.formatMessage({ id: 'export.message.subscribed' }, { fileName }),

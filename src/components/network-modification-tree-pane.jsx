@@ -42,7 +42,12 @@ import {
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
-import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
+import {
+    isExportNetworkNotification,
+    NodeSequenceType,
+    NotificationType,
+    PENDING_MODIFICATION_NOTIFICATION_TYPES,
+} from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription.js';
 
 const noNodeSelectionForCopy = {
@@ -318,8 +323,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
                 ) {
                     resetNodeClipboard();
                 }
-            } else if (studyUpdatedForce.eventData.headers.updateType === NotificationType.NETWORK_EXPORT_SUCCEEDED) {
-                console.log('Export notification studyUpdatedForce', studyUpdatedForce);
+            } else if (isExportNetworkNotification(studyUpdatedForce.eventData)) {
                 handleExportNotification(studyUpdatedForce.eventData.headers);
             }
         }
