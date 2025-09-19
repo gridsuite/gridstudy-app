@@ -6,6 +6,7 @@
  */
 import { OpenInFull } from '@mui/icons-material';
 import { forwardRef, Ref } from 'react';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 type ResizeHandleAxis = 's' | 'w' | 'e' | 'n' | 'sw' | 'nw' | 'se' | 'ne';
 type CustomResizeHandleProps = {
@@ -17,7 +18,7 @@ const styles = {
         fontSize: 'medium',
         rotate: '90deg',
     },
-};
+} as const satisfies MuiStyles;
 
 const CustomResizeHandle = forwardRef((props: CustomResizeHandleProps, ref: Ref<HTMLDivElement>) => {
     const { handleAxis, ...restProps } = props;

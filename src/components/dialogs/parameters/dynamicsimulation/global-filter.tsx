@@ -6,18 +6,18 @@
  */
 
 import { InputAdornment, TextField } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { ChangeEvent, forwardRef, RefObject, useCallback, useImperativeHandle, useRef } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { AgGridReact } from 'ag-grid-react';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    searchSection: (theme: Theme) => ({
+    searchSection: (theme) => ({
         paddingRight: theme.spacing(1),
         alignItems: 'center',
     }),
-};
+} as const satisfies MuiStyles;
 
 interface GlobalFilterProps {
     gridRef: RefObject<AgGridReact>;

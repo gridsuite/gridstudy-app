@@ -6,13 +6,13 @@
  */
 
 import React, { ReactElement } from 'react';
-import { Chip, SxProps, Theme } from '@mui/material';
+import { Chip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { BUILD_STATUS } from 'components/network/constants';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type SxStyle } from '@gridsuite/commons-ui';
 
-function getBuildStatusSx(buildStatus: BUILD_STATUS | undefined): SxProps<Theme> {
-    return (theme: Theme) => {
+function getBuildStatusSx(buildStatus: BUILD_STATUS | undefined): SxStyle {
+    return (theme) => {
         const bs = theme.node.buildStatus;
         // pick background based on status
         let bg: string;
@@ -45,16 +45,17 @@ function getBuildStatusSx(buildStatus: BUILD_STATUS | undefined): SxProps<Theme>
     };
 }
 
-const baseStyle = {
-    padding: (theme: Theme) => theme.spacing(1, 0.5),
-    fontSize: '12px',
-    fontWeight: 400,
-    lineHeight: '100%',
-};
+const baseStyle: SxStyle = (theme) =>
+    ({
+        padding: theme.spacing(1, 0.5),
+        fontSize: '12px',
+        fontWeight: 400,
+        lineHeight: '100%',
+    }) as const;
 
 type BuildStatusChipProps = {
     buildStatus?: BUILD_STATUS;
-    sx?: SxProps<Theme>;
+    sx?: SxStyle;
     icon?: ReactElement;
     onClick?: (e: React.MouseEvent) => void;
 };

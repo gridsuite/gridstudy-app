@@ -10,36 +10,35 @@ import { NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { RootNode as RootNodeType } from 'components/graph/tree-node.type';
-import { Theme } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { DeviceHub } from '@mui/icons-material';
 import NodeHandle from './node-handle';
-import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
+import { baseNodeStyles, interactiveNodeStyles } from './styles';
 
 const styles = {
     // full node container styles
-    rootSelected: (theme: Theme) => ({
-        ...selectedBaseNodeStyles(theme, 'row'),
+    rootSelected: (theme) => ({
+        ...baseNodeStyles(theme, 'row'),
         background: theme.node.root.selectedBackground,
         border: theme.node.root.border,
         boxShadow: theme.shadows[10],
         ...interactiveNodeStyles(theme, 'root'),
     }),
-    root: (theme: Theme) => ({
+    root: (theme) => ({
         ...baseNodeStyles(theme, 'row'),
         border: theme.node.root.border,
         ...interactiveNodeStyles(theme, 'root'),
     }),
 
-    iconContainer: (theme: Theme) => ({
+    iconContainer: (theme) => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
         marginLeft: theme.spacing(1),
     }),
 
-    iconButton: (theme: Theme) => ({
+    iconButton: (theme) => ({
         width: 37,
         height: 37,
         background: theme.node.root.icon.background,
@@ -49,13 +48,13 @@ const styles = {
         },
     }),
 
-    deviceIcon: (theme: Theme) => ({
+    deviceIcon: (theme) => ({
         fill: theme.node.root.icon.fill,
         width: 18,
         height: 18,
     }),
 
-    labelContainer: (theme: Theme) => ({
+    labelContainer: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -63,14 +62,14 @@ const styles = {
         marginRight: theme.spacing(1),
     }),
 
-    overflowText: (theme: Theme) => ({
+    overflowText: (theme) => ({
         color: theme.palette.text.primary,
         fontSize: '14px',
         fontWeight: 400,
         lineHeight: 'normal',
         textAlign: 'left',
     }),
-};
+} as const satisfies MuiStyles;
 
 const RootNode = (props: NodeProps<RootNodeType>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
