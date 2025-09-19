@@ -72,6 +72,8 @@ export default function FormulaSearchReplace() {
             const columns = getValues(COLUMNS_MODEL) as any[];
             const formula = columns[rowIndex][COLUMN_FORMULA] || '';
             const fieldName = `${COLUMNS_MODEL}[${rowIndex}].${COLUMN_FORMULA}`;
+            const previouslyFocused = document.activeElement as HTMLElement | null;
+
             setFocus(fieldName);
             setTimeout(() => {
                 const input = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
@@ -82,6 +84,10 @@ export default function FormulaSearchReplace() {
                     if (index >= 0) {
                         input.setSelectionRange(index, index + searchTerm.length);
                     }
+                }
+
+                if (previouslyFocused && previouslyFocused !== input && typeof previouslyFocused.focus === 'function') {
+                    previouslyFocused.focus({ preventScroll: true });
                 }
             });
         },
