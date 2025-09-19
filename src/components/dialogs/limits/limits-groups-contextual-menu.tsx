@@ -18,9 +18,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { PopoverProps } from '@mui/material/Popover';
 import { APPLICABILITY } from '../../network/constants';
+import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
@@ -81,11 +81,11 @@ export function LimitsGroupsContextualMenu({
     const handleDuplicateTab = () => {
         let newName: string = '';
         if (indexSelectedLimitSet !== null) {
-            const duplicatedLimits1: OperationalLimitsGroup = getValues(
+            const duplicatedLimits1: OperationalLimitsGroupFormInfos = getValues(
                 `${operationalLimitsGroupsFormName}[${indexSelectedLimitSet}]`
             );
             newName = duplicatedLimits1.name + '_COPY';
-            const newLimitsGroup1: OperationalLimitsGroup = {
+            const newLimitsGroup1: OperationalLimitsGroupFormInfos = {
                 ...duplicatedLimits1,
                 [ID]: newName,
             };
