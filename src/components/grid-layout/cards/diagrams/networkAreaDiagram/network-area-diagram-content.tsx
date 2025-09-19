@@ -303,18 +303,18 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 enableLevelOfDetail: true,
                 zoomLevels: NAD_ZOOM_LEVELS,
                 addButtons: false,
+                onMoveNodeCallback: onMoveNodeCallback,
+                onMoveTextNodeCallback: onMoveTextNodeCallback,
+                onSelectNodeCallback: OnLeftClickCallback,
+                onToggleHoverCallback: OnToggleHoverCallback,
+                onRightClickCallback: showEquipmentMenu,
                 initialViewBox: diagramViewerRef?.current?.getViewBox(),
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
                 props.svgMetadata ?? null,
-                diagramParameters,
-                onMoveNodeCallback,
-                onMoveTextNodeCallback,
-                OnLeftClickCallback,
-                OnToggleHoverCallback,
-                showEquipmentMenu
+                diagramParameters
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
