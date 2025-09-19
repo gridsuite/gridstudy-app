@@ -519,9 +519,11 @@ interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NETWORK_EXPORT_SUCCEEDED;
     rootNetworkUuid: UUID;
     node: UUID;
+    userId: string;
     fileName: string;
     exportUuid: UUID;
     format: string;
+    error: string;
 }
 
 // Payloads

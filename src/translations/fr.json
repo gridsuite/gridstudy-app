@@ -4,6 +4,8 @@
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
     "export.message.subscribed": "Vous serez notifié lorsque l'export sera prêt.",
     "export.message.downloadStarted": "Téléchargement en cours",
+    "export.header.fileNotFound": "Fichier non trouvé",
+    "export.header.fileError": "Échec du téléchargement du fichier",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",

@@ -42,12 +42,7 @@ import {
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
-import {
-    isExportNetworkNotification,
-    NodeSequenceType,
-    NotificationType,
-    PENDING_MODIFICATION_NOTIFICATION_TYPES,
-} from 'types/notification-types';
+import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription.js';
 
 const noNodeSelectionForCopy = {
@@ -129,7 +124,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const { subscribeExport, handleExportNotification } = useExportSubscription({
+    const { subscribeExport } = useExportSubscription({
         studyUuid: studyUuid,
         nodeUuid: currentNode?.id,
         rootNetworkUuid: currentRootNetworkUuid,
@@ -323,8 +318,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
                 ) {
                     resetNodeClipboard();
                 }
-            } else if (isExportNetworkNotification(studyUpdatedForce.eventData)) {
-                handleExportNotification(studyUpdatedForce.eventData.headers);
             }
         }
     }, [
@@ -338,7 +331,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid,
         currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
-        handleExportNotification,
     ]);
 
     const handleCreateNode = useCallback(

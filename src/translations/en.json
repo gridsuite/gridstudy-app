@@ -4,6 +4,8 @@
     "debug.header.fileError": "Computation data download failed",
     "export.message.subscribed": "You will be notified when the export is ready.",
     "export.message.downloadStarted": "Starting download...",
+    "export.header.fileNotFound": "export file not found",
+    "export.header.fileError": "export file download failed",
 
     "button.delete": "Delete",
     "button.continue": "Continue",
