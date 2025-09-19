@@ -6,7 +6,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
@@ -45,8 +45,8 @@ const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string):
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
-const styles = {
-    chip: (severity: string, severityFilter: string[], theme: Theme) => ({
+const chipStyle = (severity: string, severityFilter: string[], theme: Theme) =>
+    ({
         backgroundColor: severityFilter.includes(severity)
             ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
             : theme.severityChip.disabledColor,
@@ -63,23 +63,21 @@ const styles = {
             color: theme.palette.text.primary,
         },
         padding: 0.5,
+    }) as const satisfies SxStyle;
+
+const styles = {
+    chipContainer: (theme) => ({
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: theme.spacing(1),
     }),
-    chipContainer: (theme: Theme) => {
-        return {
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: theme.spacing(1),
-        };
-    },
-    toolContainer: (theme: Theme) => {
-        return {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: theme.spacing(1),
-            mb: theme.spacing(2),
-        };
-    },
-};
+    toolContainer: (theme) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        mb: theme.spacing(2),
+    }),
+} as const satisfies MuiStyles;
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 const PAGE_OPTIONS = [15, 30, 50, 100];
@@ -433,7 +431,7 @@ const LogTable = ({
                             deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
                             onClick={() => handleChipClick(severity)}
                             onDelete={() => handleChipClick(severity)}
-                            sx={styles.chip(severity, severityFilter, theme)}
+                            sx={chipStyle(severity, severityFilter, theme) /*TODO memoize that*/}
                         />
                     ))}
                 </Box>

@@ -8,7 +8,7 @@
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TreeViewFinderNodeProps, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import { fetchDirectoryElementPath, type MuiStyles, type TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { FolderOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import ImportCaseDialog from '../import-case-dialog';
@@ -19,7 +19,7 @@ const styles = {
         marginTop: 0,
         display: 'block',
     },
-};
+} as const satisfies MuiStyles;
 
 interface RootNetworkCaseSelectionProps {
     onSelectCase: (selectedCase: TreeViewFinderNodeProps) => void;
