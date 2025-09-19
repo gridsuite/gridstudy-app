@@ -14,6 +14,7 @@ import {
     ThemeProvider,
     StyledEngineProvider,
     GlobalStyles,
+    type Theme,
 } from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
@@ -65,6 +66,8 @@ import {
     MAP_BASEMAP_MAPBOX,
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
+    type GsTheme,
+    type GsLangUser,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -93,6 +96,7 @@ import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
+import { type AppState } from '../redux/reducer';
 import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
@@ -331,7 +335,7 @@ const darkTheme = createTheme({
 });
 
 // no other way to copy style: https://mui.com/material-ui/customization/theming/#api
-function createThemeWithComponents(baseTheme, ...args) {
+function createThemeWithComponents(baseTheme: Theme, ...args: object[]) {
     return createTheme(
         baseTheme,
         {
@@ -353,7 +357,7 @@ function createThemeWithComponents(baseTheme, ...args) {
     );
 }
 
-function getMuiTheme(theme, locale) {
+function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
     return responsiveFontSizes(
         createThemeWithComponents(
             theme === LIGHT_THEME ? lightTheme : darkTheme,
@@ -433,11 +437,11 @@ const messages = {
     },
 };
 
-const basename = new URL(document.querySelector('base').href).pathname;
+const basename = new URL(document.querySelector('base')!.href).pathname;
 
 const AppWrapperWithRedux = () => {
-    const computedLanguage = useSelector((state) => state.computedLanguage);
-    const theme = useSelector((state) => state[PARAM_THEME]);
+    const computedLanguage = useSelector((state: AppState) => state.computedLanguage);
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
     const rootCssVars = theme === LIGHT_THEME ? lightThemeCssVars : darkThemeCssVars;
