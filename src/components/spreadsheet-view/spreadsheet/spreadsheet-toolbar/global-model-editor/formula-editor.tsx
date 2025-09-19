@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ExpandingTextField, ExpandingTextFieldProps } from '@gridsuite/commons-ui';
+import { ExpandingTextField, type ExpandingTextFieldProps, type SxStyle } from '@gridsuite/commons-ui';
 import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useFormulaSearch } from './formula-search-context';
-import { useMemo } from 'react';
 
 const styles = {
     container: {
@@ -17,31 +17,30 @@ const styles = {
         flexGrow: 1,
     },
     overlay: {
-        position: 'absolute' as const,
+        position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        whiteSpace: 'pre-wrap' as const,
+        whiteSpace: 'pre-wrap',
         color: 'transparent',
-        pointerEvents: 'none' as const,
-        // mimic default MUI TextField padding
+        pointerEvents: 'none',
         padding: '16.5px 14px',
-        boxSizing: 'border-box' as const,
+        boxSizing: 'border-box',
     },
     textField: {
-        position: 'relative' as const,
+        position: 'relative',
         backgroundColor: 'transparent',
     },
-};
+} as const satisfies Record<'container' | 'overlay' | 'textField', SxStyle>;
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps>) {
     const theme = useTheme();
     const { control } = useFormContext();
     const value = useWatch({ name, control }) as string | undefined;
     const { searchTerm } = useFormulaSearch();
-
-    const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     const overlaySx = useMemo(() => {
         const { fontFamily, body1 } = theme.typography;
@@ -52,7 +51,7 @@ export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps
             fontWeight: body1?.fontWeight,
             lineHeight: '1.4375em',
             letterSpacing: body1?.letterSpacing,
-        };
+        } satisfies SxStyle;
     }, [theme]);
 
     const highlighted = useMemo(() => {
