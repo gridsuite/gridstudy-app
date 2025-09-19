@@ -43,8 +43,8 @@ import { BranchInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
 import {
     LineModificationFormInfos,
-    OperationalLimitsGroupDialogForm,
-    TemporaryLimitDialogForm,
+    OperationalLimitsGroupFormInfos,
+    TemporaryLimitFormInfos,
 } from '../network-modifications/line/modification/line-modification-type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
@@ -164,8 +164,8 @@ export const getAllLimitsFormData = (
  * sanitizes limit names and filters out the empty temporary limits lines
  */
 export const sanitizeLimitsGroups = (
-    limitsGroups: OperationalLimitsGroupDialogForm[]
-): OperationalLimitsGroupDialogForm[] =>
+    limitsGroups: OperationalLimitsGroupFormInfos[]
+): OperationalLimitsGroupFormInfos[] =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
         id: baseData.name,
@@ -190,21 +190,21 @@ export const sanitizeLimitsGroups = (
               },
     }));
 
-export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitDialogForm[]): TemporaryLimitDialogForm[] =>
+export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormInfos[]): TemporaryLimitFormInfos[] =>
     temporaryLimitList
-        ?.filter((limit: TemporaryLimitDialogForm) => limit?.name?.trim())
+        ?.filter((limit: TemporaryLimitFormInfos) => limit?.name?.trim())
         .map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
             name: sanitizeString(name) ?? '',
         })) || [];
 
-const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitDialogForm[], limit: TemporaryLimit) =>
+const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormInfos[], limit: TemporaryLimit) =>
     temporaryLimits?.find(
-        (l: TemporaryLimitDialogForm) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
+        (l: TemporaryLimitFormInfos) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
     );
 
 export const updateTemporaryLimits = (
-    limitsDialogForm: TemporaryLimitDialogForm[],
+    limitsDialogForm: TemporaryLimitFormInfos[],
     temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
     let updatedTemporaryLimits = limitsDialogForm ?? [];
@@ -216,7 +216,7 @@ export const updateTemporaryLimits = (
     });
 
     //remove deleted temporary limits from current and previous modifications
-    updatedTemporaryLimits = updatedTemporaryLimits?.filter((limit: TemporaryLimitDialogForm) => !limit[DELETION_MARK]);
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter((limit: TemporaryLimitFormInfos) => !limit[DELETION_MARK]);
 
     return updatedTemporaryLimits;
 };
@@ -228,11 +228,11 @@ export const updateTemporaryLimits = (
 export const combineFormAndMapServerLimitsGroups = (
     formBranchModification: LineModificationFormInfos,
     mapServerBranch: BranchInfos
-): OperationalLimitsGroupDialogForm[] => {
-    let updatedOpLG: OperationalLimitsGroupDialogForm[] = formBranchModification.limits.operationalLimitsGroups ?? [];
+): OperationalLimitsGroupFormInfos[] => {
+    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
-    updatedOpLG.forEach((opLG: OperationalLimitsGroupDialogForm) => {
+    updatedOpLG.forEach((opLG: OperationalLimitsGroupFormInfos) => {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
@@ -248,7 +248,7 @@ export const combineFormAndMapServerLimitsGroups = (
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
     mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
-            (opLG: OperationalLimitsGroupDialogForm) =>
+            (opLG: OperationalLimitsGroupFormInfos) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
         if (equivalentFromNetMod === undefined) {
@@ -270,9 +270,9 @@ export const combineFormAndMapServerLimitsGroups = (
 };
 
 export const addModificationTypeToTemporaryLimits = (
-    formTemporaryLimits: TemporaryLimitDialogForm[]
+    formTemporaryLimits: TemporaryLimitFormInfos[]
 ): TemporaryLimit[] => {
-    return formTemporaryLimits.map((limit: TemporaryLimitDialogForm) => {
+    return formTemporaryLimits.map((limit: TemporaryLimitFormInfos) => {
         return {
             ...limit,
             modificationType: limit[DELETION_MARK]
@@ -302,11 +302,11 @@ export function addOperationTypeToSelectedOpLG(
  * @param limitsGroupsForm current data from the form
  */
 export const addModificationTypeToOpLimitsGroups = (
-    limitsGroupsForm: OperationalLimitsGroupDialogForm[]
+    limitsGroupsForm: OperationalLimitsGroupFormInfos[]
 ): OperationalLimitsGroup[] => {
-    let modificationLimitsGroupsForm: OperationalLimitsGroupDialogForm[] = sanitizeLimitsGroups(limitsGroupsForm);
+    let modificationLimitsGroupsForm: OperationalLimitsGroupFormInfos[] = sanitizeLimitsGroups(limitsGroupsForm);
 
-    return modificationLimitsGroupsForm.map((limitsGroupForm: OperationalLimitsGroupDialogForm) => {
+    return modificationLimitsGroupsForm.map((limitsGroupForm: OperationalLimitsGroupFormInfos) => {
         const modificationType: string = LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD;
 
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
@@ -329,7 +329,7 @@ export const addModificationTypeToOpLimitsGroups = (
     });
 };
 
-export const temporaryLimitToTemporaryLimitDialogForm = (temporaryLimit: TemporaryLimit): TemporaryLimitDialogForm => {
+export const temporaryLimitToTemporaryLimitDialogForm = (temporaryLimit: TemporaryLimit): TemporaryLimitFormInfos => {
     return {
         [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
         [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
@@ -338,7 +338,7 @@ export const temporaryLimitToTemporaryLimitDialogForm = (temporaryLimit: Tempora
     };
 };
 
-export const temporaryLimitDialogFormToTemporaryLimit = (temporaryLimit: TemporaryLimitDialogForm): TemporaryLimit => {
+export const temporaryLimitDialogFormToTemporaryLimit = (temporaryLimit: TemporaryLimitFormInfos): TemporaryLimit => {
     return {
         [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
         [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,

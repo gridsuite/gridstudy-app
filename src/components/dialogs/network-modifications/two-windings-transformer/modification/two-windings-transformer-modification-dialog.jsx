@@ -654,8 +654,8 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ...{
                                         [LIMITS]: {
                                             [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                              formValues,
-                                              twt
+                                                formValues,
+                                                twt
                                             ),
                                         },
                                     },

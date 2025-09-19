@@ -66,30 +66,32 @@ export interface LineModificationFormInfos {
     AdditionalProperties: any;
     characteristics: any;
     stateEstimation: any;
-    limits: LimitsDialogForm;
+    limits: LimitsDialogFormInfos;
 }
 
-export interface LimitsDialogForm {
+export interface LimitsDialogFormInfos {
     [SELECTED_LIMITS_GROUP_1]: string | null;
     [SELECTED_LIMITS_GROUP_2]: string | null;
-    [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupDialogForm[];
+    [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormInfos[];
 }
 
-export interface OperationalLimitsGroupDialogForm {
+export interface OperationalLimitsGroupFormInfos {
+    // here 'id' is a concatenation of NAME and APPLICABIlITY because 2 limits sets on side1 and 2 may have the same name
+    // "ID" from the map server is stored as NAME in the form because of this
     [ID]: string;
     [NAME]: string;
     [APPLICABIlITY]?: string;
-    [CURRENT_LIMITS]: CurrentLimitsDialogForm;
+    [CURRENT_LIMITS]: CurrentLimitsFormInfos;
 }
 
-export interface CurrentLimitsDialogForm {
+export interface CurrentLimitsFormInfos {
     [ID]: string; // TODO : needed here or only in OperationalLimitsGroupDialogForm ??
     [APPLICABIlITY]?: string; // TODO : needed here or only in OperationalLimitsGroupDialogForm ??
     [PERMANENT_LIMIT]: number | null;
-    [TEMPORARY_LIMITS]: TemporaryLimitDialogForm[];
+    [TEMPORARY_LIMITS]: TemporaryLimitFormInfos[];
 }
 
-export interface TemporaryLimitDialogForm {
+export interface TemporaryLimitFormInfos {
     [TEMPORARY_LIMIT_NAME]: string;
     [TEMPORARY_LIMIT_DURATION]: number | null;
     [TEMPORARY_LIMIT_VALUE]: number | null;

@@ -29,7 +29,7 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from './field-constants';
-import { TemporaryLimitDialogForm } from '../dialogs/network-modifications/line/modification/line-modification-type';
+import { TemporaryLimitFormInfos } from '../dialogs/network-modifications/line/modification/line-modification-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -142,7 +142,7 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): Tempor
         };
     });
 
-export const formatToTemporaryLimitsDialogForm = (temporaryLimits: TemporaryLimit[]): TemporaryLimitDialogForm[] =>
+export const formatToTemporaryLimitsDialogForm = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormInfos[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',

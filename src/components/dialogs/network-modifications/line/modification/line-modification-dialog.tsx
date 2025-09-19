@@ -101,7 +101,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LimitsDialogForm, LineModificationFormInfos } from './line-modification-type';
+import { LimitsDialogFormInfos, LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
 
@@ -227,7 +227,7 @@ const LineModificationDialog = ({
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
-            const limits: LimitsDialogForm = line[LIMITS];
+            const limits: LimitsDialogFormInfos = line[LIMITS];
 
             modifyLine({
                 studyUuid: studyUuid,
