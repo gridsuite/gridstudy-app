@@ -161,17 +161,17 @@ code {
 .sld-label {
     stroke: none;
     fill: black;
-    font: 11px 'Verdana';
+    font-size: 11px;
 }
 .sld-graph-label {
     stroke: none;
     fill: black;
-    font: 14px 'Verdana';
+    font-size: 14px;
 }
 .sld-legend {
     stroke: none;
     fill: black;
-    font: 11px Verdana;
+    font-size: 11px;
 }
 .sld-node {
     stroke: none;
