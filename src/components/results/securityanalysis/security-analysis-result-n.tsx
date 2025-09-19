@@ -42,6 +42,13 @@ export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNP
                       value: limitViolation?.value,
                       loading: limitViolation?.loading,
                       side: convertSide(limitViolation?.side || '', intl),
+                      patlLoading: limitViolation?.patlLoading,
+                      patlLimit: limitViolation?.patlLimit,
+                      nextLimitName: translateLimitNameBackToFront(limitViolation?.nextLimitName, intl),
+                      upcomingAcceptableDuration:
+                          limitViolation?.upcomingAcceptableDuration === MAX_INT32
+                              ? null
+                              : limitViolation?.upcomingAcceptableDuration,
                   } as SecurityAnalysisNTableRow;
               }) ?? [])
             : [];
