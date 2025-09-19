@@ -289,40 +289,40 @@ code {
 }
 
 /* SLD Highlight Classes */
-.sld-voltage-level:has(.sld-bus-0:hover) .sld-bus-0.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-1:hover) .sld-bus-1.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-2:hover) .sld-bus-2.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-3:hover) .sld-bus-3.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-4:hover) .sld-bus-4.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-5:hover) .sld-bus-5.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-6:hover) .sld-bus-6.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-7:hover) .sld-bus-7.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-8:hover) .sld-bus-8.sld-busbar-section,
-.sld-voltage-level:has(.sld-bus-9:hover) .sld-bus-9.sld-busbar-section {
+.sld-voltage-level:has(circle.sld-bus-0:hover, .sld-bus-0.sld-busbar-section:hover) .sld-bus-0.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-1:hover, .sld-bus-1.sld-busbar-section:hover) .sld-bus-1.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-2:hover, .sld-bus-2.sld-busbar-section:hover) .sld-bus-2.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-3:hover, .sld-bus-3.sld-busbar-section:hover) .sld-bus-3.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-4:hover, .sld-bus-4.sld-busbar-section:hover) .sld-bus-4.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-5:hover, .sld-bus-5.sld-busbar-section:hover) .sld-bus-5.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-6:hover, .sld-bus-6.sld-busbar-section:hover) .sld-bus-6.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-7:hover, .sld-bus-7.sld-busbar-section:hover) .sld-bus-7.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-8:hover, .sld-bus-8.sld-busbar-section:hover) .sld-bus-8.sld-busbar-section,
+.sld-voltage-level:has(circle.sld-bus-9:hover, .sld-bus-9.sld-busbar-section:hover) .sld-bus-9.sld-busbar-section {
     stroke-width: 5px;
 }
-.sld-voltage-level:has(.sld-bus-0:hover) .sld-bus-0.sld-wire,
-.sld-voltage-level:has(.sld-bus-1:hover) .sld-bus-1.sld-wire,
-.sld-voltage-level:has(.sld-bus-2:hover) .sld-bus-2.sld-wire,
-.sld-voltage-level:has(.sld-bus-3:hover) .sld-bus-3.sld-wire,
-.sld-voltage-level:has(.sld-bus-4:hover) .sld-bus-4.sld-wire,
-.sld-voltage-level:has(.sld-bus-5:hover) .sld-bus-5.sld-wire,
-.sld-voltage-level:has(.sld-bus-6:hover) .sld-bus-6.sld-wire,
-.sld-voltage-level:has(.sld-bus-7:hover) .sld-bus-7.sld-wire,
-.sld-voltage-level:has(.sld-bus-8:hover) .sld-bus-8.sld-wire,
-.sld-voltage-level:has(.sld-bus-9:hover) .sld-bus-9.sld-wire {
+.sld-voltage-level:has(circle.sld-bus-0:hover, .sld-bus-0.sld-busbar-section:hover) .sld-bus-0.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-1:hover, .sld-bus-1.sld-busbar-section:hover) .sld-bus-1.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-2:hover, .sld-bus-2.sld-busbar-section:hover) .sld-bus-2.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-3:hover, .sld-bus-3.sld-busbar-section:hover) .sld-bus-3.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-4:hover, .sld-bus-4.sld-busbar-section:hover) .sld-bus-4.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-5:hover, .sld-bus-5.sld-busbar-section:hover) .sld-bus-5.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-6:hover, .sld-bus-6.sld-busbar-section:hover) .sld-bus-6.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-7:hover, .sld-bus-7.sld-busbar-section:hover) .sld-bus-7.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-8:hover, .sld-bus-8.sld-busbar-section:hover) .sld-bus-8.sld-wire,
+.sld-voltage-level:has(circle.sld-bus-9:hover, .sld-bus-9.sld-busbar-section:hover) .sld-bus-9.sld-wire {
     stroke-width: 3px;
 }
-.sld-voltage-level:has(.sld-bus-0:hover) circle.sld-bus-0.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-1:hover) circle.sld-bus-1.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-2:hover) circle.sld-bus-2.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-3:hover) circle.sld-bus-3.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-4:hover) circle.sld-bus-4.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-5:hover) circle.sld-bus-5.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-6:hover) circle.sld-bus-6.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-7:hover) circle.sld-bus-7.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-8:hover) circle.sld-bus-8.sld-node-infos,
-.sld-voltage-level:has(.sld-bus-9:hover) circle.sld-bus-9.sld-node-infos {
+.sld-voltage-level:has(circle.sld-bus-0:hover, .sld-bus-0.sld-busbar-section:hover) circle.sld-bus-0.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-1:hover, .sld-bus-1.sld-busbar-section:hover) circle.sld-bus-1.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-2:hover, .sld-bus-2.sld-busbar-section:hover) circle.sld-bus-2.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-3:hover, .sld-bus-3.sld-busbar-section:hover) circle.sld-bus-3.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-4:hover, .sld-bus-4.sld-busbar-section:hover) circle.sld-bus-4.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-5:hover, .sld-bus-5.sld-busbar-section:hover) circle.sld-bus-5.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-6:hover, .sld-bus-6.sld-busbar-section:hover) circle.sld-bus-6.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-7:hover, .sld-bus-7.sld-busbar-section:hover) circle.sld-bus-7.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-8:hover, .sld-bus-8.sld-busbar-section:hover) circle.sld-bus-8.sld-node-infos,
+.sld-voltage-level:has(circle.sld-bus-9:hover, .sld-bus-9.sld-busbar-section:hover) circle.sld-bus-9.sld-node-infos {
     stroke-width: 3px;
     stroke: var(--vl-color, black);
 }
