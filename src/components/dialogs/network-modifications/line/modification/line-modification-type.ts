@@ -6,27 +6,26 @@
  */
 
 import { UUID } from 'crypto';
-import { AttributeModification, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import { OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import { Property } from '../../common/properties/property-utils';
 
-export interface LineModificationEditData {
-    uuid?: string;
+export interface LineModificationFormInfos {
     equipmentId?: string;
-    equipmentName?: { value: string };
+    equipmentName?: string;
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid: string;
     lineId: string;
     lineName: string | null;
-    r: AttributeModification<number> | null;
-    x: AttributeModification<number>;
-    g1: AttributeModification<number>;
-    b1: AttributeModification<number>;
-    g2: AttributeModification<number>;
-    b2: AttributeModification<number>;
+    r: number;
+    x: number;
+    g1: number;
+    b1: number;
+    g2: number;
+    b2: number;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string>;
-    selectedOperationalLimitsGroup2: AttributeModification<string>;
+    selectedOperationalLimitsGroup1: string | null;
+    selectedOperationalLimitsGroup2: string | null;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;

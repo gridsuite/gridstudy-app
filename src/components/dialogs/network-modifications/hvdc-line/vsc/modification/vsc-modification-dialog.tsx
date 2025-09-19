@@ -216,10 +216,15 @@ const VscModificationDialog: React.FC<any> = ({
                                     reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable2,
                                 },
                             });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                }),
+                                {
+                                    keepDirty: true,
+                                }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })

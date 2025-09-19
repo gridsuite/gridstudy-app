@@ -7,6 +7,7 @@
 
 import { Box, CircularProgress, CircularProgressProps } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     overlay: {
@@ -24,7 +25,7 @@ const styles = {
         zIndex: 99,
         fontSize: 15,
     },
-};
+} as const satisfies MuiStyles;
 
 interface LoaderWithOverlayProps {
     color: CircularProgressProps['color'];

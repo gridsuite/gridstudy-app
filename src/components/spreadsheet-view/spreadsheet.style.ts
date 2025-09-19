@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { type MuiStyles } from '@gridsuite/commons-ui';
+
 export const spreadsheetStyles = {
     spreadsheetButton: {
         display: 'inline-flex',
@@ -15,4 +17,4 @@ export const spreadsheetStyles = {
         borderRadius: '6px',
         border: '1px solid',
     },
-};
+} as const satisfies MuiStyles;
