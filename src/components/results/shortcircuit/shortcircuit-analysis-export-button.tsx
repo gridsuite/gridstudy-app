@@ -40,6 +40,14 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         setIsCsvExportSuccessful(false);
     }, [nodeUuid, analysisType]);
 
+    useEffect(() => {
+        if (disabled) {
+            // reinit the success state when the button is disabled,
+            // for example when the calcul status change or results change
+            setIsCsvExportSuccessful(false);
+        }
+    }, [disabled]);
+
     const enumValueTranslations = useMemo(() => {
         const returnedValue: Record<string, string> = {};
         const enumValuesToTranslate = [

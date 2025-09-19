@@ -41,6 +41,14 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
         setIsCsvExportSuccessful(false);
     }, [nodeUuid, resultType]);
 
+    useEffect(() => {
+        if (disabled) {
+            // reinit the success state when the button is disabled,
+            // for example when the calcul status change or results change
+            setIsCsvExportSuccessful(false);
+        }
+    }, [disabled]);
+
     const enumValueTranslations = useMemo(() => {
         const returnedValue: Record<string, string> = {
             [PERMANENT_LIMIT_NAME]: intl.formatMessage({
