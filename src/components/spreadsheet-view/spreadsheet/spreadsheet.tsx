@@ -22,7 +22,7 @@ interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
-    nodeAliases: NodeAlias[] | undefined;
+    nodeAliases: NodeAlias[];
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;

@@ -1530,11 +1530,10 @@ export const reducer = createReducer(initialState, (builder) => {
             const currentEquipment: Record<string, Identifiable> | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
-            // Format the updated equipments to match the table format
-            const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
-
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
-            if (currentEquipment !== undefined) {
+            if (currentEquipment) {
+                // Format the updated equipments to match the table format
+                const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
