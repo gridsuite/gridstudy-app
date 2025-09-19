@@ -56,11 +56,11 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
         (params: RowClassParams) => {
             if ((isFromContingency && params?.data?.contingencyId) || (!isFromContingency && params?.data?.subjectId)) {
                 return {
-                    backgroundColor: theme.selectedRow.background,
+                    backgroundColor: theme.selectedRow.backgroundColor,
                 };
             }
         },
-        [isFromContingency, theme.selectedRow.background]
+        [isFromContingency, theme.selectedRow.backgroundColor]
     );
 
     const agGridProps = {

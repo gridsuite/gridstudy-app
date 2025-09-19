@@ -15,7 +15,7 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.formFiller.background,
+        backgroundColor: theme.formFiller.backgroundColor,
     }),
 } as const satisfies MuiStyles;
 

@@ -1177,7 +1177,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         triggerMapResizeOnChange={[visible]}
                         renderPopover={renderLinePopover}
                         mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
-                        mapTheme={theme?.palette.mode}
+                        mapTheme={theme.palette.mode}
                         areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
                         onDrawPolygonModeActive={handleDrawingModeChange}
                         onPolygonChanged={(features) => {
