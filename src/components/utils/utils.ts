@@ -142,13 +142,13 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): Tempor
         };
     });
 
-export const formatToTemporaryLimitsDialogForm = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormInfos[] =>
+export const formatToTemporaryLimitsFormInfos = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormInfos[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
             [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
-            [DELETION_MARK]: false,
+            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 

@@ -58,7 +58,7 @@ import {
     getLimitsValidationSchema,
     addModificationTypeToOpLimitsGroups,
     getAllLimitsFormData,
-    formatOpLimitGroups,
+    formatOpLimitGroupsToFormInfos,
     combineFormAndMapServerLimitsGroups,
     addOperationTypeToSelectedOpLG,
 } from '../../../limits/limits-pane-utils';
@@ -205,7 +205,7 @@ const LineModificationDialog = ({
                     b2: convertInputValue(FieldType.B2, lineModification.b2?.value ?? null),
                 }),
                 ...getAllLimitsFormData(
-                    formatOpLimitGroups(lineModification.operationalLimitsGroups), // TODO : aller typer tout ça plus proprement => doit donner un type form au fnal
+                    formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
                     lineModification.selectedOperationalLimitsGroup1?.value ?? null,
                     lineModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),

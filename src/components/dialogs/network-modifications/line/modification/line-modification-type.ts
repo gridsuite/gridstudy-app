@@ -80,13 +80,12 @@ export interface OperationalLimitsGroupFormInfos {
     // "ID" from the map server is stored as NAME in the form because of this
     [ID]: string;
     [NAME]: string;
-    [APPLICABIlITY]?: string;
     [CURRENT_LIMITS]: CurrentLimitsFormInfos;
 }
 
 export interface CurrentLimitsFormInfos {
-    [ID]: string; // TODO : needed here or only in OperationalLimitsGroupDialogForm ??
-    [APPLICABIlITY]?: string; // TODO : needed here or only in OperationalLimitsGroupDialogForm ??
+    [ID]: string;
+    [APPLICABIlITY]?: string;
     [PERMANENT_LIMIT]: number | null;
     [TEMPORARY_LIMITS]: TemporaryLimitFormInfos[];
 }

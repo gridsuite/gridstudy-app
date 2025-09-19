@@ -91,7 +91,7 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    formatOpLimitGroups,
+    formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
@@ -247,7 +247,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
                 ...getAllLimitsFormData(
-                    formatOpLimitGroups(twtModification.operationalLimitsGroups),
+                    formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroup1?.value ?? null,
                     twtModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),
