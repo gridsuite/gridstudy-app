@@ -12,7 +12,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
-import { EquipmentType, CustomMenuItem } from '@gridsuite/commons-ui';
+import { type EquipmentType, CustomMenuItem, type MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
@@ -22,7 +22,7 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
 
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;

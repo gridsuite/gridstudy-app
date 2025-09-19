@@ -7,7 +7,7 @@
 
 import { FunctionComponent, RefObject } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
-import { CustomAGGrid, CsvExport } from '@gridsuite/commons-ui';
+import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { Box } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
@@ -28,7 +28,7 @@ const styles = {
     grid: {
         flexGrow: '1',
     },
-};
+} as const satisfies MuiStyles;
 
 interface RenderTableAndExportCsvProps {
     gridRef: RefObject<AgGridReact>;

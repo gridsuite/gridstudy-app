@@ -15,7 +15,7 @@ import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { COL_STATUS, StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import { AppState } from '../../../redux/reducer';
-import { CustomAGGrid, ComputingType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { fetchDynamicSecurityAnalysisStatus } from '../../../services/study/dynamic-security-analysis';
 import { MEDIUM_COLUMN_WIDTH } from '../dynamicsimulation/utils/dynamic-simulation-result-utils';
 import { dynamicSecurityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
@@ -26,7 +26,7 @@ const styles = {
     loader: {
         height: '4px',
     },
-};
+} as const satisfies MuiStyles;
 
 const defaultColDef = {
     filter: true,

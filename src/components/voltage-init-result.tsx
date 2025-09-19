@@ -9,9 +9,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { Box, Button, LinearProgress, Stack, Theme, Typography } from '@mui/material';
+import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import { useSnackMessage, ComputingType, mergeSx } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
@@ -50,13 +50,13 @@ const styles = {
         top: 0,
         left: 0,
     },
-    succeed: (theme: Theme) => ({
+    succeed: (theme) => ({
         color: theme.palette.success.main,
     }),
-    fail: (theme: Theme) => ({
+    fail: (theme) => ({
         color: theme.palette.error.main,
     }),
-    buttonApplyModifications: (theme: Theme) => ({
+    buttonApplyModifications: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(2),
@@ -82,7 +82,7 @@ const styles = {
     hide: {
         display: 'none',
     },
-};
+} as const satisfies MuiStyles;
 
 export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     result = null,

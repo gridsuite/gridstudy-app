@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent } from 'react';
-
 import { Stack, Typography } from '@mui/material';
-
 import { StateEstimationResultStatusProps } from './state-estimation-result.type';
-
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     typography: {
@@ -19,7 +17,7 @@ const styles = {
     valueTypography: {
         marginLeft: '10px',
     },
-};
+} as const satisfies MuiStyles;
 
 export const StateEstimationStatusResult: FunctionComponent<StateEstimationResultStatusProps> = ({ result }) => {
     const renderStateEstimationStatusResult = () => {

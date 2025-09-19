@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Theme } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 export const reportStyles = {
-    mainContainer: (theme: Theme) => {
+    mainContainer: (theme) => {
         return {
             display: 'flex',
             flexDirection: 'column',
@@ -16,4 +16,4 @@ export const reportStyles = {
             p: theme.spacing(1),
         };
     },
-};
+} as const satisfies MuiStyles;
