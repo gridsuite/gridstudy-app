@@ -8,6 +8,7 @@
 import { Grid } from '@mui/material';
 import {
     ENABLED,
+    EQUIPMENT,
     LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
     REGULATION_MODE,
@@ -15,6 +16,7 @@ import {
     REGULATION_TYPE,
     TARGET_DEADBAND,
     TARGET_V,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -104,17 +106,44 @@ const RatioTapChangerPane = ({
                 if (curRatioTapChanger[REGULATION_MODE] === null) {
                     setValue(`${id}.${REGULATION_MODE}`, getComputedRegulationModeId(previousValues));
                 }
+                if (curRatioTapChanger[TARGET_V] === null) {
+                    setValue(`${id}.${TARGET_V}`, previousValues?.ratioTapChanger?.targetV);
+                }
+                if (curRatioTapChanger[TARGET_DEADBAND] === null) {
+                    setValue(`${id}.${TARGET_DEADBAND}`, previousValues?.ratioTapChanger?.targetDeadband);
+                }
                 if (curRatioTapChanger[REGULATION_TYPE] === null) {
                     setValue(`${id}.${REGULATION_TYPE}`, getComputedRegulationTypeId(previousValues));
                 }
                 if (curRatioTapChanger[REGULATION_SIDE] === null) {
                     setValue(`${id}.${REGULATION_SIDE}`, getComputedTapSideId(previousValues));
                 }
-                if (curRatioTapChanger[TARGET_V] === null) {
-                    setValue(`${id}.${TARGET_V}`, previousValues?.ratioTapChanger?.targetV);
+                if (curRatioTapChanger[VOLTAGE_LEVEL] === null) {
+                    const prevVl = voltageLevelOptions.find(
+                        (vl) => vl.id === previousValues?.ratioTapChanger?.regulatingTerminalVlId
+                    );
+                    if (prevVl) {
+                        const newVlValue = {
+                            id: prevVl.id,
+                            label: prevVl.name ?? '',
+                        };
+                        setValue(`${id}.${VOLTAGE_LEVEL}`, newVlValue);
+                    } else {
+                        // not supposed to happen, but if it does, we want to log it and keep the form as it is
+                        console.error('Voltage level not found:', prevVl);
+                    }
                 }
-                if (curRatioTapChanger[TARGET_DEADBAND] === null) {
-                    setValue(`${id}.${TARGET_DEADBAND}`, previousValues?.ratioTapChanger?.targetDeadband);
+                if (curRatioTapChanger[EQUIPMENT] === null) {
+                    const prevEquipmentId = previousValues?.ratioTapChanger?.regulatingTerminalConnectableId;
+                    if (prevEquipmentId) {
+                        const prevEquipmentType = previousValues?.ratioTapChanger?.regulatingTerminalConnectableType;
+                        const newEquipment = {
+                            id: prevEquipmentId,
+                            label: prevEquipmentType,
+                            type: prevEquipmentType,
+                        };
+                        setValue(`${id}.${EQUIPMENT}`, newEquipment);
+                    }
                 }
             }
         },
