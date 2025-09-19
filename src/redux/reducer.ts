@@ -776,6 +776,9 @@ const initialState: AppState = {
         [SpreadsheetEquipmentType.GENERATOR]: {
             regulatingTerminal: false,
         },
+        [SpreadsheetEquipmentType.BUS]: {
+            networkComponents: false,
+        },
     },
     diagramGridLayout: {
         gridLayouts: {},
@@ -1612,24 +1615,37 @@ export const reducer = createReducer(initialState, (builder) => {
             action.equipmentType !== SpreadsheetEquipmentType.BRANCH &&
             action.equipmentType !== SpreadsheetEquipmentType.LINE &&
             action.equipmentType !== SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
-            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR
+            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR &&
+            action.equipmentType !== SpreadsheetEquipmentType.BUS
         ) {
             return;
         }
-        const propsToClean =
-            action.equipmentType === SpreadsheetEquipmentType.GENERATOR
-                ? {
-                      regulatingTerminalVlName: undefined,
-                      regulatingTerminalConnectableId: undefined,
-                      regulatingTerminalConnectableType: undefined,
-                      regulatingTerminalVlId: undefined,
-                  }
-                : {
-                      operationalLimitsGroup1: undefined,
-                      operationalLimitsGroup1Names: undefined,
-                      operationalLimitsGroup2: undefined,
-                      operationalLimitsGroup2Names: undefined,
-                  };
+        let propsToClean;
+        switch (action.equipmentType) {
+            case SpreadsheetEquipmentType.GENERATOR:
+                propsToClean = {
+                    regulatingTerminalVlName: undefined,
+                    regulatingTerminalConnectableId: undefined,
+                    regulatingTerminalConnectableType: undefined,
+                    regulatingTerminalVlId: undefined,
+                };
+                break;
+            case SpreadsheetEquipmentType.LINE:
+            case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
+            case SpreadsheetEquipmentType.BRANCH:
+                propsToClean = {
+                    operationalLimitsGroup1: undefined,
+                    operationalLimitsGroup1Names: undefined,
+                    operationalLimitsGroup2: undefined,
+                    operationalLimitsGroup2Names: undefined,
+                };
+                break;
+            case SpreadsheetEquipmentType.BUS:
+                propsToClean = {
+                    synchronousComponentNum: undefined,
+                    connectedComponentNum: undefined,
+                };
+        }
         state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
             state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
                 state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]

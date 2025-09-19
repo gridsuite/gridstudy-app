@@ -29,10 +29,14 @@ export function useOptionalLoadingParametersForEquipments(type: SpreadsheetEquip
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
+    const remoteBusNetworkComponents = useSelector(
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
+    );
     const [branchOlg, setBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [lineOlg, setLineOlg] = useState<boolean>(remoteLineOlg);
     const [twtOlg, setTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [generatorRegTerm, setGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [busNetworkComponents, setBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
     const {
         value: shouldLoadOptionalLoadingParameters,
         setValue: setShouldLoadOptionalLoadingParameters,
@@ -77,16 +81,31 @@ export function useOptionalLoadingParametersForEquipments(type: SpreadsheetEquip
             !remoteGeneratorRegTerm
         ) {
             setShouldCleanOptionalLoadingParameters(true);
+        } else if (
+            type === SpreadsheetEquipmentType.BUS &&
+            remoteBusNetworkComponents !== busNetworkComponents &&
+            remoteBusNetworkComponents
+        ) {
+            setShouldLoadOptionalLoadingParameters(true);
+        } else if (
+            type === SpreadsheetEquipmentType.BUS &&
+            remoteBusNetworkComponents !== busNetworkComponents &&
+            !remoteBusNetworkComponents
+        ) {
+            setShouldCleanOptionalLoadingParameters(true);
         }
         setBranchOlg(remoteBranchOlg);
         setLineOlg(remoteLineOlg);
         setTwtOlg(remoteTwtOlg);
         setGeneratorRegTerm(remoteGeneratorRegTerm);
+        setBusNetworkComponents(remoteBusNetworkComponents);
     }, [
         branchOlg,
+        busNetworkComponents,
         generatorRegTerm,
         lineOlg,
         remoteBranchOlg,
+        remoteBusNetworkComponents,
         remoteGeneratorRegTerm,
         remoteLineOlg,
         remoteTwtOlg,

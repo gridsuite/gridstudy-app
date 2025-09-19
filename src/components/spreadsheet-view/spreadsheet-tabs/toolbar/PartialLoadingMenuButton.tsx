@@ -47,10 +47,14 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
         (state: AppState) =>
             state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.GENERATOR].regulatingTerminal
     );
+    const remoteBusNetworkComponents = useSelector(
+        (state: AppState) => state.spreadsheetOptionalLoadingParameters[SpreadsheetEquipmentType.BUS].networkComponents
+    );
     const [localBranchOlg, setLocalBranchOlg] = useState<boolean>(remoteBranchOlg);
     const [localLineOlg, setLocalLineOlg] = useState<boolean>(remoteLineOlg);
     const [localTwtOlg, setLocalTwtOlg] = useState<boolean>(remoteTwtOlg);
     const [localGeneratorRegTerm, setLocalGeneratorRegTerm] = useState<boolean>(remoteGeneratorRegTerm);
+    const [localBusNetworkComponents, setLocalBusNetworkComponents] = useState<boolean>(remoteBusNetworkComponents);
 
     const handleClick = useCallback<NonNullable<TooltipIconButtonProps['onClick']>>(
         (event) => {
@@ -59,8 +63,9 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
             setLocalLineOlg(remoteLineOlg);
             setLocalTwtOlg(remoteTwtOlg);
             setLocalGeneratorRegTerm(remoteGeneratorRegTerm);
+            setLocalBusNetworkComponents(remoteBusNetworkComponents);
         },
-        [remoteBranchOlg, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
+        [remoteBranchOlg, remoteBusNetworkComponents, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
     );
 
     const handleClose = useCallback(() => {
@@ -69,7 +74,8 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
             localBranchOlg !== remoteBranchOlg ||
             localLineOlg !== remoteLineOlg ||
             localTwtOlg !== remoteTwtOlg ||
-            localGeneratorRegTerm !== remoteGeneratorRegTerm
+            localGeneratorRegTerm !== remoteGeneratorRegTerm ||
+            localBusNetworkComponents !== remoteBusNetworkComponents
         ) {
             if (studyUuid) {
                 updateSpreadsheetParameters(studyUuid, {
@@ -80,6 +86,9 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     },
                     [SpreadsheetEquipmentType.GENERATOR]: {
                         regulatingTerminal: localGeneratorRegTerm,
+                    },
+                    [SpreadsheetEquipmentType.BUS]: {
+                        networkComponents: localBusNetworkComponents,
                     },
                 });
             }
@@ -93,14 +102,16 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
         remoteTwtOlg,
         localGeneratorRegTerm,
         remoteGeneratorRegTerm,
+        localBusNetworkComponents,
+        remoteBusNetworkComponents,
         studyUuid,
     ]);
 
     const open = anchorEl !== undefined;
 
     const isOptionalData = useMemo(
-        () => remoteBranchOlg || remoteLineOlg || remoteTwtOlg || remoteGeneratorRegTerm,
-        [remoteBranchOlg, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
+        () => remoteBranchOlg || remoteLineOlg || remoteTwtOlg || remoteGeneratorRegTerm || remoteBusNetworkComponents,
+        [remoteBranchOlg, remoteBusNetworkComponents, remoteGeneratorRegTerm, remoteLineOlg, remoteTwtOlg]
     );
 
     return (
@@ -165,6 +176,15 @@ export default function PartialLoadingMenuButton({ disabled, ...props }: Readonl
                     value={localGeneratorRegTerm}
                     labelId="spreadsheet/tabs/lazy_loading/labels/regulatingTerminal"
                     onChange={setLocalGeneratorRegTerm}
+                />
+
+                <ListSubheader sx={styles.headers}>
+                    <FormattedMessage id="BUS" />
+                </ListSubheader>
+                <PartialLoadingMenuItem
+                    value={localBusNetworkComponents}
+                    labelId="spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation"
+                    onChange={setLocalBusNetworkComponents}
                 />
             </Menu>
         </>
