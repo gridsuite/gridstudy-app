@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { isSameNode } from './graph/util/model-functions';
+import { isRootNode, isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
@@ -26,11 +26,12 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
+import { useIntl } from 'react-intl';
 
 const styles = (theme) => ({
     flexGrow: 1,
@@ -45,6 +46,14 @@ const styles = (theme) => ({
     '.react-flow__attribution': {
         backgroundColor: theme.palette.background.paper,
     },
+    contentBox: (theme) => ({
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'flex-end',
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    }),
 });
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
@@ -65,7 +74,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [tooltipContent, setTooltipContent] = useState('');
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
     const nodesMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
+
+    const intl = useIntl();
 
     const updateNodePositions = useCallback(() => {
         if (treeModel && treeModel.treeNodes?.length > 0) {
@@ -304,6 +319,43 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         }
     }, [onTreePanelResize, handleFocusNode]);
 
+    const handleNodeMouseEnter = useCallback(
+        (event, node) => {
+            if (!node?.data || isRootNode(node)) {
+                return;
+            }
+
+            const content = (
+                <Box style={{ whiteSpace: 'pre-line' }}>
+                    <Box sx={styles.contentBox}>
+                        <OverflowableText text={node.data.label} />
+                    </Box>
+
+                    <Box>
+                        {intl.formatMessage({ id: 'nodeStatus' })}:{' '}
+                        {intl.formatMessage({ id: node.data.globalBuildStatus })}
+                    </Box>
+                    <Box>
+                        {intl.formatMessage({ id: 'nodeType' })}: {intl.formatMessage({ id: node.data.nodeType })}
+                    </Box>
+                </Box>
+            );
+
+            setTooltipContent(content);
+            setTooltipPosition({ x: event.clientX + 10, y: event.clientY + 10 });
+            setTooltipOpen(true);
+        },
+        [intl]
+    );
+
+    const handleNodeMouseMove = useCallback((event) => {
+        setTooltipPosition({ x: event.clientX + 10, y: event.clientY + 10 });
+    }, []);
+
+    const handleNodeMouseLeave = useCallback(() => {
+        setTooltipOpen(false);
+    }, []);
+
     return (
         <Box sx={styles}>
             <ReactFlow
@@ -316,6 +368,9 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                 snapGrid={snapGrid}
                 onNodeContextMenu={onNodeContextMenu}
                 onNodeClick={onNodeClick}
+                onNodeMouseEnter={handleNodeMouseEnter}
+                onNodeMouseMove={handleNodeMouseMove}
+                onNodeMouseLeave={handleNodeMouseLeave}
                 elementsSelectable
                 selectNodesOnDrag={false}
                 nodeTypes={nodeTypes}
@@ -353,6 +408,35 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                 </Controls>
                 <RootNetworkPanel />
             </ReactFlow>
+            {tooltipOpen && (
+                <Tooltip
+                    open={tooltipOpen}
+                    title={tooltipContent}
+                    placement="right"
+                    slotProps={{
+                        tooltip: {
+                            sx: {
+                                maxWidth: 'none',
+                                width: 'auto',
+                            },
+                        },
+                    }}
+                    PopperProps={{
+                        anchorEl: {
+                            getBoundingClientRect: () => ({
+                                top: tooltipPosition.y,
+                                left: tooltipPosition.x,
+                                right: tooltipPosition.x,
+                                bottom: tooltipPosition.y,
+                                width: 0,
+                                height: 0,
+                            }),
+                        },
+                    }}
+                >
+                    <Box />
+                </Tooltip>
+            )}
         </Box>
     );
 };
