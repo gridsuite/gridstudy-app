@@ -39,6 +39,7 @@ import { fetchStudy, recreateStudyNetwork, reindexAllRootNetwork } from 'service
 import { HttpStatusCode } from 'utils/http-status-code';
 import { NodeType } from './graph/tree-node.type';
 import {
+    isExportNetworkNotification,
     isIndexationStatusNotification,
     isLoadflowResultNotification,
     isStateEstimationResultNotification,
@@ -47,6 +48,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
+import useExportNotificationHandler from '../hooks/use-export-notification-handler.js';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();
@@ -142,6 +144,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
+
+    const { handleExportNotification } = useExportNotificationHandler();
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -264,11 +268,15 @@ export function StudyContainer({ view, onChangeTab }) {
                 sendAlert(eventData);
                 return; // here, we do not want to update the redux state
             }
+            if (isExportNetworkNotification(eventData)) {
+                handleExportNotification(eventData);
+                return;
+            }
             displayErrorNotifications(eventData);
             dispatch(studyUpdated(eventData));
         },
         // Note: dispatch doesn't change
-        [dispatch, displayErrorNotifications, sendAlert]
+        [dispatch, displayErrorNotifications, handleExportNotification, sendAlert]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleStudyUpdate });
