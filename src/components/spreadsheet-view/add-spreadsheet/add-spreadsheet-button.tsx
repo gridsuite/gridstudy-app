@@ -6,11 +6,10 @@
  */
 
 import { useCallback, useState } from 'react';
-import { Button, type ButtonProps, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
+import { Button, type ButtonProps, Menu, MenuItem, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
 import AddSpreadsheetFromModelDialog from './dialogs/add-spreadsheet-from-model-dialog';
@@ -19,16 +18,15 @@ import type { DialogComponent } from './types';
 
 export type AddSpreadsheetButtonProps = {
     disabled: boolean;
-    resetTabIndex: (newTablesDefinitions: SpreadsheetTabDefinition[]) => void;
     resetNodeAliases: ResetNodeAliasCallback;
 };
 
 const styles = {
-    addButton: (theme: Theme) => ({
+    addButton: (theme) => ({
         color: theme.palette.primary.main,
         minWidth: '100%',
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface SpreadsheetOption {
     id: string;
@@ -57,11 +55,7 @@ const NEW_SPREADSHEET_CREATION_OPTIONS = {
     },
 } as const satisfies Record<string, SpreadsheetOption>;
 
-export default function AddSpreadsheetButton({
-    disabled,
-    resetTabIndex,
-    resetNodeAliases,
-}: Readonly<AddSpreadsheetButtonProps>) {
+export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Readonly<AddSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
@@ -100,9 +94,7 @@ export default function AddSpreadsheetButton({
                     </MenuItem>
                 ))}
             </Menu>
-            {SelectedDialog && (
-                <SelectedDialog open={dialogOpen} resetTabIndex={resetTabIndex} resetNodeAliases={resetNodeAliases} />
-            )}
+            {SelectedDialog && <SelectedDialog open={dialogOpen} resetNodeAliases={resetNodeAliases} />}
         </>
     );
 }

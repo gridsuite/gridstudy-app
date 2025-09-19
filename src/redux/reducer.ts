@@ -165,6 +165,7 @@ import {
     SET_COMPUTING_STATUS,
     SET_COMPUTING_STATUS_INFOS,
     SET_DIAGRAM_GRID_LAYOUT,
+    SET_DIRTY_COMPUTATION_PARAMETERS,
     SET_LAST_COMPLETED_COMPUTATION,
     SET_MODIFICATIONS_DRAWER_OPEN,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -183,6 +184,7 @@ import {
     type SetComputingStatusAction,
     type SetComputingStatusParametersAction,
     type SetDiagramGridLayoutAction,
+    type SetDirtyComputationParametersAction,
     type SetLastCompletedComputationAction,
     type SetModificationsDrawerOpenAction,
     type SetModificationsInProgressAction,
@@ -221,6 +223,10 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    SET_ACTIVE_SPREADSHEET_TAB,
+    SetActiveSpreadsheetTabAction,
+    SET_ADDED_SPREADSHEET_TAB,
+    SetAddedSpreadsheetTabAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -549,10 +555,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
-
     appTabIndex: number;
     attemptedLeaveParametersTabIndex: number | null;
-
+    isDirtyComputationParameters: boolean;
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
@@ -700,17 +705,22 @@ export type GlobalFilterSpreadsheetState = Record<UUID, GlobalFilter[]>;
 interface TablesState {
     uuid: UUID | null;
     definitions: SpreadsheetTabDefinition[];
+    activeTabUuid: UUID | null;
+    addedTable: UUID | null; // to track the last added table for setting the focus on it
 }
 
 const initialTablesState: TablesState = {
     uuid: null,
     definitions: [],
+    activeTabUuid: null,
+    addedTable: null,
 };
 
 const initialState: AppState = {
     syncEnabled: false,
     appTabIndex: 0,
     attemptedLeaveParametersTabIndex: null,
+    isDirtyComputationParameters: false,
     studyUuid: null,
     currentTreeNode: null,
     currentRootNetworkUuid: null,
@@ -950,6 +960,9 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(CANCEL_LEAVE_PARAMETERS_TAB, (state) => {
         state.attemptedLeaveParametersTabIndex = null;
     });
+    builder.addCase(SET_DIRTY_COMPUTATION_PARAMETERS, (state, action: SetDirtyComputationParametersAction) => {
+        state.isDirtyComputationParameters = action.isDirty;
+    });
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
         // Load toggleOptions for this study
@@ -999,7 +1012,19 @@ export const reducer = createReducer(initialState, (builder) => {
             Object.assign(existingTableDefinition, newTableDefinition);
         } else {
             state.tables.definitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+            // Set as active if it's the unique tab or no tab is currently active
+            if (state.tables.definitions.length === 1 || !state.tables.activeTabUuid) {
+                state.tables.activeTabUuid = newTableDefinition.uuid;
+            }
         }
+    });
+
+    builder.addCase(SET_ACTIVE_SPREADSHEET_TAB, (state, action: SetActiveSpreadsheetTabAction) => {
+        state.tables.activeTabUuid = action.tabUuid;
+    });
+
+    builder.addCase(SET_ADDED_SPREADSHEET_TAB, (state, action: SetAddedSpreadsheetTabAction) => {
+        state.tables.addedTable = action.tabUuid;
     });
 
     builder.addCase(UPDATE_TABLE_COLUMNS, (state, action: UpdateTableColumnsAction) => {
@@ -1037,6 +1062,21 @@ export const reducer = createReducer(initialState, (builder) => {
                 locked: false,
             })),
         }));
+        const isValidAddedTable = state.tables.addedTable
+            ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.addedTable)
+            : false;
+        if (isValidAddedTable) {
+            state.tables.activeTabUuid = state.tables.addedTable;
+        } else {
+            const isValidActiveTab = state.tables.activeTabUuid
+                ? action.tableDefinitions.some((tabDef) => tabDef.uuid === state.tables.activeTabUuid)
+                : false;
+            if (!isValidActiveTab) {
+                state.tables.activeTabUuid =
+                    action.tableDefinitions.length > 0 ? action.tableDefinitions[0].uuid : null;
+            }
+        }
+        state.tables.addedTable = null;
         state[SPREADSHEET_STORE_FIELD] = Object.values(action.tableDefinitions)
             .map((tabDef) => tabDef.uuid)
             .reduce(

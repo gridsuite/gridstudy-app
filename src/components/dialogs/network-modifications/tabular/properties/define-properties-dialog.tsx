@@ -9,9 +9,10 @@ import { useEffect } from 'react';
 import { Grid } from '@mui/material';
 import {
     CustomFormProvider,
-    EquipmentType,
+    type EquipmentType,
     equipmentTypesForPredefinedPropertiesMapper,
-    UseStateBooleanReturn,
+    type MuiStyles,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 
@@ -35,7 +36,7 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-};
+} as const satisfies MuiStyles;
 
 export type DefinePropertiesDialogProps = {
     open: UseStateBooleanReturn;

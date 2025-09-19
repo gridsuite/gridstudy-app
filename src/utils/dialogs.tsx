@@ -5,15 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import { CancelButton } from '@gridsuite/commons-ui';
+import { CancelButton, type SxStyle } from '@gridsuite/commons-ui';
 import { ReactElement, useCallback } from 'react';
-import { SxProps, Theme } from '@mui/material';
 
 interface SelectOptionsDialogProps {
     open: boolean;
@@ -21,7 +16,7 @@ interface SelectOptionsDialogProps {
     onClick: () => void;
     title: string;
     child: ReactElement;
-    style?: SxProps<Theme>;
+    style?: SxStyle;
     validateKey?: string;
     disabled?: boolean;
 }

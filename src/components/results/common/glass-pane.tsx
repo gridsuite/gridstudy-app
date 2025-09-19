@@ -9,6 +9,7 @@ import { ReactNode } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { FunctionComponent } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     glassPane: {
@@ -24,7 +25,7 @@ const styles = {
         justifyContent: 'center',
         gap: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 interface GlassPaneProps {
     active: boolean;

@@ -160,7 +160,9 @@ export type AppActions =
     | ResetSensitivityAnalysisPaginationAction
     | ResetShortcircuitAnalysisPaginationAction
     | LogsResultPaginationAction
-    | ResetLogsPaginationAction;
+    | ResetLogsPaginationAction
+    | SetActiveSpreadsheetTabAction
+    | SetAddedSpreadsheetTabAction;
 
 export const SET_APP_TAB_INDEX = 'SET_APP_TAB_INDEX';
 export type SetAppTabIndexAction = Readonly<Action<typeof SET_APP_TAB_INDEX>> & {
@@ -201,6 +203,18 @@ export type CancelLeaveParametersTabAction = Readonly<Action<typeof CANCEL_LEAVE
 export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
     return {
         type: CANCEL_LEAVE_PARAMETERS_TAB,
+    };
+}
+
+export const SET_DIRTY_COMPUTATION_PARAMETERS = 'SET_DIRTY_COMPUTATION_PARAMETERS';
+export type SetDirtyComputationParametersAction = Readonly<Action<typeof SET_DIRTY_COMPUTATION_PARAMETERS>> & {
+    isDirty: boolean;
+};
+
+export function setDirtyComputationParameters(isDirty: boolean): SetDirtyComputationParametersAction {
+    return {
+        type: SET_DIRTY_COMPUTATION_PARAMETERS,
+        isDirty,
     };
 }
 
@@ -703,6 +717,7 @@ export function setNodeSelectionForCopy(
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
+
 export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
@@ -1259,6 +1274,30 @@ export const updateTableDefinition = (newTableDefinition: SpreadsheetTabDefiniti
     type: UPDATE_TABLE_DEFINITION,
     newTableDefinition,
 });
+
+export const SET_ACTIVE_SPREADSHEET_TAB = 'SET_ACTIVE_SPREADSHEET_TAB';
+export type SetActiveSpreadsheetTabAction = Readonly<Action<typeof SET_ACTIVE_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setActiveSpreadsheetTab(tabUuid: UUID | null): SetActiveSpreadsheetTabAction {
+    return {
+        type: SET_ACTIVE_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
+
+export const SET_ADDED_SPREADSHEET_TAB = 'SET_ADDED_SPREADSHEET_TAB';
+export type SetAddedSpreadsheetTabAction = Readonly<Action<typeof SET_ADDED_SPREADSHEET_TAB>> & {
+    tabUuid: UUID | null;
+};
+
+export function setAddedSpreadsheetTab(tabUuid: UUID | null): SetAddedSpreadsheetTabAction {
+    return {
+        type: SET_ADDED_SPREADSHEET_TAB,
+        tabUuid,
+    };
+}
 
 export const UPDATE_TABLE_COLUMNS = 'UPDATE_TABLE_COLUMNS';
 

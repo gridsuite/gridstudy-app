@@ -8,6 +8,7 @@
 export interface SCAFault {
     id: string;
     elementId: string;
+    voltageLevelId: string;
     faultType: string;
 }
 

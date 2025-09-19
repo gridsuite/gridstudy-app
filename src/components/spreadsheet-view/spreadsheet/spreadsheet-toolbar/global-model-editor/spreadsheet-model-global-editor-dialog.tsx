@@ -7,9 +7,8 @@
 
 import { useEffect } from 'react';
 import { Grid } from '@mui/material';
-import { CustomFormProvider, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { SpreadsheetModelGlobalEditorTable } from './spreadsheet-model-global-editor-table';
@@ -36,7 +35,7 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-};
+} as const satisfies MuiStyles;
 
 const toCustomColumnsGlobalModelDialogFormValues = (columnsModel: ColumnGlobalModel[]) => {
     return { [COLUMNS_MODEL]: columnsModel };

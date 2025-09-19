@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { DeviceHubIcon, OverflowableText } from '@gridsuite/commons-ui';
+import { DeviceHubIcon, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { Box, Divider } from '@mui/material';
 import React from 'react';
 
@@ -26,7 +26,8 @@ const styles = {
         minHeight: '20px',
         minWidth: '20px',
     },
-};
+} as const satisfies MuiStyles;
+
 export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResultsProps> = ({ results }) => {
     return (
         <Box sx={styles.container}>

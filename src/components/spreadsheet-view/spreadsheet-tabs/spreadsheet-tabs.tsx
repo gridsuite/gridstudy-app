@@ -17,13 +17,13 @@ import {
     renameTableDefinition,
     reorderTableDefinitions,
 } from 'redux/actions';
-import { PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
+import { type MuiStyles, PopupConfirmationDialog, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import type { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
 import type { UUID } from 'crypto';
-import type { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
+import type { ColumnDefinitionDto, SpreadsheetConfig } from '../types/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import SpreadsheetTabLabel from './spreadsheet-tab-label';
 import type { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
@@ -38,8 +38,8 @@ import { SaveSpreadsheetCollectionDialog } from '../spreadsheet/spreadsheet-tool
 import SpreadsheetTabsToolbar from './spreadsheet-tabs-toolbar';
 import { SpreadsheetModelGlobalEditorDialog } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor-dialog';
 import {
-    columnsModelForm,
     COLUMNS_MODEL,
+    columnsModelForm,
 } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.utils';
 import { ColumnGlobalModel } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor.type';
 
@@ -57,7 +57,7 @@ const draggableTabStyles = {
         minHeight: 'auto',
         px: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 interface SpreadsheetTabsProps {
     selectedTabUuid: UUID | null;
@@ -211,15 +211,6 @@ export default function SpreadsheetTabs({
         [editDialogOpen]
     );
 
-    const resetTabSelection = useCallback(
-        (newTablesDefinitions: SpreadsheetTabDefinition[]) => {
-            if (newTablesDefinitions.length > 0) {
-                handleSwitchTab(newTablesDefinitions[0].uuid);
-            }
-        },
-        [handleSwitchTab]
-    );
-
     const handleDragEnd = useCallback(
         (result: DropResult) => {
             if (!studyUuid || !result.destination || result.destination.index === result.source.index) {
@@ -301,11 +292,7 @@ export default function SpreadsheetTabs({
         <>
             <Grid container direction="row" wrap="nowrap" item>
                 <Grid item padding={1} xs="auto">
-                    <AddSpreadsheetButton
-                        disabled={disabled}
-                        resetTabIndex={resetTabSelection}
-                        resetNodeAliases={resetNodeAliases}
-                    />
+                    <AddSpreadsheetButton disabled={disabled} resetNodeAliases={resetNodeAliases} />
                 </Grid>
                 <Grid item xs sx={{ overflow: 'hidden' }}>
                     <DroppableTabs

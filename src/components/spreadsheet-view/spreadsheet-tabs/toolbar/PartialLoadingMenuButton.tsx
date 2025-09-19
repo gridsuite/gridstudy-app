@@ -7,10 +7,11 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Badge, ListSubheader, Menu, type SxProps, type Theme } from '@mui/material';
+import { Badge, ListSubheader, Menu } from '@mui/material';
 import { Dataset as DatasetIcon, DatasetOutlined as DatasetDisabled } from '@mui/icons-material';
 import TooltipIconButton, { type TooltipIconButtonProps } from '../../../common/tooltip-icon-button';
 import { useSelector } from 'react-redux';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import type { AppState } from '../../../../redux/reducer';
 import { SpreadsheetEquipmentType } from '../../types/spreadsheet.type';
 import PartialLoadingMenuItem from './PartialLoadingMenuItem';
@@ -20,7 +21,7 @@ const styles = {
     headers: (theme) => ({
         backgroundColor: 'transparent',
     }),
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 export type PartialLoadingMenuButtonProps = Omit<TooltipIconButtonProps, 'tooltip' | 'size' | 'onClick'>;
 

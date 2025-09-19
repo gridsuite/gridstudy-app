@@ -29,6 +29,7 @@ import { isNodeBuilt } from '../../graph/util/model-functions';
 import {
     AttributeModification,
     CurrentLimits,
+    LineModificationInfos,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,
@@ -36,7 +37,7 @@ import {
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import { BranchInfos } from '../../../services/study/network-map.type';
 import { areOperationalLimitsGroupUnique, OperationalLimitsId } from './limits-utils';
-import { LineModificationEditData } from '../network-modifications/line/modification/line-modification-type';
+import { LineModificationFormInfos } from '../network-modifications/line/modification/line-modification-type';
 
 const limitsGroupValidationSchema = (isModification: boolean) => ({
     [ID]: yup.string().nonNullable().required(),
@@ -225,17 +226,17 @@ export const updateTemporaryLimits = (
 };
 
 /**
- * extract data loaded from the map server and merge it with local data in order to fill the operaitonal liits groups modification interface
+ * extract data loaded from the map server and merge it with local data in order to fill the operational limits groups modification interface
  */
 export const updateOpLimitsGroups = (
-    formBranchModification: LineModificationEditData,
+    formBranchModification: LineModificationFormInfos,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroup[] => {
     let updatedOpLG: OperationalLimitsGroup[] = formBranchModification.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
     updatedOpLG.forEach((opLG: OperationalLimitsGroup) => {
-        const equivalentFromMapServer = mapServerBranch.currentLimits.find(
+        const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
         );
@@ -248,7 +249,7 @@ export const updateOpLimitsGroups = (
     });
 
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
-    mapServerBranch.currentLimits.forEach((currentLimit: CurrentLimits) => {
+    mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroup) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG.applicability
@@ -367,7 +368,7 @@ export function addOperationTypeToSelectedOpLG(
 export const addModificationTypeToOpLimitsGroups = (
     limitsGroups: OperationalLimitsGroup[],
     networkLine: BranchInfos | null,
-    editData: LineModificationEditData | null | undefined,
+    editData: LineModificationInfos | null | undefined,
     currentNode: CurrentTreeNode
 ) => {
     let modificationLimitsGroups: OperationalLimitsGroup[] = sanitizeLimitsGroups(limitsGroups);
@@ -383,7 +384,7 @@ export const addModificationTypeToOpLimitsGroups = (
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(formLimitsGroup.currentLimits?.[TEMPORARY_LIMITS]),
             networkCurrentLimits?.temporaryLimits ?? [],
-            editData?.operationalLimitsGroups.find(
+            editData?.operationalLimitsGroups?.find(
                 (editDataOpLimitGroup: OperationalLimitsGroup) =>
                     editDataOpLimitGroup.id === formLimitsGroup.name &&
                     editDataOpLimitGroup.applicability === formLimitsGroup.applicability

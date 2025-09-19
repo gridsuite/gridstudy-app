@@ -5,31 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, mergeSx, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
-
+import { CheckBoxList, mergeSx, type MuiStyles, type Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
-
-import {
-    Box,
-    Checkbox,
-    CircularProgress,
-    Theme,
-    Toolbar,
-    Typography,
-    Badge,
-    IconButton,
-    Chip,
-    Tooltip,
-} from '@mui/material';
-
+import { Badge, Box, Checkbox, Chip, CircularProgress, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
@@ -41,11 +26,11 @@ import { customizeCurrentParameters, formatCaseImportParameters } from '../../ut
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
-    checkboxListItem: (theme: Theme) => ({
+    checkboxListItem: (theme) => ({
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
     }),
-    rootNetworksTitle: (theme: Theme) => ({
+    rootNetworksTitle: (theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
         overflow: 'hidden',
@@ -56,7 +41,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
     }),
-    rootNetworkMonoRoot: (theme: Theme) => ({
+    rootNetworkMonoRoot: (theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
         overflow: 'hidden',
@@ -71,13 +56,13 @@ const styles = {
             backgroundColor: theme.palette.action.hover,
         },
     }),
-    rootNetworkMonoRootHover: (theme: Theme) => ({
+    rootNetworkMonoRootHover: (theme) => ({
         cursor: 'pointer',
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
         },
     }),
-    toolbar: (theme: Theme) => ({
+    toolbar: (theme) => ({
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
             padding: 0,
@@ -87,23 +72,23 @@ const styles = {
         border: theme.spacing(1),
         flexShrink: 0,
     }),
-    toolbarIcon: (theme: Theme) => ({
+    toolbarIcon: (theme) => ({
         marginRight: theme.spacing(1),
     }),
     filler: {
         flexGrow: 1,
     },
-    toolbarCircularProgress: (theme: Theme) => ({
+    toolbarCircularProgress: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: theme.spacing(1.25),
         marginRight: theme.spacing(1.25),
     }),
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         width: theme.spacing(3),
     }),
-};
+} as const satisfies MuiStyles;
 
 const ItemLabelSecondary = (item: RootNetworkMetadata) => {
     return <Chip size="small" label={item.tag} color="primary" />;
