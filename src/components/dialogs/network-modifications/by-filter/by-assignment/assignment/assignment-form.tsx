@@ -12,6 +12,7 @@ import {
     ElementType,
     FloatInput,
     IntegerInput,
+    Option,
     SelectInput,
     SwitchInput,
     TextInput,
@@ -26,6 +27,7 @@ import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
+import { useIntl } from 'react-intl';
 
 interface AssignmentFormProps {
     name: string;
@@ -42,7 +44,8 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     equipmentFields,
     equipmentType,
 }) => {
-    const { setValue } = useFormContext();
+    const { setError, setValue } = useFormContext();
+    const intl = useIntl();
 
     const watchEditedField = useWatch({
         name: `${name}.${index}.${EDITED_FIELD}`,
@@ -50,6 +53,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
     const dataType = useMemo(() => {
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
+    }, [watchEditedField, equipmentFields]);
+
+    const settable_to_none: boolean = useMemo(() => {
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.settableToNone ?? false;
     }, [watchEditedField, equipmentFields]);
 
     const watchPropertyName = useWatch({
@@ -74,6 +81,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     if (prevDataType && prevDataType !== dataType) {
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
+
+    const emptyValueStr = useMemo(() => {
+        return intl.formatMessage({ id: 'EmptyField' });
+    }, [intl]);
 
     const formatLabelWithUnit = useFormatLabelWithUnit();
 
@@ -139,12 +150,54 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         }
 
         if (dataType === DataType.STRING) {
-            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
+            if (settable_to_none) {
+                return (
+                    <AutocompleteInput
+                        name={`${name}.${index}.${VALUE_FIELD}`}
+                        label={'ValueOrEmptyField'}
+                        options={[emptyValueStr]}
+                        size={'small'}
+                        getOptionLabel={(option: Option) =>
+                            typeof option !== 'string' ? (option?.label ?? option) : option
+                        }
+                        allowNewValue
+                    />
+                );
+            } else {
+                return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
+            }
+        }
+
+        if (dataType === DataType.DOUBLE && settable_to_none) {
+            return (
+                <AutocompleteInput
+                    name={`${name}.${index}.${VALUE_FIELD}`}
+                    label={'ValueOrEmptyField'}
+                    options={[emptyValueStr]}
+                    onCheckNewValue={(option: Option | null) => {
+                        if (option && option !== emptyValueStr && Number.isNaN(Number(option))) {
+                            setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                message: 'NumericValueOrEmptyField',
+                            });
+                        } else {
+                            setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                message: '',
+                            });
+                        }
+                        return true;
+                    }}
+                    size={'small'}
+                    getOptionLabel={(option: Option) =>
+                        typeof option !== 'string' ? (option?.label ?? option) : option
+                    }
+                    allowNewValue
+                />
+            );
         }
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, name, index, predefinedPropertiesValues, options]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, emptyValueStr, setError]);
 
     return (
         <>
