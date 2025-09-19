@@ -57,11 +57,11 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         (params: RowClassParams) => {
             if (params?.data?.elementId) {
                 return {
-                    backgroundColor: theme.selectedRow.background,
+                    backgroundColor: theme.selectedRow.backgroundColor,
                 };
             }
         },
-        [theme.selectedRow.background]
+        [theme.selectedRow.backgroundColor]
     );
 
     const onRowDataUpdated = useCallback((params: any) => {

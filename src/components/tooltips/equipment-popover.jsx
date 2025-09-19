@@ -22,7 +22,7 @@ const styles = {
         fontSize: 10,
     },
     table: (theme) => ({
-        backgroundColor: theme.tooltipTable.background,
+        backgroundColor: theme.tooltipTable.backgroundColor,
     }),
 };
 

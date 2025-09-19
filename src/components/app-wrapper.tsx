@@ -10,64 +10,62 @@ import App from './app';
 import {
     createTheme,
     CssBaseline,
-    responsiveFontSizes,
-    ThemeProvider,
-    StyledEngineProvider,
     GlobalStyles,
+    responsiveFontSizes,
+    StyledEngineProvider,
     type Theme,
+    type ThemeOptions,
+    ThemeProvider,
 } from '@mui/material';
 import { enUS as MuiCoreEnUS, frFR as MuiCoreFrFR } from '@mui/material/locale';
 import {
-    LIGHT_THEME,
-    LANG_FRENCH,
     CardErrorBoundary,
+    cardErrorBoundaryEn,
+    cardErrorBoundaryFr,
+    commonButtonEn,
+    commonButtonFr,
+    componentsEn,
+    componentsFr,
+    directoryItemsInputEn,
+    directoryItemsInputFr,
+    dndTableEn,
+    dndTableFr,
+    elementSearchEn,
+    elementSearchFr,
+    equipmentSearchEn,
+    equipmentSearchFr,
+    equipmentsEn,
+    equipmentsFr,
+    exportParamsEn,
+    exportParamsFr,
+    filterExpertEn,
+    filterExpertFr,
+    flatParametersEn,
+    flatParametersFr,
+    type GsLangUser,
+    type GsTheme,
+    importParamsEn,
+    importParamsFr,
+    LANG_FRENCH,
+    LIGHT_THEME,
     loginEn,
     loginFr,
+    multipleSelectionDialogEn,
+    multipleSelectionDialogFr,
+    networkModificationsEn,
+    networkModificationsFr,
+    NotificationsProvider,
+    parametersEn,
+    parametersFr,
     reportViewerEn,
     reportViewerFr,
     SnackbarProvider,
-    topBarEn,
-    topBarFr,
     tableEn,
     tableFr,
-    elementSearchEn,
-    elementSearchFr,
-    filterExpertEn,
-    filterExpertFr,
-    equipmentSearchEn,
-    equipmentSearchFr,
-    directoryItemsInputEn,
-    directoryItemsInputFr,
+    topBarEn,
+    topBarFr,
     treeviewFinderEn,
     treeviewFinderFr,
-    cardErrorBoundaryEn,
-    cardErrorBoundaryFr,
-    flatParametersEn,
-    flatParametersFr,
-    multipleSelectionDialogEn,
-    multipleSelectionDialogFr,
-    commonButtonEn,
-    commonButtonFr,
-    componentsFr,
-    componentsEn,
-    dndTableFr,
-    dndTableEn,
-    equipmentsEn,
-    equipmentsFr,
-    networkModificationsEn,
-    networkModificationsFr,
-    importParamsEn,
-    importParamsFr,
-    exportParamsEn,
-    exportParamsFr,
-    parametersEn,
-    parametersFr,
-    NotificationsProvider,
-    MAP_BASEMAP_MAPBOX,
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    type GsTheme,
-    type GsLangUser,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -97,7 +95,7 @@ import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
 import { type AppState } from '../redux/reducer';
-import { PARAM_THEME, basemap_style_theme_key } from '../utils/config-params';
+import { PARAM_THEME } from '../utils/config-params';
 import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 import { AllCommunityModule, ModuleRegistry, provideGlobalGridOptions } from 'ag-grid-community';
 import { lightThemeCssVars } from '../styles/light-theme-css-vars';
@@ -110,28 +108,11 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 provideGlobalGridOptions({ theme: 'legacy' });
 
 const lightTheme = createTheme({
-    components: {
-        MuiTab: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-            },
-        },
-    },
     palette: {
         mode: 'light',
-        toolbarBackground: '#EEE',
-    },
-    link: {
-        color: 'blue',
+        toolbarBackgroundColor: '#EEE',
+        cancelButtonColor: undefined as any, // set in the common theme function
+        tabBackground: undefined as any, // set in the common theme function
     },
     node: {
         common: {
@@ -162,28 +143,14 @@ const lightTheme = createTheme({
             notBuilt: '#E0E0E0',
         },
     },
-
     selectedRow: {
-        background: '#8E9C9B',
+        backgroundColor: '#8E9C9B',
     },
-    editableCell: {
-        outline: 'solid 1px #1976D2',
-        border: 'solid 1px #BABFC7',
-        borderRadius: '3px',
-        boxShadow: '0 1px 20px 1px #BABFC766',
-    },
-    editableCellError: {
-        outline: 'solid 1px red',
-        border: 'solid 1px #BABFC7',
-        borderRadius: '3px',
-        boxShadow: '0 1px 20px 1px #BABFC766',
-    },
-    aggridValueChangeHighlightBackgroundColor: '#C8E6C9 !important',
     tooltipTable: {
-        background: '#e6e6e6',
+        backgroundColor: '#e6e6e6',
     },
     formFiller: {
-        background: '#e6e6e6',
+        backgroundColor: '#e6e6e6',
     },
     searchedText: {
         highlightColor: '#53AAFF',
@@ -192,15 +159,10 @@ const lightTheme = createTheme({
     severityChip: {
         disabledColor: '#EAECED',
     },
-    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/light-v9',
-    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
-        'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
-    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    aggrid: {
+    agGrid: {
         theme: 'ag-theme-alpine',
-        overlay: {
-            background: '#e6e6e6',
-        },
+        valueChangeHighlightBackgroundColor: '#C8E6C9 !important',
+        backgroundColor: '#e6e6e6',
     },
     networkModificationPanel: {
         backgroundColor: 'white',
@@ -223,29 +185,11 @@ const lightTheme = createTheme({
 });
 
 const darkTheme = createTheme({
-    components: {
-        MuiTab: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-            },
-        },
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-            },
-        },
-    },
     palette: {
         mode: 'dark',
         tabBackground: '#1e1e1e',
-        toolbarBackground: '#424242',
-    },
-    link: {
-        color: 'green',
+        toolbarBackgroundColor: '#424242',
+        cancelButtonColor: undefined as any, // set in the common theme function
     },
     node: {
         common: {
@@ -277,25 +221,13 @@ const darkTheme = createTheme({
         },
     },
     selectedRow: {
-        background: '#545C5B',
-    },
-    editableCell: {
-        outline: 'solid 1px #90CAF9',
-        border: 'solid 1px #68686E',
-        borderRadius: '3px',
-        boxShadow: '0 1px 20px 1px #000',
-    },
-    editableCellError: {
-        outline: 'solid 1px red',
-        border: 'solid 1px #68686E',
-        borderRadius: '3px',
-        boxShadow: '0 1px 20px 1px #000',
+        backgroundColor: '#545C5B',
     },
     tooltipTable: {
-        background: '#121212',
+        backgroundColor: '#121212',
     },
     formFiller: {
-        background: '#2C2C2C',
+        backgroundColor: '#2C2C2C',
     },
     searchedText: {
         highlightColor: '#123FBB',
@@ -304,15 +236,9 @@ const darkTheme = createTheme({
     severityChip: {
         disabledColor: '#3B434A',
     },
-    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/dark-v9',
-    [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
-        'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
-    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    aggrid: {
+    agGrid: {
         theme: 'ag-theme-alpine-dark',
-        overlay: {
-            background: '#121212',
-        },
+        backgroundColor: '#121212',
     },
     networkModificationPanel: {
         backgroundColor: '#252525',
@@ -340,6 +266,7 @@ function createThemeWithComponents(baseTheme: Theme, ...args: object[]) {
         baseTheme,
         {
             palette: {
+                ...baseTheme.palette,
                 cancelButtonColor: {
                     main: baseTheme.palette.text.secondary,
                 },
@@ -351,8 +278,22 @@ function createThemeWithComponents(baseTheme: Theme, ...args: object[]) {
                         color: 'cancelButtonColor',
                     },
                 },
+                MuiTab: {
+                    styleOverrides: {
+                        root: {
+                            textTransform: 'none',
+                        },
+                    },
+                },
+                MuiButton: {
+                    styleOverrides: {
+                        root: {
+                            textTransform: 'none',
+                        },
+                    },
+                },
             },
-        },
+        } satisfies Pick<ThemeOptions, 'palette' | 'components'>,
         ...args
     );
 }

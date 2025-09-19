@@ -30,5 +30,3 @@ export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD = 'highVoltageAbsoluteThre
 // Param values
 export const PARAM_PROVIDER_OPENLOADFLOW = 'OpenLoadFlow';
 export const PARAM_PROVIDER_DYNAFLOW = 'DynaFlow';
-
-export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';
