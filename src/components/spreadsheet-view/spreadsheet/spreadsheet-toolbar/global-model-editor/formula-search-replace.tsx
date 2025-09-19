@@ -86,7 +86,7 @@ export default function FormulaSearchReplace() {
                     }
                 }
 
-                if (previouslyFocused && previouslyFocused !== input && typeof previouslyFocused.focus === 'function') {
+                if (previouslyFocused && previouslyFocused !== input) {
                     previouslyFocused.focus({ preventScroll: true });
                 }
             });
