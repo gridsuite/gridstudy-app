@@ -32,6 +32,9 @@ import { suppressEventsToPreventEditMode } from '../../commons/utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import { STUDY_VIEWS, StudyView } from 'components/utils/utils';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from 'components/graph/tree-node.type';
 
 const styles = {
     container: {
@@ -164,6 +167,9 @@ export interface EditData {
 }
 
 interface VoltageInitModificationProps {
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
     editData: EditData;
     onClose: () => void;
     onPreviewModeSubmit?: () => void;
@@ -172,6 +178,9 @@ interface VoltageInitModificationProps {
 }
 
 const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
     editData,
     onClose,
     onPreviewModeSubmit,
@@ -184,6 +193,11 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
 
     const language = useSelector((state: AppState) => state.computedLanguage);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
+
+    const isExportCSVButtonDisabled = useMemo(() => {
+        return STUDY_VIEWS[appTabIndex] !== StudyView.RESULTS;
+    }, [appTabIndex]);
 
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
@@ -505,10 +519,17 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                     <Box sx={styles.csvExport}>
                         <Box style={{ flexGrow: 1 }}></Box>
                         <CsvExport
+                            studyUuid={studyUuid}
+                            nodeUuid={currentNode.id}
+                            rootNetworkUuid={currentRootNetworkUuid}
                             columns={columnDefs}
                             tableName={tableName}
                             tableNamePrefix="VoltageInit_"
-                            disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
+                            disabled={
+                                isExportCSVButtonDisabled ||
+                                rowData.length === 0 ||
+                                editDataFetchStatus === FetchStatus.RUNNING
+                            }
                             language={language}
                             exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
                         />
@@ -529,14 +550,18 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
         },
         [
             editData,
+            studyUuid,
+            currentNode.id,
+            currentRootNetworkUuid,
+            isExportCSVButtonDisabled,
             editDataFetchStatus,
+            language,
             generatorsColumnDefs,
             transformersColumnDefs,
             staticVarCompensatorsColumnDefs,
             vscConverterStationsColumnDefs,
             shuntCompensatorsColumnDefs,
             busColumnDefs,
-            language,
         ]
     );
 
