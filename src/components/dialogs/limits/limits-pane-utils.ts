@@ -137,7 +137,6 @@ export const formatOpLimitGroupsToFormInfos = (
             applicability: opLimitGroup.applicability,
             currentLimits: {
                 id: opLimitGroup.currentLimits.id,
-                applicability: opLimitGroup.applicability,
                 permanentLimit: opLimitGroup.currentLimits.permanentLimit,
                 temporaryLimits: formatToTemporaryLimitsFormInfos(opLimitGroup.currentLimits.temporaryLimits),
             },
@@ -204,10 +203,10 @@ const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormInfos[], limi
     );
 
 export const updateTemporaryLimits = (
-    limitsDialogForm: TemporaryLimitFormInfos[],
+    temporaryLimitsFormInfos: TemporaryLimitFormInfos[],
     temporaryLimitsToModify: TemporaryLimit[] // from map server
 ) => {
-    let updatedTemporaryLimits = limitsDialogForm ?? [];
+    let updatedTemporaryLimits = temporaryLimitsFormInfos ?? [];
     //add temporary limits from map server that are not in the form values
     temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
         if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
@@ -235,7 +234,7 @@ export const combineFormAndMapServerLimitsGroups = (
     updatedOpLG.forEach((opLG: OperationalLimitsGroupFormInfos) => {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimits) =>
-                currentLimit.id === opLG.name && currentLimit.applicability === opLG[CURRENT_LIMITS][APPLICABIlITY]
+                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
         );
         if (equivalentFromMapServer !== undefined) {
             opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
@@ -249,15 +248,15 @@ export const combineFormAndMapServerLimitsGroups = (
     mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
         const equivalentFromNetMod = updatedOpLG.find(
             (opLG: OperationalLimitsGroupFormInfos) =>
-                currentLimit.id === opLG.name && currentLimit.applicability === opLG[CURRENT_LIMITS][APPLICABIlITY]
+                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
         );
         if (equivalentFromNetMod === undefined) {
             updatedOpLG.push({
                 id: currentLimit.id + currentLimit.applicability,
                 name: currentLimit.id,
+                applicability: currentLimit.applicability,
                 currentLimits: {
                     id: currentLimit.id,
-                    applicability: currentLimit.applicability,
                     permanentLimit: null,
                     temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
                 },
@@ -313,7 +312,7 @@ export const addModificationTypeToOpLimitsGroups = (
         );
         const currentLimits: CurrentLimits = {
             id: limitsGroupForm[CURRENT_LIMITS][ID],
-            applicability: limitsGroupForm[CURRENT_LIMITS]?.[APPLICABIlITY],
+            applicability: limitsGroupForm?.[APPLICABIlITY],
             permanentLimit: limitsGroupForm[CURRENT_LIMITS]?.[PERMANENT_LIMIT] ?? null,
             temporaryLimits: temporaryLimits ?? [],
         };
@@ -321,6 +320,7 @@ export const addModificationTypeToOpLimitsGroups = (
         return {
             id: limitsGroupForm.id,
             name: limitsGroupForm.name,
+            applicability: limitsGroupForm.applicability,
             currentLimits: currentLimits,
             modificationType: modificationType,
         };

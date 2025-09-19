@@ -79,13 +79,13 @@ export interface OperationalLimitsGroupFormInfos {
     // here 'id' is a concatenation of NAME and APPLICABIlITY because 2 limits sets on side1 and 2 may have the same name
     // "ID" from the map server is stored as NAME in the form because of this
     [ID]: string;
+    [APPLICABIlITY]?: string;
     [NAME]: string;
     [CURRENT_LIMITS]: CurrentLimitsFormInfos;
 }
 
 export interface CurrentLimitsFormInfos {
     [ID]: string;
-    [APPLICABIlITY]?: string;
     [PERMANENT_LIMIT]: number | null;
     [TEMPORARY_LIMITS]: TemporaryLimitFormInfos[];
 }

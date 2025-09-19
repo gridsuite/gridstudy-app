@@ -138,7 +138,6 @@ export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): Tempor
             [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
             [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
             [MODIFICATION_TYPE]: limit?.[MODIFICATION_TYPE] ?? null,
-            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 

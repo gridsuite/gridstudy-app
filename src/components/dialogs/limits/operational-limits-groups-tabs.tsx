@@ -32,6 +32,7 @@ import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { grey } from '@mui/material/colors';
+import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 
 const limitsStyles = {
     limitsBackground: {
@@ -55,7 +56,7 @@ const limitsStyles = {
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
-    limitsGroups: OperationalLimitsGroup[];
+    limitsGroups: OperationalLimitsGroupFormInfos[];
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
@@ -285,7 +286,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     sx={tabStyles.listDisplay}
                     visibleScrollbar
                 >
-                    {limitsGroups.map((opLg: OperationalLimitsGroup, index: number) => (
+                    {limitsGroups.map((opLg: OperationalLimitsGroupFormInfos, index: number) => (
                         <Tab
                             onMouseEnter={() => setHoveredRowIndex(index)}
                             onMouseLeave={() => setHoveredRowIndex(-1)}
