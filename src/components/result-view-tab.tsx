@@ -95,10 +95,11 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, currentRootNetworkUuid]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid, openVoltageLevelDiagram]);
 
     const renderSecurityAnalysisResult = useMemo(() => {
         return (
