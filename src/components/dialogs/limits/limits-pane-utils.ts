@@ -35,7 +35,6 @@ import yup from 'components/utils/yup-config';
 import {
     AttributeModification,
     CurrentLimits,
-    LineModificationInfos,
     OperationalLimitsGroup,
     OperationType,
     TemporaryLimit,

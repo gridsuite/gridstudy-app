@@ -103,6 +103,7 @@ import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
 import { LimitsDialogForm, LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
+import { toModificationOperation } from '../../../../utils/utils';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -310,10 +311,10 @@ const LineModificationDialog = ({
                                     ...{
                                         [LIMITS]: {
                                             [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                              formValues,
-                                              line
-                                        ),
-                                      },
+                                                formValues,
+                                                line
+                                            ),
+                                        },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }),

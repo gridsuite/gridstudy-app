@@ -151,7 +151,7 @@ function TemporaryLimitsTable({
             <TableCell key={rowId + 'delete'}>
                 <IconButton
                     color="primary"
-                    onClick={() => setValue(`${arrayFormName}[${index}].${DELETION_MARK}`, true)}
+                    onClick={() => setValue(`${arrayFormName}[${index}].${DELETION_MARK}`, true, { shouldDirty: true })}
                 >
                     <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />
                 </IconButton>
