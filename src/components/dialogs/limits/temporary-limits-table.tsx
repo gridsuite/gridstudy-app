@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import {
@@ -145,13 +145,18 @@ function TemporaryLimitsTable({
         );
     }
 
+    const deletionMarkFormName = useCallback(
+        (index: number) => `${arrayFormName}[${index}].${DELETION_MARK}`,
+        [arrayFormName]
+    );
+
     const renderTableRow = (rowId: string, index: number) => (
         <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
             {columnsDefinition.map((column) => renderTableCell(rowId, index, column))}
             <TableCell key={rowId + 'delete'}>
                 <IconButton
                     color="primary"
-                    onClick={() => setValue(`${arrayFormName}[${index}].${DELETION_MARK}`, true, { shouldDirty: true })}
+                    onClick={() => setValue(deletionMarkFormName(index), true, { shouldDirty: true })}
                 >
                     <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />
                 </IconButton>
@@ -164,7 +169,7 @@ function TemporaryLimitsTable({
             <TableBody>
                 {fields.map(
                     (value: Record<'id', string>, index: number) =>
-                        !getValues(`${arrayFormName}[${index}].${DELETION_MARK}`) && renderTableRow(value.id, index)
+                        !getValues(deletionMarkFormName(index)) && renderTableRow(value.id, index)
                 )}
             </TableBody>
         );
