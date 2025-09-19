@@ -75,21 +75,19 @@ export default function FormulaSearchReplace() {
             const previouslyFocused = document.activeElement as HTMLElement | null;
 
             setFocus(fieldName);
-            setTimeout(() => {
-                const input = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
-                    `textarea[name="${fieldName}"], input[name="${fieldName}"]`
-                );
-                if (input && searchTerm) {
-                    const index = formula.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    if (index >= 0) {
-                        input.setSelectionRange(index, index + searchTerm.length);
-                    }
+            const input = document.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+                `textarea[name="${fieldName}"], input[name="${fieldName}"]`
+            );
+            if (input && searchTerm) {
+                const index = formula.toLowerCase().indexOf(searchTerm.toLowerCase());
+                if (index >= 0) {
+                    input.setSelectionRange(index, index + searchTerm.length);
                 }
+            }
 
-                if (previouslyFocused && previouslyFocused !== input) {
-                    previouslyFocused.focus({ preventScroll: true });
-                }
-            });
+            if (previouslyFocused && previouslyFocused !== input) {
+                previouslyFocused.focus({ preventScroll: true });
+            }
         },
         [getValues, searchTerm, setFocus]
     );
