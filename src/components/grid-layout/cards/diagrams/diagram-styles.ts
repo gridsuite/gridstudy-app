@@ -104,6 +104,20 @@ export const styles = {
             transform: 'unset !important',
         },
     },
+    nadDefaultCursors: {
+        '& .nad-branch-edges .nad-edge-path, & .nad-3wt-edges .nad-edge-path, & .nad-branch-edges .nad-winding, & .nad-3wt-nodes .nad-winding, & .nad-edge-infos':
+            {
+                cursor: 'pointer',
+            },
+    },
+    nadEditModeCursors: {
+        '& .nad-label-box': {
+            cursor: 'grab',
+        },
+        '& .nad-edge-infos': {
+            cursor: 'default',
+        },
+    },
     paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,

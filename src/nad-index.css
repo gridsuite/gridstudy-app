@@ -1,9 +1,5 @@
 .nad-branch-edges .nad-edge-path,
-.nad-3wt-edges .nad-edge-path {
-    stroke: var(--vl-color, lightgrey);
-    stroke-width: 0.25%;
-    fill: none;
-}
+.nad-3wt-edges .nad-edge-path,
 .nad-branch-edges .nad-winding,
 .nad-3wt-nodes .nad-winding {
     stroke: var(--vl-color, lightgrey);
@@ -67,7 +63,7 @@ foreignObject.nad-text-nodes {
     width: max-content;
     padding: 10px;
     border-radius: 10px;
-    cursor: grab;
+    cursor: pointer;
     border: 2px solid rgba(0,0,0,0);
 }
 .nad-legend-square {
