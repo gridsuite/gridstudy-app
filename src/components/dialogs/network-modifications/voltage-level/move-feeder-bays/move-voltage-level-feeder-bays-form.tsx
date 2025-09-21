@@ -28,7 +28,6 @@ import { InfoOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import { RowClassParams, RowStyle } from 'ag-grid-community';
 
 interface MoveVoltageLevelFeederBaysFormProps {
     feederBaysInfos: FeederBaysFormInfos[];
@@ -48,12 +47,8 @@ export function MoveVoltageLevelFeederBaysForm({
     studyUuid,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
-    const {
-        getValues,
-        formState: { errors },
-    } = useFormContext();
+    const { getValues } = useFormContext();
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
-
     const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
     }, []);
@@ -70,6 +65,7 @@ export function MoveVoltageLevelFeederBaysForm({
             resizable: true,
             editable: false,
             headerClass: 'centered-header',
+            cellClass: 'centered-cell',
             suppressMovable: true,
         }),
         []
@@ -129,24 +125,8 @@ export function MoveVoltageLevelFeederBaysForm({
                             zIndex: 1,
                         }}
                     >
-                        <Typography
-                            variant="body1"
-                            color="primary"
-                            sx={{ textAlign: 'center', width: '100%', padding: '8px 0' }}
-                        >
+                        <Typography variant="body1" color="primary" sx={{ textAlign: 'center', width: '100%' }}>
                             {data.title}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                fontSize: '10px',
-                                color: 'red',
-                                textAlign: 'center',
-                                width: '100%',
-                                padding: '8px 0',
-                            }}
-                        >
-                            {data.helperMessage}
                         </Typography>
                     </div>
                 );
@@ -161,9 +141,9 @@ export function MoveVoltageLevelFeederBaysForm({
                     formProps={{
                         disabled: data.type === 'FEEDER_BAY_REMOVED',
                         size: 'small',
-                        variant: 'filled',
+                        variant: 'outlined',
                         sx: {
-                            padding: '8px',
+                            padding: '8%',
                             '& input': { textAlign: 'center' },
                         },
                     }}
@@ -191,7 +171,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_ID}`}
                     options={busBarSectionIds}
                     size="small"
-                    sx={{ padding: '8px 0' }}
+                    sx={{ padding: '8%' }}
                     disabled={data.type === 'FEEDER_BAY_REMOVED'}
                     disableClearable
                 />
@@ -227,9 +207,6 @@ export function MoveVoltageLevelFeederBaysForm({
 
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
-            const fieldError = (errors[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE] as any)?.[formIndex]?.[
-                CONNECTION_POSITION
-            ];
 
             return (
                 <div style={{ position: 'relative' }}>
@@ -238,9 +215,9 @@ export function MoveVoltageLevelFeederBaysForm({
                         formProps={{
                             disabled: data.type === 'FEEDER_BAY_REMOVED',
                             size: 'small',
-                            variant: fieldError ? 'outlined' : 'filled',
+                            variant: 'outlined',
                             sx: {
-                                padding: '8px',
+                                padding: '8%',
                                 '& input': { textAlign: 'center' },
                             },
                         }}
@@ -250,7 +227,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 </div>
             );
         },
-        [getValues, errors, renderSeparatorCell]
+        [getValues, renderSeparatorCell]
     );
 
     const columnDefs = useMemo(
@@ -310,10 +287,6 @@ export function MoveVoltageLevelFeederBaysForm({
         ]
     );
 
-    const getRowStyle = useCallback((params: RowClassParams): RowStyle | undefined => {
-        return params.data?.type === 'SEPARATOR' ? { fontWeight: 'bold' } : undefined;
-    }, []);
-
     const diagramToolTip = useMemo(
         () => (
             <Tooltip sx={{ paddingLeft: 1 }} title={intl.formatMessage({ id: 'builtNodeTooltipForDiagram' })}>
@@ -343,12 +316,13 @@ export function MoveVoltageLevelFeederBaysForm({
                     rowData={feederBaysInfos}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
-                    getRowStyle={getRowStyle}
                     suppressMovableColumns={true}
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}
                     rowHeight={80}
+                    rowStyle={{ border: 'none' }}
+                    suppressRowHoverHighlight={true}
                 />
             </Grid>
             <Box>

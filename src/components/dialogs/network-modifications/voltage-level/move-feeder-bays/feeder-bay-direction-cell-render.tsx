@@ -60,7 +60,7 @@ export default function FeederBayDirectionCellRenderer({
             style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '8%',
                 pointerEvents: disabled ? 'none' : 'auto',
             }}
         >
@@ -70,14 +70,14 @@ export default function FeederBayDirectionCellRenderer({
             <TextField
                 value={getTranslatedLabel(value)}
                 size="small"
-                variant="filled"
+                variant="outlined"
                 InputProps={{
                     readOnly: true,
                     style: { cursor: 'pointer', textAlign: 'center' },
                 }}
                 onClick={handleClick}
                 sx={{
-                    padding: '8px',
+                    padding: '8%',
                     '& input': {
                         textAlign: 'center',
                     },

@@ -1613,6 +1613,5 @@
     "TOP": "HAUT",
     "BOTTOM": "BAS",
     "DuplicatedPositionsError": "Numéro en doublon",
-    "MissingConnectionsInVoltageLevel": "Départs absents du poste",
-    "ConnectionsRemovedFromList": "Départs supprimés de la liste à la validation"
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)"
 }

@@ -15,7 +15,6 @@ export type FeederBaysFormInfos = {
     connectionPosition: string | null;
     type: string;
     title?: string;
-    helperMessage?: string;
 };
 
 export type FeederBayInfos = {
