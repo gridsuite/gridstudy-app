@@ -14,6 +14,8 @@ export type FeederBaysFormInfos = {
     connectionDirection: string | null;
     connectionPosition: string | null;
     type: string;
+    title?: string;
+    helperMessage?: string;
 };
 
 export type FeederBayInfos = {
@@ -22,6 +24,6 @@ export type FeederBayInfos = {
     connectablePositionInfos: ConnectablePositionInfos;
 };
 
-export type FeederBaysInfos = FeederBayInfos & {
+export type FeederBaysInfos = (FeederBayInfos & {
     equipmentId: string;
-};
+})[];

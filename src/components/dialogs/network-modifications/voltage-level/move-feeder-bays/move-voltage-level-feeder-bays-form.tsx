@@ -152,7 +152,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 );
             }
 
-            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
             return (
@@ -180,7 +180,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 return separatorContent;
             }
 
-            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
             const busBarSectionIds = getValues(
                 `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_IDS}`
@@ -207,7 +207,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 return separatorContent;
             }
 
-            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
             return FeederBayDirectionCellRenderer({
@@ -225,7 +225,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 return separatorContent;
             }
 
-            const watchTable: FeederBaysInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
             const fieldError = (errors[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE] as any)?.[formIndex]?.[
                 CONNECTION_POSITION
@@ -338,7 +338,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid xs paddingTop={2}>
+            <Grid item xs paddingTop={2}>
                 <CustomAGGrid
                     rowData={feederBaysInfos}
                     defaultColDef={defaultColDef}

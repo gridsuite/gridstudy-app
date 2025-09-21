@@ -873,12 +873,12 @@ export interface MoveVoltageLevelFeederBaysInfos {
     type: ModificationType;
     uuid: string | null;
     voltageLevelId: string;
-    feederBaysAttributeList?: ConnectablePositionModificationInfos[] | [];
+    feederBays: MoveFeederBayInfos[] | [];
 }
 
-export interface ConnectablePositionModificationInfos {
-    equipmentId: string | null;
-    busbarSectionId: string | null;
+export interface MoveFeederBayInfos {
+    equipmentId: string;
+    busbarSectionId: string;
     connectionSide: string | null;
     connectionPosition: string | null;
     connectionName: string | null;

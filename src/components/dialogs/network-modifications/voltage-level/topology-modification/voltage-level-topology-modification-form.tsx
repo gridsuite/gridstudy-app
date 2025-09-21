@@ -174,7 +174,7 @@ export function VoltageLevelTopologyModificationForm({
                     </Button>
                 </Grid>
             </Grid>
-            <Grid xs paddingTop={2}>
+            <Grid item xs paddingTop={2}>
                 <CustomAGGrid
                     rowData={mergedRowData}
                     defaultColDef={defaultColDef}
