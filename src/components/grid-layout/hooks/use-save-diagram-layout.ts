@@ -98,12 +98,12 @@ export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayout
         )
             .then(() => {
                 snackInfo({
-                    headerId: 'GridLayoutPanelSaveSuccess',
+                    headerId: 'DiagramLayoutStoreSuccess',
                 });
             })
             .catch(() => {
                 snackError({
-                    headerId: 'GridLayoutPanelSaveError',
+                    headerId: 'DiagramLayoutStoreError',
                 });
             });
     }, [diagrams, layouts, studyUuid, snackInfo, snackError]);

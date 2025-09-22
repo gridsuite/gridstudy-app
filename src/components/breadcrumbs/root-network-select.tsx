@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, ListItemText, MenuItem, Select, Theme } from '@mui/material';
+import { Box, ListItemText, MenuItem, Select } from '@mui/material';
 import { UUID } from 'crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    selectRoot: (theme: Theme) => ({
+    selectRoot: (theme) => ({
         height: theme.spacing(4),
         width: theme.spacing(15),
         paddingTop: theme.spacing(1),
@@ -22,7 +22,7 @@ const styles = {
     selectInput: { display: 'flex', gap: 1, alignItems: 'center' },
     selectItem: { gap: 1 },
     hiddenItem: { display: 'none' },
-};
+} as const satisfies MuiStyles;
 
 interface RootNetworkSelectProps {
     currentRootNetworkUuid: UUID | null;

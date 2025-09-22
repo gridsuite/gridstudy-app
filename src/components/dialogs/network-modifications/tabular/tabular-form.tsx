@@ -19,7 +19,8 @@ import {
     useStateBoolean,
     DirectoryItemSelector,
     ElementType,
-    TreeViewFinderNodeProps,
+    type TreeViewFinderNodeProps,
+    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
@@ -58,7 +59,7 @@ import { useFilterCsvGenerator } from './use-filter-csv-generator';
 
 const dialogStyles = {
     grid: { height: 500, width: '100%' },
-};
+} as const satisfies MuiStyles;
 
 export interface TabularFormProps {
     dataFetching: boolean;

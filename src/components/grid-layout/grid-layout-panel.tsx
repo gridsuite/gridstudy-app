@@ -5,12 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useRef, useMemo } from 'react';
-import { Layout, Layouts, ItemCallback, Responsive, WidthProvider } from 'react-grid-layout';
+import { useCallback, useRef, useState } from 'react';
+import { type ItemCallback, type Layout, type Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
 import { Box, useTheme } from '@mui/material';
-import { ElementType, EquipmentInfos, EquipmentType, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    type EquipmentInfos,
+    EquipmentType,
+    type MuiStyles,
+    useDebounce,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
@@ -32,7 +39,8 @@ const styles = {
         flexDirection: 'column',
         width: '100%',
     },
-};
+} as const satisfies MuiStyles;
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here

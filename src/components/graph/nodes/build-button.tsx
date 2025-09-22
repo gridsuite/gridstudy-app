@@ -8,10 +8,10 @@
 import { BUILD_STATUS } from 'components/network/constants';
 import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
-import { Button, CircularProgress, Theme } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
 import { UUID } from 'crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE } from 'components/network-modification-tree-pane';
 
 type BuildButtonProps = {
@@ -25,10 +25,10 @@ const styles = {
     button: {
         minWidth: '40px',
     },
-    playColor: (theme: Theme) => ({
+    playColor: (theme) => ({
         color: theme.palette.mode === 'light' ? 'grey' : 'white',
     }),
-};
+} as const satisfies MuiStyles;
 
 export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, nodeUuid }: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);

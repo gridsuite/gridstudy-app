@@ -7,7 +7,7 @@
 
 import { HTMLAttributes } from 'react';
 import { Checkbox, Typography } from '@mui/material';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 
 // component CheckboxItem is extracted and customized from renderRow in the MUI example
 // in order to reuse also in Autocomplete without virtualization
@@ -17,7 +17,7 @@ const styles = {
     checkbox: {
         marginRight: 8,
     },
-};
+} as const satisfies MuiStyles;
 
 interface CheckboxItemProps<Value> extends HTMLAttributes<HTMLElement> {
     option: Value;

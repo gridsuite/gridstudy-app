@@ -8,6 +8,7 @@ import { green, red } from '@mui/material/colors';
 import { Box } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import { ICellRendererParams } from 'ag-grid-community';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     cell: {
@@ -24,7 +25,7 @@ const styles = {
     fail: {
         color: red[500],
     },
-};
+} as const satisfies MuiStyles;
 
 export const COL_STATUS = 'status';
 

@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Grid, SxProps, Theme, Tooltip } from '@mui/material';
+import { Box, Grid, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { InfoOutlined } from '@mui/icons-material';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type SxStyle } from '@gridsuite/commons-ui';
 
 export interface GridSectionProps {
     title: string;
     heading?: 1 | 2 | 3 | 4 | 5 | 6;
     size?: number;
-    customStyle?: SxProps<Theme>;
+    customStyle?: SxStyle;
     tooltipEnabled?: boolean;
     tooltipMessage?: string;
     isLiteralText?: boolean;
