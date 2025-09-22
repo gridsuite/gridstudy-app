@@ -63,7 +63,7 @@ foreignObject.nad-text-nodes {
     width: max-content;
     padding: 10px;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: default;
     border: 2px solid rgba(0,0,0,0);
 }
 .nad-legend-square {

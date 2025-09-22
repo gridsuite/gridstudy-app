@@ -107,11 +107,11 @@ export const styles = {
     nadDefaultCursors: {
         '& .nad-branch-edges .nad-edge-path, & .nad-3wt-edges .nad-edge-path, & .nad-branch-edges .nad-winding, & .nad-3wt-nodes .nad-winding, & .nad-edge-infos':
             {
-                cursor: 'pointer',
+                cursor: 'context-menu',
             },
     },
     nadEditModeCursors: {
-        '& .nad-label-box': {
+        '& .nad-label-box, & .nad-vl-nodes .nad-busnode': {
             cursor: 'grab',
         },
         '& .nad-edge-infos': {
