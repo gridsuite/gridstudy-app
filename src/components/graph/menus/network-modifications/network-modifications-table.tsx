@@ -213,7 +213,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             // Scroll and highlight the selected modification
             if (cellData?.data?.uuid === hightlightedModificationUuid && cellData?.rowIndex !== null) {
                 style.backgroundColor = theme.aggrid.highlightColor;
-                gridRef.current?.api.ensureIndexVisible(cellData?.rowIndex, 'middle');
+                gridRef.current?.api.ensureIndexVisible(cellData?.rowIndex, 'top');
             }
             return style;
         },

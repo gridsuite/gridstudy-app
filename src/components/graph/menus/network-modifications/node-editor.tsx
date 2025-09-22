@@ -10,7 +10,7 @@ import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setHighlightModification, setToggleOptions } from '../../../../redux/actions';
-import { Alert, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { NodeEditorHeader } from './node-editor-header';

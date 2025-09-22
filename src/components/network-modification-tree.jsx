@@ -60,8 +60,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     const centeredNode = useSelector((state) => state.centeredNode);
 
-    const [isMinimapOpen, setIsMinimapOpen] = useState(false);
-
     const { fitView, setCenter, getZoom } = useReactFlow();
 
     const draggedBranchIdRef = useRef(null);

@@ -57,7 +57,6 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
 
     const handleClick = useCallback(
         (modification: Modification) => {
-            dispatch(setModificationsDrawerOpen());
             const node = treeNodes?.find((node) => node.id === nodeUuid);
             if (node) {
                 dispatch(setCurrentTreeNode(node));
@@ -66,6 +65,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
             if (toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO)) {
                 applyModes(toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
             }
+            dispatch(setModificationsDrawerOpen());
 
             dispatch(setHighlightModification(modification.modificationUuid));
         },
