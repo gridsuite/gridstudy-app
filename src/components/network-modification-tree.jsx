@@ -354,7 +354,19 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     return (
         <Box sx={styles}>
-            <Tooltip open={tooltipOpen} title={tooltipContent} followCursor placement="right">
+            <Tooltip
+                open={tooltipOpen}
+                title={tooltipContent}
+                componentsProps={{
+                    tooltip: {
+                        sx: {
+                            maxWidth: 'none',
+                        },
+                    },
+                }}
+                followCursor
+                placement="right"
+            >
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
