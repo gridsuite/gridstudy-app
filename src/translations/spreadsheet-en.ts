@@ -132,6 +132,11 @@ const spreadsheetEn = {
     'spreadsheet/global-model-edition/column_dependencies': 'Dependencies',
     'spreadsheet/global-model-edition/update_confirmation_message': 'Spreadsheet model updated',
     'spreadsheet/global-model-edition/update_error_message': 'Error while updating spreadsheet model',
+    'spreadsheet/global-model-edition/search_replace_button': 'Search and replace in formula',
+    'spreadsheet/global-model-edition/hide_search_button': 'Hide formula search',
+    'spreadsheet/global-model-edition/search': 'Search in formula',
+    'spreadsheet/global-model-edition/replace': 'Replace in formula',
+    'spreadsheet/global-model-edition/replace_all': 'Replace all',
 
     // calculations
     'spreadsheet/calculation/sum': 'Sum',
