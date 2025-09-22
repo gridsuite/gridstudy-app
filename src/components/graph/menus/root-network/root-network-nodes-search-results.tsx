@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setCentedNode, setCurrentTreeNode } from 'redux/actions';
 import { AppState } from 'redux/reducer';
 import { DeviceHubIcon, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
-import React from 'react';
 
 interface RootNetworkNodesSearchResultsProps {
     results: string[];

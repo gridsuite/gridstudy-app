@@ -1,4 +1,3 @@
-import { CENTER_NODE, CenterNodeAction } from './actions';
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,6 +6,7 @@ import { CENTER_NODE, CenterNodeAction } from './actions';
  */
 
 import { createReducer, type Draft } from '@reduxjs/toolkit';
+import { CENTER_NODE, CenterNodeAction } from './actions';
 import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
