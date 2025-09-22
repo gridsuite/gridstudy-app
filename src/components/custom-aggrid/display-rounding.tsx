@@ -7,6 +7,7 @@
 import { useIntl } from 'react-intl';
 import { Box, FormHelperText } from '@mui/material';
 import React from 'react';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     exponent: {
@@ -14,7 +15,7 @@ const styles = {
         bottom: '1ex',
         fontSize: '80%',
     },
-};
+} as const satisfies MuiStyles;
 
 /**
  * displays a rounding precision like this : 'Rounded to 10^decimalAfterDot' or as a decimal number if decimalAfterDot <= 4

@@ -179,7 +179,7 @@
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "FilterEvaluationError": "An error occurred while evaluating the filter",
-    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
+    "voltageInitError": "An error occurred while executing the voltage profile initialization",
     "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
 
     "SelectAll": "All",
@@ -478,6 +478,7 @@
     "LossFactor": "Loss Factor",
     "StopComputation": "Stop computation",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
+    "launchComputationConfirmQuestion": "You are about to start a computation although a change to the computation parameters is in progress.",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1243,6 +1244,7 @@
     "marginalCost": "Startup cost",
 
     "dialog.button.leave": "Leave",
+    "dialog.button.launch": "Launch",
 
     "Connect": "Reconnect ?",
     "connected1": "Connected 1",
@@ -1561,9 +1563,10 @@
     "MapCardNotAvailable": "Map is not available",
     "AddNewCard": "Images",
     "Display": "Display",
-    "SaveGridLayout": "Save",
-    "GridLayoutPanelSaveError": "An error occurred while saving the grid layout panel",
-    "GridLayoutPanelSaveSuccess": "Grid layout panel saved successfully",
+    "StoreDiagramLayout": "Store",
+    "StoreButtonTooltip": "Store diagram layout in the study",
+    "DiagramLayoutStoreError": "An error occured when storing the diagrams",
+    "DiagramLayoutStoreSuccess": "Diagrams successfully stored",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
     "NoMatch": "No match",
     "Rows": "row",

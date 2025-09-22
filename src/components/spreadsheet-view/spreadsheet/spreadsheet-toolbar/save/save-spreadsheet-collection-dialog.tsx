@@ -7,24 +7,25 @@
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Theme } from '@mui/material';
+import { Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
 import {
-    ElementType,
-    UseStateBooleanReturn,
-    useSnackMessage,
-    IElementCreationDialog,
     ElementSaveDialog,
-    IElementUpdateDialog,
+    ElementType,
+    type IElementCreationDialog,
+    type IElementUpdateDialog,
+    type MuiStyles,
+    useSnackMessage,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../../redux/reducer';
 import { SelectOptionsDialog } from '../../../../../utils/dialogs';
 import {
-    SpreadsheetConfig,
-    SpreadsheetCollection,
     ColumnDefinitionDto,
+    SpreadsheetCollection,
+    SpreadsheetConfig,
     SpreadsheetEquipmentType,
 } from '../../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
@@ -39,12 +40,12 @@ interface SaveSpreadsheetCollectionDialogProps {
 }
 
 const styles = {
-    checkboxForFilters: (theme: Theme) => ({
+    checkboxForFilters: (theme) => ({
         padding: theme.spacing(0, 3, 0, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
     }),
-    checkboxSelectAll: (theme: Theme) => ({
+    checkboxSelectAll: (theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
@@ -53,7 +54,7 @@ const styles = {
         cursor: 'pointer',
         padding: '0 16px',
     },
-};
+} as const satisfies MuiStyles;
 
 interface TableState {
     name: string;

@@ -7,13 +7,12 @@
 
 import { useCallback } from 'react';
 import Box from '@mui/material/Box';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme } from '@mui/material';
 
 const styles = {
-    header: (theme: Theme) => ({
+    header: (theme) => ({
         // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
         position: 'absolute',
         width: '100%',
@@ -26,11 +25,11 @@ const styles = {
         borderBottom: 'solid 1px',
         borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
     }),
-    close: (theme: Theme) => ({
+    close: (theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 interface DiagramHeaderProps {
     diagramTitle?: string;

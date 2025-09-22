@@ -30,7 +30,7 @@ import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
-import { NAME } from '@gridsuite/commons-ui';
+import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { grey } from '@mui/material/colors';
 
 const limitsStyles = {
@@ -51,7 +51,7 @@ const limitsStyles = {
         height: 'auto',
         padding: '1',
     },
-};
+} as const satisfies MuiStyles;
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
