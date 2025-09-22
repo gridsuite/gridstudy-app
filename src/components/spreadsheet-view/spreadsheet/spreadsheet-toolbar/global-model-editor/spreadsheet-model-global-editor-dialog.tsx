@@ -12,6 +12,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { SpreadsheetModelGlobalEditorTable } from './spreadsheet-model-global-editor-table';
+import FormulaSearchReplace from './formula-search-replace';
+import { FormulaSearchProvider } from './formula-search-context';
 import {
     COLUMNS_MODEL,
     columnsModelForm,
@@ -90,9 +92,16 @@ export function SpreadsheetModelGlobalEditorDialog({
                 PaperProps={{ sx: styles.dialogContent }}
                 {...dialogProps}
             >
-                <Grid container>
-                    <SpreadsheetModelGlobalEditorTable />
-                </Grid>
+                <FormulaSearchProvider>
+                    <Grid container direction="column">
+                        <Grid item container justifyContent="flex-start" sx={{ my: 2 }}>
+                            <FormulaSearchReplace />
+                        </Grid>
+                        <Grid item>
+                            <SpreadsheetModelGlobalEditorTable />
+                        </Grid>
+                    </Grid>
+                </FormulaSearchProvider>
             </ModificationDialog>
         </CustomFormProvider>
     );
