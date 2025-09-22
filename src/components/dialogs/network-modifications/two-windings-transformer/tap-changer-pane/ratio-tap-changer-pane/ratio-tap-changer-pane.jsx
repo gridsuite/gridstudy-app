@@ -147,7 +147,7 @@ const RatioTapChangerPane = ({
                 }
             }
         },
-        [id, previousValues, setValue, getValues]
+        [id, voltageLevelOptions, previousValues, setValue, getValues]
     );
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
