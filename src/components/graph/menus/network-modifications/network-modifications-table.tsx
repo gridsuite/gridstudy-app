@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, SetStateAction, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, SetStateAction, useRef } from 'react';
 import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     CellClickedEvent,
@@ -85,7 +85,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const hightlightedModificationUuid = useSelector((state: AppState) => state.hightlightedModificationUuid);
-    const [isGridReady, setIsGridReady] = useState(false);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -206,42 +205,15 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             if (!cellData?.data?.activated) {
                 style.opacity = 0.4;
             }
-
-            // Highlight the selected modification
-            if (cellData?.data?.uuid === hightlightedModificationUuid) {
+            // Scroll and highlight the selected modification
+            if (cellData?.data?.uuid === hightlightedModificationUuid && cellData?.rowIndex !== null) {
                 style.backgroundColor = theme.aggrid.highlightColor;
+                gridRef.current?.api.ensureIndexVisible(cellData?.rowIndex, 'middle');
             }
             return style;
         },
         [hightlightedModificationUuid, theme]
     );
-
-    const onGridReady = useCallback(() => {
-        setIsGridReady(true);
-    }, []);
-
-    useEffect(() => {
-        if (!gridRef.current?.api) {
-            return;
-        }
-        const gridApi = gridRef.current.api;
-
-        const tryHighlight = () => {
-            let node = undefined;
-            if (hightlightedModificationUuid) {
-                node = gridApi.getRowNode(hightlightedModificationUuid);
-            }
-
-            if (node) {
-                gridApi.ensureNodeVisible(node, 'middle');
-            }
-            gridApi.removeEventListener('modelUpdated', tryHighlight);
-        };
-
-        tryHighlight();
-
-        gridApi.addEventListener('modelUpdated', tryHighlight);
-    }, [isGridReady, hightlightedModificationUuid]);
 
     return (
         <Box sx={styles.container}>
@@ -266,7 +238,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
                 overrideLocales={AGGRID_LOCALES}
-                onGridReady={onGridReady}
             />
         </Box>
     );
