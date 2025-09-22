@@ -61,6 +61,8 @@ import {
     exportParamsFr,
     parametersEn,
     parametersFr,
+    filterEn,
+    filterFr,
     NotificationsProvider,
     MAP_BASEMAP_MAPBOX,
     MAP_BASEMAP_CARTO,
@@ -364,6 +366,7 @@ function getMuiTheme(theme, locale) {
 
 const messages = {
     en: {
+        ...filterEn,
         ...treeviewFinderEn,
         ...messages_en,
         ...networkModificationsEn,
@@ -398,6 +401,7 @@ const messages = {
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
+        ...filterFr,
         ...treeviewFinderFr,
         ...messages_fr,
         ...networkModificationsFr,
