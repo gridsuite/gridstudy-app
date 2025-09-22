@@ -17,7 +17,6 @@ import { v4 } from 'uuid';
 import { GridLayoutToolbar } from './grid-layout-toolbar';
 import './grid-layout-panel.css';
 import { DiagramCard } from './cards/diagrams/diagram-card';
-import MapCard from './cards/map/map-card';
 import { BLINK_LENGTH_MS } from './cards/custom-card-header';
 import CustomResizeHandle from './custom-resize-handle';
 import { useSaveDiagramLayout } from './hooks/use-save-diagram-layout';
@@ -25,6 +24,7 @@ import { isThereTooManyOpenedNadDiagrams } from './cards/diagrams/diagram-utils'
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import MapDialog from './dialog/map-dialog';
 
 const styles = {
     container: {
@@ -503,7 +503,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 })}
             </ResponsiveGridLayout>
             {isMapOpen && currentRootNetworkUuid && currentNode && (
-                <MapCard
+                <MapDialog
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     currentRootNetworkUuid={currentRootNetworkUuid}

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Dialog, Fab, Theme } from '@mui/material';
+import { Dialog, Fab, Theme } from '@mui/material';
 import { useCallback, useRef } from 'react';
 import { UUID } from 'crypto';
 import { EquipmentType, LineFlowMode, NetworkVisualizationParameters, useStateBoolean } from '@gridsuite/commons-ui';
@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import NetworkMapPanel, { NetworkMapPanelRef } from 'components/network/network-map-panel';
-import { cardStyles } from '../card-styles';
 import { Close } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -25,7 +24,7 @@ const styles = {
     }),
 };
 
-interface MapCardProps {
+interface MapDialogProps {
     studyUuid: UUID;
     onClose: () => void;
     errorMessage?: string;
@@ -36,7 +35,7 @@ interface MapCardProps {
     currentNode: CurrentTreeNode;
 }
 
-export const MapCard = (props: MapCardProps) => {
+export const MapDialog = (props: MapDialogProps) => {
     const {
         studyUuid,
         onClose,
@@ -72,38 +71,30 @@ export const MapCard = (props: MapCardProps) => {
     );
 
     return (
-        <Box sx={cardStyles.diagramContainer}>
-            <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
-                <Fab
-                    onClick={handleCloseMap}
-                    size="small"
-                    aria-label="close"
-                    variant="extended"
-                    sx={styles.closeButton}
-                >
-                    <Close fontSize="small" />
-                    <FormattedMessage id="close" />
-                </Fab>
-                <NetworkMapPanel
-                    ref={networkMapPanelRef}
-                    studyUuid={studyUuid}
-                    visible={mapOpen}
-                    lineFullPath={networkVisuParams.mapParameters.lineFullPath}
-                    lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
-                    lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
-                    currentNode={currentNode}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                    showInSpreadsheet={(eq) => {
-                        handleCloseMap();
-                        showInSpreadsheet(eq);
-                    }}
-                    onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
-                    onPolygonChanged={() => {}}
-                    isInDrawingMode={isInDrawingMode}
-                />
-            </Dialog>
-        </Box>
+        <Dialog open={mapOpen} onClose={handleCloseMap} fullScreen>
+            <Fab onClick={handleCloseMap} size="small" aria-label="close" variant="extended" sx={styles.closeButton}>
+                <Close fontSize="small" />
+                <FormattedMessage id="close" />
+            </Fab>
+            <NetworkMapPanel
+                ref={networkMapPanelRef}
+                studyUuid={studyUuid}
+                visible={mapOpen}
+                lineFullPath={networkVisuParams.mapParameters.lineFullPath}
+                lineParallelPath={networkVisuParams.mapParameters.lineParallelPath}
+                lineFlowMode={networkVisuParams.mapParameters.lineFlowMode as LineFlowMode}
+                currentNode={currentNode}
+                currentRootNetworkUuid={currentRootNetworkUuid}
+                showInSpreadsheet={(eq) => {
+                    handleCloseMap();
+                    showInSpreadsheet(eq);
+                }}
+                onOpenNetworkAreaDiagram={onOpenNetworkAreaDiagram}
+                onPolygonChanged={() => {}}
+                isInDrawingMode={isInDrawingMode}
+            />
+        </Dialog>
     );
 };
 
-export default MapCard;
+export default MapDialog;
