@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useState, useCallback, useRef } from 'react';
-import { TextField, InputAdornment, IconButton, Box, SxProps } from '@mui/material';
-import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
+import { RefObject, useCallback, useState } from 'react';
+import { Box, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Clear, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { type MuiStyles, type SxStyle, useDebounce } from '@gridsuite/commons-ui';
 
 interface QuickSearchProps {
     currentResultIndex: number;
@@ -17,14 +17,15 @@ interface QuickSearchProps {
     resultCount: number;
     resetSearch: () => void;
     placeholder?: string;
-    sx?: SxProps;
+    inputRef: RefObject<HTMLDivElement>;
+    sx?: SxStyle;
 }
 
 const styles = {
     adornmentItem: {
         padding: '2px',
     },
-};
+} as const satisfies MuiStyles;
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
     currentResultIndex,
@@ -33,11 +34,11 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     resultCount,
     resetSearch,
     placeholder,
+    inputRef,
     sx,
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
     const intl = useIntl();
     const debounceSearch = useDebounce(onSearch, 300);
 
@@ -62,7 +63,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     const handleChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             const value = event.target.value;
-            if (value.length < searchTerm.length || value === '') {
+            if (value === '') {
                 resetSearch();
                 setResultsCountDisplay(false);
             }
@@ -72,7 +73,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
                 setResultsCountDisplay(true);
             }
         },
-        [debounceSearch, resetSearch, searchTerm.length]
+        [debounceSearch, resetSearch]
     );
 
     const handleClear = useCallback(() => {
@@ -82,7 +83,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
         if (inputRef.current) {
             inputRef.current.focus();
         }
-    }, [resetSearch]);
+    }, [inputRef, resetSearch]);
 
     return (
         <TextField

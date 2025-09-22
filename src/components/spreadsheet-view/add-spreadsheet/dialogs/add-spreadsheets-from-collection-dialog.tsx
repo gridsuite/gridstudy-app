@@ -42,7 +42,6 @@ import type { DialogComponentProps } from '../types';
  */
 export default function AddSpreadsheetsFromCollectionDialog({
     open,
-    resetTabIndex,
     resetNodeAliases,
 }: Readonly<DialogComponentProps>) {
     const dispatch = useDispatch();
@@ -84,7 +83,6 @@ export default function AddSpreadsheetsFromCollectionDialog({
                     dispatch(
                         initTableDefinitions(collectionData.id, tableDefinitions, tablesFilters, tableGlobalFilters)
                     );
-                    resetTabIndex(tableDefinitions);
                 })
                 .catch((error) => {
                     snackError({
@@ -95,7 +93,7 @@ export default function AddSpreadsheetsFromCollectionDialog({
             setConfirmationDialogOpen(false);
             open.setFalse();
         },
-        [studyUuid, dispatch, resetTabIndex, open, snackError, resetNodeAliases]
+        [studyUuid, dispatch, open, snackError, resetNodeAliases]
     );
 
     const onSubmit = useCallback(
@@ -121,15 +119,11 @@ export default function AddSpreadsheetsFromCollectionDialog({
             options={[
                 {
                     id: SpreadsheetCollectionImportMode.REPLACE,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
                 },
                 {
                     id: SpreadsheetCollectionImportMode.APPEND,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
                 },
             ]}
         />

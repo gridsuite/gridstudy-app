@@ -25,12 +25,12 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
-import { LimitsGroupsContextualMenu } from './creation/limits-groups-contextual-menu';
+import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
 import { APPLICABILITY } from '../../network/constants';
-import { NAME } from '@gridsuite/commons-ui';
+import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { grey } from '@mui/material/colors';
 
 const limitsStyles = {
@@ -51,7 +51,7 @@ const limitsStyles = {
         height: 'auto',
         padding: '1',
     },
-};
+} as const satisfies MuiStyles;
 
 export interface OperationalLimitsGroupsTabsProps {
     parentFormName: string;
@@ -59,6 +59,7 @@ export interface OperationalLimitsGroupsTabsProps {
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    isAModification: boolean;
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
@@ -79,7 +80,17 @@ function generateUniqueId(baseName: string, names: string[]): string {
 }
 
 export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGroupsTabsProps>(
-    ({ parentFormName, limitsGroups, setIndexSelectedLimitSet, indexSelectedLimitSet, checkLimitSetUnicity }, ref) => {
+    (
+        {
+            parentFormName,
+            limitsGroups,
+            setIndexSelectedLimitSet,
+            indexSelectedLimitSet,
+            checkLimitSetUnicity,
+            isAModification,
+        },
+        ref
+    ) => {
         const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
         const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
@@ -170,6 +181,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     [NAME]: name,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
                     [CURRENT_LIMITS]: {
+                        [ID]: name,
                         [TEMPORARY_LIMITS]: [emptyTemporaryLimit],
                         [PERMANENT_LIMIT]: null,
                     },
@@ -350,6 +362,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
+                    isModification={isAModification}
                 />
             </>
         );

@@ -17,14 +17,12 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     ID,
-    IS_BUS_OR_BUSBAR_SECTION_MODIFICATION,
-    IS_VOLTAGE_LEVEL_MODIFICATION,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
+import PositionDiagramPane from '../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import {
@@ -111,10 +109,6 @@ export function ConnectivityForm({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
 
-    const watchBusBarSectionId = useWatch({
-        name: `${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
-    });
-
     const vlOptions = useMemo(
         () =>
             voltageLevelOptions.map((item) => ({
@@ -152,20 +146,6 @@ export function ConnectivityForm({
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
         }
     }, [newBusOrBusbarSectionOptions]);
-
-    useEffect(() => {
-        setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, false);
-        setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, false);
-        if (watchVoltageLevelId) {
-            setValue(`${id}.${IS_VOLTAGE_LEVEL_MODIFICATION}`, true);
-        }
-        if (watchBusBarSectionId === '') {
-            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-        }
-        if (watchBusBarSectionId) {
-            setValue(`${id}.${IS_BUS_OR_BUSBAR_SECTION_MODIFICATION}`, true);
-        }
-    }, [id, setValue, watchVoltageLevelId, watchBusBarSectionId]);
 
     const handleChangeVoltageLevel = useCallback(() => {
         onVoltageLevelChangeCallback?.();

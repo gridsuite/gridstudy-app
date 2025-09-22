@@ -25,12 +25,13 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    EquipmentType,
     FieldType,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -129,7 +130,7 @@ const VoltageLevelModificationDialog = ({
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+                    EquipmentType.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -149,11 +150,14 @@ const VoltageLevelModificationDialog = ({
                             }
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(voltageLevel, getValues),
-                                [SUBSTATION_ID]: voltageLevel?.substationId,
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(voltageLevel, getValues),
+                                    [SUBSTATION_ID]: voltageLevel?.substationId,
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                     })
                     .catch(() => {
@@ -244,7 +248,7 @@ const VoltageLevelModificationDialog = ({
                     <EquipmentIdSelector
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                        equipmentType={EquipmentType.VOLTAGE_LEVEL}
                         fillerHeight={4}
                     />
                 )}

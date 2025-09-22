@@ -14,7 +14,9 @@ import { type AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
 import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { FilterType } from '../../../../results/common/utils';
-import GlobalFilterSelector from '../../../../results/common/global-filter/global-filter-selector';
+import GlobalFilterSelector, {
+    type GlobalFilterSelectorProps,
+} from '../../../../results/common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
 import { useGlobalFilterOptions } from '../../../../results/common/global-filter/use-global-filter-options';
@@ -52,13 +54,24 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
         [debouncedSetFilters, tableDefinition.uuid]
     );
 
-    const filters = useMemo(
+    const filters = useMemo<GlobalFilterSelectorProps['filters']>(
         () => [
-            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ? voltageLevelsFilter : []),
+            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ? [] : voltageLevelsFilter),
             ...countriesFilter,
             ...propertiesFilter,
         ],
         [countriesFilter, propertiesFilter, tableDefinition.type, voltageLevelsFilter]
+    );
+
+    const filterTypes = useMemo<GlobalFilterSelectorProps['filterableEquipmentTypes']>(
+        () => [
+            ...(tableDefinition.type === SpreadsheetEquipmentType.BRANCH
+                ? [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]
+                : [tableDefinition.type as unknown as EQUIPMENT_TYPES]),
+            EQUIPMENT_TYPES.SUBSTATION,
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+        ],
+        [tableDefinition.type]
     );
 
     useEffect(() => {
@@ -73,11 +86,7 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     return (
         <GlobalFilterSelector
-            filterableEquipmentTypes={[
-                tableDefinition.type as unknown as EQUIPMENT_TYPES, //TODO what to do with BRANCH type?
-                EQUIPMENT_TYPES.SUBSTATION,
-                EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-            ]}
+            filterableEquipmentTypes={filterTypes}
             filters={filters}
             onChange={handleFilterChange}
             preloadedGlobalFilters={globalFilterSpreadsheetState}

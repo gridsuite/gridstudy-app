@@ -7,32 +7,21 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    Box,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    Link,
-    SxProps,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Typography } from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
+    type MuiStyles,
     MultipleAutocompleteInput,
     SubmitButton,
     TextInput,
     useSnackMessage,
-    UseStateBooleanReturn,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
@@ -56,6 +45,7 @@ import {
 } from './column-creation-form';
 import { AppState } from 'redux/reducer';
 import { createSpreadsheetColumn, updateSpreadsheetColumn } from '../../../services/study/study-config';
+import { FloatingPopoverTreeviewWrapper } from './floating-treeview-list/floating-popover-treeview-wrapper';
 
 export type ColumnCreationDialogProps = {
     open: UseStateBooleanReturn;
@@ -74,7 +64,7 @@ const styles = {
     columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
     field: { width: '70%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 const COLUMN_NAME_REGEX = /\W/g;
 
@@ -148,13 +138,15 @@ export default function ColumnCreationDialog({
     );
 
     const formulaField = (
-        <ExpandingTextField
-            name={FORMULA}
-            label="spreadsheet/custom_column/column_content"
-            minRows={3}
-            rows={3}
-            sx={{ flexGrow: 1 }}
-        />
+        <FloatingPopoverTreeviewWrapper formMethods={formMethods} spreadsheetEquipmentType={tableDefinition.type}>
+            <ExpandingTextField
+                name={FORMULA}
+                label="spreadsheet/custom_column/column_content"
+                minRows={3}
+                rows={3}
+                sx={{ flexGrow: 1 }}
+            />
+        </FloatingPopoverTreeviewWrapper>
     );
 
     const { filters, dispatchFilters } = useFilterSelector(FilterType.Spreadsheet, spreadsheetConfigUuid);
@@ -312,7 +304,7 @@ export default function ColumnCreationDialog({
                             : 'spreadsheet/custom_column/edit_columns',
                     })}
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent data-popover-anchor>
                     <Grid container spacing={2} direction="column" alignItems="center">
                         <Typography align={'justify'} sx={styles.columnDescription}>
                             <FormattedMessage

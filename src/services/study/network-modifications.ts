@@ -35,7 +35,7 @@ import {
     LCCCreationInfo,
     LccModificationInfos,
     LineCreationInfo,
-    LineModificationInfo,
+    LineModificationInfos,
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
@@ -828,15 +828,16 @@ export function modifyLine({
     nodeUuid,
     modificationUuid,
     lineId,
-    lineName,
+    equipmentName,
     r,
     x,
     g1,
     b1,
     g2,
     b2,
-    currentLimit1,
-    currentLimit2,
+    operationalLimitsGroups,
+    selectedOperationalLimitsGroup1,
+    selectedOperationalLimitsGroup2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -858,7 +859,7 @@ export function modifyLine({
     p2MeasurementValidity,
     q2MeasurementValue,
     q2MeasurementValidity,
-}: LineModificationInfo) {
+}: LineModificationInfos) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
@@ -877,15 +878,16 @@ export function modifyLine({
         body: JSON.stringify({
             type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
             equipmentId: lineId,
-            equipmentName: toModificationOperation(lineName),
+            equipmentName: equipmentName,
             r: toModificationOperation(r),
             x: toModificationOperation(x),
             g1: toModificationOperation(g1),
             b1: toModificationOperation(b1),
             g2: toModificationOperation(g2),
             b2: toModificationOperation(b2),
-            currentLimits1: currentLimit1,
-            currentLimits2: currentLimit2,
+            operationalLimitsGroups: operationalLimitsGroups,
+            selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
             busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
             voltageLevelId2: toModificationOperation(voltageLevelId2),
@@ -1005,8 +1007,9 @@ export function modifyTwoWindingsTransformer({
     ratedS,
     ratedU1,
     ratedU2,
-    currentLimit1 = undefined,
-    currentLimit2 = undefined,
+    operationalLimitsGroups,
+    selectedLimitsGroup1,
+    selectedLimitsGroup2,
     ratioTapChanger,
     phaseTapChanger,
     voltageLevelId1 = undefined,
@@ -1060,8 +1063,9 @@ export function modifyTwoWindingsTransformer({
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            currentLimits1: currentLimit1,
-            currentLimits2: currentLimit2,
+            operationalLimitsGroups: operationalLimitsGroups,
+            selectedOperationalLimitsGroup1: selectedLimitsGroup1,
+            selectedOperationalLimitsGroup2: selectedLimitsGroup2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
@@ -2166,7 +2170,6 @@ export function createVoltageLevelTopology({
     } else {
         console.info('Creating voltage level topology');
     }
-    console.log('test', createVoltageLevelTopologyInfos);
     return backendFetchText(modifyUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {

@@ -7,7 +7,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Menu from '@mui/material/Menu';
-
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -22,9 +21,10 @@ import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import {
     CustomMenuItem,
-    EquipmentInfos,
+    type EquipmentInfos,
     EquipmentType,
-    ExtendedEquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
     OperatingStatus,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -44,7 +44,7 @@ import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.mod
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
-import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
+import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { UUID } from 'crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { CurrentTreeNode } from '../graph/tree-node.type';
@@ -56,7 +56,8 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
+
 export type MenuBranchProps = {
     equipment: MapEquipment;
     equipmentType: EquipmentType;

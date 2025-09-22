@@ -16,18 +16,19 @@ import StudyPathBreadcrumbs from './breadcrumbs/study-path-breadcrumbs';
 import { STUDY_VIEWS, StudyView } from './utils/utils.js';
 import useStudyPath from '../hooks/use-study-path.js';
 import { AppState } from '../redux/reducer';
-import { Box, Grid, Theme, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
-import { DeviceHubIcon, TuneIcon, PhotoLibraryIcon, OverflowableText } from '@gridsuite/commons-ui';
+import { Box, Grid, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { DeviceHubIcon, type MuiStyles, OverflowableText, PhotoLibraryIcon, TuneIcon } from '@gridsuite/commons-ui';
 import { useDisplayModes } from '../hooks/use-display-modes';
 import { useEffect } from 'react';
+
 const styles = {
-    horizontalToolbar: (theme: Theme) => ({
+    horizontalToolbar: (theme) => ({
         backgroundColor: theme.palette.toolbarBackground,
     }),
-    selected: (theme: Theme) => ({
+    selected: (theme) => ({
         color: theme.palette.action.active,
     }),
-    notSelected: (theme: Theme) => ({
+    notSelected: (theme) => ({
         color: theme.palette.action.disabled,
     }),
     tooltip: {
@@ -43,7 +44,7 @@ const styles = {
         alignItems: 'center',
         marginRight: '10px',
     },
-};
+} as const satisfies MuiStyles;
 
 export function HorizontalToolbar() {
     const intl = useIntl();
@@ -98,25 +99,31 @@ export function HorizontalToolbar() {
                                 </ToggleButton>
                             </Tooltip>
                             <Tooltip title={<FormattedMessage id={'modifications'} />}>
-                                <ToggleButton
-                                    value={StudyDisplayMode.MODIFICATIONS}
-                                    disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
-                                >
-                                    <TuneIcon />
-                                </ToggleButton>
+                                <span style={{ display: 'inline-flex' }}>
+                                    <ToggleButton
+                                        value={StudyDisplayMode.MODIFICATIONS}
+                                        disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
+                                    >
+                                        <TuneIcon />
+                                    </ToggleButton>
+                                </span>
                             </Tooltip>
                             {enableDeveloperMode && (
                                 <Tooltip title={<FormattedMessage id={'DynamicSimulation'} />}>
-                                    <ToggleButton
-                                        value={StudyDisplayMode.EVENT_SCENARIO}
-                                        disabled={currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'}
-                                    >
-                                        <OfflineBoltOutlinedIcon fontSize="small" />
-                                    </ToggleButton>
+                                    <span>
+                                        <ToggleButton
+                                            value={StudyDisplayMode.EVENT_SCENARIO}
+                                            disabled={
+                                                currentNode === null || currentNode?.type !== 'NETWORK_MODIFICATION'
+                                            }
+                                        >
+                                            <OfflineBoltOutlinedIcon fontSize="small" />
+                                        </ToggleButton>
+                                    </span>
                                 </Tooltip>
                             )}
                             <Tooltip title={<FormattedMessage id={'images'} />}>
-                                <ToggleButton value={StudyDisplayMode.DIAGRAM_GRID_LAYOUT}>
+                                <ToggleButton value={StudyDisplayMode.GRID_LAYOUT_PANEL}>
                                     <PhotoLibraryIcon />
                                 </ToggleButton>
                             </Tooltip>

@@ -13,7 +13,7 @@ import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
 import { EquipmentType, FILTER_EQUIPMENTS, useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
+import { type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import type { AgGridReact } from 'ag-grid-react';
 import type { ColDef } from 'ag-grid-community';
 import { spreadsheetStyles } from '../../../spreadsheet.style';
@@ -90,12 +90,7 @@ export default function SaveSpreadsheetButton({
                 id: SpreadsheetSaveOptionId.SAVE_FILTER,
                 label: 'spreadsheet/save/options/filter',
                 action: saveFilterDialogOpen.setTrue,
-                disabled:
-                    dataSize === 0 ||
-                    (tableDefinition.type === SpreadsheetEquipmentType.BRANCH
-                        ? !FILTER_EQUIPMENTS[EquipmentType.LINE] ||
-                          !FILTER_EQUIPMENTS[EquipmentType.TWO_WINDINGS_TRANSFORMER]
-                        : !FILTER_EQUIPMENTS[tableDefinition.type as unknown as EquipmentType]),
+                disabled: dataSize === 0 || !FILTER_EQUIPMENTS[tableDefinition.type as unknown as EquipmentType],
             },
         }),
         [

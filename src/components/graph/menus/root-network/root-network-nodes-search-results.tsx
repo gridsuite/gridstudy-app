@@ -4,12 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { DeviceHubIcon, OverflowableText } from '@gridsuite/commons-ui';
 import { Box, Divider, Theme } from '@mui/material';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCentedNode, setCurrentTreeNode } from 'redux/actions';
 import { AppState } from 'redux/reducer';
+import { DeviceHubIcon, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import React from 'react';
 
 interface RootNetworkNodesSearchResultsProps {
     results: string[];
@@ -39,7 +40,8 @@ const styles = {
         minHeight: '20px',
         minWidth: '20px',
     },
-};
+} as const satisfies MuiStyles;
+
 export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResultsProps> = ({ results }) => {
     const dispatch = useDispatch();
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);

@@ -5,47 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, mergeSx, Parameter, useSnackMessage } from '@gridsuite/commons-ui';
-
+import { CheckBoxList, mergeSx, type MuiStyles, type Parameter, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Delete as DeleteIcon,
     RemoveRedEye as RemoveRedEyeIcon,
     VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
-
-import {
-    Box,
-    Checkbox,
-    CircularProgress,
-    Theme,
-    Toolbar,
-    Typography,
-    Badge,
-    IconButton,
-    Chip,
-    Tooltip,
-} from '@mui/material';
-
+import { Badge, Box, Checkbox, Chip, CircularProgress, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import { getCaseImportParameters } from 'services/network-conversion';
 import { deleteRootNetworks, updateRootNetwork } from 'services/root-network';
-import { setCurrentRootNetworkUuid } from 'redux/actions';
 import { isChecked, isPartial } from '../network-modifications/network-modification-node-editor-utils';
 import RootNetworkDialog, { FormData } from 'components/dialogs/root-network/root-network-dialog';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
+import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 
 const styles = {
-    checkboxListItem: (theme: Theme) => ({
+    checkboxListItem: (theme) => ({
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(1),
     }),
-    rootNetworksTitle: (theme: Theme) => ({
+    rootNetworksTitle: (theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
         overflow: 'hidden',
@@ -56,7 +41,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
     }),
-    rootNetworkMonoRoot: (theme: Theme) => ({
+    rootNetworkMonoRoot: (theme) => ({
         display: 'flex',
         padding: theme.spacing(1),
         overflow: 'hidden',
@@ -71,13 +56,13 @@ const styles = {
             backgroundColor: theme.palette.action.hover,
         },
     }),
-    rootNetworkMonoRootHover: (theme: Theme) => ({
+    rootNetworkMonoRootHover: (theme) => ({
         cursor: 'pointer',
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
         },
     }),
-    toolbar: (theme: Theme) => ({
+    toolbar: (theme) => ({
         '&': {
             // Necessary to overrides some @media specific styles that are defined elsewhere
             padding: 0,
@@ -87,23 +72,23 @@ const styles = {
         border: theme.spacing(1),
         flexShrink: 0,
     }),
-    toolbarIcon: (theme: Theme) => ({
+    toolbarIcon: (theme) => ({
         marginRight: theme.spacing(1),
     }),
     filler: {
         flexGrow: 1,
     },
-    toolbarCircularProgress: (theme: Theme) => ({
+    toolbarCircularProgress: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: theme.spacing(1.25),
         marginRight: theme.spacing(1.25),
     }),
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         width: theme.spacing(3),
     }),
-};
+} as const satisfies MuiStyles;
 
 const ItemLabelSecondary = (item: RootNetworkMetadata) => {
     return <Chip size="small" label={item.tag} color="primary" />;
@@ -126,10 +111,10 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+    const { setCurrentRootNetworkUuidWithSync } = useSyncNavigationActions();
 
     const [rootNetworkModificationDialogOpen, setRootNetworkModificationDialogOpen] = useState(false);
     const [editedRootNetwork, setEditedRootNetwork] = useState<RootNetworkMetadata | undefined>(undefined);
-    const dispatch = useDispatch();
 
     const doDeleteRootNetwork = useCallback(() => {
         const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
@@ -157,7 +142,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
             return (
                 <IconButton
                     onClick={() => {
-                        dispatch(setCurrentRootNetworkUuid(rootNetwork.rootNetworkUuid));
+                        setCurrentRootNetworkUuidWithSync(rootNetwork.rootNetworkUuid);
                     }}
                     disabled={rootNetwork.isCreating || isRootNetworksProcessing}
                 >
@@ -171,7 +156,7 @@ const RootNetworkNodeEditor: React.FC<RootNetworkNodeEditorProps> = ({
                 </IconButton>
             );
         },
-        [currentRootNetworkUuid, dispatch, isRootNetworksProcessing]
+        [currentRootNetworkUuid, isRootNetworksProcessing, setCurrentRootNetworkUuidWithSync]
     );
 
     useEffect(() => {

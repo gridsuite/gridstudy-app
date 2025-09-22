@@ -9,31 +9,33 @@ import { NodeProps, Position } from '@xyflow/react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
-import { Theme } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
-import { baseNodeStyles, interactiveNodeStyles, selectedBaseNodeStyles } from './styles';
+import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
+import React from 'react';
+import { BuildButton } from './build-button';
 
 const styles = {
-    networkModificationSelected: (theme: Theme) => ({
-        ...selectedBaseNodeStyles(theme, 'column'),
+    networkModificationSelected: (theme) => ({
+        ...baseNodeStyles(theme, 'column'),
+        background: theme.node.modification.selectedBackground,
         border: theme.node.modification.selectedBorder,
         boxShadow: theme.shadows[6],
         ...interactiveNodeStyles(theme, 'modification'),
     }),
-    networkModification: (theme: Theme) => ({
+    networkModification: (theme) => ({
         ...baseNodeStyles(theme, 'column'),
         border: theme.node.modification.border,
         ...interactiveNodeStyles(theme, 'modification'),
     }),
-    contentBox: (theme: Theme) => ({
+    contentBox: (theme) => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'flex-end',
@@ -41,20 +43,27 @@ const styles = {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
-    overflowText: (theme: Theme) => ({
+    overflowText: (theme) => ({
         color: theme.palette.text.primary,
         fontSize: '20px',
         fontWeight: 400,
         lineHeight: 'normal',
         textAlign: 'left',
     }),
-    footerBox: (theme: Theme) => ({
+    footerBox: (theme) => ({
         display: 'flex',
         justifyContent: 'flex-start',
         marginLeft: theme.spacing(1),
         height: '35%',
     }),
-    chipFloating: (theme: Theme) => ({
+    buildBox: (theme) => ({
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginTop: theme.spacing(-5),
+        marginRight: theme.spacing(0),
+        height: '35%',
+    }),
+    chipFloating: (theme) => ({
         position: 'absolute',
         top: theme.spacing(-4),
         left: theme.spacing(1),
@@ -63,11 +72,13 @@ const styles = {
     tooltip: {
         maxWidth: '720px',
     },
-};
+} as const satisfies MuiStyles;
 
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.nodeSelectionForCopy);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -118,6 +129,17 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <Box sx={styles.footerBox}>
                     {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
                         <BuildStatusChip buildStatus={props.data.localBuildStatus} />
+                    )}
+                </Box>
+
+                <Box sx={styles.buildBox}>
+                    {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
+                        <BuildButton
+                            buildStatus={props.data.localBuildStatus}
+                            studyUuid={studyUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            nodeUuid={props.id}
+                        />
                     )}
                 </Box>
 

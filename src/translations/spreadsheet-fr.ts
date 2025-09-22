@@ -118,12 +118,17 @@ const spreadsheetFr = {
     'spreadsheet/reset_filters_error': 'Erreur lors de la réinitialisation des filtres du tableur',
     'spreadsheet/rename/label': 'Renommer',
     'spreadsheet/delete/label': 'Supprimer',
-    'spreadsheet/edit/label': 'Editer',
+    'spreadsheet/edit/label': 'Éditer',
     'spreadsheet/rename_spreadsheet_error': 'Erreur lors du renommage du tableur',
     'spreadsheet/rename_dialog_title': 'Renommer le tableur',
     'spreadsheet/spreadsheet_name_le_60': 'Le nom du tableur ne peut dépasser 60 caractères',
+    'spreadsheet/loading/error_fetching_type_title': 'Erreur lors du (re)chargement du/des tableaux de type {type}',
+    'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
+    'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Sets de limites inactifs',
+    'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux distants réglés',
+    'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Composantes de réseau',
 
-    'spreadsheet/global-model-edition/edit': 'Editer le modèle',
+    'spreadsheet/global-model-edition/edit': 'Éditer le modèle',
     'spreadsheet/global-model-edition/column_id': 'ID',
     'spreadsheet/global-model-edition/column_name': 'Nom',
     'spreadsheet/global-model-edition/column_type': 'Type',
@@ -133,6 +138,11 @@ const spreadsheetFr = {
     'spreadsheet/global-model-edition/update_confirmation_message': 'Modèle de tableur mis à jour',
     'spreadsheet/global-model-edition/update_error_message':
         'Une erreur est survenue lors de la mise à jour du modèle de tableur',
+    'spreadsheet/global-model-edition/search_replace_button': 'Chercher et remplacer dans formule',
+    'spreadsheet/global-model-edition/hide_search_button': 'Replier la recherche de formule',
+    'spreadsheet/global-model-edition/search': 'Rechercher dans formule',
+    'spreadsheet/global-model-edition/replace': 'Remplacer dans formule',
+    'spreadsheet/global-model-edition/replace_all': 'Tout remplacer',
 
     // calculations
     'spreadsheet/calculation/sum': 'Somme',

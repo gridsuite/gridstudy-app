@@ -11,18 +11,19 @@ import { ReportTree } from '../../utils/report/report.type';
 import Label from '@mui/icons-material/Label';
 import { useTreeViewScroll } from './use-treeview-scroll';
 import { QuickSearch } from './QuickSearch';
-import { Box, Theme } from '@mui/material';
+import { Box } from '@mui/material';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { reportStyles } from './report.styles';
 
 const styles = {
     treeItem: {
         whiteSpace: 'nowrap',
     },
-    labelIcon: (theme: Theme) => ({
+    labelIcon: (theme) => ({
         marginRight: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface TreeViewProps {
     expandedTreeReports: string[];
@@ -45,6 +46,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const onExpandItem = useCallback(
         (node: ReportItem) => {
@@ -167,6 +169,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                 resultCount={searchResults.length}
                 resetSearch={resetSearch}
                 placeholder="searchPlaceholderLogsTreeStructure"
+                inputRef={inputRef}
             />
             <Box sx={{ flex: 1 }}>
                 <AutoSizer>

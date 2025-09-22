@@ -9,28 +9,28 @@ import CloseIcon from '@mui/icons-material/Close';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from '../plot/plotly-series-chart';
-import { Card, CardContent, CardHeader, Theme, Typography } from '@mui/material';
+import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
-import TooltipIconButton from '../common/tooltip-icon-button';
+import TooltipIconButton from '../../../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { Series } from '../plot/plot-types';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    cardActionButton: (theme: Theme) => ({
+    cardActionButton: (theme) => ({
         marginRight: theme.spacing(0.5),
         border: 'none',
         borderRadius: '50%',
     }),
-    cardActive: (theme: Theme) => ({
+    cardActive: (theme) => ({
         border: 'solid',
         borderColor: lighten(theme.palette.primary.main, 0.2),
     }),
     card: {
         height: '100%',
     },
-    cardHeader: (theme: Theme) => ({
+    cardHeader: (theme) => ({
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
         '&:hover': {
             background: lighten(theme.palette.background.paper, 0.3),
@@ -42,7 +42,7 @@ const styles = {
     cardContent: {
         height: '100%',
     },
-};
+} as const satisfies MuiStyles;
 
 export type DynamicSimulationResultSeriesChartProps = {
     id: string;

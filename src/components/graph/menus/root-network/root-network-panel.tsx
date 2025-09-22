@@ -11,6 +11,7 @@ import RootNetworkPanelHeader from './root-network-panel-header';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import RootNetworkNodeEditor from './root-network-node-editor';
 import { useSelector } from 'react-redux';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 import { useRootNetworkNotifications } from './use-root-network-notifications';
 import RootNetworkSearchPanel from './root-network-panel-search';
@@ -24,7 +25,7 @@ const styles = {
         zIndex: 10,
         overflow: 'hidden',
     },
-};
+} as const satisfies MuiStyles;
 
 const RootNetworkPanel: FunctionComponent = () => {
     const [isRootNetworksProcessing, setIsRootNetworksProcessing] = useState(false);

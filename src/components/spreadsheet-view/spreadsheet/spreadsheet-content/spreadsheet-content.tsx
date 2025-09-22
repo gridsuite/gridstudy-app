@@ -8,12 +8,12 @@
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
-import { type Identifiable } from '@gridsuite/commons-ui';
+import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
 import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
-import { Alert, Box, type Theme } from '@mui/material';
+import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
 import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
@@ -23,11 +23,11 @@ import { FilterType } from 'types/custom-aggrid-types';
 import { updateFilters } from 'components/custom-aggrid/custom-aggrid-filters/utils/aggrid-filters-utils';
 import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spreadsheet-content/hooks/use-grid-calculations';
 import { useColumnManagement } from './hooks/use-column-management';
-import { DiagramType } from 'components/diagrams/diagram.type';
+import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 
 const styles = {
-    table: (theme: Theme) => ({
+    table: (theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
@@ -41,11 +41,7 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-};
-
-interface RecursiveIdentifiable extends Identifiable {
-    [alias: string]: Identifiable | string | undefined;
-}
+} as const satisfies MuiStyles;
 
 interface SpreadsheetContentProps {
     gridRef: RefObject<AgGridReact>;
@@ -164,17 +160,27 @@ export const SpreadsheetContent = memo(
                 return undefined;
             }
 
-            return equipments.equipmentsByNodeId[currentNode.id].map((equipment) => {
-                let equipmentToAdd: RecursiveIdentifiable = { ...equipment };
-                Object.entries(equipments.equipmentsByNodeId).forEach(([nodeId, nodeEquipments]) => {
-                    let matchingEquipment = nodeEquipments.find((eq) => eq.id === equipment.id);
-                    let nodeAlias = nodeAliases.find((value) => value.id === nodeId);
-                    if (nodeAlias && matchingEquipment) {
-                        equipmentToAdd[nodeAlias.alias] = matchingEquipment;
-                    }
-                });
-                return equipmentToAdd;
-            });
+            const currentNodeData: Record<string, Identifiable> = equipments.equipmentsByNodeId[currentNode.id];
+            return Object.values(
+                Object.entries(equipments.equipmentsByNodeId).reduce(
+                    (prev, [nodeId, nodeEquipments]) => {
+                        if (nodeId === currentNode.id) {
+                            return prev;
+                        }
+                        const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
+                        if (nodeAlias) {
+                            Object.values(nodeEquipments).forEach((eq) => {
+                                prev[eq.id] = {
+                                    ...prev[eq.id],
+                                    [nodeAlias.alias]: eq,
+                                };
+                            });
+                        }
+                        return prev;
+                    },
+                    { ...currentNodeData }
+                )
+            );
         }, [equipments, currentNode.id, nodeAliases]);
 
         useEffect(() => {

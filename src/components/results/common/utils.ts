@@ -6,6 +6,7 @@
  */
 import { NA_Value } from 'components/custom-aggrid/utils/format-values-utils';
 import { IntlShape } from 'react-intl';
+import type { MuiStyles } from '@gridsuite/commons-ui';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
@@ -37,3 +38,9 @@ export enum FilterType {
     GENERIC_FILTER = 'genericFilter', // generic filters which uses the filter library
     SUBSTATION_PROPERTY = 'substationProperty',
 }
+
+export const resultsStyles = {
+    sldLink: {
+        color: 'node.background',
+    },
+} as const satisfies MuiStyles;

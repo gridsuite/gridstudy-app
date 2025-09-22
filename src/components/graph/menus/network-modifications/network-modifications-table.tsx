@@ -6,8 +6,13 @@
  */
 
 import React, { useCallback, useMemo, SetStateAction, useRef } from 'react';
-import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
+    CustomAGGrid,
+    type MuiStyles,
+    type NetworkModificationMetadata,
+    useModificationLabelComputer,
+} from '@gridsuite/commons-ui';
+import type {
     CellClickedEvent,
     ColDef,
     GetRowIdParams,
@@ -20,7 +25,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge, Box, Theme, useTheme } from '@mui/material';
+import { Badge, Box, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
@@ -36,7 +41,7 @@ import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/ce
 import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
-    container: (theme: Theme) => ({
+    container: (theme) => ({
         position: 'relative',
         flexGrow: 1,
         marginTop: theme.spacing(1),
@@ -51,7 +56,7 @@ const styles = {
             backgroundColor: theme.palette.background.paper,
         },
     }),
-};
+} as const satisfies MuiStyles;
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];

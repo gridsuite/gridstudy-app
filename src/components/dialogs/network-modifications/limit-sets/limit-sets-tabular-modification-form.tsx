@@ -15,6 +15,7 @@ import {
     FieldErrorAlert,
     IntegerInput,
     LANG_FRENCH,
+    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import {
     AMOUNT_TEMPORARY_LIMITS,
@@ -44,7 +45,7 @@ import { BOOLEAN } from '../../../network/constants';
 
 const styles = {
     grid: { height: 500, width: '100%' },
-};
+} as const satisfies MuiStyles;
 
 export interface TabularModificationFormProps {
     dataFetching: boolean;

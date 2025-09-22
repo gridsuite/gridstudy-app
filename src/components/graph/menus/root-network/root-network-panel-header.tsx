@@ -6,14 +6,15 @@
  */
 
 import React, { SetStateAction, useCallback, useState } from 'react';
-import { Box, IconButton, Theme, Tooltip, Typography } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import {
+    fetchDirectoryElementPath,
     LeftPanelCloseIcon,
     LeftPanelOpenIcon,
+    type MuiStyles,
     OverflowableText,
-    Parameter,
-    fetchDirectoryElementPath,
+    type Parameter,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
@@ -21,7 +22,7 @@ import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from '../../../dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
 import { UUID } from 'crypto';
-import { GetCaseImportParametersReturn, getCaseImportParameters } from 'services/network-conversion';
+import { getCaseImportParameters, GetCaseImportParametersReturn } from 'services/network-conversion';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
@@ -29,24 +30,25 @@ import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 
 const styles = {
-    headerPanel: (theme: Theme) => ({
+    headerPanel: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(1),
     }),
-    rootNameTitle: (theme: Theme) => ({
+    rootNameTitle: {
         fontWeight: 'bold',
-    }),
-    headerLeftContainer: (theme: Theme) => ({
+    },
+    headerLeftContainer: (theme) => ({
         marginLeft: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
         flexGrow: 1,
     }),
-    uploadButton: (theme: Theme) => ({
+    uploadButton: (theme) => ({
         marginLeft: theme.spacing(2),
     }),
-};
+} as const satisfies MuiStyles;
+
 interface RootNetworkPanelHeaderProps {
     isRootNetworksProcessing: boolean;
     setIsRootNetworksProcessing: React.Dispatch<SetStateAction<boolean>>;

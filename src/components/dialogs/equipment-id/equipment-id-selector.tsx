@@ -9,8 +9,7 @@ import { useEffect, useState } from 'react';
 import { filledTextField } from '../dialog-utils';
 import { UUID } from 'crypto';
 import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
-import { Theme } from '@mui/material/styles';
-import { EquipmentType, ExtendedEquipmentType, FieldLabel } from '@gridsuite/commons-ui';
+import { type EquipmentType, type ExtendedEquipmentType, FieldLabel, type MuiStyles } from '@gridsuite/commons-ui';
 import { FormFiller } from './formFiller.js';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
@@ -19,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 
 const styles = {
-    message: (theme: Theme) => ({
+    message: (theme) => ({
         fontSize: 'small',
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
@@ -28,7 +27,7 @@ const styles = {
         color: 'rgba(0,0,0,0)',
         width: 0,
     },
-};
+} as const satisfies MuiStyles;
 
 interface EquipmentIdSelectorProps {
     defaultValue: string | null;

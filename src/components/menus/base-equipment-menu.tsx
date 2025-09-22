@@ -6,24 +6,23 @@
  */
 
 import EditIcon from '@mui/icons-material/Edit';
-
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
+import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import {
-    Equipment,
-    EquipmentType,
     CustomMenuItem,
     CustomNestedMenuItem,
-    ExtendedEquipmentType,
+    type Equipment,
+    EquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
 } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
@@ -34,7 +33,7 @@ const styles = {
         // to justify menu items texts
         paddingLeft: '12px',
     },
-};
+} as const satisfies MuiStyles;
 
 type HandleViewInSpreadsheet = (equipmentType: EquipmentType, equipmentId: string) => void;
 type HandleDeleteEquipment = (equipmentType: EquipmentType | null, equipmentId: string) => void;

@@ -6,7 +6,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles, type SxStyle } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
@@ -39,13 +39,14 @@ import {
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import { reportStyles } from './report.styles';
+import { useLogsPagination } from './use-logs-pagination';
 
 const getColumnFilterValue = (array: FilterConfig[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };
 
-const styles = {
-    chip: (severity: string, severityFilter: string[], theme: Theme) => ({
+const chipStyle = (severity: string, severityFilter: string[], theme: Theme) =>
+    ({
         backgroundColor: severityFilter.includes(severity)
             ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
             : theme.severityChip.disabledColor,
@@ -62,27 +63,24 @@ const styles = {
             color: theme.palette.text.primary,
         },
         padding: 0.5,
+    }) as const satisfies SxStyle;
+
+const styles = {
+    chipContainer: (theme) => ({
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: theme.spacing(1),
     }),
-    chipContainer: (theme: Theme) => {
-        return {
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: theme.spacing(1),
-        };
-    },
-    toolContainer: (theme: Theme) => {
-        return {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: theme.spacing(1),
-            mb: theme.spacing(2),
-        };
-    },
-};
+    toolContainer: (theme) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        mb: theme.spacing(2),
+    }),
+} as const satisfies MuiStyles;
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 const PAGE_OPTIONS = [15, 30, 50, 100];
-const DEFAULT_PAGE_COUNT = 15;
 
 type LogTableProps = {
     selectedReport: SelectedReportLog;
@@ -111,6 +109,7 @@ const LogTable = ({
         reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
     );
     const { filters } = useFilterSelector(FilterType.Logs, reportType);
+    const { pagination, setPagination } = useLogsPagination(reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
     const [rowData, setRowData] = useState<Log[] | null>(null);
@@ -119,11 +118,12 @@ const LogTable = ({
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [filtersInitialized, setFiltersInitialized] = useState(false);
-    const [page, setPage] = useState<number>(0);
-    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
     const [count, setCount] = useState<number>(0);
+
+    const { page, rowsPerPage } = pagination;
 
     // Reset filtersInitialized when reportType or severities change
     useEffect(() => {
@@ -149,14 +149,23 @@ const LogTable = ({
             (pagedLogs) => {
                 const { content, totalElements, totalPages } = pagedLogs;
                 if (totalPages - 1 < page) {
-                    setPage(0);
+                    setPagination({ page: 0, rowsPerPage });
                 }
                 setCount(totalElements);
                 setSelectedRowIndex(-1);
                 setRowData(content);
             }
         );
-    }, [severityFilter, fetchLogs, selectedReport.id, selectedReport.type, messageFilter, page, rowsPerPage]);
+    }, [
+        severityFilter,
+        fetchLogs,
+        selectedReport.id,
+        selectedReport.type,
+        messageFilter,
+        page,
+        rowsPerPage,
+        setPagination,
+    ]);
 
     useEffect(() => {
         if (severities && severities.length > 0) {
@@ -313,7 +322,7 @@ const LogTable = ({
                 setSearchMatches(matchesPositions);
                 const matches = matchesPositions.map((match: { rowIndex: number; page: number }) => match.rowIndex);
                 if (matches.length > 0) {
-                    setPage(matchesPositions[0].page);
+                    setPagination({ page: matchesPositions[0].page, rowsPerPage });
                 }
                 handleSearchResults(matches);
             });
@@ -326,6 +335,7 @@ const LogTable = ({
             rowsPerPage,
             selectedReport.id,
             selectedReport.type,
+            setPagination,
             severityFilter,
         ]
     );
@@ -344,11 +354,11 @@ const LogTable = ({
                 newIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
             }
 
-            setPage(searchMatches[newIndex].page);
+            setPagination({ page: searchMatches[newIndex].page, rowsPerPage });
             setCurrentResultIndex(newIndex);
             highlightAndScrollToMatch(newIndex, searchResults);
         },
-        [searchResults, highlightAndScrollToMatch, currentResultIndex, searchMatches]
+        [searchResults, setPagination, searchMatches, rowsPerPage, highlightAndScrollToMatch, currentResultIndex]
     );
 
     const handleChipClick = useCallback(
@@ -379,18 +389,20 @@ const LogTable = ({
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
-            setPage(newPage);
+            setPagination({ page: newPage, rowsPerPage });
             // find index of the first element in searchMatches
             const firstMatchIndex = searchMatches.findIndex((match) => match.page === newPage);
             setCurrentResultIndex(firstMatchIndex);
         },
-        [searchMatches]
+        [searchMatches, rowsPerPage, setPagination]
     );
 
-    const handleChangeRowsPerPage = useCallback((event: any) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    }, []);
+    const handleChangeRowsPerPage = useCallback(
+        (event: any) => {
+            setPagination({ page: 0, rowsPerPage: parseInt(event.target.value, 10) });
+        },
+        [setPagination]
+    );
 
     // This effect enables to recompute the research when selected node, filters or page size change for example
     useEffect(() => {
@@ -409,6 +421,7 @@ const LogTable = ({
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
                     placeholder="searchPlaceholderLog"
+                    inputRef={inputRef}
                 />
                 <Box sx={styles.chipContainer}>
                     {severities?.map((severity) => (
@@ -418,7 +431,7 @@ const LogTable = ({
                             deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
                             onClick={() => handleChipClick(severity)}
                             onDelete={() => handleChipClick(severity)}
-                            sx={styles.chip(severity, severityFilter, theme)}
+                            sx={chipStyle(severity, severityFilter, theme) /*TODO memoize that*/}
                         />
                     ))}
                 </Box>

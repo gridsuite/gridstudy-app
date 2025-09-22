@@ -5,41 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CardContent from '@mui/material/CardContent';
-import Card from '@mui/material/Card';
-import { Button, CardActions, CardHeader, Theme, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardHeader, Typography } from '@mui/material';
 import LineSeparator from '../dialogs/commons/line-separator';
 import { FormattedMessage } from 'react-intl';
 import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    popUpContent: (theme: Theme) => ({
+    popUpContent: (theme) => ({
         fontSize: 15,
         fontFamily: theme.typography.fontFamily,
     }),
-    symbol: (theme: Theme) => ({
+    symbol: (theme) => ({
         width: theme.spacing(2),
         height: theme.spacing(2),
     }),
-    title: (theme: Theme) => ({
+    title: (theme) => ({
         lineHeight: 1,
         maxWidth: theme.spacing(17.5),
     }),
-    card: (theme: Theme) => ({
+    card: (theme) => ({
         position: 'absolute',
         left: theme.spacing(1.25),
-        bottom: theme.spacing(18.75),
+        bottom: theme.spacing(10.75),
         maxWidth: theme.spacing(25),
     }),
-    header: (theme: Theme) => ({
+    header: (theme) => ({
         paddingBottom: theme.spacing(1.4),
     }),
     actionsContainer: {
         display: 'flex',
         justifyContent: 'center',
     },
-};
+} as const satisfies MuiStyles;
 
 type GuidancePopupProps = {
     onActionClick: () => void;
