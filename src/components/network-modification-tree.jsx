@@ -75,8 +75,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     const [tooltipOpen, setTooltipOpen] = useState(false);
-    const [tooltipContent, setTooltipContent] = useState('');
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [tooltipContent, setTooltipContent] = useState();
 
     const nodesMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
@@ -328,7 +327,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
             const content = (
                 <Box style={{ whiteSpace: 'pre-line' }}>
                     <Box sx={styles.contentBox}>
-                        <OverflowableText text={node.data.label} />
+                        <OverflowableText text={node.data.label} sx={{ fontWeight: 'bold' }} />
                     </Box>
 
                     <Box>
@@ -344,15 +343,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
             );
 
             setTooltipContent(content);
-            setTooltipPosition({ x: event.clientX + 10, y: event.clientY + 10 });
             setTooltipOpen(true);
         },
         [intl]
     );
-
-    const handleNodeMouseMove = useCallback((event) => {
-        setTooltipPosition({ x: event.clientX + 10, y: event.clientY + 10 });
-    }, []);
 
     const handleNodeMouseLeave = useCallback(() => {
         setTooltipOpen(false);
@@ -360,85 +354,57 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     return (
         <Box sx={styles}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={handleNodesChange}
-                onEdgesChange={onEdgesChange}
-                fitView
-                snapToGrid
-                snapGrid={snapGrid}
-                onNodeContextMenu={onNodeContextMenu}
-                onNodeClick={onNodeClick}
-                onNodeMouseEnter={handleNodeMouseEnter}
-                onNodeMouseMove={handleNodeMouseMove}
-                onNodeMouseLeave={handleNodeMouseLeave}
-                elementsSelectable
-                selectNodesOnDrag={false}
-                nodeTypes={nodeTypes}
-                minZoom={0.1} // Lower value allows for more zoom out
-                //maxZoom={2} // Higher value allows for more zoom in
-                onNodeDragStop={handlePostNodeDragging}
-                nodeClickDistance={5} // to avoid triggering onNodeDragStop instead of onNodeClick sometimes
-                disableKeyboardA11y
-                deleteKeyCode={null}
-                defaultEdgeOptions={{
-                    type: 'smoothstep',
-                    pathOptions: {
-                        // TODO This negative offset and borderRadius values are needed to have round corners on the edge,
-                        // but because the nodes are not totally opaque, we can see the edges behind the nodes.
-                        // When the nodes are redesigned and hopefully the colors are set without transparency, we can use
-                        // the round edges by un-commenting the two lines below.
-                        //offset: -24,
-                        //borderRadius: 48,
-                    },
-                }}
-            >
-                <Controls
-                    position="bottom-right"
-                    style={{ margin: '10px', marginBottom: '30px' }}
-                    showZoom={false}
-                    showInteractive={false}
-                    showFitView={false}
-                >
-                    <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
-                        <CropFreeIcon />
-                    </TreeControlButton>
-                    <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
-                        <CenterFocusIcon />
-                    </TreeControlButton>
-                </Controls>
-                <RootNetworkPanel />
-            </ReactFlow>
-            {tooltipOpen && (
-                <Tooltip
-                    open={tooltipOpen}
-                    title={tooltipContent}
-                    placement="right"
-                    slotProps={{
-                        tooltip: {
-                            sx: {
-                                maxWidth: 'none',
-                                width: 'auto',
-                            },
-                        },
-                    }}
-                    PopperProps={{
-                        anchorEl: {
-                            getBoundingClientRect: () => ({
-                                top: tooltipPosition.y,
-                                left: tooltipPosition.x,
-                                right: tooltipPosition.x,
-                                bottom: tooltipPosition.y,
-                                width: 0,
-                                height: 0,
-                            }),
+            <Tooltip open={tooltipOpen} title={tooltipContent} followCursor placement="right">
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={handleNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    fitView
+                    snapToGrid
+                    snapGrid={snapGrid}
+                    onNodeContextMenu={onNodeContextMenu}
+                    onNodeClick={onNodeClick}
+                    onNodeMouseEnter={handleNodeMouseEnter}
+                    onNodeMouseLeave={handleNodeMouseLeave}
+                    elementsSelectable
+                    selectNodesOnDrag={false}
+                    nodeTypes={nodeTypes}
+                    minZoom={0.1} // Lower value allows for more zoom out
+                    //maxZoom={2} // Higher value allows for more zoom in
+                    onNodeDragStop={handlePostNodeDragging}
+                    nodeClickDistance={5} // to avoid triggering onNodeDragStop instead of onNodeClick sometimes
+                    disableKeyboardA11y
+                    deleteKeyCode={null}
+                    defaultEdgeOptions={{
+                        type: 'smoothstep',
+                        pathOptions: {
+                            // TODO This negative offset and borderRadius values are needed to have round corners on the edge,
+                            // but because the nodes are not totally opaque, we can see the edges behind the nodes.
+                            // When the nodes are redesigned and hopefully the colors are set without transparency, we can use
+                            // the round edges by un-commenting the two lines below.
+                            //offset: -24,
+                            //borderRadius: 48,
                         },
                     }}
                 >
-                    <Box />
-                </Tooltip>
-            )}
+                    <Controls
+                        position="bottom-right"
+                        style={{ margin: '10px', marginBottom: '30px' }}
+                        showZoom={false}
+                        showInteractive={false}
+                        showFitView={false}
+                    >
+                        <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
+                            <CropFreeIcon />
+                        </TreeControlButton>
+                        <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
+                            <CenterFocusIcon />
+                        </TreeControlButton>
+                    </Controls>
+                    <RootNetworkPanel />
+                </ReactFlow>
+            </Tooltip>
         </Box>
     );
 };
