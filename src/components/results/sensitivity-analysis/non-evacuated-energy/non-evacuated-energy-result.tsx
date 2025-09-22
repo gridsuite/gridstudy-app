@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FunctionComponent, useCallback } from 'react';
-
 import { NonEvacuatedEnergyResultProps } from './non-evacuated-energy-result.type';
 import { FormattedMessage } from 'react-intl';
 import { RunningStatus } from '../../../utils/running-status';
 import fileSaver from 'file-saver';
 import { Box, Button } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     buttonExportResult: {
@@ -18,7 +18,7 @@ const styles = {
         position: 'relative',
         marginTop: '10px',
     },
-};
+} as const satisfies MuiStyles;
 
 export const NonEvacuatedEnergyResult: FunctionComponent<NonEvacuatedEnergyResultProps> = ({ result, status }) => {
     const exportResult = useCallback(() => {

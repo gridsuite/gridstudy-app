@@ -7,8 +7,9 @@
 
 import { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Theme, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
 import { ExpandCircleDown, ExpandMore } from '@mui/icons-material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 type AccordionIllustrationProps = {
     state: boolean;
@@ -21,7 +22,7 @@ const styles = {
     accordion: {
         background: 'none',
     },
-    accordionIllustrationSummary: (theme: Theme) => ({
+    accordionIllustrationSummary: (theme) => ({
         flexDirection: 'row',
         flexGrow: 0,
         justifyContent: 'left',
@@ -38,10 +39,10 @@ const styles = {
             flexGrow: 0,
         },
     }),
-    accordionIllustrationDetails: (theme: Theme) => ({
+    accordionIllustrationDetails: (theme) => ({
         padding: theme.spacing(0),
     }),
-};
+} as const satisfies MuiStyles;
 
 export const AccordionIllustration: FunctionComponent<PropsWithChildren<AccordionIllustrationProps>> = (props) => {
     const [mouseHover, setMouseHover] = useState(false);

@@ -7,12 +7,13 @@
 
 import { useEffect } from 'react';
 import { Grid } from '@mui/material';
-import { CustomFormProvider, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { SpreadsheetModelGlobalEditorTable } from './spreadsheet-model-global-editor-table';
+import FormulaSearchReplace from './formula-search-replace';
+import { FormulaSearchProvider } from './formula-search-context';
 import {
     COLUMNS_MODEL,
     columnsModelForm,
@@ -34,7 +35,7 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-};
+} as const satisfies MuiStyles;
 
 const toCustomColumnsGlobalModelDialogFormValues = (columnsModel: ColumnGlobalModel[]) => {
     return { [COLUMNS_MODEL]: columnsModel };
@@ -91,9 +92,16 @@ export function SpreadsheetModelGlobalEditorDialog({
                 PaperProps={{ sx: styles.dialogContent }}
                 {...dialogProps}
             >
-                <Grid container>
-                    <SpreadsheetModelGlobalEditorTable />
-                </Grid>
+                <FormulaSearchProvider>
+                    <Grid container direction="column">
+                        <Grid item container justifyContent="flex-start" sx={{ my: 2 }}>
+                            <FormulaSearchReplace />
+                        </Grid>
+                        <Grid item>
+                            <SpreadsheetModelGlobalEditorTable />
+                        </Grid>
+                    </Grid>
+                </FormulaSearchProvider>
             </ModificationDialog>
         </CustomFormProvider>
     );

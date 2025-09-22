@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 export const styles = {
-    listContainer: (theme: Theme) => ({
+    listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -25,7 +25,7 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    modificationsTitle: (theme: Theme) => ({
+    modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -34,9 +34,9 @@ export const styles = {
         borderBottom: theme.networkModificationPanel.border,
         overflow: 'hidden',
     }),
-    toolbar: (theme: Theme) => ({
+    toolbar: (theme) => ({
         '&': {
-            // Necessary to overrides some @media specific styles that are defined elsewhere
+            // Necessary to override some @media specific styles that are defined elsewhere
             padding: 0,
             minHeight: 0,
         },
@@ -44,21 +44,21 @@ export const styles = {
         margin: 0,
         flexShrink: 0,
     }),
-    toolbarCheckbox: (theme: Theme) => ({
+    toolbarCheckbox: (theme) => ({
         marginLeft: theme.spacing(1.5),
     }),
     filler: {
         flexGrow: 1,
     },
-    circularProgress: (theme: Theme) => ({
+    circularProgress: (theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
     }),
-    modificationCircularProgress: (theme: Theme) => ({
+    modificationCircularProgress: (theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.main,
     }),
-    toolbarCircularProgress: (theme: Theme) => ({
+    toolbarCircularProgress: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -66,7 +66,7 @@ export const styles = {
         marginRight: theme.spacing(2),
         color: theme.palette.secondary.main,
     }),
-    notification: (theme: Theme) => ({
+    notification: (theme) => ({
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
@@ -74,13 +74,13 @@ export const styles = {
         textAlign: 'center',
         color: theme.palette.primary.main,
     }),
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         width: theme.spacing(3),
     }),
-    iconEdit: (theme: Theme) => ({
+    iconEdit: (theme) => ({
         marginRight: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 export function isChecked(s1: number) {
     return s1 !== 0;
