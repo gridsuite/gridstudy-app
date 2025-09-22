@@ -331,13 +331,13 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                     </Box>
 
                     <Box>
-                        {intl.formatMessage({ id: 'nodeStatus' })}:{' '}
+                        {intl.formatMessage({ id: 'nodeStatus' })} :{' '}
                         {node.data.globalBuildStatus
                             ? intl.formatMessage({ id: node.data.globalBuildStatus })
                             : intl.formatMessage({ id: 'NOT_BUILT' })}
                     </Box>
                     <Box>
-                        {intl.formatMessage({ id: 'nodeType' })}: {intl.formatMessage({ id: node.data.nodeType })}
+                        {intl.formatMessage({ id: 'nodeType' })} : {intl.formatMessage({ id: node.data.nodeType })}
                     </Box>
                 </Box>
             );
