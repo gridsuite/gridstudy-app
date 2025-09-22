@@ -47,6 +47,8 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
+export const IS_REMOVED = 'isRemoved';
+export const IS_SEPARATOR = 'isSeparator';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';

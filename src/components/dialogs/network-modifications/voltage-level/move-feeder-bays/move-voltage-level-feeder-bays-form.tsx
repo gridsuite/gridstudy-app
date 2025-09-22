@@ -97,16 +97,9 @@ export function MoveVoltageLevelFeederBaysForm({
         [intl, isNodeBuiltValue, shouldDisableTooltip]
     );
 
-    const renderSeparatorCell = useCallback((data: any, content: React.ReactNode = '') => {
-        if (data.type === 'SEPARATOR') {
-            return content;
-        }
-        return null;
-    }, []);
-
     const renderConnectionNameCell = useCallback(
         ({ data }: { data?: any }) => {
-            if (data.type === 'SEPARATOR') {
+            if (data.isSeparator) {
                 return (
                     <div
                         style={{
@@ -126,7 +119,7 @@ export function MoveVoltageLevelFeederBaysForm({
                         }}
                     >
                         <Typography variant="body1" color="primary" sx={{ textAlign: 'center', width: '100%' }}>
-                            {data.title}
+                            {intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' })}
                         </Typography>
                     </div>
                 );
@@ -139,7 +132,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 <TextInput
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
                     formProps={{
-                        disabled: data.type === 'FEEDER_BAY_REMOVED',
+                        disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
                         sx: {
@@ -150,16 +143,14 @@ export function MoveVoltageLevelFeederBaysForm({
                 />
             );
         },
-        [getValues]
+        [getValues, intl]
     );
 
     const renderBusbarSectionCell = useCallback(
         ({ data }: { data?: any }) => {
-            const separatorContent = renderSeparatorCell(data, '');
-            if (separatorContent !== null) {
-                return separatorContent;
+            if (data.isSeparator) {
+                return null;
             }
-
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
             const busBarSectionIds = getValues(
@@ -172,39 +163,35 @@ export function MoveVoltageLevelFeederBaysForm({
                     options={busBarSectionIds}
                     size="small"
                     sx={{ padding: '8%' }}
-                    disabled={data.type === 'FEEDER_BAY_REMOVED'}
+                    disabled={data.isRemoved}
                     disableClearable
                 />
             );
         },
-        [getValues, renderSeparatorCell]
+        [getValues]
     );
 
     const renderConnectionDirectionCell = useCallback(
         ({ data }: { data?: any }) => {
-            const separatorContent = renderSeparatorCell(data, '');
-            if (separatorContent !== null) {
-                return separatorContent;
+            if (data.isSeparator) {
+                return null;
             }
-
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
             return FeederBayDirectionCellRenderer({
                 name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
-                disabled: data.type === 'FEEDER_BAY_REMOVED',
+                disabled: data.isRemoved,
             });
         },
-        [getValues, renderSeparatorCell]
+        [getValues]
     );
 
     const renderConnectionPositionCell = useCallback(
         ({ data }: { data?: any }) => {
-            const separatorContent = renderSeparatorCell(data, '');
-            if (separatorContent !== null) {
-                return separatorContent;
+            if (data.isSeparator) {
+                return null;
             }
-
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
@@ -213,7 +200,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     <IntegerInput
                         name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_POSITION}`}
                         formProps={{
-                            disabled: data.type === 'FEEDER_BAY_REMOVED',
+                            disabled: data.isRemoved,
                             size: 'small',
                             variant: 'outlined',
                             sx: {
@@ -227,7 +214,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 </div>
             );
         },
-        [getValues, renderSeparatorCell]
+        [getValues]
     );
 
     const columnDefs = useMemo(

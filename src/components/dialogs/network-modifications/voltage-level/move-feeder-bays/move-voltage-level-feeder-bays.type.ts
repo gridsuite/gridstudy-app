@@ -7,14 +7,14 @@
 import { ConnectablePositionInfos } from '../../../connectivity/connectivity.type';
 
 export type FeederBaysFormInfos = {
-    equipmentId: string;
+    equipmentId: string | null;
     busbarSectionId: string | null;
     connectionSide: string | null;
     connectionName: string | null;
     connectionDirection: string | null;
     connectionPosition: string | null;
-    type: string;
-    title?: string;
+    isSeparator: boolean;
+    isRemoved: boolean;
 };
 
 export type FeederBayInfos = {
