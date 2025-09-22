@@ -6,7 +6,6 @@
  */
 
 import { createReducer, type Draft } from '@reduxjs/toolkit';
-import { CENTER_NODE, CenterNodeAction } from './actions';
 import {
     type AuthenticationActions,
     type AuthenticationRouterErrorAction,
@@ -644,8 +643,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
     toggleOptions: StudyDisplayMode[];
-    hightlightedModificationUuid: UUID | null;
-    centeredNode: CurrentTreeNode | null;
+    highlightedModificationUuid: UUID | null;
     mapOpen: boolean;
 }
 
@@ -790,8 +788,7 @@ const initialState: AppState = {
         params: [],
     },
     toggleOptions: [StudyDisplayMode.TREE],
-    hightlightedModificationUuid: null,
-    centeredNode: null,
+    highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1357,10 +1354,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(HIGHLIGHT_MODIFICATION, (state, action: HighlightModificationAction) => {
-        state.hightlightedModificationUuid = action.hightlightedModificationUuid;
-    });
-    builder.addCase(CENTER_NODE, (state, action: CenterNodeAction) => {
-        state.centeredNode = action.centeredNode;
+        state.highlightedModificationUuid = action.highlightedModificationUuid;
     });
 
     builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {

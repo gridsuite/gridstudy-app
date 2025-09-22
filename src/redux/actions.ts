@@ -679,25 +679,13 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
 
 export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
 export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
-    hightlightedModificationUuid: UUID | null;
+    highlightedModificationUuid: UUID | null;
 };
 
-export function setHighlightModification(modifficationUuid: UUID | null): HighlightModificationAction {
+export function setHighlightModification(modificationUuid: UUID | null): HighlightModificationAction {
     return {
         type: HIGHLIGHT_MODIFICATION,
-        hightlightedModificationUuid: modifficationUuid,
-    };
-}
-
-export const CENTER_NODE = 'CENTER_NODE';
-export type CenterNodeAction = Readonly<Action<typeof CENTER_NODE>> & {
-    centeredNode: CurrentTreeNode;
-};
-
-export function setCentedNode(centeredNode: CurrentTreeNode): CenterNodeAction {
-    return {
-        type: CENTER_NODE,
-        centeredNode: centeredNode,
+        highlightedModificationUuid: modificationUuid,
     };
 }
 

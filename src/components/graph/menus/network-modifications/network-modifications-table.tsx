@@ -89,7 +89,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
-    const hightlightedModificationUuid = useSelector((state: AppState) => state.hightlightedModificationUuid);
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -211,13 +211,13 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 style.opacity = 0.4;
             }
             // Scroll and highlight the selected modification
-            if (cellData?.data?.uuid === hightlightedModificationUuid && cellData?.rowIndex !== null) {
+            if (cellData?.data?.uuid === highlightedModificationUuid && cellData?.rowIndex !== null) {
                 style.backgroundColor = theme.aggrid.highlightColor;
                 gridRef.current?.api.ensureIndexVisible(cellData?.rowIndex, 'top');
             }
             return style;
         },
-        [hightlightedModificationUuid, theme]
+        [highlightedModificationUuid, theme]
     );
 
     return (

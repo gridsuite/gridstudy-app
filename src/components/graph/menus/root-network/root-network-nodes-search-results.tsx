@@ -50,7 +50,7 @@ export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResul
             const node = treeNodes?.find((node) => node.data.label === nodeName);
             if (node) {
                 dispatch(setCurrentTreeNode(node));
-                dispatch(setCentedNode(node));
+                // dispatch(setCentedNode(node));
             }
         },
         [dispatch, treeNodes]

@@ -60,7 +60,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
             const node = treeNodes?.find((node) => node.id === nodeUuid);
             if (node) {
                 dispatch(setCurrentTreeNode(node));
-                dispatch(setCentedNode(node));
+                //  dispatch(setCentedNode(node));
             }
             if (toggleOptions.includes(StudyDisplayMode.EVENT_SCENARIO)) {
                 applyModes(toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));

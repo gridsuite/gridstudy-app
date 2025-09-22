@@ -58,8 +58,6 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
     const toggleOptions = useSelector((state) => state.toggleOptions);
 
-    const centeredNode = useSelector((state) => state.centeredNode);
-
     const { fitView, setCenter, getZoom } = useReactFlow();
 
     const draggedBranchIdRef = useRef(null);
@@ -301,10 +299,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     }, [currentNode, nodes, setCenter, getZoom]);
 
     useEffect(() => {
-        if (centeredNode) {
+        if (currentNode) {
             handleFocusNode();
         }
-    }, [centeredNode, handleFocusNode]);
+    }, [currentNode, handleFocusNode]);
 
     useEffect(() => {
         if (onTreePanelResize) {
