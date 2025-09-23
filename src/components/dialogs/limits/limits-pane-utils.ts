@@ -305,8 +305,6 @@ export const addModificationTypeToOpLimitsGroups = (
     let modificationLimitsGroupsForm: OperationalLimitsGroupFormInfos[] = sanitizeLimitsGroups(limitsGroupsForm);
 
     return modificationLimitsGroupsForm.map((limitsGroupForm: OperationalLimitsGroupFormInfos) => {
-        const modificationType: string = LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD;
-
         const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
             sanitizeLimitNames(limitsGroupForm[CURRENT_LIMITS]?.[TEMPORARY_LIMITS])
         );
@@ -322,7 +320,7 @@ export const addModificationTypeToOpLimitsGroups = (
             name: limitsGroupForm.name,
             applicability: limitsGroupForm.applicability,
             currentLimits: currentLimits,
-            modificationType: modificationType,
+            modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
         };
     });
 };
