@@ -126,6 +126,7 @@ const spreadsheetFr = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Sets de limites inactifs',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux distants réglés',
+    'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Composantes de réseau',
 
     'spreadsheet/global-model-edition/edit': 'Éditer le modèle',
     'spreadsheet/global-model-edition/column_id': 'ID',
@@ -137,6 +138,11 @@ const spreadsheetFr = {
     'spreadsheet/global-model-edition/update_confirmation_message': 'Modèle de tableur mis à jour',
     'spreadsheet/global-model-edition/update_error_message':
         'Une erreur est survenue lors de la mise à jour du modèle de tableur',
+    'spreadsheet/global-model-edition/search_replace_button': 'Chercher et remplacer dans formule',
+    'spreadsheet/global-model-edition/hide_search_button': 'Replier la recherche de formule',
+    'spreadsheet/global-model-edition/search': 'Rechercher dans formule',
+    'spreadsheet/global-model-edition/replace': 'Remplacer dans formule',
+    'spreadsheet/global-model-edition/replace_all': 'Tout remplacer',
 
     // calculations
     'spreadsheet/calculation/sum': 'Somme',
