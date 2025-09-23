@@ -219,35 +219,33 @@ export function LimitsSidePane({
     return (
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
-                <>
-                    <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
-                        <Grid item xs={2}>
-                            <FormattedMessage id="Applicability" />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <SelectInput
-                                options={Object.values(APPLICABILITY)}
-                                name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
-                                previousValue={applicabilityPreviousValue}
-                                sx={{ flexGrow: 1 }}
-                                disableClearable
-                                size="small"
-                                onCheckNewValue={(value: Option | null) => {
-                                    if (value) {
-                                        const errorMessage: string = checkLimitSetUnicity(
-                                            selectedLimitSetName ?? '',
-                                            typeof value === 'string' ? value : value.id
-                                        );
-                                        setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
-                                            message: errorMessage,
-                                        });
-                                    }
-                                    return true;
-                                }}
-                            />
-                        </Grid>
+                <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
+                    <Grid item xs={2}>
+                        <FormattedMessage id="Applicability" />
                     </Grid>
-                </>
+                    <Grid item xs={4}>
+                        <SelectInput
+                            options={Object.values(APPLICABILITY)}
+                            name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
+                            previousValue={applicabilityPreviousValue}
+                            sx={{ flexGrow: 1 }}
+                            disableClearable
+                            size="small"
+                            onCheckNewValue={(value: Option | null) => {
+                                if (value) {
+                                    const errorMessage: string = checkLimitSetUnicity(
+                                        selectedLimitSetName ?? '',
+                                        typeof value === 'string' ? value : value.id
+                                    );
+                                    setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
+                                        message: errorMessage,
+                                    });
+                                }
+                                return true;
+                            }}
+                        />
+                    </Grid>
+                </Grid>
             )}
             <Box>
                 <LimitsChart

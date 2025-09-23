@@ -103,7 +103,7 @@ const limitsValidationSchemaCreation = (id: string, isModification: boolean) => 
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
-        [EDITED_OPERATIONAL_LIMITS_GROUPS]: yup.boolean().nullable(),
+        [EDITED_OPERATIONAL_LIMITS_GROUPS]: yup.boolean(),
     };
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
@@ -236,7 +236,7 @@ export const combineFormAndMapServerLimitsGroups = (
     let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification.limits.operationalLimitsGroups ?? [];
 
     // updates limit values :
-    updatedOpLG.forEach((opLG: OperationalLimitsGroupFormInfos) => {
+    for (const opLG of updatedOpLG) {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimits) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
@@ -247,7 +247,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
             );
         }
-    });
+    }
 
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
     mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
