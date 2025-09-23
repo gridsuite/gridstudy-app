@@ -23,7 +23,7 @@ import {
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
     OnSelectNodeCallbackType,
-    DiagramParametersMetadata,
+    NadViewerParametersOptions,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
@@ -294,7 +294,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     useLayoutEffect(() => {
         if (props.svg && svgRef.current) {
-            const diagramParameters: DiagramParametersMetadata = {
+            const nadViewerParameters: NadViewerParametersOptions = {
                 minWidth: MIN_WIDTH,
                 minHeight: MIN_HEIGHT,
                 maxWidth: MAX_WIDTH_NETWORK_AREA_DIAGRAM,
@@ -314,7 +314,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 svgRef.current,
                 props.svg,
                 props.svgMetadata ?? null,
-                diagramParameters
+                nadViewerParameters
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
