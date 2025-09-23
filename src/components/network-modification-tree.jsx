@@ -33,30 +33,30 @@ import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useIntl } from 'react-intl';
 
-const styles = (theme) => ({
-    flexGrow: 1,
-    height: '100%',
-    backgroundColor: theme.reactflow.backgroundColor,
-    '.react-flow': {
-        '--xy-edge-stroke': theme.reactflow.edge.stroke,
-    },
-    '.react-flow__attribution a': {
-        color: theme.palette.text.primary,
-    },
-    '.react-flow__attribution': {
-        backgroundColor: theme.palette.background.paper,
-    },
+const styles = {
+    modificationTree: (theme) => ({
+        flexGrow: 1,
+        height: '100%',
+        backgroundColor: theme.reactflow.backgroundColor,
+        '.react-flow': {
+            '--xy-edge-stroke': theme.reactflow.edge.stroke,
+        },
+        '.react-flow__attribution a': {
+            color: theme.palette.text.primary,
+        },
+        '.react-flow__attribution': {
+            backgroundColor: theme.palette.background.paper,
+        },
+    }),
     labelBox: (theme) => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'flex-end',
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
         whiteSpace: 'normal',
         wordBreak: 'break-word',
+        fontWeight: 'bold',
     }),
-});
+};
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
     const dispatch = useDispatch();
@@ -328,15 +328,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
             const content = (
                 <Box style={{ whiteSpace: 'pre-line' }}>
-                    <Box sx={styles.labelBox}>
-                        <span
-                            style={{
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            {node.data.label}
-                        </span>
-                    </Box>
+                    <Box sx={styles.labelBox}>{node.data.label}</Box>
                     <Box>
                         {intl.formatMessage({ id: 'nodeStatus' })} :{' '}
                         {node.data.globalBuildStatus
@@ -360,7 +352,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     }, []);
 
     return (
-        <Box sx={styles}>
+        <Box sx={styles.modificationTree}>
             <Tooltip
                 open={tooltipOpen}
                 title={tooltipContent}
