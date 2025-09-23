@@ -366,7 +366,6 @@ function getMuiTheme(theme, locale) {
 
 const messages = {
     en: {
-        ...useUniqueNameValidationEn,
         ...treeviewFinderEn,
         ...messages_en,
         ...networkModificationsEn,
@@ -398,10 +397,10 @@ const messages = {
         ...events_locale_en,
         ...spreadsheet_locale_en,
         ...parametersEn,
+        ...useUniqueNameValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
-        ...useUniqueNameValidationFr,
         ...treeviewFinderFr,
         ...messages_fr,
         ...networkModificationsFr,
@@ -433,6 +432,7 @@ const messages = {
         ...events_locale_fr,
         ...spreadsheet_locale_fr,
         ...parametersFr,
+        ...useUniqueNameValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
