@@ -1567,9 +1567,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
         action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
-            const currentEquipments =
-                state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];
-            if (currentEquipments !== undefined) {
+            if (state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
                 // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
                 if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
                     const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
@@ -1579,12 +1577,19 @@ export const reducer = createReducer(initialState, (builder) => {
                             action.nodeId
                         ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                     }
+                } else if (
+                    // If we delete a line or a two windings transformer we also have to delete it from branch type
+                    (equipmentToDeleteType === SpreadsheetEquipmentType.LINE ||
+                        SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER) &&
+                    state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId]
+                ) {
+                    delete state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId][
+                        equipmentToDeleteId
+                    ];
                 }
-
-                state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId] = deleteEquipment(
-                    currentEquipments,
+                delete state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId][
                     equipmentToDeleteId
-                );
+                ];
             }
         });
     });
@@ -1948,11 +1953,6 @@ function updateSubstationAfterVLDeletion(
     }
 
     return currentSubstations;
-}
-
-function deleteEquipment(currentEquipments: Record<string, Identifiable>, equipmentToDeleteId: string) {
-    delete currentEquipments[equipmentToDeleteId];
-    return currentEquipments;
 }
 
 export type Substation = Identifiable & {
