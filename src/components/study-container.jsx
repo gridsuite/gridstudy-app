@@ -15,7 +15,6 @@ import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     openStudy,
-    resetEquipments,
     resetEquipmentsPostComputation,
     setCurrentRootNetworkUuid,
     setCurrentTreeNode,
@@ -29,7 +28,7 @@ import { fetchRootNetworks } from 'services/root-network';
 import WaitingLoader from './utils/waiting-loader';
 import { NotificationsUrlKeys, useIntlRef, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt, isNodeEdited, isSameNode } from './graph/util/model-functions';
+import { getFirstNodeOfType } from './graph/util/model-functions';
 import { BUILD_STATUS } from './network/constants';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -485,33 +484,6 @@ export function StudyContainer({ view, onChangeTab }) {
             }
         }
     }, [studyUpdatedForce, dispatch]);
-
-    //handles map automatic mode network reload
-    useEffect(() => {
-        let previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
-        let previousCurrentRootNetworkUuid = currentRootNetworkUuidRef.current;
-        // this is the last effect to compare currentRootNetworkUuid and currentRootNetworkUuidRef.current
-        // then we can update the currentRootNetworkUuidRef.current
-        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
-        // if only node renaming, do not reload network
-        if (isNodeEdited(previousCurrentNode, currentNode)) {
-            return;
-        }
-        if (!isNodeBuilt(currentNode)) {
-            return;
-        }
-        // A modification has been added to the currentNode and this one has been built incrementally.
-        // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
-        if (
-            previousCurrentRootNetworkUuid === currentRootNetworkUuid &&
-            isSameNode(previousCurrentNode, currentNode) &&
-            isNodeBuilt(previousCurrentNode)
-        ) {
-            return;
-        }
-        dispatch(resetEquipments());
-    }, [currentNode, currentRootNetworkUuid, dispatch]);
 
     useEffect(() => {
         if (studyUuid) {
