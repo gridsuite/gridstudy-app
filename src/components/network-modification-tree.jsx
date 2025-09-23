@@ -26,7 +26,7 @@ import {
 import TreeControlButton from './graph/util/tree-control-button';
 import RootNetworkPanel from './graph/menus/root-network/root-network-panel';
 import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
-import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
@@ -53,6 +53,9 @@ const styles = (theme) => ({
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+        fontWeight: 'bold',
     }),
 });
 
@@ -326,10 +329,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
             const content = (
                 <Box style={{ whiteSpace: 'pre-line' }}>
-                    <Box sx={styles.contentBox}>
-                        <OverflowableText text={node.data.label} sx={{ fontWeight: 'bold' }} />
-                    </Box>
-
+                    <Box sx={styles.contentBox}>{node.data.label}</Box>
                     <Box>
                         {intl.formatMessage({ id: 'nodeStatus' })} :{' '}
                         {node.data.globalBuildStatus
@@ -360,7 +360,7 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
                 componentsProps={{
                     tooltip: {
                         sx: {
-                            maxWidth: 'none',
+                            maxWidth: '720px',
                         },
                     },
                 }}
