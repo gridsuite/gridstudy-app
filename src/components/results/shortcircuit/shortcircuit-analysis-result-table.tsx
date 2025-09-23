@@ -187,14 +187,17 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         };
 
         return [
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'IDNode' }),
-                colId: 'elementId',
-                field: 'elementId',
-                context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
-                },
-            }),
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'IDNode' }),
+                    colId: 'elementId',
+                    field: 'elementId',
+                    context: {
+                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(textFilterParams) }),
+                    },
+                }),
+                minWidth: 180,
+            },
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'busVoltageLevel' }),
                 colId: 'voltageLevel',
