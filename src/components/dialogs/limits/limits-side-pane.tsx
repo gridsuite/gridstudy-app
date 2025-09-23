@@ -33,7 +33,6 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
 import { APPLICABILITY } from '../../network/constants';
 
 export interface LimitsSidePaneProps {
@@ -221,7 +220,6 @@ export function LimitsSidePane({
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
                 <>
-                    <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />

@@ -58,6 +58,7 @@ import { Filter } from '../../components/dialogs/network-modifications/by-filter
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
+import { EDITED_OPERATIONAL_LIMITS_GROUPS } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -838,6 +839,7 @@ export function modifyLine({
     operationalLimitsGroups,
     selectedOperationalLimitsGroup1,
     selectedOperationalLimitsGroup2,
+    editedOperationalLimitsGroups,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -888,6 +890,7 @@ export function modifyLine({
             operationalLimitsGroups: operationalLimitsGroups,
             selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
+            [EDITED_OPERATIONAL_LIMITS_GROUPS]: editedOperationalLimitsGroups,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
             busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
             voltageLevelId2: toModificationOperation(voltageLevelId2),
@@ -1010,6 +1013,7 @@ export function modifyTwoWindingsTransformer({
     operationalLimitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
+    editedOperationalLimitsGroups,
     ratioTapChanger,
     phaseTapChanger,
     voltageLevelId1 = undefined,
@@ -1066,6 +1070,7 @@ export function modifyTwoWindingsTransformer({
             operationalLimitsGroups: operationalLimitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            editedOperationalLimitsGroups: editedOperationalLimitsGroups,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
             voltageLevelId1: toModificationOperation(voltageLevelId1),

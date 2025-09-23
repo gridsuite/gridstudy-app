@@ -1615,5 +1615,7 @@
     "Object": "Object",
     "Array": "Array",
     "Boolean": "Boolean",
-    "Enum": "Enumeration"
+    "Enum": "Enumeration",
+    "Edit": "Edit",
+    "View": "View"
 }

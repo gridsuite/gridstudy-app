@@ -28,6 +28,7 @@ import {
     CONNECTIVITY,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
+    EDITED_OPERATIONAL_LIMITS_GROUPS,
     EQUIPMENT_NAME,
     G1,
     G2,
@@ -36,7 +37,10 @@ import {
     MEASUREMENT_P2,
     MEASUREMENT_Q1,
     MEASUREMENT_Q2,
+    OPERATIONAL_LIMITS_GROUPS,
     R,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     STATE_ESTIMATION,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -45,22 +49,19 @@ import {
     VALUE,
     VOLTAGE_LEVEL,
     X,
-    SELECTED_LIMITS_GROUP_1,
-    SELECTED_LIMITS_GROUP_2,
-    OPERATIONAL_LIMITS_GROUPS,
 } from 'components/utils/field-constants';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
+    addModificationTypeToOpLimitsGroups,
+    addOperationTypeToSelectedOpLG,
+    combineFormAndMapServerLimitsGroups,
+    formatOpLimitGroupsToFormInfos,
+    getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    addModificationTypeToOpLimitsGroups,
-    getAllLimitsFormData,
-    formatOpLimitGroupsToFormInfos,
-    combineFormAndMapServerLimitsGroups,
-    addOperationTypeToSelectedOpLG,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -207,7 +208,8 @@ const LineModificationDialog = ({
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
                     lineModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    lineModification.selectedOperationalLimitsGroup2?.value ?? null
+                    lineModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    lineModification[EDITED_OPERATIONAL_LIMITS_GROUPS]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
             });
@@ -241,7 +243,9 @@ const LineModificationDialog = ({
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                operationalLimitsGroups: limits[EDITED_OPERATIONAL_LIMITS_GROUPS]
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    : [],
                 selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -254,6 +258,7 @@ const LineModificationDialog = ({
                         id: 'None',
                     })
                 ),
+                [EDITED_OPERATIONAL_LIMITS_GROUPS]: limits[EDITED_OPERATIONAL_LIMITS_GROUPS],
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,

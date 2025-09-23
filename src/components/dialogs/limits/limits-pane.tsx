@@ -8,6 +8,7 @@
 import { Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
+    EDITED_OPERATIONAL_LIMITS_GROUPS,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
@@ -15,7 +16,7 @@ import {
 } from 'components/utils/field-constants';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
@@ -27,6 +28,7 @@ import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { SwitchInput } from '@gridsuite/commons-ui';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -44,10 +46,14 @@ export function LimitsPane({
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
 
     const myRef: any = useRef<any>(null);
-
     const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
+    const editedOLG: boolean = useWatch({
+        name: `${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`,
+    });
+
+    const isAModification: boolean = useMemo(() => !!equipmentToModify, [equipmentToModify]);
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
@@ -124,6 +130,14 @@ export function LimitsPane({
                         previousValue={equipmentToModify?.selectedOperationalLimitsGroup2}
                         isABranchModif={!!equipmentToModify}
                     />
+                </Grid>
+                <Grid item xs={3}>
+                    {isAModification && (
+                        <SwitchInput
+                            name={`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`}
+                            label={editedOLG ? 'Edit' : 'View'}
+                        />
+                    )}
                 </Grid>
             </Grid>
 

@@ -1611,5 +1611,7 @@
     "Object": "Objet",
     "Array": "Tableau",
     "Boolean": "Booléen",
-    "Enum": "Énumération"
+    "Enum": "Énumération",
+    "Edit": "Édition",
+    "View": "Visualisation"
 }

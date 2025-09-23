@@ -28,6 +28,7 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
+    EDITED_OPERATIONAL_LIMITS_GROUPS,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_NAME,
@@ -249,7 +250,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    twtModification.selectedOperationalLimitsGroup2?.value ?? null
+                    twtModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    twtModification.editedOperationalLimitsGroups
                 ),
                 ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
@@ -483,7 +485,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                operationalLimitsGroups: limits[EDITED_OPERATIONAL_LIMITS_GROUPS]
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    : [],
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -496,6 +500,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         id: 'None',
                     })
                 ),
+                [EDITED_OPERATIONAL_LIMITS_GROUPS]: limits[EDITED_OPERATIONAL_LIMITS_GROUPS],
                 ratioTapChanger: computeRatioTapForSubmit(twt),
                 phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
