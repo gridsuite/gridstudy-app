@@ -15,7 +15,7 @@ import { useCallback, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { filledTextField } from '../../dialog-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { SwitchesBetweenSections } from '../voltage-level/switches-between-sections/switches-between-sections';

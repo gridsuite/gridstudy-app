@@ -12,7 +12,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useController, useFormContext, useWatch } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useCustomFormContext, useDebounce } from '@gridsuite/commons-ui';
 
 export interface UniqueCheckNameInputProps {

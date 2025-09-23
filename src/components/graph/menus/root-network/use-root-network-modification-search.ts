@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ModificationsSearchResult } from './root-network.types';
 import { getModifications } from '../../../../services/root-network';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';

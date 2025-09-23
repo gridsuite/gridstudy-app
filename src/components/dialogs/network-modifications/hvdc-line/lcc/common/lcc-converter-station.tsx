@@ -14,7 +14,7 @@ import {
     POWER_FACTOR,
 } from '../../../../../utils/field-constants';
 import { percentageTextField } from '../../../../dialog-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';

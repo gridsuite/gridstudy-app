@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { backendFetch } from './utils';
 
 const PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';

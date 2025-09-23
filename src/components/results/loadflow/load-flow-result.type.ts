@@ -6,7 +6,7 @@
  */
 
 import { ColDef } from 'ag-grid-community';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BranchSide } from '../../utils/constants';
 
 export interface ComponentResult {

@@ -10,7 +10,7 @@ import React, { useCallback, useState } from 'react';
 import { PlayCircleFilled, StopCircleOutlined } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import { buildNode, unbuildNode } from '../../../services/study';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE } from 'components/network-modification-tree-pane';
 

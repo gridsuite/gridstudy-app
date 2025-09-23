@@ -14,7 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';

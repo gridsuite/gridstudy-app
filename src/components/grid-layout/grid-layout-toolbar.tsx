@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Box, Button, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Search, Public, Upload } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
