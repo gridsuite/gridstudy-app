@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../redux/reducer';
 import { useStableComputedSet } from '../../../hooks/use-stable-computed-set';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { validAlias } from './use-node-aliases';
 import { NodeType } from '../../graph/tree-node.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
@@ -27,15 +27,15 @@ export function useBuiltNodesIds(nodeAliases: NodeAlias[] | undefined) {
         }
 
         const ids = new Set<UUID>();
-        if (aliasedNodesIds && aliasedNodesIds.length > 0) {
-            treeNodes?.forEach((treeNode) => {
+        if (aliasedNodesIds && aliasedNodesIds.length > 0 && treeNodes) {
+            for (const treeNode of treeNodes) {
                 if (
                     aliasedNodesIds.includes(treeNode.id) &&
                     (treeNode.type === NodeType.ROOT || isStatusBuilt(treeNode.data.globalBuildStatus))
                 ) {
                     ids.add(treeNode.id);
                 }
-            });
+            }
         }
         return ids;
     }, [nodeAliases, treeNodes]);

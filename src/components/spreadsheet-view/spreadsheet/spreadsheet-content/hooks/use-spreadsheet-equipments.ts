@@ -50,7 +50,9 @@ export const useSpreadsheetEquipments = (
 
     const nodesIdsToRemove = useStableComputedSet(() => {
         const unwantedFetchedNodes = new Set(loadedNodesIdsForType);
-        builtNodesIds.forEach((nodeId) => unwantedFetchedNodes.delete(nodeId));
+        for (const nodeId of builtNodesIds) {
+            unwantedFetchedNodes.delete(nodeId);
+        }
         return unwantedFetchedNodes;
     }, [builtNodesIds]);
 
@@ -59,7 +61,9 @@ export const useSpreadsheetEquipments = (
             return builtNodesIds;
         }
         const nodesIdToFetch = new Set<UUID>(builtNodesIds);
-        loadedNodesIdsForType.forEach((nodeId) => nodesIdToFetch.delete(nodeId));
+        for (const nodeId of loadedNodesIdsForType) {
+            nodesIdToFetch.delete(nodeId);
+        }
         return nodesIdToFetch;
     }, [currentNode?.id, loadedNodesIdsForType, nodeAliases, treeNodes]);
 

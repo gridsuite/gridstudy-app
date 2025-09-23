@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DeletedEquipment, isStudyNotification, type NetworkImpactsInfos } from '../../../types/notification-types';
 import { isSpreadsheetEquipmentType, SpreadsheetEquipmentType } from '../types/spreadsheet.type';
 import {
