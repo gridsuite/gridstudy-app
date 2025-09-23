@@ -295,7 +295,7 @@ export function addOperationTypeToSelectedOpLG(
 /**
  * converts the limits groups into a modification limits group
  * ie mostly add the ADD, MODIFY, MODIFY_OR_ADD, DELETE and REPLACE tags to the data using a delta between the form and the network values
- * note : for now only MODIFY_OR_ADD are handled, the others have been disabled for various reasons
+ * note : for now only MODIFY_OR_ADD is handled, the others have been disabled for various reasons
  *
  * @param limitsGroupsForm current data from the form
  */
