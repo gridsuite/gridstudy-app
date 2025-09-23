@@ -385,7 +385,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED ? styles.divDiagramInvalid : undefined,
-                    isEditNadMode && !showLabels ? styles.hideLabels : undefined
+                    isEditNadMode && !showLabels ? styles.hideLabels : undefined,
+                    isEditNadMode ? styles.nadEditModeCursors : styles.nadDefaultCursors
                 )}
             />
             <DiagramControls
