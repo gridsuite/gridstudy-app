@@ -6,8 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ExportButton } from '../../utils/export-button';
-import { PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
+import { ExportCsvButton, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
@@ -35,10 +34,11 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
 
     const intl = useIntl();
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [nodeUuid, analysisType]);
+    }, [studyUuid, currentRootNetworkUuid, nodeUuid, analysisType, appTabIndex]);
 
     useEffect(() => {
         if (disabled) {
@@ -117,7 +117,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
     ]);
 
     return (
-        <ExportButton
+        <ExportCsvButton
             onClick={exportCsv}
             disabled={disabled}
             isDownloadLoading={isCsvExportLoading}

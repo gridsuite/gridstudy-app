@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ExportButton } from 'components/utils/export-button';
+import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -34,12 +33,13 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     const intl = useIntl();
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [nodeUuid, resultType]);
+    }, [studyUuid, nodeUuid, rootNetworkUuid, resultType, appTabIndex]);
 
     useEffect(() => {
         if (disabled) {
@@ -117,7 +117,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
     ]);
 
     return (
-        <ExportButton
+        <ExportCsvButton
             onClick={exportResultCsv}
             disabled={disabled}
             isDownloadLoading={isCsvExportLoading}
