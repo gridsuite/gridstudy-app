@@ -122,6 +122,7 @@ const spreadsheetEn = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Include additional data',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Inactive limit sets',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Regulated terminals',
+    'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Network components',
 
     'spreadsheet/global-model-edition/edit': 'Model edition',
     'spreadsheet/global-model-edition/column_id': 'ID',
@@ -132,6 +133,11 @@ const spreadsheetEn = {
     'spreadsheet/global-model-edition/column_dependencies': 'Dependencies',
     'spreadsheet/global-model-edition/update_confirmation_message': 'Spreadsheet model updated',
     'spreadsheet/global-model-edition/update_error_message': 'Error while updating spreadsheet model',
+    'spreadsheet/global-model-edition/search_replace_button': 'Search and replace in formula',
+    'spreadsheet/global-model-edition/hide_search_button': 'Hide formula search',
+    'spreadsheet/global-model-edition/search': 'Search in formula',
+    'spreadsheet/global-model-edition/replace': 'Replace in formula',
+    'spreadsheet/global-model-edition/replace_all': 'Replace all',
 
     // calculations
     'spreadsheet/calculation/sum': 'Sum',
