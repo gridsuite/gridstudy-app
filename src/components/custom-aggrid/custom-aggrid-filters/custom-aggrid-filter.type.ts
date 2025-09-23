@@ -11,7 +11,7 @@ import React, { ComponentType } from 'react';
 import { ColumnMenuProps } from '../../spreadsheet-view/columns/column-menu';
 import { SortParams } from '../hooks/use-custom-aggrid-sort';
 import { COLUMN_TYPES, CustomCellType } from '../custom-aggrid-header.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',

@@ -17,7 +17,7 @@ import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { filledTextField } from '../../../dialog-utils';
 import GridSection from '../../../commons/grid-section';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 

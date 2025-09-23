@@ -15,7 +15,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;

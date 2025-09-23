@@ -7,7 +7,7 @@
 
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
 import { BUILD_STATUS } from '../network/constants';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Edge } from '@xyflow/react';
 import { AbstractNode, CurrentTreeNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 import { isReactFlowRootNodeData } from '../../redux/utils';

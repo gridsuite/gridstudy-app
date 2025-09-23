@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';

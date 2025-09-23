@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
 import { isComputationParametersUpdatedNotification } from 'types/notification-types';
 

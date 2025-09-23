@@ -6,7 +6,7 @@
  */
 
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {

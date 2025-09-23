@@ -13,7 +13,7 @@ import { LoadDialogTab } from './load-utils';
 import { PowerMeasurementsForm } from '../../common/measurements/power-measurements-form';
 import GridSection from 'components/dialogs/commons/grid-section';
 import React from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { LoadFormInfos } from './load.type';
 import { Identifiable } from '@gridsuite/commons-ui';

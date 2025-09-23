@@ -21,7 +21,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getIdOrSelf } from '../dialog-utils';
 import GridItem from '../commons/grid-item';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DynamicSimulationParametersInfos } from '../../../services/study/dynamic-simulation.type';
 
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';

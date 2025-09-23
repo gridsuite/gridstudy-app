@@ -11,7 +11,7 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../components/utils/equi
 import { deleteEquipment } from '../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../services/study/network';
 import { CurrentTreeNode } from '../components/graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 import BatteryModificationDialog from '../components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import GeneratorModificationDialog from '../components/dialogs/network-modifications/generator/modification/generator-modification-dialog';

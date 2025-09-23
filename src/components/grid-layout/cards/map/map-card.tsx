@@ -7,7 +7,7 @@
 import { Box, Dialog, Fab, useTheme } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useRef, useState } from 'react';
 import CustomCardHeader from '../custom-card-header';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import { type EquipmentType, type LineFlowMode, mergeSx, type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';

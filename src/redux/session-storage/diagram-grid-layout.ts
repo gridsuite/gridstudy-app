@@ -6,7 +6,7 @@
  */
 
 import { APP_NAME } from '../../utils/config-params';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 const SESSION_STORAGE_DIAGRAMS_GRID_LAYOUT_KEY_PREFIX = APP_NAME.toUpperCase() + '_DIAGRAMS_GRID_LAYOUT';
 

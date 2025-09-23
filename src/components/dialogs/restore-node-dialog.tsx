@@ -12,7 +12,7 @@ import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { toggleElementFromList } from 'components/utils/utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { StashedNodeProperties } from '../graph/tree-node.type';
 
 /**

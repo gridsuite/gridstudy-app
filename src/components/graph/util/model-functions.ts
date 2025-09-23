@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BUILD_STATUS } from '../../network/constants';
 import type NetworkModificationTreeModel from '../network-modification-tree-model';
 import {

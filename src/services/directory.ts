@@ -7,7 +7,7 @@
 
 import { backendFetchJson, getRequestParamFromList } from './utils';
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
 

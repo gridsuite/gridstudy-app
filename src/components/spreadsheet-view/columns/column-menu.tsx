@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setRemoveColumnDefinition } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import { DialogMenuProps } from '../../custom-aggrid/custom-aggrid-menu';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
 import ColumnCreationDialog from './column-creation-dialog';
 import { AppState } from 'redux/reducer';

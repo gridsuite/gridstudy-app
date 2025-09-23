@@ -13,7 +13,7 @@ import { Box, Grid } from '@mui/material';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import GridItem from '../../../commons/grid-item';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-utils';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';

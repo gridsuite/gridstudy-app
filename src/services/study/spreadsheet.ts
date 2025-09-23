@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { backendFetchJson, backendFetch } from '../utils';
 import { getStudyUrl } from './index';
 import type { SpreadsheetOptionalLoadingParameters } from '../../components/spreadsheet-view/types/spreadsheet.type';

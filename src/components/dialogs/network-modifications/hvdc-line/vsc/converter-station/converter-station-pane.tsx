@@ -18,7 +18,7 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../../utils/field-constants';
 import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../../dialog-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid, TextField } from '@mui/material';
 import { ReactiveLimitsForm } from '../../../../reactive-limits/reactive-limits-form';

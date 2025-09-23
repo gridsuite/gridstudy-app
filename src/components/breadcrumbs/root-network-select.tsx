@@ -6,7 +6,7 @@
  */
 
 import { Box, ListItemText, MenuItem, Select } from '@mui/material';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { RemoveRedEye, VisibilityOff } from '@mui/icons-material';
 import { RootNetworkMetadata } from '../graph/menus/network-modifications/network-modification-menu.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';

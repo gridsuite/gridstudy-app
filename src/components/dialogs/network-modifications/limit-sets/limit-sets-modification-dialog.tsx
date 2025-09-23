@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { ModificationDialog } from '../../commons/modificationDialog';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../graph/tree-node.type';
 import { FetchStatus } from 'services/utils.type';
 import { LimitSetsTabularModificationForm } from './limit-sets-tabular-modification-form';

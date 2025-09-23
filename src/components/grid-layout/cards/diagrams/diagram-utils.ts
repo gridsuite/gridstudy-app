@@ -9,7 +9,7 @@ import { DiagramMetadata } from '@powsybl/network-viewer';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { Diagram, DiagramType, Svg } from './diagram.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;

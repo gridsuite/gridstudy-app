@@ -7,7 +7,7 @@
 
 import { useCallback } from 'react';
 import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from '../types/spreadsheet.type';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppState } from '../../../redux/reducer';
 import { loadEquipments } from '../../../redux/actions';

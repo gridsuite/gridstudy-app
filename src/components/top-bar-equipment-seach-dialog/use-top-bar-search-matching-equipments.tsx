@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSearchMatchingEquipments } from './use-search-matching-equipments';
 import { useMemo } from 'react';
 import { getLocalStorageSearchEquipmentHistory } from 'redux/session-storage/search-equipment-history';

@@ -11,7 +11,7 @@ import { BranchConnectivityForm } from '../../../connectivity/branch-connectivit
 import BranchActiveReactivePowerMeasurementsForm from '../../common/measurements/branch-active-reactive-power-form';
 import { LineModificationDialogTab } from '../line-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 

@@ -8,7 +8,7 @@
 import { useIntl } from 'react-intl';
 import { ElementType, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 interface ImportCaseDialogProps {
     open: boolean;

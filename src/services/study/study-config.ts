@@ -7,7 +7,7 @@
 
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { NetworkVisualizationParameters } from '@gridsuite/commons-ui';
 import {
     ColumnStateDto,

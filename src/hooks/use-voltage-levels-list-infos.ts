@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useEffect, useState } from 'react';
 import { type Identifiable } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelsListInfos } from '../services/study/network';

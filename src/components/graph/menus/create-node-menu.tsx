@@ -15,7 +15,7 @@ import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
 import { type AppState, type NodeSelectionForCopy } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
 import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType, NodeType } from '../tree-node.type';

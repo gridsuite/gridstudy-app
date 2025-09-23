@@ -36,7 +36,7 @@ import { startShortCircuitAnalysis } from '../../../../../services/study/short-c
 import { useOneBusShortcircuitAnalysisLoader } from './hooks/use-one-bus-shortcircuit-analysis-loader';
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../../../redux/actions';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { DiagramType } from '../diagram.type';
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';

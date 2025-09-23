@@ -11,7 +11,7 @@ import {
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
 import { GsLang } from '@gridsuite/commons-ui';

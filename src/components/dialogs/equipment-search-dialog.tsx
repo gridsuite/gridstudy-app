@@ -16,7 +16,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { TextField } from '@mui/material';

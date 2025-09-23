@@ -6,7 +6,7 @@
  */
 
 import { DiagramParams, DiagramParamsDto } from 'components/grid-layout/cards/diagrams/diagram.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Layout } from 'react-grid-layout';
 
 export type DiagramLayoutParam = DiagramParams & {

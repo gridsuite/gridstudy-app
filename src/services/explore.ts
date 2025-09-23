@@ -7,7 +7,7 @@
 
 import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
 

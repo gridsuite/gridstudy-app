@@ -6,7 +6,7 @@
  */
 
 import { GsLang } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export enum DistributionType {
     PROPORTIONAL = 'PROPORTIONAL',

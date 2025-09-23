@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, Identifiable, Option } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component

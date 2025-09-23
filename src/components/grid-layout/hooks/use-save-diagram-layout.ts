@@ -9,7 +9,7 @@ import { Layout, Layouts } from 'react-grid-layout';
 import { Diagram, DiagramParams, DiagramType, NETWORK_AREA_DIAGRAM_DETAILS_TYPE } from '../cards/diagrams/diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useCallback } from 'react';
 import { DiagramGridLayoutDto, DiagramLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
 import { MAX_INT32 } from 'services/utils';

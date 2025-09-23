@@ -6,7 +6,7 @@
  */
 
 import { backendFetch, backendFetchJson } from './utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { LineTypeInfo } from '../components/dialogs/line-types-catalog/line-catalog.type';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';

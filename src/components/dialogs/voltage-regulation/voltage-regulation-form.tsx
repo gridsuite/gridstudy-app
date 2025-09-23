@@ -15,7 +15,7 @@ import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 import GridItem from '../commons/grid-item';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 interface VoltageRegulationFormProps {
     studyUuid: UUID;

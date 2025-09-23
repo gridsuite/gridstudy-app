@@ -18,7 +18,7 @@ import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensiti
 import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from '../redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';

@@ -35,7 +35,7 @@ import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import { useWatch } from 'react-hook-form';
 import { SetPointsForm } from '../../../set-points/set-points-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { GeneratorFormInfos } from '../generator-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 

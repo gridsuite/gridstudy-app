@@ -16,7 +16,7 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateTableDefinition } from 'redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';

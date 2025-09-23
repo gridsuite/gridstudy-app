@@ -9,7 +9,7 @@ import { Grid } from '@mui/material';
 import { ConnectivityForm } from './connectivity-form';
 import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import GridSection from '../commons/grid-section';
 import GridItem from '../commons/grid-item';
 import { CurrentTreeNode } from '../../graph/tree-node.type';

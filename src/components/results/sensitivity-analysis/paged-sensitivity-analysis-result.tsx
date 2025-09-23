@@ -33,7 +33,7 @@ import {
     SensitivityAnalysisTab,
     SortWay,
 } from '../../../types/custom-aggrid-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';

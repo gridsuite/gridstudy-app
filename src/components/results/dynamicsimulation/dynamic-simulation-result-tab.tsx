@@ -13,7 +13,7 @@ import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-
 import DynamicSimulationResultSynthesis from './dynamic-simulation-result-synthesis';
 import DynamicSimulationResultTimeline from './dynamic-simulation-result-timeline';
 import DynamicSimulationResultLogs from './dynamic-simulation-result-logs';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {

@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { filledTextField } from '../dialog-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Autocomplete, Box, CircularProgress, Grid, TextField } from '@mui/material';
 import { type EquipmentType, type ExtendedEquipmentType, FieldLabel, type MuiStyles } from '@gridsuite/commons-ui';
 import { FormFiller } from './formFiller.js';

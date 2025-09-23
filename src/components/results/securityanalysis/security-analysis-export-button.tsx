@@ -6,7 +6,7 @@
  */
 
 import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';

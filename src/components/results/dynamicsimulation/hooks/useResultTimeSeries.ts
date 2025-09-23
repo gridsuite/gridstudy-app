@@ -11,7 +11,7 @@ import {
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { SimpleTimeSeriesMetadata, Timeseries } from '../types/dynamic-simulation-result.type';
 import { dynamicSimulationResultInvalidations } from '../../../computing-status/use-all-computing-status';
 import { useNodeData } from 'components/use-node-data';

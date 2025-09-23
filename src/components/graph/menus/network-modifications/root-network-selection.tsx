@@ -11,7 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { setCurrentRootNetworkUuid } from 'redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export const RootNetworkSelection = () => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);

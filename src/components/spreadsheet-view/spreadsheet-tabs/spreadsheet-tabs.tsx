@@ -22,7 +22,7 @@ import { useIntl } from 'react-intl';
 import type { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { ColumnDefinitionDto, SpreadsheetConfig } from '../types/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import SpreadsheetTabLabel from './spreadsheet-tab-label';

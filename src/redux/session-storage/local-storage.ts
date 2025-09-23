@@ -8,7 +8,7 @@
 import { DARK_THEME, getComputedLanguage, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { APP_NAME } from '../../utils/config-params';
 import { StudyDisplayMode } from 'components/network-modification.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 
 const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();

@@ -12,7 +12,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { DESTINATION_FOLDER, FOLDER_ID, FOLDER_NAME } from 'components/utils/field-constants';
 import { useState } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export const SelectionCreationPanelDirectorySelector = (props: { pendingState: boolean }) => {
     const { pendingState } = props;

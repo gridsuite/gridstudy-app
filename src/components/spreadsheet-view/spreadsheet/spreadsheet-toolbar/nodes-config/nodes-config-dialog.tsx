@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import NodeConfigTable from './node-config-table';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
