@@ -46,7 +46,7 @@ const styles = (theme) => ({
     '.react-flow__attribution': {
         backgroundColor: theme.palette.background.paper,
     },
-    contentBox: (theme) => ({
+    labelBox: (theme) => ({
         flexGrow: 1,
         display: 'flex',
         alignItems: 'flex-end',
@@ -55,7 +55,6 @@ const styles = (theme) => ({
         marginBottom: theme.spacing(1),
         whiteSpace: 'normal',
         wordBreak: 'break-word',
-        fontWeight: 'bold',
     }),
 });
 
@@ -329,7 +328,15 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
 
             const content = (
                 <Box style={{ whiteSpace: 'pre-line' }}>
-                    <Box sx={styles.contentBox}>{node.data.label}</Box>
+                    <Box sx={styles.labelBox}>
+                        <span
+                            style={{
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            {node.data.label}
+                        </span>
+                    </Box>
                     <Box>
                         {intl.formatMessage({ id: 'nodeStatus' })} :{' '}
                         {node.data.globalBuildStatus
