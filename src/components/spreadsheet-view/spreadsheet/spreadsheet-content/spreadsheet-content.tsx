@@ -164,9 +164,6 @@ export const SpreadsheetContent = memo(
             return Object.values(
                 Object.entries(equipments.equipmentsByNodeId).reduce(
                     (prev, [nodeId, nodeEquipments]) => {
-                        if (nodeId === currentNode.id) {
-                            return prev;
-                        }
                         const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
                         if (nodeAlias) {
                             Object.values(nodeEquipments).forEach((eq) => {
