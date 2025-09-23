@@ -167,10 +167,13 @@ export const SpreadsheetContent = memo(
                         const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
                         if (nodeAlias) {
                             Object.values(nodeEquipments).forEach((eq) => {
-                                prev[eq.id] = {
-                                    ...prev[eq.id],
-                                    [nodeAlias.alias]: eq,
-                                };
+                                // To avoid empty lines in case of deleted equipments in current node but defined in another one
+                                if (prev[eq.id] !== undefined) {
+                                    prev[eq.id] = {
+                                        ...prev[eq.id],
+                                        [nodeAlias.alias]: eq,
+                                    };
+                                }
                             });
                         }
                         return prev;
