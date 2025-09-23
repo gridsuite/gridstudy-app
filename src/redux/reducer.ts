@@ -1567,26 +1567,24 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
         action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
-            if (state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
-                // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
-                    const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
-                        .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
-                    if (currentSubstations != null) {
-                        state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
-                            action.nodeId
-                        ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
-                    }
-                } else if (
-                    // If we delete a line or a two windings transformer we also have to delete it from branch type
-                    (equipmentToDeleteType === SpreadsheetEquipmentType.LINE ||
-                        SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER) &&
-                    state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId]
-                ) {
-                    delete state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId][
-                        equipmentToDeleteId
-                    ];
+            if (
+                // If we delete a line or a two windings transformer we also have to delete it from branch type
+                (equipmentToDeleteType === SpreadsheetEquipmentType.LINE ||
+                    equipmentToDeleteType === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER) &&
+                state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH]?.equipmentsByNodeId[action.nodeId]
+            ) {
+                delete state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId][
+                    equipmentToDeleteId
+                ];
+            } else if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
+                const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
+                    .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
+                if (currentSubstations != null) {
+                    state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[action.nodeId] =
+                        updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
                 }
+            }
+            if (state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
                 delete state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId][
                     equipmentToDeleteId
                 ];
