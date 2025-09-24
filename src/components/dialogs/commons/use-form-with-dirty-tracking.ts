@@ -15,7 +15,9 @@ export function useFormWithDirtyTracking<T extends FieldValues>(props: UseFormPr
     // React Hook Form won't be tracking which fields are dirty. This is a consequence of
     // React Hook Form's performance optimization that only subscribes to form state that is
     // explicitly destructured/accessed in the component.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { isDirty } = methods.formState;
+    const {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        formState: { isDirty },
+    } = methods;
     return methods;
 }
