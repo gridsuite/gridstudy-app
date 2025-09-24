@@ -58,8 +58,8 @@ import {
     getLimitsValidationSchema,
     addModificationTypeToOpLimitsGroups,
     getAllLimitsFormData,
-    formatOpLimitGroups,
-    updateOpLimitsGroups,
+    formatOpLimitGroupsToFormInfos,
+    combineFormAndMapServerLimitsGroups,
     addOperationTypeToSelectedOpLG,
 } from '../../../limits/limits-pane-utils';
 import {
@@ -101,7 +101,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
-import { LineModificationFormInfos } from './line-modification-type';
+import { LimitsDialogFormInfos, LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
 
@@ -205,7 +205,7 @@ const LineModificationDialog = ({
                     b2: convertInputValue(FieldType.B2, lineModification.b2?.value ?? null),
                 }),
                 ...getAllLimitsFormData(
-                    formatOpLimitGroups(lineModification.operationalLimitsGroups),
+                    formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
                     lineModification.selectedOperationalLimitsGroup1?.value ?? null,
                     lineModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),
@@ -227,7 +227,7 @@ const LineModificationDialog = ({
             const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
-            const limits = line[LIMITS];
+            const limits: LimitsDialogFormInfos = line[LIMITS];
 
             modifyLine({
                 studyUuid: studyUuid,
@@ -241,12 +241,7 @@ const LineModificationDialog = ({
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(
-                    limits[OPERATIONAL_LIMITS_GROUPS],
-                    lineToModify,
-                    editData,
-                    currentNode
-                ),
+                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -287,7 +282,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData, selectedId, lineToModify, currentNode, intl, snackError]
+        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
     );
 
     const clear = useCallback(() => {
@@ -315,7 +310,10 @@ const LineModificationDialog = ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: {
-                                            [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, line),
+                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
+                                                formValues,
+                                                line
+                                            ),
                                         },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
