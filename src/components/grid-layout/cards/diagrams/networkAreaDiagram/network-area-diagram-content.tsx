@@ -23,6 +23,7 @@ import {
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
     OnSelectNodeCallbackType,
+    NadViewerParametersOptions,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
@@ -293,40 +294,31 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     useLayoutEffect(() => {
         if (props.svg && svgRef.current) {
+            const nadViewerParameters: NadViewerParametersOptions = {
+                minWidth: MIN_WIDTH,
+                minHeight: MIN_HEIGHT,
+                maxWidth: MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+                maxHeight: MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+                enableDragInteraction: isEditNadMode,
+                enableLevelOfDetail: true,
+                zoomLevels: NAD_ZOOM_LEVELS,
+                addButtons: false,
+                onMoveNodeCallback: onMoveNodeCallback,
+                onMoveTextNodeCallback: onMoveTextNodeCallback,
+                onSelectNodeCallback: OnLeftClickCallback,
+                onToggleHoverCallback: OnToggleHoverCallback,
+                onRightClickCallback: showEquipmentMenu,
+                initialViewBox: diagramViewerRef?.current?.getViewBox(),
+            };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
                 props.svgMetadata ?? null,
-                MIN_WIDTH,
-                MIN_HEIGHT,
-                MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-                MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-                onMoveNodeCallback,
-                onMoveTextNodeCallback,
-                OnLeftClickCallback,
-                isEditNadMode,
-                true,
-                NAD_ZOOM_LEVELS,
-                OnToggleHoverCallback,
-                showEquipmentMenu,
-                false
+                nadViewerParameters
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
             diagramSizeSetter(diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
-
-            // If a previous diagram was loaded and the diagram's size remained the same, we keep
-            // the user's zoom and scroll state for the current render.
-            if (
-                diagramViewerRef.current &&
-                diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
-                diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
-            ) {
-                const viewBox = diagramViewerRef.current.getViewBox();
-                if (viewBox) {
-                    diagramViewer.setViewBox(viewBox);
-                }
-            }
 
             // Repositioning the nodes with specified positions
             if (props.customPositions.length > 0) {
