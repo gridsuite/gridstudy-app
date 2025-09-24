@@ -1617,8 +1617,8 @@
     "Boolean": "Boolean",
     "Enum": "Enumeration",
     "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
-    "TOP": "TOP",
-    "BOTTOM": "BOTTOM",
-    "DuplicatedPositionsError": "Duplicate number",
+    "TOP": "Top",
+    "BOTTOM": "Bottom",
+    "DuplicatedPositionsError": "Duplicated number",
     "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)"
 }

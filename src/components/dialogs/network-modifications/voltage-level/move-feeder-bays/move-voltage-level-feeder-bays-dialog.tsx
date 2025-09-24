@@ -51,7 +51,7 @@ const checkConnectionPositionField: TestFunction<any, AnyObject> = (value, conte
     }
     const duplicateExists = array.some((item: { [x: string]: any }, index: number) => {
         return (
-            index !== parseInt(context.path.match(/\[(\d+)\]/)?.[1] || '-1') &&
+            index !== parseInt(context.path.match(/\[(\d+)]/)?.[1] || '-1') &&
             String(item[CONNECTION_POSITION]) === String(value)
         );
     });

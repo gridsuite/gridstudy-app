@@ -875,7 +875,7 @@ export interface MoveVoltageLevelFeederBaysInfos {
     type: ModificationType;
     uuid: string | null;
     voltageLevelId: string;
-    feederBays: MoveFeederBayInfos[] | [];
+    feederBays: MoveFeederBayInfos[];
 }
 
 export interface MoveFeederBayInfos {
