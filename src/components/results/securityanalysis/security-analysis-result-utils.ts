@@ -28,6 +28,7 @@ import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import RunningStatus from 'components/utils/running-status';
 import type { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
@@ -215,12 +216,9 @@ const makeAgGridDurationColumn = (
     sortParams: ColumnContext['sortParams']
 ) => {
     return {
-        headerName: intl.formatMessage({
-            id: intlId,
-        }),
+        headerName: intl.formatMessage({ id: intlId }),
         colId: fieldId,
         field: fieldId,
-        valueFormatter: (param: ValueFormatterParams) => convertDuration(param.value),
         context: {
             sortParams,
             filterComponent: CustomAggridDurationFilter,
@@ -231,6 +229,17 @@ const makeAgGridDurationColumn = (
                     ...filterParams,
                 },
             },
+        },
+        valueGetter: (param: ValueGetterParams) => {
+            if (
+                param.data.limitType !== intl.formatMessage({ id: 'CURRENT' }) ||
+                param.data[fieldId] === UNDEFINED_ACCEPTABLE_DURATION
+            ) {
+                return ' ';
+            } else if (param.data[fieldId] === null) {
+                return intl.formatMessage({ id: 'NoneUpcomingOverload' });
+            }
+            return convertDuration(param.data[fieldId]);
         },
     };
 };
@@ -252,7 +261,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         updateFilterCallback: onFilter,
     };
     return [
-        makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'locationId', intl, filterParams, sortParams)),
+        makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Equipment', 'subjectId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
             colId: 'limitType',
@@ -270,21 +279,47 @@ export const securityAnalysisTableNColumnsDefinition = (
                 },
             },
         }),
+        makeAgGridCustomHeaderColumn(makeAgGridStringColumn('Bus', 'locationId', intl, filterParams, sortParams)),
         makeAgGridCustomHeaderColumn({
             ...makeAgGridStringColumn('LimitNameCurrentViolation', 'limitName', intl, filterParams, sortParams, [
                 FILTER_TEXT_COMPARATORS.EQUALS,
             ]),
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
+        makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'loading', intl, filterParams, sortParams)),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('PatlLoading', 'patlLoading', intl, filterParams, sortParams)
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn('actualOverloadDuration', 'acceptableDuration', intl, filterParams, sortParams)
+        ),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridDurationColumn(
+                'upComingOverloadDuration',
+                'upcomingAcceptableDuration',
+                intl,
+                filterParams,
+                sortParams
+            )
+        ),
+        makeAgGridCustomHeaderColumn({
+            ...makeAgGridStringColumn(
+                'NextLimitNameCurrentViolation',
+                'nextLimitName',
+                intl,
+                filterParams,
+                sortParams,
+                [FILTER_TEXT_COMPARATORS.EQUALS]
+            ),
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
+        }),
+
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLabelAOrKv', 'limit', intl, filterParams, sortParams)),
+        makeAgGridCustomHeaderColumn(
+            makeAgGridFloatColumn('PatlLimitValue', 'patlLimit', intl, filterParams, sortParams)
+        ),
 
         makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('CalculatedValue', 'value', intl, filterParams, sortParams)),
-
-        makeAgGridCustomHeaderColumn(makeAgGridFloatColumn('LimitLoading', 'loading', intl, filterParams, sortParams)),
-
-        makeAgGridCustomHeaderColumn(
-            makeAgGridDurationColumn('Overload', 'acceptableDuration', intl, filterParams, sortParams)
-        ),
 
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -776,8 +811,11 @@ export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     side: 'side',
     acceptableDuration: 'acceptableDuration',
     limit: 'limit',
+    patlLimit: 'patlLimit',
     value: 'value',
     loading: 'loading',
+    patlLoading: 'patlLoading',
+    upcomingAcceptableDuration: 'upcomingAcceptableDuration',
 };
 
 export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
