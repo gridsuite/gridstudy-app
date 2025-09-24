@@ -8,11 +8,11 @@
 import { Draggable } from '@hello-pangea/dnd';
 import Tab, { TabProps } from '@mui/material/Tab';
 import { Box } from '@mui/material';
-import { SxProps, Theme } from '@mui/material/styles';
+import { type SxStyle } from '@gridsuite/commons-ui';
 
 interface DraggableTabStyles {
-    container?: SxProps<Theme>;
-    tab?: SxProps<Theme>;
+    container?: SxStyle;
+    tab?: SxStyle;
 }
 
 interface DraggableTabOwnProps {
