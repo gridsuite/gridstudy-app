@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { IconButton, TextField } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -33,8 +33,8 @@ export default function FeederBayDirectionCellRenderer({
     } = useController({ name });
     const intl = useIntl();
 
-    const getTranslatedLabel = useCallback(
-        (directionId: string) => {
+    const getTranslatedLabel = useMemo(
+        () => (directionId: string) => {
             const direction = Object.values(CONNECTION_DIRECTIONS_VALUES).find((dir) => dir.id === directionId);
             return direction ? intl.formatMessage({ id: direction.label }) : '';
         },

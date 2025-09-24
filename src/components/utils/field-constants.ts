@@ -18,7 +18,6 @@ export const AUTOMATON = 'automaton';
 export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
-export const LABEL = 'label';
 export const NAME = 'name';
 export const PREDEFINED = 'predefined';
 export const TABULAR_PROPERTIES = 'properties';
