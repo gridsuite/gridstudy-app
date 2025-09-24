@@ -6,7 +6,6 @@
  */
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
-import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
 import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
 import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
@@ -25,6 +24,7 @@ import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spr
 import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
+import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 
 const styles = {
     table: (theme) => ({
@@ -48,7 +48,7 @@ interface SpreadsheetContentProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
-    nodeAliases: NodeAlias[] | undefined;
+    nodeAliases: NodeAlias[];
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
@@ -71,36 +71,10 @@ export const SpreadsheetContent = memo(
         openDiagram,
         active,
     }: SpreadsheetContentProps) => {
-        const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
 
-        const highlightUpdatedEquipment = useCallback(() => {
-            if (!equipmentToUpdateId) {
-                return;
-            }
-
-            const api = gridRef.current?.api;
-            const rowNode = api?.getRowNode(equipmentToUpdateId);
-
-            if (rowNode && api) {
-                api.flashCells({
-                    rowNodes: [rowNode],
-                    flashDuration: 1000,
-                });
-                api.setNodesSelected({ nodes: [rowNode], newValue: false });
-            }
-
-            setEquipmentToUpdateId(null);
-        }, [equipmentToUpdateId, gridRef]);
-
         // Only fetch when active
-        const { equipments, isFetching } = useSpreadsheetEquipments(
-            tableDefinition?.type,
-            equipmentToUpdateId,
-            highlightUpdatedEquipment,
-            nodeAliases,
-            active
-        );
+        const { equipments, isFetching } = useSpreadsheetEquipments(tableDefinition?.type, nodeAliases, active);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
@@ -164,9 +138,6 @@ export const SpreadsheetContent = memo(
             return Object.values(
                 Object.entries(equipments.equipmentsByNodeId).reduce(
                     (prev, [nodeId, nodeEquipments]) => {
-                        if (nodeId === currentNode.id) {
-                            return prev;
-                        }
                         const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
                         if (nodeAlias) {
                             Object.values(nodeEquipments).forEach((eq) => {
@@ -210,7 +181,6 @@ export const SpreadsheetContent = memo(
 
         const handleModify = useCallback(
             (equipmentId: string) => {
-                setEquipmentToUpdateId(equipmentId);
                 handleOpenModificationDialog(equipmentId);
             },
             [handleOpenModificationDialog]
