@@ -5,6 +5,7 @@
     stroke: var(--vl-color, lightgrey);
     stroke-width: 0.25%;
     fill: none;
+    cursor: default;
 }
 .nad-text-edges { /* Hidden for now */
     display: none;
@@ -72,6 +73,9 @@ foreignObject.nad-text-nodes {
     width: 20px;
     height: 20px;
     background: var(--vl-color, black);
+}
+.nad-edge-infos {
+    cursor: default;
 }
 .nad-edge-infos text {
     font: 20px sans-serif;

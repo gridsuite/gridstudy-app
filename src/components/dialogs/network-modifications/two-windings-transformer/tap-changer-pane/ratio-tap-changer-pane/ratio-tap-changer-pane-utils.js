@@ -285,19 +285,27 @@ export const getInitialTwtRatioRegulationModeId = (twt) => {
     return computedRegulationMode?.id || null;
 };
 
+export const getComputedRegulationModeId = (twt) => {
+    return getComputedRegulationMode(twt)?.id || null;
+};
+
 export const getComputedPreviousRatioRegulationType = (previousValues) => {
     const previousRegulationType = getComputedRegulationType(previousValues);
     return previousRegulationType?.id || null;
 };
 
-export const getComputedTapSideId = (twt) => {
+export const getComputedTapSide = (twt) => {
     const ratioTapChangerValues = twt?.ratioTapChanger;
     if (!ratioTapChangerValues || !twt) {
         return null;
     }
     if (ratioTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
-        return ratioTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
+        return ratioTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1 : SIDE.SIDE2;
     } else {
         return null;
     }
+};
+
+export const getComputedTapSideId = (twt) => {
+    return getComputedTapSide(twt)?.id || null;
 };
