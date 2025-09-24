@@ -108,9 +108,6 @@ export const styles = {
         '& .nad-label-box, & .nad-vl-nodes .nad-busnode': {
             cursor: 'grab',
         },
-        '& .nad-edge-infos': {
-            cursor: 'default',
-        },
     },
     paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
