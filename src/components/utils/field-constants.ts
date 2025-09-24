@@ -204,6 +204,7 @@ export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
 export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFY: 'MODIFY',
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the limit exists it is modified, if not it is created
     ADD: 'ADD',
     DELETE: 'DELETE',
     REPLACE: 'REPLACE',
