@@ -245,14 +245,17 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     ...onlyIfIsOneBus({ sortParams, ...autocompleteFilterParams('side') }),
                 },
             }),
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'LimitType' }),
-                colId: 'limitType',
-                field: 'limitType',
-                context: {
-                    ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
-                },
-            }),
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'LimitType' }),
+                    colId: 'limitType',
+                    field: 'limitType',
+                    context: {
+                        ...onlyIfIsAllBuses({ sortParams, ...autocompleteFilterParams('limitType') }),
+                    },
+                }),
+                minWidth: 150,
+            },
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 colId: 'limitMin',
@@ -285,28 +288,34 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                     ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
                 },
             }),
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
-                colId: 'deltaCurrentIpMin',
-                field: 'deltaCurrentIpMin',
-                context: {
-                    numeric: true,
-                    fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
-                },
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
-            }),
-            makeAgGridCustomHeaderColumn({
-                headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
-                colId: 'deltaCurrentIpMax',
-                field: 'deltaCurrentIpMax',
-                context: {
-                    numeric: true,
-                    fractionDigits: 2,
-                    ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
-                },
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
-            }),
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
+                    colId: 'deltaCurrentIpMin',
+                    field: 'deltaCurrentIpMin',
+                    context: {
+                        numeric: true,
+                        fractionDigits: 2,
+                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    },
+                    valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
+                }),
+                minWidth: 180,
+            },
+            {
+                ...makeAgGridCustomHeaderColumn({
+                    headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
+                    colId: 'deltaCurrentIpMax',
+                    field: 'deltaCurrentIpMax',
+                    context: {
+                        numeric: true,
+                        fractionDigits: 2,
+                        ...onlyIfIsAllBuses({ sortParams, ...inputFilterParams(numericFilterParams) }),
+                    },
+                    valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
+                }),
+                minWidth: 180,
+            },
             {
                 field: 'linkedElementId',
                 hide: true,
