@@ -15,14 +15,17 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { Assignment, DataType, FieldValue } from './assignment.type';
+import { Assignment, DataType, FieldOptionType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
     return getFieldOption(fieldName)?.dataType;
 };
+export const getUnsettable = (fieldName?: string | null) => {
+    return getFieldOption(fieldName)?.settableToNone;
+};
 
-export const getFieldOption = (fieldName?: string | null) => {
+export const getFieldOption = (fieldName?: string | null): FieldOptionType | undefined => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
@@ -34,7 +37,7 @@ export const getAssignmentInitialValue = () => ({
     [VALUE_FIELD]: null,
 });
 
-export function getAssignmentsSchema() {
+export function getAssignmentsSchema(emptyValueStr: string) {
     return yup
         .array()
         .of(
@@ -61,7 +64,8 @@ export function getAssignmentsSchema() {
                     .mixed<FieldValue>()
                     .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
-                        return getValueSchema(dataType);
+                        const unsettable = getUnsettable(editedField);
+                        return getValueSchema(emptyValueStr, dataType, unsettable);
                     })
                     .required(),
             })
@@ -69,12 +73,16 @@ export function getAssignmentsSchema() {
         .required();
 }
 
-function getValueSchema(dataType?: DataType) {
+function getValueSchema(emptyValueStr: string, dataType?: DataType, settable_to_none?: boolean) {
     let schema: Schema;
     // set type
     switch (dataType) {
         case DataType.DOUBLE:
-            schema = yup.number();
+            schema = settable_to_none
+                ? yup.string().test('is-number-or-none', 'NumericValueOrEmptyField', (value) => {
+                      return value === emptyValueStr || !isNaN(Number(value));
+                  })
+                : yup.number();
             break;
         case DataType.INTEGER:
             schema = yup.number().integer();
@@ -87,7 +95,8 @@ function getValueSchema(dataType?: DataType) {
             schema = yup.boolean();
             break;
         case DataType.STRING:
-            return yup.string().nullable();
+            schema = yup.string();
+            break;
         default:
             schema = yup.number();
     }
