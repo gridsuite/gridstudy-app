@@ -88,8 +88,8 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
     const formatLabelWithUnit = useFormatLabelWithUnit();
 
-    const autoCompleteSettableToNone = useCallback(
-        (numberOnly: boolean) => (
+    const AutoCompleteSettableToNone = useCallback(
+        ({ numberOnly }: { numberOnly?: boolean }) => (
             <AutocompleteInput
                 name={`${name}.${index}.${VALUE_FIELD}`}
                 label={'ValueOrEmptyField'}
@@ -181,19 +181,19 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
         if (dataType === DataType.STRING) {
             if (settable_to_none) {
-                return autoCompleteSettableToNone(false);
+                return <AutoCompleteSettableToNone />;
             } else {
                 return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
             }
         }
 
         if (dataType === DataType.DOUBLE && settable_to_none) {
-            return autoCompleteSettableToNone(true);
+            return <AutoCompleteSettableToNone numberOnly />;
         }
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, autoCompleteSettableToNone]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, AutoCompleteSettableToNone]);
 
     return (
         <>
