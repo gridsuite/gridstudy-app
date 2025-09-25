@@ -290,6 +290,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             if (equipmentType === EquipmentType.HVDC_LINE) {
                 // need a query to know the HVDC converters type (LCC vs VSC)
+                // this section should be removed when the NAD will provide this information in the SVG metadata
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
