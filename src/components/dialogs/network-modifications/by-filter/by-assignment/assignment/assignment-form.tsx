@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
@@ -88,6 +88,36 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
     const formatLabelWithUnit = useFormatLabelWithUnit();
 
+    const autoCompleteSettableToNone = useCallback(
+        (numberOnly: boolean) => (
+            <AutocompleteInput
+                name={`${name}.${index}.${VALUE_FIELD}`}
+                label={'ValueOrEmptyField'}
+                options={[emptyValueStr]}
+                size={'small'}
+                onCheckNewValue={
+                    numberOnly
+                        ? (option: Option | null) => {
+                              if (option && option !== emptyValueStr && Number.isNaN(Number(option))) {
+                                  setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                      message: 'NumericValueOrEmptyField',
+                                  });
+                              } else {
+                                  setError(`${name}.${index}.${VALUE_FIELD}`, {
+                                      message: '',
+                                  });
+                              }
+                              return true;
+                          }
+                        : undefined
+                }
+                getOptionLabel={(option: Option) => (typeof option !== 'string' ? (option?.label ?? option) : option)}
+                allowNewValue
+            />
+        ),
+        [emptyValueStr, index, name, setError]
+    );
+
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
@@ -151,53 +181,19 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
         if (dataType === DataType.STRING) {
             if (settable_to_none) {
-                return (
-                    <AutocompleteInput
-                        name={`${name}.${index}.${VALUE_FIELD}`}
-                        label={'ValueOrEmptyField'}
-                        options={[emptyValueStr]}
-                        size={'small'}
-                        getOptionLabel={(option: Option) =>
-                            typeof option !== 'string' ? (option?.label ?? option) : option
-                        }
-                        allowNewValue
-                    />
-                );
+                return autoCompleteSettableToNone(false);
             } else {
                 return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} clearable />;
             }
         }
 
         if (dataType === DataType.DOUBLE && settable_to_none) {
-            return (
-                <AutocompleteInput
-                    name={`${name}.${index}.${VALUE_FIELD}`}
-                    label={'ValueOrEmptyField'}
-                    options={[emptyValueStr]}
-                    onCheckNewValue={(option: Option | null) => {
-                        if (option && option !== emptyValueStr && Number.isNaN(Number(option))) {
-                            setError(`${name}.${index}.${VALUE_FIELD}`, {
-                                message: 'NumericValueOrEmptyField',
-                            });
-                        } else {
-                            setError(`${name}.${index}.${VALUE_FIELD}`, {
-                                message: '',
-                            });
-                        }
-                        return true;
-                    }}
-                    size={'small'}
-                    getOptionLabel={(option: Option) =>
-                        typeof option !== 'string' ? (option?.label ?? option) : option
-                    }
-                    allowNewValue
-                />
-            );
+            return autoCompleteSettableToNone(true);
         }
 
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
-    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, emptyValueStr, setError]);
+    }, [dataType, settable_to_none, name, index, predefinedPropertiesValues, options, autoCompleteSettableToNone]);
 
     return (
         <>
