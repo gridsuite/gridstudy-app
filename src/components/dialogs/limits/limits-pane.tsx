@@ -50,7 +50,7 @@ export function LimitsPane({
     const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
-    const editedOLG: boolean = useWatch({
+    const olgEditable: boolean = useWatch({
         name: `${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`,
     });
 
@@ -136,7 +136,7 @@ export function LimitsPane({
                     {isAModification && (
                         <SwitchInput
                             name={`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`}
-                            label={editedOLG ? 'Edit' : 'View'}
+                            label={olgEditable ? 'Edit' : 'View'}
                         />
                     )}
                 </Grid>
@@ -148,7 +148,7 @@ export function LimitsPane({
                     <GridSection title="LimitSets" />
                 </Grid>
                 <Grid container item xs={0.5}>
-                    <IconButton color="primary" sx={styles.button} onClick={onAddClick}>
+                    <IconButton color="primary" sx={styles.button} onClick={onAddClick} disabled={!olgEditable}>
                         <AddIcon />
                     </IconButton>
                 </Grid>
@@ -163,6 +163,7 @@ export function LimitsPane({
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                         checkLimitSetUnicity={checkLimitSetUnicity}
                         isAModification={!!equipmentToModify}
+                        editable={olgEditable}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
@@ -186,6 +187,7 @@ export function LimitsPane({
                                         currentNode={currentNode}
                                         selectedLimitSetName={operationalLimitsGroup.name}
                                         checkLimitSetUnicity={checkLimitSetUnicity}
+                                        editable={olgEditable}
                                     />
                                 )
                         )}

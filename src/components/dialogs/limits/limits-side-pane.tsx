@@ -45,6 +45,7 @@ export interface LimitsSidePaneProps {
     currentNode?: CurrentTreeNode;
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    editable: boolean;
 }
 
 export function LimitsSidePane({
@@ -57,6 +58,7 @@ export function LimitsSidePane({
     currentNode,
     selectedLimitSetName,
     checkLimitSetUnicity,
+    editable,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
@@ -169,6 +171,9 @@ export function LimitsSidePane({
             arrayFormName: string,
             temporaryLimits?: TemporaryLimit[]
         ) => {
+            if (!editable) {
+                return true;
+            }
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             let disable: boolean =
@@ -184,7 +189,7 @@ export function LimitsSidePane({
 
             return disable;
         },
-        [getValues, temporaryLimitHasPreviousValue]
+        [editable, getValues, temporaryLimitHasPreviousValue]
     );
 
     const isValueModified = useCallback(
@@ -210,10 +215,11 @@ export function LimitsSidePane({
                 label="PermanentCurrentLimitText"
                 adornment={AmpereAdornment}
                 previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={clearableFields}
+                clearable={editable && clearableFields}
+                disabled={!editable}
             />
         ),
-        [clearableFields, limitsGroupFormName, permanentCurrentLimitPreviousValue]
+        [clearableFields, editable, limitsGroupFormName, permanentCurrentLimitPreviousValue]
     );
 
     return (
@@ -231,6 +237,7 @@ export function LimitsSidePane({
                             sx={{ flexGrow: 1 }}
                             disableClearable
                             size="small"
+                            disabled={!editable}
                             onCheckNewValue={(value: Option | null) => {
                                 if (value) {
                                     const errorMessage: string = checkLimitSetUnicity(
