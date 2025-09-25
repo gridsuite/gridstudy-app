@@ -104,6 +104,11 @@ export const styles = {
             transform: 'unset !important',
         },
     },
+    nadEditModeCursors: {
+        '& .nad-label-box, & .nad-vl-nodes .nad-busnode': {
+            cursor: 'grab',
+        },
+    },
     paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,

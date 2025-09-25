@@ -36,6 +36,7 @@ import {
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { convertDuration, formatNAValue } from 'components/custom-aggrid/utils/format-values-utils';
+import { SubjectIdRendererType } from '../securityanalysis/security-analysis.type';
 
 export const convertSide = (side: string | undefined, intl: IntlShape) => {
     return side === BranchSide.ONE
@@ -237,7 +238,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number
+    tabIndex: number,
+    subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -252,6 +254,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
             colId: 'subjectId',
             field: 'subjectId',
+            cellRenderer: subjectIdRenderer,
+
             context: {
                 sortParams,
                 filterComponent: CustomAggridComparatorFilter,
@@ -359,7 +363,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     filterEnums: FilterEnumsType,
     getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
-    tabIndex: number
+    tabIndex: number,
+    subjectIdRenderer: SubjectIdRendererType
 ): ColDef[] => {
     const sortParams: ColumnContext['sortParams'] = {
         table: LOADFLOW_RESULT_SORT_STORE,
@@ -384,6 +389,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'OverloadedEquipmentVoltageLevel' }),
             colId: 'subjectId',
             field: 'subjectId',
+            cellRenderer: subjectIdRenderer,
             context: {
                 sortParams,
                 filterComponent: CustomAggridComparatorFilter,

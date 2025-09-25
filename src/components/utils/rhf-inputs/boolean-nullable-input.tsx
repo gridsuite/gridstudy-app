@@ -19,6 +19,7 @@ interface CheckboxNullableInputProps {
     formProps?: CheckboxProps;
     previousValue?: string;
     nullDisabled?: boolean;
+    onChange?: (value: boolean | null) => void;
     style?: { color: string };
 }
 
@@ -29,24 +30,28 @@ const CheckboxNullableInput = ({
     formProps,
     previousValue,
     nullDisabled,
+    onChange,
     style,
 }: Readonly<CheckboxNullableInputProps>) => {
     const {
-        field: { onChange, value },
+        field: { onChange: rhfOnChange, value },
     } = useController({ name });
 
     const intl = useIntl();
     const { isNodeBuilt, isUpdate } = useCustomFormContext();
 
     const handleChangeValue = useCallback(() => {
+        let newValue;
         if (value) {
-            onChange(null);
+            newValue = null;
         } else if (value === null) {
-            onChange(false);
+            newValue = false;
         } else {
-            onChange(true);
+            newValue = true;
         }
-    }, [onChange, value]);
+        rhfOnChange(newValue);
+        onChange?.(newValue);
+    }, [rhfOnChange, onChange, value]);
 
     // Get the current label based on value
     const currentLabel = typeof label === 'function' ? label(value) : label;
