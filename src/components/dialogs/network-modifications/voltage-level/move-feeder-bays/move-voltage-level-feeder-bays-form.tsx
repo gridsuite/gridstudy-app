@@ -29,6 +29,15 @@ import { UUID } from 'crypto';
 import { FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
+const defaultColDef = {
+    sortable: false,
+    resizable: true,
+    editable: false,
+    headerClass: 'centered-header',
+    cellClass: 'centered-cell',
+    suppressMovable: true,
+};
+
 interface MoveVoltageLevelFeederBaysFormProps {
     currentNode: CurrentTreeNode;
     selectedId: string;
@@ -56,18 +65,6 @@ export function MoveVoltageLevelFeederBaysForm({
 
     const isNodeBuiltValue = useMemo(() => isNodeBuilt(currentNode), [currentNode]);
     const shouldDisableTooltip = useMemo(() => !isUpdate && isNodeBuiltValue, [isUpdate, isNodeBuiltValue]);
-
-    const defaultColDef = useMemo(
-        () => ({
-            sortable: false,
-            resizable: true,
-            editable: false,
-            headerClass: 'centered-header',
-            cellClass: 'centered-cell',
-            suppressMovable: true,
-        }),
-        []
-    );
 
     const voltageLevelIdField = useMemo(
         () => (

@@ -159,13 +159,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     isSeparator: false,
                     isRemoved: false,
                 }));
-            } else if (
-                editData &&
-                editData?.uuid &&
-                isNodeBuiltValue &&
-                editData?.feederBays &&
-                editData.feederBays?.length > 0
-            ) {
+            } else if (editData?.uuid && isNodeBuiltValue && editData?.feederBays && editData?.feederBays?.length > 0) {
                 const feederBaysEditData = editData.feederBays;
                 if (feederBaysInfos.length > 0) {
                     feederBaysInfos.filter(Boolean).forEach((bay) => {
@@ -215,11 +209,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     }
                 }
             } else if (
-                editData &&
                 editData?.uuid &&
                 !isNodeBuiltValue &&
                 editData?.feederBays &&
-                editData.feederBays?.length > 0
+                editData?.feederBays?.length > 0
             ) {
                 mergedRowData = editData.feederBays.filter(Boolean).map((bay) => ({
                     equipmentId: bay.equipmentId,
@@ -256,6 +249,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             const busBarSectionInfos = Object.values(
                                 voltageLevel?.busBarSectionInfos || {}
                             ).flat() as string[];
+
                             const feederBaysInfos: FeederBaysInfos = (
                                 Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
                             )
@@ -269,7 +263,11 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                     (item, index, arr) =>
                                         arr.findIndex((x) => x.equipmentId === item.equipmentId) === index
                                 );
+
+                            // merge row data between actual values in network and user's modification infos
                             const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
+
+                            // reset default values for RHF state
                             reset(
                                 {
                                     [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: mergedRowData,

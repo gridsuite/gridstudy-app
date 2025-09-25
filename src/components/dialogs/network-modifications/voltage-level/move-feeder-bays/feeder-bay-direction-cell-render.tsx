@@ -11,6 +11,20 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useController, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import type { MuiStyles } from '@gridsuite/commons-ui';
+
+const styles = {
+    container: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        marginTop: 1.75,
+    },
+    button: {
+        width: 100,
+        whiteSpace: 'nowrap',
+    },
+} as const satisfies MuiStyles;
 
 const CONNECTION_DIRECTIONS_VALUES = {
     TOP: { id: 'TOP', label: 'Top' },
@@ -52,18 +66,11 @@ export default function FeederBayDirectionCellRenderer({
     }, [value, setValue, name]);
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                marginTop: 1.75,
-            }}
-        >
+        <Box sx={styles.container}>
             <IconButton onClick={handleClick} size="small" disabled={disabled}>
                 {value === CONNECTION_DIRECTIONS_VALUES.TOP.id ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
             </IconButton>
-            <ToggleButton value={value} onClick={handleClick} sx={{ width: 100, whiteSpace: 'nowrap' }} size="small">
+            <ToggleButton value={value} onClick={handleClick} disabled={disabled} size="small" sx={styles.button}>
                 {translatedLabel}
             </ToggleButton>
         </Box>
