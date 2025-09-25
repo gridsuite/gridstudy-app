@@ -44,6 +44,7 @@ interface MoveVoltageLevelFeederBaysFormProps {
     isUpdate: boolean;
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
+    isReady: boolean;
 }
 
 export function MoveVoltageLevelFeederBaysForm({
@@ -52,6 +53,7 @@ export function MoveVoltageLevelFeederBaysForm({
     isUpdate,
     currentRootNetworkUuid,
     studyUuid,
+    isReady = false,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -130,9 +132,13 @@ export function MoveVoltageLevelFeederBaysForm({
                         disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
+                        autoFocus: true,
                         sx: {
-                            padding: '8%',
-                            '& input': { textAlign: 'center' },
+                            paddingTop: '8%',
+                            '& input': {
+                                textAlign: 'center',
+                                textOverflow: 'ellipsis',
+                            },
                         },
                     }}
                 />
@@ -295,7 +301,7 @@ export function MoveVoltageLevelFeederBaysForm({
             </Grid>
             <Grid item xs paddingTop={2}>
                 <CustomAGGrid
-                    rowData={getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE)}
+                    rowData={isReady ? getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE) : undefined}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     suppressMovableColumns={true}

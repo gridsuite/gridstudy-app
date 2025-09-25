@@ -58,21 +58,22 @@ const checkConnectionPositionField: TestFunction<any, AnyObject> = (value, conte
     return !duplicateExists;
 };
 
-const requiredWhenActive = () =>
-    yup.string().when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
+function requiredWhenActive<T extends yup.Schema>(schema: T) {
+    return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
         return !isRemoved && !isSeparator ? schema.nullable().required() : schema.nullable();
     });
+}
 
 const formSchema = yup.object().shape({
     [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: yup.array().of(
         yup.object().shape({
-            [EQUIPMENT_ID]: requiredWhenActive(),
-            [BUSBAR_SECTION_ID]: requiredWhenActive(),
-            [BUSBAR_SECTION_IDS]: yup.array().of(yup.string()),
+            [EQUIPMENT_ID]: requiredWhenActive(yup.string()),
+            [BUSBAR_SECTION_ID]: requiredWhenActive(yup.string()),
+            [BUSBAR_SECTION_IDS]: requiredWhenActive(yup.array().of(yup.string())),
             [CONNECTION_SIDE]: yup.string().nullable(),
-            [CONNECTION_NAME]: requiredWhenActive(),
-            [CONNECTION_DIRECTION]: requiredWhenActive(),
-            [CONNECTION_POSITION]: requiredWhenActive().test(
+            [CONNECTION_NAME]: requiredWhenActive(yup.string()),
+            [CONNECTION_DIRECTION]: requiredWhenActive(yup.string()),
+            [CONNECTION_POSITION]: requiredWhenActive(yup.string()).test(
                 'checkUniquePositions',
                 'DuplicatedPositionsError',
                 checkConnectionPositionField
@@ -296,16 +297,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
         const feederBays: MoveFeederBayInfos[] =
             tableData && Array.isArray(tableData)
                 ? tableData
-                      .filter(
-                          (row) =>
-                              !row?.isRemoved &&
-                              !row?.isSeparator &&
-                              row?.equipmentId &&
-                              row?.busbarSectionId &&
-                              row?.connectionSide &&
-                              row?.connectionName &&
-                              row?.connectionDirection
-                      )
+                      .filter((row) => !row?.isRemoved && !row?.isSeparator)
                       .map((row) => ({
                           equipmentId: row?.equipmentId!,
                           busbarSectionId: row?.busbarSectionId!,
@@ -391,6 +383,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         isUpdate={isUpdate}
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         studyUuid={studyUuid}
+                        isReady={dataFetchStatus === FetchStatus.SUCCEED}
                     />
                 )}
             </ModificationDialog>
