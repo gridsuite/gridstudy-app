@@ -56,9 +56,6 @@ import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
-    getAllLimitsFormData,
-    formatOpLimitGroupsToFormInfos,
-    combineFormAndMapServerLimitsGroups,
     addOperationTypeToSelectedOpLG,
     combineFormAndMapServerLimitsGroups,
     formatOpLimitGroupsToFormInfos,
