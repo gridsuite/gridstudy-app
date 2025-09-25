@@ -500,6 +500,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // connectNotifications don't change
     }, [dispatch, studyUuid]);
 
+    // WARN: this must be the last effect of the component
+    // It updates refs (currentNode, currentRootNetworkUuid) which are used
+    // for comparison in previous effects
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
+    }, [currentNode, currentRootNetworkUuid]);
+
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
