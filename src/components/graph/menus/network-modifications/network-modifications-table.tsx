@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, SetStateAction, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, SetStateAction, useRef } from 'react';
 import {
     CustomAGGrid,
     type MuiStyles,
@@ -86,7 +86,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 }) => {
     const gridRef = useRef<AgGridReact>(null);
     const theme = useTheme();
-
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
     const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
@@ -210,15 +209,26 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
             if (!cellData?.data?.activated) {
                 style.opacity = 0.4;
             }
-            // Scroll and highlight the selected modification
             if (cellData?.data?.uuid === highlightedModificationUuid && cellData?.rowIndex !== null) {
                 style.backgroundColor = theme.aggrid.highlightColor;
-                gridRef.current?.api.ensureIndexVisible(cellData?.rowIndex, 'top');
             }
             return style;
         },
         [highlightedModificationUuid, theme]
     );
+
+    const handleScroll = useCallback(() => {
+        if (highlightedModificationUuid && gridRef.current?.api) {
+            const selectedRow = gridRef.current.api.getRowNode(highlightedModificationUuid);
+            if (selectedRow) {
+                gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
+            }
+        }
+    }, [highlightedModificationUuid]);
+
+    useEffect(() => {
+        handleScroll();
+    }, [handleScroll, highlightedModificationUuid]);
 
     return (
         <Box sx={styles.container}>
@@ -240,6 +250,7 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 getRowStyle={getRowStyle}
                 onRowDragEnter={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
+                onFirstDataRendered={handleScroll}
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
                 overrideLocales={AGGRID_LOCALES}

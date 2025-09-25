@@ -1392,9 +1392,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
-        if (!state.toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
-            state.toggleOptions = [...state.toggleOptions, StudyDisplayMode.MODIFICATIONS];
-        }
+        // remove EVENT_SCENARIO from toggleOptions if present and add MODIFICATIONS if not present
+        const optionsSet = new Set(state.toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
+        optionsSet.add(StudyDisplayMode.MODIFICATIONS);
+        state.toggleOptions = Array.from(optionsSet);
     });
 
     builder.addCase(SET_TOGGLE_OPTIONS, (state, action: SetToggleOptionsAction) => {
