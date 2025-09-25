@@ -162,6 +162,7 @@ code {
     stroke: none;
     fill: black;
     font: 11px 'Verdana';
+    cursor: default !important;
 }
 .sld-graph-label {
     stroke: none;
@@ -300,6 +301,7 @@ code {
 .sld-voltage-level:has(circle.sld-bus-8:hover, .sld-bus-8.sld-busbar-section:hover) .sld-bus-8.sld-busbar-section,
 .sld-voltage-level:has(circle.sld-bus-9:hover, .sld-bus-9.sld-busbar-section:hover) .sld-bus-9.sld-busbar-section {
     stroke-width: 5px;
+    cursor: default !important;
 }
 .sld-voltage-level:has(circle.sld-bus-0:hover, .sld-bus-0.sld-busbar-section:hover) .sld-bus-0.sld-wire,
 .sld-voltage-level:has(circle.sld-bus-1:hover, .sld-bus-1.sld-busbar-section:hover) .sld-bus-1.sld-wire,
