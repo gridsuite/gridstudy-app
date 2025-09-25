@@ -14,7 +14,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchStatus } from '../../../../services/utils';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
@@ -35,6 +34,7 @@ import { fetchSwitchesOfVoltageLevel } from '../../../../services/study/network'
 import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 import { SwitchInfos } from '../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const formSchema = yup.object().shape({
     [TOPOLOGY_MODIFICATION_TABLE]: yup
@@ -92,7 +92,7 @@ export default function VoltageLevelTopologyModificationDialog({
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const intl = useIntl();
 
-    const formMethods = useForm<VoltageLevelTopologyModificationFormSchemaType>({
+    const formMethods = useFormWithDirtyTracking<VoltageLevelTopologyModificationFormSchemaType>({
         defaultValues: emptyFormData,
         resolver: yupResolver<VoltageLevelTopologyModificationFormSchemaType>(formSchema),
     });

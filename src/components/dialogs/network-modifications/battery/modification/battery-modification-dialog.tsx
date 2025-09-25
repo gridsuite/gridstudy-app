@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useForm } from 'react-hook-form';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -74,6 +73,7 @@ import BatteryModificationForm from './battery-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -126,8 +126,7 @@ export default function BatteryModificationDialog({
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [batteryToModify, setBatteryToModify] = useState<BatteryFormInfos | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const formMethods = useForm<DeepNullable<BatteryModificationDialogSchemaForm>>({
+    const formMethods = useFormWithDirtyTracking<DeepNullable<BatteryModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<BatteryModificationDialogSchemaForm>>(formSchema),
     });
@@ -248,7 +247,6 @@ export default function BatteryModificationDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setBatteryToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {

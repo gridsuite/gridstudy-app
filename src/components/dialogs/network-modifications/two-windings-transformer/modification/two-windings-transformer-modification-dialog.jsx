@@ -71,7 +71,6 @@ import {
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
@@ -151,6 +150,7 @@ import {
 } from './state-estimation-form-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import { useIntl } from 'react-intl';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -207,7 +207,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const [twtToModify, setTwtToModify] = useState(null);
     const intl = useIntl();
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -711,7 +711,6 @@ const TwoWindingsTransformerModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setTwtToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {
