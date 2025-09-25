@@ -8,7 +8,8 @@ import { ConnectablePositionInfos } from '../../../connectivity/connectivity.typ
 
 export type FeederBaysFormInfos = {
     equipmentId: string | null;
-    busbarSectionId: string | null;
+    busbarSectionId: string | null; // for selected value
+    busbarSectionIds: string[] | null; // for options
     connectionSide: string | null;
     connectionName: string | null;
     connectionDirection: string | null;

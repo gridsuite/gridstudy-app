@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
-import { IconButton, TextField } from '@mui/material';
+import { useCallback, useMemo } from 'react';
+import { Box, IconButton, ToggleButton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useController, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { TextInput } from '@gridsuite/commons-ui';
 
 const CONNECTION_DIRECTIONS_VALUES = {
     TOP: { id: 'TOP', label: 'Top' },
@@ -33,13 +32,10 @@ export default function FeederBayDirectionCellRenderer({
     } = useController({ name });
     const intl = useIntl();
 
-    const getTranslatedLabel = useMemo(
-        () => (directionId: string) => {
-            const direction = Object.values(CONNECTION_DIRECTIONS_VALUES).find((dir) => dir.id === directionId);
-            return direction ? intl.formatMessage({ id: direction.label }) : '';
-        },
-        [intl]
-    );
+    const translatedLabel = useMemo(() => {
+        const direction = Object.values(CONNECTION_DIRECTIONS_VALUES).find((dir) => dir.id === value);
+        return direction ? intl.formatMessage({ id: direction.label }) : '';
+    }, [intl, value]);
 
     const handleClick = useCallback(() => {
         if (value) {
@@ -56,37 +52,20 @@ export default function FeederBayDirectionCellRenderer({
     }, [value, setValue, name]);
 
     return (
-        <div
-            style={{
+        <Box
+            sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8%',
-                pointerEvents: disabled ? 'none' : 'auto',
+                gap: 1,
+                marginTop: 1.75,
             }}
         >
             <IconButton onClick={handleClick} size="small" disabled={disabled}>
                 {value === CONNECTION_DIRECTIONS_VALUES.TOP.id ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
             </IconButton>
-            <TextField
-                value={getTranslatedLabel(value)}
-                size="small"
-                variant="outlined"
-                InputProps={{
-                    readOnly: true,
-                    style: { cursor: 'pointer', textAlign: 'center' },
-                }}
-                onClick={handleClick}
-                sx={{
-                    padding: '8%',
-                    '& input': {
-                        textAlign: 'center',
-                    },
-                }}
-                disabled={disabled}
-            />
-            <div style={{ display: 'none' }}>
-                <TextInput name={name} />
-            </div>
-        </div>
+            <ToggleButton value={value} onClick={handleClick} sx={{ width: 100, whiteSpace: 'nowrap' }} size="small">
+                {translatedLabel}
+            </ToggleButton>
+        </Box>
     );
 }

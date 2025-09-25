@@ -68,8 +68,8 @@ const formSchema = yup.object().shape({
         yup.object().shape({
             [EQUIPMENT_ID]: requiredWhenActive(),
             [BUSBAR_SECTION_ID]: requiredWhenActive(),
-            [CONNECTION_SIDE]: yup.string().nullable(),
             [BUSBAR_SECTION_IDS]: yup.array().of(yup.string()),
+            [CONNECTION_SIDE]: yup.string().nullable(),
             [CONNECTION_NAME]: requiredWhenActive(),
             [CONNECTION_DIRECTION]: requiredWhenActive(),
             [CONNECTION_POSITION]: requiredWhenActive().test(
@@ -88,8 +88,8 @@ const emptyFormData = {
         {
             [EQUIPMENT_ID]: null,
             [BUSBAR_SECTION_ID]: null,
-            [CONNECTION_SIDE]: null,
             [BUSBAR_SECTION_IDS]: [],
+            [CONNECTION_SIDE]: null,
             [CONNECTION_NAME]: null,
             [CONNECTION_DIRECTION]: null,
             [CONNECTION_POSITION]: '0',
@@ -129,8 +129,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
-    const [feederBaysInfos, setFeederBaysInfos] = useState<FeederBaysInfos>([]);
-    const [busBarSectionInfos, setBusBarSectionInfos] = useState<string[]>([]);
 
     const formMethods = useForm<DeepNullable<MoveVoltageLevelFeederBaysFormSchemaType>>({
         defaultValues: emptyFormData,
@@ -145,6 +143,100 @@ export default function MoveVoltageLevelFeederBaysDialog({
             setSelectedId(editData.voltageLevelId);
         }
     }, [editData?.voltageLevelId]);
+
+    const mergeRowData = useCallback(
+        (feederBaysInfos: FeederBaysInfos, busBarSectionInfos: string[]) => {
+            let mergedRowData: FeederBaysFormInfos[] = [];
+            if (!editData?.uuid && feederBaysInfos.length > 0) {
+                mergedRowData = feederBaysInfos.filter(Boolean).map((bay) => ({
+                    equipmentId: bay.equipmentId,
+                    busbarSectionId: bay.busbarSectionId || null,
+                    busbarSectionIds: busBarSectionInfos,
+                    connectionSide: bay.connectionSide || null,
+                    connectionName: bay.connectablePositionInfos.connectionName || null,
+                    connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
+                    connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
+                    isSeparator: false,
+                    isRemoved: false,
+                }));
+            } else if (
+                editData &&
+                editData?.uuid &&
+                isNodeBuiltValue &&
+                editData?.feederBays &&
+                editData.feederBays?.length > 0
+            ) {
+                const feederBaysEditData = editData.feederBays;
+                if (feederBaysInfos.length > 0) {
+                    feederBaysInfos.filter(Boolean).forEach((bay) => {
+                        mergedRowData.push({
+                            equipmentId: bay.equipmentId,
+                            busbarSectionId: bay.busbarSectionId,
+                            busbarSectionIds: busBarSectionInfos,
+                            connectionSide: bay.connectionSide,
+                            connectionName: bay.connectablePositionInfos.connectionName || null,
+                            connectionDirection: bay.connectablePositionInfos.connectionDirection,
+                            connectionPosition: bay.connectablePositionInfos.connectionPosition || '0',
+                            isSeparator: false,
+                            isRemoved: false,
+                        });
+                    });
+                    const deletedFeederBays = feederBaysEditData.filter(
+                        (bay) =>
+                            bay?.equipmentId &&
+                            !feederBaysInfos.some((formBay) => formBay?.equipmentId === bay.equipmentId)
+                    );
+                    if (deletedFeederBays.length > 0) {
+                        mergedRowData.push({
+                            isSeparator: true,
+                            isRemoved: false,
+                            equipmentId: null,
+                            busbarSectionId: null,
+                            busbarSectionIds: null,
+                            connectionSide: null,
+                            connectionName: null,
+                            connectionDirection: null,
+                            connectionPosition: null,
+                        });
+
+                        deletedFeederBays.forEach((bay) => {
+                            mergedRowData.push({
+                                equipmentId: bay.equipmentId,
+                                busbarSectionId: bay.busbarSectionId,
+                                busbarSectionIds: busBarSectionInfos,
+                                connectionSide: bay.connectionSide,
+                                connectionName: bay.connectionName,
+                                connectionDirection: bay.connectionDirection,
+                                connectionPosition: bay.connectionPosition,
+                                isSeparator: false,
+                                isRemoved: true,
+                            });
+                        });
+                    }
+                }
+            } else if (
+                editData &&
+                editData?.uuid &&
+                !isNodeBuiltValue &&
+                editData?.feederBays &&
+                editData.feederBays?.length > 0
+            ) {
+                mergedRowData = editData.feederBays.filter(Boolean).map((bay) => ({
+                    equipmentId: bay.equipmentId,
+                    busbarSectionId: bay.busbarSectionId,
+                    busbarSectionIds: busBarSectionInfos,
+                    connectionSide: bay.connectionSide,
+                    connectionName: bay.connectionName,
+                    connectionDirection: bay.connectionDirection,
+                    connectionPosition: bay.connectionPosition,
+                    isSeparator: false,
+                    isRemoved: false,
+                }));
+            }
+            return mergedRowData;
+        },
+        [editData, isNodeBuiltValue]
+    );
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: any) => {
@@ -161,9 +253,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
-                            setBusBarSectionInfos(
-                                Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[]
-                            );
+                            const busBarSectionInfos = Object.values(
+                                voltageLevel?.busBarSectionInfos || {}
+                            ).flat() as string[];
                             const feederBaysInfos: FeederBaysInfos = (
                                 Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
                             )
@@ -177,20 +269,22 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                     (item, index, arr) =>
                                         arr.findIndex((x) => x.equipmentId === item.equipmentId) === index
                                 );
-                            setFeederBaysInfos(feederBaysInfos);
+                            const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
+                            reset(
+                                {
+                                    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: mergedRowData,
+                                },
+                                { keepDirty: true }
+                            );
                             setDataFetchStatus(FetchStatus.SUCCEED);
-                        } else {
-                            setFeederBaysInfos([]);
-                            setBusBarSectionInfos([]);
                         }
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);
-                        setFeederBaysInfos([]);
                     });
             }
         },
-        [studyUuid, currentNodeUuid, currentRootNetworkUuid]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, mergeRowData, reset]
     );
 
     useEffect(() => {
@@ -255,118 +349,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
         reset(emptyFormData);
     }, [reset]);
 
-    const mergedRowData = useMemo((): FeederBaysFormInfos[] => {
-        if (!editData?.uuid && feederBaysInfos.length > 0) {
-            return feederBaysInfos.filter(Boolean).map((bay) => ({
-                equipmentId: bay.equipmentId,
-                busbarSectionId: bay.busbarSectionId || null,
-                connectionSide: bay.connectionSide || null,
-                connectionName: bay.connectablePositionInfos.connectionName || null,
-                connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
-                isSeparator: false,
-                isRemoved: false,
-            }));
-        }
-
-        if (
-            editData &&
-            editData?.uuid &&
-            isNodeBuiltValue &&
-            editData?.feederBays &&
-            editData.feederBays?.length > 0 &&
-            dataFetchStatus === FetchStatus.SUCCEED
-        ) {
-            const feederBaysEditData = editData.feederBays;
-            if (feederBaysInfos.length > 0) {
-                const result: FeederBaysFormInfos[] = [];
-                feederBaysInfos.filter(Boolean).forEach((bay) => {
-                    result.push({
-                        equipmentId: bay.equipmentId,
-                        busbarSectionId: bay.busbarSectionId,
-                        connectionSide: bay.connectionSide,
-                        connectionName: bay.connectablePositionInfos.connectionName || null,
-                        connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                        connectionPosition: bay.connectablePositionInfos.connectionPosition || '0',
-                        isSeparator: false,
-                        isRemoved: false,
-                    });
-                });
-                const deletedFeederBays = feederBaysEditData.filter(
-                    (bay) =>
-                        bay?.equipmentId && !feederBaysInfos.some((formBay) => formBay?.equipmentId === bay.equipmentId)
-                );
-                if (deletedFeederBays.length > 0) {
-                    result.push({
-                        isSeparator: true,
-                        isRemoved: false,
-                        equipmentId: null,
-                        busbarSectionId: null,
-                        connectionSide: null,
-                        connectionName: null,
-                        connectionDirection: null,
-                        connectionPosition: null,
-                    });
-
-                    deletedFeederBays.forEach((bay) => {
-                        result.push({
-                            equipmentId: bay.equipmentId,
-                            busbarSectionId: bay.busbarSectionId,
-                            connectionSide: bay.connectionSide,
-                            connectionName: bay.connectionName,
-                            connectionDirection: bay.connectionDirection,
-                            connectionPosition: bay.connectionPosition,
-                            isSeparator: false,
-                            isRemoved: true,
-                        });
-                    });
-                }
-                return result;
-            }
-        }
-
-        if (
-            editData &&
-            editData?.uuid &&
-            !isNodeBuiltValue &&
-            editData?.feederBays &&
-            editData.feederBays?.length > 0 &&
-            dataFetchStatus === FetchStatus.SUCCEED
-        ) {
-            return editData.feederBays.filter(Boolean).map((bay) => ({
-                equipmentId: bay.equipmentId,
-                busbarSectionId: bay.busbarSectionId,
-                connectionSide: bay.connectionSide,
-                connectionName: bay.connectionName,
-                connectionDirection: bay.connectionDirection,
-                connectionPosition: bay.connectionPosition,
-                isSeparator: false,
-                isRemoved: false,
-            }));
-        }
-
-        return [];
-    }, [dataFetchStatus, editData, feederBaysInfos, isNodeBuiltValue]);
-
-    useEffect(() => {
-        if (mergedRowData.length > 0) {
-            const formData = {
-                [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: mergedRowData.map((row) => ({
-                    [EQUIPMENT_ID]: row.equipmentId,
-                    [BUSBAR_SECTION_ID]: row.busbarSectionId,
-                    [CONNECTION_SIDE]: row.connectionSide,
-                    [BUSBAR_SECTION_IDS]: busBarSectionInfos,
-                    [CONNECTION_NAME]: row.connectionName,
-                    [CONNECTION_DIRECTION]: row.connectionDirection,
-                    [CONNECTION_POSITION]: row.connectionPosition,
-                    [IS_SEPARATOR]: row.isSeparator,
-                    [IS_REMOVED]: row.isRemoved,
-                })),
-            };
-            reset(formData, { keepDirty: true });
-        }
-    }, [busBarSectionInfos, mergedRowData, reset]);
-
     return (
         <CustomFormProvider
             validationSchema={formSchema}
@@ -406,7 +388,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 )}
                 {selectedId != null && (
                     <MoveVoltageLevelFeederBaysForm
-                        feederBaysInfos={mergedRowData}
                         currentNode={currentNode}
                         selectedId={selectedId}
                         isUpdate={isUpdate}

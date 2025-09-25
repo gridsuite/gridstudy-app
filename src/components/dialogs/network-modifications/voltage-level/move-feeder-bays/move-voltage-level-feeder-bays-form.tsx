@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { Box, Grid, TextField, Tooltip, Typography } from '@mui/material';
@@ -26,11 +26,10 @@ import GridItem from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
-import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 
 interface MoveVoltageLevelFeederBaysFormProps {
-    feederBaysInfos: FeederBaysFormInfos[];
     currentNode: CurrentTreeNode;
     selectedId: string;
     isUpdate: boolean;
@@ -39,7 +38,6 @@ interface MoveVoltageLevelFeederBaysFormProps {
 }
 
 export function MoveVoltageLevelFeederBaysForm({
-    feederBaysInfos,
     currentNode,
     selectedId,
     isUpdate,
@@ -300,7 +298,7 @@ export function MoveVoltageLevelFeederBaysForm({
             </Grid>
             <Grid item xs paddingTop={2}>
                 <CustomAGGrid
-                    rowData={feederBaysInfos}
+                    rowData={getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE)}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     suppressMovableColumns={true}
