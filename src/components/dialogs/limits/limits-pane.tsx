@@ -187,7 +187,7 @@ export function LimitsPane({
                                         currentNode={currentNode}
                                         selectedLimitSetName={operationalLimitsGroup.name}
                                         checkLimitSetUnicity={checkLimitSetUnicity}
-                                        editable={olgEditable}
+                                        disabled={!olgEditable}
                                     />
                                 )
                         )}

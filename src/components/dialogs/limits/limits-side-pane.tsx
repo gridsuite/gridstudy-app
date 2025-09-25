@@ -45,7 +45,7 @@ export interface LimitsSidePaneProps {
     currentNode?: CurrentTreeNode;
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
-    editable: boolean;
+    disabled: boolean;
 }
 
 export function LimitsSidePane({
@@ -58,7 +58,7 @@ export function LimitsSidePane({
     currentNode,
     selectedLimitSetName,
     checkLimitSetUnicity,
-    editable,
+    disabled,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
@@ -171,7 +171,7 @@ export function LimitsSidePane({
             arrayFormName: string,
             temporaryLimits?: TemporaryLimit[]
         ) => {
-            if (!editable) {
+            if (disabled) {
                 return true;
             }
             // If the temporary limit is added, all fields are editable
@@ -189,7 +189,7 @@ export function LimitsSidePane({
 
             return disable;
         },
-        [editable, getValues, temporaryLimitHasPreviousValue]
+        [disabled, getValues, temporaryLimitHasPreviousValue]
     );
 
     const isValueModified = useCallback(
@@ -215,11 +215,11 @@ export function LimitsSidePane({
                 label="PermanentCurrentLimitText"
                 adornment={AmpereAdornment}
                 previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={editable && clearableFields}
-                disabled={!editable}
+                clearable={!disabled && clearableFields}
+                disabled={disabled}
             />
         ),
-        [clearableFields, editable, limitsGroupFormName, permanentCurrentLimitPreviousValue]
+        [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
     );
 
     return (
@@ -237,7 +237,7 @@ export function LimitsSidePane({
                             sx={{ flexGrow: 1 }}
                             disableClearable
                             size="small"
-                            disabled={!editable}
+                            disabled={disabled}
                             onCheckNewValue={(value: Option | null) => {
                                 if (value) {
                                     const errorMessage: string = checkLimitSetUnicity(
@@ -272,6 +272,7 @@ export function LimitsSidePane({
                 disableTableCell={disableTableCell}
                 getPreviousValue={getPreviousValue}
                 isValueModified={isValueModified}
+                disabled={disabled}
             />
         </Box>
     );
