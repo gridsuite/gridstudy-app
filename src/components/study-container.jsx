@@ -485,6 +485,12 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, dispatch]);
 
+    //TODO: this useEffect needs to be placed here, otherwise it breaks the root network switch
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
+    }, [currentNode, currentRootNetworkUuid]);
+
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
