@@ -58,11 +58,17 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
             }
 
             if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid) {
-                fetchAllEquipments(studyUuid, nodeUuid, currentRootNetworkUuid, impactedSubstationsIds).then(
-                    (values) => {
+                fetchAllEquipments(studyUuid, nodeUuid, currentRootNetworkUuid, impactedSubstationsIds)
+                    .then((values) => {
                         dispatch(updateEquipments(values, nodeUuid));
-                    }
-                );
+                    })
+                    .catch((error: unknown) => {
+                        console.warn(
+                            `Failed to update spreadsheet equipments on notification, it will be reset`,
+                            error
+                        );
+                        dispatch(resetEquipments());
+                    });
             }
 
             if (deletedEquipments.length > 0) {
@@ -105,17 +111,22 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
                     currentRootNetworkUuid === eventRootNetworkUuid &&
                     builtNodesIds.has(eventNodeUuid)
                 ) {
-                    const networkImpacts = JSON.parse(eventData.payload) as NetworkImpactsInfos;
-                    updateEquipmentsLocal(
-                        eventNodeUuid,
-                        networkImpacts.impactedSubstationsIds,
-                        networkImpacts.deletedEquipments,
-                        networkImpacts.impactedElementTypes ?? []
-                    );
+                    try {
+                        const networkImpacts = JSON.parse(eventData.payload) as NetworkImpactsInfos;
+                        updateEquipmentsLocal(
+                            eventNodeUuid,
+                            networkImpacts.impactedSubstationsIds,
+                            networkImpacts.deletedEquipments,
+                            networkImpacts.impactedElementTypes ?? []
+                        );
+                    } catch (error: unknown) {
+                        console.warn(`Something failed during spreadsheet update, it will be reset`, error);
+                        dispatch(resetEquipments());
+                    }
                 }
             }
         },
-        [builtNodesIds, currentRootNetworkUuid, studyUuid, updateEquipmentsLocal]
+        [builtNodesIds, currentRootNetworkUuid, dispatch, studyUuid, updateEquipmentsLocal]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {

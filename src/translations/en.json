@@ -1618,5 +1618,9 @@
     "Object": "Object",
     "Array": "Array",
     "Boolean": "Boolean",
-    "Enum": "Enumeration"
+    "Enum": "Enumeration",
+    "nodeType": "Type",
+    "nodeStatus": "Status",
+    "CONSTRUCTION": "Construction",
+    "SECURITY": "Security"
 }

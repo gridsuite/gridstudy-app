@@ -1614,5 +1614,9 @@
     "Object": "Objet",
     "Array": "Tableau",
     "Boolean": "Booléen",
-    "Enum": "Énumération"
+    "Enum": "Énumération",
+    "nodeType": "Type",
+    "nodeStatus": "Statut",
+    "CONSTRUCTION": "Construction",
+    "SECURITY": "Sécurité"
 }
