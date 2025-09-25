@@ -6,18 +6,17 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button, type Theme, Tooltip } from '@mui/material';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { Badge, Button, Tooltip } from '@mui/material';
+import { type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
 import { validAlias } from '../../../hooks/use-node-aliases';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
-import { useNodeConfigNotificationsListener } from './use-node-config-notifications-listener';
 
 const styles = {
-    badgeStyle: (theme: Theme) => ({
+    badgeStyle: (theme) => ({
         '& .MuiBadge-badge': {
             minWidth: theme.spacing(2),
             height: theme.spacing(2),
@@ -25,11 +24,11 @@ const styles = {
             padding: theme.spacing(0, 0.5),
         },
     }),
-    nodesConfigButton: (theme: Theme) => ({
+    nodesConfigButton: (theme) => ({
         color: theme.palette.primary.main,
         minWidth: '100%',
     }),
-};
+} as const satisfies MuiStyles;
 
 type NodesConfigButtonProps = {
     disabled?: boolean;
@@ -49,9 +48,6 @@ export default function NodesConfigButton({
         () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
         [nodeAliases]
     );
-
-    //Enables to automatically reload nodeAliases data upon receiving study notification related to node and rootNetwork update
-    useNodeConfigNotificationsListener(tableType, nodeAliases);
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {

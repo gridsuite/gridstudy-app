@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Theme } from '@mui/material/styles';
 import { EditableTitle } from '../network-modifications/editable-title';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { setToggleOptions } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
 import { AppState } from '../../../../redux/reducer';
@@ -17,14 +16,14 @@ import { Box } from '@mui/material';
 import { StudyDisplayMode } from 'components/network-modification.type';
 
 const styles = {
-    paper: {
+    paper: (theme) => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background: (theme: Theme) => theme.palette.background.paper,
-    },
-};
+        background: theme.palette.background.paper,
+    }),
+} as const satisfies MuiStyles;
 
 export interface ScenarioEditorProps {}
 

@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useMemo } from 'react';
-import { TextField, Grid, InputAdornment, IconButton } from '@mui/material';
+import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { DisplayRounding } from '../display-rounding';
 import { useIntl } from 'react-intl';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { FILTER_DATA_TYPES } from './custom-aggrid-filter.type';
 
 const styles = {
@@ -25,7 +25,7 @@ const styles = {
             MozAppearance: 'textfield',
         },
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomAggridTextFilterProps {
     value: unknown;
