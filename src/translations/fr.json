@@ -1613,5 +1613,9 @@
     "Boolean": "Booléen",
     "Enum": "Énumération",
     "Edit": "Édition",
-    "View": "Visualisation"
+    "View": "Visualisation",
+    "nodeType": "Type",
+    "nodeStatus": "Statut",
+    "CONSTRUCTION": "Construction",
+    "SECURITY": "Sécurité"
 }
