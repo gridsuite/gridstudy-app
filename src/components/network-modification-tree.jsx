@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { reorderNetworkModificationTreeNodes, setModificationsDrawerOpen, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { isSameNode } from './graph/util/model-functions';
+import { isRootNode, isSameNode } from './graph/util/model-functions';
 import PropTypes from 'prop-types';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
@@ -31,21 +31,32 @@ import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
+import { useIntl } from 'react-intl';
 
-const styles = (theme) => ({
-    flexGrow: 1,
-    height: '100%',
-    backgroundColor: theme.reactflow.backgroundColor,
-    '.react-flow': {
-        '--xy-edge-stroke': theme.reactflow.edge.stroke,
-    },
-    '.react-flow__attribution a': {
-        color: theme.palette.text.primary,
-    },
-    '.react-flow__attribution': {
-        backgroundColor: theme.palette.background.paper,
-    },
-});
+const styles = {
+    modificationTree: (theme) => ({
+        flexGrow: 1,
+        height: '100%',
+        backgroundColor: theme.reactflow.backgroundColor,
+        '.react-flow': {
+            '--xy-edge-stroke': theme.reactflow.edge.stroke,
+        },
+        '.react-flow__attribution a': {
+            color: theme.palette.text.primary,
+        },
+        '.react-flow__attribution': {
+            backgroundColor: theme.palette.background.paper,
+        },
+    }),
+    labelBox: (theme) => ({
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'flex-end',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+        fontWeight: 'bold',
+    }),
+};
 
 const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
     const dispatch = useDispatch();
@@ -65,7 +76,12 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [tooltipContent, setTooltipContent] = useState();
+
     const nodesMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
+
+    const intl = useIntl();
 
     const updateNodePositions = useCallback(() => {
         if (treeModel && treeModel.treeNodes?.length > 0) {
@@ -304,55 +320,102 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         }
     }, [onTreePanelResize, handleFocusNode]);
 
+    const handleNodeMouseEnter = useCallback(
+        (event, node) => {
+            if (!node?.data || isRootNode(node)) {
+                return;
+            }
+
+            const content = (
+                <Box style={{ whiteSpace: 'pre-line' }}>
+                    <Box sx={styles.labelBox}>{node.data.label}</Box>
+                    <Box>
+                        {intl.formatMessage({ id: 'nodeStatus' })} :{' '}
+                        {node.data.globalBuildStatus
+                            ? intl.formatMessage({ id: node.data.globalBuildStatus })
+                            : intl.formatMessage({ id: 'NOT_BUILT' })}
+                    </Box>
+                    <Box>
+                        {intl.formatMessage({ id: 'nodeType' })} : {intl.formatMessage({ id: node.data.nodeType })}
+                    </Box>
+                </Box>
+            );
+
+            setTooltipContent(content);
+            setTooltipOpen(true);
+        },
+        [intl]
+    );
+
+    const handleNodeMouseLeave = useCallback(() => {
+        setTooltipOpen(false);
+    }, []);
+
     return (
-        <Box sx={styles}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={handleNodesChange}
-                onEdgesChange={onEdgesChange}
-                fitView
-                snapToGrid
-                snapGrid={snapGrid}
-                onNodeContextMenu={onNodeContextMenu}
-                onNodeClick={onNodeClick}
-                elementsSelectable
-                selectNodesOnDrag={false}
-                nodeTypes={nodeTypes}
-                minZoom={0.1} // Lower value allows for more zoom out
-                //maxZoom={2} // Higher value allows for more zoom in
-                onNodeDragStop={handlePostNodeDragging}
-                nodeClickDistance={5} // to avoid triggering onNodeDragStop instead of onNodeClick sometimes
-                disableKeyboardA11y
-                deleteKeyCode={null}
-                defaultEdgeOptions={{
-                    type: 'smoothstep',
-                    pathOptions: {
-                        // TODO This negative offset and borderRadius values are needed to have round corners on the edge,
-                        // but because the nodes are not totally opaque, we can see the edges behind the nodes.
-                        // When the nodes are redesigned and hopefully the colors are set without transparency, we can use
-                        // the round edges by un-commenting the two lines below.
-                        //offset: -24,
-                        //borderRadius: 48,
+        <Box sx={styles.modificationTree}>
+            <Tooltip
+                open={tooltipOpen}
+                title={tooltipContent}
+                componentsProps={{
+                    tooltip: {
+                        sx: {
+                            maxWidth: '720px',
+                        },
                     },
                 }}
+                followCursor
+                placement="right"
             >
-                <Controls
-                    position="bottom-right"
-                    style={{ margin: '10px', marginBottom: '30px' }}
-                    showZoom={false}
-                    showInteractive={false}
-                    showFitView={false}
+                <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={handleNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    fitView
+                    snapToGrid
+                    snapGrid={snapGrid}
+                    onNodeContextMenu={onNodeContextMenu}
+                    onNodeClick={onNodeClick}
+                    onNodeMouseEnter={handleNodeMouseEnter}
+                    onNodeMouseLeave={handleNodeMouseLeave}
+                    elementsSelectable
+                    selectNodesOnDrag={false}
+                    nodeTypes={nodeTypes}
+                    minZoom={0.1} // Lower value allows for more zoom out
+                    //maxZoom={2} // Higher value allows for more zoom in
+                    onNodeDragStop={handlePostNodeDragging}
+                    nodeClickDistance={5} // to avoid triggering onNodeDragStop instead of onNodeClick sometimes
+                    disableKeyboardA11y
+                    deleteKeyCode={null}
+                    defaultEdgeOptions={{
+                        type: 'smoothstep',
+                        pathOptions: {
+                            // TODO This negative offset and borderRadius values are needed to have round corners on the edge,
+                            // but because the nodes are not totally opaque, we can see the edges behind the nodes.
+                            // When the nodes are redesigned and hopefully the colors are set without transparency, we can use
+                            // the round edges by un-commenting the two lines below.
+                            //offset: -24,
+                            //borderRadius: 48,
+                        },
+                    }}
                 >
-                    <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
-                        <CropFreeIcon />
-                    </TreeControlButton>
-                    <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
-                        <CenterFocusIcon />
-                    </TreeControlButton>
-                </Controls>
-                <RootNetworkPanel />
-            </ReactFlow>
+                    <Controls
+                        position="bottom-right"
+                        style={{ margin: '10px', marginBottom: '30px' }}
+                        showZoom={false}
+                        showInteractive={false}
+                        showFitView={false}
+                    >
+                        <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
+                            <CropFreeIcon />
+                        </TreeControlButton>
+                        <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
+                            <CenterFocusIcon />
+                        </TreeControlButton>
+                    </Controls>
+                    <RootNetworkPanel />
+                </ReactFlow>
+            </Tooltip>
         </Box>
     );
 };
