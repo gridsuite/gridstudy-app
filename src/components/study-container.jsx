@@ -485,12 +485,6 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, dispatch]);
 
-    //TODO: this useEffect needs to be placed here, otherwise it breaks the root network switch
-    useEffect(() => {
-        currentNodeRef.current = currentNode;
-        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
-    }, [currentNode, currentRootNetworkUuid]);
-
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
@@ -505,6 +499,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: dispach, loadGeoData
         // connectNotifications don't change
     }, [dispatch, studyUuid]);
+
+    // WARN: this must be the last effect of the component
+    // It updates refs (currentNode, currentRootNetworkUuid) which are used
+    // for comparison in previous effects
+    useEffect(() => {
+        currentNodeRef.current = currentNode;
+        currentRootNetworkUuidRef.current = currentRootNetworkUuid;
+    }, [currentNode, currentRootNetworkUuid]);
 
     return (
         <WaitingLoader
