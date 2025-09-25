@@ -338,11 +338,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (params: RowClassParams) => {
             if (!params?.data?.linkedElementId) {
                 return {
-                    backgroundColor: theme.selectedRow.background,
+                    backgroundColor: theme.selectedRow.backgroundColor,
                 };
             }
         },
-        [theme.selectedRow.background]
+        [theme.selectedRow.backgroundColor]
     );
 
     const defaultColDef = useMemo(

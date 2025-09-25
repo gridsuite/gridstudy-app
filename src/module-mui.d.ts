@@ -4,101 +4,110 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import type { Property } from 'csstype';
+import type { PaletteColor, SimplePaletteColorOptions } from '@mui/material';
 
-import { Theme as MuiTheme, ThemeOptions as MuiThemeOptions } from '@mui/material/styles/createTheme';
+// Just to be sure that commons-ui's mui augmentation is seen by tsc
+import type {} from '@gridsuite/commons-ui';
+
+// https://mui.com/x/react-charts/quickstart/#typescript
+import type {} from '@mui/x-charts/themeAugmentation';
 
 // used to customize mui theme
-// https://mui.com/material-ui/customization/theming/#typescript
 declare module '@mui/material/styles' {
-    export * from '@mui/material/styles';
+    // https://mui.com/material-ui/customization/palette/#typescript
     interface PaletteExtension {
-        cancelButtonColor: { main: string };
-        tabBackground: string;
-        toolbarBackground: string;
+        tabBackground: Property.Background;
+        toolbarBackgroundColor: Property.BackgroundColor;
     }
-    export interface Palette extends MuiPalette, Required<PaletteExtension> {}
-    export interface PaletteOptions extends MuiPaletteOptions, Partial<PaletteExtension> {}
 
+    interface Palette extends PaletteExtension {
+        cancelButtonColor: PaletteColor;
+    }
+
+    interface PaletteOptions extends PaletteExtension {
+        // note: options aren't optional because there aren't default values in code
+        cancelButtonColor: SimplePaletteColorOptions;
+    }
+
+    // https://mui.com/material-ui/customization/theming/#typescript
     interface ThemeExtension {
-        aggrid: {
-            theme: string;
-            overlay: {
-                background: string;
-            };
-        };
         networkModificationPanel: {
-            backgroundColor: string;
-            border: string;
+            backgroundColor: Property.BackgroundColor;
+            border: Property.Border;
         };
         reactflow: {
-            backgroundColor: string;
+            backgroundColor: Property.BackgroundColor;
             labeledGroup: {
-                backgroundColor: string;
-                borderColor: string;
+                backgroundColor: Property.BackgroundColor;
+                borderColor: Property.BorderColor;
             };
             edge: {
-                stroke: string;
+                stroke: Property.Stroke;
             };
             handle: {
-                border: string;
-                background: string;
+                border: Property.Border;
+                background: Property.Background;
             };
         };
-        aggridValueChangeHighlightBackgroundColor: string;
         selectedRow: {
-            background: string;
+            backgroundColor: Property.BackgroundColor;
         };
-        link: {
-            color: string;
-        };
-        overlay: {
-            background: string;
-        };
-        palette: {
-            tabBackground: string;
-        };
+        // palette -> Palette & PaletteOptions
         node: {
             common: {
-                background: string;
-                activeBackground: string;
+                background: Property.BackgroundColor;
+                activeBackground: Property.Background;
             };
             modification: {
-                border: string;
-                selectedBorder: string;
-                hoverBorderColor: string;
-                activeBorderColor: string;
-                selectedBackground: string;
+                border: Property.Border;
+                selectedBorder: Property.Border;
+                hoverBorderColor: Property.BorderColor;
+                activeBorderColor: Property.BorderColor;
+                selectedBackground: Property.Background;
             };
             root: {
-                border: string;
-                selectedBackground: string;
-                hoverBorderColor: string;
-                activeBorderColor: string;
+                border: Property.Border;
+                selectedBackground: Property.Background;
+                hoverBorderColor: Property.BorderColor;
+                activeBorderColor: Property.BorderColor;
                 icon: {
-                    fill: string;
-                    background: string;
+                    fill: Property.Fill;
+                    background: Property.Background;
                 };
             };
             buildStatus: {
-                error: string;
-                warning: string;
-                success: string;
-                notBuilt: string;
+                error: Property.BackgroundColor;
+                warning: Property.BackgroundColor;
+                success: Property.BackgroundColor;
+                notBuilt: Property.BackgroundColor;
             };
         };
         searchedText: {
-            highlightColor: string;
-            currentHighlightColor: string;
+            highlightColor: Property.Color;
+            currentHighlightColor: Property.Color;
         };
         severityChip: {
-            disabledColor: string;
+            disabledColor: Property.BackgroundColor;
         };
         formFiller: {
-            background: string;
+            backgroundColor: Property.BackgroundColor;
+        };
+        tooltipTable: {
+            backgroundColor: Property.BackgroundColor;
         };
     }
-    export interface Theme extends MuiTheme, Required<ThemeExtension> {}
+
+    export interface Theme extends ThemeExtension {}
 
     // allow configuration using `createTheme`
-    export interface ThemeOptions extends MuiThemeOptions, Partial<ThemeExtension> {}
+    export interface ThemeOptions extends ThemeExtension {
+        // note: options aren't optional because there aren't default values in code
+    }
+}
+
+declare module '@mui/material/Button' {
+    interface ButtonPropsColorOverrides {
+        cancelButtonColor: true;
+    }
 }

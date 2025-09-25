@@ -23,7 +23,7 @@ import { useEffect } from 'react';
 
 const styles = {
     horizontalToolbar: (theme) => ({
-        backgroundColor: theme.palette.toolbarBackground,
+        backgroundColor: theme.palette.toolbarBackgroundColor,
     }),
     selected: (theme) => ({
         color: theme.palette.action.active,

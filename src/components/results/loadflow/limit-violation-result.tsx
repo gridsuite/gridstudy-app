@@ -75,11 +75,11 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
         (params: RowClassParams) => {
             if (params?.data?.elementId) {
                 return {
-                    backgroundColor: theme.selectedRow.background,
+                    backgroundColor: theme.selectedRow.backgroundColor,
                 };
             }
         },
-        [theme.selectedRow.background]
+        [theme.selectedRow.backgroundColor]
     );
 
     const onGridReady = useCallback(({ api }: GridReadyEvent) => {

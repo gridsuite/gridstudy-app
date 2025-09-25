@@ -6,16 +6,26 @@
  */
 
 import { useEffect, useState } from 'react';
-import { fetchAppsMetadata, LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
+import {
+    fetchAppsMetadata,
+    LIGHT_THEME,
+    logout,
+    type Metadata,
+    type MuiStyles,
+    TopBar,
+    type UserManagerState,
+} from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
 import { Badge, Box, Tab, Tabs } from '@mui/material';
 import { Settings } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
+import { useNavigate } from 'react-router';
+import type { User } from 'oidc-client';
 import { PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME, PARAM_USE_NAME } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
+import { type AppState } from '../redux/reducer';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { getServersInfos } from '../services/study';
 import { fetchVersion } from '../services/utils';
@@ -46,17 +56,24 @@ const styles = {
         marginLeft: -4,
         marginRight: 1,
     },
+} as const satisfies MuiStyles;
+
+export type AppTopBarProps = {
+    user: User | undefined;
+    userManager: UserManagerState;
+    onChangeTab: (tabIdx: number) => void;
 };
 
-const AppTopBar = ({ user, onChangeTab, userManager }) => {
+export default function AppTopBar({ user, onChangeTab, userManager }: Readonly<AppTopBarProps>) {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const theme = useSelector((state) => state[PARAM_THEME]);
-    const appTabIndex = useSelector((state) => state.appTabIndex);
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetworkUuid);
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const [appsAndUrls, setAppsAndUrls] = useState([]);
+    const [appsAndUrls, setAppsAndUrls] = useState<Metadata[]>([]);
 
     const notificationsCount = useComputationResultsCount();
 
@@ -79,6 +96,7 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
             appColor="#0CA789"
             appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
             onLogoutClick={() => logout(dispatch, userManager.instance)}
+            onLogoClick={() => navigate('/', { replace: true })}
             user={user}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
@@ -139,12 +157,4 @@ const AppTopBar = ({ user, onChangeTab, userManager }) => {
             )}
         </TopBar>
     );
-};
-
-AppTopBar.propTypes = {
-    user: PropTypes.object,
-    onChangeTab: PropTypes.func.isRequired,
-    userManager: PropTypes.object.isRequired,
-};
-
-export default AppTopBar;
+}
