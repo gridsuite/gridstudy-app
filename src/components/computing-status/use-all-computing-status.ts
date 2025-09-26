@@ -10,7 +10,6 @@ import {
     getDynamicSecurityAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getLoadFlowRunningStatus,
-    getNonEvacuatedEnergyRunningStatus,
     getSecurityAnalysisRunningStatus,
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
@@ -31,7 +30,6 @@ import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus, fetchLoadFlowComputationInfos } from '../../services/study/loadflow';
 import { OptionalServicesNames } from '../utils/optional-services';
 import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
-import { fetchNonEvacuatedEnergyStatus } from '../../services/study/non-evacuated-energy';
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
 import { NotificationType } from 'types/notification-types';
@@ -45,10 +43,6 @@ const securityAnalysisStatusInvalidations = [
 const sensitivityAnalysisStatusInvalidations = [
     NotificationType.SENSITIVITY_ANALYSIS_STATUS,
     NotificationType.SENSITIVITY_ANALYSIS_FAILED,
-];
-const nonEvacuatedEnergyStatusInvalidations = [
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
 ];
 const shortCircuitAnalysisStatusInvalidations = [
     NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS,
@@ -82,10 +76,6 @@ const sensitivityAnalysisStatusCompletions = [
     NotificationType.SENSITIVITY_ANALYSIS_RESULT,
     NotificationType.SENSITIVITY_ANALYSIS_FAILED,
 ];
-const nonEvacuatedEnergyStatusCompletions = [
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
-];
 const shortCircuitAnalysisStatusCompletions = [
     NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT,
     NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED,
@@ -111,7 +101,6 @@ const stateEstimationStatusCompletions = [
 // result invalidations
 export const loadflowResultInvalidations = [NotificationType.LOADFLOW_RESULT];
 export const securityAnalysisResultInvalidations = [NotificationType.SECURITY_ANALYSIS_RESULT];
-export const nonEvacuatedEnergyResultInvalidations = [NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT];
 export const dynamicSimulationResultInvalidations = [NotificationType.DYNAMIC_SIMULATION_RESULT];
 export const dynamicSecurityAnalysisResultInvalidations = [NotificationType.DYNAMIC_SECURITY_ANALYSIS_RESULT];
 export const voltageInitResultInvalidations = [NotificationType.VOLTAGE_INIT_RESULT];
@@ -121,7 +110,6 @@ export const stateEstimationResultInvalidations = [NotificationType.STATE_ESTIMA
 export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): void => {
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
@@ -164,19 +152,6 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.SENSITIVITY_ANALYSIS,
         undefined,
         sensitivityAnalysisAvailability
-    );
-
-    useComputingStatus(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        fetchNonEvacuatedEnergyStatus,
-        nonEvacuatedEnergyStatusInvalidations,
-        nonEvacuatedEnergyStatusCompletions,
-        getNonEvacuatedEnergyRunningStatus,
-        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
-        undefined,
-        nonEvacuatedEnergyAvailability
     );
 
     useComputingStatus(

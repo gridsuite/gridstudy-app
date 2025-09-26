@@ -58,7 +58,6 @@ export type NetworkModificationNodeData = AbstractNode & {
     voltageInitResultUuid?: UUID;
     securityAnalysisResultUuid?: UUID;
     sensitivityAnalysisResultUuid?: UUID;
-    nonEvacuatedEnergyResultUuid?: UUID;
     dynamicSimulationResultUuid?: UUID;
     stateEstimationResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;

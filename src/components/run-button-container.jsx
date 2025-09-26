@@ -26,7 +26,6 @@ import { DynamicSimulationParametersSelector } from './dialogs/dynamicsimulation
 import { ContingencyListSelector } from './dialogs/contingency-list-selector';
 
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
-import { startNonEvacuatedEnergy, stopNonEvacuatedEnergy } from '../services/study/non-evacuated-energy';
 import {
     fetchDynamicSimulationParameters,
     startDynamicSimulation,
@@ -80,9 +79,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const securityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]);
 
     const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
-    const nonEvacuatedEnergyStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
-    );
 
     const allBusesShortCircuitAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
@@ -114,7 +110,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
 
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
@@ -317,26 +312,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     );
                 },
             },
-            [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: {
-                messageId: 'NonEvacuatedEnergyAnalysis',
-                startComputation() {
-                    startComputationAsync(
-                        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
-                        null,
-                        () => {
-                            return startNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetworkUuid);
-                        },
-                        () => {},
-                        null,
-                        'startNonEvacuatedEnergyAnalysisError'
-                    );
-                },
-                actionOnRunnable() {
-                    actionOnRunnables(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, () =>
-                        stopNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetworkUuid)
-                    );
-                },
-            },
             [ComputingType.SHORT_CIRCUIT]: {
                 messageId: 'ShortCircuitAnalysis',
                 startComputation(debug) {
@@ -484,8 +459,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     return securityAnalysisStatus;
                 case ComputingType.SENSITIVITY_ANALYSIS:
                     return sensitivityAnalysisStatus;
-                case ComputingType.NON_EVACUATED_ENERGY_ANALYSIS:
-                    return nonEvacuatedEnergyStatus;
                 case ComputingType.SHORT_CIRCUIT:
                     return allBusesShortCircuitAnalysisStatus;
                 case ComputingType.DYNAMIC_SIMULATION:
@@ -505,7 +478,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             loadFlowWithRatioTapChangersStatus,
             securityAnalysisStatus,
             sensitivityAnalysisStatus,
-            nonEvacuatedEnergyStatus,
             allBusesShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
             dynamicSecurityAnalysisStatus,
@@ -522,9 +494,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             ...(securityAnalysisAvailability === OptionalServicesStatus.Up ? [ComputingType.SECURITY_ANALYSIS] : []),
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [ComputingType.SENSITIVITY_ANALYSIS]
-                : []),
-            ...(nonEvacuatedEnergyUnavailability === OptionalServicesStatus.Up && enableDeveloperMode
-                ? [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
                 : []),
             ...(shortCircuitAvailability === OptionalServicesStatus.Up ? [ComputingType.SHORT_CIRCUIT] : []),
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
@@ -543,7 +512,6 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
         dynamicSecurityAnalysisAvailability,
         securityAnalysisAvailability,
         sensitivityAnalysisUnavailability,
-        nonEvacuatedEnergyUnavailability,
         shortCircuitAvailability,
         voltageInitAvailability,
         stateEstimationAvailability,

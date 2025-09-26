@@ -15,7 +15,6 @@ import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
-import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from '../redux/reducer';
 import { UUID } from 'crypto';
@@ -81,7 +80,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyUnavailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
@@ -130,18 +128,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         return (
             <Paper sx={styles.analysisResult}>
                 <SensitivityAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id!}
-                    currentRootNetworkUuid={currentRootNetworkUuid}
-                />
-            </Paper>
-        );
-    }, [studyUuid, currentNode, currentRootNetworkUuid]);
-
-    const renderNonEvacuatedEnergyResult = useMemo(() => {
-        return (
-            <Paper sx={styles.analysisResult}>
-                <NonEvacuatedEnergyResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id!}
                     currentRootNetworkUuid={currentRootNetworkUuid}
@@ -221,12 +207,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
-                id: 'NonEvacuatedEnergyAnalysis',
-                computingType: [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
-                displayed: enableDeveloperMode && nonEvacuatedEnergyUnavailability === OptionalServicesStatus.Up,
-                renderResult: renderNonEvacuatedEnergyResult,
-            },
-            {
                 id: 'ShortCircuitAnalysis',
                 computingType: [ComputingType.SHORT_CIRCUIT, ComputingType.SHORT_CIRCUIT_ONE_BUS],
                 displayed: shortCircuitAvailability === OptionalServicesStatus.Up,
@@ -259,7 +239,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         ].filter(({ displayed }: IService) => displayed);
     }, [
         sensitivityAnalysisUnavailability,
-        nonEvacuatedEnergyUnavailability,
         securityAnalysisAvailability,
         dynamicSimulationAvailability,
         dynamicSecurityAnalysisAvailability,
@@ -271,7 +250,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderDynamicSecurityAnalysisResult,
         renderSecurityAnalysisResult,
         renderSensitivityAnalysisResult,
-        renderNonEvacuatedEnergyResult,
         renderShortCircuitAnalysisResult,
         renderVoltageInitResult,
         renderLoadFlowResult,
