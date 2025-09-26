@@ -84,7 +84,6 @@ const TreeTab = ({
                                         <NetworkModificationTreePane
                                             studyUuid={studyUuid}
                                             currentRootNetworkUuid={currentRootNetworkUuid}
-                                            onTreePanelResize={refs.onTreePanelResizeHandlerRef}
                                         />
                                     </ReactFlowProvider>
                                 </Box>

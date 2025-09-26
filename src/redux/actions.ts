@@ -677,6 +677,18 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
+export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
+export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
+    highlightedModificationUuid: UUID | null;
+};
+
+export function setHighlightModification(modificationUuid: UUID | null): HighlightModificationAction {
+    return {
+        type: HIGHLIGHT_MODIFICATION,
+        highlightedModificationUuid: modificationUuid,
+    };
+}
+
 export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
 export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
     currentRootNetworkUuid: UUID;

@@ -60,7 +60,7 @@ export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModifica
                         <DeviceHubIcon style={styles.iconMinSize} />
                         <OverflowableText text={getName(result.nodeUuid)} sx={styles.text} maxLineCount={1} />
                     </Box>
-                    <ModificationResults modifications={result.modifications} />
+                    <ModificationResults modifications={result.modifications} nodeUuid={result.nodeUuid} />
                     <Divider sx={{ mt: 2 }} />
                 </Box>
             ))}

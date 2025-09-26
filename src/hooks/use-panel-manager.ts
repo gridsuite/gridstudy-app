@@ -11,6 +11,7 @@ import { setToggleOptions } from 'redux/actions';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { PANEL_CONFIG } from '../constants/panel.constants';
 import { AppState } from 'redux/reducer';
+import { useTreeNodeFocus } from './use-tree-node-focus';
 
 interface PanelRef {
     getSize?: () => number;
@@ -34,7 +35,6 @@ interface PanelRefs {
     treePanelRef: RefObject<PanelRef>;
     modificationsPanelRef: RefObject<PanelRef>;
     gridPanelRef: RefObject<PanelRef>;
-    onTreePanelResizeHandlerRef: RefObject<(() => void) | null>;
 }
 
 interface PanelState {
@@ -64,7 +64,7 @@ export function usePanelManager(): UsePanelManagerReturn {
     const treePanelRef = useRef<PanelRef>(null);
     const modificationsPanelRef = useRef<PanelRef>(null);
     const gridPanelRef = useRef<PanelRef>(null);
-    const onTreePanelResizeHandlerRef = useRef<(() => void) | null>(null);
+    const triggerTreeNodeFocus = useTreeNodeFocus();
 
     // State
     const [treeAndModificationsGroupDirection, setTreeAndModificationsGroupDirection] = useState<
@@ -139,11 +139,8 @@ export function usePanelManager(): UsePanelManagerReturn {
         // Recalculate modifications panel size
         calculateModificationsPanelMinSize();
 
-        // Trigger tree resize
-        if (onTreePanelResizeHandlerRef.current) {
-            setTimeout(onTreePanelResizeHandlerRef.current, 100);
-        }
-    }, [calculateModificationsPanelMinSize, checkAndMinimizeRootNetworkPanel]);
+        triggerTreeNodeFocus();
+    }, [calculateModificationsPanelMinSize, checkAndMinimizeRootNetworkPanel, triggerTreeNodeFocus]);
 
     // Panel collapse handler
     const handlePanelCollapse = useCallback(
@@ -202,7 +199,6 @@ export function usePanelManager(): UsePanelManagerReturn {
             treePanelRef,
             modificationsPanelRef,
             gridPanelRef,
-            onTreePanelResizeHandlerRef,
         },
         state: {
             treeAndModificationsGroupDirection,

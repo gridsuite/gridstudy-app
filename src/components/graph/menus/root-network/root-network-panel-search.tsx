@@ -17,6 +17,9 @@ import SearchBar from './root-network-search-bar';
 import { RootNetworkNodesSearchResults } from './root-network-nodes-search-results';
 import { useRootNetworkNodeSearch } from './use-root-network-node-search';
 import { useRootNetworkModificationSearch } from './use-root-network-modification-search';
+import { setHighlightModification } from 'redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
 enum TAB_VALUES {
     modifications = 'MODIFICATIONS',
@@ -68,14 +71,16 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
 
     const nodesSearch = useRootNetworkNodeSearch();
     const modificationsSearch = useRootNetworkModificationSearch();
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const isLoading = isNodeTab(tabValue) ? nodesSearch.isLoading : modificationsSearch.isLoading;
     const searchTerm = isNodeTab(tabValue) ? nodesSearch.searchTerm : modificationsSearch.searchTerm;
-
+    const dispatch = useDispatch();
     const leaveSearch = () => {
         nodesSearch.reset();
         modificationsSearch.reset();
         setIsSearchActive(false);
+        dispatch(setHighlightModification(null));
     };
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,6 +88,10 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
         if (isNodeTab(tabValue)) {
             nodesSearch.search(value);
         } else {
+            // remove the highlighted Modification before search
+            if (highlightedModificationUuid) {
+                dispatch(setHighlightModification(null));
+            }
             modificationsSearch.search(value);
         }
     };

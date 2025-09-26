@@ -25,6 +25,7 @@ declare module '@mui/material/styles' {
             overlay: {
                 background: string;
             };
+            highlightColor: string;
         };
         networkModificationPanel: {
             backgroundColor: string;
