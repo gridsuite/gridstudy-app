@@ -73,7 +73,7 @@ export function MoveVoltageLevelFeederBaysForm({
     // build group
     const groupedRowData = useMemo(() => {
         if (!isReady) {
-            return [];
+            return undefined;
         }
 
         const rows = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE) as FeederBaysFormInfos[];
