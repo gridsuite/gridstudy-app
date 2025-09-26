@@ -8,6 +8,7 @@ import { IconButton } from '@mui/material';
 import { SortParams } from './hooks/use-custom-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
 import { SortWay } from '../../types/custom-aggrid-types';
 
@@ -15,7 +16,7 @@ const styles = {
     iconSize: {
         fontSize: '1rem',
     },
-};
+} as const satisfies MuiStyles;
 
 interface CustomAggridSortProps {
     colId: string;

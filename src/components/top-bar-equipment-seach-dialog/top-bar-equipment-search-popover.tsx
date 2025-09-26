@@ -4,9 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, ExtendedEquipmentType, SEARCH_EQUIPMENTS } from '@gridsuite/commons-ui';
+import {
+    type EquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
+    SEARCH_EQUIPMENTS,
+} from '@gridsuite/commons-ui';
 import { HorizontalRule } from '@mui/icons-material';
-import { Box, FormControl, FormControlLabel, Popover, Radio, RadioGroup, Theme } from '@mui/material';
+import { Box, FormControl, FormControlLabel, Popover, Radio, RadioGroup } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -21,12 +26,12 @@ const styles = {
         paddingBottom: 1,
         cursor: 'pointer',
     },
-    radioButtonColor: (theme: Theme) => ({
+    radioButtonColor: (theme) => ({
         '& .Mui-checked + .MuiFormControlLabel-label': {
             color: theme.palette.primary.main,
         },
     }),
-};
+} as const satisfies MuiStyles;
 
 interface TopBarEquipmentSearchPopoverProps {
     open: boolean;

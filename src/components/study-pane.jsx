@@ -109,8 +109,9 @@ const StudyPane = ({
                         showGrid={showGrid}
                     />
                 </div>
-                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
-                <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>
+                {/* This TabPanelLazy is used on a multi-node component so we don't want to reset it at each node change,
+                so we don't specify a key */}
+                <TabPanelLazy selected={view === StudyView.SPREADSHEET}>
                     <SpreadsheetView
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -121,6 +122,8 @@ const StudyPane = ({
                         openDiagram={openVoltageLevelDiagram}
                     />
                 </TabPanelLazy>
+                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component,
+                 and we want to reset the component at each node change*/}
                 <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>
                     <ResultViewTab
                         studyUuid={studyUuid}
@@ -131,9 +134,13 @@ const StudyPane = ({
                         view={view}
                     />
                 </TabPanelLazy>
+                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component,
+                 and we want to reset the component at each node change*/}
                 <TabPanelLazy selected={view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
                     <ReportViewerTab visible={view === StudyView.LOGS} currentNode={currentNode} disabled={disabled} />
                 </TabPanelLazy>
+                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component,
+                 and we want to reset the component at each node change*/}
                 <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={view === StudyView.PARAMETERS}>
                     <ParametersTabs view={view} />
                 </TabPanelLazy>

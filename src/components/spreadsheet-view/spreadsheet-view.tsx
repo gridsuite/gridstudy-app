@@ -20,9 +20,10 @@ import { Spreadsheet } from './spreadsheet/spreadsheet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
-import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
+import { useUpdateEquipmentsOnNotification } from './hooks/use-update-equipments-on-notification';
 
 const styles = {
     invalidNode: {
@@ -30,7 +31,7 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-};
+} as const satisfies MuiStyles;
 
 interface SpreadsheetViewProps {
     currentNode: CurrentTreeNode;
@@ -59,6 +60,8 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
+
+    useUpdateEquipmentsOnNotification(nodeAliases);
 
     const handleSwitchTab = useCallback(
         (tabUuid: UUID) => {
@@ -137,6 +140,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                     <FormattedMessage id={'NoSpreadsheets'} />
                 </Alert>
             ) : (
+                nodeAliases &&
                 tablesDefinitions.map((tabDef) => {
                     const isActive = activeSpreadsheetTabUuid === tabDef.uuid;
                     const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;

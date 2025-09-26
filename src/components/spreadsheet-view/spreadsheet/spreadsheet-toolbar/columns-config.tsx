@@ -6,7 +6,6 @@
  */
 
 import { Button, Checkbox, ListItem, ListItemButton } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +14,7 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DropResult } from '@hello-pangea/dnd';
 import { updateTableDefinition } from 'redux/actions';
 import { UUID } from 'crypto';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';
 import { updateColumnStates } from 'services/study/study-config';
@@ -28,12 +27,23 @@ import { DroppableColumnsList } from './droppable-columns-list';
 const MAX_LOCKS_PER_TAB = 5;
 
 const styles = {
-    checkboxSelectAll: (theme: Theme) => ({
+    checkboxSelectAll: (theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
     }),
-};
+    checkboxItem: {
+        cursor: 'pointer',
+    },
+    columnConfigClosedLock: (theme) => ({
+        fontSize: '1.2em',
+        color: theme.palette.action.active,
+    }),
+    columnConfigOpenLock: (theme) => ({
+        fontSize: '1.2em',
+        color: theme.palette.action.disabled,
+    }),
+} as const satisfies MuiStyles;
 
 interface ColumnsConfigProps {
     gridRef: React.RefObject<AgGridReact>;

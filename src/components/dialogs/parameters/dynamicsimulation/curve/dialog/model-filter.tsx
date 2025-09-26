@@ -7,12 +7,12 @@
 
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Box, Grid, Theme, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
-
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { AppState } from 'redux/reducer';
@@ -136,7 +136,7 @@ const makeGetVariableLabel = (intl: IntlShape) => (elem: ModelVariable) => {
 };
 
 const styles = {
-    tree: (theme: Theme) => ({
+    tree: (theme) => ({
         width: '100%',
         height: '100%',
         border: 'solid',
@@ -147,7 +147,7 @@ const styles = {
     model: {
         width: '100%',
     },
-    modelTitle: (theme: Theme) => ({
+    modelTitle: (theme) => ({
         marginBottom: theme.spacing(1),
     }),
     variable: {
@@ -158,7 +158,7 @@ const styles = {
         maxHeight: '440px',
         maxWidth: '50px',
     },
-};
+} as const satisfies MuiStyles;
 
 const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
     ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {

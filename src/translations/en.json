@@ -81,6 +81,9 @@
     "images": "Images",
     "NetworkVisualizations": "Network visualizations",
     "None": "None",
+    "EmptyField": "Empty the field",
+    "NumericValueOrEmptyField": "Numeric value or Empty the field",
+    "ValueOrEmptyField": "Value or Empty the field",
     "NoneUpcomingOverload": "None",
     "Feeders": "Feeder",
     "NominalVoltage": "Nominal voltage",
@@ -478,6 +481,7 @@
     "LossFactor": "Loss Factor",
     "StopComputation": "Stop computation",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
+    "launchComputationConfirmQuestion": "You are about to start a computation although a change to the computation parameters is in progress.",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1243,6 +1247,7 @@
     "marginalCost": "Startup cost",
 
     "dialog.button.leave": "Leave",
+    "dialog.button.launch": "Launch",
 
     "Connect": "Reconnect ?",
     "connected1": "Connected 1",
@@ -1561,9 +1566,10 @@
     "MapCardNotAvailable": "Map is not available",
     "AddNewCard": "Images",
     "Display": "Display",
-    "SaveGridLayout": "Save",
-    "GridLayoutPanelSaveError": "An error occurred while saving the grid layout panel",
-    "GridLayoutPanelSaveSuccess": "Grid layout panel saved successfully",
+    "StoreDiagramLayout": "Store",
+    "StoreButtonTooltip": "Store diagram layout in the study",
+    "DiagramLayoutStoreError": "An error occured when storing the diagrams",
+    "DiagramLayoutStoreSuccess": "Diagrams successfully stored",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
     "NoMatch": "No match",
     "Rows": "row",
@@ -1612,5 +1618,14 @@
     "Object": "Object",
     "Array": "Array",
     "Boolean": "Boolean",
-    "Enum": "Enumeration"
+    "Enum": "Enumeration",
+    "nodeType": "Type",
+    "nodeStatus": "Status",
+    "CONSTRUCTION": "Construction",
+    "SECURITY": "Security",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
+    "TOP": "Top",
+    "BOTTOM": "Bottom",
+    "DuplicatedPositionsError": "Duplicated number",
+    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)"
 }

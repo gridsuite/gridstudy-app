@@ -5,9 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, SetStateAction } from 'react';
-import { CustomAGGrid, NetworkModificationMetadata, useModificationLabelComputer } from '@gridsuite/commons-ui';
+import React, { SetStateAction, useCallback, useMemo } from 'react';
 import {
+    CustomAGGrid,
+    type MuiStyles,
+    type NetworkModificationMetadata,
+    useModificationLabelComputer,
+} from '@gridsuite/commons-ui';
+import type {
     CellClickedEvent,
     ColDef,
     GetRowIdParams,
@@ -20,7 +25,7 @@ import {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge, Box, Theme } from '@mui/material';
+import { Badge, Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
@@ -35,7 +40,7 @@ import { ExcludedNetworkModifications } from './network-modification-menu.type';
 import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
 
 const styles = {
-    container: (theme: Theme) => ({
+    container: (theme) => ({
         position: 'relative',
         flexGrow: 1,
         marginTop: theme.spacing(1),
@@ -50,7 +55,7 @@ const styles = {
             backgroundColor: theme.palette.background.paper,
         },
     }),
-};
+} as const satisfies MuiStyles;
 
 interface NetworkModificationsTableProps extends Omit<NetworkModificationEditorNameHeaderProps, 'modificationCount'> {
     modifications: NetworkModificationMetadata[];

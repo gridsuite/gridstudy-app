@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, type GridProps, type Theme } from '@mui/material';
+import { Grid, type GridProps } from '@mui/material';
 import { Restore as RestoreIcon, Save as SaveIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import type { AppState } from '../../../redux/reducer';
 import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
 import type { NodeAlias } from '../types/node-alias.type';
@@ -16,11 +17,11 @@ import TooltipIconButton from '../../common/tooltip-icon-button';
 import PartialLoadingMenuButton from './toolbar/PartialLoadingMenuButton';
 
 const styles = {
-    button: (theme: Theme) => ({
+    button: (theme) => ({
         color: theme.palette.primary.main,
         minWidth: '100%',
     }),
-};
+} as const satisfies MuiStyles;
 
 export type SpreadsheetTabsToolbarProps = Omit<GridProps, 'item' | 'container'> & {
     selectedTabIndex: number;
