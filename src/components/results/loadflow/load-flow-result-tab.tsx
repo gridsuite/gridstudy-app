@@ -279,6 +279,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             {tabIndex === 0 && (
                 <GlassPane active={isLoadingResult}>
                     <LimitViolationResult
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
                         columnDefs={loadFlowLimitViolationsColumns}
@@ -291,6 +294,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             {tabIndex === 1 && (
                 <GlassPane active={isLoadingResult}>
                     <LimitViolationResult
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
                         columnDefs={loadFlowLimitViolationsColumns}
@@ -302,6 +308,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             )}
             {tabIndex === 2 && (
                 <LoadFlowResult
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     result={result}
                     isLoadingResult={isLoadingResult || filterEnumsLoading}
                     columnDefs={loadFlowLimitViolationsColumns}

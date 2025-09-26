@@ -45,4 +45,7 @@ export interface StateEstimationResultStatusProps {
     result: StateEstimationResult;
 }
 
-export interface StateEstimationResultProps extends StateEstimationResultTableProps, StateEstimationResultStatusProps {}
+export interface StateEstimationResultProps
+    extends StateEstimationTabProps,
+        StateEstimationResultTableProps,
+        StateEstimationResultStatusProps {}
