@@ -41,6 +41,12 @@ import { FeederBayInfos, FeederBaysFormInfos, FeederBaysInfos } from './move-vol
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import { AnyObject, TestFunction } from 'yup';
 
+const mapFeederBayWithEquipmentId = (equipmentId: string) => (feederBay: FeederBayInfos) => ({
+    equipmentId,
+    ...feederBay,
+});
+const findFirstEquipmentIndex = (arr: FeederBaysInfos, equipmentId: string) =>
+    arr.findIndex((x) => x.equipmentId === equipmentId);
 const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved && !row.isSeparator;
 const checkConnectionPositionField: TestFunction<string | undefined, AnyObject> = (currentPosition, context) => {
     // access to rows
@@ -261,11 +267,11 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 ][];
 
                                 const flatMapped = entries.flatMap(([equipmentId, feederBayInfos]) =>
-                                    feederBayInfos.map((feederBay) => ({ equipmentId, ...feederBay }))
+                                    feederBayInfos.map(mapFeederBayWithEquipmentId(equipmentId))
                                 );
 
                                 const isFirstOccurrence = (item: any, index: number, arr: FeederBaysInfos) =>
-                                    arr.findIndex((x) => x.equipmentId === item.equipmentId) === index;
+                                    findFirstEquipmentIndex(arr, item.equipmentId) === index;
 
                                 return flatMapped.filter(isFirstOccurrence);
                             })();
