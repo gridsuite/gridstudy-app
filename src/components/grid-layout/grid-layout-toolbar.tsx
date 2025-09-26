@@ -41,11 +41,11 @@ interface DiagramGridHeaderProps {
     onOpenNetworkAreaDiagram?: (elementId?: string) => void;
     onLayoutSave: () => void;
     onMap?: () => void;
-    disableSave?: boolean;
+    disableStore?: boolean;
 }
 
 export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
-    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave, disableSave = true } = props;
+    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave, disableStore = true } = props;
 
     const intl = useIntl();
 
@@ -87,7 +87,7 @@ export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
                 <Box>
                     <Tooltip title={<FormattedMessage id="StoreButtonTooltip" />}>
                         <span>
-                            <Button disabled={disableSave} onClick={onLayoutSave}>
+                            <Button disabled={disableStore} onClick={onLayoutSave}>
                                 <FormattedMessage id="StoreDiagramLayout" />
                             </Button>
                         </span>
