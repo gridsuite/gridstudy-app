@@ -85,6 +85,7 @@ export const useNodeAliases = () => {
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerAliasesUpdated,
+        propsId: 'node-aliases',
     });
 
     const updateNodeAliases = useCallback(
