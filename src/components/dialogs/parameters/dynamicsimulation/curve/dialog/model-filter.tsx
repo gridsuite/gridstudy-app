@@ -226,25 +226,26 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
             });
         }, [studyUuid]);
 
+        const getSelectedVariables = useCallback((): ModelVariable[] => {
+            return (
+                variablesRef.current?.api
+                    .getSelectedItems()
+                    .filter((item) => item.variableId) // filter to keep only variable item
+                    .filter(
+                        (item, index, arr) => arr.findIndex((elem) => elem.variableId === item.variableId) === index
+                    ) ?? []
+            ); // remove duplicated by variableId
+        }, []);
+
         // expose some api for the component by using ref
         useImperativeHandle(
             ref,
             () => ({
                 api: {
-                    getSelectedVariables: () => {
-                        return (
-                            variablesRef.current?.api
-                                .getSelectedItems()
-                                .filter((item) => item.variableId) // filter to keep only variable item
-                                .filter(
-                                    (item, index, arr) =>
-                                        arr.findIndex((elem) => elem.variableId === item.variableId) === index
-                                ) ?? []
-                        ); // remove duplicated by variableId
-                    },
+                    getSelectedVariables,
                 },
             }),
-            []
+            [getSelectedVariables]
         );
 
         const getModelLabel = useMemo(() => {
