@@ -359,7 +359,7 @@
     "SensitivityInDeltaA": "Sensitivity on branches in ΔA",
     "SensitivityAtNode": "Sensitivity at nodes",
     "LoadFlowError": "An error occurred when executing loadflow",
-    "LoadFlowDynaFlowError": "You must run DynaFlow from a security type node",
+    "ForbiddenProviderError": "You must run {provider} from a security type node",
     "ShortCircuitAnalysis": "Short circuit analysis",
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "startShortCircuitError": "An error occurred while starting the short circuit analysis",
