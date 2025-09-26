@@ -1620,5 +1620,6 @@
     "nodeType": "Type",
     "nodeStatus": "Statut",
     "CONSTRUCTION": "Construction",
-    "SECURITY": "Sécurité"
+    "SECURITY": "Sécurité",
+    "disableOLGedition": "Les données saisies pour les jeux de limites ne seront pas conservées. Voulez-vous continuer ?"
 }

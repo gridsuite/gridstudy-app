@@ -1624,5 +1624,6 @@
     "nodeType": "Type",
     "nodeStatus": "Status",
     "CONSTRUCTION": "Construction",
-    "SECURITY": "Security"
+    "SECURITY": "Security",
+    "disableOLGedition": "Entered limit sets data will be lost. Do you wish to continue?"
 }

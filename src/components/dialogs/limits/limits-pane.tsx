@@ -17,7 +17,7 @@ import {
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { CurrentLimits } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
@@ -28,7 +28,7 @@ import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
-import { SwitchInput } from '@gridsuite/commons-ui';
+import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -44,6 +44,7 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
+    const { setValue } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
@@ -107,6 +108,12 @@ export function LimitsPane({
         [indexSelectedLimitSet, limitsGroups]
     );
 
+    const handlePopupConfirmation = () => {
+        setValue(`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`, false);
+        // TODO : reset des données de limites (cf combineFormAndMapServerLimitsGroups)
+        // setValue(`${id}.${OPERATIONAL_LIMITS_GROUPS}`, equipmentToModify.currentLimits);
+    };
+
     return (
         <>
             {/* active limit sets */}
@@ -133,10 +140,16 @@ export function LimitsPane({
                     />
                 </Grid>
                 <Grid item xs={3}>
+                    {/* if the user wants to switch of the modification a modal asks him to confirm */}
                     {isAModification && (
-                        <SwitchInput
+                        <InputWithPopupConfirmation
+                            Input={SwitchInput}
                             name={`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`}
                             label={olgEditable ? 'Edit' : 'View'}
+                            shouldOpenPopup={() => olgEditable}
+                            resetOnConfirmation={handlePopupConfirmation}
+                            message="disableOLGedition"
+                            validateButtonLabel="button.changeType"
                         />
                     )}
                 </Grid>
