@@ -58,7 +58,6 @@ export default function FeederBayDirectionCellRenderer({
                     ? CONNECTION_DIRECTIONS_VALUES.BOTTOM.id
                     : CONNECTION_DIRECTIONS_VALUES.TOP.id;
             setValue(name, newValue, {
-                shouldValidate: true,
                 shouldDirty: true,
                 shouldTouch: true,
             });
