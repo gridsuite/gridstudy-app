@@ -254,19 +254,21 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 voltageLevel?.busBarSectionInfos || {}
                             ).flat() as string[];
 
-                            const feederBaysInfos: FeederBaysInfos = (
-                                Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
-                            )
-                                .flatMap(([equipmentId, feederBayInfos]) =>
-                                    feederBayInfos.map((feederBay) => ({
-                                        equipmentId,
-                                        ...feederBay,
-                                    }))
-                                )
-                                .filter(
-                                    (item, index, arr) =>
-                                        arr.findIndex((x) => x.equipmentId === item.equipmentId) === index
+                            const feederBaysInfos: FeederBaysInfos = (() => {
+                                const entries = Object.entries(voltageLevel?.feederBaysInfos || {}) as [
+                                    string,
+                                    FeederBayInfos[],
+                                ][];
+
+                                const flatMapped = entries.flatMap(([equipmentId, feederBayInfos]) =>
+                                    feederBayInfos.map((feederBay) => ({ equipmentId, ...feederBay }))
                                 );
+
+                                const isFirstOccurrence = (item: any, index: number, arr: FeederBaysInfos) =>
+                                    arr.findIndex((x) => x.equipmentId === item.equipmentId) === index;
+
+                                return flatMapped.filter(isFirstOccurrence);
+                            })();
 
                             // merge row data between actual values in network and user's modification infos
                             const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);

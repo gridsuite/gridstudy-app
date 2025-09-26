@@ -158,11 +158,7 @@ export default function VoltageLevelTopologyModificationDialog({
             if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
                 equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
                     (item) => {
-                        return !(
-                            item === null ||
-                            item.currentConnectionStatus === null ||
-                            item.currentConnectionStatus === undefined
-                        );
+                        return item?.currentConnectionStatus != null;
                     }
                 ).map((item) => ({
                     type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
