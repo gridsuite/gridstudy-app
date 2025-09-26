@@ -14,7 +14,6 @@ export type FeederBaysFormInfos = {
     connectionName: string | null;
     connectionDirection: string | null;
     connectionPosition: string | null;
-    isSeparator: boolean;
     isRemoved: boolean;
 };
 
