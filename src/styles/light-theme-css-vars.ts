@@ -91,7 +91,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#AC8AC2',
     },
     '.sld-vl50to70.sld-bus-3, .nad-vl50to70.nad-bus-3': {
-        '--vl-color': '#ABCBAB',
+        '--vl-color': '#1F7620',
     },
     '.sld-vl50to70.sld-bus-4, .nad-vl50to70.nad-bus-4': {
         '--vl-color': '#C5ED3B',
@@ -103,13 +103,13 @@ export const lightThemeCssVars = {
         '--vl-color': '#55591B',
     },
     '.sld-vl50to70.sld-bus-7, .nad-vl50to70.nad-bus-7': {
-        '--vl-color': '#E5E844',
+        '--vl-color': '#E5E845',
     },
     '.sld-vl50to70.sld-bus-8, .nad-vl50to70.nad-bus-8': {
         '--vl-color': '#ABAE28',
     },
     '.sld-vl50to70.sld-bus-9, .nad-vl50to70.nad-bus-9': {
-        '--vl-color': '#DAD970',
+        '--vl-color': '#DAD971',
     },
     '.sld-vl70to120, .nad-vl70to120': {
         '--vl-color': '#FF9D00',
@@ -118,7 +118,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#7E3109',
     },
     '.sld-vl70to120.sld-bus-2, .nad-vl70to120.nad-bus-2': {
-        '--vl-color': '#CC5500',
+        '--vl-color': '#C50',
     },
     '.sld-vl70to120.sld-bus-3, .nad-vl70to120.nad-bus-3': {
         '--vl-color': '#25699D',
@@ -133,7 +133,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#1B3459',
     },
     '.sld-vl70to120.sld-bus-7, .nad-vl70to120.nad-bus-7': {
-        '--vl-color': '#448BE8',
+        '--vl-color': '#458BE8',
     },
     '.sld-vl70to120.sld-bus-8, .nad-vl70to120.nad-bus-8': {
         '--vl-color': '#2862AE',
@@ -193,7 +193,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#C30D33',
     },
     '.sld-vl180to300.sld-bus-7, .nad-vl180to300.nad-bus-7': {
-        '--vl-color': '#E7C6C8',
+        '--vl-color': '#E3BEC0',
     },
     '.sld-vl180to300.sld-bus-8, .nad-vl180to300.nad-bus-8': {
         '--vl-color': '#FF8290',
@@ -202,7 +202,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#FFCCD0',
     },
     '.sld-vl300to500, .nad-vl300to500': {
-        '--vl-color': '#FF0000',
+        '--vl-color': '#F00',
     },
     '.sld-vl300to500.sld-bus-1, .nad-vl300to500.nad-bus-1': {
         '--vl-color': '#920A0A',

@@ -776,6 +776,9 @@ const initialState: AppState = {
         [SpreadsheetEquipmentType.GENERATOR]: {
             regulatingTerminal: false,
         },
+        [SpreadsheetEquipmentType.BUS]: {
+            networkComponents: false,
+        },
     },
     diagramGridLayout: {
         gridLayouts: {},
@@ -1530,11 +1533,10 @@ export const reducer = createReducer(initialState, (builder) => {
             const currentEquipment: Record<string, Identifiable> | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
-            // Format the updated equipments to match the table format
-            const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
-
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
-            if (currentEquipment !== undefined) {
+            if (currentEquipment) {
+                // Format the updated equipments to match the table format
+                const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
@@ -1565,24 +1567,27 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
         action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
-            const currentEquipments =
-                state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];
-            if (currentEquipments !== undefined) {
-                // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
-                    const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
-                        .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
-                    if (currentSubstations != null) {
-                        state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
-                            action.nodeId
-                        ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
-                    }
-                }
-
-                state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId] = deleteEquipment(
-                    currentEquipments,
+            if (
+                // If we delete a line or a two windings transformer we also have to delete it from branch type
+                (equipmentToDeleteType === SpreadsheetEquipmentType.LINE ||
+                    equipmentToDeleteType === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER) &&
+                state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH]?.equipmentsByNodeId[action.nodeId]
+            ) {
+                delete state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId][
                     equipmentToDeleteId
-                );
+                ];
+            } else if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
+                const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
+                    .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
+                if (currentSubstations != null) {
+                    state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[action.nodeId] =
+                        updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
+                }
+            }
+            if (state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
+                delete state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId][
+                    equipmentToDeleteId
+                ];
             }
         });
     });
@@ -1612,24 +1617,37 @@ export const reducer = createReducer(initialState, (builder) => {
             action.equipmentType !== SpreadsheetEquipmentType.BRANCH &&
             action.equipmentType !== SpreadsheetEquipmentType.LINE &&
             action.equipmentType !== SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER &&
-            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR
+            action.equipmentType !== SpreadsheetEquipmentType.GENERATOR &&
+            action.equipmentType !== SpreadsheetEquipmentType.BUS
         ) {
             return;
         }
-        const propsToClean =
-            action.equipmentType === SpreadsheetEquipmentType.GENERATOR
-                ? {
-                      regulatingTerminalVlName: undefined,
-                      regulatingTerminalConnectableId: undefined,
-                      regulatingTerminalConnectableType: undefined,
-                      regulatingTerminalVlId: undefined,
-                  }
-                : {
-                      operationalLimitsGroup1: undefined,
-                      operationalLimitsGroup1Names: undefined,
-                      operationalLimitsGroup2: undefined,
-                      operationalLimitsGroup2Names: undefined,
-                  };
+        let propsToClean;
+        switch (action.equipmentType) {
+            case SpreadsheetEquipmentType.GENERATOR:
+                propsToClean = {
+                    regulatingTerminalVlName: undefined,
+                    regulatingTerminalConnectableId: undefined,
+                    regulatingTerminalConnectableType: undefined,
+                    regulatingTerminalVlId: undefined,
+                };
+                break;
+            case SpreadsheetEquipmentType.LINE:
+            case SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER:
+            case SpreadsheetEquipmentType.BRANCH:
+                propsToClean = {
+                    operationalLimitsGroup1: undefined,
+                    operationalLimitsGroup1Names: undefined,
+                    operationalLimitsGroup2: undefined,
+                    operationalLimitsGroup2Names: undefined,
+                };
+                break;
+            case SpreadsheetEquipmentType.BUS:
+                propsToClean = {
+                    synchronousComponentNum: undefined,
+                    connectedComponentNum: undefined,
+                };
+        }
         state.spreadsheetNetwork[action.equipmentType].nodesId.forEach((nodeId: UUID) => {
             state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId] = Object.values(
                 state.spreadsheetNetwork[action.equipmentType].equipmentsByNodeId[nodeId]
@@ -1933,11 +1951,6 @@ function updateSubstationAfterVLDeletion(
     }
 
     return currentSubstations;
-}
-
-function deleteEquipment(currentEquipments: Record<string, Identifiable>, equipmentToDeleteId: string) {
-    delete currentEquipments[equipmentToDeleteId];
-    return currentEquipments;
 }
 
 export type Substation = Identifiable & {
