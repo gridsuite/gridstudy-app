@@ -26,6 +26,7 @@ export type UseFilteredRowCounterInfoReturn = {
     rowCountLabel: string | undefined;
     tooltipContent: ReactElement | undefined;
     registerRowCounterEvents: (params: RowDataUpdatedEvent) => void;
+    displayedRows: number | null;
 };
 
 export function useFilteredRowCounterInfo({
@@ -158,5 +159,6 @@ export function useFilteredRowCounterInfo({
         rowCountLabel,
         tooltipContent,
         registerRowCounterEvents,
+        displayedRows,
     };
 }
