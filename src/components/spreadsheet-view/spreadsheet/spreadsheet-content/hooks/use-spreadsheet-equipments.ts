@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { cleanEquipments, removeNodeData, resetEquipments } from 'redux/actions';
 import { type AppState } from 'redux/reducer';
@@ -30,6 +30,8 @@ export const useSpreadsheetEquipments = (
     const loadedNodesIdsForType = useSelector((state: AppState) => state.spreadsheetNetwork[type].nodesId);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
+
+    const prevCurrentRootNetworkUuidRef = useRef(currentRootNetworkUuid);
 
     const {
         shouldLoadOptionalLoadingParameters,
@@ -76,7 +78,10 @@ export const useSpreadsheetEquipments = (
 
     // Reset equipment data on root network change
     useEffect(() => {
-        dispatch(resetEquipments());
+        if (prevCurrentRootNetworkUuidRef.current !== currentRootNetworkUuid) {
+            dispatch(resetEquipments());
+            prevCurrentRootNetworkUuidRef.current = currentRootNetworkUuid;
+        }
     }, [dispatch, currentRootNetworkUuid]);
 
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
