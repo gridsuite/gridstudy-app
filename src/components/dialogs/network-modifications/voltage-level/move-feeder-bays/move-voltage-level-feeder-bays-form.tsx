@@ -7,7 +7,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
-import { Box, Grid, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { filledTextField } from '../../../dialog-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
@@ -19,6 +19,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    IS_REMOVED,
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
 } from '../../../../utils/field-constants';
 import FeederBayDirectionCellRenderer from './feeder-bay-direction-cell-render';
@@ -26,8 +27,9 @@ import GridItem from '../../../commons/grid-item';
 import Button from '@mui/material/Button';
 import { InfoOutlined } from '@mui/icons-material';
 import { UUID } from 'crypto';
-import { FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
+import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
 
 const defaultColDef = {
     sortable: false,
@@ -68,6 +70,54 @@ export function MoveVoltageLevelFeederBaysForm({
     const isNodeBuiltValue = useMemo(() => isNodeBuilt(currentNode), [currentNode]);
     const shouldDisableTooltip = useMemo(() => !isUpdate && isNodeBuiltValue, [isUpdate, isNodeBuiltValue]);
 
+    // build group
+    const groupedRowData = useMemo(() => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        const rows = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE) as FeederBaysFormInfos[];
+        // grouping by isRemove
+        const groups: Record<string, FeederBaysFormInfos[]> = {};
+        for (const row of rows) {
+            const key = row[IS_REMOVED] ? 'REMOVED' : 'ACTIVE';
+            if (!groups[key]) {
+                groups[key] = [];
+            }
+            groups[key].push(row);
+        }
+        return Object.entries(groups).flatMap(([key, rows]) =>
+            // do not show the ACTIVE group's header
+            key === 'ACTIVE' ? [...rows] : [{ isGroup: true, key }, ...rows]
+        );
+    }, [isReady, getValues]);
+
+    const getGroupLabel = useCallback(
+        (group: { key: string }) => {
+            return group.key === 'REMOVED' ? intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' }) : undefined;
+        },
+        [intl]
+    );
+
+    const renderGroupCell = useCallback(
+        ({ data }: { data?: any }) => {
+            return (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        paddingLeft: 2,
+                    }}
+                >
+                    <SeparatorCellRenderer value={getGroupLabel(data) ?? ''} sx={{ textAlign: 'center' }} />
+                </Box>
+            );
+        },
+        [getGroupLabel]
+    );
+
     const voltageLevelIdField = useMemo(
         () => (
             <TextField
@@ -96,32 +146,6 @@ export function MoveVoltageLevelFeederBaysForm({
 
     const renderConnectionNameCell = useCallback(
         ({ data }: { data?: any }) => {
-            if (data.isSeparator) {
-                return (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            padding: '40px',
-                            zIndex: 1,
-                        }}
-                    >
-                        <Typography variant="body1" color="primary" sx={{ textAlign: 'center', width: '100%' }}>
-                            {intl.formatMessage({ id: 'MissingConnectionsInVoltageLevel' })}
-                        </Typography>
-                    </div>
-                );
-            }
-
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
@@ -144,14 +168,11 @@ export function MoveVoltageLevelFeederBaysForm({
                 />
             );
         },
-        [getValues, intl]
+        [getValues]
     );
 
     const renderBusbarSectionCell = useCallback(
         ({ data }: { data?: any }) => {
-            if (data.isSeparator) {
-                return null;
-            }
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
             const busBarSectionIds = getValues(
@@ -174,9 +195,6 @@ export function MoveVoltageLevelFeederBaysForm({
 
     const renderConnectionDirectionCell = useCallback(
         ({ data }: { data?: any }) => {
-            if (data.isSeparator) {
-                return null;
-            }
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
@@ -190,9 +208,6 @@ export function MoveVoltageLevelFeederBaysForm({
 
     const renderConnectionPositionCell = useCallback(
         ({ data }: { data?: any }) => {
-            if (data.isSeparator) {
-                return null;
-            }
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
             const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
 
@@ -301,7 +316,7 @@ export function MoveVoltageLevelFeederBaysForm({
             </Grid>
             <Grid item xs paddingTop={2}>
                 <CustomAGGrid
-                    rowData={isReady ? getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE) : undefined}
+                    rowData={groupedRowData}
                     defaultColDef={defaultColDef}
                     columnDefs={columnDefs}
                     suppressMovableColumns={true}
@@ -311,6 +326,14 @@ export function MoveVoltageLevelFeederBaysForm({
                     rowHeight={80}
                     rowStyle={{ border: 'none' }}
                     suppressRowHoverHighlight={true}
+                    // group config
+                    getRowHeight={(rowParam) => {
+                        return rowParam.node.data?.isGroup ? 48 : undefined;
+                    }}
+                    isFullWidthRow={(rowParam) => {
+                        return rowParam.rowNode.data?.isGroup;
+                    }}
+                    fullWidthCellRenderer={renderGroupCell}
                 />
             </Grid>
             <Box>
