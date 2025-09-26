@@ -19,13 +19,13 @@ export const darkThemeCssVars = {
         backgroundColor: '#32373bd9', // same displayed color as #6c6c6c20 but with 0.85 opacity
     },
     '.sld-vl0to30, .nad-vl0to30': {
-        '--vl-color': '#AAAE50',
+        '--vl-color': '#CCC93A',
     },
     '.sld-vl0to30.sld-bus-1, .nad-vl0to30.nad-bus-1': {
-        '--vl-color': '#5F6646',
+        '--vl-color': '#5E835C',
     },
     '.sld-vl0to30.sld-bus-2, .nad-vl0to30.nad-bus-2': {
-        '--vl-color': '#CCC93A',
+        '--vl-color': '#B1B46C',
     },
     '.sld-vl0to30.sld-bus-3, .nad-vl0to30.nad-bus-3': {
         '--vl-color': '#A156AA',
@@ -79,10 +79,10 @@ export const darkThemeCssVars = {
         '--vl-color': '#58D058',
     },
     '.sld-vl50to70, .nad-vl50to70': {
-        '--vl-color': '#A246E0',
+        '--vl-color': '#D47DFF',
     },
     '.sld-vl50to70.sld-bus-1, .nad-vl50to70.nad-bus-1': {
-        '--vl-color': '#895AAB',
+        '--vl-color': '#C230D2',
     },
     '.sld-vl50to70.sld-bus-2, .nad-vl50to70.nad-bus-2': {
         '--vl-color': '#AB94BF',
@@ -109,13 +109,13 @@ export const darkThemeCssVars = {
         '--vl-color': '#D4D486',
     },
     '.sld-vl70to120, .nad-vl70to120': {
-        '--vl-color': '#C36D33',
+        '--vl-color': '#EB8232',
     },
     '.sld-vl70to120.sld-bus-1, .nad-vl70to120.nad-bus-1': {
-        '--vl-color': '#885239',
+        '--vl-color': '#B27153',
     },
     '.sld-vl70to120.sld-bus-2, .nad-vl70to120.nad-bus-2': {
-        '--vl-color': '#A88668',
+        '--vl-color': '#C6A68B',
     },
     '.sld-vl70to120.sld-bus-3, .nad-vl70to120.nad-bus-3': {
         '--vl-color': '#25699D',
@@ -130,7 +130,7 @@ export const darkThemeCssVars = {
         '--vl-color': '#44679C',
     },
     '.sld-vl70to120.sld-bus-7, .nad-vl70to120.nad-bus-7': {
-        '--vl-color': '#448BE8',
+        '--vl-color': '#458BE8',
     },
     '.sld-vl70to120.sld-bus-8, .nad-vl70to120.nad-bus-8': {
         '--vl-color': '#2862AE',
@@ -169,10 +169,10 @@ export const darkThemeCssVars = {
         '--vl-color': '#EABC45',
     },
     '.sld-vl180to300, .nad-vl180to300': {
-        '--vl-color': '#42954B',
+        '--vl-color': '#00FF50',
     },
     '.sld-vl180to300.sld-bus-1, .nad-vl180to300.nad-bus-1': {
-        '--vl-color': '#3D6746',
+        '--vl-color': '#42954B',
     },
     '.sld-vl180to300.sld-bus-2, .nad-vl180to300.nad-bus-2': {
         '--vl-color': '#A7B27E',
