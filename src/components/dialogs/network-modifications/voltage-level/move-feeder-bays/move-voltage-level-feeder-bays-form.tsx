@@ -321,7 +321,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}
-                    rowHeight={72}
+                    rowHeight={80}
                     rowStyle={{ border: 'none' }}
                     suppressRowHoverHighlight={true}
                     // group config
