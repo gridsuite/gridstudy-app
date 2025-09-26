@@ -72,22 +72,24 @@ export function MoveVoltageLevelFeederBaysForm({
 
     // build group
     const groupedRowData = useMemo(() => {
-        if (isReady) {
-            const rows = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE) as FeederBaysFormInfos[];
-            // grouping by isRemove
-            const groups: Record<string, FeederBaysFormInfos[]> = {};
-            for (const row of rows) {
-                const key = row[IS_REMOVED] ? 'REMOVED' : 'ACTIVE';
-                if (!groups[key]) {
-                    groups[key] = [];
-                }
-                groups[key].push(row);
-            }
-            return Object.entries(groups).flatMap(([key, rows]) =>
-                // do not show the ACTIVE group's header
-                key === 'ACTIVE' ? [...rows] : [{ isGroup: true, key }, ...rows]
-            );
+        if (!isReady) {
+            return [];
         }
+
+        const rows = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE) as FeederBaysFormInfos[];
+        // grouping by isRemove
+        const groups: Record<string, FeederBaysFormInfos[]> = {};
+        for (const row of rows) {
+            const key = row[IS_REMOVED] ? 'REMOVED' : 'ACTIVE';
+            if (!groups[key]) {
+                groups[key] = [];
+            }
+            groups[key].push(row);
+        }
+        return Object.entries(groups).flatMap(([key, rows]) =>
+            // do not show the ACTIVE group's header
+            key === 'ACTIVE' ? [...rows] : [{ isGroup: true, key }, ...rows]
+        );
     }, [isReady, getValues]);
 
     const getGroupLabel = useCallback(
