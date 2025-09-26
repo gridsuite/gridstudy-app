@@ -5,18 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    Alert,
     Collapse,
     Dialog,
     DialogTitle,
+    FormControl,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Typography,
-    InputLabel,
-    Alert,
-    FormControl,
-    Select,
-    MenuItem,
-    CircularProgress,
-    IconButton,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -25,7 +24,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
+import { CancelButton, fetchDirectoryElementPath, FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
@@ -51,7 +50,7 @@ const STRING_LIST = 'STRING_LIST';
 interface ExportNetworkDialogProps {
     open: boolean;
     onClose: () => void;
-    onClick: (url: string) => void;
+    onClick: (url: string, selectedFormat: string, fileName: string) => void;
     studyUuid: UUID;
     nodeUuid: UUID;
     rootNetworkUuid: UUID;
@@ -68,10 +67,9 @@ export function ExportNetworkDialog({
     const intl = useIntl();
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
     const [selectedFormat, setSelectedFormat] = useState('');
-    const [loading, setLoading] = useState(false);
     const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
-    const [fileName, setFileName] = useState<string>();
+    const [fileName, setFileName] = useState<string>('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [unfolded, setUnfolded] = useState(false);
 
@@ -150,8 +148,7 @@ export function ExportNetworkDialog({
 
             // we have already as parameters, the access tokens, so use '&' instead of '?'
             suffix = urlSearchParams.toString() ? '&' + urlSearchParams.toString() : '';
-            setLoading(true);
-            onClick(downloadUrl + suffix);
+            onClick(downloadUrl + suffix, selectedFormat, fileName);
         } else {
             setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
         }
@@ -161,7 +158,6 @@ export function ExportNetworkDialog({
         setCurrentParameters({});
         setExportStudyErr('');
         setSelectedFormat('');
-        setLoading(false);
         onClose();
     };
 
@@ -183,7 +179,7 @@ export function ExportNetworkDialog({
                     margin="dense"
                     label={<FormattedMessage id="download.fileName" />}
                     id="fileName"
-                    value={fileName}
+                    value={fileName || ''}
                     sx={{ width: '100%', marginBottom: 1 }}
                     fullWidth
                     variant="filled"
@@ -234,17 +230,6 @@ export function ExportNetworkDialog({
                     />
                 </Collapse>
                 {exportStudyErr !== '' && <Alert severity="error">{exportStudyErr}</Alert>}
-                {loading && (
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            marginTop: '5px',
-                        }}
-                    >
-                        <CircularProgress />
-                    </div>
-                )}
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
