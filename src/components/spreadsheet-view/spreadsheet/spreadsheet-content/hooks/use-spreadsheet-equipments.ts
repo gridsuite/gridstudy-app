@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { cleanEquipments, removeNodeData } from 'redux/actions';
+import { cleanEquipments, removeNodeData, resetEquipments } from 'redux/actions';
 import { type AppState } from 'redux/reducer';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
@@ -30,6 +30,8 @@ export const useSpreadsheetEquipments = (
     const loadedNodesIdsForType = useSelector((state: AppState) => state.spreadsheetNetwork[type].nodesId);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
+
+    const prevCurrentRootNetworkUuidRef = useRef(currentRootNetworkUuid);
 
     const {
         shouldLoadOptionalLoadingParameters,
@@ -73,6 +75,14 @@ export const useSpreadsheetEquipments = (
             dispatch(removeNodeData(Array.from(nodesIdsToRemove)));
         }
     }, [active, dispatch, nodesIdsToRemove]);
+
+    // Reset equipment data on root network change
+    useEffect(() => {
+        if (prevCurrentRootNetworkUuidRef.current !== currentRootNetworkUuid) {
+            dispatch(resetEquipments());
+            prevCurrentRootNetworkUuidRef.current = currentRootNetworkUuid;
+        }
+    }, [dispatch, currentRootNetworkUuid]);
 
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
