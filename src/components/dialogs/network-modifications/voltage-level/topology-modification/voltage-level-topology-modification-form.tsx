@@ -6,18 +6,18 @@
  */
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { CurrentTreeNode } from '../../../graph/tree-node.type';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { Button, Grid, TextField } from '@mui/material';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
     SWITCH_ID,
     TOPOLOGY_MODIFICATION_TABLE,
-} from '../../../utils/field-constants';
+} from '../../../../utils/field-constants';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { filledTextField } from '../../dialog-utils';
+import { filledTextField } from '../../../dialog-utils';
 import HeaderWithTooltip from './header-with-tooltip';
-import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import ConnectionCellRenderer from './connection-cell-render';
 import { useFormContext } from 'react-hook-form';
 import { SwitchRowForm } from './voltage-level-topology.type';
@@ -174,7 +174,7 @@ export function VoltageLevelTopologyModificationForm({
                     </Button>
                 </Grid>
             </Grid>
-            <Grid xs paddingTop={2}>
+            <Grid item xs paddingTop={2}>
                 <CustomAGGrid
                     rowData={mergedRowData}
                     defaultColDef={defaultColDef}
