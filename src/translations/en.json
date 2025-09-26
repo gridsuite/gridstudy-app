@@ -1622,5 +1622,10 @@
     "nodeType": "Type",
     "nodeStatus": "Status",
     "CONSTRUCTION": "Construction",
-    "SECURITY": "Security"
+    "SECURITY": "Security",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
+    "TOP": "Top",
+    "BOTTOM": "Bottom",
+    "DuplicatedPositionsError": "Duplicated number",
+    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)"
 }

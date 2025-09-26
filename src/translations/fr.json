@@ -1618,5 +1618,10 @@
     "nodeType": "Type",
     "nodeStatus": "Statut",
     "CONSTRUCTION": "Construction",
-    "SECURITY": "Sécurité"
+    "SECURITY": "Sécurité",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
+    "TOP": "Haut",
+    "BOTTOM": "Bas",
+    "DuplicatedPositionsError": "Numéro en doublon",
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)"
 }

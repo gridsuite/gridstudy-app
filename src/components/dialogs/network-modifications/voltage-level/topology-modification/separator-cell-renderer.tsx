@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Typography } from '@mui/material';
+import { SxProps, Typography } from '@mui/material';
 import React from 'react';
-import { type MuiStyles } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     separator: (theme) => ({
@@ -19,11 +19,12 @@ const styles = {
 
 type SeparatorCellRendererProps = {
     value: string;
+    sx?: SxProps;
 };
 
-export default function SeparatorCellRenderer({ value }: Readonly<SeparatorCellRendererProps>) {
+export default function SeparatorCellRenderer({ value, sx }: Readonly<SeparatorCellRendererProps>) {
     return (
-        <Typography variant="subtitle1" color="primary" sx={styles.separator}>
+        <Typography variant="subtitle1" color="primary" sx={mergeSx(styles.separator, sx)}>
             {value}
         </Typography>
     );
