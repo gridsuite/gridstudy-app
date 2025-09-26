@@ -24,6 +24,7 @@ import {
     OnToggleNadHoverCallbackType,
     OnSelectNodeCallbackType,
     NadViewerParametersOptions,
+    EQUIPMENT_TYPES,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
@@ -35,6 +36,7 @@ import {
     ComputingType,
     ElementType,
     EquipmentType,
+    ExtendedEquipmentType,
     IElementCreationDialog,
     IElementUpdateDialog,
     mergeSx,
@@ -48,6 +50,8 @@ import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
+import { fetchNetworkElementInfos } from 'services/study/network';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 
 type NetworkAreaDiagramContentProps = {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -269,23 +273,56 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const showEquipmentMenu = useCallback(
         (svgId: string, equipmentId: string, equipmentType: string, mousePosition: Point) => {
             // don't display the equipment menu in edit mode.
-            if (!isEditNadMode) {
+            if (isEditNadMode) {
+                return;
+            }
+
+            const openMenu = (equipmentType: EquipmentType, equipmentSubtype: ExtendedEquipmentType | null = null) => {
+                const equipment = { id: equipmentId };
+                openEquipmentMenu(
+                    equipment as MapEquipment,
+                    mousePosition.x,
+                    mousePosition.y,
+                    equipmentType,
+                    equipmentSubtype
+                );
+            };
+
+            if (equipmentType === EquipmentType.HVDC_LINE) {
+                // need a query to know the HVDC converters type (LCC vs VSC)
+                // this section should be removed when the NAD will provide this information in the SVG metadata
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNode?.id,
+                    currentRootNetworkUuid,
+                    EQUIPMENT_TYPES.HVDC_LINE,
+                    EQUIPMENT_INFOS_TYPES.MAP.type,
+                    equipmentId,
+                    false
+                )
+                    .then((hvdcInfos) => {
+                        const equipmentSubtype =
+                            hvdcInfos?.hvdcType === 'LCC'
+                                ? ExtendedEquipmentType.HVDC_LINE_LCC
+                                : ExtendedEquipmentType.HVDC_LINE_VSC;
+
+                        openMenu(EquipmentType.HVDC_LINE, equipmentSubtype);
+                    })
+                    .catch(() => {
+                        snackError({
+                            messageId: 'NetworkEquipmentNotFound',
+                            messageValues: { equipmentId: equipmentId },
+                        });
+                    });
+            } else {
                 const convertedType = getEquipmentTypeFromFeederType(equipmentType);
 
                 if (convertedType?.equipmentType) {
-                    // Create a minimal equipment object
-                    const equipment = { id: equipmentId };
-                    openEquipmentMenu(
-                        equipment as MapEquipment,
-                        mousePosition.x,
-                        mousePosition.y,
-                        convertedType.equipmentType,
-                        convertedType.equipmentSubtype ?? null
-                    );
+                    openMenu(convertedType.equipmentType, convertedType.equipmentSubtype ?? null);
                 }
             }
         },
-        [isEditNadMode, openEquipmentMenu]
+        [isEditNadMode, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
     );
 
     /**
