@@ -81,6 +81,9 @@
     "images": "Images",
     "NetworkVisualizations": "Images réseau",
     "None": "Aucun",
+    "EmptyField": "Vider le champs",
+    "NumericValueOrEmptyField": "Valeur numérique ou Vider le champs",
+    "ValueOrEmptyField": "Valeur ou Vider le champs",
     "NoneUpcomingOverload": "Aucune",
     "Feeders": "Départs",
     "NominalVoltage": "Tension nominale",
@@ -1611,5 +1614,9 @@
     "Object": "Objet",
     "Array": "Tableau",
     "Boolean": "Booléen",
-    "Enum": "Énumération"
+    "Enum": "Énumération",
+    "nodeType": "Type",
+    "nodeStatus": "Statut",
+    "CONSTRUCTION": "Construction",
+    "SECURITY": "Sécurité"
 }
