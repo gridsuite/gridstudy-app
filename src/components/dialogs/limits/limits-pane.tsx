@@ -8,6 +8,7 @@
 import { Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
+    EDITED_OPERATIONAL_LIMITS_GROUPS,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
@@ -15,7 +16,7 @@ import {
 } from 'components/utils/field-constants';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { CurrentLimits } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
@@ -27,6 +28,7 @@ import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { SwitchInput } from '@gridsuite/commons-ui';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -48,6 +50,11 @@ export function LimitsPane({
     const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
+    const olgEditable: boolean = useWatch({
+        name: `${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`,
+    });
+
+    const isAModification: boolean = useMemo(() => !!equipmentToModify, [equipmentToModify]);
 
     const onAddClick = useCallback(() => myRef.current?.addNewLimitSet(), []);
 
@@ -125,6 +132,14 @@ export function LimitsPane({
                         isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
+                <Grid item xs={3}>
+                    {isAModification && (
+                        <SwitchInput
+                            name={`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`}
+                            label={olgEditable ? 'Edit' : 'View'}
+                        />
+                    )}
+                </Grid>
             </Grid>
 
             {/* limits */}
@@ -133,7 +148,7 @@ export function LimitsPane({
                     <GridSection title="LimitSets" />
                 </Grid>
                 <Grid container item xs={0.5}>
-                    <IconButton color="primary" sx={styles.button} onClick={onAddClick}>
+                    <IconButton color="primary" sx={styles.button} onClick={onAddClick} disabled={!olgEditable}>
                         <AddIcon />
                     </IconButton>
                 </Grid>
@@ -148,6 +163,7 @@ export function LimitsPane({
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                         checkLimitSetUnicity={checkLimitSetUnicity}
                         isAModification={!!equipmentToModify}
+                        editable={olgEditable}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
@@ -171,6 +187,7 @@ export function LimitsPane({
                                         currentNode={currentNode}
                                         selectedLimitSetName={operationalLimitsGroup.name}
                                         checkLimitSetUnicity={checkLimitSetUnicity}
+                                        disabled={!olgEditable}
                                     />
                                 )
                         )}

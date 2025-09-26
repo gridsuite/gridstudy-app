@@ -1615,6 +1615,8 @@
     "Array": "Tableau",
     "Boolean": "Booléen",
     "Enum": "Énumération",
+    "Edit": "Édition",
+    "View": "Visualisation",
     "nodeType": "Type",
     "nodeStatus": "Statut",
     "CONSTRUCTION": "Construction",
