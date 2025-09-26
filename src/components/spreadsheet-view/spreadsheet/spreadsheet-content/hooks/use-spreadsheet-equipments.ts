@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { cleanEquipments, removeNodeData } from 'redux/actions';
+import { cleanEquipments, removeNodeData, resetEquipments } from 'redux/actions';
 import { type AppState } from 'redux/reducer';
 import type { NodeAlias } from '../../../types/node-alias.type';
 import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
@@ -73,6 +73,11 @@ export const useSpreadsheetEquipments = (
             dispatch(removeNodeData(Array.from(nodesIdsToRemove)));
         }
     }, [active, dispatch, nodesIdsToRemove]);
+
+    // Reset equipment data on root network change
+    useEffect(() => {
+        dispatch(resetEquipments());
+    }, [dispatch, currentRootNetworkUuid]);
 
     // Note: take care about the dependencies because any execution here implies equipment loading (large fetches).
     // For example, we have 3 currentNode properties in deps rather than currentNode object itself.
