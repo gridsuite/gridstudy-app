@@ -84,8 +84,8 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         const [selectedNominalVoltages, setSelectedNominalVoltages] = useState<number[]>([]);
 
         // --- country (i.e. countryCode) => fetch from network-map-server --- //
-        const [countries, setCountries] = useState([]);
-        const [selectedCountries, setSelectedCountries] = useState([]);
+        const [countries, setCountries] = useState<string[]>([]);
+        const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
         const { translate } = useLocalizedCountries();
 
         // fetching options in different criterias
