@@ -1572,7 +1572,7 @@
     "DiagramLayoutStoreSuccess": "Diagrams successfully stored",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
     "NoMatch": "No match",
-    "Rows": "row",
+    "Rows": "{count, plural,=1 {row} other {rows}}",
     "ExternalFilters": "External filters",
     "ColumnsFilters": "Columns filters",
     "genericFilter": "Generic",
