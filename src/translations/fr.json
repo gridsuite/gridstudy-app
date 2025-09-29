@@ -1568,7 +1568,7 @@
     "DiagramLayoutStoreSuccess": "Images mémorisées avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
     "NoMatch": "Pas de correspondance",
-    "Rows": "ligne",
+    "Rows": "{count, plural,=1 {ligne} other {lignes}}",
     "ExternalFilters": "Filtres externes",
     "ColumnsFilters": "Filtres de colonnes",
     "genericFilter": "Générique",
