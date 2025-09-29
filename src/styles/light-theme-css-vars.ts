@@ -151,25 +151,25 @@ export const lightThemeCssVars = {
         '--vl-color': '#79CED4',
     },
     '.sld-vl120to180.sld-bus-3, .nad-vl120to180.nad-bus-3': {
-        '--vl-color': '#6B3A26',
+        '--vl-color': '#A30E32',
     },
     '.sld-vl120to180.sld-bus-4, .nad-vl120to180.nad-bus-4': {
-        '--vl-color': '#C94119',
+        '--vl-color': '#FF8290',
     },
     '.sld-vl120to180.sld-bus-5, .nad-vl120to180.nad-bus-5': {
-        '--vl-color': '#D69A88',
+        '--vl-color': '#DAA8AD',
     },
     '.sld-vl120to180.sld-bus-6, .nad-vl120to180.nad-bus-6': {
-        '--vl-color': '#7E3109',
+        '--vl-color': '#C30D33',
     },
     '.sld-vl120to180.sld-bus-7, .nad-vl120to180.nad-bus-7': {
-        '--vl-color': '#B78B58',
+        '--vl-color': '#E3BEC0',
     },
     '.sld-vl120to180.sld-bus-8, .nad-vl120to180.nad-bus-8': {
-        '--vl-color': '#E47400',
+        '--vl-color': '#FF8290',
     },
     '.sld-vl120to180.sld-bus-9, .nad-vl120to180.nad-bus-9': {
-        '--vl-color': '#FFC019',
+        '--vl-color': '#FFCCD0',
     },
     '.sld-vl180to300, .nad-vl180to300': {
         '--vl-color': '#32B532',
@@ -181,25 +181,25 @@ export const lightThemeCssVars = {
         '--vl-color': '#A7B368',
     },
     '.sld-vl180to300.sld-bus-3, .nad-vl180to300.nad-bus-3': {
-        '--vl-color': '#A30E32',
+        '--vl-color': '#6B3A26',
     },
     '.sld-vl180to300.sld-bus-4, .nad-vl180to300.nad-bus-4': {
-        '--vl-color': '#FF8290',
+        '--vl-color': '#C94119',
     },
     '.sld-vl180to300.sld-bus-5, .nad-vl180to300.nad-bus-5': {
-        '--vl-color': '#DAA8AD',
+        '--vl-color': '#D69A88',
     },
     '.sld-vl180to300.sld-bus-6, .nad-vl180to300.nad-bus-6': {
-        '--vl-color': '#C30D33',
+        '--vl-color': '#7E3109',
     },
     '.sld-vl180to300.sld-bus-7, .nad-vl180to300.nad-bus-7': {
-        '--vl-color': '#E3BEC0',
+        '--vl-color': '#B78B58',
     },
     '.sld-vl180to300.sld-bus-8, .nad-vl180to300.nad-bus-8': {
-        '--vl-color': '#FF8290',
+        '--vl-color': '#E47400',
     },
     '.sld-vl180to300.sld-bus-9, .nad-vl180to300.nad-bus-9': {
-        '--vl-color': '#FFCCD0',
+        '--vl-color': '#FFC019',
     },
     '.sld-vl300to500, .nad-vl300to500': {
         '--vl-color': '#F00',
@@ -211,24 +211,24 @@ export const lightThemeCssVars = {
         '--vl-color': '#FF9494',
     },
     '.sld-vl300to500.sld-bus-3, .nad-vl300to500.nad-bus-3': {
-        '--vl-color': '#32B532',
+        '--vl-color': '#25699D',
     },
     '.sld-vl300to500.sld-bus-4, .nad-vl300to500.nad-bus-4': {
-        '--vl-color': '#00FF50',
+        '--vl-color': '#0057F9',
     },
     '.sld-vl300to500.sld-bus-5, .nad-vl300to500.nad-bus-5': {
-        '--vl-color': '#A7B368',
+        '--vl-color': '#1B3459',
     },
     '.sld-vl300to500.sld-bus-6, .nad-vl300to500.nad-bus-6': {
-        '--vl-color': '#1A4D1B',
+        '--vl-color': '#1B3459',
     },
     '.sld-vl300to500.sld-bus-7, .nad-vl300to500.nad-bus-7': {
-        '--vl-color': '#C2CB92',
+        '--vl-color': '#458BE8',
     },
     '.sld-vl300to500.sld-bus-8, .nad-vl300to500.nad-bus-8': {
-        '--vl-color': '#218B21',
+        '--vl-color': '#2862AE',
     },
     '.sld-vl300to500.sld-bus-9, .nad-vl300to500.nad-bus-9': {
-        '--vl-color': '#58D058',
+        '--vl-color': '#B0D4FE',
     },
 };
