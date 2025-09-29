@@ -9,6 +9,7 @@ import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QU
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
+import { reorderObject } from '@gridsuite/commons-ui';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
@@ -21,6 +22,8 @@ export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);
+    // PowSyBl requires that "version" appears first in the common load flow parameters
+    newParams.commonParameters = reorderObject(newParams.commonParameters, 'version');
     return backendFetch(setLoadFlowParametersUrl, {
         method: 'POST',
         headers: {
