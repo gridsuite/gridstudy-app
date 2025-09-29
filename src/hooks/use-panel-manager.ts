@@ -139,7 +139,10 @@ export function usePanelManager(): UsePanelManagerReturn {
         // Recalculate modifications panel size
         calculateModificationsPanelMinSize();
 
-        triggerTreeNodeFocus();
+        // add delay to ensure the panel has resized before focusing
+        setTimeout(() => {
+            triggerTreeNodeFocus();
+        }, 100);
     }, [calculateModificationsPanelMinSize, checkAndMinimizeRootNetworkPanel, triggerTreeNodeFocus]);
 
     // Panel collapse handler
