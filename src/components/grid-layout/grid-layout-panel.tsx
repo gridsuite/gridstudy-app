@@ -173,6 +173,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
     const dispatch = useDispatch();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const [disableStoreButton, setDisableStoreButton] = useState<boolean>(true);
 
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
@@ -201,6 +202,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     const addLayoutItem = useCallback((diagram: Diagram) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
+        setDisableStoreButton(false);
     }, []);
 
     const removeLayoutItem = useCallback((cardUuid: UUID | string) => {
@@ -215,6 +217,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             return newLayouts;
         });
+        setDisableStoreButton(false);
     }, []);
 
     const loadingMapError = useMemo(() => {
@@ -251,6 +254,22 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         onAddDiagram: addLayoutItem,
         onDiagramAlreadyExists,
     });
+
+    const handleUpdateDiagram = useCallback(
+        (diagram: Diagram) => {
+            setDisableStoreButton(false);
+            updateDiagram(diagram);
+        },
+        [updateDiagram]
+    );
+
+    const handleUpdateDiagramPositions = useCallback(
+        (diagramParams: DiagramParams) => {
+            setDisableStoreButton(false);
+            updateDiagramPositions(diagramParams);
+        },
+        [updateDiagramPositions]
+    );
 
     const onRemoveCard = useCallback(
         (diagramUuid: UUID) => {
@@ -384,6 +403,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             return newLayouts;
         });
+        setDisableStoreButton(false);
     }, []);
 
     /**
@@ -415,6 +435,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             lastModifiedBreakpointRef.current = currentBreakpointRef.current;
             // Ensure final order is propagated to all breakpoints
             propagateOrder(layout, currentBreakpointRef.current);
+            setDisableStoreButton(false);
         },
         [propagateOrder]
     );
@@ -426,6 +447,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         } else {
             setLayouts(initialLayouts);
         }
+        setDisableStoreButton(true);
     }, []);
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
@@ -444,10 +466,16 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         [diagrams, snackInfo]
     );
 
-    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
+    const gridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
 
     // Debounce the layout save function to avoid excessive calls
-    const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
+    const debouncedGridLayoutSave = useDebounce(gridLayoutSave, 300);
+
+    const handleGridLayoutSave = useCallback(() => {
+        setDisableStoreButton(true);
+        debouncedGridLayoutSave();
+    }, [debouncedGridLayoutSave]);
+
     return (
         <Box sx={styles.container}>
             <GridLayoutToolbar
@@ -455,7 +483,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 onSearch={showVoltageLevelDiagram}
                 onOpenNetworkAreaDiagram={showGrid}
                 onMap={onOpenMap}
-                onLayoutSave={debouncedGridLayoutSave}
+                onLayoutSave={handleGridLayoutSave}
+                disableStore={disableStoreButton}
             />
             <ResponsiveGridLayout
                 ref={responsiveGridLayoutRef} // the provided innerRef prop is bugged (see https://github.com/react-grid-layout/react-grid-layout/issues/1444)
@@ -504,8 +533,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             onClose={() => onRemoveCard(diagram.diagramUuid)}
                             showInSpreadsheet={showInSpreadsheet}
                             createDiagram={createDiagram}
-                            updateDiagram={updateDiagram}
-                            updateDiagramPositions={updateDiagramPositions}
+                            updateDiagram={handleUpdateDiagram}
+                            updateDiagramPositions={handleUpdateDiagramPositions}
                         />
                     );
                 })}

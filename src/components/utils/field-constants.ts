@@ -46,6 +46,8 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
+export const IS_REMOVED = 'isRemoved';
+export const IS_SEPARATOR = 'isSeparator';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -495,3 +497,9 @@ export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
 export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
 export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';
+
+// move connections
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
+export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
+export const CONNECTION_SIDE = 'connectionSide';
