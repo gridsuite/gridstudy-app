@@ -21,7 +21,6 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
 import { CustomFormProvider, ExtendedEquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LccDialogTab, LccFormInfos, LccModificationSchemaForm } from '../common/lcc-type';
 import { useCallback, useEffect, useState } from 'react';
@@ -51,6 +50,7 @@ import { LccModificationForm } from './lcc-modification-form';
 import { toModificationOperation } from '../../../../../utils/utils';
 import { LccConverterStationModificationInfos, LccModificationInfos } from 'services/network-modification-types';
 import { DeepNullable } from '../../../../../utils/ts-utils';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -93,7 +93,7 @@ export const LccModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<LccModificationSchemaForm>>({
+    const formMethods = useFormWithDirtyTracking<DeepNullable<LccModificationSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LccModificationSchemaForm>>(formSchema),
     });
@@ -237,7 +237,6 @@ export const LccModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setLccToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             }

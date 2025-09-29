@@ -1569,7 +1569,7 @@
     "DiagramLayoutStoreSuccess": "Diagrams successfully stored",
     "MaxNumberOfNadDiagramsReached": "You need to close at least one network area diagram to open a new one",
     "NoMatch": "No match",
-    "Rows": "row",
+    "Rows": "{count, plural,=1 {row} other {rows}}",
     "ExternalFilters": "External filters",
     "ColumnsFilters": "Columns filters",
     "genericFilter": "Generic",
@@ -1619,5 +1619,10 @@
     "nodeType": "Type",
     "nodeStatus": "Status",
     "CONSTRUCTION": "Construction",
-    "SECURITY": "Security"
+    "SECURITY": "Security",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Move connections",
+    "TOP": "Top",
+    "BOTTOM": "Bottom",
+    "DuplicatedPositionsError": "Duplicated number",
+    "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)"
 }
