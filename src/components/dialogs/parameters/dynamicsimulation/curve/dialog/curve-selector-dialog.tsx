@@ -25,6 +25,7 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { mergeSx } from '@gridsuite/commons-ui';
 import { parametersStyles } from '../../../util/styles';
+import { type EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 interface CurveSelectorDialogProps {
     open: boolean;
@@ -62,7 +63,7 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
         // combine between equipments and variables
         const curves = selectedEquipments.flatMap((equipment) =>
             selectedVariables.map((variable) => ({
-                equipmentType: equipment.type,
+                equipmentType: equipment.type as unknown as EQUIPMENT_TYPES,
                 equipmentId: equipment.id,
                 variableId: variable.variableId,
             }))
