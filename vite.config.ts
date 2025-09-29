@@ -32,7 +32,7 @@ export default defineConfig((config) => ({
         react(),
         eslint({
             failOnWarning: config.mode !== 'development',
-            lintOnStart: true,
+            lintOnStart: false,
         }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
