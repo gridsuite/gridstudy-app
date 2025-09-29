@@ -16,8 +16,8 @@ import {
     Popper,
     styled,
     TextField,
-    Theme,
 } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import VirtualizedList from './virtualized-list';
 import CheckboxItem from './checkbox-item';
@@ -26,7 +26,7 @@ import CheckboxItem from './checkbox-item';
 // https://mui.com/material-ui/react-autocomplete/#virtualization
 
 const styles = {
-    autocomplete: (theme: Theme) => ({
+    autocomplete: (theme) => ({
         '.MuiAutocomplete-inputRoot': {
             height: '40px',
             backgroundColor: 'unset', // prevents the field from changing size when selected with the keyboard
@@ -48,7 +48,8 @@ const styles = {
             maxWidth: 'calc(100% - 32px)', // reduce 32px to avoid the number of hidden tags, e.g +2, shown in a new line
         },
     }),
-};
+} as const satisfies MuiStyles;
+
 // to reset all default alignments
 const StyledPopper = styled(Popper)({
     [`& .${autocompleteClasses.listbox}`]: {

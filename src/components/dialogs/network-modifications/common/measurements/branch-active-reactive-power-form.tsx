@@ -9,13 +9,14 @@ import { FunctionComponent } from 'react';
 import GridSection from '../../../commons/grid-section';
 import { BranchActiveReactivePowerMeasurementsFormProps } from './measurement.type';
 import { PowerMeasurementsForm } from './power-measurements-form';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     h3: {
         marginTop: 0,
         marginBottom: 0,
     },
-};
+} as const satisfies MuiStyles;
 
 const BranchActiveReactivePowerMeasurementsForm: FunctionComponent<BranchActiveReactivePowerMeasurementsFormProps> = ({
     equipmentToModify,

@@ -5,12 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useRef } from 'react';
-import { Layout, Layouts, ItemCallback, Responsive, WidthProvider } from 'react-grid-layout';
+import { useCallback, useRef, useState } from 'react';
+import { type ItemCallback, type Layout, type Layouts, Responsive, WidthProvider } from 'react-grid-layout';
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { Diagram, DiagramParams, DiagramType } from './cards/diagrams/diagram.type';
 import { Box, useTheme } from '@mui/material';
-import { ElementType, EquipmentInfos, EquipmentType, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    type EquipmentInfos,
+    EquipmentType,
+    type MuiStyles,
+    useDebounce,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
@@ -29,7 +36,8 @@ const styles = {
         flexDirection: 'column',
         width: '100%',
     },
-};
+} as const satisfies MuiStyles;
+
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 // Diagram types to manage here
@@ -159,6 +167,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     const responsiveGridLayoutRef = useRef<any>(null);
     const currentBreakpointRef = useRef<string>('lg');
     const lastModifiedBreakpointRef = useRef<string>('lg'); // Track the last modified breakpoint
+    const [disableStoreButton, setDisableStoreButton] = useState<boolean>(true);
 
     const { snackInfo } = useSnackMessage();
 
@@ -190,6 +199,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     const addLayoutItem = useCallback((diagram: Diagram) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
+        setDisableStoreButton(false);
     }, []);
 
     const removeLayoutItem = useCallback((cardUuid: UUID | string) => {
@@ -204,6 +214,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             return newLayouts;
         });
+        setDisableStoreButton(false);
     }, []);
 
     const onAddMapCard = useCallback(() => {
@@ -228,6 +239,22 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         onAddDiagram: addLayoutItem,
         onDiagramAlreadyExists,
     });
+
+    const handleUpdateDiagram = useCallback(
+        (diagram: Diagram) => {
+            setDisableStoreButton(false);
+            updateDiagram(diagram);
+        },
+        [updateDiagram]
+    );
+
+    const handleUpdateDiagramPositions = useCallback(
+        (diagramParams: DiagramParams) => {
+            setDisableStoreButton(false);
+            updateDiagramPositions(diagramParams);
+        },
+        [updateDiagramPositions]
+    );
 
     const onRemoveCard = useCallback(
         (diagramUuid: UUID) => {
@@ -361,6 +388,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             return newLayouts;
         });
+        setDisableStoreButton(false);
     }, []);
 
     /**
@@ -392,6 +420,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             lastModifiedBreakpointRef.current = currentBreakpointRef.current;
             // Ensure final order is propagated to all breakpoints
             propagateOrder(layout, currentBreakpointRef.current);
+            setDisableStoreButton(false);
         },
         [propagateOrder]
     );
@@ -403,6 +432,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         } else {
             setLayouts(initialLayouts);
         }
+        setDisableStoreButton(true);
     }, []);
     useDiagramsGridLayoutInitialization({ onLoadDiagramLayout });
 
@@ -421,10 +451,15 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         [diagrams, snackInfo]
     );
 
-    const handleGridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
+    const gridLayoutSave = useSaveDiagramLayout({ layouts, diagrams });
 
     // Debounce the layout save function to avoid excessive calls
-    const debouncedGridLayoutSave = useDebounce(handleGridLayoutSave, 300);
+    const debouncedGridLayoutSave = useDebounce(gridLayoutSave, 300);
+
+    const handleGridLayoutSave = useCallback(() => {
+        setDisableStoreButton(true);
+        debouncedGridLayoutSave();
+    }, [debouncedGridLayoutSave]);
 
     return (
         <Box sx={styles.container}>
@@ -433,7 +468,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 onSearch={showVoltageLevelDiagram}
                 onOpenNetworkAreaDiagram={showGrid}
                 onMap={!isMapCardAdded() ? onAddMapCard : undefined}
-                onLayoutSave={debouncedGridLayoutSave}
+                onLayoutSave={handleGridLayoutSave}
+                disableStore={disableStoreButton}
             />
             <ResponsiveGridLayout
                 ref={responsiveGridLayoutRef} // the provided innerRef prop is bugged (see https://github.com/react-grid-layout/react-grid-layout/issues/1444)
@@ -482,8 +518,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             onClose={() => onRemoveCard(diagram.diagramUuid)}
                             showInSpreadsheet={showInSpreadsheet}
                             createDiagram={createDiagram}
-                            updateDiagram={updateDiagram}
-                            updateDiagramPositions={updateDiagramPositions}
+                            updateDiagram={handleUpdateDiagram}
+                            updateDiagramPositions={handleUpdateDiagramPositions}
                         />
                     );
                 })}

@@ -189,32 +189,29 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
     const renderCommonCharacteristics = (equipmentInfo) => {
         return (
             <>
-                {equipmentInfo.r && (
-                    <TableRow>
-                        <TableCell />
-                        {renderTableCell({
-                            label: 'seriesResistance',
-                            isLabel: true,
-                        })}
-                        {renderTableCell({
-                            value: formatValue(equipmentInfo.r, 2),
-                            isLabel: false,
-                        })}
-                    </TableRow>
-                )}
-                {equipmentInfo.x && (
-                    <TableRow>
-                        <TableCell />
-                        {renderTableCell({
-                            label: 'seriesReactance',
-                            isLabel: true,
-                        })}
-                        {renderTableCell({
-                            value: formatValue(equipmentInfo.x, 2),
-                            isLabel: false,
-                        })}
-                    </TableRow>
-                )}
+                <TableRow>
+                    <TableCell />
+                    {renderTableCell({
+                        label: 'seriesResistance',
+                        isLabel: true,
+                    })}
+                    {renderTableCell({
+                        value: formatValue(equipmentInfo.r, 2),
+                        isLabel: false,
+                    })}
+                </TableRow>
+
+                <TableRow>
+                    <TableCell />
+                    {renderTableCell({
+                        label: 'seriesReactance',
+                        isLabel: true,
+                    })}
+                    {renderTableCell({
+                        value: formatValue(equipmentInfo.x, 2),
+                        isLabel: false,
+                    })}
+                </TableRow>
             </>
         );
     };

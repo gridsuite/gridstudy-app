@@ -8,6 +8,7 @@
 import { useCallback, useMemo } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     nominalVoltageZone: {
@@ -35,7 +36,7 @@ const styles = {
             textDecoration: 'underline',
         },
     },
-};
+} as const satisfies MuiStyles;
 
 export type NominalVoltageFilterProps = {
     nominalVoltages: number[];

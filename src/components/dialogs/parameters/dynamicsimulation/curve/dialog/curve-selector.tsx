@@ -5,22 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Theme, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter';
 import ModelFilter, { GetSelectedVariablesHandle } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 import { IdentifiableAttributes } from 'services/study/filter';
 import { ModelVariable } from '../../dynamic-simulation.type';
 
 const styles = {
-    h6: (theme: Theme) => ({
+    h6: (theme) => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface GetSelectedItemsHandler {
     api: {

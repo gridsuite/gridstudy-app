@@ -150,11 +150,14 @@ const VoltageLevelModificationDialog = ({
                             }
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(voltageLevel, getValues),
-                                [SUBSTATION_ID]: voltageLevel?.substationId,
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(voltageLevel, getValues),
+                                    [SUBSTATION_ID]: voltageLevel?.substationId,
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                     })
                     .catch(() => {
