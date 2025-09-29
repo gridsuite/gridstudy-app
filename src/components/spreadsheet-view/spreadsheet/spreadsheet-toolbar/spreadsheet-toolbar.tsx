@@ -76,6 +76,7 @@ export const SpreadsheetToolbar = ({
                     columns={columns}
                     disabled={disabled}
                     nodeAliases={nodeAliases}
+                    dataSize={rowCounterInfos.displayedRows ?? 0}
                 />
             </Grid>
         </Grid>

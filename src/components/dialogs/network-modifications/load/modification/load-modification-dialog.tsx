@@ -30,7 +30,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -66,6 +66,7 @@ import { LoadFormInfos } from '../common/load.type';
 import { DeepNullable } from 'components/utils/ts-utils';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from 'components/dialogs/set-points/set-points-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -111,7 +112,7 @@ export default function LoadModificationDialog({
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
-    const formMethods = useForm<DeepNullable<LoadModificationSchemaForm>>({
+    const formMethods = useFormWithDirtyTracking<DeepNullable<LoadModificationSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<LoadModificationSchemaForm>>(formSchema),
     });
@@ -183,7 +184,6 @@ export default function LoadModificationDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setLoadToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             }
