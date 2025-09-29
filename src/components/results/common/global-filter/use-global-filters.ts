@@ -16,6 +16,7 @@ interface UseGlobalFiltersParams {
 export default function useGlobalFilters({ onFilterChange }: UseGlobalFiltersParams) {
     const [globalFilters, setGlobalFilters] = useState<GlobalFilters>();
 
+    // see <GlobalFilterSelector onChange={...} .../>
     const handleGlobalFilterChange = useCallback(
         (value: GlobalFilter[]) => {
             let newGlobalFilter: GlobalFilters = {};
