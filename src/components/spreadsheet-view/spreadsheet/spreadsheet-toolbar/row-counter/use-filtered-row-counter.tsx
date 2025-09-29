@@ -120,16 +120,15 @@ export function useFilteredRowCounterInfo({
         const lines: string[] = [`${intl.formatMessage({ id: 'ClickToReset' })}`];
         if (Object.keys(gsFilterByType)?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ExternalFilters' })} : `);
-
-            Object.entries(gsFilterByType).forEach(([filterType, labels]) => {
+            for (const [filterType, labels] of Object.entries(gsFilterByType)) {
                 const formattedLabels = labels.map((label) => intl.formatMessage({ id: label })).join(', ');
                 lines.push(`- ${intl.formatMessage({ id: filterType })} : "${formattedLabels}"`);
-            });
+            }
         }
 
         if (spreadsheetColumnsFiltersState?.length > 0) {
             lines.push(`${intl.formatMessage({ id: 'ColumnsFilters' })} : `);
-            spreadsheetColumnsFiltersState.forEach((filterModel) => {
+            for (const filterModel of spreadsheetColumnsFiltersState) {
                 const headerName =
                     gridRef.current?.api.getColumn(filterModel.column)?.getColDef()?.headerName ?? filterModel.column;
                 lines.push(
@@ -138,7 +137,7 @@ export function useFilteredRowCounterInfo({
                         ', '
                     )
                 );
-            });
+            }
         }
         return <span style={{ whiteSpace: 'pre-line' }}>{lines.join('\n')}</span>;
     }, [globalFilterSpreadsheetState, gridRef, intl, isAnyFilterPresent, isLoading, spreadsheetColumnsFiltersState]);
