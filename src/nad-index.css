@@ -7,6 +7,13 @@
     fill: none;
     cursor: default;
 }
+.nad-edge-path:hover {
+    stroke-width: 35px;
+    cursor: crosshair !important; /* DO NOT COMMIT, just for testing */
+}
+mask polyline {
+    stroke-width: 0.25%;
+}
 .nad-text-edges { /* Hidden for now */
     display: none;
 }
@@ -172,9 +179,13 @@ g.nad-disconnected > g.nad-disconnected {
     :is(
         .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
         .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-        .nad-vl-nodes circle.nad-unknown-busnode
+        .nad-vl-nodes circle.nad-unknown-busnode,
+        mask polyline
         ) {
         stroke-width: 3;
+    }
+    .nad-edge-path:hover {
+        stroke-width: 35px !important;
     }
     :is(
         .nad-branch-edges .nad-overload .nad-edge-path
@@ -182,7 +193,21 @@ g.nad-disconnected > g.nad-disconnected {
         animation: line-blink-nad-zoom-0 0.75s infinite steps(1, start);
     }
 }
-
+.nad-zoom-2000 {
+    .nad-edge-path:hover {
+        stroke-width: 55px !important;;
+    }
+}
+.nad-zoom-3500 {
+    .nad-edge-path:hover {
+        stroke-width: 75px !important;;
+    }
+}
+.nad-zoom-6000 {
+    .nad-edge-path:hover {
+        stroke-width: 105px !important;;
+    }
+}
 /* Makes the dashed lines' spaces consistent when zooming */
 :is(.nad-zoom-0, .nad-zoom-2000) :is(
     .nad-disconnected .nad-edge-path
@@ -196,9 +221,13 @@ g.nad-disconnected > g.nad-disconnected {
     :is(
         .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
         .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-        .nad-vl-nodes circle.nad-unknown-busnode
+        .nad-vl-nodes circle.nad-unknown-busnode,
+        mask polyline
         ) {
         stroke-width: 0.2%;
+    }
+    .nad-edge-path:hover {
+        stroke-width: 150px !important;;
     }
     :is(
         .nad-branch-edges .nad-overload .nad-edge-path
@@ -222,9 +251,13 @@ g.nad-disconnected > g.nad-disconnected {
     :is(
         .nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path,
         .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding,
-        .nad-vl-nodes circle.nad-unknown-busnode
+        .nad-vl-nodes circle.nad-unknown-busnode,
+        mask polyline
         ) {
         stroke-width: 0.1%;
+    }
+    .nad-edge-path:hover {
+        stroke-width: 200px !important;;
     }
     :is(
         .nad-branch-edges .nad-overload .nad-edge-path
