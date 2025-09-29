@@ -137,6 +137,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                     <FormattedMessage id={'NoSpreadsheets'} />
                 </Alert>
             ) : (
+                nodeAliases &&
                 tablesDefinitions.map((tabDef) => {
                     const isActive = activeSpreadsheetTabUuid === tabDef.uuid;
                     const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;

@@ -8,6 +8,7 @@
 import { Grid } from '@mui/material';
 import {
     ENABLED,
+    EQUIPMENT,
     LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
     REGULATION_MODE,
@@ -15,8 +16,9 @@ import {
     REGULATION_TYPE,
     TARGET_DEADBAND,
     TARGET_V,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { VoltageAdornment } from '../../../../dialog-utils';
@@ -24,7 +26,12 @@ import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import { RATIO_REGULATION_MODES } from 'components/network/constants';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
-import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
+import {
+    getComputedPreviousRatioRegulationType,
+    getComputedRegulationModeId,
+    getComputedRegulationTypeId,
+    getComputedTapSideId,
+} from './ratio-tap-changer-pane-utils';
 import GridItem from '../../../../commons/grid-item';
 import GridSection from '../../../../commons/grid-section';
 import RegulatedTerminalSection from '../regulated-terminal-section';
@@ -39,7 +46,7 @@ const RatioTapChangerPane = ({
     editData,
     isModification = false,
 }) => {
-    const { trigger } = useFormContext();
+    const { trigger, setValue, getValues } = useFormContext();
     const intl = useIntl();
 
     const previousRegulation = () => {
@@ -90,6 +97,81 @@ const RatioTapChangerPane = ({
         return regulationTypeWatch || getComputedPreviousRatioRegulationType(previousValues);
     }, [previousValues, regulationTypeWatch]);
 
+    const findAndSetVoltageLevelFromPrevious = useCallback(
+        (previousValues, voltageLevelOptions) => {
+            const prevVl = voltageLevelOptions.find(
+                (vl) => vl.id === previousValues?.ratioTapChanger?.regulatingTerminalVlId
+            );
+            if (prevVl) {
+                const newVlValue = {
+                    id: prevVl.id,
+                    label: prevVl.name ?? '',
+                };
+                setValue(`${id}.${VOLTAGE_LEVEL}`, newVlValue);
+            } else {
+                // not supposed to happen, but if it does, we want to log it and keep the form as it is
+                console.error('Voltage level not found:', prevVl);
+            }
+        },
+        [setValue, id]
+    );
+
+    const setEquipmentFromPrevious = useCallback(
+        (previousValues) => {
+            const prevEquipmentId = previousValues?.ratioTapChanger?.regulatingTerminalConnectableId;
+            if (prevEquipmentId) {
+                const prevEquipmentType = previousValues?.ratioTapChanger?.regulatingTerminalConnectableType;
+                const newEquipment = {
+                    id: prevEquipmentId,
+                    label: prevEquipmentType,
+                    type: prevEquipmentType,
+                };
+                setValue(`${id}.${EQUIPMENT}`, newEquipment);
+            }
+        },
+        [setValue, id]
+    );
+
+    // we want to fill the empty fields with the previous values when 'on load' is enabled
+    const fillRatioTapChangerRegulationAttributesWithPreviousValues = useCallback(
+        (newOnLoad) => {
+            if (newOnLoad === true) {
+                const curRatioTapChanger = getValues(id);
+
+                if (curRatioTapChanger[REGULATION_MODE] === null) {
+                    setValue(`${id}.${REGULATION_MODE}`, getComputedRegulationModeId(previousValues));
+                }
+                if (curRatioTapChanger[TARGET_V] === null) {
+                    setValue(`${id}.${TARGET_V}`, previousValues?.ratioTapChanger?.targetV);
+                }
+                if (curRatioTapChanger[TARGET_DEADBAND] === null) {
+                    setValue(`${id}.${TARGET_DEADBAND}`, previousValues?.ratioTapChanger?.targetDeadband);
+                }
+                if (curRatioTapChanger[REGULATION_TYPE] === null) {
+                    setValue(`${id}.${REGULATION_TYPE}`, getComputedRegulationTypeId(previousValues));
+                }
+                if (curRatioTapChanger[REGULATION_SIDE] === null) {
+                    setValue(`${id}.${REGULATION_SIDE}`, getComputedTapSideId(previousValues));
+                }
+                if (curRatioTapChanger[VOLTAGE_LEVEL] === null) {
+                    findAndSetVoltageLevelFromPrevious(previousValues, voltageLevelOptions);
+                }
+                if (curRatioTapChanger[EQUIPMENT] === null) {
+                    setEquipmentFromPrevious(previousValues);
+                }
+            }
+        },
+        [
+            id,
+            voltageLevelOptions,
+            previousValues,
+            setValue,
+            getValues,
+            findAndSetVoltageLevelFromPrevious,
+            setEquipmentFromPrevious,
+        ]
+    );
+
     // we want to update the validation of these fields when they become optionals to remove the red alert
     useEffect(() => {
         if (regulationModeWatch === RATIO_REGULATION_MODES.FIXED_RATIO.id) {
@@ -107,6 +189,7 @@ const RatioTapChangerPane = ({
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
             previousValue={previousRegulation()}
+            onChange={fillRatioTapChangerRegulationAttributesWithPreviousValues}
         />
     ) : (
         <SwitchInput

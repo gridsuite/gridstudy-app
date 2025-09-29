@@ -17,7 +17,7 @@ import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.js';
 import { useCallback, useRef, useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { CurrentLimits } from '../../../services/network-modification-types';
 import { OperationalLimitsGroupsTabs } from './operational-limits-groups-tabs';
 import { tabStyles } from 'components/utils/tab-utils';
 import IconButton from '@mui/material/IconButton';
@@ -26,11 +26,13 @@ import GridSection from '../commons/grid-section';
 import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
+import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { BranchInfos } from '../../../services/study/network-map.type';
 
 export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
-    equipmentToModify?: any;
+    equipmentToModify?: BranchInfos | null;
     clearableFields?: boolean;
 }
 
@@ -44,7 +46,7 @@ export function LimitsPane({
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroup[] = useWatch({
+    const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
 
@@ -72,10 +74,11 @@ export function LimitsPane({
             }
 
             // checks if limit sets with that name already exist
-            const sameNameInLs: OperationalLimitsGroup[] = limitsGroups
+            const sameNameInLs: OperationalLimitsGroupFormInfos[] = limitsGroups
                 .filter((_ls, index: number) => index !== indexSelectedLimitSet)
                 .filter(
-                    (limitsGroup: OperationalLimitsGroup) => limitsGroup.name.trim() === editedLimitGroupName.trim()
+                    (limitsGroup: OperationalLimitsGroupFormInfos) =>
+                        limitsGroup.name.trim() === editedLimitGroupName.trim()
                 );
 
             // only 2 limit sets with the same name are allowed and only if there have SIDE1 and SIDE2 applicability
@@ -146,12 +149,13 @@ export function LimitsPane({
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                         checkLimitSetUnicity={checkLimitSetUnicity}
                         isAModification={!!equipmentToModify}
+                        currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>
                     {indexSelectedLimitSet !== null &&
                         limitsGroups.map(
-                            (operationalLimitsGroup: OperationalLimitsGroup, index: number) =>
+                            (operationalLimitsGroup: OperationalLimitsGroupFormInfos, index: number) =>
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id}

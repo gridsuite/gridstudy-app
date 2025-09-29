@@ -9,7 +9,7 @@ import { NodeProps, Position } from '@xyflow/react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { LIGHT_THEME, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, type MuiStyles } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
@@ -21,6 +21,7 @@ import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
 import React from 'react';
 import { BuildButton } from './build-button';
+import { Typography } from '@mui/material';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -43,12 +44,19 @@ const styles = {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
     }),
-    overflowText: (theme) => ({
+    typographyText: (theme) => ({
         color: theme.palette.text.primary,
         fontSize: '20px',
         fontWeight: 400,
         lineHeight: 'normal',
         textAlign: 'left',
+        display: '-webkit-box',
+        WebkitBoxOrient: 'vertical',
+        WebkitLineClamp: 2,
+        overflow: 'hidden',
+        width: 'auto',
+        textOverflow: 'ellipsis',
+        wordBreak: 'break-word',
     }),
     footerBox: (theme) => ({
         display: 'flex',
@@ -118,12 +126,9 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 ]}
             >
                 <Box sx={styles.contentBox}>
-                    <OverflowableText
-                        text={props.data.label}
-                        sx={styles.overflowText}
-                        tooltipSx={styles.tooltip}
-                        maxLineCount={2}
-                    />
+                    <Typography variant="body1" sx={styles.typographyText}>
+                        {props.data.label}
+                    </Typography>
                 </Box>
 
                 <Box sx={styles.footerBox}>
