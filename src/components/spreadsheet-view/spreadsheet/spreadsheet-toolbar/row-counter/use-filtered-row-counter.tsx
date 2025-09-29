@@ -103,7 +103,7 @@ export function useFilteredRowCounterInfo({
             return intl.formatMessage({ id: 'NoMatch' });
         } else {
             const plural = intl.formatMessage({ id: 'Rows' }, { count: totalRows });
-            return displayedRows !== totalRows ? `${displayedRows} / ${totalRows} ${plural}` : `${totalRows} ${plural}`;
+            return displayedRows === totalRows ? `${totalRows} ${plural}` : `${displayedRows} / ${totalRows} ${plural}`;
         }
     }, [displayedRows, totalRows, intl, isAnyFilterPresent]);
 
