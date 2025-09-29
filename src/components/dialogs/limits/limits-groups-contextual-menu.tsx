@@ -98,13 +98,11 @@ export function LimitsGroupsContextualMenu({
             };
             // if the permanent limit is undefined in the form we try to get the previous value of the corresponding current limit
             if (!newLimitsGroup1[CURRENT_LIMITS][PERMANENT_LIMIT]) {
-                const previousPermanentLimit = currentLimitsToModify.find(
-                    (cl: CurrentLimits) =>
-                        cl.id === duplicatedLimits1[NAME] && cl.applicability === duplicatedLimits1[APPLICABIlITY]
-                )?.permanentLimit;
-                if (previousPermanentLimit) {
-                    newLimitsGroup1[CURRENT_LIMITS][PERMANENT_LIMIT] = previousPermanentLimit;
-                }
+                newLimitsGroup1[CURRENT_LIMITS][PERMANENT_LIMIT] =
+                    currentLimitsToModify.find(
+                        (cl: CurrentLimits) =>
+                            cl.id === duplicatedLimits1[NAME] && cl.applicability === duplicatedLimits1[APPLICABIlITY]
+                    )?.permanentLimit ?? null;
             }
 
             appendToLimitsGroups(newLimitsGroup1);
