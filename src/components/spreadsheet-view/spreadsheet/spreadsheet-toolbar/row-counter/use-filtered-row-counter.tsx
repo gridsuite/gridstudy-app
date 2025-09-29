@@ -61,7 +61,7 @@ export function useFilteredRowCounterInfo({
                 }
                 const api = gridRef.current.api;
                 setDisplayedRows(api.getDisplayedRowCount());
-                setTotalRows(Object.values(equipments.equipmentsByNodeId[currentNode.id]).length ?? 0);
+                setTotalRows(Object.values(equipments.equipmentsByNodeId[currentNode.id] ?? {}).length ?? 0);
                 setIsLoading(false);
             }, 600),
         [gridRef, currentNode, disabled, equipments.equipmentsByNodeId]

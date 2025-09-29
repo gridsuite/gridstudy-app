@@ -8,9 +8,9 @@ import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
 import { APPLICABILITY } from '../../network/constants';
 import { useIntl } from 'react-intl';
+import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
@@ -29,7 +29,7 @@ export const SelectedOperationalLimitGroup = ({
     previousValue,
     isABranchModif,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
-    const optionsValues: OperationalLimitsGroup[] = useWatch({
+    const optionsValues: OperationalLimitsGroupFormInfos[] = useWatch({
         name: optionsFormName,
     });
     const intl = useIntl();
@@ -38,12 +38,12 @@ export const SelectedOperationalLimitGroup = ({
         const finalOptions: string[] = optionsValues
             ? optionsValues
                   .filter(
-                      (optionObj: OperationalLimitsGroup) =>
+                      (optionObj: OperationalLimitsGroupFormInfos) =>
                           optionObj.applicability &&
                           (optionObj.applicability === filteredApplicability ||
                               optionObj.applicability === APPLICABILITY.EQUIPMENT.id)
                   )
-                  .map((filteredoptionObj: OperationalLimitsGroup) => filteredoptionObj.name)
+                  .map((filteredoptionObj: OperationalLimitsGroupFormInfos) => filteredoptionObj.name)
                   .filter((id: string) => id != null)
             : [];
         if (isABranchModif) {
