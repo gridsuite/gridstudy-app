@@ -7,9 +7,8 @@
 
 import { useEffect, useMemo } from 'react';
 import { Grid } from '@mui/material';
-import { CustomFormProvider, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import { CustomFormProvider, type MuiStyles, type UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -33,7 +32,7 @@ const styles = {
         maxWidth: 'none',
         margin: 'auto',
     },
-};
+} as const satisfies MuiStyles;
 
 const toCustomColumnNodesDialogFormValues = (nodeAliases: NodeAlias[]) => {
     return { [NODES_ALIASES]: nodeAliases };

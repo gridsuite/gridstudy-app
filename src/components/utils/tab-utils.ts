@@ -5,17 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { darken, lighten, Theme } from '@mui/material';
+import { darken, lighten } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    tabWithError: (theme: Theme) => ({
+    tabWithError: (theme) => ({
         '&.Mui-selected': { color: theme.palette.error.main },
         color: theme.palette.error.main,
     }),
-    tabWithErrorIndicator: (theme: Theme) => ({
+    tabWithErrorIndicator: (theme) => ({
         backgroundColor: theme.palette.error.main,
     }),
-};
+} as const satisfies MuiStyles;
 
 export function getTabIndicatorStyle<T extends number | string>(tabIndexesWithError: T[], index: T) {
     return tabIndexesWithError.includes(index) ? styles.tabWithErrorIndicator : undefined;
@@ -41,10 +42,10 @@ export const stylesLayout = {
     listDisplay: {
         height: '100%',
     },
-};
+} as const satisfies MuiStyles;
 
 export const tabStyles = {
-    listTitleDisplay: (theme: Theme) => ({
+    listTitleDisplay: (theme) => ({
         paddingTop: 1,
         paddingBottom: 1,
         paddingLeft: theme.spacing(2),
@@ -55,7 +56,7 @@ export const tabStyles = {
                 ? darken(theme.palette.background.paper, 0.1)
                 : theme.palette.background.paper,
     }),
-    listDisplay: (theme: Theme) => ({
+    listDisplay: (theme) => ({
         ...stylesLayout.listDisplay,
         backgroundColor:
             theme.palette.mode === 'light'
@@ -73,7 +74,7 @@ export const tabStyles = {
             height: '30px', //40px by default
         },
     }),
-    parametersBox: (theme: Theme) => ({
+    parametersBox: (theme) => ({
         backgroundColor:
             theme.palette.mode === 'light'
                 ? theme.palette.background.paper
@@ -82,15 +83,15 @@ export const tabStyles = {
         position: 'relative',
         padding: 0,
     }),
-    contentBox: (theme: Theme) => ({
+    contentBox: (theme) => ({
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         paddingLeft: theme.spacing(8),
         paddingRight: theme.spacing(8),
         height: '100%',
     }),
-    dividerTab: (theme: Theme) => ({
+    dividerTab: (theme) => ({
         padding: 0,
         minHeight: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;

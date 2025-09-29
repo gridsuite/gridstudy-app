@@ -6,16 +6,14 @@
  */
 
 import { Box, Checkbox, Tooltip } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { ReactNode, useEffect, useRef, useState } from 'react';
-
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { ICellRendererParams } from 'ag-grid-community';
 import { CustomCellRendererProps } from 'ag-grid-react';
-import { mergeSx } from '@gridsuite/commons-ui';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    tableCell: (theme: Theme) => ({
+    tableCell: (theme) => ({
         fontSize: 'small',
         cursor: 'inherit',
         display: 'flex',
@@ -35,7 +33,7 @@ const styles = {
     numericValue: {
         marginLeft: 'inherit',
     },
-};
+} as const satisfies MuiStyles;
 
 export const BooleanCellRenderer = (props: any) => {
     const isChecked = props.value;

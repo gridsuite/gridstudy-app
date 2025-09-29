@@ -169,10 +169,13 @@ export default function LoadModificationDialog({
                     .then((load: LoadFormInfos) => {
                         if (load) {
                             setLoadToModify(load);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
