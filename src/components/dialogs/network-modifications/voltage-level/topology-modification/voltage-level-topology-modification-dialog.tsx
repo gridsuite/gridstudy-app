@@ -13,26 +13,26 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../../services/utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../network/constants';
-import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { ModificationDialog } from '../../commons/modificationDialog';
-import { EquipmentIdSelector } from '../../equipment-id/equipment-id-selector';
-import yup from '../../../utils/yup-config';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from '../../../../network/constants';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { ModificationDialog } from '../../../commons/modificationDialog';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import yup from '../../../../utils/yup-config';
 import {
     CURRENT_CONNECTION_STATUS,
     PREV_CONNECTION_STATUS,
     SWITCH_ID,
     TOPOLOGY_MODIFICATION_TABLE,
-} from '../../../utils/field-constants';
+} from '../../../../utils/field-constants';
 import { VoltageLevelTopologyModificationForm } from './voltage-level-topology-modification-form';
-import { modifyVoltageLevelTopology } from '../../../../services/study/network-modifications';
-import { TopologyVoltageLevelModificationInfos } from '../../../../services/network-modification-types';
-import { fetchSwitchesOfVoltageLevel } from '../../../../services/study/network';
-import { EquipmentModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
-import { SwitchInfos } from '../../../../services/study/network-map.type';
+import { modifyVoltageLevelTopology } from '../../../../../services/study/network-modifications';
+import { TopologyVoltageLevelModificationInfos } from '../../../../../services/network-modification-types';
+import { fetchSwitchesOfVoltageLevel } from '../../../../../services/study/network';
+import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { SwitchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
@@ -158,11 +158,7 @@ export default function VoltageLevelTopologyModificationDialog({
             if (topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE]?.length > 0) {
                 equipmentAttributeModificationInfos = topologyVLModificationInfos[TOPOLOGY_MODIFICATION_TABLE].filter(
                     (item) => {
-                        return !(
-                            item === null ||
-                            item.currentConnectionStatus === null ||
-                            item.currentConnectionStatus === undefined
-                        );
+                        return item?.currentConnectionStatus != null;
                     }
                 ).map((item) => ({
                     type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,

@@ -16,7 +16,20 @@ import {
 } from 'services/network-modification-types';
 import { VoltageLevel } from './equipment-types';
 import { Option } from '@gridsuite/commons-ui';
-import { APPLICABIlITY, CURRENT_LIMITS, ID, NAME, SELECTED } from './field-constants';
+import {
+    APPLICABIlITY,
+    CURRENT_LIMITS,
+    DELETION_MARK,
+    ID,
+    MODIFICATION_TYPE,
+    NAME,
+    SELECTED,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_VALUE,
+} from './field-constants';
+import { TemporaryLimitFormInfos } from '../dialogs/network-modifications/line/modification/line-modification-type';
 
 export const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 
@@ -121,10 +134,20 @@ export function toModificationUnsetOperation<T>(
 export const formatTemporaryLimits = (temporaryLimits: TemporaryLimit[]): TemporaryLimit[] =>
     temporaryLimits?.map((limit: TemporaryLimit) => {
         return {
-            name: limit?.name ?? '',
-            value: limit?.value ?? null,
-            acceptableDuration: limit?.acceptableDuration ?? null,
-            modificationType: limit?.modificationType ?? null,
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [MODIFICATION_TYPE]: limit?.[MODIFICATION_TYPE] ?? null,
+        };
+    });
+
+export const formatToTemporaryLimitsFormInfos = (temporaryLimits: TemporaryLimit[]): TemporaryLimitFormInfos[] =>
+    temporaryLimits?.map((limit: TemporaryLimit) => {
+        return {
+            [TEMPORARY_LIMIT_NAME]: limit?.[TEMPORARY_LIMIT_NAME] ?? '',
+            [TEMPORARY_LIMIT_VALUE]: limit?.[TEMPORARY_LIMIT_VALUE] ?? null,
+            [TEMPORARY_LIMIT_DURATION]: limit?.[TEMPORARY_LIMIT_DURATION] ?? null,
+            [DELETION_MARK]: limit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETE,
         };
     });
 
