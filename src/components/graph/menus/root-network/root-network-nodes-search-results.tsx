@@ -25,6 +25,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         pt: 1,
+        pl: 0.5,
         mb: 1,
     },
     itemHover: (theme: Theme) => ({

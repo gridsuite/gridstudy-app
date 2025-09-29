@@ -33,6 +33,7 @@ const styles = {
         cursor: 'pointer',
         pt: 0.5,
         pb: 0.5,
+        pl: 0.5,
     },
 };
 export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications, nodeUuid }) => {
