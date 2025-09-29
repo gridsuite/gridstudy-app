@@ -32,7 +32,7 @@ import { BranchInfos } from '../../../services/study/network-map.type';
 export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
-    equipmentToModify?: BranchInfos;
+    equipmentToModify?: BranchInfos | null;
     clearableFields?: boolean;
 }
 
