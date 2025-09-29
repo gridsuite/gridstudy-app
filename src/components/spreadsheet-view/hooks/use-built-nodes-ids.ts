@@ -17,8 +17,12 @@ import type { NodeAlias } from '../types/node-alias.type';
 export function useBuiltNodesIds(nodeAliases: NodeAlias[] | undefined) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
 
     return useStableComputedSet(() => {
+        if (!isTreeModelUpToDate) {
+            return new Set<UUID>();
+        }
         const aliasedNodesIds = nodeAliases
             ?.filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);
