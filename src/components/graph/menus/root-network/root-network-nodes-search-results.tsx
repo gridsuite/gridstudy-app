@@ -51,7 +51,7 @@ export const RootNetworkNodesSearchResults: React.FC<RootNetworkNodesSearchResul
         (nodeName: string) => {
             const node = treeNodes?.find((node) => node.data.label === nodeName);
             if (node) {
-                setCurrentTreeNodeWithSync(node);
+                setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
         },
