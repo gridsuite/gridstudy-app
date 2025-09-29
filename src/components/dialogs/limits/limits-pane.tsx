@@ -29,6 +29,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
+import { combineFormAndMapServerLimitsGroups } from './limits-pane-utils';
 
 export interface LimitsPaneProps {
     id?: string;
@@ -44,7 +45,7 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [indexSelectedLimitSet, setIndexSelectedLimitSet] = useState<number | null>(null);
-    const { setValue } = useFormContext();
+    const { reset, getValues } = useFormContext();
 
     const myRef: any = useRef<any>(null);
 
@@ -109,9 +110,18 @@ export function LimitsPane({
     );
 
     const handlePopupConfirmation = () => {
-        setValue(`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`, false);
-        // TODO : reset des données de limites (cf combineFormAndMapServerLimitsGroups)
-        // setValue(`${id}.${OPERATIONAL_LIMITS_GROUPS}`, equipmentToModify.currentLimits);
+        const resetOLGs: OperationalLimitsGroupFormInfos[] = combineFormAndMapServerLimitsGroups(
+            null,
+            equipmentToModify
+        );
+        const currentValues = getValues();
+        reset({
+            ...currentValues,
+            [LIMITS]: {
+                [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
+                [EDITED_OPERATIONAL_LIMITS_GROUPS]: false,
+            },
+        });
     };
 
     return (

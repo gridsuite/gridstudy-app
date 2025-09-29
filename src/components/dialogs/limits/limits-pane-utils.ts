@@ -230,10 +230,10 @@ export const updateTemporaryLimits = (
  * in order to fill the operational limits groups modification interface
  */
 export const combineFormAndMapServerLimitsGroups = (
-    formBranchModification: LineModificationFormInfos,
+    formBranchModification: LineModificationFormInfos | null,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
-    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification.limits.operationalLimitsGroups ?? [];
+    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];
 
     // updates limit values :
     for (const opLG of updatedOpLG) {
