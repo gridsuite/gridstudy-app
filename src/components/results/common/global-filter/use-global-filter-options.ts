@@ -6,10 +6,10 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
-import { GlobalFilter } from './global-filter-types';
+import type { GlobalFilter } from '../../../global-filter/types';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../services/study/network-map';
 import { FilterType } from '../utils';
-import { fetchSubstationPropertiesGlobalFilters } from './global-filter-utils';
+import { fetchSubstationPropertiesGlobalFilters } from '../../../global-filter/global-filter-utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 

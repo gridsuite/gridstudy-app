@@ -26,7 +26,7 @@ import { ComputationReportViewer } from './results/common/computation-report-vie
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import GlobalFilterSelector from './results/common/global-filter/global-filter-selector.js';
+import GlobalFilterSelector from './global-filter/global-filter-selector.js';
 import {
     BusVoltages,
     Indicators,

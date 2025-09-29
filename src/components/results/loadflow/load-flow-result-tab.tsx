@@ -44,7 +44,7 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
-import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import GlobalFilterSelector from '../../global-filter/global-filter-selector';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 

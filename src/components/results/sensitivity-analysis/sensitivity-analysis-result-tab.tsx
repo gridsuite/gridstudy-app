@@ -37,7 +37,7 @@ import {
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
-import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import GlobalFilterSelector from '../../global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';

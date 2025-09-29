@@ -17,10 +17,10 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { PropsWithChildren, RefObject, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import { FilterType } from '../utils';
-import { GlobalFilter } from './global-filter-types';
+import { FilterType } from '../results/common/utils';
+import type { GlobalFilter } from './types';
 import { fetchSubstationPropertiesGlobalFilters, getOptionLabel, RECENT_FILTER } from './global-filter-utils';
-import { useLocalizedCountries } from '../../../utils/localized-countries-hook';
+import { useLocalizedCountries } from '../utils/localized-countries-hook';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import {
     DirectoryItemSelector,

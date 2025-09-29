@@ -12,11 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { type AppState } from '../../../../../redux/reducer';
 import { setGlobalFiltersToSpreadsheetConfig } from 'services/study/study-config';
-import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../../../global-filter/types';
 import { FilterType } from '../../../../results/common/utils';
-import GlobalFilterSelector, {
-    type GlobalFilterSelectorProps,
-} from '../../../../results/common/global-filter/global-filter-selector';
+import GlobalFilterSelector, { type GlobalFilterSelectorProps } from '../../../../global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
 import { useGlobalFilterOptions } from '../../../../results/common/global-filter/use-global-filter-options';

@@ -7,7 +7,7 @@
 
 import RunningStatus from './utils/running-status';
 import { UUID } from 'crypto';
-import { GlobalFilter } from './results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from './global-filter/types';
 
 export interface VoltageInitResultProps {
     result: any;

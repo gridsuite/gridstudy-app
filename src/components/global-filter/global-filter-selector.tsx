@@ -7,9 +7,9 @@
 
 import GlobalFilterProvider from './global-filter-provider';
 import GlobalFilterAutocomplete, { GlobalFilterAutocompleteProps } from './global-filter-autocomplete';
-import { GlobalFilter } from './global-filter-types';
 import { useMemo } from 'react';
-import { FilterType } from '../utils';
+import type { GlobalFilter } from './types';
+import { FilterType } from '../results/common/utils';
 
 export type GlobalFilterSelectorProps = GlobalFilterAutocompleteProps & {
     onChange: (globalFilters: GlobalFilter[]) => void;
