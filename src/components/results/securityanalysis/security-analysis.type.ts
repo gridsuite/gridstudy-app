@@ -144,11 +144,19 @@ export interface SecurityAnalysisResultNmkProps {
 }
 
 export interface SecurityAnalysisNTableRow {
-    limit?: number;
-    limitType?: string;
-    loading?: number;
     subjectId?: string;
+    locationId?: string;
+    limit?: number;
+    limitName?: string | null;
+    limitType?: string;
+    nextLimitName?: string | null;
     value?: number;
+    loading?: number;
+    patlLoading?: number;
+    patlLimit?: number;
+    acceptableDuration?: number | null;
+    upcomingAcceptableDuration?: number | null;
+    side?: string;
 }
 
 export interface SecurityAnalysisResultProps {

@@ -126,6 +126,7 @@ const spreadsheetFr = {
     'spreadsheet/tabs/lazy_loading/toolbar_button_tooltip': 'Inclure données supplémentaires',
     'spreadsheet/tabs/lazy_loading/labels/operationalLimitsGroups': 'Sets de limites inactifs',
     'spreadsheet/tabs/lazy_loading/labels/regulatingTerminal': 'Terminaux distants réglés',
+    'spreadsheet/tabs/lazy_loading/labels/networkComponentsInformation': 'Composantes de réseau',
 
     'spreadsheet/global-model-edition/edit': 'Éditer le modèle',
     'spreadsheet/global-model-edition/column_id': 'ID',
