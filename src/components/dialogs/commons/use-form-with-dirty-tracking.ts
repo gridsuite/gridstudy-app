@@ -13,8 +13,8 @@ export function useFormWithDirtyTracking<T extends FieldValues>(props: UseFormPr
     // React Hook Form only tracks dirty fields when you explicitly subscribe to the form state.
     // Without this line, the keepDirty: true option in reset() will not work properly because
     // React Hook Form won't be tracking which fields are dirty. This is a consequence of
-    // React Hook Form's performance optimization that only subscribes to form state that is
-    // explicitly destructured/accessed in the component.
+    // React Hook Form's performance optimization that only subscribes to form state
+    // that is explicitly destructured/accessed in the component.
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         formState: { isDirty },
