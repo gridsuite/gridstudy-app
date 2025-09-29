@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LimitTypes } from '../loadflow/load-flow-result.type';
-import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
+import type { LimitTypes } from '../loadflow/load-flow-result.type';
+import type { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 // data sent to the back
 export interface GlobalFilters {

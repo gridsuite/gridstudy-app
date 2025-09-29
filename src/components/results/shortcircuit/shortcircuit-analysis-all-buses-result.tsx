@@ -16,7 +16,7 @@ import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
-import { GlobalFilters } from '../common/types';
+import { type GlobalFilters } from '../common/types';
 
 interface ShortCircuitAnalysisAllBusResultProps {
     onGridColumnsChanged: (params: GridReadyEvent) => void;

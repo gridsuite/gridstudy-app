@@ -38,7 +38,7 @@ import { FilterType, PaginationType, ShortcircuitAnalysisTab } from '../../../ty
 import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
-import { GlobalFilters } from '../common/types';
+import { type GlobalFilters } from '../common/types';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;

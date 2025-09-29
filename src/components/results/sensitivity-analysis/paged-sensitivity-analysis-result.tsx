@@ -37,7 +37,7 @@ import { UUID } from 'crypto';
 import { SensiKind, SENSITIVITY_AT_NODE } from './sensitivity-analysis-result.type';
 import { AppState } from '../../../redux/reducer';
 import { SensitivityResult, SensitivityResultFilterOptions } from '../../../services/study/sensitivity-analysis.type';
-import { GlobalFilters } from '../common/types';
+import { type GlobalFilters } from '../common/types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 
 export type PagedSensitivityAnalysisResultProps = {

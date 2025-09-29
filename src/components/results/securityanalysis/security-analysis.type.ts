@@ -11,7 +11,7 @@ import { AgGridReactProps } from 'ag-grid-react';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
-import { GlobalFilters } from '../common/types';
+import { type GlobalFilters } from '../common/types';
 
 export interface LimitViolation {
     subjectId?: string;

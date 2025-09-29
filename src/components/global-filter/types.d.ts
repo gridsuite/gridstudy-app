@@ -6,7 +6,7 @@
  */
 
 // complete individual global filter
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 
 // complete individual global filter
 export interface GlobalFilter {
