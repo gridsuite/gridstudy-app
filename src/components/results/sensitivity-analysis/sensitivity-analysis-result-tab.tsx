@@ -39,7 +39,7 @@ import {
 import useGlobalFilters from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../../global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { useGlobalFilterOptions } from '../../global-filter/use-global-filter-options';
 import { useFilterSelector } from '../../../hooks/use-filter-selector';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';

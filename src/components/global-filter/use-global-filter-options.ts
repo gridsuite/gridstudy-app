@@ -6,14 +6,14 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useEffect, useState } from 'react';
-import type { GlobalFilter } from '../../../global-filter/types';
-import { fetchAllCountries, fetchAllNominalVoltages } from '../../../../services/study/network-map';
-import { FilterType } from '../utils';
-import { fetchSubstationPropertiesGlobalFilters } from '../../../global-filter/global-filter-utils';
+import type { GlobalFilter } from './types';
+import { fetchAllCountries, fetchAllNominalVoltages } from '../../services/study/network-map';
+import { FilterType } from '../results/common/utils';
+import { fetchSubstationPropertiesGlobalFilters } from './global-filter-utils';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../redux/reducer';
 
-export const useGlobalFilterOptions = () => {
+export function useGlobalFilterOptions() {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -30,39 +30,30 @@ export const useGlobalFilterOptions = () => {
             fetchAllCountries(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((countryCodes) => {
                     setCountriesFilter(
-                        countryCodes.map((countryCode: string) => ({
-                            label: countryCode,
-                            filterType: FilterType.COUNTRY,
-                        }))
+                        countryCodes.map((countryCode) => ({ label: countryCode, filterType: FilterType.COUNTRY }))
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchCountryError',
-                    });
+                    snackError({ messageTxt: error.message, headerId: 'FetchCountryError' });
                 });
 
             fetchAllNominalVoltages(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((nominalVoltages) => {
                     setVoltageLevelsFilter(
-                        nominalVoltages.map((nominalV: number) => ({
+                        nominalVoltages.map((nominalV) => ({
                             label: nominalV.toString(),
                             filterType: FilterType.VOLTAGE_LEVEL,
                         }))
                     );
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'FetchNominalVoltagesError',
-                    });
+                    snackError({ messageTxt: error.message, headerId: 'FetchNominalVoltagesError' });
                 });
 
             fetchSubstationPropertiesGlobalFilters().then(({ substationPropertiesGlobalFilters }) => {
                 const propertiesGlobalFilters: GlobalFilter[] = [];
                 if (substationPropertiesGlobalFilters) {
-                    for (let [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
+                    for (const [propertyName, propertyValues] of substationPropertiesGlobalFilters.entries()) {
                         propertyValues.forEach((propertyValue) => {
                             propertiesGlobalFilters.push({
                                 label: propertyValue,
@@ -78,4 +69,4 @@ export const useGlobalFilterOptions = () => {
     }, [studyUuid, currentRootNetworkUuid, snackError, currentNode?.id]);
 
     return { countriesFilter, voltageLevelsFilter, propertiesFilter };
-};
+}

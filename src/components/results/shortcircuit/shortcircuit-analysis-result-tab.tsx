@@ -30,7 +30,7 @@ import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../../global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { useGlobalFilterOptions } from '../../global-filter/use-global-filter-options';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;

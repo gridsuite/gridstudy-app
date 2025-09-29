@@ -17,7 +17,7 @@ import { FilterType } from '../../../../results/common/utils';
 import GlobalFilterSelector, { type GlobalFilterSelectorProps } from '../../../../global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '@powsybl/network-viewer';
 import { addToRecentGlobalFilters } from '../../../../../redux/actions';
-import { useGlobalFilterOptions } from '../../../../results/common/global-filter/use-global-filter-options';
+import { useGlobalFilterOptions } from '../../../../global-filter/use-global-filter-options';
 
 export type SpreadsheetGlobalFilterProps = {
     tableDefinition: SpreadsheetTabDefinition;

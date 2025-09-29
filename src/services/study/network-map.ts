@@ -154,7 +154,11 @@ export function fetchVoltageLevelIdForLineOrTransformerBySide(
     return backendFetchText(fetchEquipmentInfosUrl);
 }
 
-export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchAllCountries(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<string[]> {
     console.info(
         `Fetching all countries of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );
@@ -289,7 +293,11 @@ export async function createMapContingencyList(
     return createContingencyList(equipmentContingencyList, elementName, '', destinationDirectoryId);
 }
 
-export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchAllNominalVoltages(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
+): Promise<number[]> {
     console.info(
         `Fetching all nominal voltages of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );

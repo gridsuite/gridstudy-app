@@ -16,7 +16,7 @@ import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import useGlobalFilters from './results/common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from './results/common/global-filter/use-global-filter-options';
+import { useGlobalFilterOptions } from './global-filter/use-global-filter-options';
 
 export type VoltageInitResultTabProps = {
     studyUuid: UUID;
