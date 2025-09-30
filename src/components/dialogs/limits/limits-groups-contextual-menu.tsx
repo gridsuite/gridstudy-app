@@ -6,8 +6,12 @@
  */
 
 import {
+    APPLICABIlITY,
+    CURRENT_LIMITS,
     ID,
+    NAME,
     OPERATIONAL_LIMITS_GROUPS,
+    PERMANENT_LIMIT,
     SELECTED_LIMITS_GROUP_1,
     SELECTED_LIMITS_GROUP_2,
 } from '../../utils/field-constants';
@@ -21,6 +25,7 @@ import { useIntl } from 'react-intl';
 import { PopoverProps } from '@mui/material/Popover';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { CurrentLimits } from '../../../services/network-modification-types';
 
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
@@ -33,6 +38,7 @@ export interface LimitsGroupsContextualMenuProps {
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
     isModification: boolean;
+    currentLimitsToModify: CurrentLimits[];
 }
 
 export function LimitsGroupsContextualMenu({
@@ -46,6 +52,7 @@ export function LimitsGroupsContextualMenu({
     selectedLimitsGroups1,
     selectedLimitsGroups2,
     isModification,
+    currentLimitsToModify,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
@@ -89,6 +96,15 @@ export function LimitsGroupsContextualMenu({
                 ...duplicatedLimits1,
                 [ID]: newName,
             };
+            // if the permanent limit is undefined in the form we try to get the previous value of the corresponding current limit
+            if (!newLimitsGroup1[CURRENT_LIMITS][PERMANENT_LIMIT]) {
+                newLimitsGroup1[CURRENT_LIMITS][PERMANENT_LIMIT] =
+                    currentLimitsToModify.find(
+                        (cl: CurrentLimits) =>
+                            cl.id === duplicatedLimits1[NAME] && cl.applicability === duplicatedLimits1[APPLICABIlITY]
+                    )?.permanentLimit ?? null;
+            }
+
             appendToLimitsGroups(newLimitsGroup1);
             setIndexSelectedLimitSet(getValues(`${operationalLimitsGroupsFormName}`).length - 1);
         }

@@ -32,6 +32,7 @@ import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useIntl } from 'react-intl';
+import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -58,7 +59,7 @@ const styles = {
     }),
 };
 
-const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
+const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
@@ -314,11 +315,8 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         setCenter(centerX, centerY, { zoom: getZoom() });
     }, [currentNode, nodes, setCenter, getZoom]);
 
-    useEffect(() => {
-        if (onTreePanelResize) {
-            onTreePanelResize.current = handleFocusNode;
-        }
-    }, [onTreePanelResize, handleFocusNode]);
+    // trigger focus when requested from outside (ex: from root network modification results)
+    useTreeNodeFocus(handleFocusNode);
 
     const handleNodeMouseEnter = useCallback(
         (event, node) => {

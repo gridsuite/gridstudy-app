@@ -21,6 +21,8 @@ import HorizontalToolbar from './horizontal-toolbar';
 import { openDiagram, setToggleOptions } from '../redux/actions.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './network-modification.type';
+import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases.js';
+import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification.js';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -89,6 +91,9 @@ const StudyPane = ({
 
     const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
 
+    const { nodeAliases } = useNodeAliases();
+    useUpdateEquipmentsOnNotification(nodeAliases);
+
     return (
         <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
@@ -109,9 +114,9 @@ const StudyPane = ({
                         showGrid={showGrid}
                     />
                 </div>
-                {/* This TabPanelLazy is used on a multi-node component so we don't want to reset it at each node change,
-                so we don't specify a key */}
-                <TabPanelLazy selected={view === StudyView.SPREADSHEET}>
+                {/* using a key in these TabPanelLazy because we can change the nodeUuid in these components,
+                 and we want to reset the components at each node change*/}
+                <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>
                     <SpreadsheetView
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -122,8 +127,6 @@ const StudyPane = ({
                         openDiagram={openVoltageLevelDiagram}
                     />
                 </TabPanelLazy>
-                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component,
-                 and we want to reset the component at each node change*/}
                 <TabPanelLazy key={`results-${currentNode?.id}`} selected={view === StudyView.RESULTS}>
                     <ResultViewTab
                         studyUuid={studyUuid}
@@ -134,13 +137,9 @@ const StudyPane = ({
                         view={view}
                     />
                 </TabPanelLazy>
-                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component,
-                 and we want to reset the component at each node change*/}
                 <TabPanelLazy selected={view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
                     <ReportViewerTab visible={view === StudyView.LOGS} currentNode={currentNode} disabled={disabled} />
                 </TabPanelLazy>
-                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component,
-                 and we want to reset the component at each node change*/}
                 <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={view === StudyView.PARAMETERS}>
                     <ParametersTabs view={view} />
                 </TabPanelLazy>
