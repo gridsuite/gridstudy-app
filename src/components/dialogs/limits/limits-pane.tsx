@@ -30,11 +30,12 @@ import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
 import { combineFormAndMapServerLimitsGroups } from './limits-pane-utils';
+import { BranchInfos } from '../../../services/study/network-map.type';
 
 export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
-    equipmentToModify?: any;
+    equipmentToModify?: BranchInfos | null;
     clearableFields?: boolean;
 }
 
@@ -187,6 +188,7 @@ export function LimitsPane({
                         checkLimitSetUnicity={checkLimitSetUnicity}
                         isAModification={!!equipmentToModify}
                         editable={olgEditable}
+                        currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>

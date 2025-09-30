@@ -50,7 +50,7 @@ import {
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
-import { FieldErrors, useForm } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import yup from 'components/utils/yup-config';
 import { ModificationDialog } from '../../../commons/modificationDialog';
@@ -105,6 +105,7 @@ import { useIntl } from 'react-intl';
 import { LimitsDialogFormInfos, LineModificationFormInfos } from './line-modification-type';
 import { LineModificationInfos } from '../../../../../services/network-modification-types';
 import { toModificationOperation } from '../../../../utils/utils';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 export interface LineModificationDialogProps {
     // contains data when we try to edit an existing hypothesis from the current node's list
@@ -178,7 +179,7 @@ const LineModificationDialog = ({
         .concat(modificationPropertiesSchema)
         .required();
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -334,7 +335,6 @@ const LineModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setLineToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {

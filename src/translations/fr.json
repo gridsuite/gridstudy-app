@@ -1568,7 +1568,7 @@
     "DiagramLayoutStoreSuccess": "Images mémorisées avec succès",
     "MaxNumberOfNadDiagramsReached": "Vous devez fermer au moins une image nodale existante pour en ouvrir une nouvelle",
     "NoMatch": "Pas de correspondance",
-    "Rows": "ligne",
+    "Rows": "{count, plural,=1 {ligne} other {lignes}}",
     "ExternalFilters": "Filtres externes",
     "ColumnsFilters": "Filtres de colonnes",
     "genericFilter": "Générique",
@@ -1621,5 +1621,10 @@
     "nodeStatus": "Statut",
     "CONSTRUCTION": "Construction",
     "SECURITY": "Sécurité",
-    "disableOLGedition": "Les données saisies pour les jeux de limites ne seront pas conservées. Voulez-vous continuer ?"
+    "disableOLGedition": "Les données saisies pour les jeux de limites ne seront pas conservées. Voulez-vous continuer ?",
+    "MOVE_VOLTAGE_LEVEL_FEEDER_BAYS": "Déplacer les départs",
+    "TOP": "Haut",
+    "BOTTOM": "Bas",
+    "DuplicatedPositionsError": "Numéro en doublon",
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)"
 }
