@@ -178,13 +178,13 @@ export const darkThemeCssVars = {
         '--vl-color': '#A7B27E',
     },
     '.sld-vl180to300.sld-bus-3, .nad-vl180to300.nad-bus-3': {
-        '--vl-color': '#97593F',
+        '--vl-color': '#F57F17',
     },
     '.sld-vl180to300.sld-bus-4, .nad-vl180to300.nad-bus-4': {
-        '--vl-color': '#C94119',
+        '--vl-color': '#A3715C',
     },
     '.sld-vl180to300.sld-bus-5, .nad-vl180to300.nad-bus-5': {
-        '--vl-color': '#D69A88',
+        '--vl-color': '#DBAB9D',
     },
     '.sld-vl180to300.sld-bus-6, .nad-vl180to300.nad-bus-6': {
         '--vl-color': '#885239',
@@ -193,7 +193,7 @@ export const darkThemeCssVars = {
         '--vl-color': '#B39572',
     },
     '.sld-vl180to300.sld-bus-8, .nad-vl180to300.nad-bus-8': {
-        '--vl-color': '#D58433',
+        '--vl-color': '#C94119',
     },
     '.sld-vl180to300.sld-bus-9, .nad-vl180to300.nad-bus-9': {
         '--vl-color': '#EABC45',
@@ -202,10 +202,10 @@ export const darkThemeCssVars = {
         '--vl-color': '#FF0007',
     },
     '.sld-vl300to500.sld-bus-1, .nad-vl300to500.nad-bus-1': {
-        '--vl-color': '#B5676B',
+        '--vl-color': '#DD6484',
     },
     '.sld-vl300to500.sld-bus-2, .nad-vl300to500.nad-bus-2': {
-        '--vl-color': '#EA9B9E',
+        '--vl-color': '#FFBCBE',
     },
     '.sld-vl300to500.sld-bus-3, .nad-vl300to500.nad-bus-3': {
         '--vl-color': '#25699D',
@@ -220,7 +220,7 @@ export const darkThemeCssVars = {
         '--vl-color': '#44679C',
     },
     '.sld-vl300to500.sld-bus-7, .nad-vl300to500.nad-bus-7': {
-        '--vl-color': '#448BE8',
+        '--vl-color': '#458BE8',
     },
     '.sld-vl300to500.sld-bus-8, .nad-vl300to500.nad-bus-8': {
         '--vl-color': '#2862AE',
