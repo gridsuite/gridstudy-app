@@ -18,11 +18,12 @@ import TreeTab from './tree-tab';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
-import { openDiagram, setToggleOptions } from '../redux/actions.js';
+import { openDiagram, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './network-modification.type';
-import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases.js';
-import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification.js';
+import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
+import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
+import { useResetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-on-root-network';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -93,6 +94,7 @@ const StudyPane = ({
 
     const { nodeAliases } = useNodeAliases();
     useUpdateEquipmentsOnNotification(nodeAliases);
+    useResetOnRootNetwork();
 
     return (
         <Box sx={styles.paneContainer}>
