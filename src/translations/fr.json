@@ -893,6 +893,8 @@
     "permanentCurrentLimitMandatory": "Un IST doit être fourni si le jeu de limites contient des limites d'intensité temporaires",
     "SelectedOperationalLimitGroup": "Jeu de limites actif",
     "SelectedOperationalLimitGroups": "Jeux de limites actifs",
+    "operationalLimitsGroup1WithProperties": "Jeu de limites actif côté 1 avec propriété",
+    "operationalLimitsGroup2WithProperties": "Jeu de limites actif côté 2 avec propriété",
     "Applicability": "Applicable sur",
 
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
