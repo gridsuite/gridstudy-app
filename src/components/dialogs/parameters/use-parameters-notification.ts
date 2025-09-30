@@ -8,11 +8,13 @@
 import {
     ComputingType,
     isValidComputingType,
+    NotificationsUrlKeys,
     OptionalServicesStatus,
+    useNotificationsListener,
     UseParametersBackendReturnProps,
 } from '@gridsuite/commons-ui';
-import { AppState, StudyUpdated } from '../../../redux/reducer';
-import { useEffect, useRef } from 'react';
+import { AppState } from '../../../redux/reducer';
+import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import {
     ComputationParametersUpdatedEventData,
@@ -30,10 +32,9 @@ export const haveComputationParametersChanged = (
     );
 };
 
-export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
-    const studyUpdatedEventData = studyUpdated?.eventData;
-    if (isComputationParametersUpdatedNotification(studyUpdatedEventData)) {
-        return haveComputationParametersChanged(type, studyUpdatedEventData);
+export const isComputationParametersUpdated = (type: ComputingType, eventData: any) => {
+    if (isComputationParametersUpdatedNotification(eventData)) {
+        return haveComputationParametersChanged(type, eventData);
     }
     return false;
 };
@@ -44,36 +45,22 @@ export const useParametersNotification = <T extends ComputingType>(
     parametersBackend: UseParametersBackendReturnProps<T>
 ) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
-    const optionalServiceStatusRef = useRef(optionalServiceStatus);
-    optionalServiceStatusRef.current = optionalServiceStatus;
     const [, , fetchProvider, , , , fetchParameters, , , ,] = parametersBackend;
 
-    // we need to fetch provider when ever a computationParametersUpdated notification received.
-    // use optionalServiceStatusRef here to avoid double effects proc
-    // other dependencies don't change this much
-    useEffect(() => {
-        if (
-            studyUpdated &&
-            isComputationParametersUpdated(type, studyUpdated) &&
-            studyUuid &&
-            optionalServiceStatusRef.current === OptionalServicesStatus.Up
-        ) {
-            fetchProvider(studyUuid);
-        }
-    }, [fetchProvider, studyUpdated, studyUuid, type]);
+    // we need to fetch provider and parameters when ever a computationParametersUpdated notification received.
+    const onComputationParametersUpdated = useCallback(
+        (event: MessageEvent<string>) => {
+            if (!studyUuid || optionalServiceStatus !== OptionalServicesStatus.Up) {
+                return;
+            }
+            const eventData = JSON.parse(event.data);
+            if (isComputationParametersUpdated(type, eventData)) {
+                fetchProvider(studyUuid);
+                fetchParameters(studyUuid);
+            }
+        },
+        [fetchParameters, fetchProvider, optionalServiceStatus, studyUuid, type]
+    );
 
-    // we need to fetch parameters when ever a computationParametersUpdated notification received.
-    // use optionalServiceStatusRef here to avoid double effects proc
-    // other dependencies don't change this much
-    useEffect(() => {
-        if (
-            studyUpdated &&
-            isComputationParametersUpdated(type, studyUpdated) &&
-            studyUuid &&
-            optionalServiceStatusRef.current === OptionalServicesStatus.Up
-        ) {
-            fetchParameters(studyUuid);
-        }
-    }, [fetchParameters, studyUuid, type, studyUpdated]);
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: onComputationParametersUpdated });
 };
