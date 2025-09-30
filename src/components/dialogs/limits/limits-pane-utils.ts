@@ -225,12 +225,27 @@ export const updateTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
+export const mapServerOLGtoOperationalLimitsGroupsFormInfos = (currentLimits: CurrentLimits[]) => {
+    return currentLimits?.map((currentLimit: CurrentLimits) => {
+        return {
+            id: currentLimit.id + currentLimit.applicability,
+            name: currentLimit.id,
+            applicability: currentLimit.applicability,
+            currentLimits: {
+                id: currentLimit.id,
+                permanentLimit: null,
+                temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
+            },
+        };
+    });
+};
+
 /**
  * extract data loaded from the map server and merge it with local data
  * in order to fill the operational limits groups modification interface
  */
 export const combineFormAndMapServerLimitsGroups = (
-    formBranchModification: LineModificationFormInfos | null,
+    formBranchModification: LineModificationFormInfos,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
     let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];

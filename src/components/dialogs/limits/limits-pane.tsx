@@ -29,7 +29,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
-import { combineFormAndMapServerLimitsGroups } from './limits-pane-utils';
+import { mapServerOLGtoOperationalLimitsGroupsFormInfos } from './limits-pane-utils';
 import { BranchInfos } from '../../../services/study/network-map.type';
 
 export interface LimitsPaneProps {
@@ -111,9 +111,8 @@ export function LimitsPane({
     );
 
     const handlePopupConfirmation = () => {
-        const resetOLGs: OperationalLimitsGroupFormInfos[] = combineFormAndMapServerLimitsGroups(
-            null,
-            equipmentToModify
+        const resetOLGs: OperationalLimitsGroupFormInfos[] = mapServerOLGtoOperationalLimitsGroupsFormInfos(
+            equipmentToModify?.currentLimits ?? []
         );
         const currentValues = getValues();
         reset({
@@ -151,7 +150,7 @@ export function LimitsPane({
                     />
                 </Grid>
                 <Grid item xs={3}>
-                    {/* if the user wants to switch of the modification a modal asks him to confirm */}
+                    {/* if the user wants to switch off the modification a modal asks him to confirm */}
                     {isAModification && (
                         <InputWithPopupConfirmation
                             Input={SwitchInput}
