@@ -55,8 +55,6 @@ import {
     type CurrentRootNetworkUuidAction,
     type CurrentTreeNodeAction,
     DELETE_EQUIPMENTS,
-    DELETED_OR_RENAMED_NODES,
-    type DeletedOrRenamedNodesAction,
     type DeleteEquipmentsAction,
     DYNAMIC_SIMULATION_RESULT_FILTER,
     type DynamicSimulationResultFilterAction,
@@ -161,6 +159,8 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_PAGINATION,
     type SensitivityAnalysisResultFilterAction,
     SensitivityAnalysisResultPaginationAction,
+    SET_ACTIVE_SPREADSHEET_TAB,
+    SET_ADDED_SPREADSHEET_TAB,
     SET_APP_TAB_INDEX,
     SET_CALCULATION_SELECTIONS,
     SET_COMPUTATION_STARTING,
@@ -180,6 +180,8 @@ import {
     SET_ROOT_NETWORK_INDEXATION_STATUS,
     SET_ROOT_NETWORKS,
     SET_TOGGLE_OPTIONS,
+    SetActiveSpreadsheetTabAction,
+    SetAddedSpreadsheetTabAction,
     type SetAppTabIndexAction,
     type SetCalculationSelectionsAction,
     type SetComputationStartingAction,
@@ -214,21 +216,19 @@ import {
     UPDATE_COLUMNS_DEFINITION,
     UPDATE_EQUIPMENTS,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
+    UPDATE_NODE_ALIASES,
     UPDATE_SPREADSHEET_PARTIAL_DATA,
     UPDATE_TABLE_COLUMNS,
     UPDATE_TABLE_DEFINITION,
     type UpdateColumnsDefinitionsAction,
     type UpdateEquipmentsAction,
     type UpdateNetworkVisualizationParametersAction,
+    UpdateNodeAliasesAction,
     type UpdateSpreadsheetPartialDataAction,
     type UpdateTableColumnsAction,
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    SET_ACTIVE_SPREADSHEET_TAB,
-    SetActiveSpreadsheetTabAction,
-    SET_ADDED_SPREADSHEET_TAB,
-    SetAddedSpreadsheetTabAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -337,6 +337,7 @@ import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper
 import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
+import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 
 // Redux state
 export type StudyUpdated = {
@@ -579,6 +580,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     rootNetworkIndexationStatus: RootNetworkIndexationStatus;
     tableSort: TableSort;
     tables: TablesState;
+    nodeAliases: NodeAlias[];
 
     nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
@@ -640,7 +642,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [LOGS_PAGINATION_STORE_FIELD]: LogsPaginationState;
 
     calculationSelections: Record<UUID, CalculationType[]>;
-    deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
     toggleOptions: StudyDisplayMode[];
     highlightedModificationUuid: UUID | null;
@@ -736,6 +737,7 @@ const initialState: AppState = {
         allChildren: null,
     },
     tables: initialTablesState,
+    nodeAliases: [],
     calculationSelections: {},
     mapEquipments: undefined,
     geoData: null,
@@ -811,7 +813,6 @@ const initialState: AppState = {
     })),
     oneBusShortCircuitAnalysisDiagram: null,
     rootNetworkIndexationStatus: RootNetworkIndexationStatus.NOT_INDEXED,
-    deletedOrRenamedNodes: [],
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1925,10 +1926,6 @@ export const reducer = createReducer(initialState, (builder) => {
         state.globalFilterSpreadsheetState = {};
     });
 
-    builder.addCase(DELETED_OR_RENAMED_NODES, (state, action: DeletedOrRenamedNodesAction) => {
-        state.deletedOrRenamedNodes = action.deletedOrRenamedNodes;
-    });
-
     builder.addCase(RESET_DIAGRAM_EVENT, (state, _action: ResetDiagramEventAction) => {
         state.latestDiagramEvent = undefined;
     });
@@ -1943,6 +1940,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SELECT_SYNC_ENABLED, (state, action: SelectSyncEnabledAction) => {
         state.syncEnabled = action.syncEnabled;
+    });
+
+    builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
+        state.nodeAliases = action.nodeAliases;
     });
 });
 

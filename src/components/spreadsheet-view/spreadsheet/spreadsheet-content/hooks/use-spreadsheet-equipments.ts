@@ -9,19 +9,15 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { cleanEquipments, removeNodeData } from 'redux/actions';
 import { type AppState } from 'redux/reducer';
-import type { NodeAlias } from '../../../types/node-alias.type';
 import { useOptionalLoadingParametersForEquipments } from './use-optional-loading-parameters-for-equipments';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { useFetchEquipment } from 'components/spreadsheet-view/hooks/use-fetch-equipment';
 import { useBuiltNodesIds } from '../../../hooks/use-built-nodes-ids';
 import { useStableComputedSet } from '../../../../../hooks/use-stable-computed-set';
 import type { UUID } from 'node:crypto';
+import { useNodeAliases } from '../../../hooks/use-node-aliases';
 
-export const useSpreadsheetEquipments = (
-    type: SpreadsheetEquipmentType,
-    nodeAliases: NodeAlias[],
-    active: boolean = false
-) => {
+export const useSpreadsheetEquipments = (type: SpreadsheetEquipmentType, active: boolean = false) => {
     const dispatch = useDispatch();
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -29,6 +25,7 @@ export const useSpreadsheetEquipments = (
     const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[type]);
     const loadedNodesIdsForType = useSelector((state: AppState) => state.spreadsheetNetwork[type].nodesId);
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    const { nodeAliases } = useNodeAliases();
     const { fetchNodesEquipmentData } = useFetchEquipment(type);
 
     const {
@@ -46,7 +43,7 @@ export const useSpreadsheetEquipments = (
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shouldCleanOptionalLoadingParameters, type]);
 
-    const builtNodesIds = useBuiltNodesIds(nodeAliases);
+    const builtNodesIds = useBuiltNodesIds();
 
     const nodesIdsToRemove = useStableComputedSet(() => {
         const unwantedFetchedNodes = new Set(loadedNodesIdsForType);

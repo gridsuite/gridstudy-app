@@ -10,7 +10,7 @@ import type { AppState } from '../../../redux/reducer';
 import { useEffect, useRef } from 'react';
 import { resetEquipments } from '../../../redux/actions';
 
-export function useResetOnRootNetwork() {
+export function useResetSpreadsheetOnRootNetwork() {
     const dispatch = useDispatch();
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
