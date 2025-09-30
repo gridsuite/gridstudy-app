@@ -1596,6 +1596,7 @@
     "BUILT_WITH_WARNING": "Alertes",
     "BUILT_WITH_ERROR": "Erreurs",
     "NOT_BUILT": "Non réalisé",
+    "BUILDING": "En cours de réalisation",
     "allBusbarSections": "Tous",
     "allOptionHelperText": "Tous les jeux de barres n'ont pas les memes sections (index et nombre)",
     "enableNavigationSync": "Activer la navigation dans l'arbre en multi-onglets",
