@@ -14,11 +14,8 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../utils/compute-title';
-import { studyUpdated } from '../redux/actions';
-import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { useDispatch, useSelector } from 'react-redux';
+import { isDirectoryUpdateNotification } from '../utils/directories-notification-type';
 import { UUID } from 'crypto';
-import { AppState } from '../redux/reducer';
 import { isMetadataUpdatedNotification } from 'types/notification-types';
 
 export default function useStudyPath(studyUuid: UUID | null) {
@@ -30,8 +27,6 @@ export default function useStudyPath(studyUuid: UUID | null) {
 
     const { snackError, snackInfo } = useSnackMessage();
     const [initialTitle] = useState(document.title);
-    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const dispatch = useDispatch();
 
     // using a ref because this is not used for rendering, it is used in the websocket onMessage()
     const studyParentDirectoriesUuidsRef = useRef<UUID[]>([]);
@@ -64,28 +59,40 @@ export default function useStudyPath(studyUuid: UUID | null) {
                     });
                 });
     }, [initialTitle, snackError, studyUuid]);
-    const onStudyUpdated = useCallback(
+
+    const onParentDirectoryUpdated = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
-            dispatch(studyUpdated(eventData));
-            if (eventData.headers) {
-                if (eventData.headers['notificationType'] === directoriesNotificationType.UPDATE_DIRECTORY) {
-                    // TODO: this receives notifications for all the public directories and all the user's private directories
-                    // At least we don't fetch everytime a notification is received, but we should instead limit the
-                    // number of notifications (they are sent to all the clients every time). Here we are only
-                    // interested in changes in parent directories of the study (study is moved, or any parent is moved
-                    // or renamed)
-                    if (studyParentDirectoriesUuidsRef.current.includes(eventData.headers['directoryUuid'])) {
-                        fetchStudyPath();
-                    }
+            if (isDirectoryUpdateNotification(eventData)) {
+                // TODO: this receives notifications for all the public directories and all the user's private directories
+                // At least we don't fetch everytime a notification is received, but we should instead limit the
+                // number of notifications (they are sent to all the clients every time). Here we are only
+                // interested in changes in parent directories of the study (study is moved, or any parent is moved
+                // or renamed)
+                if (studyParentDirectoriesUuidsRef.current.includes(eventData.headers['directoryUuid'])) {
+                    fetchStudyPath();
                 }
             }
         },
-        [dispatch, fetchStudyPath]
+        [fetchStudyPath]
     );
 
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {
-        listenerCallbackMessage: onStudyUpdated,
+        listenerCallbackMessage: onParentDirectoryUpdated,
+    });
+
+    const onMetadataUpdated = useCallback(
+        (event: MessageEvent<string>) => {
+            const eventData = JSON.parse(event.data);
+            if (isMetadataUpdatedNotification(eventData)) {
+                fetchStudyPath();
+            }
+        },
+        [fetchStudyPath]
+    );
+
+    useNotificationsListener(NotificationsUrlKeys.STUDY, {
+        listenerCallbackMessage: onMetadataUpdated,
     });
 
     useEffect(() => {
@@ -118,12 +125,5 @@ export default function useStudyPath(studyUuid: UUID | null) {
         fetchStudyPath();
     }, [studyUuid, initialTitle, fetchStudyPath]);
 
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (isMetadataUpdatedNotification(studyUpdatedForce.eventData)) {
-                fetchStudyPath();
-            }
-        }
-    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
     return { studyName: studyName, parentDirectoriesNames: parentDirectoriesNames };
 }

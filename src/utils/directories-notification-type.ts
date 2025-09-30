@@ -5,8 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const directoriesNotificationType = {
-    DELETE_DIRECTORY: 'DELETE_DIRECTORY',
-    ADD_DIRECTORY: 'ADD_DIRECTORY',
-    UPDATE_DIRECTORY: 'UPDATE_DIRECTORY',
+import { type UUID } from 'node:crypto';
+
+export enum directoriesNotificationType {
+    DELETE_DIRECTORY = 'DELETE_DIRECTORY',
+    ADD_DIRECTORY = 'ADD_DIRECTORY',
+    UPDATE_DIRECTORY = 'UPDATE_DIRECTORY',
+}
+
+// Headers
+interface CommonDirectoryEventDataHeaders {
+    notificationType: directoriesNotificationType;
+}
+
+interface DirectoryUpdateEventDataHeaders extends CommonDirectoryEventDataHeaders {
+    updateType: directoriesNotificationType.UPDATE_DIRECTORY;
+    directoryUuid: UUID;
+}
+
+// Payloads
+
+// EventData
+export interface DirectoryUpdateEventData {
+    headers: DirectoryUpdateEventDataHeaders;
+    payload: string;
+}
+export function isDirectoryUpdateNotification(notif: unknown): notif is DirectoryUpdateEventData {
+    return (notif as DirectoryUpdateEventData).headers?.updateType === directoriesNotificationType.UPDATE_DIRECTORY;
+}
+
+// Notification types
+export type DirectoryNotification = {
+    eventData: DirectoryUpdateEventData;
 };
