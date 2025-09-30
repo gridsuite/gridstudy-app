@@ -291,7 +291,7 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Help the user stay over a line */
 .hoverHelper mask polyline {
-    stroke-width: 0.25%;
+    stroke-width: 200px;
 }
 .hoverHelper.nad-zoom-0 mask polyline {
     stroke-width: 3px;
@@ -313,12 +313,12 @@ g.nad-disconnected > g.nad-disconnected {
 }
 
 .hoverHelper :is(.nad-branch-edges .nad-edge-path:hover, .nad-3wt-edges .nad-edge-path:hover) {
-    stroke-width: 35px;
+    stroke-width: 40px;
 }
 .hoverHelper.nad-zoom-0 :is(.nad-branch-edges .nad-edge-path:hover, .nad-3wt-edges .nad-edge-path:hover) {
 }
 .hoverHelper.nad-zoom-2000 :is(.nad-branch-edges .nad-edge-path:hover, .nad-3wt-edges .nad-edge-path:hover) {
-    stroke-width: 55px;
+    stroke-width: 60px;
 }
 .hoverHelper.nad-zoom-3500 :is(.nad-branch-edges .nad-edge-path:hover, .nad-3wt-edges .nad-edge-path:hover) {
     stroke-width: 75px;
