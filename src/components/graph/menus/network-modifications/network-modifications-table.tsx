@@ -221,7 +221,10 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
         if (highlightedModificationUuid && gridRef.current?.api) {
             const selectedRow = gridRef.current.api.getRowNode(highlightedModificationUuid);
             if (selectedRow) {
-                gridRef.current.api.ensureNodeVisible(selectedRow, 'top');
+                // Ensure the row is visible, using a timeout to wait for the grid to finish any ongoing rendering
+                setTimeout(() => {
+                    gridRef?.current?.api.ensureNodeVisible(selectedRow, 'top');
+                }, 0);
             }
         }
     }, [highlightedModificationUuid]);
@@ -250,7 +253,6 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
                 getRowStyle={getRowStyle}
                 onRowDragEnter={onRowDragStart}
                 onRowDragEnd={onRowDragEnd}
-                onFirstDataRendered={handleScroll}
                 rowDragManaged={!isRowDragDisabled}
                 suppressNoRowsOverlay={true}
                 overrideLocales={AGGRID_LOCALES}
