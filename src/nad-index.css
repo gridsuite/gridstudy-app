@@ -291,7 +291,7 @@ g.nad-disconnected > g.nad-disconnected {
 
 /* Help the user stay over a line */
 .hoverHelper mask polyline {
-    stroke-width: 200px;
+    stroke-width: 0.25%;
 }
 .hoverHelper.nad-zoom-0 mask polyline {
     stroke-width: 3px;
