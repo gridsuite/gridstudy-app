@@ -21,6 +21,8 @@ import HorizontalToolbar from './horizontal-toolbar';
 import { openDiagram, setToggleOptions } from '../redux/actions.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './network-modification.type';
+import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases.js';
+import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification.js';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -89,6 +91,9 @@ const StudyPane = ({
 
     const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
 
+    const { nodeAliases } = useNodeAliases();
+    useUpdateEquipmentsOnNotification(nodeAliases);
+
     return (
         <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
@@ -109,7 +114,8 @@ const StudyPane = ({
                         showGrid={showGrid}
                     />
                 </div>
-                {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
+                {/* using a key in these TabPanelLazy because we can change the nodeUuid in these components,
+                 and we want to reset the components at each node change*/}
                 <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>
                     <SpreadsheetView
                         studyUuid={studyUuid}

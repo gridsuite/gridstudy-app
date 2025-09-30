@@ -96,7 +96,7 @@ export function fetchDynamicSimulationStatus(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-simulation/status';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchText(url);
 }
 
 export function fetchDynamicSimulationResultTimeSeries(

@@ -6,7 +6,6 @@
  */
 
 import { DiagramParams, DiagramParamsDto } from 'components/grid-layout/cards/diagrams/diagram.type';
-import type { UUID } from 'node:crypto';
 import { Layout } from 'react-grid-layout';
 
 export type DiagramLayoutParam = DiagramParams & {
@@ -17,12 +16,7 @@ export interface DiagramGridLayout {
     diagramLayouts: DiagramLayoutParam[];
 }
 
-type MapDTO = {
-    diagramUuid: UUID;
-    type: 'map';
-};
-
-export type DiagramLayoutDto = (DiagramParamsDto | MapDTO) & {
+export type DiagramLayoutDto = DiagramParamsDto & {
     diagramPositions: Record<string, Pick<Layout, 'w' | 'h' | 'x' | 'y'>>;
 };
 

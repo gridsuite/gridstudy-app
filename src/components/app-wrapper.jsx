@@ -61,6 +61,8 @@ import {
     exportParamsFr,
     parametersEn,
     parametersFr,
+    useUniqueNameValidationEn,
+    useUniqueNameValidationFr,
     NotificationsProvider,
     MAP_BASEMAP_MAPBOX,
     MAP_BASEMAP_CARTO,
@@ -197,6 +199,7 @@ const lightTheme = createTheme({
         overlay: {
             background: '#e6e6e6',
         },
+        highlightColor: '#1976D214',
     },
     networkModificationPanel: {
         backgroundColor: 'white',
@@ -309,6 +312,7 @@ const darkTheme = createTheme({
         overlay: {
             background: '#121212',
         },
+        highlightColor: '#90CAF929',
     },
     networkModificationPanel: {
         backgroundColor: '#252525',
@@ -395,6 +399,7 @@ const messages = {
         ...events_locale_en,
         ...spreadsheet_locale_en,
         ...parametersEn,
+        ...useUniqueNameValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -429,6 +434,7 @@ const messages = {
         ...events_locale_fr,
         ...spreadsheet_locale_fr,
         ...parametersFr,
+        ...useUniqueNameValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

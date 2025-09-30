@@ -8,7 +8,7 @@
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { setToggleOptions } from '../../../../redux/actions';
+import { setHighlightModification, setToggleOptions } from '../../../../redux/actions';
 import { Box } from '@mui/material';
 import { AppState } from '../../../../redux/reducer';
 import RunningStatus from 'components/utils/running-status';
@@ -35,6 +35,7 @@ const NodeEditor = () => {
     const toggleOptions = useSelector((state: AppState) => state.toggleOptions);
 
     const closeModificationsDrawer = () => {
+        dispatch(setHighlightModification(null));
         dispatch(setToggleOptions(toggleOptions.filter((option) => option !== StudyDisplayMode.MODIFICATIONS)));
     };
 

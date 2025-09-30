@@ -8,9 +8,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ModificationsSearchResult } from './root-network.types';
 import { getModifications } from '../../../../services/root-network';
 import type { UUID } from 'node:crypto';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
+import { setHighlightModification } from 'redux/actions';
 
 function reOrderSearchResults(
     results: ModificationsSearchResult[],
@@ -33,6 +34,7 @@ export const useRootNetworkModificationSearch = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [modificationsResults, setModificationsResults] = useState<ModificationsSearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
 
     const studyUuid = useSelector((s: AppState) => s.studyUuid);
     const currentRootNetworkUuid = useSelector((s: AppState) => s.currentRootNetworkUuid);
@@ -42,7 +44,8 @@ export const useRootNetworkModificationSearch = () => {
     const reset = useCallback(() => {
         setSearchTerm('');
         setModificationsResults([]);
-    }, []);
+        dispatch(setHighlightModification(null));
+    }, [dispatch]);
 
     const searchMatchingElements = useCallback(
         (searchTerm: string) => {

@@ -71,7 +71,6 @@ import {
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
@@ -91,11 +90,11 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    formatOpLimitGroups,
+    formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    updateOpLimitsGroups,
+    combineFormAndMapServerLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -151,6 +150,7 @@ import {
 } from './state-estimation-form-utils';
 import { LimitsPane } from '../../../limits/limits-pane';
 import { useIntl } from 'react-intl';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -207,7 +207,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const [twtToModify, setTwtToModify] = useState(null);
     const intl = useIntl();
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -247,7 +247,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getStateEstimationEditData(STATE_ESTIMATION, twtModification),
                 ...getAllLimitsFormData(
-                    formatOpLimitGroups(twtModification.operationalLimitsGroups),
+                    formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroup1?.value ?? null,
                     twtModification.selectedOperationalLimitsGroup2?.value ?? null
                 ),
@@ -483,12 +483,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(
-                    limits[OPERATIONAL_LIMITS_GROUPS],
-                    twtToModify,
-                    editData,
-                    currentNode
-                ),
+                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -538,8 +533,6 @@ const TwoWindingsTransformerModificationDialog = ({
             currentNodeUuid,
             editData,
             selectedId,
-            twtToModify,
-            currentNode,
             intl,
             computeRatioTapForSubmit,
             computePhaseTapForSubmit,
@@ -660,7 +653,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: {
-                                            [OPERATIONAL_LIMITS_GROUPS]: updateOpLimitsGroups(formValues, twt),
+                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
+                                                formValues,
+                                                twt
+                                            ),
                                         },
                                     },
                                     ...getRatioTapChangerFormData({
@@ -715,7 +711,6 @@ const TwoWindingsTransformerModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setTwtToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {
