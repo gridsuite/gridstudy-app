@@ -23,7 +23,7 @@ import {
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
@@ -61,6 +61,7 @@ export interface OperationalLimitsGroupsTabsProps {
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
     isAModification: boolean;
+    currentLimitsToModify: CurrentLimits[];
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
@@ -89,6 +90,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             indexSelectedLimitSet,
             checkLimitSetUnicity,
             isAModification,
+            currentLimitsToModify,
         },
         ref
     ) => {
@@ -364,6 +366,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
                     isModification={isAModification}
+                    currentLimitsToModify={currentLimitsToModify}
                 />
             </>
         );
