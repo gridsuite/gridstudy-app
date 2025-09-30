@@ -9,7 +9,6 @@
 import type { IdentifierListFilter } from './identifier-list-filter';
 import type { ExpertFilter } from './expert-filter';
 import type { UUID } from 'crypto';
-import type { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import type { FilterEquipmentType } from './filter';
 
 export * from './filter';
