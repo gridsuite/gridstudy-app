@@ -65,7 +65,7 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
         (modification: Modification) => {
             const node = treeNodes?.find((node) => node.id === nodeUuid);
             if (node) {
-                setCurrentTreeNodeWithSync(node);
+                setCurrentTreeNodeWithSync({ ...node });
                 triggerTreeNodeFocus();
             }
             dispatch(setModificationsDrawerOpen());
