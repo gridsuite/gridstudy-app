@@ -1077,100 +1077,68 @@ export function isSpreadsheetParametersUpdatedNotification(
 }
 
 // Notification types
-export type StudyUpdateEventData =
-    | StudyEventData
-    | ComputationParametersUpdatedEventData
-    | RootNetworkUpdatedEventData
-    | RootNetworkUpdateFailedEventData
-    | RootNetworkDeletionStartedEventData
-    | IndexationStatusEventData
-    | StudyNetworkRecreationEventData
-    | MetadataUpdatedEventData
-    | StudyAlertEventData
-    | NodeCreatedEventData
-    | NodesDeletedEventData
-    | NodeMovedEventData
-    | NodesUpdatedEventData
-    | NodeEditedEventData
-    | NodesBuildStatusUpdatedEventData
-    | NodeBuildCompletedEventData
-    | NodeBuildFailedEventData
-    | SubtreeMovedEventData
-    | SubtreeCreatedEventData
-    | NodesColumnPositionsChangedEventData
-    | ModificationsCreationInProgressEventData
-    | ModificationsUpdatingInProgressEventData
-    | ModificationsStashingInProgressEventData
-    | ModificationsRestoringInProgressEventData
-    | ModificationsDeletingInProgressEventData
-    | ModificationsUpdateFinishedEventData
-    | ModificationsDeleteFinishedEventData
-    | EventCreatingInProgressEventData
-    | EventUpdatingInProgressEventData
-    | EventDeletingInProgressEventData
-    | EventCrudFinishedEventData
-    | LoadflowResultEventData
-    | LoadflowFailedEventData
-    | LoadflowStatusEventData
-    | SecurityAnalysisResultEventData
-    | SecurityAnalysisFailedEventData
-    | SecurityAnalysisStatusEventData
-    | SensitivityAnalysisResultEventData
-    | SensitivityAnalysisFailedEventData
-    | SensitivityAnalysisStatusEventData
-    | NonEvacuatedEnergyAnalysisResultEventData
-    | NonEvacuatedEnergyAnalysisFailedEventData
-    | NonEvacuatedEnergyAnalysisStatusEventData
-    | ShortCircuitAnalysisResultEventData
-    | ShortCircuitAnalysisFailedEventData
-    | ShortCircuitAnalysisStatusEventData
-    | OneBusShortCircuitAnalysisResultEventData
-    | OneBusShortCircuitAnalysisFailedEventData
-    | OneBusShortCircuitAnalysisStatusEventData
-    | DynamicSimulationResultEventData
-    | DynamicSimulationFailedEventData
-    | DynamicSimulationStatusEventData
-    | DynamicSecurityAnalysisResultEventData
-    | DynamicSecurityAnalysisFailedEventData
-    | DynamicSecurityAnalysisStatusEventData
-    | VoltageInitResultEventData
-    | VoltageInitFailedEventData
-    | VoltageInitCancelFailedEventData
-    | VoltageInitStatusEventData
-    | StateEstimationResultEventData
-    | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
-
 export type StudyUpdateNotification = {
-    eventData: StudyUpdateEventData;
+    eventData:
+        | StudyEventData
+        | ComputationParametersUpdatedEventData
+        | RootNetworkUpdatedEventData
+        | RootNetworkUpdateFailedEventData
+        | RootNetworkDeletionStartedEventData
+        | IndexationStatusEventData
+        | StudyNetworkRecreationEventData
+        | MetadataUpdatedEventData
+        | StudyAlertEventData
+        | NodeCreatedEventData
+        | NodesDeletedEventData
+        | NodeMovedEventData
+        | NodesUpdatedEventData
+        | NodeEditedEventData
+        | NodesBuildStatusUpdatedEventData
+        | NodeBuildCompletedEventData
+        | NodeBuildFailedEventData
+        | SubtreeMovedEventData
+        | SubtreeCreatedEventData
+        | NodesColumnPositionsChangedEventData
+        | ModificationsCreationInProgressEventData
+        | ModificationsUpdatingInProgressEventData
+        | ModificationsStashingInProgressEventData
+        | ModificationsRestoringInProgressEventData
+        | ModificationsDeletingInProgressEventData
+        | ModificationsUpdateFinishedEventData
+        | ModificationsDeleteFinishedEventData
+        | EventCreatingInProgressEventData
+        | EventUpdatingInProgressEventData
+        | EventDeletingInProgressEventData
+        | EventCrudFinishedEventData
+        | LoadflowResultEventData
+        | LoadflowFailedEventData
+        | LoadflowStatusEventData
+        | SecurityAnalysisResultEventData
+        | SecurityAnalysisFailedEventData
+        | SecurityAnalysisStatusEventData
+        | SensitivityAnalysisResultEventData
+        | SensitivityAnalysisFailedEventData
+        | SensitivityAnalysisStatusEventData
+        | NonEvacuatedEnergyAnalysisResultEventData
+        | NonEvacuatedEnergyAnalysisFailedEventData
+        | NonEvacuatedEnergyAnalysisStatusEventData
+        | ShortCircuitAnalysisResultEventData
+        | ShortCircuitAnalysisFailedEventData
+        | ShortCircuitAnalysisStatusEventData
+        | OneBusShortCircuitAnalysisResultEventData
+        | OneBusShortCircuitAnalysisFailedEventData
+        | OneBusShortCircuitAnalysisStatusEventData
+        | DynamicSimulationResultEventData
+        | DynamicSimulationFailedEventData
+        | DynamicSimulationStatusEventData
+        | DynamicSecurityAnalysisResultEventData
+        | DynamicSecurityAnalysisFailedEventData
+        | DynamicSecurityAnalysisStatusEventData
+        | VoltageInitResultEventData
+        | VoltageInitFailedEventData
+        | VoltageInitCancelFailedEventData
+        | VoltageInitStatusEventData
+        | StateEstimationResultEventData
+        | StateEstimationFailedEventData
+        | StateEstimationStatusEventData;
 };
-
-/******************* TO REMOVE LATER ****************/
-// Headers
-/**
- * @deprecated The type should not be used
- * @note TODO Remove later after useNodeData and useComputationStatus refactorization
- */
-export interface StudyUpdatedEventDataHeader {
-    studyUuid: UUID;
-    updateType: string;
-    parentNode: UUID;
-    rootNetworkUuid: UUID;
-    timestamp: number;
-    node?: UUID;
-    nodes?: UUID[];
-    error?: string;
-    userId?: string;
-    computationType?: ComputingType;
-}
-// EventData
-/**
- * @deprecated The type should not be used
- * @note TODO Remove later after useNodeData and useComputationStatus refactorization
- */
-export interface StudyUpdatedEventData {
-    headers: StudyUpdatedEventDataHeader;
-    /** @see NetworkImpactsInfos */
-    payload: string;
-}
-/******************* TO REMOVE LATER ****************/
