@@ -10,7 +10,6 @@ import { Button, type ButtonProps, Menu, MenuItem, Tooltip } from '@mui/material
 import AddIcon from '@mui/icons-material/Add';
 import { type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
-import { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import AddEmptySpreadsheetDialog from './dialogs/add-empty-spreadsheet-dialog';
 import AddSpreadsheetFromModelDialog from './dialogs/add-spreadsheet-from-model-dialog';
 import AddSpreadsheetsFromCollectionDialog from './dialogs/add-spreadsheets-from-collection-dialog';
@@ -18,7 +17,6 @@ import type { DialogComponent } from './types';
 
 export type AddSpreadsheetButtonProps = {
     disabled: boolean;
-    resetNodeAliases: ResetNodeAliasCallback;
 };
 
 const styles = {
@@ -55,7 +53,7 @@ const NEW_SPREADSHEET_CREATION_OPTIONS = {
     },
 } as const satisfies Record<string, SpreadsheetOption>;
 
-export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Readonly<AddSpreadsheetButtonProps>) {
+export default function AddSpreadsheetButton({ disabled }: Readonly<AddSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<SpreadsheetOption | undefined>();
@@ -94,7 +92,7 @@ export default function AddSpreadsheetButton({ disabled, resetNodeAliases }: Rea
                     </MenuItem>
                 ))}
             </Menu>
-            {SelectedDialog && <SelectedDialog open={dialogOpen} resetNodeAliases={resetNodeAliases} />}
+            {SelectedDialog && <SelectedDialog open={dialogOpen} />}
         </>
     );
 }
