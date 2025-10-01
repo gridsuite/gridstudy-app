@@ -21,20 +21,16 @@ import { v4 as uuid4 } from 'uuid';
 import { ColumnDefinitionDto, SpreadsheetConfig, SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { SaveFilterConfirmationDialog } from './save-filter-confirmation-dialog';
-import { NodeAlias } from '../../../types/node-alias.type';
+import { useNodeAliases } from '../../../hooks/use-node-aliases';
 
 export type SaveSpreadsheetDialogProps = {
     tableDefinition: SpreadsheetTabDefinition;
     open: UseStateBooleanReturn;
-    nodeAliases: NodeAlias[] | undefined;
 };
 
-export default function SaveSpreadsheetDialog({
-    tableDefinition,
-    open,
-    nodeAliases,
-}: Readonly<SaveSpreadsheetDialogProps>) {
+export default function SaveSpreadsheetDialog({ tableDefinition, open }: Readonly<SaveSpreadsheetDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
+    const { nodeAliases } = useNodeAliases();
     const tableFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD][tableDefinition.uuid]);
     const tableGlobalFilters = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]

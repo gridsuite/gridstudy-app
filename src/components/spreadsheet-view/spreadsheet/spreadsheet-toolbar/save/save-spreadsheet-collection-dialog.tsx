@@ -30,13 +30,12 @@ import {
 } from '../../../types/spreadsheet.type';
 import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
-import { NodeAlias } from '../../../types/node-alias.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import { useNodeAliases } from '../../../hooks/use-node-aliases';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;
-    nodeAliases: NodeAlias[] | undefined;
 }
 
 const styles = {
@@ -63,11 +62,9 @@ interface TableState {
     index: number;
 }
 
-export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetCollectionDialogProps> = ({
-    open,
-    nodeAliases,
-}) => {
+export const SaveSpreadsheetCollectionDialog: FunctionComponent<SaveSpreadsheetCollectionDialogProps> = ({ open }) => {
     const { snackError, snackInfo } = useSnackMessage();
+    const { nodeAliases } = useNodeAliases();
     const intl = useIntl();
     const tables = useSelector((state: AppState) => state.tables.definitions);
     const tablesFilters = useSelector((state: AppState) => state[SPREADSHEET_STORE_FIELD]);

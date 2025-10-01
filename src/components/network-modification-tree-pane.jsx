@@ -16,7 +16,6 @@ import {
     setNodeSelectionForCopy,
     resetLogsFilter,
     reorderNetworkModificationTreeNodes,
-    deletedOrRenamedNodes,
     resetLogsPagination,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -271,7 +270,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     resetNodeClipboard();
                 }
                 dispatch(networkModificationTreeNodesRemoved(studyUpdatedForce.eventData.headers.nodes));
-                dispatch(deletedOrRenamedNodes(studyUpdatedForce.eventData.headers.nodes));
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
                 });

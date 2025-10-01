@@ -76,6 +76,7 @@ import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagr
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
+import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -150,7 +151,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction
     | SetOpenMapAction
     | SecurityAnalysisResultPaginationAction
@@ -1463,18 +1463,6 @@ export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFil
     };
 }
 
-export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
-export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
-    deletedOrRenamedNodes: UUID[];
-};
-
-export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
-    return {
-        type: DELETED_OR_RENAMED_NODES,
-        deletedOrRenamedNodes,
-    };
-}
-
 export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
 export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
 
@@ -1505,5 +1493,17 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     return {
         type: SELECT_SYNC_ENABLED,
         syncEnabled,
+    };
+}
+
+export const UPDATE_NODE_ALIASES = 'UPDATE_NODE_ALIASES';
+export type UpdateNodeAliasesAction = Readonly<Action<typeof UPDATE_NODE_ALIASES>> & {
+    nodeAliases: NodeAlias[];
+};
+
+export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAction {
+    return {
+        type: UPDATE_NODE_ALIASES,
+        nodeAliases,
     };
 }

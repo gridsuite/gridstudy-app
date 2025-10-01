@@ -13,7 +13,6 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
-import { NodeAlias } from '../types/node-alias.type';
 import { mapColumns } from '../columns/utils/column-mapper';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
@@ -22,7 +21,6 @@ interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
-    nodeAliases: NodeAlias[];
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
     openDiagram?: (equipmentId: string, diagramType?: DiagramType.SUBSTATION | DiagramType.VOLTAGE_LEVEL) => void;
@@ -34,7 +32,6 @@ export const Spreadsheet = memo(
         currentNode,
         tableDefinition,
         disabled,
-        nodeAliases,
         equipmentId,
         onEquipmentScrolled,
         openDiagram,
@@ -73,7 +70,6 @@ export const Spreadsheet = memo(
                     tableDefinition={tableDefinition}
                     rowCounterInfos={rowCounterInfos}
                     columns={displayedColsDefs}
-                    nodeAliases={nodeAliases}
                     disabled={disabled}
                 />
 
@@ -82,7 +78,6 @@ export const Spreadsheet = memo(
                     currentNode={currentNode}
                     tableDefinition={tableDefinition}
                     columns={displayedColsDefs}
-                    nodeAliases={nodeAliases}
                     disabled={disabled}
                     equipmentId={equipmentId}
                     onEquipmentScrolled={onEquipmentScrolled}
