@@ -44,7 +44,7 @@ import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription';
-import { exportNetworkFile } from '../services/study/network.js';
+import { exportNetworkFile } from '../services/study/network';
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
