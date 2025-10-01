@@ -28,7 +28,7 @@ import {
     CONNECTIVITY,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    EDITED_OPERATIONAL_LIMITS_GROUPS,
+    ENABLE_OLG_MODIFICATION,
     EQUIPMENT_NAME,
     G1,
     G2,
@@ -210,7 +210,7 @@ const LineModificationDialog = ({
                     formatOpLimitGroupsToFormInfos(lineModification.operationalLimitsGroups),
                     lineModification.selectedOperationalLimitsGroup1?.value ?? null,
                     lineModification.selectedOperationalLimitsGroup2?.value ?? null,
-                    lineModification[EDITED_OPERATIONAL_LIMITS_GROUPS]
+                    lineModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getPropertiesFromModification(lineModification.properties),
             });
@@ -244,7 +244,7 @@ const LineModificationDialog = ({
                 b1: convertOutputValue(FieldType.B1, characteristics[B1]),
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
-                operationalLimitsGroups: limits[EDITED_OPERATIONAL_LIMITS_GROUPS]
+                operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
                     ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
                     : [],
                 selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
@@ -259,7 +259,7 @@ const LineModificationDialog = ({
                         id: 'None',
                     })
                 ),
-                [EDITED_OPERATIONAL_LIMITS_GROUPS]: limits[EDITED_OPERATIONAL_LIMITS_GROUPS],
+                [ENABLE_OLG_MODIFICATION]: limits[ENABLE_OLG_MODIFICATION],
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
                 busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
                 voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
@@ -316,8 +316,7 @@ const LineModificationDialog = ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: {
-                                            [EDITED_OPERATIONAL_LIMITS_GROUPS]:
-                                                formValues.limits[EDITED_OPERATIONAL_LIMITS_GROUPS],
+                                            [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
                                                 formValues,
                                                 line

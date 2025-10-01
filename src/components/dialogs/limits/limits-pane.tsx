@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
-    EDITED_OPERATIONAL_LIMITS_GROUPS,
+    ENABLE_OLG_MODIFICATION,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
     SELECTED_LIMITS_GROUP_1,
@@ -29,7 +29,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { InputWithPopupConfirmation, SwitchInput } from '@gridsuite/commons-ui';
-import { mapServerOLGtoOperationalLimitsGroupsFormInfos } from './limits-pane-utils';
+import { mapServerLimitsGroupsToFormInfos } from './limits-pane-utils';
 import { BranchInfos } from '../../../services/study/network-map.type';
 
 export interface LimitsPaneProps {
@@ -54,7 +54,7 @@ export function LimitsPane({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
-        name: `${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`,
+        name: `${id}.${ENABLE_OLG_MODIFICATION}`,
     });
 
     const isAModification: boolean = useMemo(() => !!equipmentToModify, [equipmentToModify]);
@@ -111,7 +111,7 @@ export function LimitsPane({
     );
 
     const handlePopupConfirmation = () => {
-        const resetOLGs: OperationalLimitsGroupFormInfos[] = mapServerOLGtoOperationalLimitsGroupsFormInfos(
+        const resetOLGs: OperationalLimitsGroupFormInfos[] = mapServerLimitsGroupsToFormInfos(
             equipmentToModify?.currentLimits ?? []
         );
         const currentValues = getValues();
@@ -119,7 +119,7 @@ export function LimitsPane({
             ...currentValues,
             [LIMITS]: {
                 [OPERATIONAL_LIMITS_GROUPS]: resetOLGs,
-                [EDITED_OPERATIONAL_LIMITS_GROUPS]: false,
+                [ENABLE_OLG_MODIFICATION]: false,
             },
         });
     };
@@ -154,7 +154,7 @@ export function LimitsPane({
                     {isAModification && (
                         <InputWithPopupConfirmation
                             Input={SwitchInput}
-                            name={`${id}.${EDITED_OPERATIONAL_LIMITS_GROUPS}`}
+                            name={`${id}.${ENABLE_OLG_MODIFICATION}`}
                             label={olgEditable ? 'Edit' : 'View'}
                             shouldOpenPopup={() => olgEditable}
                             resetOnConfirmation={handlePopupConfirmation}

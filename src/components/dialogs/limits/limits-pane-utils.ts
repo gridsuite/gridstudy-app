@@ -10,7 +10,7 @@ import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     DELETION_MARK,
-    EDITED_OPERATIONAL_LIMITS_GROUPS,
+    ENABLE_OLG_MODIFICATION,
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
@@ -103,7 +103,7 @@ const limitsValidationSchemaCreation = (id: string, isModification: boolean) => 
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
-        [EDITED_OPERATIONAL_LIMITS_GROUPS]: yup.boolean(),
+        [ENABLE_OLG_MODIFICATION]: yup.boolean(),
     };
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
@@ -117,7 +117,7 @@ const limitsEmptyFormData = (id: string) => {
         [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
-        [EDITED_OPERATIONAL_LIMITS_GROUPS]: false,
+        [ENABLE_OLG_MODIFICATION]: false,
     };
 
     return { [id]: limitsGroup };
@@ -151,7 +151,7 @@ export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroupFormInfos[] = [],
     selectedOperationalLimitsGroup1: string | null = null,
     selectedOperationalLimitsGroup2: string | null = null,
-    editedOperationalLimitsGroups?: boolean,
+    enableOLGModification?: boolean,
     id = LIMITS
 ) => {
     return {
@@ -159,7 +159,7 @@ export const getAllLimitsFormData = (
             [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
-            [EDITED_OPERATIONAL_LIMITS_GROUPS]: !!editedOperationalLimitsGroups,
+            [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
         },
     };
 };
@@ -225,7 +225,7 @@ export const updateTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
-export const mapServerOLGtoOperationalLimitsGroupsFormInfos = (currentLimits: CurrentLimits[]) => {
+export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[]) => {
     return currentLimits?.map((currentLimit: CurrentLimits) => {
         return {
             id: currentLimit.id + currentLimit.applicability,

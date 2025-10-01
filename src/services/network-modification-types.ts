@@ -15,7 +15,7 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
-import { EDITED_OPERATIONAL_LIMITS_GROUPS } from '../components/utils/field-constants';
+import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 
 export enum OperationType {
     SET = 'SET',
@@ -237,7 +237,7 @@ export interface TwoWindingsTransformerModificationInfo {
     operationalLimitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
-    [EDITED_OPERATIONAL_LIMITS_GROUPS]: boolean;
+    [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1?: string;
     busOrBusbarSectionId1?: string;
     voltageLevelId2?: string;
@@ -557,7 +557,7 @@ export interface LineModificationInfos {
     operationalLimitsGroups: OperationalLimitsGroup[];
     selectedOperationalLimitsGroup1: AttributeModification<string> | null;
     selectedOperationalLimitsGroup2: AttributeModification<string> | null;
-    [EDITED_OPERATIONAL_LIMITS_GROUPS]: boolean;
+    [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;

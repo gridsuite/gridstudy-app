@@ -28,7 +28,7 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
-    EDITED_OPERATIONAL_LIMITS_GROUPS,
+    ENABLE_OLG_MODIFICATION,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_NAME,
@@ -251,7 +251,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroup1?.value ?? null,
                     twtModification.selectedOperationalLimitsGroup2?.value ?? null,
-                    twtModification.editedOperationalLimitsGroups
+                    twtModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
@@ -485,7 +485,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                operationalLimitsGroups: limits[EDITED_OPERATIONAL_LIMITS_GROUPS]
+                operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
                     ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
                     : [],
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
@@ -500,7 +500,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         id: 'None',
                     })
                 ),
-                [EDITED_OPERATIONAL_LIMITS_GROUPS]: limits[EDITED_OPERATIONAL_LIMITS_GROUPS],
+                [ENABLE_OLG_MODIFICATION]: limits[ENABLE_OLG_MODIFICATION],
                 ratioTapChanger: computeRatioTapForSubmit(twt),
                 phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
@@ -658,8 +658,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: {
-                                            [EDITED_OPERATIONAL_LIMITS_GROUPS]:
-                                                formValues.limits[EDITED_OPERATIONAL_LIMITS_GROUPS],
+                                            [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
                                                 formValues,
                                                 twt

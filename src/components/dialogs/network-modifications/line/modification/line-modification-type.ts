@@ -12,7 +12,7 @@ import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     DELETION_MARK,
-    EDITED_OPERATIONAL_LIMITS_GROUPS,
+    ENABLE_OLG_MODIFICATION,
     ID,
     NAME,
     OPERATIONAL_LIMITS_GROUPS,
@@ -75,7 +75,7 @@ export interface LimitsDialogFormInfos {
     [SELECTED_LIMITS_GROUP_2]: string | null;
     [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormInfos[];
     // if true OperationalLimitsGroupFormInfos[] are used and sent to the back, otherwise they are ignored
-    [EDITED_OPERATIONAL_LIMITS_GROUPS]: boolean;
+    [ENABLE_OLG_MODIFICATION]: boolean;
 }
 
 export interface OperationalLimitsGroupFormInfos {
