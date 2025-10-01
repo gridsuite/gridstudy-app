@@ -181,10 +181,10 @@ export const lightThemeCssVars = {
         '--vl-color': '#A7B368',
     },
     '.sld-vl180to300.sld-bus-3, .nad-vl180to300.nad-bus-3': {
-        '--vl-color': '#6B3A26',
+        '--vl-color': '#E47400',
     },
     '.sld-vl180to300.sld-bus-4, .nad-vl180to300.nad-bus-4': {
-        '--vl-color': '#C94119',
+        '--vl-color': '#6B3A26',
     },
     '.sld-vl180to300.sld-bus-5, .nad-vl180to300.nad-bus-5': {
         '--vl-color': '#D69A88',
@@ -196,7 +196,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#B78B58',
     },
     '.sld-vl180to300.sld-bus-8, .nad-vl180to300.nad-bus-8': {
-        '--vl-color': '#E47400',
+        '--vl-color': '#C94119',
     },
     '.sld-vl180to300.sld-bus-9, .nad-vl180to300.nad-bus-9': {
         '--vl-color': '#FFC019',
@@ -217,7 +217,7 @@ export const lightThemeCssVars = {
         '--vl-color': '#0057F9',
     },
     '.sld-vl300to500.sld-bus-5, .nad-vl300to500.nad-bus-5': {
-        '--vl-color': '#1B3459',
+        '--vl-color': '#74AFEA',
     },
     '.sld-vl300to500.sld-bus-6, .nad-vl300to500.nad-bus-6': {
         '--vl-color': '#1B3459',

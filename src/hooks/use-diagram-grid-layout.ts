@@ -42,14 +42,14 @@ const decodeInfinity = (value: number) => {
 const backendToFrontendGridLayout = (diagramGridLayout: DiagramGridLayoutDto): DiagramGridLayoutConfig => {
     const gridLayoutResult: Layouts = {};
 
-    for (const { diagramUuid, type, diagramPositions } of diagramGridLayout.diagramLayouts) {
+    for (const { diagramUuid, diagramPositions } of diagramGridLayout.diagramLayouts) {
         for (const [layoutKey, layoutValues] of Object.entries(diagramPositions)) {
             if (!gridLayoutResult[layoutKey]) {
                 gridLayoutResult[layoutKey] = [];
             }
             gridLayoutResult[layoutKey].push({
                 ...layoutValues,
-                i: type === 'map' ? 'MapCard' : diagramUuid,
+                i: diagramUuid,
                 x: decodeInfinity(layoutValues.x),
                 y: decodeInfinity(layoutValues.y),
             });
@@ -58,24 +58,22 @@ const backendToFrontendGridLayout = (diagramGridLayout: DiagramGridLayoutDto): D
 
     return {
         gridLayouts: gridLayoutResult,
-        params: diagramGridLayout.diagramLayouts
-            .filter((layout) => layout.type !== 'map')
-            .map((layout) => {
-                if (layout.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                    return {
-                        type: layout.type,
-                        diagramUuid: layout.diagramUuid,
-                        nadConfigUuid: layout.originalNadConfigUuid,
-                        initializationNadConfigUuid: layout.currentNadConfigUuid,
-                        filterUuid: layout.filterUuid,
-                        name: layout.name,
-                        voltageLevelIds: [],
-                        voltageLevelToExpandIds: [],
-                        voltageLevelToOmitIds: [],
-                        positions: [],
-                    };
-                }
-                return layout;
-            }),
+        params: diagramGridLayout.diagramLayouts.map((layout) => {
+            if (layout.type === DiagramType.NETWORK_AREA_DIAGRAM) {
+                return {
+                    type: layout.type,
+                    diagramUuid: layout.diagramUuid,
+                    nadConfigUuid: layout.originalNadConfigUuid,
+                    initializationNadConfigUuid: layout.currentNadConfigUuid,
+                    filterUuid: layout.filterUuid,
+                    name: layout.name,
+                    voltageLevelIds: [],
+                    voltageLevelToExpandIds: [],
+                    voltageLevelToOmitIds: [],
+                    positions: [],
+                };
+            }
+            return layout;
+        }),
     };
 };
