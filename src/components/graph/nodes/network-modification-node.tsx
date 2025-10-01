@@ -124,10 +124,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
         );
     }, [props.data, intl]);
 
-    const handleTooltipClose = () => {
-        setTooltipOpen(false);
-    };
-
     const getNodeOpacity = () => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
     };
@@ -149,6 +145,9 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
             <Tooltip
                 open={tooltipOpen}
                 title={tooltipContent}
+                disableFocusListener
+                disableTouchListener
+                onClose={HandleHideTooltip}
                 componentsProps={{
                     tooltip: {
                         sx: {
@@ -157,6 +156,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     },
                 }}
                 followCursor
+                placement="right"
             >
                 <Box
                     onMouseEnter={HandleDisplayTooltip}
@@ -185,7 +185,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                                 studyUuid={studyUuid}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 nodeUuid={props.id}
-                                handleTooltipClose={handleTooltipClose}
+                                handleTooltipClose={HandleHideTooltip}
                             />
                         )}
                     </Box>
