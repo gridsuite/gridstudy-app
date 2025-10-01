@@ -453,10 +453,10 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     const onOpenNetworkAreaDiagram = useCallback(
         (elementId?: string) => {
-            if (isThereTooManyOpenedNadDiagrams(diagrams)) {
-                if (!elementId) {
-                    return;
-                }
+            if (!elementId) {
+                return;
+            }
+            if (!isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageId: 'NADOpenedInTheGrid',
                     messageValues: { elementId: elementId },
