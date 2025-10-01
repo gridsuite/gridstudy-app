@@ -10,6 +10,7 @@ import {
     BUS_BAR_INDEX,
     BUSBAR_SECTION_ID,
     IS_AFTER_BUSBAR_SECTION_ID,
+    NEW_SWITCH_STATES,
     SWITCH_AFTER_NOT_REQUIRED,
     SWITCH_BEFORE_NOT_REQUIRED,
     SWITCHES_AFTER_SECTIONS,
@@ -19,7 +20,7 @@ import { Box, Button, Grid, Slider, TextField, Tooltip, Typography } from '@mui/
 import { filledTextField } from '../../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { AutocompleteInput, Option, SelectInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, Option, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import GridSection from '../../../commons/grid-section';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { InfoOutlined } from '@mui/icons-material';
@@ -93,6 +94,7 @@ export function CreateVoltageLevelSectionForm({
             {...filledTextField}
         />
     );
+    const isNewSwitchOpen = useWatch({ name: NEW_SWITCH_STATES });
 
     useEffect(() => {
         if (busBarSectionInfos && busbarIndex) {
@@ -280,6 +282,12 @@ export function CreateVoltageLevelSectionForm({
             disabled={!busbarIndex || isNotRequiredSwitchAfter || isNotFoundOrNotSupported}
         />
     );
+    const newSwitchState = (
+        <SwitchInput
+            name={NEW_SWITCH_STATES}
+            label={isNewSwitchOpen ? 'areSwitchesClosed' : 'areSwitchesOpen'}
+        />
+    );
     const getLabelDescription = useCallback(() => {
         return intl.formatMessage({ id: 'newSection' });
     }, [intl]);
@@ -371,6 +379,9 @@ export function CreateVoltageLevelSectionForm({
                 </Grid>
                 <Grid item xs={12} sm={4}>
                     {switchAfterField}
+                </Grid>
+                <Grid item xs={12}>
+                    {newSwitchState}
                 </Grid>
             </Grid>
             <PositionDiagramPane
