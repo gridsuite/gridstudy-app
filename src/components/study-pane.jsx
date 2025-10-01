@@ -25,6 +25,7 @@ import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
 import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
 import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
+import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -101,6 +102,7 @@ const StudyPane = ({
     useUpdateEquipmentsOnNotification();
     useNodeAliasesUpdateOnNotification();
     useResetSpreadsheetOnRootNetwork();
+    useSpreadsheetEquipments();
 
     return (
         <Box sx={styles.paneContainer}>

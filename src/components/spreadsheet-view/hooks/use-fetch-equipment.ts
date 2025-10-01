@@ -10,27 +10,26 @@ import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppState } from '../../../redux/reducer';
-import { loadEquipments } from '../../../redux/actions';
+import { loadEquipments, resetEquipmentsByTypes, setSpreadsheetFetching } from '../../../redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from '../../../services/study/network';
 import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
 import { EQUIPMENT_INFOS_TYPES } from '../../utils/equipment-types';
 
-export function useFetchEquipment(type: SpreadsheetEquipmentType) {
+export function useFetchEquipment() {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const fetchNodesEquipmentData = useCallback(
-        (nodeIds: Set<UUID>, currentNodeUuid: UUID, currentRootNetworkUuid: UUID, onFetchingDone?: () => void) => {
-            if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+        (type: SpreadsheetEquipmentType, nodesIds: Set<UUID>) => {
+            if (studyUuid && currentRootNetworkUuid) {
+                dispatch(setSpreadsheetFetching(type, true));
                 const fetcherPromises: ReturnType<typeof fetchNetworkElementsInfos>[] = [];
-                const spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
-                    nodesId: [],
-                    equipmentsByNodeId: {},
-                };
+                const spreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId'] = {};
 
-                nodeIds.forEach((nodeId) => {
+                nodesIds.forEach((nodeId) => {
                     const promise = fetchNetworkElementsInfos(
                         studyUuid,
                         nodeId,
@@ -42,12 +41,8 @@ export function useFetchEquipment(type: SpreadsheetEquipmentType) {
                     fetcherPromises.push(promise);
                     promise
                         .then((results) => {
-                            spreadsheetEquipmentsByNodes.nodesId.push(nodeId);
                             // Format the equipments data to set calculated fields so that the edition validation is consistent with the displayed data
-                            spreadsheetEquipmentsByNodes.equipmentsByNodeId[nodeId] = mapSpreadsheetEquipments(
-                                type,
-                                results
-                            );
+                            spreadsheetEquipmentsByNodes[nodeId] = mapSpreadsheetEquipments(type, results);
                         })
                         .catch((err) => {
                             console.error(
@@ -60,7 +55,7 @@ export function useFetchEquipment(type: SpreadsheetEquipmentType) {
                     .then(() => {
                         dispatch(loadEquipments(type, spreadsheetEquipmentsByNodes));
                         console.debug(
-                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodeIds.size}`
+                            `Equipment data fetching and dispatch done for ${fetcherPromises.length} built nodes among ${nodesIds.size}`
                         );
                     })
                     .catch((err) => {
@@ -71,11 +66,11 @@ export function useFetchEquipment(type: SpreadsheetEquipmentType) {
                         });
                     })
                     .finally(() => {
-                        onFetchingDone?.();
+                        dispatch(setSpreadsheetFetching(type, false));
                     });
             }
         },
-        [dispatch, snackError, studyUuid, type]
+        [currentRootNetworkUuid, dispatch, snackError, studyUuid]
     );
 
     return { fetchNodesEquipmentData };
