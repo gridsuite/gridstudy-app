@@ -30,6 +30,7 @@ import { UUID } from 'crypto';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
+import GridSection from '../../../commons/grid-section';
 
 const defaultColDef = {
     sortable: false,
@@ -313,6 +314,9 @@ export function MoveVoltageLevelFeederBaysForm({
                         {diagramToolTip}
                     </GridItem>
                 )}
+            </Grid>
+            <Grid item xs={1}>
+                <GridSection title={'moveFeederBaysSections'} />
             </Grid>
             <Grid item xs paddingTop={2}>
                 <CustomAGGrid

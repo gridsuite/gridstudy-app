@@ -1623,5 +1623,6 @@
     "TOP": "Haut",
     "BOTTOM": "Bas",
     "DuplicatedPositionsError": "Numéro en doublon",
-    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)"
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
+    "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée"
 }
