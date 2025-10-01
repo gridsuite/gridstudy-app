@@ -180,12 +180,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED) {
-                snackError({
-                    headerId: 'nonEvacuatedEnergyAnalysisError',
-                    messageTxt: errorMessage,
-                });
-            }
             if (
                 updateTypeHeader === NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED ||
                 updateTypeHeader === NotificationType.ONE_BUS_SC_ANALYSIS_FAILED

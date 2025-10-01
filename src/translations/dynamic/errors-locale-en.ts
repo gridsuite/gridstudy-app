@@ -6,10 +6,6 @@
  */
 
 const errors_locale_en = {
-    // NonEvacuatedEnergy
-    fetchNonEvacuatedEnergyProviderError: 'An error occured when fetching non evacuated energy provider',
-    fetchNonEvacuatedEnergyProvidersError: 'An error occured when fetching non evacuated energy provider list',
-    updateNonEvacuatedEnergyParametersError: 'An error occurred while updating the non evacuated energy parameters',
     // DynamicSimulation
     fetchDynamicSimulationParametersError: 'An error occured when fetching the dynamic simulation parameters',
     fetchDynamicSimulationProvidersError: 'An error occured when fetching dynamic simulation provider list',
