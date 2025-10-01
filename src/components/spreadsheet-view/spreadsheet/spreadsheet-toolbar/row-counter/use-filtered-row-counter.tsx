@@ -40,7 +40,7 @@ export function useFilteredRowCounterInfo({
     const [isLoading, setIsLoading] = useState(true);
     const [isAnyFilterPresent, setIsAnyFilterPresent] = useState(false);
 
-    const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[tableDefinition?.type]);
+    const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
