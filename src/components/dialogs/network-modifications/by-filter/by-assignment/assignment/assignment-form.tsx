@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
@@ -17,39 +17,59 @@ import {
     SwitchInput,
     TextInput,
     useFormatLabelWithUnit,
+    usePredefinedProperties,
     usePrevious,
 } from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
-import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
+import {
+    EDITED_FIELD,
+    EQUIPMENT_TYPE_FIELD,
+    FILTERS,
+    PROPERTY_NAME_FIELD,
+    VALUE_FIELD,
+} from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { getIdOrValue } from '../../../../commons/utils';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
-import { PredefinedProperties } from '../../../common/properties/property-utils';
 import GridItem from '../../../../commons/grid-item';
 import { useIntl } from 'react-intl';
+import { EQUIPMENTS_FIELDS } from './assignment-constants';
+
+type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
 
 interface AssignmentFormProps {
     name: string;
     index: number;
-    predefinedProperties: PredefinedProperties;
-    equipmentFields: FieldOptionType[];
-    equipmentType: string;
 }
 
-const AssignmentForm: FC<AssignmentFormProps> = ({
-    name,
-    index,
-    predefinedProperties,
-    equipmentFields,
-    equipmentType,
-}) => {
+const AssignmentForm: FC<AssignmentFormProps> = ({ name, index }) => {
     const { setError, setValue } = useFormContext();
     const intl = useIntl();
 
     const watchEditedField = useWatch({
         name: `${name}.${index}.${EDITED_FIELD}`,
     });
+
+    const equipmentType: EquipmentTypeOptionType = useWatch({
+        name: EQUIPMENT_TYPE_FIELD,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const equipmentFields: FieldOptionType[] = Object.assign([], EQUIPMENTS_FIELDS[equipmentType] ?? []);
+
+    const [predefinedProperties, setEquipmentType, setPropertyField] = usePredefinedProperties(
+        equipmentType,
+        watchEditedField
+    );
+
+    // get predefined properties
+    useEffect(() => {
+        setEquipmentType(equipmentType);
+    }, [equipmentType, setEquipmentType]);
+
+    useEffect(() => {
+        setPropertyField(watchEditedField);
+    }, [watchEditedField, setPropertyField]);
 
     const dataType = useMemo(() => {
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
