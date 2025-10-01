@@ -13,7 +13,6 @@ import { Grid } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';
-import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
 import SaveSpreadsheetButton from './save/save-spreadsheet-button';
 import SpreadsheetGlobalFilter from './global-filter/spreadsheet-global-filter';
 import { FilteredRowCounter } from './row-counter/filtered-row-counter';
