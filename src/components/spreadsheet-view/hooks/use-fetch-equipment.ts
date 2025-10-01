@@ -10,7 +10,7 @@ import { type SpreadsheetEquipmentsByNodes, type SpreadsheetEquipmentType } from
 import type { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppState } from '../../../redux/reducer';
-import { loadEquipments, resetEquipmentsByTypes, setSpreadsheetFetching } from '../../../redux/actions';
+import { loadEquipments, setSpreadsheetFetching } from '../../../redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from '../../../services/study/network';
 import { mapSpreadsheetEquipments } from '../../../utils/spreadsheet-equipments-mapper';
