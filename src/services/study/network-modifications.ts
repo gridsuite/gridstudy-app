@@ -1102,7 +1102,7 @@ export interface CreateTabularModificationProps {
     modificationType: string;
     modifications: Modification[];
     modificationUuid: UUID;
-    type: ModificationType;
+    tabularType: ModificationType;
     csvFilename?: string;
     properties?: TabularProperty[];
 }
@@ -1113,27 +1113,27 @@ export function createTabularModification({
     modificationType,
     modifications,
     modificationUuid,
-    type,
+    tabularType,
     csvFilename,
     properties,
 }: CreateTabularModificationProps) {
-    let createTabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    let tabularModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
-        createTabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
+        tabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating tabular modification');
     } else {
         console.info('Creating tabular modification');
     }
 
-    return backendFetchText(createTabularModificationUrl, {
+    return backendFetchText(tabularModificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: type,
+            type: tabularType,
             modificationType: modificationType,
             modifications: modifications,
             properties: properties,
@@ -2042,50 +2042,6 @@ export function modifyByAssignment(
             'Content-Type': 'application/json',
         },
         body: body,
-    });
-}
-
-export interface CreateTabularCreationProps {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    creationType: string;
-    creations: Modification[];
-    modificationUuid: UUID;
-    csvFilename?: string;
-    properties?: TabularProperty[];
-}
-
-export function createTabularCreation({
-    studyUuid,
-    nodeUuid,
-    creationType,
-    creations,
-    modificationUuid,
-    csvFilename,
-    properties,
-}: CreateTabularCreationProps) {
-    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
-    const isUpdate = !!modificationUuid;
-    if (isUpdate) {
-        createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating tabular creation');
-    } else {
-        console.info('Creating tabular creation');
-    }
-
-    return backendFetchText(createTabularCreationUrl, {
-        method: isUpdate ? 'PUT' : 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.TABULAR_CREATION.type,
-            creationType: creationType,
-            creations: creations,
-            properties: properties,
-            csvFilename: csvFilename,
-        }),
     });
 }
 
