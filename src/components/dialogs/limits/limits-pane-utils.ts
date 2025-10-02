@@ -57,13 +57,8 @@ const temporaryLimitsValidationSchema = () => {
     return yup.object().shape({
         [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
         [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-        [TEMPORARY_LIMIT_NAME]: yup
-            .string()
-            .nullable()
-            .when([TEMPORARY_LIMIT_VALUE, TEMPORARY_LIMIT_DURATION], {
-                is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
-                then: () => yup.string().nullable().required(),
-            }),
+        [TEMPORARY_LIMIT_NAME]: yup.string().nullable().required(),
+        [DELETION_MARK]: yup.boolean(),
     });
 };
 
@@ -75,9 +70,11 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         .array()
         .of(temporaryLimitsValidationSchema())
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
-            const namesArray = !array
+            const namesArray: (string | null)[] = !array
                 ? []
-                : array.filter((l) => !!l[TEMPORARY_LIMIT_NAME]).map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
+                : array
+                      .filter((l: TemporaryLimitFormInfos) => !!l[TEMPORARY_LIMIT_NAME] && !l[DELETION_MARK])
+                      .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
         })
         .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
