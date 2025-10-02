@@ -177,7 +177,7 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
 
         const getSelectedItems = useCallback(() => {
             return items.filter(
-                (item) => getState(item.id) === CheckState.CHECKED && !items.find((elem) => elem.parentId === item.id) // no children
+                (item) => getState(item.id) === CheckState.CHECKED && !items.some((elem) => elem.parentId === item.id) // no children
             );
         }, [items, getState]);
 
