@@ -9,7 +9,7 @@ import { FunctionComponent } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
 import { DraggableColumnItem } from './draggable-column-item';
 import { ColumnDefinition, SpreadsheetTabDefinition } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 interface DroppableColumnsListProps {
     tableDefinition: SpreadsheetTabDefinition;

@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ExcludedNetworkModifications, RootNetworkMetadata } from './network-modification-menu.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 function getUpdatedExcludedModifications(
     prev: ExcludedNetworkModifications[],

@@ -9,7 +9,7 @@ import { Checkbox, IconButton, ListItem, ListItemIcon, ListItemText, Theme } fro
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { FunctionComponent } from 'react';
 
 const styles = {
