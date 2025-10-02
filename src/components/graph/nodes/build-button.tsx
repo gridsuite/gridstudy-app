@@ -19,6 +19,7 @@ type BuildButtonProps = {
     studyUuid: UUID | null;
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
+    onClick?: () => void;
 };
 
 const styles = {
@@ -30,13 +31,20 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, nodeUuid }: BuildButtonProps) => {
+export const BuildButton = ({
+    buildStatus,
+    studyUuid,
+    currentRootNetworkUuid,
+    nodeUuid,
+    onClick,
+}: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
+            onClick?.();
             if (!studyUuid || !currentRootNetworkUuid || isLoading) {
                 return;
             }
@@ -76,7 +84,7 @@ export const BuildButton = ({ buildStatus, studyUuid, currentRootNetworkUuid, no
                     });
             }
         },
-        [studyUuid, currentRootNetworkUuid, nodeUuid, buildStatus, isLoading, snackError]
+        [onClick, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
     );
 
     const getIcon = () => {
