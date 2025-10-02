@@ -24,7 +24,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { isCalculationRow } from '../utils/calculation-utils';
 import { ROW_INDEX_COLUMN_ID } from '../constants';
 import { updateSpreadsheetColumn } from 'services/study/study-config';

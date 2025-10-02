@@ -22,7 +22,7 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
