@@ -90,10 +90,15 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const intl = useIntl();
+
+    // We manage tooltip state manually instead of relying on MUI's default behavior.
+    // Reason: when the child element (e.g. a button) handles click events,
+    // MUI's Tooltip does not automatically close and can remain stuck open.
+    // This explicit state handling prevents tooltip persistence.
     const [tooltipOpen, setTooltipOpen] = useState(false);
 
-    const HandleDisplayTooltip = () => setTooltipOpen(true);
-    const HandleHideTooltip = () => setTooltipOpen(false);
+    const displayTooltip = () => setTooltipOpen(true);
+    const hideTooltip = () => setTooltipOpen(false);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -147,7 +152,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 title={tooltipContent}
                 disableFocusListener
                 disableTouchListener
-                onClose={HandleHideTooltip}
+                onOpen={displayTooltip}
+                onClose={hideTooltip}
                 componentsProps={{
                     tooltip: {
                         sx: {
@@ -159,8 +165,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 placement="right"
             >
                 <Box
-                    onMouseEnter={HandleDisplayTooltip}
-                    onMouseLeave={HandleHideTooltip}
+                    onMouseEnter={displayTooltip}
+                    onMouseLeave={hideTooltip}
                     sx={[
                         isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
                         { opacity: getNodeOpacity() },
@@ -185,7 +191,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                                 studyUuid={studyUuid}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 nodeUuid={props.id}
-                                handleTooltipClose={HandleHideTooltip}
+                                onClick={hideTooltip}
                             />
                         )}
                     </Box>

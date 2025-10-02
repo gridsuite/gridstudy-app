@@ -19,7 +19,7 @@ type BuildButtonProps = {
     studyUuid: UUID | null;
     currentRootNetworkUuid: UUID | null;
     nodeUuid: UUID;
-    handleTooltipClose?: () => void;
+    onClick?: () => void;
 };
 
 const styles = {
@@ -36,7 +36,7 @@ export const BuildButton = ({
     studyUuid,
     currentRootNetworkUuid,
     nodeUuid,
-    handleTooltipClose,
+    onClick,
 }: BuildButtonProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
@@ -44,7 +44,7 @@ export const BuildButton = ({
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
             event.stopPropagation();
-            handleTooltipClose?.();
+            onClick?.();
             if (!studyUuid || !currentRootNetworkUuid || isLoading) {
                 return;
             }
@@ -84,7 +84,7 @@ export const BuildButton = ({
                     });
             }
         },
-        [handleTooltipClose, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
+        [onClick, studyUuid, currentRootNetworkUuid, isLoading, buildStatus, nodeUuid, snackError]
     );
 
     const getIcon = () => {
