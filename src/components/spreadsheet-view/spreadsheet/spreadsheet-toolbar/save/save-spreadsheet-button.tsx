@@ -39,7 +39,7 @@ interface SaveSpreadsheetButtonProps {
     columns: ColDef[];
     disabled: boolean;
     tableDefinition: SpreadsheetTabDefinition;
-    dataSize?: number;
+    dataSize: number;
     nodeAliases: NodeAlias[] | undefined;
 }
 

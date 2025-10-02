@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { SetStateAction, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, SetStateAction, useRef } from 'react';
 import {
     CustomAGGrid,
     type MuiStyles,
@@ -25,7 +25,7 @@ import type {
     ValueGetterParams,
 } from 'ag-grid-community';
 import { RemoveRedEye as RemoveRedEyeIcon } from '@mui/icons-material';
-import { Badge, Box } from '@mui/material';
+import { Badge, Box, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
@@ -38,6 +38,7 @@ import SwitchCellRenderer from './switch-cell-renderer';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { ExcludedNetworkModifications } from './network-modification-menu.type';
 import { NetworkModificationNameCellRenderer } from 'components/custom-aggrid/cell-renderers';
+import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
     container: (theme) => ({
@@ -83,8 +84,11 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
     setModificationsToExclude,
     ...nameHeaderProps
 }) => {
+    const gridRef = useRef<AgGridReact>(null);
+    const theme = useTheme();
     const rootNetworks = useSelector((state: AppState) => state.rootNetworks);
     const isMonoRootStudy = useSelector((state: AppState) => state.isMonoRootStudy);
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -199,17 +203,40 @@ const NetworkModificationsTable: React.FC<NetworkModificationsTableProps> = ({
 
     const getRowId = (params: GetRowIdParams<NetworkModificationMetadata>) => params.data.uuid;
 
-    const getRowStyle = useCallback((cellData: RowClassParams<NetworkModificationMetadata, unknown>) => {
-        const style: RowStyle = {};
-        if (!cellData?.data?.activated) {
-            style.opacity = 0.4;
+    const getRowStyle = useCallback(
+        (cellData: RowClassParams<NetworkModificationMetadata, unknown>) => {
+            const style: RowStyle = {};
+            if (!cellData?.data?.activated) {
+                style.opacity = 0.4;
+            }
+            if (cellData?.data?.uuid === highlightedModificationUuid && cellData?.rowIndex !== null) {
+                style.backgroundColor = theme.aggrid.highlightColor;
+            }
+            return style;
+        },
+        [highlightedModificationUuid, theme]
+    );
+
+    const handleScroll = useCallback(() => {
+        if (highlightedModificationUuid && gridRef.current?.api) {
+            const selectedRow = gridRef.current.api.getRowNode(highlightedModificationUuid);
+            if (selectedRow) {
+                // Ensure the row is visible, using a timeout to wait for the grid to finish any ongoing rendering
+                setTimeout(() => {
+                    gridRef?.current?.api.ensureNodeVisible(selectedRow, 'top');
+                }, 0);
+            }
         }
-        return style;
-    }, []);
+    }, [highlightedModificationUuid]);
+
+    useEffect(() => {
+        handleScroll();
+    }, [handleScroll, highlightedModificationUuid]);
 
     return (
         <Box sx={styles.container}>
             <CustomAGGrid
+                ref={gridRef}
                 rowData={modifications}
                 getRowId={getRowId}
                 rowSelection={{
