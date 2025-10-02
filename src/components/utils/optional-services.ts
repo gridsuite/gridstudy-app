@@ -57,16 +57,15 @@ export const retrieveOptionalServices = (services: IOptionalService[]): IOptiona
 
     // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
     // in that case, we consider it is UP
-    optionalServicesNames
-        .filter(
-            (serviceName) =>
-                !retrievedOptionalServices.map((service) => service.name).includes(serviceName as OptionalServicesNames)
-        )
-        .forEach((serviceName) =>
-            retrievedOptionalServices.push({
-                name: serviceName as OptionalServicesNames,
-                status: OptionalServicesStatus.Up,
-            })
-        );
+    const filteredOptionalServicesNames = optionalServicesNames.filter(
+        (serviceName) =>
+            !retrievedOptionalServices.map((service) => service.name).includes(serviceName as OptionalServicesNames)
+    );
+    for (const serviceName of filteredOptionalServicesNames) {
+        retrievedOptionalServices.push({
+            name: serviceName as OptionalServicesNames,
+            status: OptionalServicesStatus.Up,
+        });
+    }
     return retrievedOptionalServices;
 };
