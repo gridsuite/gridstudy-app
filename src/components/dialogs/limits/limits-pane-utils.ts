@@ -341,6 +341,7 @@ export const addModificationTypeToOpLimitsGroups = (
             applicability: limitsGroupForm.applicability,
             currentLimits: currentLimits,
             modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
 };

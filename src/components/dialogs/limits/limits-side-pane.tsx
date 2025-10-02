@@ -164,34 +164,6 @@ export function LimitsSidePane({
         [findTemporaryLimit, shouldReturnPreviousValue]
     );
 
-    const disableTableCell = useCallback(
-        (
-            rowIndex: number,
-            column: ColumnText | ColumnNumeric,
-            arrayFormName: string,
-            temporaryLimits?: TemporaryLimit[]
-        ) => {
-            if (disabled) {
-                return true;
-            }
-            // If the temporary limit is added, all fields are editable
-            // otherwise, only the value field is editable
-            let disable: boolean =
-                temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                column.dataKey !== TEMPORARY_LIMIT_VALUE;
-
-            if (
-                getValues(arrayFormName) &&
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-            ) {
-                disable = false;
-            }
-
-            return disable;
-        },
-        [disabled, getValues, temporaryLimitHasPreviousValue]
-    );
-
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
             const temporaryLimits = getValues(arrayFormName);
@@ -269,7 +241,6 @@ export function LimitsSidePane({
                 createRow={createRows}
                 columnsDefinition={columnsDefinition}
                 previousValues={temporaryLimitsPreviousValues}
-                disableTableCell={disableTableCell}
                 getPreviousValue={getPreviousValue}
                 isValueModified={isValueModified}
                 disabled={disabled}
