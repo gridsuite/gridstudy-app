@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useMemo, useState } from 'react';
 import CustomCardHeader from '../custom-card-header';
 import { Diagram, DiagramAdditionalMetadata, DiagramParams, DiagramType } from './diagram.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
