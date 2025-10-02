@@ -45,8 +45,8 @@ const getOptionalServiceByServerName = (serverName: string): OptionalServicesNam
     }
 };
 
-export const computeRetrieveOptionalServices = (services: IOptionalService[]): IOptionalService[] => {
-    const retrieveOptionalServices = services.map((service) => {
+export const retrieveOptionalServices = (services: IOptionalService[]): IOptionalService[] => {
+    const retrievedOptionalServices = services.map((service) => {
         return {
             ...service,
             name: getOptionalServiceByServerName(service.name) ?? service.name,
@@ -60,13 +60,13 @@ export const computeRetrieveOptionalServices = (services: IOptionalService[]): I
     optionalServicesNames
         .filter(
             (serviceName) =>
-                !retrieveOptionalServices.map((service) => service.name).includes(serviceName as OptionalServicesNames)
+                !retrievedOptionalServices.map((service) => service.name).includes(serviceName as OptionalServicesNames)
         )
         .forEach((serviceName) =>
-            retrieveOptionalServices.push({
+            retrievedOptionalServices.push({
                 name: serviceName as OptionalServicesNames,
                 status: OptionalServicesStatus.Up,
             })
         );
-    return retrieveOptionalServices;
+    return retrievedOptionalServices;
 };

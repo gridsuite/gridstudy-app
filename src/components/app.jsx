@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { computeRetrieveOptionalServices } from './utils/optional-services';
+import { retrieveOptionalServices } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AnnouncementNotification,
@@ -326,7 +326,7 @@ const App = () => {
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
-                    dispatch(setOptionalServices(computeRetrieveOptionalServices(services)));
+                    dispatch(setOptionalServices(retrieveOptionalServices(services)));
                 })
                 .catch((error) => {
                     snackError({
