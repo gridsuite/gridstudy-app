@@ -129,8 +129,13 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
         [builtNodesIds, currentRootNetworkUuid, dispatch, studyUuid, updateEquipmentsLocal]
     );
 
+    const listenerResetEquipments = useCallback(() => {
+        dispatch(resetEquipments());
+    }, [dispatch]);
+
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerUpdateEquipmentsLocal,
+        listenerCallbackOnReopen: listenerResetEquipments,
         propsId: SPREADSHEET_EQUIPMENTS_LISTENER_ID,
     });
 }

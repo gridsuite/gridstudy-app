@@ -7,7 +7,7 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export function startNonEvacuatedEnergy(
     studyUuid: UUID,

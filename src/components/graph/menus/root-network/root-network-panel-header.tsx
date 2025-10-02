@@ -21,11 +21,11 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { FileUpload } from '@mui/icons-material';
 import RootNetworkDialog, { FormData } from '../../../dialogs/root-network/root-network-dialog';
 import { createRootNetwork } from 'services/root-network';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { getCaseImportParameters, GetCaseImportParametersReturn } from 'services/network-conversion';
 import { customizeCurrentParameters, formatCaseImportParameters } from '../../util/case-import-parameters';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMonoRootStudy } from 'redux/actions';
+import { setHighlightModification, setMonoRootStudy } from 'redux/actions';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -191,7 +191,8 @@ const RootNetworkPanelHeader: React.FC<RootNetworkPanelHeaderProps> = ({
     const minimizeRootNetworkPanel = useCallback(() => {
         setIsSearchActive(false);
         setIsRootNetworkPanelMinimized((prev) => !prev);
-    }, [setIsRootNetworkPanelMinimized, setIsSearchActive]);
+        dispatch(setHighlightModification(null));
+    }, [dispatch, setIsRootNetworkPanelMinimized, setIsSearchActive]);
 
     const openSearch = useCallback(() => {
         setIsSearchActive(true);

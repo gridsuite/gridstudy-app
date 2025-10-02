@@ -13,7 +13,7 @@ import { SelectOptionsDialog } from 'utils/dialogs';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DropResult } from '@hello-pangea/dnd';
 import { updateTableDefinition } from 'redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { spreadsheetStyles } from '../../spreadsheet.style';

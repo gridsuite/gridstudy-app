@@ -13,7 +13,7 @@ import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useNodeAliases } from './hooks/use-node-aliases';
 import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { Spreadsheet } from './spreadsheet/spreadsheet';
@@ -23,7 +23,6 @@ import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
 import { type MuiStyles, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
-import { useUpdateEquipmentsOnNotification } from './hooks/use-update-equipments-on-notification';
 
 const styles = {
     invalidNode: {
@@ -60,8 +59,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [resetConfirmationDialogOpen, setResetConfirmationDialogOpen] = useState(false);
-
-    useUpdateEquipmentsOnNotification(nodeAliases);
 
     const handleSwitchTab = useCallback(
         (tabUuid: UUID) => {

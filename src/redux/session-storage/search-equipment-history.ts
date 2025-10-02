@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { mixed, string } from 'yup';
 import { EquipmentInfos, EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
 import { APP_NAME } from 'utils/config-params';
