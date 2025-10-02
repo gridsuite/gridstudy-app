@@ -10,10 +10,11 @@ import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } 
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
-import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
+import { isBlankOrEmpty } from '../../components/utils/validation-functions';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -388,14 +389,31 @@ export const fetchRootNetworkIndexationStatus = (studyUuid: UUID, rootNetworkUui
     return backendFetchText(fetchRootNetworkIndexationUrl);
 };
 
-/* export-network */
-
-export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportFormat: string) {
+export function exportNetworkFile(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    rootNetworkUuid: UUID,
+    params: Record<string, any>,
+    selectedFormat: string,
+    fileName: string
+): Promise<void> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
-        exportFormat;
-    return getUrlWithToken(url);
+        selectedFormat;
+
+    const urlSearchParams = new URLSearchParams();
+    if (Object.keys(params).length > 0) {
+        const paramsJson = JSON.stringify(params);
+        urlSearchParams.append('formatParameters', paramsJson);
+    }
+    if (!isBlankOrEmpty(fileName)) {
+        urlSearchParams.append('fileName', fileName);
+    }
+
+    const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
+
+    return backendFetch(url + suffix);
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {

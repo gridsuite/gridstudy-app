@@ -42,18 +42,16 @@ export function setExportSubscription(identifier: string): void {
 
 export default function useExportSubscription({
     studyUuid,
-    nodeUuid,
     rootNetworkUuid,
 }: {
     studyUuid: UUID;
-    nodeUuid: UUID;
     rootNetworkUuid: UUID;
 }) {
     const intl = useIntl();
     const { snackInfo } = useSnackMessage();
 
     const subscribeExport = useCallback(
-        (format: string, fileName: string) => {
+        (nodeUuid: UUID, format: string, fileName: string) => {
             const identifier = buildExportIdentifier({
                 studyUuid,
                 nodeUuid,
@@ -67,7 +65,7 @@ export default function useExportSubscription({
                 messageTxt: intl.formatMessage({ id: 'export.message.subscribed' }, { fileName }),
             });
         },
-        [studyUuid, nodeUuid, rootNetworkUuid, snackInfo, intl]
+        [studyUuid, rootNetworkUuid, snackInfo, intl]
     );
 
     return { subscribeExport };

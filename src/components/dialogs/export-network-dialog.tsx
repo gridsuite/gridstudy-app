@@ -26,8 +26,6 @@ import Button from '@mui/material/Button';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CancelButton, fetchDirectoryElementPath, FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
-import { getExportUrl } from '../../services/study/network';
-import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
 import { UUID } from 'crypto';
@@ -50,10 +48,9 @@ const STRING_LIST = 'STRING_LIST';
 interface ExportNetworkDialogProps {
     open: boolean;
     onClose: () => void;
-    onClick: (url: string, selectedFormat: string, fileName: string) => void;
+    onClick: (nodeUuid: UUID, params: Record<string, any>, selectedFormat: string, fileName: string) => void;
     studyUuid: UUID;
     nodeUuid: UUID;
-    rootNetworkUuid: UUID;
 }
 
 export function ExportNetworkDialog({
@@ -62,7 +59,6 @@ export function ExportNetworkDialog({
     onClick,
     studyUuid,
     nodeUuid,
-    rootNetworkUuid,
 }: Readonly<ExportNetworkDialogProps>) {
     const intl = useIntl();
     const [formatsWithParameters, setFormatsWithParameters] = useState<Record<string, ExportFormatProperties>>({});
@@ -135,20 +131,7 @@ export function ExportNetworkDialog({
     }, []);
     const handleExportClick = () => {
         if (fileName && selectedFormat) {
-            const downloadUrl = getExportUrl(studyUuid, nodeUuid, rootNetworkUuid, selectedFormat);
-            let suffix;
-            const urlSearchParams = new URLSearchParams();
-            if (Object.keys(currentParameters).length > 0) {
-                const jsoned = JSON.stringify(currentParameters);
-                urlSearchParams.append('formatParameters', jsoned);
-            }
-            if (!isBlankOrEmpty(fileName)) {
-                urlSearchParams.append('fileName', fileName);
-            }
-
-            // we have already as parameters, the access tokens, so use '&' instead of '?'
-            suffix = urlSearchParams.toString() ? '&' + urlSearchParams.toString() : '';
-            onClick(downloadUrl + suffix, selectedFormat, fileName);
+            onClick(nodeUuid, currentParameters, selectedFormat, fileName);
         } else {
             setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
         }
@@ -179,7 +162,7 @@ export function ExportNetworkDialog({
                     margin="dense"
                     label={<FormattedMessage id="download.fileName" />}
                     id="fileName"
-                    value={fileName || ''}
+                    value={fileName}
                     sx={{ width: '100%', marginBottom: 1 }}
                     fullWidth
                     variant="filled"
