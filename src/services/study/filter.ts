@@ -6,36 +6,10 @@
  */
 
 import { backendFetchJson, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-
-export interface ExpertFilter {
-    id?: UUID;
-    name?: string;
-    type: 'EXPERT';
-    equipmentType: string; // TODO must be EquipmentType enum
-    rules: RuleGroupTypeExport;
-    topologyKind?: string; // TODO must be TopologyKind enum
-}
-
-export type EquipmentsFilter = {
-    equipmentID: string;
-    distributionKey?: number;
-};
-
-export interface FilterEquipments {
-    filterId: UUID;
-    identifiableAttributes: IdentifiableAttributes[];
-    notFoundEquipments: string[];
-}
-
-export interface IdentifiableAttributes {
-    id: string;
-    type: EQUIPMENT_TYPES;
-    distributionKey: number;
-}
+import type { FilterEquipments, IdentifiableAttributes } from '../../types/filter-lib';
+import type { ExpertFilter } from '../../types/filter-lib/expert-filter';
 
 export async function evaluateJsonFilter(
     studyUuid: UUID,

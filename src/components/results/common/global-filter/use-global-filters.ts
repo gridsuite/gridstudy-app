@@ -6,7 +6,8 @@
  */
 
 import { useCallback, useState } from 'react';
-import { GlobalFilter, GlobalFilters } from './global-filter-types';
+import type { GlobalFilter } from './global-filter-types';
+import type { GlobalFilters } from '../../../../services/study/analysis.types';
 import { FilterType } from '../utils';
 
 interface UseGlobalFiltersParams {

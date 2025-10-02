@@ -25,7 +25,7 @@ import { exportSensitivityResultsAsCsv } from 'services/study/sensitivity-analys
 import { SensiKind } from './sensitivity-analysis-result.type';
 import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
 import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import type { GlobalFilters } from '../../../services/study/analysis.types';
 
 interface SensitivityExportButtonProps {
     studyUuid: UUID;

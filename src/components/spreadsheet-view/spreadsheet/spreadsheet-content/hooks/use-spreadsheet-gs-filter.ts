@@ -16,15 +16,15 @@ import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import type { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { FilterEquipmentType } from '../../../../../types/filter-lib';
 
 async function buildAndEvaluateFilter(
-    equipmentType: EQUIPMENT_TYPES,
+    equipmentType: FilterEquipmentType,
     countries: string[],
     nominalVoltages: number[],
     substationProperties: Record<string, string[]>,
-    idsByEqType: Record<string, string[]>,
+    idsByEqType: Partial<Record<FilterEquipmentType, string[]>>,
     studyUuid: UUID,
     currentNodeId: UUID,
     currentRootNetworkUuid: UUID
@@ -55,6 +55,9 @@ export const useSpreadsheetGlobalFilter = (
 ) => {
     const { snackError } = useSnackMessage();
     const [filterIds, setFilterIds] = useState<string[]>([]);
+    useEffect(() => {
+        console.log('filterIds', filterIds);
+    }, [filterIds]);
     const globalFilterSpreadsheetState = useSelector((state: AppState) => state.globalFilterSpreadsheetState[tabUuid]);
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -83,9 +86,10 @@ export const useSpreadsheetGlobalFilter = (
                     }, {});
                 const genericFilters = globalFilters?.filter((filter) => filter.filterType === 'genericFilter');
 
-                let idsByEqType: Record<string, string[]> = {};
+                let idsByEqType: Partial<Record<FilterEquipmentType, string[]>> = {};
                 let firstInitByEqType: Record<string, boolean> = {};
 
+                console.log('genericFilters', genericFilters);
                 if (genericFilters?.length > 0) {
                     // We currently pre evaluate generic filters because expert filters can't be referenced by other expert filters as of now
                     const filtersUuids = genericFilters
@@ -97,6 +101,7 @@ export const useSpreadsheetGlobalFilter = (
                         currentRootNetworkUuid,
                         filtersUuids
                     );
+                    console.log('evaluateFilters response', response);
                     response.forEach((filterEq) => {
                         if (filterEq.identifiableAttributes.length > 0) {
                             const eqType = filterEq.identifiableAttributes[0].type;
@@ -109,19 +114,20 @@ export const useSpreadsheetGlobalFilter = (
                                 idsByEqType[eqType] = equipIds;
                                 firstInitByEqType[eqType] = false;
                             } else if (idsByEqType[eqType].length > 0 && equipIds.length > 0) {
-                                // intersection here because it is a AND
+                                // intersection here because it is an AND
                                 idsByEqType[eqType] = idsByEqType[eqType].filter((id) => equipIds.includes(id));
                             }
                         }
                     });
                 }
+                console.log('idsByEqType', idsByEqType);
                 Promise.all(
                     (equipmentType === SpreadsheetEquipmentType.BRANCH
-                        ? [SpreadsheetEquipmentType.LINE, SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]
-                        : [equipmentType]
+                        ? [FilterEquipmentType.LINE, FilterEquipmentType.TWO_WINDINGS_TRANSFORMER]
+                        : [equipmentType as unknown as FilterEquipmentType]
                     ).map((eType) =>
                         buildAndEvaluateFilter(
-                            eType as unknown as EQUIPMENT_TYPES,
+                            eType,
                             countries,
                             nominalVoltages,
                             substationProperties,
@@ -133,7 +139,8 @@ export const useSpreadsheetGlobalFilter = (
                     )
                 ).then(
                     (values) => {
-                        // we don't do a set because as equipment types are different/don't overlap, there isn't common id between types
+                        console.log('values', values);
+                        // we don't do a set because, as equipment types are different/don't overlap, there isn't common id between types
                         setFilterIds(values.flatMap((ias) => ias.map((ia) => ia.id)));
                     },
                     (reason) => {
