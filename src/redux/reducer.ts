@@ -64,6 +64,8 @@ import {
     type EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     type FavoriteContingencyListsAction,
+    HIGHLIGHT_MODIFICATION,
+    HighlightModificationAction,
     INIT_TABLE_DEFINITIONS,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
@@ -641,6 +643,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
     toggleOptions: StudyDisplayMode[];
+    highlightedModificationUuid: UUID | null;
     mapOpen: boolean;
 }
 
@@ -785,6 +788,7 @@ const initialState: AppState = {
         params: [],
     },
     toggleOptions: [StudyDisplayMode.TREE],
+    highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1349,6 +1353,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMapNeeded = true;
     });
 
+    builder.addCase(HIGHLIGHT_MODIFICATION, (state, action: HighlightModificationAction) => {
+        state.highlightedModificationUuid = action.highlightedModificationUuid;
+    });
+
     builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {
         if (state.currentRootNetworkUuid !== action.currentRootNetworkUuid) {
             state.currentRootNetworkUuid = action.currentRootNetworkUuid;
@@ -1384,9 +1392,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
-        if (!state.toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
-            state.toggleOptions = [...state.toggleOptions, StudyDisplayMode.MODIFICATIONS];
-        }
+        // remove EVENT_SCENARIO from toggleOptions if present and add MODIFICATIONS if not present
+        const optionsSet = new Set(state.toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
+        optionsSet.add(StudyDisplayMode.MODIFICATIONS);
+        state.toggleOptions = Array.from(optionsSet);
     });
 
     builder.addCase(SET_TOGGLE_OPTIONS, (state, action: SetToggleOptionsAction) => {
@@ -1533,11 +1542,10 @@ export const reducer = createReducer(initialState, (builder) => {
             const currentEquipment: Record<string, Identifiable> | undefined =
                 state.spreadsheetNetwork[equipmentType]?.equipmentsByNodeId[action.nodeId];
 
-            // Format the updated equipments to match the table format
-            const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
-
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
-            if (currentEquipment !== undefined) {
+            if (currentEquipment) {
+                // Format the updated equipments to match the table format
+                const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
@@ -1568,24 +1576,27 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
         action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
-            const currentEquipments =
-                state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId];
-            if (currentEquipments !== undefined) {
-                // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
-                    const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
-                        .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
-                    if (currentSubstations != null) {
-                        state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[
-                            action.nodeId
-                        ] = updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
-                    }
-                }
-
-                state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId] = deleteEquipment(
-                    currentEquipments,
+            if (
+                // If we delete a line or a two windings transformer we also have to delete it from branch type
+                (equipmentToDeleteType === SpreadsheetEquipmentType.LINE ||
+                    equipmentToDeleteType === SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER) &&
+                state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH]?.equipmentsByNodeId[action.nodeId]
+            ) {
+                delete state.spreadsheetNetwork[SpreadsheetEquipmentType.BRANCH].equipmentsByNodeId[action.nodeId][
                     equipmentToDeleteId
-                );
+                ];
+            } else if (equipmentToDeleteType === SpreadsheetEquipmentType.VOLTAGE_LEVEL) {
+                const currentSubstations = state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION]
+                    .equipmentsByNodeId[action.nodeId] as Record<string, Substation> | null;
+                if (currentSubstations != null) {
+                    state.spreadsheetNetwork[SpreadsheetEquipmentType.SUBSTATION].equipmentsByNodeId[action.nodeId] =
+                        updateSubstationAfterVLDeletion(currentSubstations, equipmentToDeleteId);
+                }
+            }
+            if (state.spreadsheetNetwork[equipmentToDeleteType]?.equipmentsByNodeId[action.nodeId]) {
+                delete state.spreadsheetNetwork[equipmentToDeleteType].equipmentsByNodeId[action.nodeId][
+                    equipmentToDeleteId
+                ];
             }
         });
     });
@@ -1949,11 +1960,6 @@ function updateSubstationAfterVLDeletion(
     }
 
     return currentSubstations;
-}
-
-function deleteEquipment(currentEquipments: Record<string, Identifiable>, equipmentToDeleteId: string) {
-    delete currentEquipments[equipmentToDeleteId];
-    return currentEquipments;
 }
 
 export type Substation = Identifiable & {

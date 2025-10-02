@@ -31,23 +31,34 @@ import { groupIdSuffix } from './graph/nodes/labeled-group-node.type';
 import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
+import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 
-const styles = (theme) => ({
-    flexGrow: 1,
-    height: '100%',
-    backgroundColor: theme.reactflow.backgroundColor,
-    '.react-flow': {
-        '--xy-edge-stroke': theme.reactflow.edge.stroke,
-    },
-    '.react-flow__attribution a': {
-        color: theme.palette.text.primary,
-    },
-    '.react-flow__attribution': {
-        backgroundColor: theme.palette.background.paper,
-    },
-});
+const styles = {
+    modificationTree: (theme) => ({
+        flexGrow: 1,
+        height: '100%',
+        backgroundColor: theme.reactflow.backgroundColor,
+        '.react-flow': {
+            '--xy-edge-stroke': theme.reactflow.edge.stroke,
+        },
+        '.react-flow__attribution a': {
+            color: theme.palette.text.primary,
+        },
+        '.react-flow__attribution': {
+            backgroundColor: theme.palette.background.paper,
+        },
+    }),
+    labelBox: (theme) => ({
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'flex-end',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+        fontWeight: 'bold',
+    }),
+};
 
-const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResize }) => {
+const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
 
@@ -298,14 +309,11 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid, onTreePanelResi
         setCenter(centerX, centerY, { zoom: getZoom() });
     }, [currentNode, nodes, setCenter, getZoom]);
 
-    useEffect(() => {
-        if (onTreePanelResize) {
-            onTreePanelResize.current = handleFocusNode;
-        }
-    }, [onTreePanelResize, handleFocusNode]);
+    // trigger focus when requested from outside (ex: from root network modification results)
+    useTreeNodeFocus(handleFocusNode);
 
     return (
-        <Box sx={styles}>
+        <Box sx={styles.modificationTree}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

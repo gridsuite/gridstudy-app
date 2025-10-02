@@ -71,7 +71,14 @@ export function fetchDynamicSecurityAnalysisStatus(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-security-analysis/status';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchText(url);
+}
+
+export function fetchDynamicSecurityAnalysisProvider(studyUuid: UUID) {
+    console.info(`Fetching dynamic security analysis provider on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
+    console.debug(url);
+    return backendFetchText(url);
 }
 
 export function fetchDefaultDynamicSecurityAnalysisProvider() {
