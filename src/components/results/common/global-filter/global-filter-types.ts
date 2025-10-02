@@ -7,7 +7,7 @@
 
 import { LimitTypes } from '../../loadflow/load-flow-result.type';
 import { FilterConfig, SortConfig } from '../../../../types/custom-aggrid-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 /**
  * globals filters are the filters applied to computation results

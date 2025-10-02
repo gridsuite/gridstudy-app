@@ -7,7 +7,7 @@
 
 import { type RefObject, useCallback, useEffect, useState } from 'react';
 import { type FilterChangedEvent, type IRowNode } from 'ag-grid-community';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSelector } from 'react-redux';
 import { type AppState } from '../../../../../redux/reducer';
 import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';

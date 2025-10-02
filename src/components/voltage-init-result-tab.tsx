@@ -10,7 +10,7 @@ import { ComputingType } from '@gridsuite/commons-ui';
 import RunningStatus from './utils/running-status';
 import { voltageInitResultInvalidations } from './computing-status/use-all-computing-status';
 import { useNodeData } from './use-node-data';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from '../redux/reducer';
 import { VoltageInitResult } from './voltage-init-result';
 import { useMemo } from 'react';
