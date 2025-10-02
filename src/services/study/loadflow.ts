@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
+import { type ResultsQueryParams } from '../../components/results/common/types';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');

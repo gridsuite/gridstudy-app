@@ -13,7 +13,7 @@ import {
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
-import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
+import { type GlobalFilters } from '../../components/results/common/types';
 import { GsLang } from '@gridsuite/commons-ui';
 
 interface ShortCircuitAnalysisResult {

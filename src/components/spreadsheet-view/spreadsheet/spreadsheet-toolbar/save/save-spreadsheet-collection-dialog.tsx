@@ -32,7 +32,7 @@ import { v4 as uuid4 } from 'uuid';
 import { saveSpreadsheetCollection, updateSpreadsheetCollection } from '../../../../../services/explore';
 import { NodeAlias } from '../../../types/node-alias.type';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../../../global-filter/types';
 
 interface SaveSpreadsheetCollectionDialogProps {
     open: UseStateBooleanReturn;

@@ -43,9 +43,9 @@ import { mapFieldsToColumnsFilter } from '../../../utils/aggrid-headers-utils';
 import { securityAnalysisResultInvalidations } from '../../computing-status/use-all-computing-status';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
-import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import GlobalFilterSelector from '../../global-filter/global-filter-selector';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { useGlobalFilterOptions } from '../../global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 

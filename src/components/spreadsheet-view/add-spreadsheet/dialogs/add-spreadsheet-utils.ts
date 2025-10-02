@@ -29,7 +29,7 @@ import { v4 as uuid4 } from 'uuid';
 import { COLUMN_DEPENDENCIES } from '../../columns/column-creation-form';
 import { GlobalFilterSpreadsheetState, SpreadsheetFilterState } from 'redux/reducer';
 import { addSpreadsheetConfigToCollection } from 'services/study/study-config';
-import { GlobalFilter } from '../../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../../global-filter/types';
 import { ResetNodeAliasCallback } from '../../hooks/use-node-aliases';
 
 const createNewTableDefinition = (

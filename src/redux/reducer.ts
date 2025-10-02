@@ -297,7 +297,7 @@ import {
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
 import type { UUID } from 'crypto';
-import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../components/global-filter/types';
 import type { Entries, ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import {

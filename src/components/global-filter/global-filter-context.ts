@@ -6,7 +6,7 @@
  */
 
 import { createContext } from 'react';
-import { GlobalFilter } from './global-filter-types';
+import type { GlobalFilter } from './types';
 
 export const GlobalFilterContext = createContext<{
     // manage internal states

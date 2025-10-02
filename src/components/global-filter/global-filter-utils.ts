@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GlobalFilter } from './global-filter-types';
-import { FilterType } from '../utils';
+import type { GlobalFilter } from './types';
+import { FilterType } from '../results/common/utils';
 import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 
 export const RECENT_FILTER: string = 'recent';

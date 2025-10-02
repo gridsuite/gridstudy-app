@@ -14,7 +14,7 @@ import {
     SpreadsheetCollectionDto,
     SpreadsheetConfig,
 } from 'components/spreadsheet-view/types/spreadsheet.type';
-import { GlobalFilter } from '../../components/results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../components/global-filter/types';
 import { DiagramGridLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
 
 export function getNetworkVisualizationParameters(studyUuid: UUID): Promise<NetworkVisualizationParameters> {

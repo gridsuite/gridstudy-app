@@ -13,7 +13,7 @@ import { type AppState } from '../../../../../redux/reducer';
 import { evaluateFilters, evaluateJsonFilter } from '../../../../../services/study/filter';
 import { buildExpertFilter } from '../../../../dialogs/parameters/dynamicsimulation/curve/dialog/curve-selector-utils';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import type { GlobalFilter } from '../../../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../../../global-filter/types';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import type { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';

@@ -5,14 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LimitTypes } from '../../loadflow/load-flow-result.type';
-import { FilterConfig, SortConfig } from '../../../../types/custom-aggrid-types';
-import { UUID } from 'crypto';
-
-/**
- * globals filters are the filters applied to computation results
- * they may contain generic filters
- */
+import type { LimitTypes } from '../loadflow/load-flow-result.type';
+import type { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 
 // data sent to the back
 export interface GlobalFilters {
@@ -24,18 +18,10 @@ export interface GlobalFilters {
     limitViolationsTypes?: LimitTypes[];
 }
 
-// complete individual global filter
-export interface GlobalFilter {
-    label: string;
-    filterType: string;
-    filterSubtype?: string; // when filterType needs more precise subcategories
-    filterTypeFromMetadata?: string; // only useful for generic filters
-    recent?: boolean;
-    uuid?: UUID; // only useful for generic filters
-    equipmentType?: string; // only useful for generic filters
-    path?: string; // only useful for generic filters
-}
-
+/**
+ * globals filters are the filters applied to computation results
+ * they may contain generic filters
+ */
 export interface ResultsQueryParams {
     sort?: SortConfig[];
     filters: FilterConfig[] | null; // column filters

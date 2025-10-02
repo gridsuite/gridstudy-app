@@ -8,7 +8,7 @@
 import type { UUID } from 'crypto';
 import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
-import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
+import type { GlobalFilter } from '../../global-filter/types';
 
 // The order of the enum values is important, do not change it without checking the usage (e.g. in select options in AddEmptySpreadsheetDialog)
 export enum SpreadsheetEquipmentType {

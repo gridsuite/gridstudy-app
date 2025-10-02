@@ -44,9 +44,9 @@ import {
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { UUID } from 'crypto';
-import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
+import GlobalFilterSelector from '../../global-filter/global-filter-selector';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
-import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { useGlobalFilterOptions } from '../../global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
 import { Button, Tooltip } from '@mui/material';
 import { resultsStyles } from '../common/utils';
