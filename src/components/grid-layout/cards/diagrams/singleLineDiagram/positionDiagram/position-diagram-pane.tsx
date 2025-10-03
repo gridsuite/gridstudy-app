@@ -13,7 +13,7 @@ import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
 import { getVoltageLevelSingleLineDiagram } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
 
 interface PositionDiagramPaneProps {

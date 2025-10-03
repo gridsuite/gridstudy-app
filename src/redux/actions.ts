@@ -22,7 +22,7 @@ import {
     type Identifiable,
     type NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';

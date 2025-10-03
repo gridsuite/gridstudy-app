@@ -18,7 +18,7 @@ import { EQUIPMENT_ID } from 'components/utils/field-constants';
 import { TabularModificationType } from './tabular-common';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 interface FileDownloadParams {
     content: string;

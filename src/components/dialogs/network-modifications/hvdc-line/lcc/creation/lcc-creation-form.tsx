@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
 import LccHvdcLine from '../common/lcc-hvdc-line';

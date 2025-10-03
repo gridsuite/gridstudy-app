@@ -13,7 +13,7 @@ import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useNodeAliases } from './hooks/use-node-aliases';
 import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { Spreadsheet } from './spreadsheet/spreadsheet';

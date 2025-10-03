@@ -18,7 +18,7 @@ import {
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../services/study/voltage-init';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { haveComputationParametersChanged } from './use-parameters-notification';
 import { isComputationParametersUpdatedNotification } from 'types/notification-types';
 
