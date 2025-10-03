@@ -15,7 +15,7 @@ import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { useFetchEquipment } from 'components/spreadsheet-view/hooks/use-fetch-equipment';
 import { useBuiltNodesIds } from '../../../hooks/use-built-nodes-ids';
 import { useStableComputedSet } from '../../../../../hooks/use-stable-computed-set';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export const useSpreadsheetEquipments = (
     type: SpreadsheetEquipmentType,

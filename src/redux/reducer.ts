@@ -296,7 +296,7 @@ import {
     TABLE_SORT_STORE,
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { Entries, ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';

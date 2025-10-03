@@ -18,7 +18,7 @@ import {
     useDebounce,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useDiagramsGridLayoutInitialization } from './hooks/use-diagrams-grid-layout-initialization';
 import { v4 } from 'uuid';
 import { GridLayoutToolbar } from './grid-layout-toolbar';

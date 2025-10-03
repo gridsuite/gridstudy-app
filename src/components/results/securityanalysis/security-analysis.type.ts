@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
