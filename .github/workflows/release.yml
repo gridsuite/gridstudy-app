@@ -14,7 +14,6 @@ on:
 
 jobs:
   run-release:
-    # TODO replace ref when powsybl/github-ci#62 is merged
     uses: powsybl/github-ci/.github/workflows/release-frontend-app-generic.yml@aaae75875296657028f2805e7a3fbdb1418b8b95
     with:
       releaseVersion: ${{ github.event.inputs.releaseVersion }}
