@@ -127,6 +127,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             {tabIndex === 1 && (
                 <GlassPane active={isLoadingResult}>
                     <StateEstimationQualityResult
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationQualityColumns}
@@ -137,6 +140,9 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
             {tabIndex === 2 && (
                 <GlassPane active={isLoadingResult}>
                     <StateEstimationQualityResult
+                        studyUuid={studyUuid}
+                        nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={stateEstimationQualityColumns}
