@@ -17,17 +17,9 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    italicFontTextField,
-    MVAPowerAdornment,
-    OhmAdornment,
-} from '../../../dialog-utils';
+import { ActivePowerAdornment, filledTextField, italicFontTextField, MVAPowerAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import { Box, Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
@@ -43,6 +35,7 @@ import { useWatch } from 'react-hook-form';
 import { VoltageRegulationForm } from '../../../voltage-regulation/voltage-regulation-form';
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface GeneratorCreationFormProps {
     studyUuid: UUID;
@@ -99,14 +92,6 @@ export default function GeneratorCreationForm({
 
     const ratedNominalPowerField = (
         <FloatInput name={RATED_NOMINAL_POWER} label={'RatedNominalPowerText'} adornment={MVAPowerAdornment} />
-    );
-
-    const transientReactanceField = (
-        <FloatInput name={TRANSIENT_REACTANCE} label={'TransientReactanceForm'} adornment={OhmAdornment} />
-    );
-
-    const transformerReactanceField = (
-        <FloatInput name={TRANSFORMER_REACTANCE} label={'TransformerReactanceForm'} adornment={OhmAdornment} />
     );
 
     const plannedActivePowerSetPointField = (
@@ -182,8 +167,7 @@ export default function GeneratorCreationForm({
             {/* Short Circuit of start part */}
             <GridSection title="ShortCircuit" />
             <Grid container spacing={2}>
-                <GridItem size={4}>{transientReactanceField}</GridItem>
-                <GridItem size={4}>{transformerReactanceField}</GridItem>
+                <ShortCircuitForm />
             </Grid>
 
             {/* Cost of start part */}
