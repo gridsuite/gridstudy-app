@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
@@ -29,6 +28,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -70,7 +70,7 @@ const SubstationModificationDialog = ({
     const [substationToModify, setSubstationToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -112,10 +112,13 @@ const SubstationModificationDialog = ({
                     .then((substation) => {
                         if (substation) {
                             setSubstationToModify(substation);
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(substation, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(substation, getValues),
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -123,7 +126,6 @@ const SubstationModificationDialog = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setSubstationToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             }

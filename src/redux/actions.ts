@@ -22,7 +22,7 @@ import {
     type Identifiable,
     type NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
@@ -203,6 +203,18 @@ export type CancelLeaveParametersTabAction = Readonly<Action<typeof CANCEL_LEAVE
 export function cancelLeaveParametersTab(): CancelLeaveParametersTabAction {
     return {
         type: CANCEL_LEAVE_PARAMETERS_TAB,
+    };
+}
+
+export const SET_DIRTY_COMPUTATION_PARAMETERS = 'SET_DIRTY_COMPUTATION_PARAMETERS';
+export type SetDirtyComputationParametersAction = Readonly<Action<typeof SET_DIRTY_COMPUTATION_PARAMETERS>> & {
+    isDirty: boolean;
+};
+
+export function setDirtyComputationParameters(isDirty: boolean): SetDirtyComputationParametersAction {
+    return {
+        type: SET_DIRTY_COMPUTATION_PARAMETERS,
+        isDirty,
     };
 }
 
@@ -665,6 +677,18 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
+export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
+export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
+    highlightedModificationUuid: UUID | null;
+};
+
+export function setHighlightModification(modificationUuid: UUID | null): HighlightModificationAction {
+    return {
+        type: HIGHLIGHT_MODIFICATION,
+        highlightedModificationUuid: modificationUuid,
+    };
+}
+
 export const CURRENT_ROOT_NETWORK_UUID = 'CURRENT_ROOT_NETWORK_UUID';
 export type CurrentRootNetworkUuidAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK_UUID>> & {
     currentRootNetworkUuid: UUID;
@@ -705,6 +729,7 @@ export function setNodeSelectionForCopy(
 
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 export type SetModificationsDrawerOpenAction = Readonly<Action<typeof SET_MODIFICATIONS_DRAWER_OPEN>>;
+
 export function setModificationsDrawerOpen(): SetModificationsDrawerOpenAction {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,

@@ -13,14 +13,14 @@ import SpreadsheetTabs from './spreadsheet-tabs/spreadsheet-tabs';
 import { AppState } from '../../redux/reducer';
 import { SpreadsheetCollectionDto, SpreadsheetEquipmentType } from './types/spreadsheet.type';
 import { CurrentTreeNode } from '../graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useNodeAliases } from './hooks/use-node-aliases';
 import TabPanelLazy from 'components/results/common/tab-panel-lazy';
 import { Spreadsheet } from './spreadsheet/spreadsheet';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getSpreadsheetConfigCollection, setSpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions, setActiveSpreadsheetTab } from 'redux/actions';
-import { PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
+import { type MuiStyles, PopupConfirmationDialog, useSnackMessage } from '@gridsuite/commons-ui';
 import { processSpreadsheetsCollectionData } from './add-spreadsheet/dialogs/add-spreadsheet-utils';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 
@@ -30,7 +30,7 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-};
+} as const satisfies MuiStyles;
 
 interface SpreadsheetViewProps {
     currentNode: CurrentTreeNode;
@@ -137,6 +137,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                     <FormattedMessage id={'NoSpreadsheets'} />
                 </Alert>
             ) : (
+                nodeAliases &&
                 tablesDefinitions.map((tabDef) => {
                     const isActive = activeSpreadsheetTabUuid === tabDef.uuid;
                     const equipmentIdToScrollTo = tabDef.type === equipmentType && isActive ? equipmentId : null;

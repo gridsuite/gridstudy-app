@@ -26,7 +26,7 @@ import {
     type NetworkMapProps,
     type NetworkMapRef,
 } from '@powsybl/network-viewer';
-import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, forwardRef } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
@@ -34,14 +34,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import {
     ComputingType,
-    EquipmentInfos,
+    type EquipmentInfos,
     EquipmentType,
     ExtendedEquipmentType,
     HvdcType,
+    type MuiStyles,
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
-    UseStateBooleanReturn,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
@@ -55,7 +56,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
@@ -111,7 +112,7 @@ const styles = {
             backgroundColor: '#f2f2f2',
         },
     },
-};
+} as const satisfies MuiStyles;
 
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 

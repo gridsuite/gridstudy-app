@@ -22,7 +22,7 @@ import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import { SpreadsheetCollectionDto } from 'components/spreadsheet-view/types/spreadsheet.type';
@@ -119,15 +119,11 @@ export default function AddSpreadsheetsFromCollectionDialog({
             options={[
                 {
                     id: SpreadsheetCollectionImportMode.REPLACE,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_replace',
                 },
                 {
                     id: SpreadsheetCollectionImportMode.APPEND,
-                    label: intl.formatMessage({
-                        id: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
-                    }),
+                    label: 'spreadsheet/create_new_spreadsheet/apply_spreadsheet_collection_mode_append',
                 },
             ]}
         />

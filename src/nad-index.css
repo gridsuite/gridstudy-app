@@ -1,14 +1,11 @@
 .nad-branch-edges .nad-edge-path,
-.nad-3wt-edges .nad-edge-path {
-    stroke: var(--vl-color, lightgrey);
-    stroke-width: 0.25%;
-    fill: none;
-}
+.nad-3wt-edges .nad-edge-path,
 .nad-branch-edges .nad-winding,
 .nad-3wt-nodes .nad-winding {
     stroke: var(--vl-color, lightgrey);
     stroke-width: 0.25%;
     fill: none;
+    cursor: default;
 }
 .nad-text-edges { /* Hidden for now */
     display: none;
@@ -67,7 +64,7 @@ foreignObject.nad-text-nodes {
     width: max-content;
     padding: 10px;
     border-radius: 10px;
-    cursor: grab;
+    cursor: default;
     border: 2px solid rgba(0,0,0,0);
 }
 .nad-legend-square {
@@ -76,6 +73,9 @@ foreignObject.nad-text-nodes {
     width: 20px;
     height: 20px;
     background: var(--vl-color, black);
+}
+.nad-edge-infos {
+    cursor: default;
 }
 .nad-edge-infos text {
     font: 20px sans-serif;
@@ -275,6 +275,9 @@ g.nad-disconnected > g.nad-disconnected {
 .nad-textnode-highlight {
     z-index: 99999;
     border: 2px solid #90929477;
+}
+.nad-busnode-highlight {
+    transform: scale(1.12);
 }
 :is(.nad-zoom-0) .nad-busnode-highlight {
     transform: scale(1.12);

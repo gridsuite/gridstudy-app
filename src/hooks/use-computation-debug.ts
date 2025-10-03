@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { getDebugState, saveDebugState } from '../redux/session-storage/debug-state';
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
@@ -31,6 +31,7 @@ const downloadDebugFileFetchers = {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: downloadDebugFileDynamicSecurityAnalysis,
     [ComputingType.VOLTAGE_INITIALIZATION]: downloadDebugFileVoltageInit,
     [ComputingType.SHORT_CIRCUIT]: downloadDebugFileShortCircuitAnalysis,
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: downloadDebugFileShortCircuitAnalysis,
 } as Record<ComputingType, ((resultUuid: UUID) => Promise<Response>) | null>;
 
 export function buildDebugIdentifier({

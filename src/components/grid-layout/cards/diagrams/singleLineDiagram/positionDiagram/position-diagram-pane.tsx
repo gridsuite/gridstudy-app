@@ -13,7 +13,7 @@ import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../../../../network/constants';
 import { getVoltageLevelSingleLineDiagram } from '../../../../../../services/study/network';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DiagramType } from '../../diagram.type';
 
 interface PositionDiagramPaneProps {
@@ -36,7 +36,6 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
     const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
-
     const voltageLevelSingleLineDiagramUrl = useMemo(() => {
         if (!voltageLevelId) {
             return '';

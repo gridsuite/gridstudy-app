@@ -18,7 +18,7 @@ import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensiti
 import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { AppState } from '../redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
@@ -26,7 +26,7 @@ import { useSelector } from 'react-redux';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
 import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 import DynamicSecurityAnalysisResultTab from './results/dynamic-security-analysis/dynamic-security-analysis-result-tab';
-import { usePrevious, ComputingType } from '@gridsuite/commons-ui';
+import { ComputingType, type MuiStyles, usePrevious } from '@gridsuite/commons-ui';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { IService } from './result-view-tab.type';
 import { CurrentTreeNode } from './graph/tree-node.type';
@@ -43,7 +43,7 @@ const styles = {
         flexDirection: 'column',
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 interface IResultViewTabProps {
     studyUuid: UUID;
@@ -95,10 +95,11 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
+                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, currentRootNetworkUuid]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid, openVoltageLevelDiagram]);
 
     const renderSecurityAnalysisResult = useMemo(() => {
         return (
@@ -157,10 +158,11 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     nodeUuid={currentNode?.id}
                     currentRootNetworkUuid={currentRootNetworkUuid}
                     view={view}
+                    openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [view, currentNode?.id, studyUuid, currentRootNetworkUuid]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, view, openVoltageLevelDiagram]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (

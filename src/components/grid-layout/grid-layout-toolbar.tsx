@@ -8,14 +8,15 @@
 import { useState } from 'react';
 import { Box, Button, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { UUID } from 'crypto';
-import { Search, Public, Upload, SaveOutlined } from '@mui/icons-material';
+import type { UUID } from 'node:crypto';
+import { Search, Public, Upload } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
     ElementType,
-    EquipmentInfos,
+    type EquipmentInfos,
+    type MuiStyles,
     OverflowableText,
-    TreeViewFinderNodeProps,
+    type TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { TopBarEquipmentSearchDialog } from 'components/top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -32,7 +33,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-};
+} as const satisfies MuiStyles;
 
 interface DiagramGridHeaderProps {
     onLoad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
@@ -40,10 +41,11 @@ interface DiagramGridHeaderProps {
     onOpenNetworkAreaDiagram?: (elementId?: string) => void;
     onLayoutSave: () => void;
     onMap?: () => void;
+    disableStore?: boolean;
 }
 
 export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
-    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave } = props;
+    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave, disableStore = true } = props;
 
     const intl = useIntl();
 
@@ -83,10 +85,12 @@ export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
                     </ToggleButtonGroup>
                 </Box>
                 <Box>
-                    <Tooltip title={<FormattedMessage id="SaveGridLayout" />}>
-                        <Button startIcon={<SaveOutlined />} sx={{ textTransform: 'uppercase' }} onClick={onLayoutSave}>
-                            <FormattedMessage id="SaveGridLayout" />
-                        </Button>
+                    <Tooltip title={<FormattedMessage id="StoreButtonTooltip" />}>
+                        <span>
+                            <Button disabled={disableStore} onClick={onLayoutSave}>
+                                <FormattedMessage id="StoreDiagramLayout" />
+                            </Button>
+                        </span>
                     </Tooltip>
                 </Box>
             </Box>

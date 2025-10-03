@@ -9,13 +9,12 @@ import { Layout, Layouts } from 'react-grid-layout';
 import { Diagram, DiagramParams, DiagramType, NETWORK_AREA_DIAGRAM_DETAILS_TYPE } from '../cards/diagrams/diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useCallback } from 'react';
 import { DiagramGridLayoutDto, DiagramLayoutDto } from 'components/grid-layout/diagram-grid-layout.types';
 import { MAX_INT32 } from 'services/utils';
 import { saveDiagramGridLayout } from 'services/study/study-config';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { v4 } from 'uuid';
 
 interface UseSaveDiagramLayoutProps {
     layouts: Layouts;
@@ -64,14 +63,6 @@ const frontendToBackendDiagramGridLayout = (diagram: DiagramGridLayoutConfig): D
         }
     });
 
-    // get the map from gridLayoutById
-    const transformedMapDTO: DiagramLayoutDto = {
-        diagramUuid: v4() as UUID,
-        type: 'map',
-        diagramPositions: gridLayoutById['MapCard'],
-    };
-    diagramLayouts.push(transformedMapDTO);
-
     return {
         diagramLayouts: diagramLayouts,
     };
@@ -107,12 +98,12 @@ export const useSaveDiagramLayout = ({ layouts, diagrams }: UseSaveDiagramLayout
         )
             .then(() => {
                 snackInfo({
-                    headerId: 'GridLayoutPanelSaveSuccess',
+                    headerId: 'DiagramLayoutStoreSuccess',
                 });
             })
             .catch(() => {
                 snackError({
-                    headerId: 'GridLayoutPanelSaveError',
+                    headerId: 'DiagramLayoutStoreError',
                 });
             });
     }, [diagrams, layouts, studyUuid, snackInfo, snackError]);

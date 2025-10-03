@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ExportButton } from 'components/utils/export-button';
-import { UUID } from 'crypto';
+import { ExportCsvButton, useSnackMessage } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
@@ -34,12 +33,21 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const appTabIndex = useSelector((state: AppState) => state.appTabIndex);
 
     const intl = useIntl();
 
     useEffect(() => {
         setIsCsvExportSuccessful(false);
-    }, [nodeUuid, resultType]);
+    }, [studyUuid, nodeUuid, rootNetworkUuid, resultType, appTabIndex]);
+
+    useEffect(() => {
+        if (disabled) {
+            // reinit the success state when the button is disabled,
+            // for example when the calcul status change or results change
+            setIsCsvExportSuccessful(false);
+        }
+    }, [disabled]);
 
     const enumValueTranslations = useMemo(() => {
         const returnedValue: Record<string, string> = {
@@ -109,7 +117,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExp
     ]);
 
     return (
-        <ExportButton
+        <ExportCsvButton
             onClick={exportResultCsv}
             disabled={disabled}
             isDownloadLoading={isCsvExportLoading}

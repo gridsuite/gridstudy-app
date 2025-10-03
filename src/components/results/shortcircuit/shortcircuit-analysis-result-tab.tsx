@@ -25,7 +25,7 @@ import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcirc
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
@@ -37,6 +37,7 @@ interface ShortCircuitAnalysisResultTabProps {
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
     view: string;
+    openVoltageLevelDiagram: (id: string) => void;
 }
 
 const getDisplayedColumns = (params: GridReadyEvent) => {
@@ -53,6 +54,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     nodeUuid,
     currentRootNetworkUuid,
     view,
+    openVoltageLevelDiagram,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
@@ -194,11 +196,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
                         globalFilters={getGlobalFilterParameter(globalFilters)}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ) : (
                     <ShortCircuitAnalysisOneBusResult
                         onGridColumnsChanged={handleGridColumnsChanged}
                         onRowDataUpdated={handleRowDataUpdated}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
                     />
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (

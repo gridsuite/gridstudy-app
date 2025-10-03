@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, MenuItem, Select, type SelectChangeEvent, type Theme, Typography } from '@mui/material';
+import { Box, Grid, MenuItem, Select, type SelectChangeEvent, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomAGGrid, type MuiStyles, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter, type IdentifiableAttributes } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
@@ -45,10 +45,10 @@ const styles = {
         width: '100%',
         flexGrow: 1,
     },
-    equipmentTitle: (theme: Theme) => ({
+    equipmentTitle: (theme) => ({
         marginBottom: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterProps>(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {

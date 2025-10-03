@@ -13,13 +13,14 @@ import DynamicSimulationResultTimeSeries from './dynamic-simulation-result-time-
 import DynamicSimulationResultSynthesis from './dynamic-simulation-result-synthesis';
 import DynamicSimulationResultTimeline from './dynamic-simulation-result-timeline';
 import DynamicSimulationResultLogs from './dynamic-simulation-result-logs';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     resultContainer: {
         flexGrow: 1,
     },
-};
+} as const satisfies MuiStyles;
 
 const TAB_INDEX_TIME_SERIES = 'DynamicSimulationTabTimeSeries';
 const TAB_INDEX_TIMELINE = 'DynamicSimulationTabTimeline';

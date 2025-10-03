@@ -30,7 +30,6 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
-import { useForm } from 'react-hook-form';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
@@ -57,6 +56,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions.ts';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -95,7 +95,7 @@ const ShuntCompensatorModificationDialog = ({
     const [idExists, setIdExists] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -181,10 +181,13 @@ const ShuntCompensatorModificationDialog = ({
                             } else {
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
-                                reset((formValues) => ({
-                                    ...formValues,
-                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
-                                }));
+                                reset(
+                                    (formValues) => ({
+                                        ...formValues,
+                                        [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
+                                    }),
+                                    { keepDirty: true }
+                                );
                             }
                         }
                         setLoading(false);
@@ -197,7 +200,6 @@ const ShuntCompensatorModificationDialog = ({
                         setLoading(false);
                         if (editData?.equipmentId !== equipmentId) {
                             setShuntCompensatorInfos(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {

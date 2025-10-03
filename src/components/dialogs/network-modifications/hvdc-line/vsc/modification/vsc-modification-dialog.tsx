@@ -6,7 +6,6 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
@@ -70,6 +69,7 @@ import {
 } from '../../../common/properties/property-utils';
 import { isNodeBuilt } from '../../../../../graph/util/model-functions';
 import { ReactiveCapabilityCurvePoints } from '../../../../reactive-limits/reactive-limits.type';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const formSchema = yup
     .object()
@@ -112,7 +112,7 @@ const VscModificationDialog: React.FC<any> = ({
     const [equipmentId, setEquipmentId] = useState<string | null>(defaultIdValue ?? null);
     const [vscToModify, setVscToModify] = useState<VscModificationInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const formMethods = useForm({
+    const formMethods = useFormWithDirtyTracking({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -216,10 +216,15 @@ const VscModificationDialog: React.FC<any> = ({
                                     reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable2,
                                 },
                             });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                }),
+                                {
+                                    keepDirty: true,
+                                }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -227,7 +232,6 @@ const VscModificationDialog: React.FC<any> = ({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setVscToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             }

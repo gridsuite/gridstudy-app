@@ -7,32 +7,21 @@
 
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    Box,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    Link,
-    SxProps,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Typography } from '@mui/material';
 import {
     AutocompleteInput,
     CancelButton,
     CustomFormProvider,
     ExpandingTextField,
     IntegerInput,
+    type MuiStyles,
     MultipleAutocompleteInput,
     SubmitButton,
     TextInput,
     useSnackMessage,
-    UseStateBooleanReturn,
+    type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, UseFormSetError, useWatch } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
@@ -41,7 +30,7 @@ import { hasCyclicDependencies, Item } from './utils/cyclic-dependencies';
 import { COLUMN_TYPES } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { FilterType } from 'types/custom-aggrid-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../types/spreadsheet.type';
 import {
     COLUMN_DEPENDENCIES,
@@ -75,7 +64,7 @@ const styles = {
     columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
     field: { width: '70%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 const COLUMN_NAME_REGEX = /\W/g;
 

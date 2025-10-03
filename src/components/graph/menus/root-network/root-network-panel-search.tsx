@@ -5,18 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useState } from 'react';
-import { Box, Typography, Tabs, Tab, Tooltip, Theme } from '@mui/material';
+import { Box, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import { ModificationsSearchResult } from './root-network.types';
 import RootNetworkMinimizedPanelContent from './root-network-minimized-panel-content';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { RootNetworkModificationsSearchResults } from './root-network-modifications-search-results';
-
 import { useRootNetworkSearchNotifications } from './use-root-network-search-notifications';
 import SearchBar from './root-network-search-bar';
 import { RootNetworkNodesSearchResults } from './root-network-nodes-search-results';
 import { useRootNetworkNodeSearch } from './use-root-network-node-search';
 import { useRootNetworkModificationSearch } from './use-root-network-modification-search';
+import { setHighlightModification } from 'redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 
 enum TAB_VALUES {
     modifications = 'MODIFICATIONS',
@@ -39,7 +42,7 @@ function isNodeTab(tabValue: TAB_VALUES): boolean {
 }
 
 const styles = {
-    root: (theme: Theme) => ({
+    root: (theme) => ({
         margin: theme.spacing(2),
     }),
     searchField: {
@@ -60,7 +63,7 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
     },
-};
+} as const satisfies MuiStyles;
 
 const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSearchActive }) => {
     const intl = useIntl();
@@ -68,10 +71,11 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
 
     const nodesSearch = useRootNetworkNodeSearch();
     const modificationsSearch = useRootNetworkModificationSearch();
+    const highlightedModificationUuid = useSelector((state: AppState) => state.highlightedModificationUuid);
 
     const isLoading = isNodeTab(tabValue) ? nodesSearch.isLoading : modificationsSearch.isLoading;
     const searchTerm = isNodeTab(tabValue) ? nodesSearch.searchTerm : modificationsSearch.searchTerm;
-
+    const dispatch = useDispatch();
     const leaveSearch = () => {
         nodesSearch.reset();
         modificationsSearch.reset();
@@ -83,6 +87,10 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
         if (isNodeTab(tabValue)) {
             nodesSearch.search(value);
         } else {
+            // remove the highlighted Modification before search
+            if (highlightedModificationUuid) {
+                dispatch(setHighlightModification(null));
+            }
             modificationsSearch.search(value);
         }
     };

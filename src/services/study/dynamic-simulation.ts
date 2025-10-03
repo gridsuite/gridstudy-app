@@ -13,7 +13,7 @@ import {
 } from './index';
 
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { DynamicSimulationParametersFetchReturn, DynamicSimulationParametersInfos } from './dynamic-simulation.type';
 import {
     SimpleTimeSeriesMetadata,
@@ -96,7 +96,7 @@ export function fetchDynamicSimulationStatus(
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-simulation/status';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchText(url);
 }
 
 export function fetchDynamicSimulationResultTimeSeries(

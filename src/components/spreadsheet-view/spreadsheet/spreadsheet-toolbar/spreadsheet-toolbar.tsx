@@ -7,9 +7,10 @@
 
 import type { RefObject } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SpreadsheetEquipmentType, type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
+import { type SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
-import { Grid, Theme } from '@mui/material';
+import { Grid } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { ColumnsConfig } from './columns-config';
 import ColumnCreationButton from './column-creation-button';
 import { NodeAlias } from 'components/spreadsheet-view/types/node-alias.type';
@@ -19,18 +20,18 @@ import { FilteredRowCounter } from './row-counter/filtered-row-counter';
 import { UseFilteredRowCounterInfoReturn } from './row-counter/use-filtered-row-counter';
 
 const styles = {
-    toolbar: (theme: Theme) => ({
+    toolbar: (theme) => ({
         marginTop: theme.spacing(2),
         alignItems: 'center',
     }),
-    filterContainer: (theme: Theme) => ({
+    filterContainer: (theme) => ({
         marginLeft: theme.spacing(1),
         display: 'flex',
     }),
-    save: (theme: Theme) => ({
+    save: (theme) => ({
         marginRight: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 interface SpreadsheetToolbarProps {
     gridRef: RefObject<AgGridReact>;
@@ -52,9 +53,7 @@ export const SpreadsheetToolbar = ({
     return (
         <Grid container columnSpacing={2} sx={styles.toolbar}>
             <Grid item sx={styles.filterContainer}>
-                {tableDefinition.type !== SpreadsheetEquipmentType.BRANCH && (
-                    <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
-                )}
+                <SpreadsheetGlobalFilter tableDefinition={tableDefinition} />
             </Grid>
             <Grid item>
                 <FilteredRowCounter rowCounterInfos={rowCounterInfos} tableDefinition={tableDefinition} />
@@ -77,6 +76,7 @@ export const SpreadsheetToolbar = ({
                     columns={columns}
                     disabled={disabled}
                     nodeAliases={nodeAliases}
+                    dataSize={rowCounterInfos.displayedRows ?? 0}
                 />
             </Grid>
         </Grid>

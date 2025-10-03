@@ -6,24 +6,25 @@
  */
 
 import { CheckCircleOutlined } from '@mui/icons-material';
-import { Alert, Button, Theme } from '@mui/material';
+import { Alert, Button } from '@mui/material';
 import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { LoadflowModifications } from './loadflow-modifications';
 
 const styles = {
-    loadFlowModif: (theme: Theme) => ({
+    loadFlowModif: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(2),
     }),
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         fontSize: theme.spacing(2.75),
     }),
-};
+} as const satisfies MuiStyles;
 
 export const LoadflowModificationAlert = () => {
     const [isModificationDialogOpen, setIsModificationDialogOpen] = useState(false);

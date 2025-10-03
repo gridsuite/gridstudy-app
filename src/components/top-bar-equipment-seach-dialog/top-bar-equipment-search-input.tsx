@@ -4,7 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, ExtendedEquipmentType, SEARCH_EQUIPMENTS } from '@gridsuite/commons-ui';
+import {
+    type EquipmentType,
+    type ExtendedEquipmentType,
+    type MuiStyles,
+    SEARCH_EQUIPMENTS,
+} from '@gridsuite/commons-ui';
 import { Search, SearchOff, Tune } from '@mui/icons-material';
 import { AutocompleteRenderInputParams, Chip, IconButton, TextField } from '@mui/material';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
@@ -26,7 +31,7 @@ const styles = {
             color: 'black',
         },
     },
-};
+} as const satisfies MuiStyles;
 
 export const TopBarEquipmentSearchInput = (props: TopBarEquipmentSearchInputProps) => {
     const { displayedValue, params, equipmentType, setEquipmentType } = props;

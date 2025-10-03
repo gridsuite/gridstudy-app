@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useForm } from 'react-hook-form';
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, EquipmentType, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
@@ -95,6 +94,7 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../generator-dialog.type';
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -167,7 +167,7 @@ export default function GeneratorModificationDialog({
     const [generatorToModify, setGeneratorToModify] = useState<GeneratorFormInfos | null>();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const formMethods = useForm<DeepNullable<GeneratorModificationDialogSchemaForm>>({
+    const formMethods = useFormWithDirtyTracking<DeepNullable<GeneratorModificationDialogSchemaForm>>({
         defaultValues: emptyFormData,
         resolver: yupResolver<DeepNullable<GeneratorModificationDialogSchemaForm>>(formSchema),
     });
@@ -293,10 +293,13 @@ export default function GeneratorModificationDialog({
                                 ...value,
                                 reactiveCapabilityCurvePoints: previousReactiveCapabilityCurveTable,
                             });
-                            reset((formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
-                            }));
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
+                                }),
+                                { keepDirty: true }
+                            );
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
@@ -304,7 +307,6 @@ export default function GeneratorModificationDialog({
                         setDataFetchStatus(FetchStatus.FAILED);
                         if (editData?.equipmentId !== equipmentId) {
                             setGeneratorToModify(null);
-                            reset(emptyFormData);
                         }
                     });
             } else {

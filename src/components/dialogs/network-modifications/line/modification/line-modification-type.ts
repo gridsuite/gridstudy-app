@@ -5,28 +5,42 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { AttributeModification, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import type { UUID } from 'node:crypto';
+import { OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import { Property } from '../../common/properties/property-utils';
+import {
+    APPLICABIlITY,
+    CURRENT_LIMITS,
+    DELETION_MARK,
+    ID,
+    NAME,
+    OPERATIONAL_LIMITS_GROUPS,
+    PERMANENT_LIMIT,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_VALUE,
+    TEMPORARY_LIMITS,
+} from '../../../../utils/field-constants';
 
-export interface LineModificationEditData {
-    uuid?: string;
+export interface LineModificationFormInfos {
     equipmentId?: string;
-    equipmentName?: { value: string };
+    equipmentName?: string;
     studyUuid: string;
     nodeUuid: UUID;
     modificationUuid: string;
     lineId: string;
     lineName: string | null;
-    r: AttributeModification<number> | null;
-    x: AttributeModification<number>;
-    g1: AttributeModification<number>;
-    b1: AttributeModification<number>;
-    g2: AttributeModification<number>;
-    b2: AttributeModification<number>;
+    r: number;
+    x: number;
+    g1: number;
+    b1: number;
+    g2: number;
+    b2: number;
     operationalLimitsGroups: OperationalLimitsGroup[];
-    selectedOperationalLimitsGroup1: AttributeModification<string>;
-    selectedOperationalLimitsGroup2: AttributeModification<string>;
+    selectedOperationalLimitsGroup1: string | null;
+    selectedOperationalLimitsGroup2: string | null;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
@@ -52,5 +66,33 @@ export interface LineModificationEditData {
     AdditionalProperties: any;
     characteristics: any;
     stateEstimation: any;
-    limits: any;
+    limits: LimitsDialogFormInfos;
+}
+
+export interface LimitsDialogFormInfos {
+    [SELECTED_LIMITS_GROUP_1]: string | null;
+    [SELECTED_LIMITS_GROUP_2]: string | null;
+    [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormInfos[];
+}
+
+export interface OperationalLimitsGroupFormInfos {
+    // here 'id' is a concatenation of NAME and APPLICABIlITY because 2 limits sets on side1 and 2 may have the same name
+    // "ID" from the map server is stored as NAME in the form because of this
+    [ID]: string;
+    [APPLICABIlITY]?: string;
+    [NAME]: string;
+    [CURRENT_LIMITS]: CurrentLimitsFormInfos;
+}
+
+export interface CurrentLimitsFormInfos {
+    [ID]: string;
+    [PERMANENT_LIMIT]: number | null;
+    [TEMPORARY_LIMITS]: TemporaryLimitFormInfos[];
+}
+
+export interface TemporaryLimitFormInfos {
+    [TEMPORARY_LIMIT_NAME]: string;
+    [TEMPORARY_LIMIT_DURATION]: number | null;
+    [TEMPORARY_LIMIT_VALUE]: number | null;
+    [DELETION_MARK]: boolean;
 }

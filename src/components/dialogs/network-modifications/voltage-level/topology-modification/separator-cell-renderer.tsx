@@ -4,25 +4,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Theme, Typography } from '@mui/material';
+import { SxProps, Typography } from '@mui/material';
 import React from 'react';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    separator: (theme: Theme) => ({
+    separator: (theme) => ({
         fontWeight: 'bold',
         fontSize: '1rem',
         width: '100%',
         marginTop: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 type SeparatorCellRendererProps = {
     value: string;
+    sx?: SxProps;
 };
 
-export default function SeparatorCellRenderer({ value }: Readonly<SeparatorCellRendererProps>) {
+export default function SeparatorCellRenderer({ value, sx }: Readonly<SeparatorCellRendererProps>) {
     return (
-        <Typography variant="subtitle1" color="primary" sx={styles.separator}>
+        <Typography variant="subtitle1" color="primary" sx={mergeSx(styles.separator, sx)}>
             {value}
         </Typography>
     );
