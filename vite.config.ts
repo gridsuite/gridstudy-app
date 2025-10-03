@@ -7,6 +7,8 @@
 
 import react from '@vitejs/plugin-react';
 import { CommonServerOptions, defineConfig } from 'vite';
+// @ts-expect-error See https://github.com/gxmari007/vite-plugin-eslint/issues/79
+import eslint from 'vite-plugin-eslint';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -25,9 +27,10 @@ const serverSettings: CommonServerOptions = {
     },
 };
 
-export default defineConfig((config) => ({
+export default defineConfig(() => ({
     plugins: [
         react(),
+        eslint(),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
     ],
