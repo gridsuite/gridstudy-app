@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { getDebugState, saveDebugState } from '../redux/session-storage/debug-state';
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';

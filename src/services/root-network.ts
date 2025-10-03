@@ -8,7 +8,7 @@
 import { RootNetworkInfos } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { PREFIX_STUDY_QUERIES, getStudyUrl } from './study';
 import { backendFetch, backendFetchJson } from './utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export function fetchRootNetworks(studyUuid: UUID) {
     console.info('Fetching root networks for studyUuid : ', studyUuid);
