@@ -7,7 +7,7 @@
 
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState, StudyUpdated } from '../redux/reducer';
 import { identity, useDebounce } from '@gridsuite/commons-ui';
 import { StudyUpdatedEventData } from 'types/notification-types';

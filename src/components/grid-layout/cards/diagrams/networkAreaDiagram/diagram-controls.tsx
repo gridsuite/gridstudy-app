@@ -31,7 +31,7 @@ import SpeakerNotesOutlinedIcon from '@mui/icons-material/SpeakerNotesOutlined';
 import { Tooltip } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AddLocationOutlined } from '@mui/icons-material';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { fetchNetworkElementInfos } from 'services/study/network';

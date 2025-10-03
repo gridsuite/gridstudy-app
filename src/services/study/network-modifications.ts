@@ -17,7 +17,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     Assignment,
     AttachLineInfo,
@@ -39,6 +39,7 @@ import {
     LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
+    MoveVoltageLevelFeederBaysInfos,
     NetworkModificationRequestInfos,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
@@ -2177,5 +2178,36 @@ export function createVoltageLevelTopology({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(createVoltageLevelTopologyInfos),
+    });
+}
+
+export function moveVoltageLevelFeederBays({
+    moveVoltageLevelFeederBaysInfos,
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    isUpdate,
+}: {
+    moveVoltageLevelFeederBaysInfos: MoveVoltageLevelFeederBaysInfos;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: string | null;
+    isUpdate: boolean;
+}) {
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (modificationUuid) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level topology');
+    } else {
+        console.info('Creating voltage level topology');
+    }
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(moveVoltageLevelFeederBaysInfos),
     });
 }

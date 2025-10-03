@@ -64,6 +64,8 @@ import {
     type EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
     type FavoriteContingencyListsAction,
+    HIGHLIGHT_MODIFICATION,
+    HighlightModificationAction,
     INIT_TABLE_DEFINITIONS,
     type InitTableDefinitionsAction,
     LOAD_EQUIPMENTS,
@@ -294,7 +296,7 @@ import {
     TABLE_SORT_STORE,
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { GlobalFilter } from '../components/results/common/global-filter/global-filter-types';
 import type { Entries, ValueOf } from 'type-fest';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
@@ -641,6 +643,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     deletedOrRenamedNodes: UUID[];
     diagramGridLayout: DiagramGridLayoutConfig;
     toggleOptions: StudyDisplayMode[];
+    highlightedModificationUuid: UUID | null;
     mapOpen: boolean;
 }
 
@@ -785,6 +788,7 @@ const initialState: AppState = {
         params: [],
     },
     toggleOptions: [StudyDisplayMode.TREE],
+    highlightedModificationUuid: null,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1349,6 +1353,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMapNeeded = true;
     });
 
+    builder.addCase(HIGHLIGHT_MODIFICATION, (state, action: HighlightModificationAction) => {
+        state.highlightedModificationUuid = action.highlightedModificationUuid;
+    });
+
     builder.addCase(CURRENT_ROOT_NETWORK_UUID, (state, action: CurrentRootNetworkUuidAction) => {
         if (state.currentRootNetworkUuid !== action.currentRootNetworkUuid) {
             state.currentRootNetworkUuid = action.currentRootNetworkUuid;
@@ -1384,9 +1392,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {
-        if (!state.toggleOptions.includes(StudyDisplayMode.MODIFICATIONS)) {
-            state.toggleOptions = [...state.toggleOptions, StudyDisplayMode.MODIFICATIONS];
-        }
+        // remove EVENT_SCENARIO from toggleOptions if present and add MODIFICATIONS if not present
+        const optionsSet = new Set(state.toggleOptions.filter((option) => option !== StudyDisplayMode.EVENT_SCENARIO));
+        optionsSet.add(StudyDisplayMode.MODIFICATIONS);
+        state.toggleOptions = Array.from(optionsSet);
     });
 
     builder.addCase(SET_TOGGLE_OPTIONS, (state, action: SetToggleOptionsAction) => {

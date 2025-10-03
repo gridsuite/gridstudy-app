@@ -7,7 +7,7 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { VoltageInitStudyParameters } from '@gridsuite/commons-ui';
 import { ResultsQueryParams } from '../../components/results/common/global-filter/global-filter-types';
 

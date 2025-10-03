@@ -26,7 +26,7 @@ import {
 } from './add-spreadsheet-form';
 import { addNewSpreadsheet } from './add-spreadsheet-utils';
 import { getSpreadsheetModel } from 'services/study-config';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import type { DialogComponentProps } from '../types';

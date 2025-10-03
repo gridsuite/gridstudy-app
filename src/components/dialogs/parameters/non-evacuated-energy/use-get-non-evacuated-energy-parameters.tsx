@@ -12,7 +12,7 @@ import { getNonEvacuatedEnergyParameters } from '../../../../services/study/non-
 import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { AppState } from 'redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { UseGetNonEvacuatedEnergyParametersReturnProps } from './utils';
 import { isComputationParametersUpdated } from '../use-parameters-notification';

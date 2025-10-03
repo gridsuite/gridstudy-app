@@ -7,19 +7,18 @@
 
 import { IntegerInput } from '@gridsuite/commons-ui';
 import { SECTION_COUNT } from 'components/utils/field-constants';
-import GridItem from '../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 import { Box, Grid, TextField, Tooltip } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
-import PositionDiagramPane from '../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
-import { useCallback, useState } from 'react';
+import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
+import { useCallback, useMemo, useState } from 'react';
 import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { filledTextField } from '../../dialog-utils';
-import { UUID } from 'crypto';
-import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { CurrentTreeNode } from '../../../graph/tree-node.type';
-import { SwitchesBetweenSections } from '../voltage-level/switches-between-sections/switches-between-sections';
-import { useMemo } from 'react';
+import { filledTextField } from '../../../dialog-utils';
+import type { UUID } from 'node:crypto';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { CurrentTreeNode } from '../../../../graph/tree-node.type';
+import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 
 export interface CreateVoltageLevelTopologyFormProps {
     voltageLevelId: string;

@@ -6,7 +6,7 @@
  */
 
 import { RunningStatus } from 'components/utils/running-status';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from '@gridsuite/commons-ui';

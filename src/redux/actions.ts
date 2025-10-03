@@ -22,7 +22,7 @@ import {
     type Identifiable,
     type NetworkVisualizationParameters,
 } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { UnknownArray } from 'type-fest';
 import type NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
@@ -674,6 +674,18 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     return {
         type: CURRENT_TREE_NODE,
         currentTreeNode: currentTreeNode,
+    };
+}
+
+export const HIGHLIGHT_MODIFICATION = 'HIGHLIGHT_MODIFICATION';
+export type HighlightModificationAction = Readonly<Action<typeof HIGHLIGHT_MODIFICATION>> & {
+    highlightedModificationUuid: UUID | null;
+};
+
+export function setHighlightModification(modificationUuid: UUID | null): HighlightModificationAction {
+    return {
+        type: HIGHLIGHT_MODIFICATION,
+        highlightedModificationUuid: modificationUuid,
     };
 }
 

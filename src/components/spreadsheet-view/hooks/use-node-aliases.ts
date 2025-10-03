@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
 import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from '../types/node-alias.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { deletedOrRenamedNodes } from 'redux/actions';
 import { isSpreadsheetNodeAliasesUpdatedNotification } from 'types/notification-types';
 
@@ -85,6 +85,7 @@ export const useNodeAliases = () => {
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerAliasesUpdated,
+        propsId: 'node-aliases',
     });
 
     const updateNodeAliases = useCallback(

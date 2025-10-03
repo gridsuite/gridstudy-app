@@ -19,7 +19,7 @@ import {
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid: UUID,
