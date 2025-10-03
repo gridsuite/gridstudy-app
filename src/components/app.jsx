@@ -7,11 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getOptionalServiceByServerName,
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from './utils/optional-services';
+import { retrieveOptionalServices } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AnnouncementNotification,
@@ -106,8 +102,22 @@ const App = () => {
     );
 
     const updateParams = useCallback(
-        (params) => {
+        (params, defaultValues = null) => {
             console.debug('received UI parameters : ', params);
+            if (defaultValues) {
+                // Browsing defaultParametersValues entries
+                Object.entries(defaultValues).forEach(([key, defaultValue]) => {
+                    // Checking if keys defined in defaultParametersValues file are already defined in config server
+                    // If they are not defined, values are taken from default values file
+                    if (!params.find((param) => param.name === key)) {
+                        params.push({
+                            name: key,
+                            value: defaultValue,
+                        });
+                    }
+                });
+                console.debug('UI parameters filled with default values when undefined : ', params);
+            }
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
@@ -306,18 +316,7 @@ const App = () => {
 
             const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then((params) => {
                 fetchDefaultParametersValues().then((defaultValues) => {
-                    // Browsing defaultParametersValues entries
-                    Object.entries(defaultValues).forEach(([key, defaultValue]) => {
-                        // Checking if keys defined in defaultParametersValues file are already defined in config server
-                        // If they are not defined, values are taken from default values file
-                        if (!params.find((param) => param.name === key)) {
-                            params.push({
-                                name: key,
-                                value: defaultValue,
-                            });
-                        }
-                    });
-                    updateParams(params);
+                    updateParams(params, defaultValues);
                 });
             });
 
@@ -327,29 +326,7 @@ const App = () => {
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
-                    const retrieveOptionalServices = services.map((service) => {
-                        return {
-                            ...service,
-                            name: getOptionalServiceByServerName(service.name),
-                        };
-                    });
-                    // get all potentially optional services
-                    const optionalServicesNames = Object.keys(OptionalServicesNames);
-
-                    // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
-                    // in that case, we consider it is UP
-                    optionalServicesNames
-                        .filter(
-                            (serviceName) =>
-                                !retrieveOptionalServices.map((service) => service.name).includes(serviceName)
-                        )
-                        .forEach((serviceName) =>
-                            retrieveOptionalServices.push({
-                                name: serviceName,
-                                status: OptionalServicesStatus.Up,
-                            })
-                        );
-                    dispatch(setOptionalServices(retrieveOptionalServices));
+                    dispatch(setOptionalServices(retrieveOptionalServices(services)));
                 })
                 .catch((error) => {
                     snackError({
