@@ -8,7 +8,7 @@
 import { PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { GlobalFilter } from './global-filter-types';
 import { FilterType } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ElementAttributes, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
 import { computeFullPath } from '../../../../utils/compute-title';
 import { addToRecentGlobalFilters, removeFromRecentGlobalFilters } from '../../../../redux/actions';

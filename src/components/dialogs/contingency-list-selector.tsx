@@ -21,7 +21,7 @@ import { fetchContingencyCount } from '../../services/study';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { toggleElementFromList } from 'components/utils/utils';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from '@mui/material';
 import { AppState } from '../../redux/reducer';

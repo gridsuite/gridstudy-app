@@ -24,7 +24,7 @@ import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment, SusceptanceAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { FunctionComponent } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';

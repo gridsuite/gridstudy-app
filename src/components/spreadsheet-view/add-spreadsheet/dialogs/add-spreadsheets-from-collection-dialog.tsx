@@ -22,7 +22,7 @@ import { AppState } from 'redux/reducer';
 import { useIntl } from 'react-intl';
 import { updateStudySpreadsheetConfigCollection } from 'services/study/study-config';
 import { initTableDefinitions } from 'redux/actions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 import { dialogStyles } from '../styles/styles';
 import { SpreadsheetCollectionDto } from 'components/spreadsheet-view/types/spreadsheet.type';
