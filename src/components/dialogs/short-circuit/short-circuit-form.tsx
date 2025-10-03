@@ -15,7 +15,7 @@ export interface ShortCircuitFormProps {
     previousValues?: ShortCircuitInfos;
 }
 
-export default function ShortCircuitForm({ previousValues }: ShortCircuitFormProps) {
+export default function ShortCircuitForm({ previousValues }: Readonly<ShortCircuitFormProps>) {
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
@@ -32,9 +32,9 @@ export default function ShortCircuitForm({ previousValues }: ShortCircuitFormPro
             label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
-                !isNaN(Number(previousValues?.stepUpTransformerX))
-                    ? (previousValues?.stepUpTransformerX ?? undefined)
-                    : undefined
+                Number.isNaN(Number(previousValues?.stepUpTransformerX))
+                    ? undefined
+                    : (previousValues?.stepUpTransformerX ?? undefined)
             }
             clearable={true}
         />
