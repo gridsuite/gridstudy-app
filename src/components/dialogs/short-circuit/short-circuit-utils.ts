@@ -17,15 +17,13 @@ export const getShortCircuitEmptyFormData = () => {
 export const getShortCircuitFormSchema = (isEquipmentModification = false) => {
     return {
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [TRANSIENT_REACTANCE]: isEquipmentModification
-            ? yup.number().nullable()
-            : yup
-                  .number()
-                  .nullable()
-                  .when([TRANSFORMER_REACTANCE], {
-                      is: (transformerReactance: number) => transformerReactance != null,
-                      then: (schema) => schema.required(),
-                  }),
+        [TRANSIENT_REACTANCE]: yup
+            .number()
+            .nullable()
+            .when([TRANSFORMER_REACTANCE], {
+                is: (transformerReactance: number) => isEquipmentModification && transformerReactance != null,
+                then: (schema) => schema.required(),
+            }),
     };
 };
 
