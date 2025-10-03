@@ -31,6 +31,7 @@ import type {
     ComputingStatusParameters,
     DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
+    ModificationsSelectionForCopy,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
@@ -724,6 +725,20 @@ export function setNodeSelectionForCopy(
     return {
         type: NODE_SELECTION_FOR_COPY,
         nodeSelectionForCopy: nodeSelectionForCopy,
+    };
+}
+
+export const MODIFICATIONS_SELECTION_FOR_COPY = 'MODIFICATIONS_SELECTION_FOR_COPY';
+export type ModificationsSelectionForCopyAction = Readonly<Action<typeof MODIFICATIONS_SELECTION_FOR_COPY>> & {
+    modificationsSelectionForCopy: NonNullable<ModificationsSelectionForCopy>;
+};
+
+export function setModificationsSelectionForCopy(
+    modificationsSelectionForCopy: NonNullable<ModificationsSelectionForCopy>
+): ModificationsSelectionForCopyAction {
+    return {
+        type: MODIFICATIONS_SELECTION_FOR_COPY,
+        modificationsSelectionForCopy: modificationsSelectionForCopy,
     };
 }
 

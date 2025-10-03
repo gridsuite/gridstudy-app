@@ -229,6 +229,8 @@ import {
     SetActiveSpreadsheetTabAction,
     SET_ADDED_SPREADSHEET_TAB,
     SetAddedSpreadsheetTabAction,
+    MODIFICATIONS_SELECTION_FOR_COPY,
+    ModificationsSelectionForCopyAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -330,7 +332,10 @@ import {
     SortWay,
 } from '../types/custom-aggrid-types';
 import { DiagramParams, DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
-import { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import {
+    NetworkModificationCopyInfo,
+    RootNetworkMetadata,
+} from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';
 import { NodeInsertModes, RootNetworkIndexationStatus, type StudyUpdateNotification } from 'types/notification-types';
 import { mapSpreadsheetEquipments } from '../utils/spreadsheet-equipments-mapper';
@@ -533,6 +538,11 @@ export type NodeSelectionForCopy = {
     allChildren: NetworkModificationNodeInfos[] | null;
 };
 
+export type ModificationsSelectionForCopy = {
+    modificationsUuids: UUID[];
+    networkModificationCopyInfo: NetworkModificationCopyInfo | undefined;
+};
+
 export type Actions = AppActions | AuthenticationActions;
 
 export interface AppConfigState {
@@ -581,6 +591,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     tables: TablesState;
 
     nodeSelectionForCopy: NodeSelectionForCopy;
+    modificationsSelectionForCopy: ModificationsSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     isNetworkModificationTreeModelUpToDate: boolean;
@@ -734,6 +745,10 @@ const initialState: AppState = {
         nodeType: undefined,
         copyType: null,
         allChildren: null,
+    },
+    modificationsSelectionForCopy: {
+        modificationsUuids: [],
+        networkModificationCopyInfo: undefined,
     },
     tables: initialTablesState,
     calculationSelections: {},
@@ -1389,6 +1404,10 @@ export const reducer = createReducer(initialState, (builder) => {
             )?.data.nodeType;
         }
         state.nodeSelectionForCopy = nodeSelectionForCopy;
+    });
+
+    builder.addCase(MODIFICATIONS_SELECTION_FOR_COPY, (state, action: ModificationsSelectionForCopyAction) => {
+        state.modificationsSelectionForCopy = action.modificationsSelectionForCopy;
     });
 
     builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, _action: SetModificationsDrawerOpenAction) => {

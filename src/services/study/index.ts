@@ -229,6 +229,7 @@ export function copyOrMoveModifications(
         '?' +
         new URLSearchParams({
             action: copyInfos.copyType,
+            originStudyUuid: copyInfos.originStudyUuid ?? '',
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 

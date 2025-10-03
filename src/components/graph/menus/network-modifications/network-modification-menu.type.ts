@@ -54,7 +54,8 @@ export enum NetworkModificationCopyType {
 
 export interface NetworkModificationCopyInfo {
     copyType: NetworkModificationCopyType;
-    originNodeUuid?: UUID;
+    originStudyUuid?: UUID | null;
+    originNodeUuid?: UUID | null;
 }
 
 export interface MenuDefinitionSubItem {
