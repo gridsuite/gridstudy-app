@@ -74,6 +74,7 @@ const rearrangeLayoutByOrder = (sourceLayout: Layout[], targetCols: number, visu
     const newLayout: Layout[] = [];
     let currentX = 0;
     let currentY = 0;
+    let rowMaxHeight = 0;
 
     // Place cards in the specified order, wrapping to new rows as needed
     for (const cardId of visualOrder) {
@@ -84,13 +85,17 @@ const rearrangeLayoutByOrder = (sourceLayout: Layout[], targetCols: number, visu
 
         // Move to next row if card doesn't fit in current row
         if (currentX + card.w > targetCols) {
+            currentY += rowMaxHeight;
             currentX = 0;
-            currentY++;
+            rowMaxHeight = 0;
         }
 
         // Place card at current position and advance X coordinate
         newLayout.push({ ...card, x: currentX, y: currentY });
         currentX += card.w;
+
+        // Track the tallest card in the current row
+        rowMaxHeight = Math.max(rowMaxHeight, card.h);
     }
 
     return newLayout;
@@ -115,10 +120,11 @@ const findNextPosition = (existingLayouts: Layout[], maxCols: number) => {
 
     // Find the current bottom row
     const bottomY = Math.max(...existingLayouts.map((item) => item.y));
-    const bottomRowItems = existingLayouts.filter((item) => item.y === bottomY).sort((a, b) => a.x - b.x);
 
     // Calculate the next X position in the bottom row
-    const rightmostX = bottomRowItems.reduce((maxX, item) => Math.max(maxX, item.x + item.w), 0);
+    const rightmostX = existingLayouts.reduce((maxX, item) => {
+        return item.y === bottomY ? Math.max(maxX, item.x + item.w) : maxX;
+    }, 0);
 
     // Check if the new card fits in the current row
     if (rightmostX + GRID_CONFIG.defaultCard.w <= maxCols) {
@@ -351,10 +357,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     }, []);
 
     // Event handlers for grid interactions
-    const handleLayoutChange = useCallback((currentLayout: Layout[], allLayouts: Layouts) => {
-        setLayouts((prev) => ({ ...prev, [currentBreakpointRef.current]: currentLayout }));
-    }, []);
-
     const handleResize = useCallback<ItemCallback>((layout, oldItem, newItem, placeholder, event, _el) => {
         // We cannot use the ResponsiveGridLayout's innerRef prop (see https://github.com/react-grid-layout/react-grid-layout/issues/1444)
         // so we manually fetch its inner ref inside to get the HTMLDivElement.
@@ -401,6 +403,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 }
             }
 
+            // Persist the current breakpoint layout (captures any compaction moves during resize)
+            newLayouts[currentBreakpointRef.current] = layout;
+
             return newLayouts;
         });
         setDisableStoreButton(false);
@@ -416,7 +421,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             const sourceBreakpoint = lastModifiedBreakpointRef.current;
             currentBreakpointRef.current = newBreakpoint;
 
-            if (sourceBreakpoint !== newBreakpoint && layouts[sourceBreakpoint]?.length) {
+            if (sourceBreakpoint !== newBreakpoint && layouts[sourceBreakpoint]?.length > 0) {
                 const sourceLayout = layouts[sourceBreakpoint];
                 const visualOrder = getVisualOrder(sourceLayout);
                 const targetCols = GRID_CONFIG.cols[newBreakpoint as keyof typeof GRID_CONFIG.cols];
@@ -495,7 +500,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 cols={GRID_CONFIG.cols}
                 margin={[parseInt(theme.spacing(1)), parseInt(theme.spacing(1))]}
                 compactType={'vertical'}
-                onLayoutChange={handleLayoutChange}
                 onResizeStop={handleResizeStop}
                 onBreakpointChange={handleBreakpointChange}
                 layouts={layouts}
