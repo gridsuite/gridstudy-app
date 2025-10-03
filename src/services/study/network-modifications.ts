@@ -1102,7 +1102,10 @@ export interface CreateTabularModificationProps {
     modificationType: string;
     modifications: Modification[];
     modificationUuid: UUID;
-    tabularType: ModificationType;
+    tabularType:
+        | ModificationType.LIMIT_SETS_TABULAR_MODIFICATION
+        | ModificationType.TABULAR_MODIFICATION
+        | ModificationType.TABULAR_CREATION;
     csvFilename?: string;
     properties?: TabularProperty[];
 }
@@ -1121,9 +1124,9 @@ export function createTabularModification({
     const isUpdate = !!modificationUuid;
     if (isUpdate) {
         tabularModificationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating tabular modification');
+        console.info('Updating ' + tabularType);
     } else {
-        console.info('Creating tabular modification');
+        console.info('Creating ' + tabularType);
     }
 
     return backendFetchText(tabularModificationUrl, {
