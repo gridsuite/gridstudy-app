@@ -16,11 +16,9 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION,
 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, filledTextField, MVAPowerAdornment, OhmAdornment } from '../../../dialog-utils';
+import { ActivePowerAdornment, filledTextField, MVAPowerAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
 import { ReactiveLimitsForm } from '../../../reactive-limits/reactive-limits-form';
 import { FormattedMessage, useIntl } from 'react-intl';

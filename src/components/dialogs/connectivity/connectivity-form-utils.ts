@@ -14,7 +14,7 @@ import {
     CONNECTIVITY,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    ID, TRANSFORMER_REACTANCE, TRANSIENT_REACTANCE,
+    ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';

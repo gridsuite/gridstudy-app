@@ -95,7 +95,11 @@ import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../ge
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
-import { getShortCircuitEmptyFormData, getShortCircuitFormData, getShortCircuitFormSchema } from '../../../short-circuit/short-circuit-utils';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
