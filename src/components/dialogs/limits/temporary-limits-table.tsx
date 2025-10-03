@@ -151,7 +151,11 @@ function TemporaryLimitsTable({
     );
 
     const renderTableRow = (rowId: string, index: number) => (
-        <TableRow onMouseEnter={() => setHoveredRowIndex(index)} onMouseLeave={() => setHoveredRowIndex(-1)}>
+        <TableRow
+            key={'row' + rowId}
+            onMouseEnter={() => setHoveredRowIndex(index)}
+            onMouseLeave={() => setHoveredRowIndex(-1)}
+        >
             {columnsDefinition.map((column) => renderTableCell(rowId, index, column))}
             <TableCell key={rowId + 'delete'}>
                 <IconButton

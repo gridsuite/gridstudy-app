@@ -273,8 +273,8 @@ export interface OperationalLimitsGroup {
 
 export interface Limit {
     name: string;
-    acceptableDuration: number | null;
-    value: number | null;
+    acceptableDuration?: number | null;
+    value?: number | null;
 }
 
 export interface TemporaryLimit extends Limit {

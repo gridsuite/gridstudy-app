@@ -92,7 +92,7 @@ export interface CurrentLimitsFormInfos {
 
 export interface TemporaryLimitFormInfos {
     [TEMPORARY_LIMIT_NAME]: string;
-    [TEMPORARY_LIMIT_DURATION]: number | null;
-    [TEMPORARY_LIMIT_VALUE]: number | null;
-    [DELETION_MARK]: boolean;
+    [TEMPORARY_LIMIT_DURATION]?: number | null;
+    [TEMPORARY_LIMIT_VALUE]?: number | null;
+    [DELETION_MARK]?: boolean;
 }
