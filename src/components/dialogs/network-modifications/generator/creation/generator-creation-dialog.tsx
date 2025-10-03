@@ -84,6 +84,11 @@ import { DeepNullable } from '../../../../utils/ts-utils';
 import { GeneratorCreationDialogSchemaForm, GeneratorFormInfos } from '../generator-dialog.type';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import { NetworkModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -92,8 +97,7 @@ const emptyFormData = {
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
-    [TRANSIENT_REACTANCE]: null,
-    [TRANSFORMER_REACTANCE]: null,
+    ...getShortCircuitEmptyFormData(),
     [PLANNED_ACTIVE_POWER_SET_POINT]: null,
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
@@ -115,14 +119,7 @@ const formSchema = yup
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [TRANSIENT_REACTANCE]: yup
-            .number()
-            .nullable()
-            .when([TRANSFORMER_REACTANCE], {
-                is: (transformerReactance: number) => transformerReactance != null,
-                then: (schema) => schema.required(),
-            }),
+        ...getShortCircuitFormSchema(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
@@ -177,8 +174,10 @@ export default function GeneratorCreationDialog({
                 [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
                 [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
                 [DROOP]: generator.activePowerControl?.droop,
-                [TRANSIENT_REACTANCE]: generator.generatorShortCircuit?.directTransX,
-                [TRANSFORMER_REACTANCE]: generator.generatorShortCircuit?.stepUpTransformerX,
+                ...getShortCircuitFormData({
+                    directTransX: generator.generatorShortCircuit?.directTransX,
+                    stepUpTransformerX: generator.generatorShortCircuit?.stepUpTransformerX,
+                }),
                 [VOLTAGE_REGULATION_TYPE]:
                     generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
@@ -231,8 +230,10 @@ export default function GeneratorCreationDialog({
                 [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
                 [FREQUENCY_REGULATION]: editData.participate,
                 [DROOP]: editData.droop,
-                [TRANSIENT_REACTANCE]: editData.directTransX,
-                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerX,
+                ...getShortCircuitFormData({
+                    directTransX: editData.directTransX,
+                    stepUpTransformerX: editData.stepUpTransformerX,
+                }),
                 [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
                     ? REGULATION_TYPES.DISTANT.id
                     : REGULATION_TYPES.LOCAL.id,

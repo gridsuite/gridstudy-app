@@ -54,6 +54,7 @@ import {
     ReactiveCapabilityCurvePoints,
 } from '../../reactive-limits/reactive-limits.type';
 import { ActivePowerControlInfos } from '../../active-power-control/active-power-control.type';
+import { ShortCircuitFormInfos } from '../../short-circuit/short-circuit-utils';
 
 export type GeneratorDialogSchemaBaseForm = {
     [EQUIPMENT_NAME]?: string;
@@ -127,7 +128,7 @@ export interface GeneratorFormInfos {
     generatorStartup: GeneratorStartUpFormInfos;
     connectablePosition: ConnectablePositionFormInfos;
     activePowerControl: ActivePowerControlInfos;
-    generatorShortCircuit: GeneratorShortCircuitFormInfos;
+    generatorShortCircuit: ShortCircuitFormInfos;
     regulatingTerminalId: string;
     regulatingTerminalVlId: string;
     regulatingTerminalConnectableId: string;
@@ -153,9 +154,4 @@ interface GeneratorStartUpFormInfos {
     marginalCost?: number | null;
     plannedOutageRate?: number | null;
     forcedOutageRate?: number | null;
-}
-
-interface GeneratorShortCircuitFormInfos {
-    directTransX?: number | null;
-    stepUpTransformerX?: number | null;
 }

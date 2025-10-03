@@ -27,6 +27,7 @@ import { BatteryCreationInfos } from '../../../../../services/network-modificati
 import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface BatteryModificationFormProps {
     studyUuid: UUID;
@@ -179,6 +180,11 @@ export default function BatteryModificationForm({
                     previousValues={batteryToModify?.activePowerControl}
                 />
             </Grid>
+
+            {/* Short Circuit of start part */}
+            <GridSection title="ShortCircuit" />
+            <ShortCircuitForm previousValues={batteryToModify?.batteryShortCircuit} />
+
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
