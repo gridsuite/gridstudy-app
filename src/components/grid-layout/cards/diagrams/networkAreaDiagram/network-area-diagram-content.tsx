@@ -346,6 +346,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onToggleHoverCallback: OnToggleHoverCallback,
                 onRightClickCallback: showEquipmentMenu,
                 initialViewBox: diagramViewerRef?.current?.getViewBox(),
+                enableHoverHelper: true,
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
