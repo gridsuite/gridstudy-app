@@ -56,7 +56,7 @@ import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';

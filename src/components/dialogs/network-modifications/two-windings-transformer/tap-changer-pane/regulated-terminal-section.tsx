@@ -20,7 +20,7 @@ import Grid from '@mui/material/Grid';
 import { RegulatingTerminalForm } from '../../../regulating-terminal/regulating-terminal-form';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { getTapChangerEquipmentSectionTypeValue } from '../../../../utils/utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 
 export default function RegulatedTerminalSection({

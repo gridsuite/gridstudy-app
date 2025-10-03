@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl';
 import { downloadShortCircuitResultZippedCsv } from '../../../services/study/short-circuit-analysis';
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BranchSide } from 'components/utils/constants';
 import { AppState } from 'redux/reducer';
 import { useSelector } from 'react-redux';

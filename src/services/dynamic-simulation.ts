@@ -6,7 +6,7 @@
  */
 
 import { backendFetch, backendFetchJson } from './utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/dynamic-simulation';
 
