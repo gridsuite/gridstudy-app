@@ -88,7 +88,6 @@ import {
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
-    NetworkModificationCopyInfo,
     NetworkModificationCopyType,
     NetworkModificationData,
 } from './network-modification-menu.type';
