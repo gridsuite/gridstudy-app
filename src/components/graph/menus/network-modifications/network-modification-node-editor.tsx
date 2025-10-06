@@ -1340,13 +1340,13 @@ const NetworkModificationNodeEditor = () => {
 
     const isPasteButtonDisabled = useMemo(() => {
         return (
-            !modificationsToCopyRef.current ||
-            modificationsToCopyRef.current.length <= 0 ||
+            !modificationsToCopy ||
+            modificationsToCopy.length <= 0 ||
             isAnyNodeBuilding ||
             mapDataLoading ||
             !currentNode
         );
-    }, [isAnyNodeBuilding, mapDataLoading, currentNode, modificationsToCopyRef.current]);
+    }, [isAnyNodeBuilding, mapDataLoading, currentNode, modificationsToCopy]);
 
     const isRestoreButtonDisabled = useMemo(() => {
         return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
