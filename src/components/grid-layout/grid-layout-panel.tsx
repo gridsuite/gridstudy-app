@@ -248,6 +248,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         removeDiagram,
         createDiagram,
         updateDiagram,
+        replaceDiagram,
         updateDiagramPositions,
     } = useDiagramModel({
         diagramTypes: diagramTypes,
@@ -261,6 +262,14 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             updateDiagram(diagram);
         },
         [updateDiagram]
+    );
+
+    const handleReplaceDiagram = useCallback(
+        (diagram: Diagram) => {
+            setDisableStoreButton(false);
+            replaceDiagram(diagram);
+        },
+        [replaceDiagram]
     );
 
     const handleUpdateDiagramPositions = useCallback(
@@ -534,6 +543,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             showInSpreadsheet={showInSpreadsheet}
                             createDiagram={createDiagram}
                             updateDiagram={handleUpdateDiagram}
+                            replaceDiagram={handleReplaceDiagram}
                             updateDiagramPositions={handleUpdateDiagramPositions}
                         />
                     );

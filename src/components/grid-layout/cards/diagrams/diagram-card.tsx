@@ -39,6 +39,7 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     createDiagram: (diagram: DiagramParams) => void;
     updateDiagram: (diagram: Diagram) => void;
+    replaceDiagram: (diagram: Diagram) => void;
     updateDiagramPositions: (diagram: DiagramParams) => void;
     key: string; // Required for React Grid Layout to identify the component
 }
@@ -55,6 +56,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         showInSpreadsheet,
         createDiagram,
         updateDiagram,
+        replaceDiagram,
         updateDiagramPositions,
         ...reactGridLayoutCustomChildComponentProps
     } = props;
@@ -149,7 +151,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
     const handleReplaceNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             if (diagram.type === DiagramType.NETWORK_AREA_DIAGRAM) {
-                updateDiagram({
+                replaceDiagram({
                     ...diagram,
                     name: elementName,
                     nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
@@ -162,7 +164,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                 });
             }
         },
-        [diagram, updateDiagram]
+        [diagram, replaceDiagram]
     );
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
@@ -238,7 +240,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             visible={visible}
                             isEditNadMode={diagramsInEditMode}
                             onToggleEditNadMode={(isEditMode) => setDiagramsInEditMode(isEditMode)}
-                            onLoadNad={handleReplaceNad}
+                            onReplaceNad={handleReplaceNad}
                             onExpandVoltageLevel={handleExpandVoltageLevelId}
                             onAddVoltageLevel={handleAddVoltageLevel}
                             onExpandAllVoltageLevels={handleExpandAllVoltageLevels}

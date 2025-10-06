@@ -66,7 +66,7 @@ type NetworkAreaDiagramContentProps = {
     readonly visible: boolean;
     readonly isEditNadMode: boolean;
     readonly onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onReplaceNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
     readonly onAddVoltageLevel: (vlId: string) => void;
@@ -83,7 +83,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         visible,
         isEditNadMode,
         onToggleEditNadMode,
-        onLoadNad,
+        onReplaceNad,
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
@@ -95,7 +95,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
-    const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
@@ -116,6 +116,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             }
         },
         [onMoveNode]
+    );
+
+    const handleReplaceNad = useCallback(
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
+            // Since we want to replace the NAD with a new one, we ditch the previous diagram
+            // viewer reference because we do not want to use an obsolete viewbox on the new NAD.
+            diagramViewerRef.current = null;
+            onReplaceNad(elementUuid, elementType, elementName);
+        },
+        [onReplaceNad]
     );
 
     const onMoveTextNodeCallback = useCallback(
@@ -330,7 +340,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg && svgRef.current) {
+        if (props.svg && svgRef.current && !props.loadingState) {
             const nadViewerParameters: NadViewerParametersOptions = {
                 minWidth: MIN_WIDTH,
                 minHeight: MIN_HEIGHT,
@@ -369,6 +379,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     }
                 });
             }
+            // We keep a reference of the diagram viewer to get its viewbox for the next render.
             diagramViewerRef.current = diagramViewer;
         }
     }, [
@@ -376,6 +387,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         props.svg,
         props.svgMetadata,
         props.customPositions,
+        props.loadingState,
         diagramSizeSetter,
         onMoveNodeCallback,
         OnToggleHoverCallback,
@@ -429,7 +441,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             <DiagramControls
                 onSave={handleSaveNadConfig}
                 onUpdate={handleUpdateNadConfig}
-                onLoad={onLoadNad}
+                onLoad={handleReplaceNad}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
