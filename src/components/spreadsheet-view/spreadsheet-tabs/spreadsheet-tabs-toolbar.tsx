@@ -8,11 +8,8 @@
 import { Grid, type GridProps } from '@mui/material';
 import { Restore as RestoreIcon, Save as SaveIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import type { AppState } from '../../../redux/reducer';
 import NodesConfigButton from '../spreadsheet/spreadsheet-toolbar/nodes-config/nodes-config-button';
-import type { NodeAlias } from '../types/node-alias.type';
 import TooltipIconButton from '../../common/tooltip-icon-button';
 import PartialLoadingMenuButton from './toolbar/PartialLoadingMenuButton';
 
@@ -26,8 +23,6 @@ const styles = {
 export type SpreadsheetTabsToolbarProps = Omit<GridProps, 'item' | 'container'> & {
     selectedTabIndex: number;
     disabled: boolean;
-    nodeAliases: NodeAlias[] | undefined;
-    updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
     onSaveClick: () => void;
     onExportClick: () => void;
 };
@@ -37,21 +32,13 @@ export default function SpreadsheetTabsToolbar({
     onSaveClick,
     onExportClick,
     selectedTabIndex,
-    nodeAliases,
-    updateNodeAliases,
     padding,
     ...props
 }: Readonly<SpreadsheetTabsToolbarProps>) {
-    const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     return (
         <Grid item container {...props}>
             <Grid item padding={padding}>
-                <NodesConfigButton
-                    disabled={disabled}
-                    tableType={tablesDefinitions[selectedTabIndex]?.type}
-                    nodeAliases={nodeAliases}
-                    updateNodeAliases={updateNodeAliases}
-                />
+                <NodesConfigButton disabled={disabled} />
             </Grid>
             <Grid item padding={padding}>
                 <PartialLoadingMenuButton sx={styles.button} disabled={disabled} />
