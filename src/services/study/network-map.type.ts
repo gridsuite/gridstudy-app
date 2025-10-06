@@ -6,10 +6,22 @@
  */
 import { CurrentLimits } from '../network-modification-types';
 import { Equipment } from '../../components/dialogs/network-modifications/common/properties/property-utils';
+import { FeederBayInfos } from '../../components/dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays.type';
 
 export type SwitchInfos = {
     id: string;
     open: boolean;
+};
+
+export type TopologyInfos = {
+    topologyKind: string;
+    busbarCount: number;
+    sectionCount: number;
+    switchKinds: string[];
+    isRetrievedBusbarSections: boolean;
+    isBusbarSectionPositionFound: boolean;
+    busBarSectionInfos: Map<string, string[]>;
+    feederBaysInfos: Map<string, FeederBayInfos[]>;
 };
 
 export type BranchInfos = Equipment & {

@@ -33,13 +33,13 @@ import {
     MoveFeederBayInfos,
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { fetchVoltageLevelTopology } from '../../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import { AnyObject, TestFunction } from 'yup';
+import { TopologyInfos } from '../../../../../services/study/network-map.type';
 
 const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved;
 const checkConnectionPositionField: TestFunction<string | undefined, AnyObject> = (currentPosition, context) => {
@@ -220,10 +220,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const handleVoltageLevelDataFetch = useCallback(
-        (voltageLevel: any) => {
-            const busBarSectionInfos = Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[];
+        (topology: TopologyInfos) => {
+            const busBarSectionInfos = Object.values(topology?.busBarSectionInfos || {}).flat() as string[];
             const feederBaysInfos: FeederBaysInfos = (
-                Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
+                Object.entries(topology?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
             )
                 .flatMap(([equipmentId, feederBayInfos]) =>
                     feederBayInfos.map((feederBay) => ({
@@ -249,21 +249,13 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const onEquipmentIdChange = useCallback(
-        (equipmentId: string) => {
-            if (equipmentId) {
+        (voltageLevelId: string) => {
+            if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchNetworkElementInfos(
-                    studyUuid,
-                    currentNodeUuid,
-                    currentRootNetworkUuid,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-                    EQUIPMENT_INFOS_TYPES.FORM.type,
-                    equipmentId,
-                    true
-                )
-                    .then((voltageLevel) => {
-                        if (voltageLevel) {
-                            handleVoltageLevelDataFetch(voltageLevel);
+                fetchVoltageLevelTopology(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId)
+                    .then((topology) => {
+                        if (topology) {
+                            handleVoltageLevelDataFetch(topology);
                         }
                     })
                     .catch(() => {
