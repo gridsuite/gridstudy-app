@@ -32,6 +32,7 @@ export const styles = {
         },
         '& .nad-pst-arrow': {
             stroke: theme.palette.text.primary,
+            strokeWidth: 3,
         },
     }),
     divSingleLineDiagram: (theme) => ({
