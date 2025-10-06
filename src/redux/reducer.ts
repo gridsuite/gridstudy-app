@@ -334,7 +334,6 @@ import {
 import { DiagramParams, DiagramType } from '../components/grid-layout/cards/diagrams/diagram.type';
 import {
     NetworkModificationCopyInfo,
-    NetworkModificationCopyType,
     RootNetworkMetadata,
 } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { CalculationType } from 'components/spreadsheet-view/types/calculation.type';

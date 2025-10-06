@@ -72,7 +72,7 @@ import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { AppState, ModificationsSelectionForCopy } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { fetchNetworkModification } from '../../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../../services/study';
@@ -169,8 +169,6 @@ const NetworkModificationNodeEditor = () => {
         (state: AppState) => state.modificationsSelectionForCopy.modificationsUuids
     );
     const modificationsToCopyInfos = useSelector((state: AppState) => state.modificationsSelectionForCopy.copyInfos);
-    const modificationsToCopyInfosRef = useRef<NetworkModificationCopyInfo>();
-    modificationsToCopyInfosRef.current = modificationsToCopyInfos as any;
 
     const [isDragging, setIsDragging] = useState(false);
     const [initialPosition, setInitialPosition] = useState<number | undefined>(undefined);
@@ -914,9 +912,9 @@ const NetworkModificationNodeEditor = () => {
             const studyUpdatedEventData = studyUpdatedForce.eventData;
 
             if (
-                modificationsToCopyInfosRef.current &&
+                modificationsToCopyInfos &&
                 studyUpdatedEventData.headers.nodes.some(
-                    (nodeId) => nodeId === modificationsToCopyInfosRef.current?.originNodeUuid
+                    (nodeId) => nodeId === modificationsToCopyInfos?.originNodeUuid
                 )
             ) {
                 // Must clean modifications clipboard if the origin Node is removed
@@ -972,6 +970,7 @@ const NetworkModificationNodeEditor = () => {
         studyUpdatedForce,
         cleanClipboard,
         dofetchExcludedNetworkModifications,
+        modificationsToCopyInfos,
     ]);
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] = useState(false);
@@ -1122,11 +1121,11 @@ const NetworkModificationNodeEditor = () => {
     }, [broadcastChannel, currentNode?.id, dispatchModificationsSelectionForCopy, selectedModificationsIds, studyUuid]);
 
     const doPasteModifications = useCallback(() => {
-        if (!modificationsToCopyInfosRef.current || !studyUuid || !currentNode?.id) {
+        if (!modificationsToCopyInfos || !studyUuid || !currentNode?.id) {
             return;
         }
-        if (modificationsToCopyInfosRef.current.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToCopy, modificationsToCopyInfosRef.current)
+        if (modificationsToCopyInfos.copyType === NetworkModificationCopyType.MOVE) {
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToCopy, modificationsToCopyInfos)
                 .then(() => {
                     cleanClipboard(false);
                 })
@@ -1137,19 +1136,16 @@ const NetworkModificationNodeEditor = () => {
                     });
                 });
         } else {
-            copyOrMoveModifications(
-                studyUuid,
-                currentNode.id,
-                modificationsToCopy,
-                modificationsToCopyInfosRef.current
-            ).catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDuplicateModificationMsg',
-                });
-            });
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToCopy, modificationsToCopyInfos).catch(
+                (errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errDuplicateModificationMsg',
+                    });
+                }
+            );
         }
-    }, [modificationsToCopy, studyUuid, currentNode?.id, cleanClipboard, snackError]);
+    }, [modificationsToCopy, studyUuid, currentNode?.id, cleanClipboard, snackError, modificationsToCopyInfos]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
