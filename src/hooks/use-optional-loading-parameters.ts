@@ -10,7 +10,7 @@ import { fetchSpreadsheetParameters } from '../services/study/spreadsheet';
 import type { PartialDeep } from 'type-fest';
 import { SpreadsheetOptionalLoadingParameters } from '../components/spreadsheet-view/types/spreadsheet.type';
 import { isSpreadsheetParametersUpdatedNotification } from '../types/notification-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useDispatch } from 'react-redux';
 import { updateSpreadsheetPartialData } from '../redux/actions';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';

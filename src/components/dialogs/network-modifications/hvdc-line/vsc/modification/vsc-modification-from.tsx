@@ -14,7 +14,7 @@ import {
 import { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { TextInput } from '@gridsuite/commons-ui';
 import { Box, Grid, TextField } from '@mui/material';

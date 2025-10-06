@@ -71,7 +71,7 @@ import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { FileUpload, RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { createCompositeModifications, updateCompositeModifications } from '../../../../services/explore';
 import { fetchNetworkModification } from '../../../../services/network-modification';

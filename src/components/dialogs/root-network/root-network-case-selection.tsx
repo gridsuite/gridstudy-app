@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { fetchDirectoryElementPath, type MuiStyles, type TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { FolderOutlined } from '@mui/icons-material';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import ImportCaseDialog from '../import-case-dialog';
 
 const styles = {

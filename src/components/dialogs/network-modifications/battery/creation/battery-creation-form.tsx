@@ -21,7 +21,7 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { SetPointsForm } from '../../../set-points/set-points-form';
 
