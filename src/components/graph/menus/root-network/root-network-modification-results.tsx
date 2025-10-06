@@ -9,7 +9,7 @@ import { useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Modification } from './root-network.types';
 import { Box, Theme, Typography } from '@mui/material';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setHighlightModification, setModificationsDrawerOpen } from 'redux/actions';

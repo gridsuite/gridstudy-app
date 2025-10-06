@@ -6,14 +6,12 @@
  */
 
 import { AppState } from '../../../redux/reducer';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNodeAliases, updateNodeAliases as _updateNodeAlias } from '../../../services/study/node-alias';
-import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeAlias } from '../types/node-alias.type';
-import type { UUID } from 'node:crypto';
-import { deletedOrRenamedNodes } from 'redux/actions';
-import { isSpreadsheetNodeAliasesUpdatedNotification } from 'types/notification-types';
+import { updateNodeAliases as updateNodeAliasesInStore } from 'redux/actions';
 
 // NodeAlias may have invalid id/name, in error cases
 export const validAlias = (alias: NodeAlias) => alias.id != null && alias.name != null;
@@ -22,83 +20,35 @@ export type ResetNodeAliasCallback = (appendMode: boolean, aliases?: string[]) =
 
 export const useNodeAliases = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const changedNodeUuids = useSelector((state: AppState) => state.deletedOrRenamedNodes);
+    const nodeAliases = useSelector((state: AppState) => state.nodeAliases);
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-
-    // init value is undefined until we have successfully made a fetch
-    const [nodeAliases, setNodeAliases] = useState<NodeAlias[]>();
-
-    const someAliasToRefresh = useMemo(() => {
-        function intersect(arr1: UUID[], arr2: UUID[]) {
-            const set = new Set(arr1);
-            return arr2.some((id) => set.has(id));
-        }
-        if (changedNodeUuids.length === 0) {
-            return false;
-        }
-        const currentAliasesUuids = nodeAliases?.map((n) => n.id).filter((id) => !!id);
-        return currentAliasesUuids && intersect(changedNodeUuids, currentAliasesUuids);
-    }, [changedNodeUuids, nodeAliases]);
 
     const fetchNodeAliases = useCallback(() => {
         if (studyUuid) {
             getNodeAliases(studyUuid)
-                .then((_nodeAliases) => setNodeAliases(_nodeAliases))
+                .then((_nodeAliases) => dispatch(updateNodeAliasesInStore(_nodeAliases)))
                 .catch((error) => {
-                    setNodeAliases(undefined);
+                    dispatch(updateNodeAliasesInStore([]));
                     snackError({
                         messageTxt: error.message,
                         headerId: 'nodeAliasesRetrievingError',
                     });
                 });
         } else {
-            setNodeAliases(undefined);
+            dispatch(updateNodeAliasesInStore([]));
         }
-    }, [snackError, studyUuid]);
-
-    // There are 3 cases where we update the aliases
-
-    useEffect(() => {
-        // initial state
-        fetchNodeAliases();
-    }, [fetchNodeAliases]);
-
-    useEffect(() => {
-        if (someAliasToRefresh) {
-            // update state on node deletion/rename, if they are aliased
-            fetchNodeAliases();
-            dispatch(deletedOrRenamedNodes([]));
-        }
-    }, [dispatch, fetchNodeAliases, someAliasToRefresh]);
-
-    const listenerAliasesUpdated = useCallback(
-        (event: MessageEvent) => {
-            const eventData = JSON.parse(event.data);
-            if (isSpreadsheetNodeAliasesUpdatedNotification(eventData)) {
-                // aliases change notification
-                fetchNodeAliases();
-            }
-        },
-        [fetchNodeAliases]
-    );
-
-    useNotificationsListener(NotificationsUrlKeys.STUDY, {
-        listenerCallbackMessage: listenerAliasesUpdated,
-        propsId: 'node-aliases',
-    });
+    }, [dispatch, snackError, studyUuid]);
 
     const updateNodeAliases = useCallback(
         (newNodeAliases: NodeAlias[]) => {
             if (studyUuid) {
-                _updateNodeAlias(studyUuid, newNodeAliases)
-                    .then((_r) => setNodeAliases(newNodeAliases))
-                    .catch((error) =>
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'nodeAliasesUpdateError',
-                        })
-                    );
+                _updateNodeAlias(studyUuid, newNodeAliases).catch((error) =>
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'nodeAliasesUpdateError',
+                    })
+                );
             }
         },
         [snackError, studyUuid]
@@ -133,5 +83,5 @@ export const useNodeAliases = () => {
         [nodeAliases, updateNodeAliases]
     );
 
-    return { nodeAliases, updateNodeAliases, resetNodeAliases };
+    return { nodeAliases, fetchNodeAliases, updateNodeAliases, resetNodeAliases };
 };
