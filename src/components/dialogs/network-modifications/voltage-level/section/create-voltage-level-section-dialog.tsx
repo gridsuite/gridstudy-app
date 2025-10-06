@@ -32,8 +32,7 @@ import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-fo
 import { CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
-import { EQUIPMENT_INFOS_TYPES } from '../../../../utils/equipment-types';
-import { fetchNetworkElementInfos, fetchVoltageLevelTopology } from '../../../../../services/study/network';
+import { fetchVoltageLevelTopology } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { TopologyInfos } from '../../../../../services/study/network-map.type';
 
