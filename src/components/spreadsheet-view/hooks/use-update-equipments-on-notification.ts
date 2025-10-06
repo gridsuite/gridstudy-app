@@ -46,7 +46,7 @@ export function useUpdateEquipmentsOnNotification() {
                     return;
                 }
                 const impactedSpreadsheetEquipmentsTypes = impactedElementTypes.filter((type) =>
-                    Object.keys(allEquipments).includes(type)
+                    Object.keys(allEquipments.equipments).includes(type)
                 );
                 if (impactedSpreadsheetEquipmentsTypes.length > 0) {
                     dispatch(
