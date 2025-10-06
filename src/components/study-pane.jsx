@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';
@@ -23,7 +23,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './network-modification.type';
 import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
 import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
-import { useResetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-on-root-network';
+import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network.js';
+import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification.js';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -92,9 +93,14 @@ const StudyPane = ({
 
     const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
 
-    const { nodeAliases } = useNodeAliases();
-    useUpdateEquipmentsOnNotification(nodeAliases);
-    useResetOnRootNetwork();
+    const { fetchNodeAliases } = useNodeAliases();
+    // Initializing node aliases from backend fetch
+    useEffect(() => {
+        fetchNodeAliases();
+    }, [fetchNodeAliases]);
+    useUpdateEquipmentsOnNotification();
+    useNodeAliasesUpdateOnNotification();
+    useResetSpreadsheetOnRootNetwork();
 
     return (
         <Box sx={styles.paneContainer}>

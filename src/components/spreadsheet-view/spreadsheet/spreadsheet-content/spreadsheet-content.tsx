@@ -14,7 +14,6 @@ import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
@@ -25,6 +24,7 @@ import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
 import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
+import { useNodeAliases } from '../../hooks/use-node-aliases';
 
 const styles = {
     table: (theme) => ({
@@ -48,7 +48,6 @@ interface SpreadsheetContentProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
-    nodeAliases: NodeAlias[];
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
@@ -63,7 +62,6 @@ export const SpreadsheetContent = memo(
         currentNode,
         tableDefinition,
         columns,
-        nodeAliases,
         disabled,
         equipmentId,
         onEquipmentScrolled,
@@ -72,9 +70,10 @@ export const SpreadsheetContent = memo(
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
+        const { nodeAliases } = useNodeAliases();
 
         // Only fetch when active
-        const { equipments, isFetching } = useSpreadsheetEquipments(tableDefinition?.type, nodeAliases, active);
+        const { equipments, isFetching } = useSpreadsheetEquipments(tableDefinition?.type, active);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
