@@ -30,6 +30,9 @@ export const styles = {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,
         },
+        '& .nad-pst-arrow': {
+            stroke: theme.palette.text.primary,
+        },
     }),
     divSingleLineDiagram: (theme) => ({
         '& polyline': {
@@ -49,6 +52,9 @@ export const styles = {
         },
         '& .arrow': {
             fill: theme.palette.text.primary,
+        },
+        '& .sld-pst-arrow': {
+            stroke: theme.palette.text.primary,
         },
     }),
     divSingleLineDiagramHideLockAndBolt: {
