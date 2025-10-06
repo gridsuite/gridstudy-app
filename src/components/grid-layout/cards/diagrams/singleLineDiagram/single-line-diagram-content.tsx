@@ -53,7 +53,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     readonly visible: boolean;
-    readonly onNextVoltageLevelClick: (voltageLevelId: string) => void;
+    readonly onNextVoltageLevelClick: (voltageLevelId: string, event: MouseEvent) => void;
 }
 
 type BusMenuState = {
