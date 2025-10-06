@@ -53,7 +53,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const { nodeAliases, updateNodeAliases, resetNodeAliases } = useNodeAliases();
+    const { nodeAliases, resetNodeAliases } = useNodeAliases();
 
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const activeSpreadsheetTabUuid = useSelector((state: AppState) => state.tables.activeTabUuid);
@@ -126,10 +126,7 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                 disabled={disabled}
                 selectedTabUuid={activeSpreadsheetTabUuid}
                 handleSwitchTab={handleSwitchTab}
-                resetNodeAliases={resetNodeAliases}
                 handleResetCollectionClick={handleResetCollectionClick}
-                nodeAliases={nodeAliases}
-                updateNodeAliases={updateNodeAliases}
             />
 
             {tablesDefinitions.length === 0 ? (
@@ -154,7 +151,6 @@ export const SpreadsheetView: FunctionComponent<SpreadsheetViewProps> = ({
                                     currentNode={currentNode}
                                     tableDefinition={tabDef}
                                     disabled={disabled}
-                                    nodeAliases={nodeAliases}
                                     equipmentId={equipmentIdToScrollTo}
                                     onEquipmentScrolled={onEquipmentScrolled}
                                     active={isActive}
