@@ -76,6 +76,7 @@ import type { DiagramType } from '../components/grid-layout/cards/diagrams/diagr
 import type { RootNetworkMetadata } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { NodeInsertModes, RootNetworkIndexationStatus, StudyUpdateEventData } from 'types/notification-types';
 import { ComputingAndNetworkModificationType } from 'utils/report/report.type';
+import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
 
 export type TableValue<TValue = unknown> = {
     uuid: UUID;
@@ -150,7 +151,6 @@ export type AppActions =
     | AttemptLeaveParametersTabAction
     | ConfirmLeaveParametersTabAction
     | CancelLeaveParametersTabAction
-    | DeletedOrRenamedNodesAction
     | RemoveEquipmentDataAction
     | SetOpenMapAction
     | SecurityAnalysisResultPaginationAction
@@ -218,15 +218,39 @@ export function setDirtyComputationParameters(isDirty: boolean): SetDirtyComputa
     };
 }
 
+export const ADD_SPREADSHEET_LOADED_NODES_IDS = 'ADD_SPREADSHEET_LOADED_NODES_IDS';
+export type AddSpreadsheetLoadedNodesIdsAction = Readonly<Action<typeof ADD_SPREADSHEET_LOADED_NODES_IDS>> & {
+    nodesIds: UUID[];
+};
+
+export function addSpreadsheetLoadedNodesIds(nodesIds: UUID[]): AddSpreadsheetLoadedNodesIdsAction {
+    return {
+        type: ADD_SPREADSHEET_LOADED_NODES_IDS,
+        nodesIds,
+    };
+}
+
+export const REMOVE_SPREADSHEET_LOADED_NODES_IDS = 'REMOVE_SPREADSHEET_LOADED_NODES_IDS';
+export type RemoveSpreadsheetLoadedNodesIdsAction = Readonly<Action<typeof REMOVE_SPREADSHEET_LOADED_NODES_IDS>> & {
+    nodesIds: UUID[];
+};
+
+export function removeSpreadsheetLoadedNodesIds(nodesIds: UUID[]): RemoveSpreadsheetLoadedNodesIdsAction {
+    return {
+        type: REMOVE_SPREADSHEET_LOADED_NODES_IDS,
+        nodesIds,
+    };
+}
+
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes;
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId'];
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes
+    spreadsheetEquipmentByNodes: SpreadsheetEquipmentsByNodes['equipmentsByNodeId']
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
@@ -237,12 +261,14 @@ export function loadEquipments(
 
 export const REMOVE_NODE_DATA = 'REMOVE_NODE_DATA';
 export type RemoveNodeDataAction = Readonly<Action<typeof REMOVE_NODE_DATA>> & {
+    spreadsheetEquipmentType: SpreadsheetEquipmentType;
     nodesIdToRemove: string[];
 };
 
-export function removeNodeData(nodesIdToRemove: string[]): RemoveNodeDataAction {
+export function removeNodeData(type: SpreadsheetEquipmentType, nodesIdToRemove: string[]): RemoveNodeDataAction {
     return {
         type: REMOVE_NODE_DATA,
+        spreadsheetEquipmentType: type,
         nodesIdToRemove,
     };
 }
@@ -333,6 +359,23 @@ export function cleanEquipments(equipmentType: SpreadsheetEquipmentType): CleanE
     return {
         type: CLEAN_EQUIPMENTS,
         equipmentType,
+    };
+}
+
+export const SET_SPREADSHEET_FETCHING = 'SET_SPREADSHEET_FETCHING';
+export type SetSpreadsheetFetchingAction = Readonly<Action<typeof SET_SPREADSHEET_FETCHING>> & {
+    spreadsheetEquipmentType: SpreadsheetEquipmentType;
+    isFetching: boolean;
+};
+
+export function setSpreadsheetFetching(
+    type: SpreadsheetEquipmentType,
+    isFetching: boolean
+): SetSpreadsheetFetchingAction {
+    return {
+        type: SET_SPREADSHEET_FETCHING,
+        spreadsheetEquipmentType: type,
+        isFetching,
     };
 }
 
@@ -1463,18 +1506,6 @@ export function resetAllSpreadsheetGlobalFilters(): ResetAllSpreadsheetGlobalFil
     };
 }
 
-export const DELETED_OR_RENAMED_NODES = 'DELETED_OR_RENAMED_NODES';
-export type DeletedOrRenamedNodesAction = Readonly<Action<typeof DELETED_OR_RENAMED_NODES>> & {
-    deletedOrRenamedNodes: UUID[];
-};
-
-export function deletedOrRenamedNodes(deletedOrRenamedNodes: UUID[]): DeletedOrRenamedNodesAction {
-    return {
-        type: DELETED_OR_RENAMED_NODES,
-        deletedOrRenamedNodes,
-    };
-}
-
 export const RESET_DIAGRAM_EVENT = 'RESET_DIAGRAM_EVENT';
 export type ResetDiagramEventAction = Readonly<Action<typeof RESET_DIAGRAM_EVENT>>;
 
@@ -1505,5 +1536,17 @@ export function selectSyncEnabled(syncEnabled: boolean): SelectSyncEnabledAction
     return {
         type: SELECT_SYNC_ENABLED,
         syncEnabled,
+    };
+}
+
+export const UPDATE_NODE_ALIASES = 'UPDATE_NODE_ALIASES';
+export type UpdateNodeAliasesAction = Readonly<Action<typeof UPDATE_NODE_ALIASES>> & {
+    nodeAliases: NodeAlias[];
+};
+
+export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAction {
+    return {
+        type: UPDATE_NODE_ALIASES,
+        nodeAliases,
     };
 }
