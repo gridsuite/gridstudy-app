@@ -52,6 +52,12 @@ export enum NetworkModificationCopyType {
     INSERT = 'INSERT',
 }
 
+export interface NetworkModificationCopyInfo {
+    copyType: NetworkModificationCopyType;
+    originStudyUuid?: UUID;
+    originNodeUuid?: UUID;
+}
+
 export interface MenuDefinitionSubItem {
     id: string;
     label: string;

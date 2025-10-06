@@ -9,7 +9,7 @@ import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromLi
 import { UUID } from 'crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
-import { NetworkModificationCopyType } from 'components/graph/menus/network-modifications/network-modification-menu.type';
+import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
@@ -217,11 +217,9 @@ export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
     modificationToCutUuidList: UUID[],
-    copyType: NetworkModificationCopyType,
-    originStudyUuid?: UUID,
-    originNodeUuid?: UUID
+    copyInfos: NetworkModificationCopyInfo
 ) {
-    console.info(copyType + ' modifications');
+    console.info(copyInfos.copyType + ' modifications');
     const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -230,9 +228,9 @@ export function copyOrMoveModifications(
         safeEncodeURIComponent(targetNodeId) +
         '?' +
         new URLSearchParams({
-            action: copyType,
-            originStudyUuid: originStudyUuid ?? '',
-            originNodeUuid: originNodeUuid ?? '',
+            action: copyInfos.copyType,
+            originStudyUuid: copyInfos.originStudyUuid ?? '',
+            originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
     return backendFetch(copyOrMoveModificationUrl, {
