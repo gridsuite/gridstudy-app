@@ -235,10 +235,6 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
-    SET_ACTIVE_SPREADSHEET_TAB,
-    SetActiveSpreadsheetTabAction,
-    SET_ADDED_SPREADSHEET_TAB,
-    SetAddedSpreadsheetTabAction,
     MODIFICATIONS_SELECTION_FOR_COPY,
     ModificationsSelectionForCopyAction,
 } from './actions';
