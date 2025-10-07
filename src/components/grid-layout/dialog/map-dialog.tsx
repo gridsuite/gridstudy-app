@@ -6,7 +6,7 @@
  */
 import { Dialog, Fab, Theme } from '@mui/material';
 import { useCallback, useRef } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { EquipmentType, LineFlowMode, NetworkVisualizationParameters, useStateBoolean } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
