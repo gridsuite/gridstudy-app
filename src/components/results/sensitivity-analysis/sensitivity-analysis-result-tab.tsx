@@ -5,33 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { SyntheticEvent, useMemo, useState } from 'react';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs.js';
 import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
-import {
-    DATA_KEY_TO_FILTER_KEY_N,
-    DATA_KEY_TO_FILTER_KEY_NK,
-    DATA_KEY_TO_SORT_KEY,
-    FUNCTION_TYPES,
-    isSensiKind,
-    mappingTabs,
-    SensitivityResultTabs,
-} from './sensitivity-analysis-result-utils';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
-import { downloadZipFile } from '../../../services/utils';
-import { ComputingType, PARAM_LANGUAGE, useSnackMessage } from '@gridsuite/commons-ui';
-import { ExportButton } from '../../utils/export-button';
+import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     COMPUTATION_RESULTS_LOGS,
-    SensiKind,
     SensiTab,
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_MW,
@@ -40,9 +27,8 @@ import useGlobalFilters from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
-import { useFilterSelector } from '../../../hooks/use-filter-selector';
-import { FilterType as AgGridFilterType, SortWay } from '../../../types/custom-aggrid-types';
-import { SENSITIVITY_ANALYSIS_RESULT_SORT_STORE } from '../../../utils/store-sort-filter-fields';
+import { SensitivityExportButton } from './sensitivity-analysis-export-button.js';
+import { isSensiKind, SensitivityResultTabs } from './sensitivity-analysis-result-utils.js';
 
 export type SensitivityAnalysisResultTabProps = {
     studyUuid: UUID;
@@ -55,38 +41,16 @@ function SensitivityAnalysisResultTab({
     nodeUuid,
     currentRootNetworkUuid,
 }: Readonly<SensitivityAnalysisResultTabProps>) {
-    const { snackError } = useSnackMessage();
     const [nOrNkIndex, setNOrNkIndex] = useState<number>(0);
     const [sensiTab, setSensiTab] = useState<SensiTab>(SENSITIVITY_IN_DELTA_MW);
-    const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState<boolean>(false);
-    const [isCsvExportLoading, setIsCsvExportLoading] = useState<boolean>(false);
     const sensitivityAnalysisStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { filters } = useFilterSelector(
-        AgGridFilterType.SensitivityAnalysis,
-        mappingTabs(sensiTab as SensiKind, nOrNkIndex)
-    );
-    const sortConfig = useSelector(
-        (state: AppState) =>
-            state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][mappingTabs(sensiTab as SensiKind, nOrNkIndex)]
-    );
-
-    const initTable = () => {
-        setIsCsvExportSuccessful(false);
-    };
-
-    const handleSensiTabChange = (newSensiTab: SensiTab) => {
-        initTable();
-        setSensiTab(newSensiTab);
-    };
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
-        initTable();
         setNOrNkIndex(newNOrNKIndex);
     };
 
@@ -97,76 +61,6 @@ function SensitivityAnalysisResultTab({
 
     const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
-
-    const handleExportResultAsCsv = useCallback(() => {
-        setIsCsvExportLoading(true);
-        setIsCsvExportSuccessful(false);
-        const mappedFilters = filters?.map((elem) => {
-            const keyMap = nOrNkIndex === 0 ? DATA_KEY_TO_FILTER_KEY_N : DATA_KEY_TO_FILTER_KEY_NK;
-            const newColumn = keyMap[elem.column as keyof typeof keyMap];
-            return { ...elem, column: newColumn };
-        });
-        const sortSelector = sortConfig?.length
-            ? {
-                  sortKeysWithWeightAndDirection: Object.fromEntries(
-                      sortConfig.map((value) => [
-                          DATA_KEY_TO_SORT_KEY[value.colId as keyof typeof DATA_KEY_TO_SORT_KEY],
-                          value.sort === SortWay.DESC ? -1 : 1,
-                      ])
-                  ),
-              }
-            : {};
-        const selector = {
-            tabSelection: SensitivityResultTabs[nOrNkIndex].id,
-            functionType: FUNCTION_TYPES[sensiTab as SensiKind],
-            offset: 0,
-            pageNumber: 0,
-            pageSize: -1, // meaning 'All'
-            ...sortSelector,
-        };
-
-        exportSensitivityResultsAsCsv(
-            studyUuid,
-            nodeUuid,
-            currentRootNetworkUuid,
-            {
-                csvHeaders: csvHeaders,
-                resultTab: SensitivityResultTabs[nOrNkIndex].id,
-                sensitivityFunctionType: isSensiKind(sensiTab) ? FUNCTION_TYPES[sensiTab] : undefined,
-                language: language,
-            },
-            selector,
-            mappedFilters,
-            getGlobalFilterParameter(globalFilters)
-        )
-            .then((response) => {
-                response.blob().then((blob: Blob) => {
-                    downloadZipFile(blob, 'sensitivity_analyse_results.zip');
-                    setIsCsvExportSuccessful(true);
-                });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'csvExportSensitivityResultError',
-                });
-                setIsCsvExportSuccessful(false);
-            })
-            .finally(() => setIsCsvExportLoading(false));
-    }, [
-        filters,
-        sortConfig,
-        nOrNkIndex,
-        sensiTab,
-        studyUuid,
-        nodeUuid,
-        currentRootNetworkUuid,
-        csvHeaders,
-        language,
-        getGlobalFilterParameter,
-        globalFilters,
-        snackError,
-    ]);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         return sensiTab === SENSITIVITY_AT_NODE ? [] : [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER, EQUIPMENT_TYPES.LINE];
@@ -179,7 +73,7 @@ function SensitivityAnalysisResultTab({
 
     return (
         <>
-            <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={handleSensiTabChange} />
+            <SensitivityAnalysisTabs sensiTab={sensiTab} setSensiTab={setSensiTab} />
             {isSensiKind(sensiTab) && (
                 <>
                     <Box
@@ -203,11 +97,15 @@ function SensitivityAnalysisResultTab({
                                 disableGenericFilters={sensiTab === SENSITIVITY_AT_NODE}
                             />
                         </Box>
-                        <ExportButton
+                        <SensitivityExportButton
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            csvHeaders={csvHeaders}
+                            nOrNkIndex={nOrNkIndex}
+                            sensiKind={sensiTab}
+                            globalFilters={getGlobalFilterParameter(globalFilters)}
                             disabled={isCsvButtonDisabled}
-                            onClick={handleExportResultAsCsv}
-                            isDownloadLoading={isCsvExportLoading}
-                            isDownloadSuccessful={isCsvExportSuccessful}
                         />
                     </Box>
                     <PagedSensitivityAnalysisResult

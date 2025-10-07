@@ -14,7 +14,7 @@ import {
     SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { SELECTION_TYPES } from './selection-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export type DestinationFolder = {
     [FOLDER_ID]: UUID;

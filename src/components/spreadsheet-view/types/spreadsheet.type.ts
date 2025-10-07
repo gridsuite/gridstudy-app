@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { Identifiable } from '@gridsuite/commons-ui';
 import type { COLUMN_TYPES } from '../../custom-aggrid/custom-aggrid-header.type';
 import type { GlobalFilter } from '../../results/common/global-filter/global-filter-types';
@@ -82,8 +82,8 @@ export type ColumnStateDto = {
 };
 
 export type SpreadsheetEquipmentsByNodes = {
-    nodesId: UUID[];
     equipmentsByNodeId: Record<UUID, Record<string, Identifiable>>;
+    isFetching: boolean;
 };
 
 export type SpreadsheetConfig = {
@@ -121,5 +121,8 @@ export type SpreadsheetOptionalLoadingParameters = {
     [SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER]: BranchOptionalLoadingParameters;
     [SpreadsheetEquipmentType.GENERATOR]: {
         regulatingTerminal: boolean;
+    };
+    [SpreadsheetEquipmentType.BUS]: {
+        networkComponents: boolean;
     };
 };

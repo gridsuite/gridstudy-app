@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Box, Button, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Search, Public, Upload } from '@mui/icons-material';
 import {
     DirectoryItemSelector,
@@ -41,10 +41,11 @@ interface DiagramGridHeaderProps {
     onOpenNetworkAreaDiagram?: (elementId?: string) => void;
     onLayoutSave: () => void;
     onMap?: () => void;
+    disableStore?: boolean;
 }
 
 export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
-    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave } = props;
+    const { onLoad, onSearch, onOpenNetworkAreaDiagram, onMap, onLayoutSave, disableStore = true } = props;
 
     const intl = useIntl();
 
@@ -85,9 +86,11 @@ export const GridLayoutToolbar = (props: DiagramGridHeaderProps) => {
                 </Box>
                 <Box>
                     <Tooltip title={<FormattedMessage id="StoreButtonTooltip" />}>
-                        <Button onClick={onLayoutSave}>
-                            <FormattedMessage id="StoreDiagramLayout" />
-                        </Button>
+                        <span>
+                            <Button disabled={disableStore} onClick={onLayoutSave}>
+                                <FormattedMessage id="StoreDiagramLayout" />
+                            </Button>
+                        </span>
                     </Tooltip>
                 </Box>
             </Box>

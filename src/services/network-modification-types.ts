@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Property } from '../components/dialogs/network-modifications/common/properties/property-utils';
 import {
     DataType,
@@ -870,3 +870,19 @@ export type BalancesAdjustmentInfos = {
     subtractLoadFlowBalancing: boolean;
     areas: BalancesAdjustmentZoneInfos[];
 };
+
+export interface MoveVoltageLevelFeederBaysInfos {
+    type: ModificationType;
+    uuid: string | null;
+    voltageLevelId: string;
+    feederBays: MoveFeederBayInfos[];
+}
+
+export interface MoveFeederBayInfos {
+    equipmentId: string;
+    busbarSectionId: string;
+    connectionSide: string | null;
+    connectionPosition: string | null;
+    connectionName: string | null;
+    connectionDirection: string | null;
+}

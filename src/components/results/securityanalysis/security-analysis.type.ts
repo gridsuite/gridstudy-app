@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
@@ -144,11 +144,19 @@ export interface SecurityAnalysisResultNmkProps {
 }
 
 export interface SecurityAnalysisNTableRow {
-    limit?: number;
-    limitType?: string;
-    loading?: number;
     subjectId?: string;
+    locationId?: string;
+    limit?: number;
+    limitName?: string | null;
+    limitType?: string;
+    nextLimitName?: string | null;
     value?: number;
+    loading?: number;
+    patlLoading?: number;
+    patlLimit?: number;
+    acceptableDuration?: number | null;
+    upcomingAcceptableDuration?: number | null;
+    side?: string;
 }
 
 export interface SecurityAnalysisResultProps {
