@@ -82,8 +82,7 @@ export const SpreadsheetContent = memo(
             if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
                 fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [active, nodesIds]);
+        }, [active, nodesIds, equipments.equipmentsByNodeId, fetchNodesEquipmentData, tableDefinition?.type]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
