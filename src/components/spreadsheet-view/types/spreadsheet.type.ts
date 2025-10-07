@@ -82,8 +82,8 @@ export type ColumnStateDto = {
 };
 
 export type SpreadsheetEquipmentsByNodes = {
-    nodesId: UUID[];
     equipmentsByNodeId: Record<UUID, Record<string, Identifiable>>;
+    isFetching: boolean;
 };
 
 export type SpreadsheetConfig = {
