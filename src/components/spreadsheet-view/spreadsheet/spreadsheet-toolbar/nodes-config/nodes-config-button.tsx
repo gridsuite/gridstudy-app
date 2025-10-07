@@ -9,12 +9,9 @@ import { FormattedMessage } from 'react-intl';
 import { Badge, Button, Tooltip } from '@mui/material';
 import { type MuiStyles, useStateBoolean } from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
-import { validAlias } from '../../../hooks/use-node-aliases';
-import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
-import type { NodeAlias } from '../../../types/node-alias.type';
+import { useNodeAliases, validAlias } from '../../../hooks/use-node-aliases';
 import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
-import { useNodeConfigNotificationsListener } from './use-node-config-notifications-listener';
 
 const styles = {
     badgeStyle: (theme) => ({
@@ -33,25 +30,17 @@ const styles = {
 
 type NodesConfigButtonProps = {
     disabled?: boolean;
-    tableType: SpreadsheetEquipmentType;
-    nodeAliases: NodeAlias[] | undefined;
-    updateNodeAliases: (newNodeAliases: NodeAlias[]) => void;
 };
 
-export default function NodesConfigButton({
-    disabled,
-    tableType,
-    nodeAliases,
-    updateNodeAliases,
-}: Readonly<NodesConfigButtonProps>) {
+export default function NodesConfigButton({ disabled }: Readonly<NodesConfigButtonProps>) {
     const dialogOpen = useStateBoolean(false);
+
+    const { nodeAliases, updateNodeAliases } = useNodeAliases();
+
     const showWarning = useMemo(
         () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
         [nodeAliases]
     );
-
-    //Enables to automatically reload nodeAliases data upon receiving study notification related to node and rootNetwork update
-    useNodeConfigNotificationsListener(tableType, nodeAliases);
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {

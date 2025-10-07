@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
+import { LimitTypes, LoadFlowTabProps, OverloadedEquipment } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
@@ -43,10 +43,14 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import useGlobalFilters from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
+import { ICellRendererParams } from 'ag-grid-community';
+import { Button, Tooltip } from '@mui/material';
+import { resultsStyles } from '../common/utils';
+import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 
 const styles = {
     flexWrapper: {
@@ -70,6 +74,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
+    openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
 
@@ -84,7 +89,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
     const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
-
+    const { onLinkClick } = useLoadFlowResultColumnActions({
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        openVoltageLevelDiagram,
+    });
     const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
     const getEnumLabel = useCallback(
@@ -159,12 +169,44 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         invalidations: loadflowResultInvalidations,
     });
 
+    const SubjectIdRenderer = useCallback(
+        (props: ICellRendererParams) => {
+            const { value, node, colDef } = props || {};
+            const onClick = () => {
+                const row: OverloadedEquipment = { ...node?.data };
+                onLinkClick(row, colDef);
+            };
+            if (value) {
+                return (
+                    <Tooltip title={value}>
+                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                            {value}
+                        </Button>
+                    </Tooltip>
+                );
+            }
+        },
+        [onLinkClick]
+    );
+
     const loadFlowLimitViolationsColumns = useMemo(() => {
         switch (tabIndex) {
             case 0:
-                return loadFlowCurrentViolationsColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex);
+                return loadFlowCurrentViolationsColumnsDefinition(
+                    intl,
+                    filterEnums,
+                    getEnumLabel,
+                    tabIndex,
+                    SubjectIdRenderer
+                );
             case 1:
-                return loadFlowVoltageViolationsColumnsDefinition(intl, filterEnums, getEnumLabel, tabIndex);
+                return loadFlowVoltageViolationsColumnsDefinition(
+                    intl,
+                    filterEnums,
+                    getEnumLabel,
+                    tabIndex,
+                    SubjectIdRenderer
+                );
             case 2:
                 return loadFlowResultColumnsDefinition(
                     intl,
@@ -178,7 +220,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             default:
                 return [];
         }
-    }, [tabIndex, intl, filterEnums, getEnumLabel]);
+    }, [tabIndex, intl, filterEnums, getEnumLabel, SubjectIdRenderer]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);

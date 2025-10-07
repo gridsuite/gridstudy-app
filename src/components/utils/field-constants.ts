@@ -46,6 +46,8 @@ export const CONNECTED2 = 'terminal2Connected';
 export const CONNECTION_DIRECTION2 = 'connectionDirection2';
 export const CONNECTION_NAME2 = 'connectionName2';
 export const CONNECTION_POSITION2 = 'connectionPosition2';
+export const IS_REMOVED = 'isRemoved';
+export const IS_SEPARATOR = 'isSeparator';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
@@ -204,6 +206,7 @@ export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
 export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFY: 'MODIFY',
+    MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the limit exists it is modified, if not it is created
     ADD: 'ADD',
     DELETE: 'DELETE',
     REPLACE: 'REPLACE',
@@ -373,32 +376,6 @@ export const ASSIGNMENTS = 'assignments';
 export const PROPERTY_NAME_FIELD = 'propertyName';
 export const VALUE_FIELD = 'value';
 
-// non evacuated energy
-export const GENERATION_STAGES_KIND = 'energySource';
-export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
-export const GENERATION_STAGES_PERCENT_MAXP_2 = 'percentMaxP2';
-export const GENERATION_STAGES_PERCENT_MAXP_3 = 'percentMaxP3';
-export const STAGES_DEFINITION_INDEX = 'stagesDefinitionIndex';
-export const PMAX_PERCENTS_INDEX = 'pMaxPercentsIndex';
-
-export const SENSITIVITY_THRESHOLD = 'sensitivityThreshold';
-export const GENERATORS_CAPPINGS_KIND = 'energySource';
-export const GENERATORS_CAPPINGS_FILTER = 'generators';
-
-export const BRANCHES = 'branches';
-export const MONITORED_BRANCHES_IST_N = 'istN';
-export const MONITORED_BRANCHES_LIMIT_NAME_N = 'limitNameN';
-export const MONITORED_BRANCHES_COEFF_N = 'nCoefficient';
-export const MONITORED_BRANCHES_IST_N_1 = 'istNm1';
-export const MONITORED_BRANCHES_LIMIT_NAME_N_1 = 'limitNameNm1';
-export const MONITORED_BRANCHES_COEFF_N_1 = 'nm1Coefficient';
-
-export const GENERATORS_CAPPINGS = 'generatorsCappings';
-export const STAGES_SELECTION = 'stagesSelection';
-export const STAGES_DEFINITION = 'stagesDefinition';
-export const STAGES_DEFINITION_GENERATORS = 'generators';
-export const PMAX_PERCENTS = 'pMaxPercents';
-export const GENERATORS_LIMIT = 'generatorsCappings';
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';
@@ -494,3 +471,9 @@ export const BALANCES_ADJUSTMENT_BALANCE_TYPE = 'balancesAdjustmentBalanceType';
 export const BALANCES_ADJUSTMENT_WITH_LOAD_FLOW = 'balancesAdjustmentWithLoadFlow';
 export const BALANCES_ADJUSTMENT_WITH_RATIO_TAP_CHANGERS = 'balancesAdjustmentWithRatioTapChangers';
 export const BALANCES_ADJUSTMENT_SUBTRACT_LOAD_FLOW_BALANCING = 'balancesAdjustmentSubtractLoadFlowBalancing';
+
+// move connections
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
+export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
+export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
+export const CONNECTION_SIDE = 'connectionSide';

@@ -11,7 +11,6 @@ import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveSpreadsheetDialog from './save-spreadsheet-dialog';
 import { EquipmentType, FILTER_EQUIPMENTS, useCsvExport, useStateBoolean } from '@gridsuite/commons-ui';
-import type { NodeAlias } from '../../../types/node-alias.type';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
 import { type SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import type { AgGridReact } from 'ag-grid-react';
@@ -39,8 +38,7 @@ interface SaveSpreadsheetButtonProps {
     columns: ColDef[];
     disabled: boolean;
     tableDefinition: SpreadsheetTabDefinition;
-    dataSize?: number;
-    nodeAliases: NodeAlias[] | undefined;
+    dataSize: number;
 }
 
 export default function SaveSpreadsheetButton({
@@ -49,7 +47,6 @@ export default function SaveSpreadsheetButton({
     columns,
     disabled,
     dataSize,
-    nodeAliases,
 }: Readonly<SaveSpreadsheetButtonProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const customSaveDialogOpen = useStateBoolean(false);
@@ -131,11 +128,7 @@ export default function SaveSpreadsheetButton({
                     </MenuItem>
                 ))}
             </Menu>
-            <SaveSpreadsheetDialog
-                tableDefinition={tableDefinition}
-                open={customSaveDialogOpen}
-                nodeAliases={nodeAliases}
-            />
+            <SaveSpreadsheetDialog tableDefinition={tableDefinition} open={customSaveDialogOpen} />
             <SaveNamingFilterDialog open={saveFilterDialogOpen} gridRef={gridRef} tableDefinition={tableDefinition} />
         </>
     );

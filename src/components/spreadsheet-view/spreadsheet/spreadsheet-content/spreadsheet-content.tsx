@@ -6,7 +6,6 @@
  */
 
 import { memo, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
-import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
 import { EquipmentTable } from './equipment-table';
 import { type Identifiable, type MuiStyles } from '@gridsuite/commons-ui';
 import { type CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
@@ -15,7 +14,6 @@ import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
@@ -25,6 +23,10 @@ import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spr
 import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
+import { useNodeAliases } from '../../hooks/use-node-aliases';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
 
 const styles = {
     table: (theme) => ({
@@ -48,7 +50,6 @@ interface SpreadsheetContentProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
-    nodeAliases: NodeAlias[] | undefined;
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
@@ -63,7 +64,6 @@ export const SpreadsheetContent = memo(
         currentNode,
         tableDefinition,
         columns,
-        nodeAliases,
         disabled,
         equipmentId,
         onEquipmentScrolled,
@@ -71,36 +71,19 @@ export const SpreadsheetContent = memo(
         openDiagram,
         active,
     }: SpreadsheetContentProps) => {
-        const [equipmentToUpdateId, setEquipmentToUpdateId] = useState<string | null>(null);
         const [isGridReady, setIsGridReady] = useState(false);
+        const { nodeAliases } = useNodeAliases();
+        const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
+        const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
+        const { fetchNodesEquipmentData } = useFetchEquipment();
 
-        const highlightUpdatedEquipment = useCallback(() => {
-            if (!equipmentToUpdateId) {
-                return;
+        // Initial data loading for this type when the tab is opened
+        useEffect(() => {
+            if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
+                fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
             }
-
-            const api = gridRef.current?.api;
-            const rowNode = api?.getRowNode(equipmentToUpdateId);
-
-            if (rowNode && api) {
-                api.flashCells({
-                    rowNodes: [rowNode],
-                    flashDuration: 1000,
-                });
-                api.setNodesSelected({ nodes: [rowNode], newValue: false });
-            }
-
-            setEquipmentToUpdateId(null);
-        }, [equipmentToUpdateId, gridRef]);
-
-        // Only fetch when active
-        const { equipments, isFetching } = useSpreadsheetEquipments(
-            tableDefinition?.type,
-            equipmentToUpdateId,
-            highlightUpdatedEquipment,
-            nodeAliases,
-            active
-        );
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [active, nodesIds]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
@@ -152,28 +135,20 @@ export const SpreadsheetContent = memo(
         );
 
         const transformedRowData = useMemo(() => {
-            if (
-                !nodeAliases ||
-                !equipments?.nodesId.includes(currentNode.id) ||
-                !equipments.equipmentsByNodeId[currentNode.id]
-            ) {
-                return undefined;
-            }
-
             const currentNodeData: Record<string, Identifiable> = equipments.equipmentsByNodeId[currentNode.id];
             return Object.values(
                 Object.entries(equipments.equipmentsByNodeId).reduce(
                     (prev, [nodeId, nodeEquipments]) => {
-                        if (nodeId === currentNode.id) {
-                            return prev;
-                        }
                         const nodeAlias = nodeAliases.find((value) => value.id === nodeId);
                         if (nodeAlias) {
                             Object.values(nodeEquipments).forEach((eq) => {
-                                prev[eq.id] = {
-                                    ...prev[eq.id],
-                                    [nodeAlias.alias]: eq,
-                                };
+                                // To avoid empty lines in case of deleted equipments in current node but defined in another one
+                                if (prev[eq.id] !== undefined) {
+                                    prev[eq.id] = {
+                                        ...prev[eq.id],
+                                        [nodeAlias.alias]: eq,
+                                    };
+                                }
                             });
                         }
                         return prev;
@@ -210,7 +185,6 @@ export const SpreadsheetContent = memo(
 
         const handleModify = useCallback(
             (equipmentId: string) => {
-                setEquipmentToUpdateId(equipmentId);
                 handleOpenModificationDialog(equipmentId);
             },
             [handleOpenModificationDialog]
@@ -240,7 +214,7 @@ export const SpreadsheetContent = memo(
                             rowData={transformedRowData}
                             currentNode={currentNode}
                             columnData={columns}
-                            isFetching={isFetching}
+                            isFetching={equipments.isFetching}
                             isDataEditable={isModificationDialogForEquipmentType}
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}

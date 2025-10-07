@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType, type MuiStyles } from '@gridsuite/commons-ui';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from '../../../redux/reducer';
 import { DropResult } from '@hello-pangea/dnd';
 

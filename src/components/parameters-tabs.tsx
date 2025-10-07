@@ -37,19 +37,11 @@ import {
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import {
-    fetchDefaultNonEvacuatedEnergyProvider,
-    fetchNonEvacuatedEnergyProvider,
-    getNonEvacuatedEnergyParameters,
-    updateNonEvacuatedEnergyProvider,
-} from 'services/study/non-evacuated-energy';
-import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { StateEstimationParameters } from './dialogs/parameters/state-estimation/state-estimation-parameters';
 import { useGetStateEstimationParameters } from './dialogs/parameters/state-estimation/use-get-state-estimation-parameters';
 import DynamicSecurityAnalysisParameters from './dialogs/parameters/dynamic-security-analysis/dynamic-security-analysis-parameters';
-import { useGetNonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/use-get-non-evacuated-energy-parameters';
 import { stylesLayout, tabStyles } from './utils/tab-utils';
 import { useParameterState } from './dialogs/parameters/use-parameters-state';
 import { useGetShortCircuitParameters } from './dialogs/parameters/use-get-short-circuit-parameters';
@@ -74,7 +66,6 @@ enum TAB_VALUES {
     lfParamsTabValue = 'LOAD_FLOW',
     securityAnalysisParamsTabValue = 'SECURITY_ANALYSIS',
     sensitivityAnalysisParamsTabValue = 'SENSITIVITY_ANALYSIS',
-    nonEvacuatedEnergyParamsTabValue = 'NON_EVACUATED_ENERGY_ANALYSIS',
     shortCircuitParamsTabValue = 'SHORT_CIRCUIT',
     dynamicSimulationParamsTabValue = 'DYNAMIC_SIMULATION',
     dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
@@ -106,7 +97,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
 
     const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
     const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const dynamicSecurityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSecurityAnalysis);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
@@ -188,19 +178,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         sensitivityAnalysisBackend
     );
 
-    const nonEvacuatedEnergyBackend = useParametersBackend(
-        user,
-        studyUuid,
-        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
-        nonEvacuatedEnergyAvailability,
-        fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
-        fetchNonEvacuatedEnergyProvider,
-        fetchDefaultNonEvacuatedEnergyProvider,
-        updateNonEvacuatedEnergyProvider,
-        getNonEvacuatedEnergyParameters
-    );
-
-    const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
     const shortCircuitParameters = useGetShortCircuitParameters();
     const voltageInitParameters = useGetVoltageInitParameters();
     const useStateEstimationParameters = useGetStateEstimationParameters();
@@ -249,7 +226,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
             if (
                 (!enableDeveloperMode &&
                     (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                        oldValue === TAB_VALUES.nonEvacuatedEnergyParamsTabValue ||
                         oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
                         oldValue === TAB_VALUES.dynamicSimulationParamsTabValue ||
                         oldValue === TAB_VALUES.dynamicSecurityAnalysisParamsTabValue)) ||
@@ -298,13 +274,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                         parametersBackend={sensitivityAnalysisBackend}
                         setHaveDirtyFields={setDirtyFields}
                         enableDeveloperMode={enableDeveloperMode}
-                    />
-                );
-            case TAB_VALUES.nonEvacuatedEnergyParamsTabValue:
-                return (
-                    <NonEvacuatedEnergyParameters
-                        parametersBackend={nonEvacuatedEnergyBackend}
-                        useNonEvacuatedEnergyParameters={useNonEvacuatedEnergyParameters}
                     />
                 );
             case TAB_VALUES.shortCircuitParamsTabValue:
@@ -356,8 +325,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
         currentNodeUuid,
         currentRootNetworkUuid,
         sensitivityAnalysisBackend,
-        nonEvacuatedEnergyBackend,
-        useNonEvacuatedEnergyParameters,
         shortCircuitParameters,
         user,
         voltageInitParameters,
@@ -401,13 +368,6 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                                 label={<FormattedMessage id="SensitivityAnalysis" />}
                                 value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                             />
-                            {enableDeveloperMode ? (
-                                <Tab
-                                    disabled={nonEvacuatedEnergyAvailability !== OptionalServicesStatus.Up}
-                                    label={<FormattedMessage id="NonEvacuatedEnergyAnalysis" />}
-                                    value={TAB_VALUES.nonEvacuatedEnergyParamsTabValue}
-                                />
-                            ) : null}
                             <Tab
                                 disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="ShortCircuit" />}

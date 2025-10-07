@@ -15,7 +15,7 @@ import { Badge, Box, Checkbox, Chip, CircularProgress, IconButton, Toolbar, Tool
 import { SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AppState } from 'redux/reducer';
 import { RootNetworkInfos, RootNetworkMetadata } from '../network-modifications/network-modification-menu.type';
 import { getCaseImportParameters } from 'services/network-conversion';
