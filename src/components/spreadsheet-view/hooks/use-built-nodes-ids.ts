@@ -9,16 +9,21 @@ import { useSelector } from 'react-redux';
 import type { AppState } from '../../../redux/reducer';
 import { useStableComputedSet } from '../../../hooks/use-stable-computed-set';
 import type { UUID } from 'node:crypto';
-import { validAlias } from './use-node-aliases';
+import { useNodeAliases, validAlias } from './use-node-aliases';
 import { NodeType } from '../../graph/tree-node.type';
 import { isStatusBuilt } from '../../graph/util/model-functions';
-import type { NodeAlias } from '../types/node-alias.type';
 
-export function useBuiltNodesIds(nodeAliases: NodeAlias[] | undefined) {
+export function useBuiltNodesIds() {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
+    const isTreeModelUpToDate = useSelector((state: AppState) => state.isNetworkModificationTreeModelUpToDate);
+
+    const { nodeAliases } = useNodeAliases();
 
     return useStableComputedSet(() => {
+        if (!isTreeModelUpToDate) {
+            return new Set<UUID>();
+        }
         const aliasedNodesIds = nodeAliases
             ?.filter((nodeAlias) => validAlias(nodeAlias))
             .map((nodeAlias) => nodeAlias.id);

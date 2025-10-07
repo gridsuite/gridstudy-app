@@ -9,7 +9,7 @@ import { useCallback, useEffect } from 'react';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { CalculationRowData, generateCalculationRows } from 'components/spreadsheet-view/utils/calculation-utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSelector, shallowEqual } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';

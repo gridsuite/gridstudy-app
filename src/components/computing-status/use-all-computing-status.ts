@@ -17,7 +17,7 @@ import {
     getVoltageInitRunningStatus,
 } from '../utils/running-status';
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ComputingType } from '@gridsuite/commons-ui';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';

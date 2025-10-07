@@ -6,7 +6,7 @@
  */
 import type { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
 import type { ComputingType } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export enum NotificationType {
     // Study status
