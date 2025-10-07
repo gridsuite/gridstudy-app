@@ -27,11 +27,12 @@ import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { BranchInfos } from '../../../services/study/network-map.type';
 
 export interface LimitsPaneProps {
     id?: string;
     currentNode?: CurrentTreeNode;
-    equipmentToModify?: any;
+    equipmentToModify?: BranchInfos | null;
     clearableFields?: boolean;
 }
 
@@ -148,6 +149,7 @@ export function LimitsPane({
                         setIndexSelectedLimitSet={setIndexSelectedLimitSet}
                         checkLimitSetUnicity={checkLimitSetUnicity}
                         isAModification={!!equipmentToModify}
+                        currentLimitsToModify={equipmentToModify?.currentLimits ?? []}
                     />
                 </Grid>
                 <Grid item xs={6} sx={tabStyles.parametersBox} marginLeft={2}>

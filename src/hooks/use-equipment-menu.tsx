@@ -11,7 +11,7 @@ import withOperatingStatusMenu, { MenuBranchProps } from '../components/menus/op
 import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../components/menus/base-equipment-menu';
 import withEquipmentMenu from '../components/menus/equipment-menu';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 type EquipmentMenuProps = {
     position?: [number, number] | null;

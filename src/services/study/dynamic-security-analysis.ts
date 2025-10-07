@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     DynamicSecurityAnalysisParametersFetchReturn,
     DynamicSecurityAnalysisParametersInfos,
@@ -70,6 +70,13 @@ export function fetchDynamicSecurityAnalysisStatus(
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-security-analysis/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchDynamicSecurityAnalysisProvider(studyUuid: UUID) {
+    console.info(`Fetching dynamic security analysis provider on study '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-security-analysis/provider';
     console.debug(url);
     return backendFetchText(url);
 }

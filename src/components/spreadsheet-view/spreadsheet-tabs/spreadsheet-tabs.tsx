@@ -22,18 +22,16 @@ import { useIntl } from 'react-intl';
 import type { DropResult } from '@hello-pangea/dnd';
 import DroppableTabs from 'components/utils/draggable-tab/droppable-tabs';
 import DraggableTab from 'components/utils/draggable-tab/draggable-tab';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import type { ColumnDefinitionDto, SpreadsheetConfig } from '../types/spreadsheet.type';
 import RenameTabDialog from './rename-tab-dialog';
 import SpreadsheetTabLabel from './spreadsheet-tab-label';
-import type { ResetNodeAliasCallback } from '../hooks/use-node-aliases';
 import {
     removeSpreadsheetConfigFromCollection,
     renameSpreadsheetModel,
     reorderSpreadsheetConfigs,
     updateSpreadsheetModel,
 } from 'services/study/study-config';
-import type { NodeAlias } from '../types/node-alias.type';
 import { SaveSpreadsheetCollectionDialog } from '../spreadsheet/spreadsheet-toolbar/save/save-spreadsheet-collection-dialog';
 import SpreadsheetTabsToolbar from './spreadsheet-tabs-toolbar';
 import { SpreadsheetModelGlobalEditorDialog } from '../spreadsheet/spreadsheet-toolbar/global-model-editor/spreadsheet-model-global-editor-dialog';
@@ -63,20 +61,14 @@ interface SpreadsheetTabsProps {
     selectedTabUuid: UUID | null;
     handleSwitchTab: (tabUuid: UUID) => void;
     disabled: boolean;
-    resetNodeAliases: ResetNodeAliasCallback;
     handleResetCollectionClick: () => void;
-    nodeAliases: NodeAlias[] | undefined;
-    updateNodeAliases: (nodeAliases: NodeAlias[]) => void;
 }
 
 export default function SpreadsheetTabs({
     selectedTabUuid,
     handleSwitchTab,
     disabled,
-    resetNodeAliases,
     handleResetCollectionClick,
-    nodeAliases,
-    updateNodeAliases,
 }: Readonly<SpreadsheetTabsProps>) {
     const tablesDefinitions = useSelector((state: AppState) => state.tables.definitions);
     const spreadsheetsCollectionUuid = useSelector((state: AppState) => state.tables.uuid);
@@ -292,7 +284,7 @@ export default function SpreadsheetTabs({
         <>
             <Grid container direction="row" wrap="nowrap" item>
                 <Grid item padding={1} xs="auto">
-                    <AddSpreadsheetButton disabled={disabled} resetNodeAliases={resetNodeAliases} />
+                    <AddSpreadsheetButton disabled={disabled} />
                 </Grid>
                 <Grid item xs sx={{ overflow: 'hidden' }}>
                     <DroppableTabs
@@ -315,8 +307,6 @@ export default function SpreadsheetTabs({
                     disabled={disabled}
                     onSaveClick={saveCollectionDialogOpen.setTrue}
                     onExportClick={handleResetCollectionClick}
-                    nodeAliases={nodeAliases}
-                    updateNodeAliases={updateNodeAliases}
                 />
             </Grid>
             {confirmationDialogOpen && (
@@ -338,7 +328,7 @@ export default function SpreadsheetTabs({
                 tabUuid={tabActionInProgressUuid}
                 tablesDefinitions={tablesDefinitions}
             />
-            <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} nodeAliases={nodeAliases} />
+            <SaveSpreadsheetCollectionDialog open={saveCollectionDialogOpen} />
             <SpreadsheetModelGlobalEditorDialog
                 open={editDialogOpen}
                 columnsModel={columnsModel}

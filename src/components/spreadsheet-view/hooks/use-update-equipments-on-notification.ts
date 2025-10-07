@@ -20,18 +20,17 @@ import { fetchAllEquipments } from '../../../services/study/network-map';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { NotificationsUrlKeys, useNotificationsListener } from '@gridsuite/commons-ui';
-import { NodeAlias } from '../types/node-alias.type';
 import { useBuiltNodesIds } from './use-built-nodes-ids';
 
 const SPREADSHEET_EQUIPMENTS_LISTENER_ID = 'spreadsheet-equipments-listener';
 
-export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | undefined) {
+export function useUpdateEquipmentsOnNotification() {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
-    const builtNodesIds = useBuiltNodesIds(nodeAliases);
+    const builtNodesIds = useBuiltNodesIds();
 
     const updateEquipmentsLocal = useCallback(
         (
@@ -129,8 +128,13 @@ export function useUpdateEquipmentsOnNotification(nodeAliases: NodeAlias[] | und
         [builtNodesIds, currentRootNetworkUuid, dispatch, studyUuid, updateEquipmentsLocal]
     );
 
+    const listenerResetEquipments = useCallback(() => {
+        dispatch(resetEquipments());
+    }, [dispatch]);
+
     useNotificationsListener(NotificationsUrlKeys.STUDY, {
         listenerCallbackMessage: listenerUpdateEquipmentsLocal,
+        listenerCallbackOnReopen: listenerResetEquipments,
         propsId: SPREADSHEET_EQUIPMENTS_LISTENER_ID,
     });
 }

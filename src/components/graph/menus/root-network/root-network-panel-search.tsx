@@ -80,7 +80,6 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
         nodesSearch.reset();
         modificationsSearch.reset();
         setIsSearchActive(false);
-        dispatch(setHighlightModification(null));
     };
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
