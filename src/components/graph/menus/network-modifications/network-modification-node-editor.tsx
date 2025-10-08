@@ -230,7 +230,6 @@ const NetworkModificationNodeEditor = () => {
                 });
             }
         });
-        //broadcastChannel doesn't change
     }, [broadcastChannel, snackInfo]);
 
     const cleanClipboard = useCallback(
@@ -1091,6 +1090,7 @@ const NetworkModificationNodeEditor = () => {
             originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
+        // TO DO
         // we don't send the copied modifications to broadcast because moving modifications from one study to a different one is not allowed
         //broadcastChannel.postMessage({ copyInfos: { copyType: NetworkModificationCopyType.MOVE } });
     }, [currentNode?.id, selectedModificationsIds, studyUuid]);
