@@ -10,7 +10,7 @@ import { ModificationsSearchResult } from './root-network.types';
 import React, { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import type { AppState } from '../../../../redux/reducer';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { ModificationResults } from './root-network-modification-results';
 
 const styles = {

@@ -6,7 +6,7 @@
  */
 
 import { backendFetchJson, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';

@@ -17,7 +17,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     Assignment,
     AttachLineInfo,
@@ -59,6 +59,7 @@ import { Filter } from '../../components/dialogs/network-modifications/by-filter
 import { ExcludedNetworkModifications } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import { TabularProperty } from '../../components/dialogs/network-modifications/tabular/properties/property-utils';
 import { Modification } from '../../components/dialogs/network-modifications/tabular/tabular-common';
+import { ENABLE_OLG_MODIFICATION } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -839,6 +840,7 @@ export function modifyLine({
     operationalLimitsGroups,
     selectedOperationalLimitsGroup1,
     selectedOperationalLimitsGroup2,
+    enableOLGModification,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -889,6 +891,7 @@ export function modifyLine({
             operationalLimitsGroups: operationalLimitsGroups,
             selectedOperationalLimitsGroup1: selectedOperationalLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedOperationalLimitsGroup2,
+            [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             voltageLevelId1: toModificationOperation(voltageLevelId1),
             busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
             voltageLevelId2: toModificationOperation(voltageLevelId2),
@@ -1011,6 +1014,7 @@ export function modifyTwoWindingsTransformer({
     operationalLimitsGroups,
     selectedLimitsGroup1,
     selectedLimitsGroup2,
+    enableOLGModification,
     ratioTapChanger,
     phaseTapChanger,
     voltageLevelId1 = undefined,
@@ -1067,6 +1071,7 @@ export function modifyTwoWindingsTransformer({
             operationalLimitsGroups: operationalLimitsGroups,
             selectedOperationalLimitsGroup1: selectedLimitsGroup1,
             selectedOperationalLimitsGroup2: selectedLimitsGroup2,
+            [ENABLE_OLG_MODIFICATION]: enableOLGModification,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
             voltageLevelId1: toModificationOperation(voltageLevelId1),

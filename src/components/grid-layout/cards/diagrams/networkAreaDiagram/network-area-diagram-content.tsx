@@ -30,7 +30,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { AppState } from 'redux/reducer';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Point } from '@svgdotjs/svg.js';
 import {
     ComputingType,

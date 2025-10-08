@@ -33,7 +33,6 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
 import { APPLICABILITY } from '../../network/constants';
 
 export interface LimitsSidePaneProps {
@@ -46,6 +45,7 @@ export interface LimitsSidePaneProps {
     currentNode?: CurrentTreeNode;
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    disabled: boolean;
 }
 
 export function LimitsSidePane({
@@ -58,6 +58,7 @@ export function LimitsSidePane({
     currentNode,
     selectedLimitSetName,
     checkLimitSetUnicity,
+    disabled,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
@@ -163,31 +164,6 @@ export function LimitsSidePane({
         [findTemporaryLimit, shouldReturnPreviousValue]
     );
 
-    const disableTableCell = useCallback(
-        (
-            rowIndex: number,
-            column: ColumnText | ColumnNumeric,
-            arrayFormName: string,
-            temporaryLimits?: TemporaryLimit[]
-        ) => {
-            // If the temporary limit is added, all fields are editable
-            // otherwise, only the value field is editable
-            let disable: boolean =
-                temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                column.dataKey !== TEMPORARY_LIMIT_VALUE;
-
-            if (
-                getValues(arrayFormName) &&
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADD
-            ) {
-                disable = false;
-            }
-
-            return disable;
-        },
-        [getValues, temporaryLimitHasPreviousValue]
-    );
-
     const isValueModified = useCallback(
         (rowIndex: number, arrayFormName: string) => {
             const temporaryLimits = getValues(arrayFormName);
@@ -211,45 +187,44 @@ export function LimitsSidePane({
                 label="PermanentCurrentLimitText"
                 adornment={AmpereAdornment}
                 previousValue={permanentCurrentLimitPreviousValue ?? undefined}
-                clearable={clearableFields}
+                clearable={!disabled && clearableFields}
+                disabled={disabled}
             />
         ),
-        [clearableFields, limitsGroupFormName, permanentCurrentLimitPreviousValue]
+        [clearableFields, disabled, limitsGroupFormName, permanentCurrentLimitPreviousValue]
     );
 
     return (
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
-                <>
-                    <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
-                    <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
-                        <Grid item xs={2}>
-                            <FormattedMessage id="Applicability" />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <SelectInput
-                                options={Object.values(APPLICABILITY)}
-                                name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
-                                previousValue={applicabilityPreviousValue}
-                                sx={{ flexGrow: 1 }}
-                                disableClearable
-                                size="small"
-                                onCheckNewValue={(value: Option | null) => {
-                                    if (value) {
-                                        const errorMessage: string = checkLimitSetUnicity(
-                                            selectedLimitSetName ?? '',
-                                            typeof value === 'string' ? value : value.id
-                                        );
-                                        setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
-                                            message: errorMessage,
-                                        });
-                                    }
-                                    return true;
-                                }}
-                            />
-                        </Grid>
+                <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
+                    <Grid item xs={2}>
+                        <FormattedMessage id="Applicability" />
                     </Grid>
-                </>
+                    <Grid item xs={4}>
+                        <SelectInput
+                            options={Object.values(APPLICABILITY)}
+                            name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
+                            previousValue={applicabilityPreviousValue}
+                            sx={{ flexGrow: 1 }}
+                            disableClearable
+                            size="small"
+                            disabled={disabled}
+                            onCheckNewValue={(value: Option | null) => {
+                                if (value) {
+                                    const errorMessage: string = checkLimitSetUnicity(
+                                        selectedLimitSetName ?? '',
+                                        typeof value === 'string' ? value : value.id
+                                    );
+                                    setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
+                                        message: errorMessage,
+                                    });
+                                }
+                                return true;
+                            }}
+                        />
+                    </Grid>
+                </Grid>
             )}
             <Box>
                 <LimitsChart
@@ -266,9 +241,9 @@ export function LimitsSidePane({
                 createRow={createRows}
                 columnsDefinition={columnsDefinition}
                 previousValues={temporaryLimitsPreviousValues}
-                disableTableCell={disableTableCell}
                 getPreviousValue={getPreviousValue}
                 isValueModified={isValueModified}
+                disabled={disabled}
             />
         </Box>
     );
