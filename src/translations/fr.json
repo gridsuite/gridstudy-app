@@ -26,6 +26,10 @@
 
     "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
+    "CopiedModificationInvalidationMessageFromAnotherStudy": "Suite à la modification d'un hypothèse dans l'étude d'origine des modifications copiées, le contenu du presse papier a été supprimé",
+    "CutModificationMessageFromAnotherStudy": "Des modifications on été coupées dans une autre étude ; le contenu du presse papier n'a pas été modifié",
+    "CopiedModificationUpdateMessageFromAnotherStudy": "Suite à la copie de modifications dans une autre étude, le presse papier a été modifié",
+    "CopiedModificationInvalidationMessageAfterTabClosure": "Suite à la fermeture de l'onglet d'une autre étude, le presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "download.fileName": "Nom de fichier",

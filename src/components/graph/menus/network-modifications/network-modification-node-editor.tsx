@@ -195,19 +195,26 @@ const NetworkModificationNodeEditor = () => {
             console.info(event.data);
             isInitiatingCopyTab.current = false;
             if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
-                setCopiedModifications([]);
-                setCopyInfos(null);
-                // faire une fonction qui fait les 2 d'un coup ?
-                snackInfo({
-                    messageId: 'CopiedNodeInvalidationMessage',
+                setCopiedModifications((oldCopiedModifications) => {
+                    if (oldCopiedModifications.length) {
+                        snackInfo({
+                            messageId: 'CopiedModificationInvalidationMessageFromAnotherStudy',
+                        });
+                    }
+                    return [];
                 });
+                setCopyInfos(null);
+            } else if (event.data.copyType === NetworkModificationCopyType.MOVE) {
+                snackInfo({ messageId: 'CutModificationMessageFromAnotherStudy' });
             } else {
                 setCopiedModifications(event.data.modificationsUuids);
+                console.log(event.data);
                 setCopyInfos({
-                    copyType: event.data.copyType,
-                    originStudyUuid: event.data.originStudyUuid,
-                    originNodeUuid: event.data.originNodeUuid,
+                    copyType: event.data.copyInfos.copyType,
+                    originStudyUuid: event.data.copyInfos.originStudyUuid,
+                    originNodeUuid: event.data.copyInfos.originNodeUuid,
                 });
+                snackInfo({ messageId: 'CopiedModificationUpdateMessageFromAnotherStudy' });
             }
         };
         return broadcast;
@@ -218,10 +225,13 @@ const NetworkModificationNodeEditor = () => {
         window.addEventListener('beforeunload', (event) => {
             if (true === isInitiatingCopyTab.current) {
                 broadcastChannel.postMessage(emptyCopiedModificationsSelection);
+                snackInfo({
+                    messageId: 'CopiedModificationInvalidationMessageAfterTabClosure',
+                });
             }
         });
         //broadcastChannel doesn't change
-    }, [broadcastChannel]);
+    }, [broadcastChannel, snackInfo]);
 
     const cleanClipboard = useCallback(
         (showSnackInfo: boolean = true) => {
@@ -1075,13 +1085,14 @@ const NetworkModificationNodeEditor = () => {
     }, [modifications, selectedNetworkModifications]);
 
     const doCutModifications = useCallback(() => {
-        // moving modifications from one study to a different one is not allowed
         setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: NetworkModificationCopyType.MOVE,
             originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
+        // we don't send the copied modifications to broadcast because moving modifications from one study to a different one is not allowed
+        //broadcastChannel.postMessage({ copyInfos: { copyType: NetworkModificationCopyType.MOVE } });
     }, [currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
@@ -1094,9 +1105,11 @@ const NetworkModificationNodeEditor = () => {
         });
         broadcastChannel.postMessage({
             modificationsUuids: selectedModificationsIds(),
-            copyType: NetworkModificationCopyType.COPY,
-            originStudyUuid: studyUuid,
-            originNodeUuid: currentNode?.id,
+            copyInfos: {
+                copyType: NetworkModificationCopyType.COPY,
+                originStudyUuid: studyUuid,
+                originNodeUuid: currentNode?.id,
+            },
         });
     }, [broadcastChannel, currentNode?.id, selectedModificationsIds, studyUuid]);
 
