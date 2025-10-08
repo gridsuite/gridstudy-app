@@ -39,6 +39,9 @@ type UseDiagramModelProps = {
     onDiagramAlreadyExists?: (diagramUuid: UUID) => void;
 };
 
+export type CreateDiagramFuncType = (diagramParams: DiagramParams) => void;
+export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;
+
 export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
     const { snackInfo, snackError } = useSnackMessage();
@@ -366,7 +369,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams]
     );
 
-    const createDiagram = useCallback(
+    const createDiagram: CreateDiagramFuncType = useCallback(
         (diagramParams: DiagramParams) => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
@@ -403,8 +406,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         ]
     );
 
-    const updateDiagramAndFetch = useCallback(
-        (diagramParams: DiagramParams, fetch: boolean) => {
+    const updateDiagram: UpdateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams, fetch: boolean = true) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance doesn't manage this type of diagram
                 return;
@@ -425,20 +428,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
             }
         },
         [diagrams, fetchDiagramSvg, filterDiagramParams]
-    );
-
-    const updateDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, true);
-        },
-        [updateDiagramAndFetch]
-    );
-
-    const updateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, false);
-        },
-        [updateDiagramAndFetch]
     );
 
     const removeDiagram = useCallback((id: UUID) => {
@@ -514,6 +503,5 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         removeDiagram,
         createDiagram,
         updateDiagram,
-        updateDiagramPositions,
     };
 };

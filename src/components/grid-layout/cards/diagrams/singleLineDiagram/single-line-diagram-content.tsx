@@ -38,22 +38,23 @@ import { setComputationStarting, setComputingStatus, setLogsFilter } from '../..
 import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { DiagramType } from '../diagram.type';
+import { DiagramType, SubstationDiagramParams, VoltageLevelDiagramParams } from '../diagram.type';
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import useComputationDebug from '../../../../../hooks/use-computation-debug';
+import { v4 } from 'uuid';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: UUID;
-    readonly svgType: DiagramType;
     readonly svg?: string;
     readonly svgMetadata?: SLDMetadata;
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
-    readonly diagramId: UUID;
     readonly visible: boolean;
-    readonly onNextVoltageLevelClick: (voltageLevelId: string, event: MouseEvent) => void;
+    readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
+    readonly onNextVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onNewVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
 }
 
 type BusMenuState = {
@@ -71,7 +72,16 @@ const defaultBusMenuState: BusMenuState = {
 };
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
-    const { diagramSizeSetter, studyUuid, visible, onNextVoltageLevelClick } = props;
+    const {
+        diagramSizeSetter,
+        studyUuid,
+        visible,
+        diagramParams,
+        onNextVoltageLevelDiagram,
+        onNewVoltageLevelDiagram,
+        showInSpreadsheet,
+        loadingState,
+    } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const svgRef = useRef<HTMLDivElement>();
@@ -97,7 +107,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!, currentRootNetworkUuid!);
+    ] = useOneBusShortcircuitAnalysisLoader(diagramParams.diagramUuid, currentNode?.id!, currentRootNetworkUuid!);
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -160,6 +170,27 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             display: false,
         });
     }, []);
+
+    const handleNextVoltageLevelClick = useCallback(
+        (vlId: string, event: MouseEvent): void => {
+            if (event.ctrlKey) {
+                onNewVoltageLevelDiagram?.({
+                    diagramUuid: v4() as UUID,
+                    type: DiagramType.VOLTAGE_LEVEL,
+                    voltageLevelId: vlId,
+                    name: '',
+                });
+            } else {
+                onNextVoltageLevelDiagram?.({
+                    ...diagramParams,
+                    type: DiagramType.VOLTAGE_LEVEL,
+                    voltageLevelId: vlId,
+                    name: '',
+                });
+            }
+        },
+        [diagramParams, onNewVoltageLevelDiagram, onNextVoltageLevelDiagram]
+    );
 
     // --- for running in debug mode --- //
     const subscribeDebug = useComputationDebug({
@@ -237,7 +268,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         studyUuid,
         disabled: false,
         onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
-            props.showInSpreadsheet({
+            showInSpreadsheet({
                 equipmentId: equipmentId,
                 equipmentType: equipmentType,
             });
@@ -288,24 +319,24 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     useLayoutEffect(() => {
         if (props.svg && svgRef.current) {
             const isReadyForInteraction =
-                !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !props.loadingState;
+                !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
                 props.svg, //svgContent
                 props.svgMetadata ?? null, //svg metadata
-                props.svgType, //svg type
+                diagramParams.type, //svg type
                 MIN_WIDTH, // minWidth
                 MIN_HEIGHT, // minHeight
 
                 // maxWidth
-                props.svgType === DiagramType.VOLTAGE_LEVEL ? MAX_WIDTH_VOLTAGE_LEVEL : MAX_WIDTH_SUBSTATION,
+                diagramParams.type === DiagramType.VOLTAGE_LEVEL ? MAX_WIDTH_VOLTAGE_LEVEL : MAX_WIDTH_SUBSTATION,
 
                 // maxHeight
-                props.svgType === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
+                diagramParams.type === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
 
                 // callback on the next voltage arrows
-                isReadyForInteraction ? onNextVoltageLevelClick : null,
+                isReadyForInteraction ? handleNextVoltageLevelClick : null,
 
                 // callback on the breakers
                 isReadyForInteraction && !isNodeReadOnly(currentNode) ? handleBreakerClick : null,
@@ -324,7 +355,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
+            diagramSizeSetter(
+                diagramParams.diagramUuid,
+                diagramParams.type,
+                diagramViewer.getWidth(),
+                diagramViewer.getHeight()
+            );
 
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker) {
@@ -337,7 +373,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             }
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
-            // the user's zoom and scoll state for the current render.
+            // the user's zoom and scroll state for the current render.
             if (
                 diagramViewerRef.current &&
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
@@ -359,27 +395,27 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         showEquipmentMenu,
         showBusMenu,
         enableDeveloperMode,
-        props.diagramId,
-        props.svgType,
+        diagramParams.diagramUuid,
+        diagramParams.type,
         theme,
         modificationInProgress,
-        props.loadingState,
+        loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
-        onNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
         computationStarting,
+        handleNextVoltageLevelClick,
     ]);
 
     // When the loading is finished, we always reset these two states
     useLayoutEffect(() => {
-        if (!props.loadingState) {
+        if (!loadingState) {
             setModificationInProgress(false);
             setLocallySwitchedBreaker(undefined);
         }
     }, [
-        props.loadingState, // the only one changing
+        loadingState, // the only one changing
         setModificationInProgress,
         setLocallySwitchedBreaker,
     ]);
@@ -391,7 +427,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     return (
         <>
             <Box height={2}>
-                {(props.loadingState || modificationInProgress || isDiagramRunningOneBusShortcircuitAnalysis) && (
+                {(loadingState || modificationInProgress || isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
                 )}
                 {oneBusShortcircuitAnalysisLoaderMessage}
