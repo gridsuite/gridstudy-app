@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, useCallback, useEffect, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
     ElementType,
+    FieldType,
     FloatInput,
     IntegerInput,
     Option,
@@ -30,7 +31,7 @@ import {
 } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { getIdOrValue } from '../../../../commons/utils';
-import { DataType, FieldOptionType } from './assignment.type';
+import { DataType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import GridItem from '../../../../commons/grid-item';
 import { useIntl } from 'react-intl';
@@ -51,25 +52,28 @@ const AssignmentForm: FC<AssignmentFormProps> = ({ name, index }) => {
         name: `${name}.${index}.${EDITED_FIELD}`,
     });
 
-    const equipmentType: EquipmentTypeOptionType = useWatch({
+    const watchEquipmentType: EquipmentTypeOptionType = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const equipmentFields: FieldOptionType[] = Object.assign([], EQUIPMENTS_FIELDS[equipmentType] ?? []);
 
-    const [predefinedProperties, setEquipmentType, setPropertyField] = usePredefinedProperties(
-        equipmentType,
-        watchEditedField
+    const equipmentFields = useMemo(
+        () => Object.values(EQUIPMENTS_FIELDS[watchEquipmentType]) ?? [],
+        [watchEquipmentType]
     );
 
-    // get predefined properties
-    useEffect(() => {
-        setEquipmentType(equipmentType);
-    }, [equipmentType, setEquipmentType]);
+    const networkEquipmentType = useMemo(() => {
+        if (
+            [
+                FieldType.OPERATIONAL_LIMITS_GROUP_1_WITH_PROPERTIES,
+                FieldType.OPERATIONAL_LIMITS_GROUP_2_WITH_PROPERTIES,
+            ].includes(watchEditedField)
+        ) {
+            return 'limitsGroup'; // found in the predefined properties metadata object
+        }
+        return watchEquipmentType;
+    }, [watchEquipmentType, watchEditedField]);
 
-    useEffect(() => {
-        setPropertyField(watchEditedField);
-    }, [watchEditedField, setPropertyField]);
+    const [predefinedProperties] = usePredefinedProperties(networkEquipmentType);
 
     const dataType = useMemo(() => {
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
@@ -141,11 +145,11 @@ const AssignmentForm: FC<AssignmentFormProps> = ({ name, index }) => {
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
-            equipmentTypes={[equipmentType]}
+            equipmentTypes={[watchEquipmentType]}
             elementType={ElementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
-            disable={!equipmentType}
+            disable={!watchEquipmentType}
         />
     );
 
