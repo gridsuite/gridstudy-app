@@ -894,6 +894,7 @@
     "SelectedOperationalLimitGroup": "Jeu de limites actif",
     "SelectedOperationalLimitGroups": "Jeux de limites actifs",
     "Applicability": "Applicable sur",
+    "UsedPropertyName": "Nom de propriété déjà utilisé",
 
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",

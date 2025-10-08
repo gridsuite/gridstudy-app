@@ -267,6 +267,7 @@ export interface OperationalLimitsGroup {
     id: string;
     name: string;
     applicability?: string;
+    limitsProperties?: LimitsProperty[];
     currentLimits: CurrentLimits;
     modificationType?: string | null; // only needed when the data is used for a branch modification
 }
@@ -282,11 +283,26 @@ export interface TemporaryLimit extends Limit {
     selected?: boolean;
 }
 
+export interface LimitsProperty {
+    name: string;
+    value: string;
+}
+
+// Structure from modification
 export interface CurrentLimits {
     id: string;
     applicability?: string;
     permanentLimit: number | null;
     temporaryLimits: TemporaryLimit[];
+}
+
+// Structure from map-server
+export interface CurrentLimitsData {
+    id: string;
+    applicability?: string;
+    limitsProperties?: LimitsProperty[];
+    permanentLimit: number | null;
+    temporaryLimits: TemporaryLimit[]; // TODO : not exactly the right type Limit is more convenient
 }
 
 export interface SubstationModificationInfo {
@@ -504,6 +520,39 @@ export interface ShuntCompensatorCreationInfo {
     connectionName: string | null;
     connectionPosition: string | null;
     terminalConnected: boolean | null;
+    properties: Property[] | null;
+}
+
+export interface ShuntCompensatorCreationInfo {}
+
+export interface LineFormInfos {
+    studyUuid: string;
+    nodeUuid: UUID;
+    lineId: string;
+    lineName: string | null;
+    r: number;
+    x: number;
+    g1: number;
+    b1: number;
+    g2: number;
+    b2: number;
+    voltageLevelId1: string;
+    busOrBusbarSectionId1: string;
+    voltageLevelId2: string;
+    busOrBusbarSectionId2: string;
+    limitsGroups: CurrentLimitsData[];
+    selectedLimitsGroup1: string;
+    selectedLimitsGroup2: string;
+    isUpdate: boolean;
+    modificationUuid: string;
+    connectionName1: string | null;
+    connectionDirection1: string | null;
+    connectionName2: string | null;
+    connectionDirection2: string | null;
+    connectionPosition1: string | null;
+    connectionPosition2: string | null;
+    connected1: boolean;
+    connected2: boolean;
     properties: Property[] | null;
 }
 

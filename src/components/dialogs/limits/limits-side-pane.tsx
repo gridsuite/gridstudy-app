@@ -7,16 +7,18 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    DndColumnType,
     ColumnNumeric,
     ColumnText,
     DndColumn,
+    DndColumnType,
     FloatInput,
-    SelectInput,
     Option,
+    SelectInput,
 } from '@gridsuite/commons-ui';
 import {
     APPLICABIlITY,
+    CURRENT_LIMITS,
+    LIMITS_PROPERTIES,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -33,11 +35,11 @@ import { TemporaryLimit } from '../../../services/network-modification-types';
 import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
-import GridSection from '../commons/grid-section';
 import { APPLICABILITY } from '../../network/constants';
+import { LimitsPropertiesSideStack } from './limits-properties-side-stack';
 
 export interface LimitsSidePaneProps {
-    limitsGroupFormName: string;
+    OplimitsGroupFormName: string;
     limitsGroupApplicabilityName?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
@@ -49,7 +51,7 @@ export interface LimitsSidePaneProps {
 }
 
 export function LimitsSidePane({
-    limitsGroupFormName,
+    OplimitsGroupFormName,
     limitsGroupApplicabilityName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
@@ -61,6 +63,10 @@ export function LimitsSidePane({
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
+    const limitsGroupFormName = useMemo(
+        (): string => `${OplimitsGroupFormName}.${CURRENT_LIMITS}`,
+        [OplimitsGroupFormName]
+    );
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -220,8 +226,8 @@ export function LimitsSidePane({
     return (
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
-                <>
-                    <GridSection title={selectedLimitSetName ?? ''} isLiteralText />
+                <Box>
+                    <LimitsPropertiesSideStack formName={`${OplimitsGroupFormName}.${LIMITS_PROPERTIES}`} />
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />
@@ -249,7 +255,7 @@ export function LimitsSidePane({
                             />
                         </Grid>
                     </Grid>
-                </>
+                </Box>
             )}
             <Box>
                 <LimitsChart

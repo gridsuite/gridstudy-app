@@ -6,13 +6,14 @@
  */
 
 import { UUID } from 'crypto';
-import { OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import { LimitsProperty, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import { Property } from '../../common/properties/property-utils';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     DELETION_MARK,
     ID,
+    LIMITS_PROPERTIES,
     NAME,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
@@ -80,6 +81,7 @@ export interface OperationalLimitsGroupFormInfos {
     // "ID" from the map server is stored as NAME in the form because of this
     [ID]: string;
     [APPLICABIlITY]?: string;
+    [LIMITS_PROPERTIES]?: LimitsProperty[];
     [NAME]: string;
     [CURRENT_LIMITS]: CurrentLimitsFormInfos;
 }

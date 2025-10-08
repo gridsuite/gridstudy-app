@@ -911,6 +911,7 @@
     "SelectedOperationalLimitGroup": "Active limit set",
     "SelectedOperationalLimitGroups": "Active limit sets",
     "Applicability": "Applicability",
+    "UsedPropertyName": "Property name already used",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
