@@ -294,7 +294,7 @@ export default function GeneratorModificationForm({
                 />
             </Grid>
 
-            {/* Short Circuit of start part */}
+            {/* Short Circuit part */}
             <GridSection title="ShortCircuit" />
             <ShortCircuitForm previousValues={generatorToModify?.generatorShortCircuit} />
 

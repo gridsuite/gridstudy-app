@@ -164,7 +164,7 @@ export default function GeneratorCreationForm({
                 <ActivePowerControlForm />
             </Grid>
 
-            {/* Short Circuit of start part */}
+            {/* Short Circuit part */}
             <GridSection title="ShortCircuit" />
             <Grid container spacing={2}>
                 <ShortCircuitForm />

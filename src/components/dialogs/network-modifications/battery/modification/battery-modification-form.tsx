@@ -181,7 +181,7 @@ export default function BatteryModificationForm({
                 />
             </Grid>
 
-            {/* Short Circuit of start part */}
+            {/* Short Circuit part */}
             <GridSection title="ShortCircuit" />
             <ShortCircuitForm previousValues={batteryToModify?.batteryShortCircuit} />
 

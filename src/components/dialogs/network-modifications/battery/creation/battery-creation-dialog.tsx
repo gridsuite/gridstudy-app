@@ -128,7 +128,6 @@ export default function BatteryCreationDialog({
 
     const { reset } = formMethods;
     const fromSearchCopyToFormValues = (battery: BatteryFormInfos) => {
-        console.log('fromSearchCopyToFormValues', battery);
         reset(
             {
                 [EQUIPMENT_ID]: battery.id + '(1)',
