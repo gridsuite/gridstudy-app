@@ -64,6 +64,7 @@ export interface OperationalLimitsGroupsTabsProps {
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
     isAModification: boolean;
     currentLimitsToModify: CurrentLimitsData[];
+    editable: boolean;
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
@@ -92,6 +93,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             indexSelectedLimitSet,
             checkLimitSetUnicity,
             isAModification,
+            editable,
             currentLimitsToModify,
         },
         ref
@@ -349,7 +351,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                                     handleOpenMenu(e, index)
                                                 }
                                                 // during the naming of a limit set no other limit set manipulation is allowed :
-                                                disabled={editingTabIndex !== -1}
+                                                disabled={!editable || editingTabIndex !== -1}
                                             >
                                                 <MenuIcon fontSize="small" />
                                             </IconButton>

@@ -5,13 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+
 import { LimitsProperty, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
+import type { UUID } from 'node:crypto';
 import { Property } from '../../common/properties/property-utils';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     DELETION_MARK,
+    ENABLE_OLG_MODIFICATION,
     ID,
     LIMITS_PROPERTIES,
     NAME,
@@ -74,6 +76,8 @@ export interface LimitsDialogFormInfos {
     [SELECTED_LIMITS_GROUP_1]: string | null;
     [SELECTED_LIMITS_GROUP_2]: string | null;
     [OPERATIONAL_LIMITS_GROUPS]: OperationalLimitsGroupFormInfos[];
+    // if true OperationalLimitsGroupFormInfos[] are used and sent to the back, otherwise they are ignored
+    [ENABLE_OLG_MODIFICATION]: boolean;
 }
 
 export interface OperationalLimitsGroupFormInfos {

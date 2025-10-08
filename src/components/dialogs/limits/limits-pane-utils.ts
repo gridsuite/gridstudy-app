@@ -10,6 +10,7 @@ import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     DELETION_MARK,
+    ENABLE_OLG_MODIFICATION,
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
@@ -103,6 +104,7 @@ const limitsValidationSchemaCreation = (id: string, isModification: boolean) => 
             }),
         [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
         [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
+        [ENABLE_OLG_MODIFICATION]: yup.boolean(),
     };
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
@@ -116,6 +118,7 @@ const limitsEmptyFormData = (id: string) => {
         [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
+        [ENABLE_OLG_MODIFICATION]: false,
     };
 
     return { [id]: limitsGroup };
@@ -150,6 +153,7 @@ export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroupFormInfos[] = [],
     selectedOperationalLimitsGroup1: string | null = null,
     selectedOperationalLimitsGroup2: string | null = null,
+    enableOLGModification?: boolean,
     id = LIMITS
 ) => {
     return {
@@ -157,6 +161,7 @@ export const getAllLimitsFormData = (
             [OPERATIONAL_LIMITS_GROUPS]: operationalLimitsGroups,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroup1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroup2,
+            [ENABLE_OLG_MODIFICATION]: !!enableOLGModification,
         },
     };
 };
@@ -223,6 +228,21 @@ export const updateTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
+export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[]) => {
+    return currentLimits?.map((currentLimit: CurrentLimits) => {
+        return {
+            id: currentLimit.id + currentLimit.applicability,
+            name: currentLimit.id,
+            applicability: currentLimit.applicability,
+            currentLimits: {
+                id: currentLimit.id,
+                permanentLimit: null,
+                temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
+            },
+        };
+    });
+};
+
 /**
  * extract data loaded from the map server and merge it with local data
  * in order to fill the operational limits groups modification interface
@@ -231,10 +251,10 @@ export const combineFormAndMapServerLimitsGroups = (
     formBranchModification: LineModificationFormInfos,
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
-    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification.limits.operationalLimitsGroups ?? [];
+    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];
 
     // updates limit values :
-    updatedOpLG.forEach((opLG: OperationalLimitsGroupFormInfos) => {
+    for (const opLG of updatedOpLG) {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
             (currentLimit: CurrentLimitsData) =>
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
@@ -245,7 +265,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
             );
         }
-    });
+    }
 
     // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
     mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimitsData) => {
@@ -325,6 +345,7 @@ export const addModificationTypeToOpLimitsGroups = (
             applicability: limitsGroupForm.applicability,
             currentLimits: currentLimits,
             modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
 };
