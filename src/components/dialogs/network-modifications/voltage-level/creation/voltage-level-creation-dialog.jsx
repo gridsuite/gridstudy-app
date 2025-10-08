@@ -9,6 +9,7 @@ import {
     convertInputValue,
     convertOutputValue,
     CustomFormProvider,
+    fetchDefaultCountry,
     FieldType,
     MODIFICATION_TYPES,
     useSnackMessage,
@@ -296,10 +297,18 @@ const VoltageLevelCreationDialog = ({
     const searchCopy = useFormSearchCopy(fromExternalDataToFormValues, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
 
     useEffect(() => {
+        fetchDefaultCountry().then((country) => {
+            if (country) {
+                reset({
+                    ...getValues(),
+                    [COUNTRY]: country,
+                });
+            }
+        });
         if (editData) {
             fromExternalDataToFormValues(editData, false);
         }
-    }, [fromExternalDataToFormValues, editData]);
+    }, [fromExternalDataToFormValues, editData, reset, getValues]);
 
     const onSubmit = useCallback(
         (voltageLevel) => {
