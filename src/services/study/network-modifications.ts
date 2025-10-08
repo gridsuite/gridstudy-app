@@ -17,7 +17,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     Assignment,
     AttachLineInfo,

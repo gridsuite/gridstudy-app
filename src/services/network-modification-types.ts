@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Property } from '../components/dialogs/network-modifications/common/properties/property-utils';
 import {
     DataType,
@@ -80,6 +80,8 @@ export interface BatteryModificationInfos {
     connectionPosition: AttributeModification<number> | null;
     terminalConnected: AttributeModification<boolean> | null;
     properties: Property[] | null;
+    directTransX: AttributeModification<number> | null;
+    stepUpTransformerX: AttributeModification<number> | null;
 }
 
 export interface LoadCreationInfo {
@@ -440,6 +442,8 @@ export interface BatteryCreationInfos {
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
+    directTransX: number | null;
+    stepUpTransformerX: number | null;
     participate: boolean | null;
     droop: number | null;
     maxQ: number | null;

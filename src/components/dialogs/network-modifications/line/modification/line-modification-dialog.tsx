@@ -98,7 +98,7 @@ import {
 } from '../../common/measurements/branch-active-reactive-power-form-utils';
 import { LineModificationDialogTab } from '../line-utils';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { BranchInfos } from '../../../../../services/study/network-map.type';
 import { useIntl } from 'react-intl';
