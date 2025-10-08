@@ -79,6 +79,8 @@ export interface BatteryModificationInfos {
     connectionPosition: AttributeModification<number> | null;
     terminalConnected: AttributeModification<boolean> | null;
     properties: Property[] | null;
+    directTransX: AttributeModification<number> | null;
+    stepUpTransformerX: AttributeModification<number> | null;
 }
 
 export interface LoadCreationInfo {
@@ -438,6 +440,8 @@ export interface BatteryCreationInfos {
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
+    directTransX: number | null;
+    stepUpTransformerX: number | null;
     participate: boolean | null;
     droop: number | null;
     maxQ: number | null;
