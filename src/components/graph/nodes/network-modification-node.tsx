@@ -19,10 +19,11 @@ import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
-import React, { useMemo, useState } from 'react';
+
 import { BuildButton } from './build-button';
 import { Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { forwardRef, useMemo } from 'react';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -83,6 +84,12 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
+const NodeBox = forwardRef<HTMLDivElement, any>(({ children, ...boxProps }, ref) => (
+    <Box ref={ref} {...boxProps}>
+        {children}
+    </Box>
+));
+
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.nodeSelectionForCopy);
@@ -90,15 +97,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const intl = useIntl();
-
-    // We manage tooltip state manually instead of relying on MUI's default behavior.
-    // Reason: when the child element (e.g. a button) handles click events,
-    // MUI's Tooltip does not automatically close and can remain stuck open.
-    // This explicit state handling prevents tooltip persistence.
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-
-    const displayTooltip = () => setTooltipOpen(true);
-    const hideTooltip = () => setTooltipOpen(false);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -148,25 +146,16 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
             )}
 
             <Tooltip
-                open={tooltipOpen}
                 title={tooltipContent}
                 disableFocusListener
                 disableTouchListener
-                onOpen={displayTooltip}
-                onClose={hideTooltip}
                 componentsProps={{
-                    tooltip: {
-                        sx: {
-                            maxWidth: '720px',
-                        },
-                    },
+                    tooltip: { sx: { maxWidth: '720px' } },
                 }}
                 followCursor
                 placement="right"
             >
-                <Box
-                    onMouseEnter={displayTooltip}
-                    onMouseLeave={hideTooltip}
+                <NodeBox
                     sx={[
                         isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
                         { opacity: getNodeOpacity() },
@@ -191,13 +180,12 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                                 studyUuid={studyUuid}
                                 currentRootNetworkUuid={currentRootNetworkUuid}
                                 nodeUuid={props.id}
-                                onClick={hideTooltip}
                             />
                         )}
                     </Box>
 
                     {props.data.localBuildStatus === BUILD_STATUS.BUILDING && <NodeOverlaySpinner />}
-                </Box>
+                </NodeBox>
             </Tooltip>
         </>
     );
