@@ -63,7 +63,6 @@ import {
     resetLogsFilter,
     resetLogsPagination,
     setModificationsInProgress,
-    setModificationsSelectionForCopy,
 } from '../../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -88,6 +87,7 @@ import {
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
     MenuSection,
+    NetworkModificationCopyInfo,
     NetworkModificationCopyType,
     NetworkModificationData,
 } from './network-modification-menu.type';
@@ -137,7 +137,7 @@ const isEditableModification = (modif: NetworkModificationMetadata) => {
     return !nonEditableModificationTypes.has(modif.type);
 };
 
-const noModificationsSelectionForCopy = {
+const emptyCopiedModificationsSelection = {
     modificationsUuids: [],
     copyInfos: null,
 };
@@ -164,10 +164,10 @@ const NetworkModificationNodeEditor = () => {
 
     const [selectedNetworkModifications, setSelectedNetworkModifications] = useState<NetworkModificationMetadata[]>([]);
 
-    const modificationsToCopy = useSelector(
-        (state: AppState) => state.modificationsSelectionForCopy.modificationsUuids
-    );
-    const modificationsToCopyInfos = useSelector((state: AppState) => state.modificationsSelectionForCopy.copyInfos);
+    const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
+    const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
+    const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
+    copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
     const [initialPosition, setInitialPosition] = useState<number | undefined>(undefined);
@@ -188,45 +188,26 @@ const NetworkModificationNodeEditor = () => {
 
     const isInitiatingCopyTab = useRef(false);
 
-    const dispatchModificationsSelectionForCopy = useCallback(
-        (
-            modificationsUuids: UUID[],
-            copyType: NetworkModificationCopyType,
-            originStudyUuid?: UUID,
-            originNodeUuid?: UUID
-        ) => {
-            dispatch(
-                setModificationsSelectionForCopy({
-                    modificationsUuids: modificationsUuids,
-                    copyInfos: { copyType: copyType, originStudyUuid: originStudyUuid, originNodeUuid: originNodeUuid },
-                })
-            );
-        },
-        [dispatch]
-    );
-
-    const dispatchNoModificationsSelectionForCopy = useCallback(() => {
-        dispatch(setModificationsSelectionForCopy(noModificationsSelectionForCopy));
-    }, [dispatch]);
-
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('modificationsCopyChannel');
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel');
             console.info(event.data);
             isInitiatingCopyTab.current = false;
-            if (JSON.stringify(noModificationsSelectionForCopy) === JSON.stringify(event.data)) {
-                dispatchNoModificationsSelectionForCopy();
+            if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
+                setCopiedModifications([]);
+                setCopyInfos(null);
+                // faire une fonction qui fait les 2 d'un coup ?
                 snackInfo({
                     messageId: 'CopiedNodeInvalidationMessage',
                 });
             } else {
-                dispatchModificationsSelectionForCopy(
-                    event.data.modificationsUuids,
-                    event.data.copyType,
-                    event.data.originStudyUuid,
-                    event.data.originNodeUuid
-                );
+                setCopiedModifications(event.data.modificationsUuids);
+                setCopyInfos({
+                    copyType: event.data.copyType,
+                    originStudyUuid: event.data.originStudyUuid,
+                    originNodeUuid: event.data.originNodeUuid,
+                });
             }
         };
         return broadcast;
@@ -236,7 +217,7 @@ const NetworkModificationNodeEditor = () => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', (event) => {
             if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(noModificationsSelectionForCopy);
+                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
             }
         });
         //broadcastChannel doesn't change
@@ -244,18 +225,21 @@ const NetworkModificationNodeEditor = () => {
 
     const cleanClipboard = useCallback(
         (showSnackInfo: boolean = true) => {
-            dispatchNoModificationsSelectionForCopy();
-            if (modificationsToCopy.length && showSnackInfo) {
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessage',
-                });
-            }
+            setCopyInfos(null);
+            setCopiedModifications((oldCopiedModifications) => {
+                if (oldCopiedModifications.length && showSnackInfo) {
+                    snackInfo({
+                        messageId: 'CopiedModificationInvalidationMessage',
+                    });
+                }
+                return [];
+            });
             if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(noModificationsSelectionForCopy);
+                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
                 isInitiatingCopyTab.current = false;
             }
         },
-        [dispatchNoModificationsSelectionForCopy, modificationsToCopy, snackInfo, broadcastChannel]
+        [snackInfo, broadcastChannel]
     );
 
     // TODO this is not complete.
@@ -263,7 +247,7 @@ const NetworkModificationNodeEditor = () => {
     // a modification on a public study which is in the clipboard.
     // We don't have precision on notifications to do this for now.
     const handleValidatedDialog = () => {
-        if (editData?.uuid && modificationsToCopy.includes(editData?.uuid)) {
+        if (editData?.uuid && copiedModifications.includes(editData?.uuid)) {
             cleanClipboard();
         }
     };
@@ -911,10 +895,8 @@ const NetworkModificationNodeEditor = () => {
             const studyUpdatedEventData = studyUpdatedForce.eventData;
 
             if (
-                modificationsToCopyInfos &&
-                studyUpdatedEventData.headers.nodes.some(
-                    (nodeId) => nodeId === modificationsToCopyInfos?.originNodeUuid
-                )
+                copyInfosRef.current &&
+                studyUpdatedEventData.headers.nodes.some((nodeId) => nodeId === copyInfosRef.current?.originNodeUuid)
             ) {
                 // Must clean modifications clipboard if the origin Node is removed
                 cleanClipboard();
@@ -969,7 +951,6 @@ const NetworkModificationNodeEditor = () => {
         studyUpdatedForce,
         cleanClipboard,
         dofetchExcludedNetworkModifications,
-        modificationsToCopyInfos,
     ]);
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] = useState(false);
@@ -1007,7 +988,7 @@ const NetworkModificationNodeEditor = () => {
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
-                    modificationsToCopy.some((aCopiedModification) =>
+                    copiedModifications.some((aCopiedModification) =>
                         selectedModificationsUuid.includes(aCopiedModification)
                     )
                 ) {
@@ -1020,7 +1001,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [selectedNetworkModifications, studyUuid, currentNode?.id, modificationsToCopy, cleanClipboard, snackError]);
+    }, [currentNode?.id, selectedNetworkModifications, snackError, studyUuid, cleanClipboard, copiedModifications]);
 
     const doCreateCompositeModificationsElements = ({
         name,
@@ -1095,36 +1076,36 @@ const NetworkModificationNodeEditor = () => {
 
     const doCutModifications = useCallback(() => {
         // moving modifications from one study to a different one is not allowed
-        dispatchModificationsSelectionForCopy(
-            selectedModificationsIds(),
-            NetworkModificationCopyType.MOVE,
-            studyUuid ?? undefined,
-            currentNode?.id
-        );
-    }, [currentNode?.id, dispatchModificationsSelectionForCopy, selectedModificationsIds, studyUuid]);
+        setCopiedModifications(selectedModificationsIds());
+        setCopyInfos({
+            copyType: NetworkModificationCopyType.MOVE,
+            originStudyUuid: studyUuid ?? undefined,
+            originNodeUuid: currentNode?.id,
+        });
+    }, [currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         isInitiatingCopyTab.current = true;
-        dispatchModificationsSelectionForCopy(
-            selectedModificationsIds(),
-            NetworkModificationCopyType.COPY,
-            studyUuid ?? undefined,
-            currentNode?.id
-        );
+        setCopiedModifications(selectedModificationsIds());
+        setCopyInfos({
+            copyType: NetworkModificationCopyType.COPY,
+            originStudyUuid: studyUuid ?? undefined,
+            originNodeUuid: currentNode?.id,
+        });
         broadcastChannel.postMessage({
             modificationsUuids: selectedModificationsIds(),
             copyType: NetworkModificationCopyType.COPY,
             originStudyUuid: studyUuid,
             originNodeUuid: currentNode?.id,
         });
-    }, [broadcastChannel, currentNode?.id, dispatchModificationsSelectionForCopy, selectedModificationsIds, studyUuid]);
+    }, [broadcastChannel, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doPasteModifications = useCallback(() => {
-        if (!modificationsToCopyInfos || !studyUuid || !currentNode?.id) {
+        if (!copyInfos || !studyUuid || !currentNode?.id) {
             return;
         }
-        if (modificationsToCopyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToCopy, modificationsToCopyInfos)
+        if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos)
                 .then(() => {
                     cleanClipboard(false);
                 })
@@ -1135,16 +1116,14 @@ const NetworkModificationNodeEditor = () => {
                     });
                 });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode.id, modificationsToCopy, modificationsToCopyInfos).catch(
-                (errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errDuplicateModificationMsg',
-                    });
-                }
-            );
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDuplicateModificationMsg',
+                });
+            });
         }
-    }, [modificationsToCopy, studyUuid, currentNode?.id, cleanClipboard, snackError, modificationsToCopyInfos]);
+    }, [copyInfos, studyUuid, currentNode?.id, copiedModifications, cleanClipboard, snackError]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
@@ -1314,14 +1293,8 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const isPasteButtonDisabled = useMemo(() => {
-        return (
-            !modificationsToCopy ||
-            modificationsToCopy.length <= 0 ||
-            isAnyNodeBuilding ||
-            mapDataLoading ||
-            !currentNode
-        );
-    }, [isAnyNodeBuilding, mapDataLoading, currentNode, modificationsToCopy]);
+        return copiedModifications.length <= 0 || isAnyNodeBuilding || mapDataLoading || !currentNode;
+    }, [copiedModifications.length, isAnyNodeBuilding, mapDataLoading, currentNode]);
 
     const isRestoreButtonDisabled = useMemo(() => {
         return modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress;
@@ -1397,8 +1370,8 @@ const NetworkModificationNodeEditor = () => {
                         <FormattedMessage
                             id={isPasteButtonDisabled ? 'paste' : 'NbModificationToPaste'}
                             values={{
-                                nb: modificationsToCopy.length,
-                                several: modificationsToCopy.length > 1 ? 's' : '',
+                                nb: copiedModifications.length,
+                                several: copiedModifications.length > 1 ? 's' : '',
                             }}
                         />
                     }
