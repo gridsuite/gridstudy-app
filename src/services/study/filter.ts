@@ -6,7 +6,7 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { backendFetchJson, getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';

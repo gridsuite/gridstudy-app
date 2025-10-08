@@ -7,7 +7,7 @@
 
 import { type RefObject, useCallback, useEffect, useMemo } from 'react';
 import type { FilterChangedEvent, GridOptions } from 'ag-grid-community';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useSelector } from 'react-redux';
 import { type AppState } from '../../../../../redux/reducer';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
