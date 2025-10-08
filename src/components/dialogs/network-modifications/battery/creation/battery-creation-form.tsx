@@ -24,6 +24,7 @@ import { ActivePowerControlForm } from '../../../active-power-control/active-pow
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import { SetPointsForm } from '../../../set-points/set-points-form';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface BatteryCreationFormProps {
     studyUuid: UUID;
@@ -88,9 +89,16 @@ export default function BatteryCreationForm({
 
             {/* Set points part */}
             <SetPointsForm />
+
+            {/* Active power control part */}
             <Grid container spacing={2} paddingTop={2}>
                 <ActivePowerControlForm />
             </Grid>
+
+            {/* Short Circuit part */}
+            <GridSection title="ShortCircuit" />
+            <ShortCircuitForm />
+
             <PropertiesForm networkElementType={'battery'} />
         </>
     );
