@@ -79,6 +79,7 @@ export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
+export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
 export const PERMANENT_LIMIT = 'permanentLimit';
@@ -376,32 +377,6 @@ export const ASSIGNMENTS = 'assignments';
 export const PROPERTY_NAME_FIELD = 'propertyName';
 export const VALUE_FIELD = 'value';
 
-// non evacuated energy
-export const GENERATION_STAGES_KIND = 'energySource';
-export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
-export const GENERATION_STAGES_PERCENT_MAXP_2 = 'percentMaxP2';
-export const GENERATION_STAGES_PERCENT_MAXP_3 = 'percentMaxP3';
-export const STAGES_DEFINITION_INDEX = 'stagesDefinitionIndex';
-export const PMAX_PERCENTS_INDEX = 'pMaxPercentsIndex';
-
-export const SENSITIVITY_THRESHOLD = 'sensitivityThreshold';
-export const GENERATORS_CAPPINGS_KIND = 'energySource';
-export const GENERATORS_CAPPINGS_FILTER = 'generators';
-
-export const BRANCHES = 'branches';
-export const MONITORED_BRANCHES_IST_N = 'istN';
-export const MONITORED_BRANCHES_LIMIT_NAME_N = 'limitNameN';
-export const MONITORED_BRANCHES_COEFF_N = 'nCoefficient';
-export const MONITORED_BRANCHES_IST_N_1 = 'istNm1';
-export const MONITORED_BRANCHES_LIMIT_NAME_N_1 = 'limitNameNm1';
-export const MONITORED_BRANCHES_COEFF_N_1 = 'nm1Coefficient';
-
-export const GENERATORS_CAPPINGS = 'generatorsCappings';
-export const STAGES_SELECTION = 'stagesSelection';
-export const STAGES_DEFINITION = 'stagesDefinition';
-export const STAGES_DEFINITION_GENERATORS = 'generators';
-export const PMAX_PERCENTS = 'pMaxPercents';
-export const GENERATORS_LIMIT = 'generatorsCappings';
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';

@@ -6,7 +6,7 @@
  */
 
 import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { ComputingType, EquipmentType, ExtendedEquipmentType, Parameter } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';

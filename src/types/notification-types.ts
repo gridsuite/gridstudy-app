@@ -6,7 +6,7 @@
  */
 import type { EQUIPMENT_TYPES as NetworkViewerEquipmentType } from '@powsybl/network-viewer';
 import type { ComputingType } from '@gridsuite/commons-ui';
-import type { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export enum NotificationType {
     // Study status
@@ -61,9 +61,6 @@ export enum NotificationType {
     SENSITIVITY_ANALYSIS_RESULT = 'sensitivityAnalysisResult',
     SENSITIVITY_ANALYSIS_FAILED = 'sensitivityAnalysis_failed',
     SENSITIVITY_ANALYSIS_STATUS = 'sensitivityAnalysis_status',
-    NON_EVACUATED_ENERGY_ANALYSIS_RESULT = 'nonEvacuatedEnergyResult',
-    NON_EVACUATED_ENERGY_ANALYSIS_FAILED = 'nonEvacuatedEnergy_failed',
-    NON_EVACUATED_ENERGY_ANALYSIS_STATUS = 'nonEvacuatedEnergy_status',
     SHORTCIRCUIT_ANALYSIS_RESULT = 'shortCircuitAnalysisResult',
     SHORTCIRCUIT_ANALYSIS_FAILED = 'shortCircuitAnalysis_failed',
     SHORTCIRCUIT_ANALYSIS_STATUS = 'shortCircuitAnalysis_status',
@@ -140,9 +137,6 @@ export const COMPUTATION_NOTIFIACTION_TYPES = [
     NotificationType.SENSITIVITY_ANALYSIS_RESULT,
     NotificationType.SENSITIVITY_ANALYSIS_FAILED,
     NotificationType.SENSITIVITY_ANALYSIS_STATUS,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED,
-    NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS,
     NotificationType.SHORTCIRCUIT_ANALYSIS_RESULT,
     NotificationType.SHORTCIRCUIT_ANALYSIS_FAILED,
     NotificationType.SHORTCIRCUIT_ANALYSIS_STATUS,
@@ -425,18 +419,6 @@ interface SensitivityAnalysisFailedEventDataHeaders extends ComputationFailedEve
 
 interface SensitivityAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
     updateType: NotificationType.SENSITIVITY_ANALYSIS_STATUS;
-}
-
-interface NonEvacuatedEnergyAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
-    updateType: NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_RESULT;
-}
-
-interface NonEvacuatedEnergyAnalysisFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
-    updateType: NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_FAILED;
-}
-
-interface NonEvacuatedEnergyAnalysisStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
-    updateType: NotificationType.NON_EVACUATED_ENERGY_ANALYSIS_STATUS;
 }
 
 interface ShortCircuitAnalysisResultEventDataHeaders extends ComputationResultEventDataHeaders {
@@ -756,21 +738,6 @@ export interface SensitivityAnalysisStatusEventData {
     payload: undefined;
 }
 
-export interface NonEvacuatedEnergyAnalysisResultEventData {
-    headers: NonEvacuatedEnergyAnalysisResultEventDataHeaders;
-    payload: undefined;
-}
-
-export interface NonEvacuatedEnergyAnalysisFailedEventData {
-    headers: NonEvacuatedEnergyAnalysisFailedEventDataHeaders;
-    payload: undefined;
-}
-
-export interface NonEvacuatedEnergyAnalysisStatusEventData {
-    headers: NonEvacuatedEnergyAnalysisStatusEventDataHeaders;
-    payload: undefined;
-}
-
 export interface ShortCircuitAnalysisResultEventData {
     headers: ShortCircuitAnalysisResultEventDataHeaders;
     payload: undefined;
@@ -1051,9 +1018,6 @@ export type ComputationEventData =
     | SensitivityAnalysisResultEventData
     | SensitivityAnalysisFailedEventData
     | SensitivityAnalysisStatusEventData
-    | NonEvacuatedEnergyAnalysisResultEventData
-    | NonEvacuatedEnergyAnalysisFailedEventData
-    | NonEvacuatedEnergyAnalysisStatusEventData
     | ShortCircuitAnalysisResultEventData
     | ShortCircuitAnalysisFailedEventData
     | ShortCircuitAnalysisStatusEventData
@@ -1142,9 +1106,6 @@ export type StudyUpdateEventData =
     | SensitivityAnalysisResultEventData
     | SensitivityAnalysisFailedEventData
     | SensitivityAnalysisStatusEventData
-    | NonEvacuatedEnergyAnalysisResultEventData
-    | NonEvacuatedEnergyAnalysisFailedEventData
-    | NonEvacuatedEnergyAnalysisStatusEventData
     | ShortCircuitAnalysisResultEventData
     | ShortCircuitAnalysisFailedEventData
     | ShortCircuitAnalysisStatusEventData

@@ -7,17 +7,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    deletedOrRenamedNodes,
-    networkModificationHandleSubtree,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
-    reorderNetworkModificationTreeNodes,
-    resetLogsFilter,
-    resetLogsPagination,
+    networkModificationHandleSubtree,
     setNodeSelectionForCopy,
+    resetLogsFilter,
+    reorderNetworkModificationTreeNodes,
+    resetLogsPagination,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -29,15 +28,15 @@ import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
-    createNodeSequence,
     createTreeNode,
     cutSubtree,
     cutTreeNode,
+    stashSubtree,
+    stashTreeNode,
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
-    stashSubtree,
-    stashTreeNode,
+    createNodeSequence,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
@@ -277,7 +276,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     resetNodeClipboard();
                 }
                 dispatch(networkModificationTreeNodesRemoved(studyUpdatedForce.eventData.headers.nodes));
-                dispatch(deletedOrRenamedNodes(studyUpdatedForce.eventData.headers.nodes));
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
                 });

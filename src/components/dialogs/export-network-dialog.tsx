@@ -28,7 +28,7 @@ import { CancelButton, fetchDirectoryElementPath, FlatParameters, useSnackMessag
 import { ExportFormatProperties, getAvailableExportFormats } from '../../services/study';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { useParameterState } from './parameters/use-parameters-state';
 import { AppState } from '../../redux/reducer';

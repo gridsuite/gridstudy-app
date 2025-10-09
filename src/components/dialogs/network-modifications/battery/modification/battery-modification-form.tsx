@@ -22,11 +22,12 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import { ActivePowerControlForm } from '../../../active-power-control/active-power-control-form';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { BatteryCreationInfos } from '../../../../../services/network-modification-types';
 import { BatteryFormInfos } from '../battery-dialog.type';
 import { CurrentTreeNode } from '../../../../graph/tree-node.type';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import ShortCircuitForm from '../../../short-circuit/short-circuit-form';
 
 export interface BatteryModificationFormProps {
     studyUuid: UUID;
@@ -179,6 +180,11 @@ export default function BatteryModificationForm({
                     previousValues={batteryToModify?.activePowerControl}
                 />
             </Grid>
+
+            {/* Short Circuit part */}
+            <GridSection title="ShortCircuit" />
+            <ShortCircuitForm previousValues={batteryToModify?.batteryShortCircuit} />
+
             <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
