@@ -43,8 +43,8 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
-import { createDiagramConfig, updateDiagramConfig, DiagramConfigPosition } from 'services/explore';
-import { DiagramType } from '../diagram.type';
+import { createDiagramConfig, updateDiagramConfig } from 'services/explore';
+import { DiagramType, NetworkAreaDiagramParams } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
@@ -54,45 +54,21 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 
 type NetworkAreaDiagramContentProps = {
+    readonly diagramParams: NetworkAreaDiagramParams;
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
-    readonly svgType: DiagramType;
     readonly svg?: string;
     readonly svgMetadata?: DiagramMetadata;
     readonly svgScalingFactor?: number;
     readonly svgVoltageLevels?: string[];
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
-    readonly diagramId: UUID;
     readonly visible: boolean;
-    readonly isEditNadMode: boolean;
-    readonly onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
-    readonly onExpandVoltageLevel: (vlId: string) => void;
-    readonly onExpandAllVoltageLevels: () => void;
-    readonly onAddVoltageLevel: (vlId: string) => void;
-    readonly onHideVoltageLevel: (vlId: string) => void;
-    readonly onMoveNode: (vlId: string, x: number, y: number) => void;
-    readonly onMoveTextnode: (vlId: string, x: number, y: number) => void;
-    readonly customPositions: DiagramConfigPosition[];
     readonly onVoltageLevelClick: (vlId: string) => void;
+    readonly onNadChange: (nadParams: NetworkAreaDiagramParams, fetch?: boolean) => void;
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const {
-        diagramSizeSetter,
-        visible,
-        isEditNadMode,
-        onToggleEditNadMode,
-        onLoadNad,
-        diagramId,
-        onExpandVoltageLevel,
-        onExpandAllVoltageLevels,
-        onAddVoltageLevel,
-        onHideVoltageLevel,
-        onVoltageLevelClick,
-        onMoveNode,
-        onMoveTextnode,
-    } = props;
+    const { diagramSizeSetter, visible, diagramParams, onVoltageLevelClick, onNadChange } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
@@ -108,42 +84,13 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const [shouldDisplayMenu, setShouldDisplayMenu] = useState(false);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
-
-    const onMoveNodeCallback = useCallback(
-        (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
-            if (onMoveNode) {
-                onMoveNode(equipmentId, x, y);
-            }
-        },
-        [onMoveNode]
-    );
-
-    const onMoveTextNodeCallback = useCallback(
-        (
-            equipmentId: string,
-            vlNodeId: string,
-            textNodeId: string,
-            shiftX: number,
-            shiftY: number,
-            shiftXOrig: number,
-            shiftYOrig: number,
-            connectionShiftX: number,
-            connectionShiftY: number,
-            connectionShiftXOrig: number,
-            connectionShiftYOrig: number
-        ) => {
-            if (onMoveTextnode) {
-                onMoveTextnode(equipmentId, shiftX, shiftY);
-            }
-        },
-        [onMoveTextnode]
-    );
+    const [isEditNadMode, setIsEditNadMode] = useState<boolean>(false);
 
     const handleToggleShowLabels = useCallback(() => {
         setShowLabels((oldShowLabels) => !oldShowLabels);
     }, []);
 
-    const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
+    const handleToggleHover: OnToggleNadHoverCallbackType = useCallback(
         (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
             // Do not show the hover in edit mode
             if (isEditNadMode) {
@@ -172,7 +119,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [setShouldDisplayTooltip, setAnchorPosition, isEditNadMode]
     );
 
-    const OnLeftClickCallback: OnSelectNodeCallbackType = useCallback(
+    const handleNodeLeftClick: OnSelectNodeCallbackType = useCallback(
         (equipmentId, nodeId, mousePosition) => {
             if (mousePosition && !props.loadingState) {
                 if (isEditNadMode) {
@@ -325,6 +272,103 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [isEditNadMode, openEquipmentMenu, currentNode?.id, currentRootNetworkUuid, studyUuid, snackError]
     );
 
+    const handleAddVoltageLevel = useCallback(
+        (voltageLevelIdToAdd: string) => {
+            if (diagramParams.voltageLevelIds.includes(voltageLevelIdToAdd)) {
+                return;
+            }
+            onNadChange({
+                ...diagramParams,
+                voltageLevelIds: [...diagramParams.voltageLevelIds, voltageLevelIdToAdd],
+                voltageLevelToOmitIds: diagramParams.voltageLevelToOmitIds.filter((id) => id !== voltageLevelIdToAdd),
+            });
+        },
+        [diagramParams, onNadChange]
+    );
+
+    const handleExpandVoltageLevelId = useCallback(
+        (voltageLevelIdToExpand: string) => {
+            onNadChange({
+                ...diagramParams,
+                voltageLevelIds: diagramParams.voltageLevelIds.filter((id) => id !== voltageLevelIdToExpand),
+                voltageLevelToExpandIds: [...diagramParams.voltageLevelToExpandIds, voltageLevelIdToExpand],
+            });
+        },
+        [diagramParams, onNadChange]
+    );
+
+    const handleExpandAllVoltageLevels = useCallback(() => {
+        onNadChange({
+            ...diagramParams,
+            voltageLevelIds: [],
+            voltageLevelToExpandIds: [...diagramParams.voltageLevelIds],
+        });
+    }, [diagramParams, onNadChange]);
+
+    const handleHideVoltageLevelId = useCallback(
+        (voltageLevelIdToOmit: string) => {
+            onNadChange({
+                ...diagramParams,
+                voltageLevelIds: diagramParams.voltageLevelIds.filter((id) => id !== voltageLevelIdToOmit),
+                voltageLevelToOmitIds: [...diagramParams.voltageLevelToOmitIds, voltageLevelIdToOmit],
+            });
+        },
+        [diagramParams, onNadChange]
+    );
+
+    const handleMoveNode = useCallback(
+        (equipmentId: string, nodeId: string, x: number, y: number) => {
+            const updatedPositions = diagramParams.positions.map((position) =>
+                position.voltageLevelId === equipmentId ? { ...position, xPosition: x, yPosition: y } : position
+            );
+
+            onNadChange(
+                {
+                    ...diagramParams,
+                    positions: updatedPositions,
+                },
+                false
+            );
+        },
+        [diagramParams, onNadChange]
+    );
+
+    const handleMoveTextnode = useCallback(
+        (equipmentId: string, vlNodeId: string, textNodeId: string, shiftX: number, shiftY: number) => {
+            const updatedPositions = diagramParams.positions.map((position) =>
+                position.voltageLevelId === equipmentId
+                    ? { ...position, xLabelPosition: shiftX, yLabelPosition: shiftY }
+                    : position
+            );
+
+            onNadChange(
+                {
+                    ...diagramParams,
+                    positions: updatedPositions,
+                },
+                false
+            );
+        },
+        [diagramParams, onNadChange]
+    );
+
+    const handleReplaceNad = useCallback(
+        (elementUuid: UUID, elementType: ElementType, elementName: string) => {
+            onNadChange({
+                ...diagramParams,
+                name: elementName,
+                nadConfigUuid: elementType === ElementType.DIAGRAM_CONFIG ? elementUuid : undefined,
+                filterUuid: elementType === ElementType.FILTER ? elementUuid : undefined,
+                initializationNadConfigUuid: undefined,
+                voltageLevelIds: [],
+                voltageLevelToExpandIds: [],
+                voltageLevelToOmitIds: [],
+                positions: [],
+            });
+        },
+        [diagramParams, onNadChange]
+    );
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -340,10 +384,10 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 enableLevelOfDetail: true,
                 zoomLevels: NAD_ZOOM_LEVELS,
                 addButtons: false,
-                onMoveNodeCallback: onMoveNodeCallback,
-                onMoveTextNodeCallback: onMoveTextNodeCallback,
-                onSelectNodeCallback: OnLeftClickCallback,
-                onToggleHoverCallback: OnToggleHoverCallback,
+                onMoveNodeCallback: handleMoveNode,
+                onMoveTextNodeCallback: handleMoveTextnode,
+                onSelectNodeCallback: handleNodeLeftClick,
+                onToggleHoverCallback: handleToggleHover,
                 onRightClickCallback: showEquipmentMenu,
                 initialViewBox: diagramViewerRef?.current?.getViewBox(),
             };
@@ -355,11 +399,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
+            diagramSizeSetter(
+                diagramParams.diagramUuid,
+                diagramParams.type,
+                diagramViewer.getWidth(),
+                diagramViewer.getHeight()
+            );
 
             // Repositioning the nodes with specified positions
-            if (props.customPositions.length > 0) {
-                props.customPositions.forEach((position) => {
+            if (diagramParams.positions.length > 0) {
+                diagramParams.positions.forEach((position) => {
                     if (position.xPosition !== undefined && position.yPosition !== undefined) {
                         diagramViewer.moveNodeToCoordinates(
                             position.voltageLevelId,
@@ -372,19 +421,20 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        props.svgType,
+        diagramParams.type,
         props.svg,
         props.svgMetadata,
-        props.customPositions,
+        diagramParams.positions,
         diagramSizeSetter,
-        onMoveNodeCallback,
-        OnToggleHoverCallback,
-        onMoveTextNodeCallback,
         isEditNadMode,
-        diagramId,
-        OnLeftClickCallback,
+        diagramParams.diagramUuid,
         showEquipmentMenu,
+        handleMoveNode,
+        handleMoveTextnode,
+        handleNodeLeftClick,
+        handleToggleHover,
     ]);
+
     const closeMenu = () => {
         setMenuAnchorPosition(null);
         setShouldDisplayMenu(false);
@@ -411,8 +461,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     open={!!menuAnchorPosition}
                     anchorPosition={menuAnchorPosition}
                     onClose={closeMenu}
-                    onExpandItem={onExpandVoltageLevel}
-                    onHideItem={onHideVoltageLevel}
+                    onExpandItem={handleExpandVoltageLevelId}
+                    onHideItem={handleHideVoltageLevelId}
                     selectedItemId={selectedVoltageLevelId}
                 />
             )}
@@ -429,11 +479,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             <DiagramControls
                 onSave={handleSaveNadConfig}
                 onUpdate={handleUpdateNadConfig}
-                onLoad={onLoadNad}
+                onLoad={handleReplaceNad}
                 isEditNadMode={isEditNadMode}
-                onToggleEditNadMode={onToggleEditNadMode}
-                onExpandAllVoltageLevels={onExpandAllVoltageLevels}
-                onAddVoltageLevel={onAddVoltageLevel}
+                onToggleEditNadMode={setIsEditNadMode}
+                onExpandAllVoltageLevels={handleExpandAllVoltageLevels}
+                onAddVoltageLevel={handleAddVoltageLevel}
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
                 isDiagramLoading={props.loadingState}

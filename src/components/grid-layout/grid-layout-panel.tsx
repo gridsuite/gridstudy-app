@@ -205,7 +205,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setDisableStoreButton(false);
     }, []);
 
-    const removeLayoutItem = useCallback((cardUuid: UUID | string) => {
+    const removeLayoutItem = useCallback((cardUuid: UUID) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => {
             const newLayouts: Layouts = {};
@@ -240,35 +240,19 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setIsMapOpen(false);
     }, []);
 
-    const {
-        diagrams,
-        loadingDiagrams,
-        diagramErrors,
-        globalError,
-        removeDiagram,
-        createDiagram,
-        updateDiagram,
-        updateDiagramPositions,
-    } = useDiagramModel({
-        diagramTypes: diagramTypes,
-        onAddDiagram: addLayoutItem,
-        onDiagramAlreadyExists,
-    });
+    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
+        useDiagramModel({
+            diagramTypes: diagramTypes,
+            onAddDiagram: addLayoutItem,
+            onDiagramAlreadyExists,
+        });
 
     const handleUpdateDiagram = useCallback(
-        (diagram: Diagram) => {
+        (diagram: DiagramParams, fetch?: boolean) => {
             setDisableStoreButton(false);
-            updateDiagram(diagram);
+            updateDiagram(diagram, fetch);
         },
         [updateDiagram]
-    );
-
-    const handleUpdateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            setDisableStoreButton(false);
-            updateDiagramPositions(diagramParams);
-        },
-        [updateDiagramPositions]
     );
 
     const onRemoveCard = useCallback(
@@ -534,7 +518,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             showInSpreadsheet={showInSpreadsheet}
                             createDiagram={createDiagram}
                             updateDiagram={handleUpdateDiagram}
-                            updateDiagramPositions={handleUpdateDiagramPositions}
                         />
                     );
                 })}
