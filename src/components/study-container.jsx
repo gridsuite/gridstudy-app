@@ -46,7 +46,7 @@ import {
     RootNetworkIndexationStatus,
 } from 'types/notification-types';
 import { useDiagramGridLayout } from 'hooks/use-diagram-grid-layout';
-import useExportNotification from '../hooks/use-export-notification.ts';
+import useExportNotification from '../hooks/use-export-notification.js';
 
 function useStudy(studyUuidRequest) {
     const dispatch = useDispatch();

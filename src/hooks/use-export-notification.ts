@@ -53,7 +53,7 @@ export function unsetExportSubscription(identifier: string): void {
 
 export default function useExportNotification() {
     const intl = useIntl();
-    const { snackWarning, snackInfo } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const { downloadExportNetworkFile } = useExportDownload();
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
@@ -86,7 +86,7 @@ export default function useExportNotification() {
                     unsetExportSubscription(exportIdentifierNotif);
 
                     if (error) {
-                        snackWarning({
+                        snackError({
                             messageTxt: error,
                         });
                     } else {
@@ -99,7 +99,7 @@ export default function useExportNotification() {
                 }
             }
         },
-        [userId, snackWarning, downloadExportNetworkFile, snackInfo, intl]
+        [userId, snackError, downloadExportNetworkFile, snackInfo, intl]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleExportNotification });

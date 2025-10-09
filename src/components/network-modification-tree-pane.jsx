@@ -44,6 +44,7 @@ import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
 import useExportSubscription from '../hooks/use-export-subscription';
+import { exportNetworkFile } from '../services/study/network.js';
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
@@ -58,7 +59,6 @@ export const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
-    const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
     const [nodesToRestore, setNodesToRestore] = useState([]);
 
@@ -126,7 +126,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const { subscribeExport } = useExportSubscription({
         studyUuid: studyUuid,
-        nodeUuid: activeNode?.id,
         rootNetworkUuid: currentRootNetworkUuid,
     });
 
@@ -468,11 +467,14 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
-    const handleClickExportNodeNetwork = (url, selectedFormat, fileName) => {
-        subscribeExport(selectedFormat, fileName);
-        window.open(url, DownloadIframe);
-        setOpenExportDialog(false);
-    };
+    const handleClickExportNodeNetwork = useCallback(
+        (nodeUuid, params, selectedFormat, fileName) => {
+            subscribeExport(nodeUuid, selectedFormat, fileName);
+            exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName).then();
+            setOpenExportDialog(false);
+        },
+        [studyUuid, currentRootNetworkUuid, subscribeExport]
+    );
 
     const handleExportCaseOnNode = () => {
         setOpenExportDialog(true);
@@ -593,7 +595,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportNodeNetwork}
                     studyUuid={studyUuid}
-                    rootNetworkUuid={currentRootNetworkUuid}
                     nodeUuid={activeNode?.id}
                 />
             )}
@@ -605,7 +606,6 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
                     anchorNodeId={activeNode?.id}
                 />
             )}
-            <iframe id={DownloadIframe} name={DownloadIframe} title={DownloadIframe} style={{ display: 'none' }} />
         </>
     );
 };
