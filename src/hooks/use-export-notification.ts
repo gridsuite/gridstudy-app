@@ -6,12 +6,12 @@
  */
 import { UUID } from 'crypto';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { NotificationsUrlKeys, useNotificationsListener, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { useExportDownload } from './use-export-download';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import { ExportNetworkEventData } from '../types/notification-types';
+import { isExportNetworkNotification } from '../types/notification-types';
 
 export function buildExportIdentifier({
     studyUuid,
@@ -51,53 +51,56 @@ export function unsetExportSubscription(identifier: string): void {
     }
 }
 
-export default function useExportNotificationHandler() {
+export default function useExportNotification() {
     const intl = useIntl();
     const { snackWarning, snackInfo } = useSnackMessage();
     const { downloadExportNetworkFile } = useExportDownload();
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const handleExportNotification = useCallback(
-        (eventData: ExportNetworkEventData) => {
-            const {
-                studyUuid,
-                node,
-                rootNetworkUuid,
-                format,
-                userId: useId,
-                exportUuid,
-                fileName,
-                error,
-            } = eventData.headers;
+        (event: MessageEvent<string>) => {
+            const eventData = JSON.parse(event.data);
+            if (isExportNetworkNotification(eventData)) {
+                const {
+                    studyUuid,
+                    node,
+                    rootNetworkUuid,
+                    format,
+                    userId: useId,
+                    exportUuid,
+                    fileName,
+                    error,
+                } = eventData.headers;
 
-            const exportIdentifierNotif = buildExportIdentifier({
-                studyUuid: studyUuid,
-                nodeUuid: node,
-                rootNetworkUuid: rootNetworkUuid,
-                format,
-                fileName,
-            });
+                const exportIdentifierNotif = buildExportIdentifier({
+                    studyUuid: studyUuid,
+                    nodeUuid: node,
+                    rootNetworkUuid: rootNetworkUuid,
+                    format,
+                    fileName,
+                });
 
-            const isSubscribed = isExportSubscribed(exportIdentifierNotif);
+                const isSubscribed = isExportSubscribed(exportIdentifierNotif);
 
-            if (isSubscribed && useId === userId) {
-                unsetExportSubscription(exportIdentifierNotif);
+                if (isSubscribed && useId === userId) {
+                    unsetExportSubscription(exportIdentifierNotif);
 
-                if (error) {
-                    snackWarning({
-                        messageTxt: error,
-                    });
-                } else {
-                    downloadExportNetworkFile(exportUuid);
-                    snackInfo({
-                        headerTxt: intl.formatMessage({ id: 'exportNetwork' }),
-                        messageTxt: intl.formatMessage({ id: 'export.message.downloadStarted' }, { fileName }),
-                    });
+                    if (error) {
+                        snackWarning({
+                            messageTxt: error,
+                        });
+                    } else {
+                        downloadExportNetworkFile(exportUuid);
+                        snackInfo({
+                            headerTxt: intl.formatMessage({ id: 'exportNetwork' }),
+                            messageTxt: intl.formatMessage({ id: 'export.message.downloadStarted' }, { fileName }),
+                        });
+                    }
                 }
             }
         },
         [userId, snackWarning, downloadExportNetworkFile, snackInfo, intl]
     );
 
-    return { handleExportNotification };
+    useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleExportNotification });
 }

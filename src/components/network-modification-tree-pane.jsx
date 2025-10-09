@@ -43,7 +43,7 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
 import { CopyType } from './network-modification.type';
 import { NodeSequenceType, NotificationType, PENDING_MODIFICATION_NOTIFICATION_TYPES } from 'types/notification-types';
-import useExportSubscription from '../hooks/use-export-subscription.js';
+import useExportSubscription from '../hooks/use-export-subscription';
 
 const noNodeSelectionForCopy = {
     sourceStudyUuid: null,
@@ -126,7 +126,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const { subscribeExport } = useExportSubscription({
         studyUuid: studyUuid,
-        nodeUuid: currentNode?.id,
+        nodeUuid: activeNode?.id,
         rootNetworkUuid: currentRootNetworkUuid,
     });
 
