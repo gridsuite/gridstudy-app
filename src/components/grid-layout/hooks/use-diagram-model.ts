@@ -404,7 +404,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const updateDiagramAndFetch = useCallback(
-        (diagramParams: DiagramParams, fetch: boolean, keepSvg: boolean) => {
+        (diagramParams: DiagramParams, fetch: boolean) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance doesn't manage this type of diagram
                 return;
@@ -419,9 +419,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 ...newDiagrams[diagramParams.diagramUuid],
                 ...diagramParams,
             };
-            if (!keepSvg) {
-                newDiagrams[diagramParams.diagramUuid].svg = null;
-            }
             setDiagrams(newDiagrams);
             if (fetch) {
                 fetchDiagramSvg(newDiagrams[diagramParams.diagramUuid]);
@@ -430,25 +427,16 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams, fetchDiagramSvg, filterDiagramParams]
     );
 
-    const replaceDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
-            // We ditch the existing NAD's SVG to prevent re-renders until the new NAD is ready
-            updateDiagramAndFetch(diagramParams, true, false);
-        },
-        [updateDiagramAndFetch]
-    );
-
     const updateDiagram = useCallback(
         (diagramParams: DiagramParams) => {
-            updateDiagramAndFetch(diagramParams, true, true);
+            return updateDiagramAndFetch(diagramParams, true);
         },
         [updateDiagramAndFetch]
     );
 
     const updateDiagramPositions = useCallback(
         (diagramParams: DiagramParams) => {
-            // This is not necessary to fetch again the NAD as we only update the node's positions locally
-            updateDiagramAndFetch(diagramParams, false, true);
+            return updateDiagramAndFetch(diagramParams, false);
         },
         [updateDiagramAndFetch]
     );
@@ -526,7 +514,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         removeDiagram,
         createDiagram,
         updateDiagram,
-        replaceDiagram,
         updateDiagramPositions,
     };
 };

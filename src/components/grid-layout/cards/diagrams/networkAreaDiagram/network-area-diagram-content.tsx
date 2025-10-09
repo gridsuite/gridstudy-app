@@ -66,7 +66,7 @@ type NetworkAreaDiagramContentProps = {
     readonly visible: boolean;
     readonly isEditNadMode: boolean;
     readonly onToggleEditNadMode?: (isEditMode: boolean) => void;
-    readonly onReplaceNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
+    readonly onLoadNad: (elementUuid: UUID, elementType: ElementType, elementName: string) => void;
     readonly onExpandVoltageLevel: (vlId: string) => void;
     readonly onExpandAllVoltageLevels: () => void;
     readonly onAddVoltageLevel: (vlId: string) => void;
@@ -83,7 +83,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         visible,
         isEditNadMode,
         onToggleEditNadMode,
-        onReplaceNad,
+        onLoadNad,
         diagramId,
         onExpandVoltageLevel,
         onExpandAllVoltageLevels,
@@ -118,14 +118,14 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [onMoveNode]
     );
 
-    const handleReplaceNad = useCallback(
+    const handleLoadNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
             // Since we want to replace the NAD with a new one, we ditch the previous diagram
             // viewer reference because we do not want to use an obsolete viewbox on the new NAD.
             diagramViewerRef.current = null;
-            onReplaceNad(elementUuid, elementType, elementName);
+            onLoadNad(elementUuid, elementType, elementName);
         },
-        [onReplaceNad]
+        [onLoadNad]
     );
 
     const onMoveTextNodeCallback = useCallback(
@@ -441,7 +441,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             <DiagramControls
                 onSave={handleSaveNadConfig}
                 onUpdate={handleUpdateNadConfig}
-                onLoad={handleReplaceNad}
+                onLoad={handleLoadNad}
                 isEditNadMode={isEditNadMode}
                 onToggleEditNadMode={onToggleEditNadMode}
                 onExpandAllVoltageLevels={onExpandAllVoltageLevels}
