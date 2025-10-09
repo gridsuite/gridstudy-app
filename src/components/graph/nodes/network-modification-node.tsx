@@ -152,7 +152,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 componentsProps={{
                     tooltip: { sx: { maxWidth: '720px' } },
                 }}
-                followCursor
+                arrow
                 placement="right"
             >
                 <NodeBox
