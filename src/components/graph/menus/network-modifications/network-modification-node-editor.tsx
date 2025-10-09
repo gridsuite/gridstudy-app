@@ -206,7 +206,6 @@ const NetworkModificationNodeEditor = () => {
                 setCopyInfos(null);
             } else {
                 setCopiedModifications(event.data.modificationsUuids);
-                console.log(event.data);
                 setCopyInfos({
                     copyType: event.data.copyInfos.copyType,
                     originStudyUuid: event.data.copyInfos.originStudyUuid,
