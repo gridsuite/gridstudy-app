@@ -116,7 +116,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 <Box>{props.data.label}</Box>
                 <Box>
                     {intl.formatMessage({ id: 'nodeStatus' })} :{' '}
-                    {props.data
+                    {props.data.globalBuildStatus
                         ? intl.formatMessage({ id: props.data.globalBuildStatus })
                         : intl.formatMessage({ id: 'NOT_BUILT' })}
                 </Box>
