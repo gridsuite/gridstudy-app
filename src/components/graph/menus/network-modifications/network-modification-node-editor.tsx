@@ -204,8 +204,6 @@ const NetworkModificationNodeEditor = () => {
                     return [];
                 });
                 setCopyInfos(null);
-            } else if (event.data.copyType === NetworkModificationCopyType.MOVE) {
-                snackInfo({ messageId: 'CutModificationMessageFromAnotherStudy' });
             } else {
                 setCopiedModifications(event.data.modificationsUuids);
                 console.log(event.data);
@@ -1090,9 +1088,6 @@ const NetworkModificationNodeEditor = () => {
             originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
-        // TO DO
-        // we don't send the copied modifications to broadcast because moving modifications from one study to a different one is not allowed
-        //broadcastChannel.postMessage({ copyInfos: { copyType: NetworkModificationCopyType.MOVE } });
     }, [currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
