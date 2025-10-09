@@ -8,37 +8,7 @@ import { UUID } from 'crypto';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
-
-export function buildExportIdentifier({
-    studyUuid,
-    nodeUuid,
-    rootNetworkUuid,
-    format,
-    fileName,
-}: {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    rootNetworkUuid: UUID;
-    format: string;
-    fileName: string;
-}) {
-    return `${studyUuid}|${rootNetworkUuid}|${nodeUuid}|${fileName}|${format}`;
-}
-
-function getExportState(): Set<string> | null {
-    const state = sessionStorage.getItem('export-subscriptions');
-    return state ? new Set<string>(JSON.parse(state)) : null;
-}
-
-function saveExportState(state: Set<string>): void {
-    sessionStorage.setItem('export-subscriptions', JSON.stringify([...state]));
-}
-
-export function setExportSubscription(identifier: string): void {
-    const exportState = getExportState() ?? new Set<string>();
-    exportState.add(identifier);
-    saveExportState(exportState);
-}
+import { buildExportIdentifier, setExportSubscription } from '../utils/export-utils';
 
 export default function useExportSubscription({
     studyUuid,
