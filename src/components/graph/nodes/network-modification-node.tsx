@@ -23,8 +23,9 @@ import BuildStatusChip from './build-status-chip';
 import { BuildButton } from './build-button';
 import { Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { forwardRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
+import ForwardRefBox from 'components/utils/forwardRefBox';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -84,12 +85,6 @@ const styles = {
         maxWidth: '720px',
     },
 } as const satisfies MuiStyles;
-
-const NodeBox = forwardRef<HTMLDivElement, any>(({ children, ...boxProps }, ref) => (
-    <Box ref={ref} {...boxProps}>
-        {children}
-    </Box>
-));
 
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -158,7 +153,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 enterNextDelay={TOOLTIP_DELAY}
                 placement="left"
             >
-                <NodeBox
+                <ForwardRefBox
                     sx={[
                         isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
                         { opacity: getNodeOpacity() },
@@ -188,7 +183,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     </Box>
 
                     {props.data.localBuildStatus === BUILD_STATUS.BUILDING && <NodeOverlaySpinner />}
-                </NodeBox>
+                </ForwardRefBox>
             </Tooltip>
         </>
     );
