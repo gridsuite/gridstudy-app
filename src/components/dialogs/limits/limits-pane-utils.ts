@@ -123,8 +123,8 @@ const limitsEmptyFormData = (modification: boolean, id: string) => {
     return { [id]: limitsGroup };
 };
 
-export const getLimitsEmptyFormData = (modification = true, id = LIMITS) => {
-    return limitsEmptyFormData(modification, id);
+export const getLimitsEmptyFormData = (isModification = true, id = LIMITS) => {
+    return limitsEmptyFormData(isModification, id);
 };
 
 export const formatOpLimitGroupsToFormInfos = (
@@ -151,7 +151,7 @@ export const getAllLimitsFormData = (
     operationalLimitsGroups: OperationalLimitsGroupFormInfos[] = [],
     selectedOperationalLimitsGroup1: string | null = null,
     selectedOperationalLimitsGroup2: string | null = null,
-    enableOLGModification?: boolean,
+    enableOLGModification: boolean | null = true,
     id = LIMITS
 ) => {
     return {

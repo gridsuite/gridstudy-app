@@ -185,8 +185,7 @@ const LineCreationDialog = ({
                 ...getAllLimitsFormData(
                     formatCompleteCurrentLimit(line.currentLimits),
                     line.selectedOperationalLimitsGroup1 ?? null,
-                    line.selectedOperationalLimitsGroup2 ?? null,
-                    true
+                    line.selectedOperationalLimitsGroup2 ?? null
                 ),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -238,8 +237,7 @@ const LineCreationDialog = ({
                         id: id + baseData.applicability,
                     })),
                     line?.selectedOperationalLimitsGroup1 ?? null,
-                    line?.selectedOperationalLimitsGroup2 ?? null,
-                    true
+                    line?.selectedOperationalLimitsGroup2 ?? null
                 ),
                 ...getPropertiesFromModification(line.properties),
             });
