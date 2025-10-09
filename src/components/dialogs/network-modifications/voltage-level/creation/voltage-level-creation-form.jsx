@@ -59,7 +59,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                 }
             });
         }
-    }, [setValue, isWithSubstationCreation, getValues]);
+    }, [setValue, isWithSubstationCreation]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
