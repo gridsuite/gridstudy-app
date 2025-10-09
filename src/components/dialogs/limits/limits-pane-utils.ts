@@ -112,12 +112,12 @@ export const getLimitsValidationSchema = (isModification: boolean = false, id: s
     return limitsValidationSchemaCreation(id, isModification);
 };
 
-const limitsEmptyFormData = (modification: boolean, id: string) => {
+const limitsEmptyFormData = (isModification: boolean, id: string) => {
     const limitsGroup = {
         [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
-        [ENABLE_OLG_MODIFICATION]: !modification,
+        [ENABLE_OLG_MODIFICATION]: !isModification,
     };
 
     return { [id]: limitsGroup };
