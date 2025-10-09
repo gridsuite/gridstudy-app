@@ -24,6 +24,7 @@ import { BuildButton } from './build-button';
 import { Tooltip, Typography } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { forwardRef, useMemo } from 'react';
+import { TOOLTIP_DELAY } from 'utils/UIconstants';
 
 const styles = {
     networkModificationSelected: (theme) => ({
@@ -153,7 +154,9 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     tooltip: { sx: { maxWidth: '720px' } },
                 }}
                 arrow
-                placement="right"
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
+                placement="left"
             >
                 <NodeBox
                     sx={[
