@@ -10,13 +10,6 @@ const errors_locale_fr = {
     updateStateEstimationParametersError:
         "Une erreur est survenue lors de la mise a jour des paramètres de l'estimateur d'état",
 
-    // NonEvacuatedEnergy
-    fetchNonEvacuatedEnergyProviderError:
-        "Une erreur est survenue lors de la récupération du fournisseur d'analyse d'énergie non évacuée",
-    fetchNonEvacuatedEnergyProvidersError:
-        "Une erreur est survenue lors de la récupération des fournisseurs d'analyse d'énergie non évacuée",
-    updateNonEvacuatedEnergyParametersError:
-        "Une erreur est survenue lors de la mise a jour des paramètres de l'analyse d'énergie non évacuée",
     // DynamicSimulation
     fetchDynamicSimulationParametersError:
         'Une erreur est survenue lors de la récupération des paramètres de la simulation dynamique',
