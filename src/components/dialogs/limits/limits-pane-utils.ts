@@ -175,7 +175,6 @@ export const sanitizeLimitsGroups = (
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
         id: baseData.name,
-        limitsProperties: baseData.limitsProperties,
         currentLimits: !currentLimits
             ? {
                   id: '',
