@@ -51,18 +51,13 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
 
     useEffect(() => {
-        // in new substation mode
-        // set the default country
+        // in new substation mode, set the default country
         if (isWithSubstationCreation) {
-            fetchDefaultCountry()
-                .then((country) => {
-                    return new Promise((resolve) => setTimeout(() => resolve(country), 1000));
-                })
-                .then((country) => {
-                    if (country) {
-                        setValue(COUNTRY, country);
-                    }
-                });
+            fetchDefaultCountry().then((country) => {
+                if (country) {
+                    setValue(COUNTRY, country);
+                }
+            });
         }
     }, [setValue, isWithSubstationCreation, getValues]);
 
