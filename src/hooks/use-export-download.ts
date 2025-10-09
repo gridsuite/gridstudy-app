@@ -7,9 +7,9 @@
 import { UUID } from 'crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
-import { fetchExportNetworkFile } from '../services/study';
 import { downloadZipFile } from '../services/utils';
 import { HttpStatusCode } from '../utils/http-status-code';
+import { fetchExportNetworkFile } from '../services/network-conversion';
 
 export function useExportDownload() {
     const { snackWarning, snackError } = useSnackMessage();

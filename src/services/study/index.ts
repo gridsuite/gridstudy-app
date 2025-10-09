@@ -254,11 +254,6 @@ export function getAvailableExportFormats(): Promise<Record<string, ExportFormat
     return backendFetchJson(getExportFormatsUrl);
 }
 
-export function fetchExportNetworkFile(exportUuid: UUID) {
-    const url = PREFIX_STUDY_QUERIES + '/v1/download-network-file/' + exportUuid;
-    return backendFetch(url);
-}
-
 export function getAvailableComponentLibraries(): Promise<string[]> {
     console.info('get available component libraries for diagrams');
     const getAvailableComponentLibrariesUrl = PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
