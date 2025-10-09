@@ -112,19 +112,19 @@ export const getLimitsValidationSchema = (isModification: boolean = false, id: s
     return limitsValidationSchemaCreation(id, isModification);
 };
 
-const limitsEmptyFormData = (id: string) => {
+const limitsEmptyFormData = (modification: boolean, id: string) => {
     const limitsGroup = {
         [OPERATIONAL_LIMITS_GROUPS]: [],
         [SELECTED_LIMITS_GROUP_1]: null,
         [SELECTED_LIMITS_GROUP_2]: null,
-        [ENABLE_OLG_MODIFICATION]: false,
+        [ENABLE_OLG_MODIFICATION]: !modification,
     };
 
     return { [id]: limitsGroup };
 };
 
-export const getLimitsEmptyFormData = (id = LIMITS) => {
-    return limitsEmptyFormData(id);
+export const getLimitsEmptyFormData = (modification = true, id = LIMITS) => {
+    return limitsEmptyFormData(modification, id);
 };
 
 export const formatOpLimitGroupsToFormInfos = (

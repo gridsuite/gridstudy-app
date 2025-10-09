@@ -91,7 +91,7 @@ import { LimitsPane } from '../../../limits/limits-pane.tsx';
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
 
@@ -185,7 +185,8 @@ const LineCreationDialog = ({
                 ...getAllLimitsFormData(
                     formatCompleteCurrentLimit(line.currentLimits),
                     line.selectedOperationalLimitsGroup1 ?? null,
-                    line.selectedOperationalLimitsGroup2 ?? null
+                    line.selectedOperationalLimitsGroup2 ?? null,
+                    true
                 ),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -237,7 +238,8 @@ const LineCreationDialog = ({
                         id: id + baseData.applicability,
                     })),
                     line?.selectedOperationalLimitsGroup1 ?? null,
-                    line?.selectedOperationalLimitsGroup2 ?? null
+                    line?.selectedOperationalLimitsGroup2 ?? null,
+                    true
                 ),
                 ...getPropertiesFromModification(line.properties),
             });

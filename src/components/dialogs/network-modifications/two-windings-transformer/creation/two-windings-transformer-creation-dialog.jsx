@@ -125,7 +125,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(false),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -253,7 +253,8 @@ const TwoWindingsTransformerCreationDialog = ({
                         id: id + baseData.applicability,
                     })),
                     twt?.selectedOperationalLimitsGroup1 ?? null,
-                    twt?.selectedOperationalLimitsGroup2 ?? null
+                    twt?.selectedOperationalLimitsGroup2 ?? null,
+                    true
                 ),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -337,7 +338,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getAllLimitsFormData(
                         formatCompleteCurrentLimit(twt.currentLimits),
                         twt.selectedOperationalLimitsGroup1 ?? null,
-                        twt.selectedOperationalLimitsGroup2 ?? null
+                        twt.selectedOperationalLimitsGroup2 ?? null,
+                        true
                     ),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
