@@ -38,12 +38,13 @@ function filterRedundantProperties(nodeId: string, equipmentType: SpreadsheetEqu
     return !exclusionList.includes(nodeId);
 }
 
+function wildcardMatch(pattern: string, value: string): boolean {
+    // Convert * to regex ".*" and escape other special regex characters
+    const regexStr = String.raw`^${pattern.replaceAll(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replaceAll(/\*/g, '.*')}$`;
+    return new RegExp(regexStr).test(value);
+}
+
 export function sortData(treeData: TreeNode[]) {
-    function wildcardMatch(pattern: string, value: string): boolean {
-        // Convert * to regex ".*" and escape other special regex characters
-        const regexStr = `^${pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*')}$`;
-        return new RegExp(regexStr).test(value);
-    }
     function getPriority(id: string): number {
         const exactIndex = fieldsPriorityOrder.indexOf(id);
         if (exactIndex !== -1) {
@@ -57,6 +58,7 @@ export function sortData(treeData: TreeNode[]) {
         }
         return fieldsPriorityOrder.length / 2 + id.localeCompare(id);
     }
+
     const sorted = [...treeData].sort((a, b) => {
         const pa = getPriority(a.id);
         const pb = getPriority(b.id);
