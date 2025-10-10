@@ -159,13 +159,16 @@ export function MoveVoltageLevelFeederBaysForm({
                     formProps={{
                         disabled: data.isRemoved,
                         size: 'small',
-                        variant: 'standard',
+                        variant: 'outlined',
                         autoFocus: true,
                         sx: {
-                            paddingTop: '1.5rem',
+                            paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
                                 textOverflow: 'ellipsis',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                border: 'unset', // Remove the border
                             },
                         },
                     }}
