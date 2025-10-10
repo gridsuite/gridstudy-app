@@ -47,6 +47,7 @@ interface MoveVoltageLevelFeederBaysFormProps {
     currentRootNetworkUuid: UUID;
     studyUuid: UUID;
     isReady: boolean;
+    previousValues: FeederBaysFormInfos[];
 }
 
 export function MoveVoltageLevelFeederBaysForm({
@@ -56,6 +57,7 @@ export function MoveVoltageLevelFeederBaysForm({
     currentRootNetworkUuid,
     studyUuid,
     isReady = false,
+    previousValues,
 }: Readonly<MoveVoltageLevelFeederBaysFormProps>) {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -153,7 +155,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 <TextInput
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
                     formProps={{
-                        disabled: true,
+                        disabled: false,
                         size: 'small',
                         variant: 'outlined',
                         autoFocus: true,
@@ -165,10 +167,13 @@ export function MoveVoltageLevelFeederBaysForm({
                             },
                         },
                     }}
+                    previousValue={
+                        previousValues[formIndex].connectionName ? previousValues[formIndex].connectionName : ''
+                    }
                 />
             );
         },
-        [getValues]
+        [getValues, previousValues]
     );
 
     const renderBusbarSectionCell = useCallback(

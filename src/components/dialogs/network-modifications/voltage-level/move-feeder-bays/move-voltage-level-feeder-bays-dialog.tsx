@@ -133,6 +133,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState<string>(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
+    const [previousValues, setPreviousValues] = useState<FeederBaysFormInfos[]>([]);
 
     const formMethods = useForm<DeepNullable<MoveVoltageLevelFeederBaysFormSchemaType>>({
         defaultValues: emptyFormData,
@@ -234,7 +235,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 .filter((item, index, arr) => arr.findIndex((x) => x.equipmentId === item.equipmentId) === index);
             // merge row data between actual values in network and user's modification infos
             const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
-
+            setPreviousValues(mergedRowData);
             // reset default values for RHF state
             reset(
                 {
@@ -245,7 +246,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
 
             setDataFetchStatus(FetchStatus.SUCCEED);
         },
-        [mergeRowData, reset, setDataFetchStatus]
+        [mergeRowData, reset, setDataFetchStatus, setPreviousValues]
     );
 
     const onEquipmentIdChange = useCallback(
@@ -370,6 +371,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         studyUuid={studyUuid}
                         isReady={dataFetchStatus === FetchStatus.SUCCEED}
+                        previousValues={previousValues}
                     />
                 )}
             </ModificationDialog>
