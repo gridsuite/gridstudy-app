@@ -24,7 +24,7 @@ import {
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
-import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput, fetchDefaultCountry, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
 import { Box, Grid, Paper, Tooltip } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
@@ -49,9 +49,17 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchAddSubstationCreation = useWatch({ name: ADD_SUBSTATION_CREATION });
+
     useEffect(() => {
-        setIsWithSubstationCreation(watchAddSubstationCreation);
-    }, [watchAddSubstationCreation]);
+        // in new substation mode, set the default country
+        if (isWithSubstationCreation) {
+            fetchDefaultCountry().then((country) => {
+                if (country) {
+                    setValue(COUNTRY, country);
+                }
+            });
+        }
+    }, [setValue, isWithSubstationCreation]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
@@ -149,6 +157,10 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
 
     const handleDeleteButton = useCallback(() => {
         setValue(ADD_SUBSTATION_CREATION, false);
+        // clear the fields of the new substation
+        setValue(SUBSTATION_CREATION_ID, null);
+        setValue(SUBSTATION_NAME, null);
+        setValue(COUNTRY, null);
         setIsWithSubstationCreation(false);
     }, [setValue]);
 
@@ -159,7 +171,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUu
                 <GridItem>{voltageLevelNameField}</GridItem>
             </Grid>
 
-            {isWithSubstationCreation ? (
+            {watchAddSubstationCreation ? (
                 <Grid>
                     <Grid item xs={12} container spacing={2}></Grid>
                     <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
