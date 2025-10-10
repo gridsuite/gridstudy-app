@@ -1609,7 +1609,7 @@
     "PHASE_TAP": "Déphaseur",
     "RATIO_TAP": "Régleur",
     "Insert": "Insérer",
-    "String": "Chaîne de caractère",
+    "String": "Texte",
     "Number": "Nombre",
     "Object": "Objet",
     "Array": "Tableau",
@@ -1627,5 +1627,6 @@
     "BOTTOM": "Bas",
     "DuplicatedPositionsError": "Numéro en doublon",
     "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
-    "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée"
+    "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
+    "Length": "Nombre d'éléments"
 }

@@ -1631,5 +1631,6 @@
     "BOTTOM": "Bottom",
     "DuplicatedPositionsError": "Duplicated number",
     "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)",
-    "moveFeederBaysSections": "Feeder bay will be connected onto the selected busbar section"
+    "moveFeederBaysSections": "Feeder bay will be connected onto the selected busbar section",
+    "Length": "Amount of elements"
 }

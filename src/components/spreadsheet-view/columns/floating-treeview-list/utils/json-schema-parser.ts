@@ -6,6 +6,9 @@
  */
 
 import { JSONSchema4 } from 'json-schema';
+import { IntlShape } from 'react-intl';
+import { fieldsPriorityOrder } from './sort-priority-order';
+import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 
 export type TreeNode = {
     id: string;
@@ -13,6 +16,65 @@ export type TreeNode = {
     type?: string;
     children?: TreeNode[];
 };
+
+function formatSpecialCases(nodeId: string) {
+    // Matches following cases : properties, voltageLevelProperties, voltageLevelProperties1, voltageLevelProperties2, substationProperties, voltageLevels[].properties...
+    if (nodeId.includes('roperties')) {
+        return `${nodeId}.`;
+    } else if (['operationalLimitsGroup1', 'operationalLimitsGroup2'].includes(nodeId)) {
+        return `${nodeId}[]`;
+    }
+    return nodeId;
+}
+
+function filterRedundantProperties(nodeId: string, equipmentType: SpreadsheetEquipmentType) {
+    const exclusionList = ['voltageLevels[].substationId', 'voltageLevels[].substationProperties'];
+    if ([SpreadsheetEquipmentType.LINE, SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER].includes(equipmentType)) {
+        exclusionList.push('type');
+    }
+    if ([SpreadsheetEquipmentType.TWO_WINDINGS_TRANSFORMER].includes(equipmentType)) {
+        exclusionList.push('country');
+    }
+    return !exclusionList.includes(nodeId);
+}
+
+export function sortData(treeData: TreeNode[]) {
+    function wildcardMatch(pattern: string, value: string): boolean {
+        // Convert * to regex ".*" and escape other special regex characters
+        const regexStr = `^${pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '.*')}$`;
+        return new RegExp(regexStr).test(value);
+    }
+    function getPriority(id: string): number {
+        const exactIndex = fieldsPriorityOrder.indexOf(id);
+        console.log(id, exactIndex);
+        if (exactIndex !== -1) {
+            return exactIndex;
+        }
+        const wildcardIndex = fieldsPriorityOrder.findIndex(
+            (pattern) => pattern.includes('*') && wildcardMatch(pattern, id)
+        );
+        if (wildcardIndex !== -1) {
+            return wildcardIndex;
+        }
+        return fieldsPriorityOrder.length / 2 + id.localeCompare(id);
+    }
+    const sorted = [...treeData].sort((a, b) => {
+        const pa = getPriority(a.id);
+        const pb = getPriority(b.id);
+
+        if (pa !== pb) {
+            return pa - pb;
+        }
+        return a.label.localeCompare(b.label);
+    });
+    // Recursively sort children if present
+    for (const node of sorted) {
+        if (node.children) {
+            node.children = sortData(node.children);
+        }
+    }
+    return sorted;
+}
 
 /**
  * Builds a registry of all schemas found by walking the tree.
@@ -52,12 +114,15 @@ function resolveRef(ref: string, registry: Map<string, JSONSchema4>): JSONSchema
 export function buildTreeData(
     schema: JSONSchema4 | null,
     rootSchema: JSONSchema4 | null,
+    intl: IntlShape | null,
+    equipmentType: SpreadsheetEquipmentType,
     parentKey: string = '',
     registry?: Map<string, JSONSchema4>
 ): TreeNode[] {
     if (!schema || !rootSchema) {
         return [];
     }
+    console.log(parentKey);
 
     // Build registry once at the root call
     if (!registry) {
@@ -71,42 +136,67 @@ export function buildTreeData(
             console.warn(`Unresolved $ref during json schema parsing: ${schema.$ref}`);
             return [];
         }
-        return buildTreeData(resolved, rootSchema, parentKey, registry);
+        return buildTreeData(resolved, rootSchema, intl, equipmentType, parentKey, registry);
     }
 
-    if (schema.type?.includes('array') && schema.items) {
-        return buildTreeData(schema.items as JSONSchema4, rootSchema, `${parentKey}[]`);
+    if (schema.type?.includes('array') && schema.items && intl) {
+        const nodeId = `${parentKey}[]`;
+        const children = buildTreeData(schema.items as JSONSchema4, rootSchema, intl, equipmentType, nodeId, registry);
+
+        // For all nodes of array type we add an additionnal custom variable to get the amount of elements
+        const lengthNode: TreeNode = {
+            id: `length(${parentKey})`,
+            label: `${intl.formatMessage({ id: 'Length' })}`,
+            type: 'number',
+        };
+        return [...children, lengthNode];
     }
 
     if (schema.additionalProperties) {
-        return buildTreeData(schema.additionalProperties as JSONSchema4, rootSchema, parentKey);
+        return buildTreeData(schema.additionalProperties as JSONSchema4, rootSchema, intl, equipmentType, parentKey);
     }
 
     if (schema.type === 'object' || schema.properties) {
-        return Object.entries(schema.properties ?? {}).map(([key, value]) => {
-            const childSchema = value as JSONSchema4;
-            let nodeId = parentKey ? `${parentKey}.${key}` : key;
-            // Flatten case: anyOf with $ref to enum
-            if (childSchema?.enum) {
+        return Object.entries(schema.properties ?? {})
+            .filter(([key]) => {
+                // In case of a substation equipment we filter out substations properties inside voltage level
+                return filterRedundantProperties(parentKey ? `${parentKey}.${key}` : key, equipmentType);
+            })
+            .map(([key, value]) => {
+                const childSchema = value as JSONSchema4;
+                let nodeId = parentKey ? `${parentKey}.${key}` : key;
+                // Flatten case: anyOf with $ref to enum
+                if (childSchema?.enum) {
+                    return {
+                        id: nodeId,
+                        label: key,
+                        type: 'enum',
+                    };
+                }
+
+                let type: (string | undefined)[] = Array.isArray(childSchema.type)
+                    ? Object.values(childSchema.type).filter((t) => t !== 'null')
+                    : [childSchema.type];
+                type = type.filter(Boolean);
+
+                const children = buildTreeData(childSchema, rootSchema, intl, equipmentType, nodeId, registry);
+
+                // For all nodes of object type we add an additionnal custom variable to get the amount of elements
+                if (type.includes('object') && intl) {
+                    children.push({
+                        id: `length(${nodeId})`,
+                        label: `${intl.formatMessage({ id: 'Length' })}`,
+                        type: 'number',
+                    });
+                }
+
                 return {
-                    id: nodeId,
+                    id: formatSpecialCases(nodeId),
                     label: key,
-                    type: 'enum',
+                    type: type.length > 0 ? type[0] : 'object',
+                    children,
                 };
-            }
-
-            let type: (string | undefined)[] = Array.isArray(childSchema.type)
-                ? Object.values(childSchema.type).filter((t) => t !== 'null')
-                : [childSchema.type];
-
-            type = type.filter(Boolean);
-            return {
-                id: nodeId,
-                label: key,
-                type: type.length > 0 ? type[0] : 'object',
-                children: buildTreeData(childSchema, rootSchema, nodeId),
-            };
-        });
+            });
     }
 
     return [];
