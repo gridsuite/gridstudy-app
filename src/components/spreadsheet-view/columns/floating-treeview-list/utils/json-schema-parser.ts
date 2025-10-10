@@ -56,7 +56,9 @@ export function sortData(treeData: TreeNode[]) {
         if (wildcardIndex !== -1) {
             return wildcardIndex;
         }
-        return fieldsPriorityOrder.length / 2 + id.localeCompare(id);
+
+        // If a field isn't in the priority list it get placed in the middle of the fields
+        return fieldsPriorityOrder.length / 2;
     }
 
     const sorted = [...treeData].sort((a, b) => {
