@@ -315,10 +315,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid item xs={1}>
-                <GridSection title={'moveFeederBaysSections'} />
+            <Grid item spacing={2} paddingTop={2}>
+                <FormattedMessage id={'moveFeederBaysSections'} />
             </Grid>
-            <Grid item xs paddingTop={2}>
+            <Grid item xs paddingTop={1}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}
