@@ -46,7 +46,6 @@ export function sortData(treeData: TreeNode[]) {
     }
     function getPriority(id: string): number {
         const exactIndex = fieldsPriorityOrder.indexOf(id);
-        console.log(id, exactIndex);
         if (exactIndex !== -1) {
             return exactIndex;
         }
@@ -122,7 +121,6 @@ export function buildTreeData(
     if (!schema || !rootSchema) {
         return [];
     }
-    console.log(parentKey);
 
     // Build registry once at the root call
     if (!registry) {
