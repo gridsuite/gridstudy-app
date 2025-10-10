@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { ASSIGNMENTS, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-constants';
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import AssignmentForm from './assignment/assignment-form';
 import { Box, Grid } from '@mui/material';
 import { getAssignmentInitialValue } from './assignment/assignment-utils';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
-import { mergeSx, unscrollableDialogStyles, usePredefinedProperties } from '@gridsuite/commons-ui';
+import { mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { EQUIPMENTS_FIELDS } from './assignment/assignment-constants';
 import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
 import GridItem from '../../../commons/grid-item';
@@ -26,15 +26,6 @@ const EQUIPMENT_TYPE_OPTIONS: EquipmentTypeOptionType[] = Object.keys(EQUIPMENTS
 
 const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () => {
     const { setValue, getValues } = useFormContext();
-    const equipmentType: EquipmentTypeOptionType = useWatch({
-        name: EQUIPMENT_TYPE_FIELD,
-    });
-    const equipmentFields = EQUIPMENTS_FIELDS[equipmentType] ?? [];
-    // get predefined properties
-    const [predefinedProperties, setEquipmentType] = usePredefinedProperties(equipmentType);
-    useEffect(() => {
-        setEquipmentType(equipmentType);
-    }, [equipmentType, setEquipmentType]);
 
     const getOptionLabel = useGetLabelEquipmentTypes();
 
@@ -59,11 +50,6 @@ const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () =
         <ExpandableInput
             name={ASSIGNMENTS}
             Field={AssignmentForm}
-            fieldProps={{
-                predefinedProperties,
-                equipmentFields,
-                equipmentType,
-            }}
             addButtonLabel={'addNewAssignment'}
             initialValue={getAssignmentInitialValue()}
         />

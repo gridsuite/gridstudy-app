@@ -95,6 +95,11 @@ import { GeneratorFormInfos, GeneratorModificationDialogSchemaForm } from '../ge
 import { toModificationOperation } from '../../../../utils/utils';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -102,8 +107,7 @@ const emptyFormData = {
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
-    [TRANSIENT_REACTANCE]: null,
-    [TRANSFORMER_REACTANCE]: null,
+    ...getShortCircuitEmptyFormData(),
     [PLANNED_ACTIVE_POWER_SET_POINT]: null,
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
@@ -131,8 +135,7 @@ const formSchema = yup
                     schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
         [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
-        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+        ...getShortCircuitFormSchema(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
 
@@ -195,8 +198,10 @@ export default function GeneratorModificationDialog({
                 [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
-                [TRANSIENT_REACTANCE]: editData?.directTransX?.value ?? null,
-                [TRANSFORMER_REACTANCE]: editData?.stepUpTransformerX?.value ?? null,
+                ...getShortCircuitFormData({
+                    directTransX: editData?.directTransX?.value ?? null,
+                    stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
+                }),
                 [VOLTAGE_REGULATION_TYPE]: editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
                 ...getConnectivityFormData({
