@@ -195,15 +195,11 @@ const NetworkModificationNodeEditor = () => {
             console.info(event.data);
             isInitiatingCopyTab.current = false;
             if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
-                setCopiedModifications((oldCopiedModifications) => {
-                    if (oldCopiedModifications.length) {
-                        snackInfo({
-                            messageId: 'CopiedModificationInvalidationMessageFromAnotherStudy',
-                        });
-                    }
-                    return [];
-                });
+                setCopiedModifications([]);
                 setCopyInfos(null);
+                snackInfo({
+                    messageId: 'CopiedModificationInvalidationMessageFromAnotherStudy',
+                });
             } else {
                 setCopiedModifications(event.data.modificationsUuids);
                 setCopyInfos({
