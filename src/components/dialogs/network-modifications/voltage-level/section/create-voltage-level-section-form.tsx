@@ -27,10 +27,9 @@ import PositionDiagramPane from 'components/grid-layout/cards/diagrams/singleLin
 import type { UUID } from 'node:crypto';
 import { POSITION_NEW_SECTION_SIDE, SWITCH_TYPE } from '../../../../network/constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { BusBarSectionInfos } from './voltage-level-section.type';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 
-const getArrayPosition = (data: BusBarSectionInfos[], selectedOptionId: string) => {
+const getArrayPosition = (data: Map<string, string[]>, selectedOptionId: string) => {
     if (!selectedOptionId || !data) {
         return { position: -1, length: 0 };
     }
@@ -49,7 +48,7 @@ const getArrayPosition = (data: BusBarSectionInfos[], selectedOptionId: string) 
 type OptionWithDisabled = Option & { disabled?: boolean };
 
 interface VoltageLevelSectionsCreationFormProps {
-    busBarSectionInfos?: BusBarSectionInfos[];
+    busBarSectionInfos?: Map<string, string[]>;
     voltageLevelId: string;
     allBusbarSectionsList: string[];
     studyUuid: UUID;
@@ -113,6 +112,7 @@ export function CreateVoltageLevelSectionForm({
                 }
                 return;
             }
+            // @ts-ignore
             const sections = busBarSectionInfos[selectedKey];
             if (!sections || !Array.isArray(sections)) {
                 setBusBarSectionsIdOptions([]);
