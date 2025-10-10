@@ -208,8 +208,8 @@ const lightTheme = createTheme({
     reactflow: {
         backgroundColor: 'white',
         labeledGroup: {
-            backgroundColor: 'white',
-            borderColor: '#11161A',
+            backgroundColor: '#FAFAFA',
+            borderColor: '#BDBDBD',
         },
         edge: {
             stroke: '#6F767B',

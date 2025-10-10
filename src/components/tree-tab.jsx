@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { useMemo, useCallback } from 'react';
 
 import NetworkModificationTreePane from './network-modification-tree-pane';
+import { ZoomThemeProvider } from './graph/zoom-theme-provider';
 import WaitingLoader from './utils/waiting-loader';
 import GridLayoutPanel from './grid-layout/grid-layout-panel';
 import NodeEditor from './graph/menus/network-modifications/node-editor';
@@ -81,10 +82,12 @@ const TreeTab = ({
                             <Panel ref={refs.treePanelRef} id={PANEL_IDS.TREE} minSize={PANEL_CONFIG.MIN_SIZE}>
                                 <Box sx={styles.panelContent}>
                                     <ReactFlowProvider>
-                                        <NetworkModificationTreePane
-                                            studyUuid={studyUuid}
-                                            currentRootNetworkUuid={currentRootNetworkUuid}
-                                        />
+                                        <ZoomThemeProvider>
+                                            <NetworkModificationTreePane
+                                                studyUuid={studyUuid}
+                                                currentRootNetworkUuid={currentRootNetworkUuid}
+                                            />
+                                        </ZoomThemeProvider>
                                     </ReactFlowProvider>
                                 </Box>
                             </Panel>

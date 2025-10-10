@@ -32,6 +32,7 @@ import { StudyDisplayMode } from './network-modification.type';
 import { useSyncNavigationActions } from 'hooks/use-sync-navigation-actions';
 import { NodeType } from './graph/tree-node.type';
 import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
+import { zoomStyles } from './graph/zoom.styles';
 
 const styles = {
     modificationTree: (theme) => ({
@@ -39,6 +40,7 @@ const styles = {
         height: '100%',
         backgroundColor: theme.reactflow.backgroundColor,
         '.react-flow': {
+            '--xy-edge-stroke-width-default': zoomStyles.edgeWidth(theme),
             '--xy-edge-stroke': theme.reactflow.edge.stroke,
         },
         '.react-flow__attribution a': {
@@ -331,19 +333,10 @@ const NetworkModificationTree = ({ onNodeContextMenu, studyUuid }) => {
                 //maxZoom={2} // Higher value allows for more zoom in
                 onNodeDragStop={handlePostNodeDragging}
                 nodeClickDistance={5} // to avoid triggering onNodeDragStop instead of onNodeClick sometimes
-                disableKeyboardA11y
-                deleteKeyCode={null}
-                defaultEdgeOptions={{
-                    type: 'smoothstep',
-                    pathOptions: {
-                        // TODO This negative offset and borderRadius values are needed to have round corners on the edge,
-                        // but because the nodes are not totally opaque, we can see the edges behind the nodes.
-                        // When the nodes are redesigned and hopefully the colors are set without transparency, we can use
-                        // the round edges by un-commenting the two lines below.
-                        //offset: -24,
-                        //borderRadius: 48,
-                    },
+                proOptions={{
+                    hideAttribution: true,
                 }}
+                defaultEdgeOptions={{ type: 'smoothstep' }}
             >
                 <Controls
                     position="bottom-right"
