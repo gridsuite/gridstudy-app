@@ -20,6 +20,7 @@ import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,
     CONNECTION_DIRECTION,
+    CONNECTION_EQUIPMENT_ID,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTION_SIDE,
@@ -71,6 +72,7 @@ const formSchema = yup.object().shape({
     [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: yup.array().of(
         yup.object().shape({
             [EQUIPMENT_ID]: requiredWhenActive(yup.string()),
+            [CONNECTION_EQUIPMENT_ID]: yup.string(),
             [BUSBAR_SECTION_ID]: requiredWhenActive(yup.string()),
             [BUSBAR_SECTION_IDS]: requiredWhenActive(yup.array().of(yup.string())),
             [CONNECTION_SIDE]: yup.string().nullable(),
@@ -91,6 +93,7 @@ const emptyFormData = {
     [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: [
         {
             [EQUIPMENT_ID]: null,
+            [CONNECTION_EQUIPMENT_ID]: null,
             [BUSBAR_SECTION_ID]: null,
             [BUSBAR_SECTION_IDS]: [],
             [CONNECTION_SIDE]: null,
@@ -155,6 +158,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             if (!editData?.uuid && feederBaysInfos.length > 0) {
                 mergedRowData = feederBaysInfos.filter(Boolean).map((bay) => ({
                     equipmentId: bay.equipmentId,
+                    connectionEquipmentId: bay.connectionEquipmentId,
                     busbarSectionId: bay.busbarSectionId || null,
                     busbarSectionIds: busBarSectionInfos,
                     connectionSide: bay.connectionSide || null,
@@ -169,6 +173,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     feederBaysInfos.filter(Boolean).forEach((bay) => {
                         mergedRowData.push({
                             equipmentId: bay.equipmentId,
+                            connectionEquipmentId: bay.connectionEquipmentId,
                             busbarSectionId: bay.busbarSectionId,
                             busbarSectionIds: busBarSectionInfos,
                             connectionSide: bay.connectionSide,
@@ -187,6 +192,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                         deletedFeederBays.forEach((bay) => {
                             mergedRowData.push({
                                 equipmentId: bay.equipmentId,
+                                connectionEquipmentId: bay.connectionEquipmentId,
                                 busbarSectionId: bay.busbarSectionId,
                                 busbarSectionIds: busBarSectionInfos,
                                 connectionSide: bay.connectionSide,
@@ -206,6 +212,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             ) {
                 mergedRowData = editData.feederBays.filter(Boolean).map((bay) => ({
                     equipmentId: bay.equipmentId,
+                    connectionEquipmentId: bay.connectionEquipmentId,
                     busbarSectionId: bay.busbarSectionId,
                     busbarSectionIds: busBarSectionInfos,
                     connectionSide: bay.connectionSide,
@@ -287,6 +294,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
             tableData && Array.isArray(tableData)
                 ? tableData.map((row) => ({
                       equipmentId: row?.equipmentId!,
+                      connectionEquipmentId: row?.connectionEquipmentId!,
                       busbarSectionId: row?.busbarSectionId!,
                       connectionSide: row?.connectionSide!,
                       connectionPosition: row?.connectionPosition != null ? String(row.connectionPosition) : '0',
@@ -338,7 +346,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 onClear={clear}
                 fullWidth
                 onSave={onSubmit}
-                maxWidth={'md'}
+                maxWidth={'lg'}
                 titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
                 keepMounted={true}

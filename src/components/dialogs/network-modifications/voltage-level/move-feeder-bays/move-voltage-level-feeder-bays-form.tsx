@@ -17,6 +17,7 @@ import {
     BUSBAR_SECTION_ID,
     BUSBAR_SECTION_IDS,
     CONNECTION_DIRECTION,
+    CONNECTION_EQUIPMENT_ID,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     IS_REMOVED,
@@ -146,6 +147,28 @@ export function MoveVoltageLevelFeederBaysForm({
         [intl, isNodeBuiltValue, shouldDisableTooltip]
     );
 
+    const renderConnectionEquipmentIdCell = useCallback(({ data }: { data?: any }) => {
+        return (
+            <TextField
+                size="small"
+                fullWidth
+                value={data[CONNECTION_EQUIPMENT_ID]}
+                variant={'standard'}
+                InputProps={{
+                    disableUnderline: true,
+                    readOnly: true,
+                    sx: {
+                        paddingTop: '1.5rem',
+                        '& input': {
+                            textAlign: 'center',
+                            textOverflow: 'ellipsis',
+                        },
+                    },
+                }}
+            />
+        );
+    }, []);
+
     const renderConnectionNameCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
@@ -192,10 +215,13 @@ export function MoveVoltageLevelFeederBaysForm({
                     sx={{ padding: '8%' }}
                     disabled={data.isRemoved}
                     disableClearable
+                    previousValue={
+                        previousValues[formIndex].busbarSectionId ? previousValues[formIndex].busbarSectionId : ''
+                    }
                 />
             );
         },
-        [getValues]
+        [getValues, previousValues]
     );
 
     const renderConnectionDirectionCell = useCallback(
@@ -240,6 +266,17 @@ export function MoveVoltageLevelFeederBaysForm({
 
     const columnDefs = useMemo(
         () => [
+            {
+                field: CONNECTION_EQUIPMENT_ID,
+                filter: true,
+                flex: 2,
+                cellRenderer: renderConnectionEquipmentIdCell,
+                headerComponent: HeaderWithTooltip,
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: 'ConnectionEquipmentId' }),
+                    ...commonHeaderParams,
+                },
+            },
             {
                 field: CONNECTION_NAME,
                 filter: true,
@@ -286,9 +323,10 @@ export function MoveVoltageLevelFeederBaysForm({
             },
         ],
         [
+            renderConnectionEquipmentIdCell,
             intl,
-            commonHeaderParams,
             renderConnectionNameCell,
+            commonHeaderParams,
             renderBusbarSectionCell,
             renderConnectionDirectionCell,
             renderConnectionPositionCell,
@@ -328,7 +366,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}
-                    rowHeight={80}
+                    rowHeight={85}
                     rowStyle={{ border: 'none' }}
                     suppressRowHoverHighlight={true}
                     // group config

@@ -892,4 +892,5 @@ export interface MoveFeederBayInfos {
     connectionPosition: string | null;
     connectionName: string | null;
     connectionDirection: string | null;
+    connectionEquipmentId: string | null;
 }
