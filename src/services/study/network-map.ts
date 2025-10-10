@@ -154,7 +154,12 @@ export function fetchVoltageLevelIdForLineOrTransformerBySide(
     return backendFetchText(fetchEquipmentInfosUrl);
 }
 
-export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchAllCountries(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    signal?: AbortSignal
+): Promise<string[]> {
     console.info(
         `Fetching all countries of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );
@@ -163,7 +168,7 @@ export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID, curren
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
-    return backendFetchJson(fetchCountriesUrl);
+    return backendFetchJson(fetchCountriesUrl, undefined, undefined, signal);
 }
 
 /**
@@ -289,7 +294,12 @@ export async function createMapContingencyList(
     return createContingencyList(equipmentContingencyList, elementName, '', destinationDirectoryId);
 }
 
-export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+export function fetchAllNominalVoltages(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    signal?: AbortSignal
+): Promise<number[]> {
     console.info(
         `Fetching all nominal voltages of study '${studyUuid}', node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}' ...`
     );
@@ -298,5 +308,5 @@ export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, 
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/nominal-voltages?inUpstreamBuiltParentNode=true';
     console.debug(fetchNominalVoltagesUrl);
-    return backendFetchJson(fetchNominalVoltagesUrl);
+    return backendFetchJson(fetchNominalVoltagesUrl, undefined, undefined, signal);
 }
