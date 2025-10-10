@@ -9,13 +9,20 @@ import { type MuiStyles } from '@gridsuite/commons-ui';
 import { colors, Theme } from '@mui/material';
 import { zoomStyles } from '../zoom.styles';
 
-export const LABEL_BLOCK_HEIGHT = 30; // px, matches label box vertical size
+export const LABEL_GROUP_OFFSET = 30;
 
-export const getContainerStyle = (theme: Theme, isLight: boolean) => ({
-    ...zoomStyles.labeledGroupBorder(theme),
-    background: theme.tree?.is.minimalDetail ? (isLight ? theme.palette.grey[200] : colors.grey[700]) : 'transparent',
-    borderColor: isLight ? colors.grey[400] : colors.grey[500],
-});
+export const getContainerStyle = (theme: Theme, isLight: boolean) => {
+    let backgroundColor = 'transparent';
+    if (theme.tree?.is.minimalDetail) {
+        backgroundColor = isLight ? theme.palette.grey[200] : colors.grey[700];
+    }
+
+    return {
+        ...zoomStyles.labeledGroupBorder(theme),
+        background: backgroundColor,
+        borderColor: isLight ? colors.grey[400] : colors.grey[500],
+    };
+};
 
 export const labeledGroupNodeStyles = {
     label: (theme) => ({

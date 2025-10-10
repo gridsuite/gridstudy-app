@@ -12,7 +12,7 @@ import { nodeHeight as nodeLayoutHeight, nodeWidth as nodeLayoutWidth } from '..
 import { FormattedMessage } from 'react-intl';
 import { LabeledGroupNodeType } from './labeled-group-node.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './constants';
-import { labeledGroupNodeStyles, getContainerStyle, LABEL_BLOCK_HEIGHT } from './labeled-group-node.styles';
+import { labeledGroupNodeStyles, getContainerStyle, LABEL_GROUP_OFFSET } from './labeled-group-node.styles';
 
 export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
     const theme = useTheme();
@@ -23,13 +23,13 @@ export function LabeledGroupNode({ data }: NodeProps<LabeledGroupNodeType>) {
     const horizontalPadding = (nodeLayoutWidth - NODE_WIDTH) / 2;
 
     // Adjust position and size to account for border width and label block
-    const labeledGroupTopPosition = data.position.topLeft.row * nodeLayoutHeight - verticalPadding - LABEL_BLOCK_HEIGHT;
+    const labeledGroupTopPosition = data.position.topLeft.row * nodeLayoutHeight - verticalPadding - LABEL_GROUP_OFFSET;
     const labeledGroupLeftPosition = data.position.topLeft.column * nodeLayoutWidth - horizontalPadding;
 
     const labeledGroupHeight =
         (data.position.bottomRight.row - data.position.topLeft.row + 1) * nodeLayoutHeight -
         2 * verticalPadding +
-        2 * LABEL_BLOCK_HEIGHT;
+        2 * LABEL_GROUP_OFFSET;
     const labeledGroupWidth = (data.position.bottomRight.column - data.position.topLeft.column + 1) * nodeLayoutWidth;
 
     const isLight = theme.palette.mode === 'light';

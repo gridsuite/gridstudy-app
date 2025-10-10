@@ -49,7 +49,10 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     }, [props.id, selectionForCopy]);
 
     const nodeOpacity = useMemo(() => {
-        return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 1;
+        if (!isSelectedForCut()) {
+            return 1;
+        }
+        return getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6;
     }, [isSelectedForCut]);
 
     const tooltipContent = useMemo(() => {
