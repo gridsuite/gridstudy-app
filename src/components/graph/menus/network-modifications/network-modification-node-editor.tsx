@@ -1081,7 +1081,6 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
-        isInitiatingCopyTab.current = true;
         setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: NetworkModificationCopyType.COPY,
@@ -1096,6 +1095,7 @@ const NetworkModificationNodeEditor = () => {
                 originNodeUuid: currentNode?.id,
             },
         });
+        isInitiatingCopyTab.current = true;
     }, [broadcastChannel, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doPasteModifications = useCallback(() => {
