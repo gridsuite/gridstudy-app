@@ -9,6 +9,7 @@ import { LIGHT_THEME, type SxStyle } from '@gridsuite/commons-ui';
 import { Theme } from '@mui/material';
 import { getLocalStorageTheme } from 'redux/session-storage/local-storage';
 import { NODE_HEIGHT, NODE_WIDTH } from './constants';
+import { zoomStyles } from '../zoom.styles';
 
 export const baseNodeStyles = (theme: Theme, direction: 'row' | 'column') =>
     ({
@@ -20,7 +21,7 @@ export const baseNodeStyles = (theme: Theme, direction: 'row' | 'column') =>
         p: 1,
         alignItems: 'stretch',
         background: theme.node.common.background,
-        borderRadius: '8px',
+        borderRadius: zoomStyles.borderRadius(theme),
         overflow: 'hidden',
     }) as const satisfies SxStyle;
 

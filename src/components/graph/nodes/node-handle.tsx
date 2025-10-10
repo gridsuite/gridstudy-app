@@ -7,24 +7,28 @@
 
 import { useTheme } from '@mui/material';
 import { Handle, HandleType, Position } from '@xyflow/react';
+import { zoomStyles } from '../zoom.styles';
 
 type NodeHandleProps = {
     type: HandleType;
     position: Position;
 };
+
 const NodeHandle = ({ type, position }: NodeHandleProps) => {
     const theme = useTheme();
+    const hidden = !zoomStyles.visibility.showHandles(theme);
+
     return (
         <Handle
             type={type}
             position={position}
             style={{
-                width: 12,
-                height: 12,
+                width: hidden ? 0 : 12,
+                height: hidden ? 0 : 12,
                 borderRadius: '50%',
-                border: theme.reactflow.handle.border,
-                background: theme.reactflow.handle.background,
-                zIndex: 10,
+                border: hidden ? 'none' : theme.reactflow.handle.border,
+                background: hidden ? 'none' : theme.reactflow.handle.background,
+                zIndex: hidden ? 0 : 10,
             }}
             isConnectable={false}
         />
