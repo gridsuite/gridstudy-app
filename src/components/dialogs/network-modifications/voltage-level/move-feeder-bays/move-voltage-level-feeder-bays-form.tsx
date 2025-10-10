@@ -184,7 +184,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 <TextInput
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_NAME}`}
                     formProps={{
-                        disabled: false,
+                        disabled: data.isRemoved,
                         size: 'small',
                         variant: 'outlined',
                         autoFocus: true,
