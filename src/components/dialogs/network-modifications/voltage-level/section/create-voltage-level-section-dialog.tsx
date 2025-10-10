@@ -207,7 +207,7 @@ export default function CreateVoltageLevelSectionDialog({
                     : POSITION_NEW_SECTION_SIDE.BEFORE.id,
                 [SWITCHES_BEFORE_SECTIONS]: editData?.leftSwitchKind ?? null,
                 [SWITCHES_AFTER_SECTIONS]: editData?.rightSwitchKind ?? null,
-                [NEW_SWITCH_STATES]: editData?.switchOpen ?? false,
+                [NEW_SWITCH_STATES]: !(editData?.switchOpen ?? false),
             });
         },
         [reset]
@@ -253,7 +253,7 @@ export default function CreateVoltageLevelSectionDialog({
                     voltageLevelSection?.isAfterBusBarSectionId === POSITION_NEW_SECTION_SIDE.AFTER.id,
                 leftSwitchKind: voltageLevelSection?.switchesBeforeSections || null,
                 rightSwitchKind: voltageLevelSection?.switchesAfterSections || null,
-                switchOpen: voltageLevelSection?.newSwitchStates || false,
+                switchOpen: !voltageLevelSection?.newSwitchStates || false,
             } satisfies CreateVoltageLevelSectionInfos;
             createVoltageLevelSection({
                 voltageLevelSectionInfos: voltageLevelSectionInfos,
