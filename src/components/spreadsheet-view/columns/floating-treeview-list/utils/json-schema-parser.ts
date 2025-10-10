@@ -40,25 +40,25 @@ function filterRedundantProperties(nodeId: string, equipmentType: SpreadsheetEqu
 
 function wildcardMatch(pattern: string, value: string): boolean {
     // Convert * to regex ".*" and escape other special regex characters
-    const regexStr = String.raw`^${pattern.replaceAll(/[-/\\^$+?.()|[\]{}]/g, '\\$&').replaceAll(/\*/g, '.*')}$`;
+    const regexStr = `^${pattern.replaceAll(/[-/\\^$+?.()|[\]{}]/g, '*').replaceAll(/\*/g, '.*')}$`;
     return new RegExp(regexStr).test(value);
 }
 
-export function sortData(treeData: TreeNode[]) {
-    function getPriority(id: string): number {
-        const exactIndex = fieldsPriorityOrder.indexOf(id);
-        if (exactIndex !== -1) {
-            return exactIndex;
-        }
-        const wildcardIndex = fieldsPriorityOrder.findIndex(
-            (pattern) => pattern.includes('*') && wildcardMatch(pattern, id)
-        );
-        if (wildcardIndex !== -1) {
-            return wildcardIndex;
-        }
-        return fieldsPriorityOrder.length / 2 + id.localeCompare(id);
+function getPriority(id: string): number {
+    const exactIndex = fieldsPriorityOrder.indexOf(id);
+    if (exactIndex !== -1) {
+        return exactIndex;
     }
+    const wildcardIndex = fieldsPriorityOrder.findIndex(
+        (pattern) => pattern.includes('*') && wildcardMatch(pattern, id)
+    );
+    if (wildcardIndex !== -1) {
+        return wildcardIndex;
+    }
+    return fieldsPriorityOrder.length / 2 + id.localeCompare(id);
+}
 
+export function sortData(treeData: TreeNode[]) {
     const sorted = [...treeData].sort((a, b) => {
         const pa = getPriority(a.id);
         const pb = getPriority(b.id);
