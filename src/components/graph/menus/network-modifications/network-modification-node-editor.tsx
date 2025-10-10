@@ -191,8 +191,7 @@ const NetworkModificationNodeEditor = () => {
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('modificationsCopyChannel');
         broadcast.onmessage = (event) => {
-            console.info('message received from broadcast channel');
-            console.info(event.data);
+            console.info('message received from broadcast channel: ', event.data);
             isInitiatingCopyTab.current = false;
             if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
                 setCopiedModifications([]);
