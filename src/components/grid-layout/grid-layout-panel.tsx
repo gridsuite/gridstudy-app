@@ -185,6 +185,36 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
     }, []);
 
+    const scrollDiagramIntoView = useCallback((diagramId: string) => {
+        const container = responsiveGridLayoutRef.current?.elementRef?.current as HTMLElement;
+        if (!container) {
+            return;
+        }
+
+        const card = container.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement;
+        if (!card) {
+            return;
+        }
+
+        const cardRect = card.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        let newScrollTop = container.scrollTop;
+
+        if (cardRect.top < containerRect.top) {
+            // Card is above the visible area — scroll up just enough
+            newScrollTop -= containerRect.top - cardRect.top;
+        } else if (cardRect.bottom > containerRect.bottom) {
+            // Card is below the visible area — scroll down just enough
+            newScrollTop += cardRect.bottom - containerRect.bottom;
+        }
+
+        container.scrollTo({
+            top: newScrollTop,
+            behavior: 'smooth',
+        });
+    }, []);
+
     const onDiagramAlreadyExists = useCallback(
         (diagramUuid: UUID) => {
             setBlinkingDiagrams((oldBlinkingDiagrams) => {
@@ -194,8 +224,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 return [...oldBlinkingDiagrams, diagramUuid];
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
+            scrollDiagramIntoView(diagramUuid);
         },
-        [stopDiagramBlinking]
+        [stopDiagramBlinking, scrollDiagramIntoView]
     );
 
     // Grid operations
@@ -526,6 +557,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             key={diagram.diagramUuid}
                             studyUuid={studyUuid}
                             visible={visible}
+                            data-grid-id={diagram.diagramUuid}
                             diagram={diagram}
                             blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
                             loading={loadingDiagrams.includes(diagram.diagramUuid)}
