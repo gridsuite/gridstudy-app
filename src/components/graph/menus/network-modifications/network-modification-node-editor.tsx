@@ -137,6 +137,11 @@ const isEditableModification = (modif: NetworkModificationMetadata) => {
     return !nonEditableModificationTypes.has(modif.type);
 };
 
+const emptyCopiedModificationsSelection = {
+    modificationsUuids: [],
+    copyInfos: null,
+};
+
 const NetworkModificationNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -181,6 +186,40 @@ const NetworkModificationNodeEditor = () => {
     const buttonAddRef = useRef<HTMLButtonElement>(null);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
+    const isInitiatingCopyTab = useRef(false);
+
+    const [broadcastChannel] = useState(() => {
+        const broadcast = new BroadcastChannel('modificationsCopyChannel');
+        broadcast.onmessage = (event) => {
+            console.info('message received from broadcast channel: ', event.data);
+            isInitiatingCopyTab.current = false;
+            if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
+                cleanClipboard();
+            } else {
+                setCopiedModifications(event.data.modificationsUuids);
+                setCopyInfos({
+                    copyType: event.data.copyInfos.copyType,
+                    originStudyUuid: event.data.copyInfos.originStudyUuid,
+                    originNodeUuid: event.data.copyInfos.originNodeUuid,
+                });
+                snackInfo({ messageId: 'CopiedModificationUpdateMessageFromAnotherStudy' });
+            }
+        };
+        return broadcast;
+    });
+
+    useEffect(() => {
+        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
+        window.addEventListener('beforeunload', (event) => {
+            if (true === isInitiatingCopyTab.current) {
+                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
+                snackInfo({
+                    messageId: 'CopiedModificationInvalidationMessageAfterTabClosure',
+                });
+            }
+        });
+    }, [broadcastChannel, snackInfo]);
+
     const cleanClipboard = useCallback(
         (showSnackInfo: boolean = true) => {
             setCopyInfos(null);
@@ -192,8 +231,12 @@ const NetworkModificationNodeEditor = () => {
                 }
                 return [];
             });
+            if (true === isInitiatingCopyTab.current) {
+                broadcastChannel.postMessage(emptyCopiedModificationsSelection);
+                isInitiatingCopyTab.current = false;
+            }
         },
-        [snackInfo]
+        [snackInfo, broadcastChannel]
     );
 
     // TODO this is not complete.
@@ -1032,17 +1075,28 @@ const NetworkModificationNodeEditor = () => {
         setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: NetworkModificationCopyType.MOVE,
+            originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
-    }, [currentNode?.id, selectedModificationsIds]);
+    }, [currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: NetworkModificationCopyType.COPY,
+            originStudyUuid: studyUuid ?? undefined,
             originNodeUuid: currentNode?.id,
         });
-    }, [currentNode?.id, selectedModificationsIds]);
+        broadcastChannel.postMessage({
+            modificationsUuids: selectedModificationsIds(),
+            copyInfos: {
+                copyType: NetworkModificationCopyType.COPY,
+                originStudyUuid: studyUuid,
+                originNodeUuid: currentNode?.id,
+            },
+        });
+        isInitiatingCopyTab.current = true;
+    }, [broadcastChannel, currentNode?.id, selectedModificationsIds, studyUuid]);
 
     const doPasteModifications = useCallback(() => {
         if (!copyInfos || !studyUuid || !currentNode?.id) {

@@ -26,6 +26,9 @@
 
     "CopiedNodeInvalidationMessage": "As a result of node modification, the contents of the clipboard have been deleted",
     "CopiedModificationInvalidationMessage": "Following a modification of the hypothesis, the content of the clipboard has been deleted",
+    "CopiedModificationInvalidationMessageFromAnotherStudy": "Following a change in the modifications in another study, the content of the clipboard has been deleted",
+    "CopiedModificationUpdateMessageFromAnotherStudy": "As a result of copying modifications from another study, the content of the clipboard has been updated",
+    "CopiedModificationInvalidationMessageAfterTabClosure": "As a result of closing the tab from another study, the content of the clipboard has been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
     "download.fileName": "File name",
