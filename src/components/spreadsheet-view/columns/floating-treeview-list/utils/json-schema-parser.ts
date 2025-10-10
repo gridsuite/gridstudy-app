@@ -40,7 +40,7 @@ function filterRedundantProperties(nodeId: string, equipmentType: SpreadsheetEqu
 
 function wildcardMatch(pattern: string, value: string): boolean {
     // Convert * to regex ".*" and escape other special regex characters
-    const regexStr = `^${pattern.replaceAll(/[-/\\^$+?.()|[\]{}]/g, '*').replaceAll(/\*/g, '.*')}$`;
+    const regexStr = `^${pattern.replaceAll(/[-/\\^$+?.()|[\]{}]/g, '*').replaceAll('*', '.*')}$`;
     return new RegExp(regexStr).test(value);
 }
 
