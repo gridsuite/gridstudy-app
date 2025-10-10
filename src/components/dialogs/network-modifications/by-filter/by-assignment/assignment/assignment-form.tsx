@@ -57,7 +57,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({ name, index }) => {
     });
 
     const equipmentFields = useMemo(
-        () => Object.values(EQUIPMENTS_FIELDS[watchEquipmentType]) ?? [],
+        () => Object.values(EQUIPMENTS_FIELDS[watchEquipmentType] ?? []),
         [watchEquipmentType]
     );
 

@@ -31,6 +31,7 @@ import type { UUID } from 'node:crypto';
 import { FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
+import GridSection from '../../../commons/grid-section';
 
 const defaultColDef = {
     sortable: false,
@@ -183,7 +184,7 @@ export function MoveVoltageLevelFeederBaysForm({
                         variant: 'outlined',
                         autoFocus: true,
                         sx: {
-                            paddingTop: '8%',
+                            paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
                                 textOverflow: 'ellipsis',
@@ -212,7 +213,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_ID}`}
                     options={busBarSectionIds}
                     size="small"
-                    sx={{ padding: '8%' }}
+                    sx={{ padding: '1rem' }}
                     disabled={data.isRemoved}
                     disableClearable
                     previousValue={
@@ -251,7 +252,7 @@ export function MoveVoltageLevelFeederBaysForm({
                             size: 'small',
                             variant: 'outlined',
                             sx: {
-                                padding: '8%',
+                                padding: '1rem',
                                 '& input': { textAlign: 'center' },
                             },
                         }}
@@ -356,6 +357,9 @@ export function MoveVoltageLevelFeederBaysForm({
                         {diagramToolTip}
                     </GridItem>
                 )}
+            </Grid>
+            <Grid item xs={1}>
+                <GridSection title={'moveFeederBaysSections'} />
             </Grid>
             <Grid item xs paddingTop={2}>
                 <CustomAGGrid
