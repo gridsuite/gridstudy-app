@@ -8,7 +8,6 @@ import { ConnectablePositionInfos } from '../../../connectivity/connectivity.typ
 
 export type FeederBaysFormInfos = {
     equipmentId: string | null;
-    connectionEquipmentId: string | null;
     busbarSectionId: string | null; // for selected value
     busbarSectionIds: string[] | null; // for options
     connectionSide: string | null;
@@ -22,7 +21,6 @@ export type FeederBayInfos = {
     busbarSectionId: string;
     connectionSide: string | null;
     connectablePositionInfos: ConnectablePositionInfos;
-    connectionEquipmentId: string;
 };
 
 export type FeederBaysInfos = (FeederBayInfos & {

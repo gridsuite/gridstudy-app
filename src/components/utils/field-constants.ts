@@ -478,4 +478,3 @@ export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS = 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS';
 export const MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE = 'moveVoltageLevelFeederBaysTable';
 export const BUSBAR_SECTION_IDS = 'busbarSectionIds';
 export const CONNECTION_SIDE = 'connectionSide';
-export const CONNECTION_EQUIPMENT_ID = 'connectionEquipmentId';
