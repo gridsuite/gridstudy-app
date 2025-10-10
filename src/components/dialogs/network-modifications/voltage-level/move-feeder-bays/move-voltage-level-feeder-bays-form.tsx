@@ -220,7 +220,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     sx={{ padding: '1rem' }}
                     disabled={data.isRemoved}
                     disableClearable
-                    previousValue={watchTable[formIndex].busbarSectionId}
+                    previousValue={watchTable[formIndex]?.busbarSectionId}
                 />
             );
         },
@@ -276,7 +276,7 @@ export function MoveVoltageLevelFeederBaysForm({
                 cellRenderer: renderEquipmentIdCell,
                 headerComponent: HeaderWithTooltip,
                 headerComponentParams: {
-                    displayName: intl.formatMessage({ id: 'ConnectionEquipmentId' }),
+                    displayName: intl.formatMessage({ id: 'equipmentID' }),
                     ...commonHeaderParams,
                 },
             },

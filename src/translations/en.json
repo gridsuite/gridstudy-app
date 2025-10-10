@@ -1632,5 +1632,5 @@
     "DuplicatedPositionsError": "Duplicated number",
     "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)",
     "moveFeederBaysSections": "Feeder bay will be connected onto the selected busbar section",
-    "ConnectionEquipmentId": "Equipment ID"
+    "equipmentID": "Equipment ID"
 }
