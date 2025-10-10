@@ -1127,6 +1127,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         lineFlowMode={lineFlowMode}
                         useName={useName}
                         visible={visible}
+                        enablePitchAndRotate={false}
                         disabled={disabled}
                         onSubstationClick={handleOpenVoltageLevel}
                         onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
