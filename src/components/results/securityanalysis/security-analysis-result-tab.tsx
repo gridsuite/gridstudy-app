@@ -44,7 +44,7 @@ import { securityAnalysisResultInvalidations } from '../../computing-status/use-
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
 import { useNodeData } from 'components/use-node-data';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
@@ -124,7 +124,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         getStoreFields(tabIndex) as SecurityAnalysisTab
     );
     const { page, rowsPerPage } = pagination;
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const globalFilterOptions = useMemo(
@@ -165,25 +165,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
-            if (globalFilters !== undefined && getGlobalFilterParameter(globalFilters) !== undefined) {
+            if (isGlobalFilterParameter(globalFilters)) {
                 queryParams['globalFilters'] = globalFilters;
             }
 
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
 
-        [
-            tabIndex,
-            resultType,
-            sortConfig,
-            filters,
-            getGlobalFilterParameter,
-            globalFilters,
-            currentRootNetworkUuid,
-            page,
-            rowsPerPage,
-            intl,
-        ]
+        [tabIndex, resultType, sortConfig, filters, globalFilters, currentRootNetworkUuid, page, rowsPerPage, intl]
     );
 
     const {

@@ -45,7 +45,7 @@ import {
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { UUID } from 'node:crypto';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
 import { Button, Tooltip } from '@mui/material';
@@ -88,7 +88,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { filters } = useFilterSelector(AgGridFilterType.Loadflow, mappingTabs(tabIndex));
 
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { onLinkClick } = useLoadFlowResultColumnActions({
         studyUuid,
         nodeUuid,
@@ -129,16 +129,20 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
                 })),
                 filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
-                ...(getGlobalFilterParameter(globalFilters) !== undefined && {
-                    globalFilters: {
-                        ...getGlobalFilterParameter(globalFilters),
-                        limitViolationsTypes:
-                            tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
-                    },
-                }),
+                ...(isGlobalFilterParameter(globalFilters)
+                    ? {
+                          globalFilters: {
+                              ...globalFilters,
+                              limitViolationsTypes:
+                                  tabIndex === 0
+                                      ? [LimitTypes.CURRENT]
+                                      : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
+                          },
+                      }
+                    : {}),
             });
         },
-        [tabIndex, filters, intl, sortConfig, getGlobalFilterParameter, globalFilters]
+        [tabIndex, filters, intl, sortConfig, globalFilters]
     );
 
     const fetchloadflowResultWithParameters = useMemo(() => {
