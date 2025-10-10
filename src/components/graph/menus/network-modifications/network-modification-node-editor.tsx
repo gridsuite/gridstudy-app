@@ -194,11 +194,7 @@ const NetworkModificationNodeEditor = () => {
             console.info('message received from broadcast channel: ', event.data);
             isInitiatingCopyTab.current = false;
             if (JSON.stringify(emptyCopiedModificationsSelection) === JSON.stringify(event.data)) {
-                setCopiedModifications([]);
-                setCopyInfos(null);
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessageFromAnotherStudy',
-                });
+                cleanClipboard();
             } else {
                 setCopiedModifications(event.data.modificationsUuids);
                 setCopyInfos({
