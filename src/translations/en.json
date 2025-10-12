@@ -2,10 +2,9 @@
     "debug.message.downloadFile": "Computation data will be downloaded upon its completion.",
     "debug.header.fileNotFound": "Computation data not found",
     "debug.header.fileError": "Computation data download failed",
-    "export.message.subscribed": "You will be notified when the export is ready.",
-    "export.message.downloadStarted": "Starting download...",
-    "export.header.fileNotFound": "export file not found",
-    "export.header.fileError": "export file download failed",
+    "export.message.started": "Export file started",
+    "export.message.succeeded": "Export file succeeded",
+    "export.header.failed": "export file failed",
 
     "button.delete": "Delete",
     "button.continue": "Continue",

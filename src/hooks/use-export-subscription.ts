@@ -8,7 +8,7 @@ import { UUID } from 'crypto';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
-import { buildExportIdentifier, setExportSubscription } from '../utils/export-utils';
+import { buildExportIdentifier, setExportSubscription } from '../utils/export-network-utils';
 
 export default function useExportSubscription({
     studyUuid,
@@ -21,18 +21,16 @@ export default function useExportSubscription({
     const { snackInfo } = useSnackMessage();
 
     const subscribeExport = useCallback(
-        (nodeUuid: UUID, format: string, fileName: string) => {
+        (nodeUuid: UUID, exportUuid: UUID) => {
             const identifier = buildExportIdentifier({
                 studyUuid,
                 nodeUuid,
                 rootNetworkUuid,
-                format,
-                fileName,
+                exportUuid,
             });
             setExportSubscription(identifier);
             snackInfo({
-                headerTxt: intl.formatMessage({ id: 'exportNetwork' }),
-                messageTxt: intl.formatMessage({ id: 'export.message.subscribed' }, { fileName }),
+                messageTxt: intl.formatMessage({ id: 'export.message.started' }),
             });
         },
         [studyUuid, rootNetworkUuid, snackInfo, intl]

@@ -8,11 +8,10 @@ import { UUID } from 'crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { downloadZipFile } from '../services/utils';
-import { HttpStatusCode } from '../utils/http-status-code';
 import { fetchExportNetworkFile } from '../services/network-conversion';
 
 export function useExportDownload() {
-    const { snackWarning, snackError } = useSnackMessage();
+    const { snackError } = useSnackMessage();
 
     const downloadExportNetworkFile = useCallback(
         (exportUuid: UUID) => {
@@ -31,21 +30,14 @@ export function useExportDownload() {
                     const blob = await response.blob();
                     downloadZipFile(blob, filename);
                 })
-                .catch((responseError: any) => {
-                    const error = responseError as Error & { status: number };
-                    if (error.status === HttpStatusCode.NOT_FOUND) {
-                        snackWarning({
-                            headerId: 'export.header.fileNotFound',
-                        });
-                    } else {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'export.header.fileError',
-                        });
-                    }
+                .catch((error: Error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'export.header.failed',
+                    });
                 });
         },
-        [snackWarning, snackError]
+        [snackError]
     );
     return { downloadExportNetworkFile };
 }

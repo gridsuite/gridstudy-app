@@ -5,35 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'node:crypto';
+import { getExportState, saveExportState } from '../redux/session-storage/export-network-state';
 
 export function buildExportIdentifier({
     studyUuid,
     nodeUuid,
     rootNetworkUuid,
-    format,
-    fileName,
+    exportUuid,
 }: {
     studyUuid: UUID;
     nodeUuid: UUID;
     rootNetworkUuid: UUID;
-    format: string;
-    fileName: string;
+    exportUuid: UUID;
 }) {
-    return `${studyUuid}|${rootNetworkUuid}|${nodeUuid}|${fileName}|${format}`;
+    return `${studyUuid}|${rootNetworkUuid}|${nodeUuid}|${exportUuid}`;
 }
 
-function getExportState(): Set<string> | null {
-    const state = sessionStorage.getItem('export-subscriptions');
-    return state ? new Set<string>(JSON.parse(state)) : null;
-}
-
-function saveExportState(state: Set<string>): void {
-    sessionStorage.setItem('export-subscriptions', JSON.stringify([...state]));
-}
-
-export function isExportSubscribed(identifier: string): boolean {
+export function isExportSubscribed(identifier: string) {
     const exportState = getExportState();
-    return exportState?.has(identifier) ?? false;
+    return exportState?.has(identifier);
 }
 
 export function unsetExportSubscription(identifier: string): void {
@@ -45,7 +35,7 @@ export function unsetExportSubscription(identifier: string): void {
 }
 
 export function setExportSubscription(identifier: string): void {
-    const exportState = getExportState() ?? new Set<string>();
+    const exportState = getExportState() ?? new Set();
     exportState.add(identifier);
     saveExportState(exportState);
 }

@@ -11,7 +11,7 @@ import { useExportDownload } from './use-export-download';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { isExportNetworkNotification } from '../types/notification-types';
-import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/export-utils';
+import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/export-network-utils';
 
 export default function useExportNotification() {
     const intl = useIntl();
@@ -25,28 +25,22 @@ export default function useExportNotification() {
             if (isExportNetworkNotification(eventData)) {
                 const {
                     studyUuid,
-                    node,
+                    node: nodeUuid,
                     rootNetworkUuid,
-                    format,
-                    userId: useId,
+                    userId: userIdNotif,
                     exportUuid,
-                    fileName,
                     error,
                 } = eventData.headers;
 
                 const exportIdentifierNotif = buildExportIdentifier({
-                    studyUuid: studyUuid,
-                    nodeUuid: node,
-                    rootNetworkUuid: rootNetworkUuid,
-                    format,
-                    fileName,
+                    studyUuid,
+                    nodeUuid,
+                    rootNetworkUuid,
+                    exportUuid,
                 });
-
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
-
-                if (isSubscribed && useId === userId) {
+                if (isSubscribed && userIdNotif === userId) {
                     unsetExportSubscription(exportIdentifierNotif);
-
                     if (error) {
                         snackError({
                             messageTxt: error,
@@ -54,8 +48,7 @@ export default function useExportNotification() {
                     } else {
                         downloadExportNetworkFile(exportUuid);
                         snackInfo({
-                            headerTxt: intl.formatMessage({ id: 'exportNetwork' }),
-                            messageTxt: intl.formatMessage({ id: 'export.message.downloadStarted' }, { fileName }),
+                            messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }),
                         });
                     }
                 }

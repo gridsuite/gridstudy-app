@@ -413,7 +413,7 @@ export function exportNetworkFile(
 
     const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
 
-    return backendFetch(url + suffix);
+    return backendFetchJson(url + suffix);
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {

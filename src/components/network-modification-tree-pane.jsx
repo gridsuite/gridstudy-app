@@ -7,16 +7,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+    networkModificationHandleSubtree,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
-    networkModificationHandleSubtree,
-    setNodeSelectionForCopy,
-    resetLogsFilter,
     reorderNetworkModificationTreeNodes,
+    resetLogsFilter,
     resetLogsPagination,
+    setNodeSelectionForCopy,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -28,15 +28,15 @@ import { BUILD_STATUS } from './network/constants';
 import {
     copySubtree,
     copyTreeNode,
+    createNodeSequence,
     createTreeNode,
     cutSubtree,
     cutTreeNode,
-    stashSubtree,
-    stashTreeNode,
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
     fetchStashedNodes,
-    createNodeSequence,
+    stashSubtree,
+    stashTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/index';
 import { RestoreNodesDialog } from './dialogs/restore-node-dialog';
@@ -467,11 +467,18 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const handleClickExportNodeNetwork = useCallback(
         (nodeUuid, params, selectedFormat, fileName) => {
-            subscribeExport(nodeUuid, selectedFormat, fileName);
-            exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName).then();
+            exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName)
+                .then((response) => {
+                    subscribeExport(nodeUuid, response);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                });
             setOpenExportDialog(false);
         },
-        [studyUuid, currentRootNetworkUuid, subscribeExport]
+        [studyUuid, currentRootNetworkUuid, subscribeExport, snackError]
     );
 
     const handleExportCaseOnNode = () => {
