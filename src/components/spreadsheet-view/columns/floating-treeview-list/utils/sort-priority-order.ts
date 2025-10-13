@@ -9,7 +9,6 @@ export const fieldsPriorityOrder = [
     '*id',
     '*name',
     'properties.',
-    '*.properties',
     'type',
     '*nominalV',
     '*voltageLevels',
