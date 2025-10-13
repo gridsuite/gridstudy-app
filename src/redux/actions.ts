@@ -31,6 +31,7 @@ import type {
     ComputingStatusParameters,
     DiagramGridLayoutConfig,
     GlobalFilterSpreadsheetState,
+    MapState,
     NodeSelectionForCopy,
     OneBusShortCircuitAnalysisDiagram,
     SpreadsheetFilterState,
@@ -1548,5 +1549,17 @@ export function updateNodeAliases(nodeAliases: NodeAlias[]): UpdateNodeAliasesAc
     return {
         type: UPDATE_NODE_ALIASES,
         nodeAliases,
+    };
+}
+
+export const SET_MAP_STATE = 'SET_MAP_STATE';
+export type SetMapStateAction = Readonly<Action<typeof SET_MAP_STATE>> & {
+    mapState: Partial<MapState>;
+};
+
+export function setMapState(mapState: Partial<MapState>): SetMapStateAction {
+    return {
+        type: SET_MAP_STATE,
+        mapState,
     };
 }

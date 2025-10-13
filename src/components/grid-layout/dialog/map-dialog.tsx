@@ -10,7 +10,7 @@ import type { UUID } from 'node:crypto';
 import { EquipmentType, LineFlowMode, NetworkVisualizationParameters, useStateBoolean } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { resetMapEquipment, setMapDataLoading, setOpenMap, setReloadMapNeeded } from 'redux/actions';
+import { resetMapEquipment, setMapDataLoading, setMapState, setOpenMap, setReloadMapNeeded } from 'redux/actions';
 import NetworkMapPanel, { NetworkMapPanelRef } from 'components/network/network-map-panel';
 import { Close } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
@@ -59,6 +59,12 @@ export const MapDialog = (props: MapDialogProps) => {
                 networkMapPanelRef.current?.leaveDrawingMode();
                 if (reason && reason === 'escapeKeyDown') {
                     return; // Do not close the map but only the drawing mode
+                }
+            }
+            if (networkMapPanelRef.current) {
+                const currentMapState = networkMapPanelRef.current.getCurrentMapState?.();
+                if (currentMapState) {
+                    dispatch(setMapState(currentMapState));
                 }
             }
             dispatch(setOpenMap(false));

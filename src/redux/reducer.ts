@@ -235,6 +235,8 @@ import {
     type UpdateTableDefinitionAction,
     USE_NAME,
     type UseNameAction,
+    SetMapStateAction,
+    SET_MAP_STATE,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -559,6 +561,12 @@ export interface DiagramGridLayoutConfig {
 
 export type LogsPaginationState = Record<string, LogsPaginationConfig>;
 
+export interface MapState {
+    zoom?: number;
+    center?: [number, number];
+    filteredNominalVoltages?: number[];
+}
+
 export interface AppState extends CommonStoreState, AppConfigState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -650,6 +658,7 @@ export interface AppState extends CommonStoreState, AppConfigState {
     toggleOptions: StudyDisplayMode[];
     highlightedModificationUuid: UUID | null;
     mapOpen: boolean;
+    mapState: MapState;
 }
 
 export type LogsFilterState = Record<string, FilterConfig[]>;
@@ -775,6 +784,7 @@ const initialState: AppState = {
     freezeMapUpdates: false,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
+    mapState: {},
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     globalFilterSpreadsheetState: {},
     spreadsheetOptionalLoadingParameters: {
@@ -1957,6 +1967,13 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(UPDATE_NODE_ALIASES, (state, action: UpdateNodeAliasesAction) => {
         state.nodeAliases = action.nodeAliases;
+    });
+
+    builder.addCase(SET_MAP_STATE, (state, action: SetMapStateAction) => {
+        state.mapState = {
+            ...state.mapState,
+            ...action.mapState,
+        };
     });
 });
 

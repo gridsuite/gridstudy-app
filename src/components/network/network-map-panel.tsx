@@ -57,7 +57,7 @@ import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState, MapState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -70,8 +70,6 @@ import SelectionCreationPanel from './selection-creation-panel/selection-creatio
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 
-const INITIAL_POSITION = [0, 0] as const;
-const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
 const EMPTY_ARRAY: any[] = [];
@@ -132,6 +130,7 @@ type NetworkMapPanelProps = {
 
 export type NetworkMapPanelRef = {
     leaveDrawingMode: () => void;
+    getCurrentMapState: () => MapState;
 };
 
 export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelProps>(
@@ -166,6 +165,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         const isNetworkModificationTreeUpToDate = useSelector(
             (state: AppState) => state.isNetworkModificationTreeModelUpToDate
         );
+        const mapState = useSelector((state: AppState) => state.mapState);
         const theme = useTheme();
         const { snackInfo } = useSnackMessage();
 
@@ -182,7 +182,9 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
 
         const { snackError } = useSnackMessage();
 
-        const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
+        const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>(
+            mapState?.filteredNominalVoltages ?? []
+        );
         const [geoData, setGeoData] = useState<GeoData>();
         const geoDataRef = useRef<any>();
 
@@ -703,13 +705,21 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                 });
                 return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(
                     () => {
-                        if (isFullReload) {
+                        if (isFullReload && !mapState?.filteredNominalVoltages) {
+                            // Only reset filters if no saved state exists
                             handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                         }
                     }
                 );
             },
-            [currentNode, handleFilteredNominalVoltagesChange, currentRootNetworkUuid, mapEquipments, studyUuid]
+            [
+                currentNode,
+                handleFilteredNominalVoltagesChange,
+                currentRootNetworkUuid,
+                mapEquipments,
+                studyUuid,
+                mapState?.filteredNominalVoltages,
+            ]
         );
 
         const updateMapEquipments = useCallback(
@@ -912,7 +922,8 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             // we check if equipments are done initializing because they are checked to fetch accurate missing geo data
             if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized && !isInitialized) {
                 // when root networks are changed, mapEquipments are recreated. when they are done recreating, the map is zoomed around the new network
-                if (mapEquipments) {
+                if (mapEquipments && !mapState?.filteredNominalVoltages) {
+                    // Only initialize filters if no saved state exists
                     handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                 }
                 if (currentNodeRef.current && !isReactFlowRootNodeData(currentNodeRef.current)) {
@@ -931,6 +942,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             isInitialized,
             loadMissingGeoData,
             dispatch,
+            mapState?.filteredNominalVoltages,
         ]);
 
         // Reload geo data (if necessary) when we switch on full path
@@ -1016,12 +1028,24 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             setShouldOpenSelectionCreationPanel(false);
         }, [isInDrawingMode]);
 
+        const getCurrentMapState = useCallback(() => {
+            return {
+                zoom: networkMapRef.current?.getCurrentViewState()?.zoom,
+                center: [
+                    networkMapRef.current?.getCurrentViewState()?.center.lng,
+                    networkMapRef.current?.getCurrentViewState()?.center.lat,
+                ] as [number, number],
+                filteredNominalVoltages: filteredNominalVoltages,
+            };
+        }, [filteredNominalVoltages]);
+
         useImperativeHandle(
             ref,
             () => ({
                 leaveDrawingMode,
+                getCurrentMapState,
             }),
-            [leaveDrawingMode]
+            [leaveDrawingMode, getCurrentMapState]
         );
 
         const handleDrawingModeChange = useCallback(
@@ -1120,8 +1144,9 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         filteredNominalVoltages={filteredNominalVoltages}
                         labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
                         arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-                        initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
-                        initialZoom={INITIAL_ZOOM}
+                        // Use saved state for initial position and zoom
+                        initialPosition={mapState?.center}
+                        initialZoom={mapState?.zoom}
                         lineFullPath={lineFullPath}
                         lineParallelPath={lineParallelPath}
                         lineFlowMode={lineFlowMode}
@@ -1219,11 +1244,17 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (
                 nominalVoltagesFromMapEquipments !== undefined &&
                 nominalVoltagesFromMapEquipments.length > 0 &&
-                filteredNominalVoltages === undefined
+                filteredNominalVoltages.length === 0 &&
+                !mapState?.filteredNominalVoltages // Only initialize if no saved map state exists
             ) {
                 handleFilteredNominalVoltagesChange(nominalVoltagesFromMapEquipments);
             }
-        }, [filteredNominalVoltages, handleFilteredNominalVoltagesChange, nominalVoltagesFromMapEquipments]);
+        }, [
+            filteredNominalVoltages,
+            handleFilteredNominalVoltagesChange,
+            nominalVoltagesFromMapEquipments,
+            mapState?.filteredNominalVoltages,
+        ]);
 
         function renderNominalVoltageFilter() {
             return (
