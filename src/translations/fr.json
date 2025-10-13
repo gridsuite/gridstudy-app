@@ -30,6 +30,9 @@
 
     "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
+    "CopiedModificationInvalidationMessageFromAnotherStudy": "Suite à un changement des modifications dans une autre étude, le contenu du presse papier a été supprimé",
+    "CopiedModificationUpdateMessageFromAnotherStudy": "Suite à la copie de modifications dans une autre étude, le presse papier a été modifié",
+    "CopiedModificationInvalidationMessageAfterTabClosure": "Suite à la fermeture de l'onglet d'une autre étude, le presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "download.fileName": "Nom de fichier",
@@ -1630,5 +1633,7 @@
     "TOP": "Haut",
     "BOTTOM": "Bas",
     "DuplicatedPositionsError": "Numéro en doublon",
-    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)"
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
+    "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
+    "equipmentID": "ID de l'ouvrage"
 }
