@@ -125,7 +125,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(false),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
