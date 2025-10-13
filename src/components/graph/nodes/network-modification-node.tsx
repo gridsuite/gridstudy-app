@@ -26,6 +26,7 @@ import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import ForwardRefBox from 'components/utils/forwardRefBox';
 import { zoomStyles } from '../zoom.styles';
 import { modificationNodeStyles, getBorderWidthStyle, getNodeBaseStyle } from './network-modification-node.styles';
+import { DETAIL_LEVELS } from '../zoom.constants';
 
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -54,6 +55,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
         }
         return getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6;
     }, [isSelectedForCut]);
+
+    const tooltipDelay = theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL ? 0 : TOOLTIP_DELAY;
 
     const tooltipContent = useMemo(() => {
         return (
@@ -95,8 +98,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     tooltip: { sx: modificationNodeStyles.tooltip },
                 }}
                 arrow
-                enterDelay={theme.tree?.is.minimalDetail ? 0 : TOOLTIP_DELAY}
-                enterNextDelay={theme.tree?.is.minimalDetail ? 0 : TOOLTIP_DELAY}
+                enterDelay={tooltipDelay}
+                enterNextDelay={tooltipDelay}
                 placement="left"
             >
                 <ForwardRefBox

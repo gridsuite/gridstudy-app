@@ -6,78 +6,78 @@
  */
 
 import { Theme } from '@mui/material';
+import { DETAIL_LEVELS } from './zoom.constants';
 
 /**
  * Zoom-based styling configuration
- * Centralizes all zoom-dependent styling decisions
+ * Uses CSS custom properties (--tree-zoom) for efficient scaling without re-renders
+ * Formula: baseValue + scaleFactor * (1/zoom - 1)
  */
 
-// Zoom scaling configuration: baseValue + scaleFactor * (1/zoom - 1)
 const SCALING = {
     borderWidth: { base: { light: 1, dark: 3 }, scale: 1.5 },
-    iconSize: { base: 14, scale: 10 },
+    iconSize: { base: 15, scale: 10 },
+    iconStrokeWidth: { base: 0.3, scale: 0.15 },
     labeledGroupBorder: { base: 3, scale: 2 },
     edgeWidth: { base: 1, scale: 1 },
     borderRadius: { base: 8, scale: 2 },
 } as const;
 
-function scale(zoom: number, base: number, factor: number): number {
-    return Math.round(base + factor * Math.max(0, 1 / zoom - 1));
+/**
+ * Generate CSS calc() expression for zoom-based scaling
+ * calc(base + scale * (1/var(--tree-zoom) - 1))
+ */
+function cssScale(base: number, scale: number): string {
+    return `calc(${base}px + ${scale}px * (1 / var(--tree-zoom, 1) - 1))`;
 }
 
 export const zoomStyles = {
-    // Dynamic styling
+    // Dynamic styling using CSS custom properties
     borderWidth: (theme: Theme, selected = false): string => {
-        const zoom = theme.tree?.zoom ?? 1;
         const base =
             theme.palette.mode === 'dark' && selected ? SCALING.borderWidth.base.dark : SCALING.borderWidth.base.light;
-        return `${scale(zoom, base, SCALING.borderWidth.scale)}px`;
+        return cssScale(base, SCALING.borderWidth.scale);
     },
 
     borderRadius: (theme: Theme): string => {
-        const zoom = theme.tree?.zoom ?? 1;
-        return `${scale(zoom, SCALING.borderRadius.base, SCALING.borderRadius.scale)}px`;
+        return cssScale(SCALING.borderRadius.base, SCALING.borderRadius.scale);
     },
 
     edgeWidth: (theme: Theme): string => {
-        const zoom = theme.tree?.zoom ?? 1;
-        return `${scale(zoom, SCALING.edgeWidth.base, SCALING.edgeWidth.scale)}px`;
+        return cssScale(SCALING.edgeWidth.base, SCALING.edgeWidth.scale);
     },
 
     iconSize: (theme: Theme): string => {
-        const zoom = theme.tree?.zoom ?? 1;
-        return `${scale(zoom, SCALING.iconSize.base, SCALING.iconSize.scale)}px`;
+        return cssScale(SCALING.iconSize.base, SCALING.iconSize.scale);
     },
 
-    iconStrokeWidth: (theme: Theme): number => {
-        const zoom = theme.tree?.zoom ?? 1;
-        return 0.3 + Math.max(0, (1 / zoom - 1) * 0.15);
+    iconStrokeWidth: (theme: Theme): string => {
+        return cssScale(SCALING.iconStrokeWidth.base, SCALING.iconStrokeWidth.scale);
     },
 
     labeledGroupBorder: (theme: Theme) => {
-        const zoom = theme.tree?.zoom ?? 1;
-        const width = scale(zoom, SCALING.labeledGroupBorder.base, SCALING.labeledGroupBorder.scale);
-        const radius = scale(zoom, SCALING.borderRadius.base, SCALING.borderRadius.scale);
-        const style = theme.tree?.is.minimalDetail ? 'solid' : 'dashed';
+        const width = cssScale(SCALING.labeledGroupBorder.base, SCALING.labeledGroupBorder.scale);
+        const radius = cssScale(SCALING.borderRadius.base, SCALING.borderRadius.scale);
+        const style = theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL ? 'solid' : 'dashed';
         return {
-            border: `${style} ${width}px #8B8F8F`,
-            borderRadius: `${radius}px`,
+            border: `${style} ${width} #8B8F8F`,
+            borderRadius: radius,
         };
     },
 
     // Visibility
     visibility: {
-        showHandles: (theme: Theme) => !theme.tree?.atMost.reducedDetail,
-        showNodeContent: (theme: Theme) => !theme.tree?.atMost.minimalDetail,
-        showLabeledGroupLabel: (theme: Theme) => !theme.tree?.atMost.minimalDetail,
-        showBuildStatusLabel: (theme: Theme) => theme.tree?.atLeast.standardDetail ?? false,
-        showBuildButton: (theme: Theme) => theme.tree?.atLeast.standardDetail ?? false,
-        showGlobalBuildStatus: (theme: Theme) => !(theme.tree?.atMost.minimalDetail ?? false),
+        showHandles: (theme: Theme) => theme.tree?.detailLevel === DETAIL_LEVELS.STANDARD,
+        showNodeContent: (theme: Theme) => theme.tree?.detailLevel !== DETAIL_LEVELS.MINIMAL,
+        showLabeledGroupLabel: (theme: Theme) => theme.tree?.detailLevel !== DETAIL_LEVELS.MINIMAL,
+        showBuildStatusLabel: (theme: Theme) => theme.tree?.detailLevel === DETAIL_LEVELS.STANDARD,
+        showBuildButton: (theme: Theme) => theme.tree?.detailLevel === DETAIL_LEVELS.STANDARD,
+        showGlobalBuildStatus: (theme: Theme) => theme.tree?.detailLevel !== DETAIL_LEVELS.MINIMAL,
     },
 
     // Layout
     layout: {
-        useFullHeightFooter: (theme: Theme) => theme.tree?.atMost.minimalDetail ?? false,
+        useFullHeightFooter: (theme: Theme) => theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL,
         getCompactChipSize: (theme: Theme, size: number = 3) => ({
             borderRadius: '50%',
             width: theme.spacing(size),
@@ -87,7 +87,9 @@ export const zoomStyles = {
             '& .MuiChip-label': { padding: 0, overflow: 'hidden', display: 'none' },
             '& .MuiChip-icon': { margin: 0 },
         }),
-        getLargeChipSize: (theme: Theme) =>
-            theme.tree?.atMost.minimalDetail ? zoomStyles.layout.getCompactChipSize(theme, 6) : undefined,
+        getLargeChipSize: (theme: Theme): React.CSSProperties | undefined =>
+            theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL
+                ? zoomStyles.layout.getCompactChipSize(theme, 6)
+                : undefined,
     },
 };

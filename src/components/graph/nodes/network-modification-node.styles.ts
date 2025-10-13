@@ -82,7 +82,7 @@ export const modificationNodeStyles = {
         fontSize: zoomStyles.iconSize(theme),
         '& path': {
             stroke: `currentColor`,
-            strokeWidth: `${zoomStyles.iconStrokeWidth(theme)}px`,
+            strokeWidth: zoomStyles.iconStrokeWidth(theme),
         },
     }),
 

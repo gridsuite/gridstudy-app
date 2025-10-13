@@ -8,12 +8,13 @@
 import { type MuiStyles } from '@gridsuite/commons-ui';
 import { colors, Theme } from '@mui/material';
 import { zoomStyles } from '../zoom.styles';
+import { DETAIL_LEVELS } from '../zoom.constants';
 
 export const LABEL_GROUP_OFFSET = 30;
 
 export const getContainerStyle = (theme: Theme, isLight: boolean) => {
     let backgroundColor = 'transparent';
-    if (theme.tree?.is.minimalDetail) {
+    if (theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL) {
         backgroundColor = isLight ? theme.palette.grey[200] : colors.grey[700];
     }
 
@@ -34,8 +35,8 @@ export const labeledGroupNodeStyles = {
         border: '1px solid',
         borderColor: theme.reactflow.labeledGroup.borderColor,
         boxShadow: theme.shadows[1],
-        fontSize: '12px',
-        display: theme.tree?.atMost.minimalDetail ? 'none' : 'flex',
+        fontSize: '13px',
+        display: theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL ? 'none' : 'flex',
         gap: '4px',
         alignItems: 'center',
         justifyContent: 'center',
@@ -48,7 +49,7 @@ export const labeledGroupNodeStyles = {
     }),
 
     text: (theme) => ({
-        display: theme.tree?.atLeast.standardDetail ? 'inline' : 'none',
+        display: theme.tree?.detailLevel === DETAIL_LEVELS.STANDARD ? 'inline' : 'none',
         verticalAlign: 'middle',
     }),
 } as const satisfies MuiStyles;

@@ -23,12 +23,13 @@ const NodeHandle = ({ type, position }: NodeHandleProps) => {
             type={type}
             position={position}
             style={{
-                width: hidden ? 0 : 12,
-                height: hidden ? 0 : 12,
+                opacity: hidden ? 0 : 1,
+                width: 12,
+                height: 12,
                 borderRadius: '50%',
-                border: hidden ? 'none' : theme.reactflow.handle.border,
-                background: hidden ? 'none' : theme.reactflow.handle.background,
-                zIndex: hidden ? 0 : 10,
+                border: theme.reactflow.handle.border,
+                background: theme.reactflow.handle.background,
+                zIndex: 99,
             }}
             isConnectable={false}
         />
