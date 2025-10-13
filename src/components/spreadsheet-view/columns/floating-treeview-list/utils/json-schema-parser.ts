@@ -44,23 +44,23 @@ function wildcardMatch(pattern: string, value: string): boolean {
     return new RegExp(regexStr).test(value);
 }
 
-export function sortData(treeData: TreeNode[]) {
-    function getPriority(id: string): number {
-        const exactIndex = fieldsPriorityOrder.indexOf(id);
-        if (exactIndex !== -1) {
-            return exactIndex;
-        }
-        const wildcardIndex = fieldsPriorityOrder.findIndex(
-            (pattern) => pattern.includes('*') && wildcardMatch(pattern, id)
-        );
-        if (wildcardIndex !== -1) {
-            return wildcardIndex;
-        }
-
-        // If a field isn't in the priority list it get placed in the middle of the fields
-        return fieldsPriorityOrder.length / 2;
+function getPriority(id: string): number {
+    const exactIndex = fieldsPriorityOrder.indexOf(id);
+    if (exactIndex !== -1) {
+        return exactIndex;
+    }
+    const wildcardIndex = fieldsPriorityOrder.findIndex(
+        (pattern) => pattern.includes('*') && wildcardMatch(pattern, id)
+    );
+    if (wildcardIndex !== -1) {
+        return wildcardIndex;
     }
 
+    // If a field isn't in the priority list it get placed in the middle of the fields
+    return fieldsPriorityOrder.length / 2;
+}
+
+export function sortData(treeData: TreeNode[]) {
     const sorted = [...treeData].sort((a, b) => {
         const pa = getPriority(a.id);
         const pb = getPriority(b.id);
