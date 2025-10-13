@@ -205,7 +205,7 @@ export function LimitsSidePane({
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
                 <Box>
-                    <LimitsPropertiesSideStack formName={`${OplimitsGroupFormName}.${LIMITS_PROPERTIES}`} />
+                    <LimitsPropertiesSideStack formName={`${OplimitsGroupFormName}.${LIMITS_PROPERTIES}`} disabled={disabled}/>
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />

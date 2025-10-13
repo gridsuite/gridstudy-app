@@ -15,8 +15,9 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 export interface LimitsPropertiesSideStackProps {
     formName: string;
+    disabled?: boolean;
 }
-export function LimitsPropertiesSideStack({ formName, ...props }: Readonly<LimitsPropertiesSideStackProps>) {
+export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<LimitsPropertiesSideStackProps>) {
     const { setValue } = useFormContext();
     const limitsProperties: LimitsProperty[] = useWatch({ name: formName });
 
@@ -63,24 +64,25 @@ export function LimitsPropertiesSideStack({ formName, ...props }: Readonly<Limit
     );
 
     return (
-        <Stack direction="column" spacing={2} paddingBottom={2} flexWrap="wrap">
-            <Stack direction="row" {...props} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+        <Stack direction="column" spacing={2} paddingBottom={2} flexWrap="wrap" >
+            <Stack direction="row" sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 {limitsProperties?.map((property: LimitsProperty, index: number) => (
                     <LimitsTagChip
                         key={`${property.name}`}
                         limitsProperty={property}
                         onDelete={() => handleDelete(index)}
+                        disabled={disabled}
                     />
                 ))}
                 {!isEditing ? (
-                    <IconButton color="primary" sx={{ verticalAlign: 'center' }} onClick={() => setIsEditing(true)}>
+                    <IconButton color="primary" sx={{ verticalAlign: 'center' }} onClick={() => setIsEditing(true)} disabled={disabled}>
                         <AddCircle />
                     </IconButton>
                 ) : (
                     ''
                 )}
             </Stack>
-            {isEditing ? (
+            {isEditing && !disabled ? (
                 <Box
                     display="flex"
                     gap={2}

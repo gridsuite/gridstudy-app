@@ -227,12 +227,13 @@ export const updateTemporaryLimits = (
     return updatedTemporaryLimits;
 };
 
-export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[]) => {
-    return currentLimits?.map((currentLimit: CurrentLimits) => {
+export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimitsData[]) => {
+    return currentLimits?.map((currentLimit: CurrentLimitsData) => {
         return {
             id: currentLimit.id + currentLimit.applicability,
             name: currentLimit.id,
             applicability: currentLimit.applicability,
+            limitsProperties: currentLimit.limitsProperties,
             currentLimits: {
                 id: currentLimit.id,
                 permanentLimit: null,
@@ -342,6 +343,7 @@ export const addModificationTypeToOpLimitsGroups = (
             id: limitsGroupForm.id,
             name: limitsGroupForm.name,
             applicability: limitsGroupForm.applicability,
+            limitsProperties: limitsGroupForm.limitsProperties,
             currentLimits: currentLimits,
             modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
             temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
