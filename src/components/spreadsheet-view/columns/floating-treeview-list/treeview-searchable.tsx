@@ -13,28 +13,39 @@ import Button from '@mui/material/Button';
 import { Dispatch, MouseEvent, RefObject, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { FORMULA } from '../column-creation-form';
 import { useFormulaQuickSearch } from './use-formula-quicksearch';
-import { buildTreeData } from './utils/json-schema-parser';
+import { buildTreeData, sortData } from './utils/json-schema-parser';
 import { JSONSchema4 } from 'json-schema';
 import { UseFormReturn } from 'react-hook-form';
 import { renderTreeData } from './utils/render-tree-data';
 import { usePopoverToggle } from './utils/use-popover-toggle';
 import { useIntl } from 'react-intl';
+import { SpreadsheetEquipmentType } from 'components/spreadsheet-view/types/spreadsheet.type';
 
 interface TreeviewSearchableProps {
     properties: JSONSchema4 | null;
     formMethods: UseFormReturn<any>;
     setAnchorEl: Dispatch<SetStateAction<Element | null>>;
     inputRef: RefObject<HTMLInputElement | null>;
+    equipmentType: SpreadsheetEquipmentType;
 }
 
 const MOUSE_EVENT_DETAIL_DOUBLE_CLICK = 2;
 
-export const TreeviewSearchable = ({ properties, formMethods, setAnchorEl, inputRef }: TreeviewSearchableProps) => {
+export const TreeviewSearchable = ({
+    properties,
+    formMethods,
+    setAnchorEl,
+    inputRef,
+    equipmentType,
+}: TreeviewSearchableProps) => {
     const intl = useIntl();
     const [pendingSelection, setPendingSelection] = useState<string | null>(null);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-    const treeData = useMemo(() => buildTreeData(properties, properties), [properties]);
+    const treeData = useMemo(
+        () => sortData(buildTreeData(properties, properties, intl, equipmentType)),
+        [equipmentType, intl, properties]
+    );
     const { currentResultIndex, matches, handleSearch, handleNavigate, handleResetSearch, itemRefs, filter } =
         useFormulaQuickSearch(treeData, setExpandedItems);
 
