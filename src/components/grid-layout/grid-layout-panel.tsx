@@ -187,35 +187,11 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     const scrollDiagramIntoView = useCallback((diagramId: string) => {
         const container = responsiveGridLayoutRef.current?.elementRef?.current as HTMLElement;
-        if (!container) {
-            return;
-        }
-
-        const card = container.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement;
-        if (!card) {
-            return;
-        }
-
-        const cardRect = card.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-
-        let newScrollTop = container.scrollTop;
-
-        if (cardRect.top < containerRect.top) {
-            // Card is above the visible area — scroll up just enough
-            newScrollTop -= containerRect.top - cardRect.top;
-        } else if (cardRect.bottom > containerRect.bottom) {
-            // Card is below the visible area — scroll down just enough
-            newScrollTop += cardRect.bottom - containerRect.bottom;
-        }
-
-        container.scrollTo({
-            top: newScrollTop,
-            behavior: 'smooth',
-        });
+        const card = container?.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement;
+        card?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
     }, []);
 
-    const onDiagramAlreadyExists = useCallback(
+    const focusOnDiagram = useCallback(
         (diagramUuid: UUID) => {
             setBlinkingDiagrams((oldBlinkingDiagrams) => {
                 if (oldBlinkingDiagrams.includes(diagramUuid)) {
@@ -224,7 +200,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 return [...oldBlinkingDiagrams, diagramUuid];
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
-            scrollDiagramIntoView(diagramUuid);
+            // Scroll to card after a short delay to allow DOM rendering
+            setTimeout(() => scrollDiagramIntoView(diagramUuid), 150);
         },
         [stopDiagramBlinking, scrollDiagramIntoView]
     );
@@ -277,13 +254,13 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         diagramErrors,
         globalError,
         removeDiagram,
-        createDiagram,
+        createDiagramWithFocus,
         updateDiagram,
         updateDiagramPositions,
     } = useDiagramModel({
         diagramTypes: diagramTypes,
         onAddDiagram: addLayoutItem,
-        onDiagramAlreadyExists,
+        focusOnDiagram,
     });
 
     const handleUpdateDiagram = useCallback(
@@ -332,10 +309,10 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             if (diagram) {
                 showGrid();
-                createDiagram(diagram);
+                createDiagramWithFocus(diagram);
             }
         },
-        [createDiagram, showGrid]
+        [createDiagramWithFocus, showGrid]
     );
 
     const handleLoadNad = useCallback(
@@ -351,9 +328,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 voltageLevelToOmitIds: [],
                 positions: [],
             };
-            createDiagram(diagram);
+            createDiagramWithFocus(diagram);
         },
-        [createDiagram]
+        [createDiagramWithFocus]
     );
 
     /**
@@ -564,7 +541,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             errorMessage={globalError || diagramErrors[diagram.diagramUuid]}
                             onClose={() => onRemoveCard(diagram.diagramUuid)}
                             showInSpreadsheet={showInSpreadsheet}
-                            createDiagram={createDiagram}
+                            createDiagram={createDiagramWithFocus}
                             updateDiagram={handleUpdateDiagram}
                             updateDiagramPositions={handleUpdateDiagramPositions}
                         />
