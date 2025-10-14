@@ -7,7 +7,7 @@
 
 import { JSONSchema4 } from 'json-schema';
 import { IntlShape } from 'react-intl';
-import { fieldsPriorityOrder } from './sort-priority-order';
+import { FIELDS_PRIORITY_ORDER } from './sort-priority-order';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 
 export type TreeNode = {
@@ -100,11 +100,11 @@ function wildcardMatch(pattern: string, value: string): boolean {
  * @returns Priority index (lower number = higher priority)
  */
 function getPriority(id: string): number {
-    const exactIndex = fieldsPriorityOrder.indexOf(id);
+    const exactIndex = FIELDS_PRIORITY_ORDER.indexOf(id);
     if (exactIndex !== -1) {
         return exactIndex;
     }
-    const wildcardIndex = fieldsPriorityOrder.findIndex(
+    const wildcardIndex = FIELDS_PRIORITY_ORDER.findIndex(
         (pattern) => pattern.includes('*') && wildcardMatch(pattern, id)
     );
     if (wildcardIndex !== -1) {
@@ -112,7 +112,7 @@ function getPriority(id: string): number {
     }
 
     // If a field isn't in the priority list it get placed in the middle of the fields
-    return fieldsPriorityOrder.length / 2;
+    return FIELDS_PRIORITY_ORDER.length / 2;
 }
 
 /**
