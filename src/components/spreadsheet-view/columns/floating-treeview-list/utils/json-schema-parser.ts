@@ -21,8 +21,11 @@ function formatSpecialCases(nodeId: string) {
     // Matches following cases : properties, voltageLevelProperties, voltageLevelProperties1, voltageLevelProperties2, substationProperties, voltageLevels[].properties...
     if (nodeId.includes('roperties')) {
         return `${nodeId}.`;
-    } else if (['operationalLimitsGroup1', 'operationalLimitsGroup2'].includes(nodeId)) {
-        return `${nodeId}[]`;
+    } else if (wildcardMatch('operationalLimitsGroup*', nodeId)) {
+        if (['operationalLimitsGroup1', 'operationalLimitsGroup2'].includes(nodeId)) {
+            return `${nodeId}[]`;
+        }
+        return nodeId.replace(/(operationalLimitsGroup[\w\d]*)(\.)/, '$1[]$2');
     }
     return nodeId;
 }
