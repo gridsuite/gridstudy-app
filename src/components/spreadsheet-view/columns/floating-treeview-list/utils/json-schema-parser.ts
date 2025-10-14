@@ -40,8 +40,9 @@ function formatSpecialCases(nodeId: string): string {
         if (['operationalLimitsGroup1', 'operationalLimitsGroup2'].includes(nodeId)) {
             return `${nodeId}[]`;
         }
+        console.log(nodeId);
         // Nested groups get brackets inserted before the dot
-        return nodeId.replace(/(operationalLimitsGroup[\w\d]*)(\.)/, '$1[]$2');
+        return nodeId.replace(/(operationalLimitsGroup\w*)(\.)/, '$1[]$2');
     }
 
     return nodeId;
@@ -247,7 +248,7 @@ function buildObjectPropertyNodes(
             // Handle enum types
             if (childSchema?.enum) {
                 return {
-                    id: nodeId,
+                    id: formatSpecialCases(nodeId),
                     label: key,
                     type: 'enum',
                 };
