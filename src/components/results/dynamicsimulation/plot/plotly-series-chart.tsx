@@ -23,6 +23,28 @@ type CustomPlotParams = PlotParams & {
 // create own Plot by using Plotly in basic dist for the reason of big size in standard dist plotly.js
 const Plot = createPlotlyComponent(Plotly) as FunctionComponent<CustomPlotParams>;
 
+// Helper function
+function seriesToData(
+    s: Series,
+    getMarker: (s: Series) => Partial<PlotMarker>,
+    defaults?: Partial<PlotData>
+): Partial<PlotData> {
+    return {
+        ...defaults,
+        name: s.name,
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: getMarker(s),
+        line: {
+            color: baseColors[s.index % baseColors.length][
+                `${300 + (Math.floor(s.index / baseColors.length) % 7) * 100}` as keyof (typeof baseColors)[number]
+            ],
+        },
+        x: s.data.x ? s.data.x.map((value) => value / 1000) : [],
+        y: s.data.y ? s.data.y : [],
+    };
+}
+
 export type PlotlySeriesChartProps = {
     id: string;
     groupId: string;
@@ -60,41 +82,11 @@ function PlotlySeriesChart({ id, groupId, leftSeries, rightSeries, sync }: Reado
     }, []);
 
     const data = useMemo(() => {
-        function seriesToData(
-            getMarker: (s: Series) => Partial<PlotMarker>,
-            defaults?: Partial<PlotData>
-        ): (s: Series) => Partial<PlotData> {
-            return (s: Series) => ({
-                ...defaults,
-                name: s.name,
-                type: 'scatter',
-                mode: 'lines+markers',
-                marker: getMarker(s),
-                line: {
-                    color: baseColors[s.index % baseColors.length][
-                        `${
-                            300 + (Math.floor(s.index / baseColors.length) % 7) * 100
-                        }` as keyof (typeof baseColors)[number] // compute from 300 to 900 with step = 100
-                    ],
-                },
-                x: s.data.x ? s.data.x.map((value) => value / 1000) : [], // ms => s
-                y: s.data.y ? s.data.y : [],
-            });
-        }
-
-        return [
-            ...(leftSeries ?? []).map(seriesToData(makeGetMarker({}))),
-            ...(rightSeries ?? []).map(
-                seriesToData(
-                    makeGetMarker({
-                        symbol: 'square',
-                    }),
-                    {
-                        yaxis: 'y2',
-                    }
-                )
-            ),
-        ];
+        const leftData = (leftSeries ?? []).map((series) => seriesToData(series, makeGetMarker({})));
+        const rightData = (rightSeries ?? []).map((series) =>
+            seriesToData(series, makeGetMarker({ symbol: 'square' }), { yaxis: 'y2' })
+        );
+        return [...leftData, ...rightData];
     }, [leftSeries, rightSeries, makeGetMarker]);
 
     const handleOnRelayout = useCallback(

@@ -33,6 +33,8 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
+    TRANSFORMER_REACTANCE,
+    TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialog-utils';
@@ -74,6 +76,11 @@ import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-poin
 import { ModificationDialog } from '../../../commons/modificationDialog';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { useFormWithDirtyTracking } from 'components/dialogs/commons/use-form-with-dirty-tracking';
+import {
+    getShortCircuitEmptyFormData,
+    getShortCircuitFormData,
+    getShortCircuitFormSchema,
+} from '../../../short-circuit/short-circuit-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -84,6 +91,7 @@ const emptyFormData = {
     ...getSetPointsEmptyFormData(true),
     ...getActivePowerControlEmptyFormData(true),
     ...emptyProperties,
+    ...getShortCircuitEmptyFormData(),
 };
 
 const formSchema = yup
@@ -103,6 +111,7 @@ const formSchema = yup
         [REACTIVE_LIMITS]: getReactiveLimitsValidationSchema(true),
         ...getSetPointsSchema(true),
         ...getActivePowerControlSchema(true),
+        ...getShortCircuitFormSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -162,6 +171,10 @@ export default function BatteryModificationDialog({
                     reactiveCapabilityCurvePoints: editData?.reactiveCapabilityCurvePoints ?? null,
                 }),
                 ...getPropertiesFromModification(editData?.properties ?? undefined),
+                ...getShortCircuitFormData({
+                    directTransX: editData?.directTransX?.value ?? null,
+                    stepUpTransformerX: editData?.stepUpTransformerX?.value ?? null,
+                }),
             });
         },
         [reset]
@@ -295,6 +308,8 @@ export default function BatteryModificationDialog({
                     ? (reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] ?? null)
                     : null,
                 properties: toModificationProperties(battery) ?? null,
+                directTransX: toModificationOperation(battery[TRANSIENT_REACTANCE]),
+                stepUpTransformerX: toModificationOperation(battery[TRANSFORMER_REACTANCE]),
             } satisfies BatteryModificationInfos;
             modifyBattery({
                 batteryModificationInfos: batteryModificationInfos,

@@ -234,7 +234,6 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 .filter((item, index, arr) => arr.findIndex((x) => x.equipmentId === item.equipmentId) === index);
             // merge row data between actual values in network and user's modification infos
             const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
-
             // reset default values for RHF state
             reset(
                 {
@@ -329,7 +328,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 onClear={clear}
                 fullWidth
                 onSave={onSubmit}
-                maxWidth={'md'}
+                maxWidth={'lg'}
                 titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
                 keepMounted={true}

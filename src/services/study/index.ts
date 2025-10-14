@@ -216,7 +216,7 @@ export function fetchContingencyCount(
 export function copyOrMoveModifications(
     studyUuid: UUID,
     targetNodeId: UUID,
-    modificationToCutUuidList: string[],
+    modificationToCutUuidList: UUID[],
     copyInfos: NetworkModificationCopyInfo
 ) {
     console.info(copyInfos.copyType + ' modifications');
@@ -229,6 +229,7 @@ export function copyOrMoveModifications(
         '?' +
         new URLSearchParams({
             action: copyInfos.copyType,
+            originStudyUuid: copyInfos.originStudyUuid ?? '',
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
