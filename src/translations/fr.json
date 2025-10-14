@@ -1631,5 +1631,6 @@
     "DuplicatedPositionsError": "Numéro en doublon",
     "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
     "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
-    "Length": "Nombre d'éléments"
+    "Length": "Nombre d'éléments",
+    "equipmentID": "ID de l'ouvrage"
 }
