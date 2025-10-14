@@ -23,8 +23,9 @@ export function renderTreeData(
             <TreeItem
                 key={`${index}${node.id}`}
                 itemId={node.id}
-                // @ts-ignore
-                ref={(el) => (itemRefs.current[node.id] = el)}
+                ref={(el) => {
+                    itemRefs.current[node.id] = el;
+                }}
                 label={
                     <TreeLabel
                         key={`${index}${node.id}`}
