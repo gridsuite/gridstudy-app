@@ -26,7 +26,7 @@ import { useIntl } from 'react-intl';
 
 export interface SaveNamingFilterDialogProps {
     open: UseStateBooleanReturn;
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
 }
 

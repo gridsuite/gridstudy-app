@@ -31,7 +31,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface RenderTableAndExportCsvProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     columns: any[];
     defaultColDef: ColDef;
     tableName: string;

@@ -31,10 +31,10 @@ interface PanelVisibility {
 }
 
 interface PanelRefs {
-    treeAndModificationsPanelGroupRef: RefObject<PanelRef>;
-    treePanelRef: RefObject<PanelRef>;
-    modificationsPanelRef: RefObject<PanelRef>;
-    gridPanelRef: RefObject<PanelRef>;
+    treeAndModificationsPanelGroupRef: RefObject<PanelRef | null>;
+    treePanelRef: RefObject<PanelRef | null>;
+    modificationsPanelRef: RefObject<PanelRef | null>;
+    gridPanelRef: RefObject<PanelRef | null>;
 }
 
 interface PanelState {

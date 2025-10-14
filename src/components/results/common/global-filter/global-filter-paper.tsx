@@ -37,7 +37,7 @@ const XS_COLUMN2: number = 4;
 const XS_COLUMN3: number = 4.5;
 
 type GlobalFilterPaperProps = PropsWithChildren<{
-    autocompleteRef?: RefObject<HTMLElement>;
+    autocompleteRef?: RefObject<HTMLElement | null>;
 }>;
 
 function GlobalFilterPaper({ children, autocompleteRef }: Readonly<GlobalFilterPaperProps>) {

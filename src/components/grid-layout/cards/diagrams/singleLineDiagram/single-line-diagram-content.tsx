@@ -74,8 +74,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { diagramSizeSetter, studyUuid, visible, onNextVoltageLevelClick } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
-    const svgRef = useRef<HTMLDivElement>();
-    const diagramViewerRef = useRef<SingleLineDiagramViewer>();
+    const svgRef = useRef<HTMLDivElement>(null);
+    const diagramViewerRef = useRef<SingleLineDiagramViewer>(null);
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
@@ -277,6 +277,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 equipmentType={hoveredEquipmentType}
                 equipmentId={hoveredEquipmentId}
                 loadFlowStatus={loadFlowStatus}
+                anchorPosition={undefined}
             />
         );
     };

@@ -7,7 +7,7 @@
 import { ExpandingTextField, type ExpandingTextFieldProps, type SxStyle } from '@gridsuite/commons-ui';
 import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useMemo } from 'react';
+import { JSX, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useFormulaSearch } from './formula-search-context';
 

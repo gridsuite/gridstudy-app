@@ -49,7 +49,7 @@ export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) 
 };
 
 export const useSpreadsheetGlobalFilter = (
-    gridRef: RefObject<AgGridReact>,
+    gridRef: RefObject<AgGridReact | null>,
     tabUuid: UUID,
     equipmentType: SpreadsheetEquipmentType
 ) => {
