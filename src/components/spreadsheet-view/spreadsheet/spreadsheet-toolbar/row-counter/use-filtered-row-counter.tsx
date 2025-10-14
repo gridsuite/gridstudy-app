@@ -7,7 +7,7 @@
 
 import { SpreadsheetTabDefinition } from '../../../types/spreadsheet.type';
 import { AgGridReact } from 'ag-grid-react';
-import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, type RefObject, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { debounce } from '@mui/material';
 import { useSelector } from 'react-redux';
@@ -40,10 +40,6 @@ export function useFilteredRowCounterInfo({
     const [isLoading, setIsLoading] = useState(true);
     const [isAnyFilterPresent, setIsAnyFilterPresent] = useState(false);
 
-    const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
-    // Use a ref on equipments to avoid stale state issues on registered listeners
-    const equipmentsRef = useRef(equipments);
-
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
@@ -51,10 +47,6 @@ export function useFilteredRowCounterInfo({
     const spreadsheetColumnsFiltersState = useSelector(
         (state: AppState) => state.spreadsheetFilter[tableDefinition?.uuid]
     );
-
-    useEffect(() => {
-        equipmentsRef.current = equipments;
-    }, [equipments]);
 
     // Update is debounced to avoid displayed row count falsely set to 0 because of AG Grid internal behaviour which briefly set row count to 0 in between filters
     const debouncedUpdateRowCounter = useMemo(
@@ -68,7 +60,7 @@ export function useFilteredRowCounterInfo({
                 }
                 const api = gridRef.current.api;
                 setDisplayedRows(api.getDisplayedRowCount());
-                setTotalRows(Object.values(equipmentsRef.current.equipmentsByNodeId[currentNode.id] ?? {}).length ?? 0);
+                setTotalRows(api.getGridOption('rowData')?.length ?? 0);
                 setIsLoading(false);
             }, 600),
         [gridRef, currentNode, disabled]
