@@ -49,6 +49,7 @@ export interface LimitsSidePaneProps {
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
     disabled: boolean;
+    isModification?: boolean;
 }
 
 export function LimitsSidePane({
@@ -62,6 +63,7 @@ export function LimitsSidePane({
     selectedLimitSetName,
     checkLimitSetUnicity,
     disabled,
+    isModification,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
@@ -205,7 +207,12 @@ export function LimitsSidePane({
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
                 <Box>
-                    <LimitsPropertiesSideStack formName={`${OplimitsGroupFormName}.${LIMITS_PROPERTIES}`} disabled={disabled}/>
+                    {!isModification && (
+                        <LimitsPropertiesSideStack
+                            formName={`${OplimitsGroupFormName}.${LIMITS_PROPERTIES}`}
+                            disabled={disabled}
+                        />
+                    )}
                     <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
                         <Grid item xs={2}>
                             <FormattedMessage id="Applicability" />

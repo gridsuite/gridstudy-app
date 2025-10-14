@@ -339,9 +339,11 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                                     ''
                                                 )}
                                             </Stack>
-                                            <LimitsPropertiesStack
-                                                formName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                            />
+                                            {!isAModification && (
+                                                <LimitsPropertiesStack
+                                                    formName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                                />
+                                            )}
                                         </Stack>
 
                                         {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (

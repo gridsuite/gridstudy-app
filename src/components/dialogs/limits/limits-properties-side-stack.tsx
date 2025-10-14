@@ -64,7 +64,7 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
     );
 
     return (
-        <Stack direction="column" spacing={2} paddingBottom={2} flexWrap="wrap" >
+        <Stack direction="column" spacing={2} paddingBottom={2} flexWrap="wrap">
             <Stack direction="row" sx={{ display: 'flex', flexWrap: 'wrap' }}>
                 {limitsProperties?.map((property: LimitsProperty, index: number) => (
                     <LimitsTagChip
@@ -75,7 +75,12 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                     />
                 ))}
                 {!isEditing ? (
-                    <IconButton color="primary" sx={{ verticalAlign: 'center' }} onClick={() => setIsEditing(true)} disabled={disabled}>
+                    <IconButton
+                        color="primary"
+                        sx={{ verticalAlign: 'center' }}
+                        onClick={() => setIsEditing(true)}
+                        disabled={disabled}
+                    >
                         <AddCircle />
                     </IconButton>
                 ) : (
