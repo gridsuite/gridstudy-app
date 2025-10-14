@@ -13,7 +13,7 @@ import { type AppState } from '../../../../../redux/reducer';
 import { SpreadsheetEquipmentType } from '../../../types/spreadsheet.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { ROW_INDEX_COLUMN_ID } from '../../../constants';
-import { useGlobalFilterResults } from '../../../../global-filter/use-global-filter-server';
+import { useGlobalFilterResults } from '../../../../results/common/global-filter/use-global-filter-results';
 import { FilterEquipmentType } from '../../../../../types/filter-lib/filter';
 
 export const refreshSpreadsheetAfterFilterChanged = (event: FilterChangedEvent) => {

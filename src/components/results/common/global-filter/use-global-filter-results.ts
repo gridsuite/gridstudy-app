@@ -9,19 +9,15 @@ import type { NonEmptyTuple } from 'type-fest';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import type { GlobalFilter, GlobalFilters } from '../results/common/global-filter/global-filter-types';
-import { evaluateGlobalFilter } from '../../services/study/filter';
-import type { AppState } from '../../redux/reducer';
-import useGlobalFilters, { isGlobalFilterParameter } from '../results/common/global-filter/use-global-filters';
-import type { FilterEquipmentType } from '../../types/filter-lib/filter';
-
-function isDefined<V>(value: V | null | undefined): value is V {
-    return value !== null && value !== undefined;
-}
+import type { GlobalFilter, GlobalFilters } from './global-filter-types';
+import { evaluateGlobalFilter } from '../../../../services/study/filter';
+import type { AppState } from '../../../../redux/reducer';
+import useGlobalFilters, { isGlobalFilterParameter } from './use-global-filters';
+import type { FilterEquipmentType } from '../../../../types/filter-lib/filter';
 
 /* Because of ESLint react-hooks/rules-of-hooks, nullable value must be managed inside the hook, because
  * React hooks can't be called conditionally and/or different order. */
-export function useGlobalFiltersResults(
+function useGlobalFiltersResults(
     globalFilters: GlobalFilters | undefined,
     equipmentTypes: NonEmptyTuple<FilterEquipmentType>
 ) {
@@ -31,12 +27,7 @@ export function useGlobalFiltersResults(
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const [filteredIds, setFilteredIds] = useState<string[]>();
     useEffect(() => {
-        if (
-            isDefined(studyUuid) &&
-            isDefined(currentRootNetworkUuid) &&
-            isDefined(currentNodeUuid) &&
-            isGlobalFilterParameter(globalFilters)
-        ) {
+        if (studyUuid && currentRootNetworkUuid && currentNodeUuid && isGlobalFilterParameter(globalFilters)) {
             evaluateGlobalFilter(studyUuid, currentNodeUuid, currentRootNetworkUuid, equipmentTypes, globalFilters)
                 .then(setFilteredIds)
                 .catch((error) => {
