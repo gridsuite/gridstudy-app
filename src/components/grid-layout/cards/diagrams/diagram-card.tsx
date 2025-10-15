@@ -215,6 +215,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
                             onNextVoltageLevelClick={handleVoltageLevelClick}
+                            diagramTitle={diagram.name}
                         />
                     )}
                     {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
