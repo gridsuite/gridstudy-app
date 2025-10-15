@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useDiagramEventListener } from './use-diagram-event-listener';
 import {
     Diagram,
@@ -207,6 +207,102 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         ]
     );
 
+    // Helper functions to reduce nesting
+    const handleFetchSuccess = useCallback(
+        (diagram: Diagram, data: any) => {
+            setDiagrams((diagrams) => {
+                if (!diagrams[diagram.diagramUuid]) {
+                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                    return diagrams;
+                }
+                const newDiagrams = { ...diagrams };
+                const vlIdsFromSvg =
+                    (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map((vl: any) => vl.id) ??
+                    [];
+
+                newDiagrams[diagram.diagramUuid] = {
+                    ...diagrams[diagram.diagramUuid],
+                    svg: data,
+                    name: getDiagramTitle(diagram, data),
+                    ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
+                        voltageLevelToExpandIds: [],
+                        voltageLevelIds: [
+                            ...new Set([
+                                ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
+                                ...vlIdsFromSvg,
+                            ]),
+                        ],
+                        voltageLevelToOmitIds: (
+                            diagrams[diagram.diagramUuid] as NetworkAreaDiagram
+                        ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
+                        positions: mergePositions(
+                            (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
+                            data.metadata as DiagramMetadata
+                        ),
+                    }),
+                };
+                return newDiagrams;
+            });
+        },
+        [getDiagramTitle]
+    );
+
+    const handleFetchError = useCallback(
+        (diagram: Diagram, error: any) => {
+            console.error('Error while fetching SVG', error.message);
+            if (error.status === 400) {
+                setDiagrams((diagrams) => {
+                    const newDiagrams = { ...diagrams };
+                    delete newDiagrams[diagram.diagramUuid];
+                    return newDiagrams;
+                });
+                snackError({
+                    headerId: 'nadConfiguredPositionsModeFailed',
+                });
+                return;
+            }
+            setDiagrams((diagrams) => {
+                if (!diagrams[diagram.diagramUuid]) {
+                    console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
+                    return diagrams;
+                }
+                const newDiagrams = { ...diagrams };
+
+                newDiagrams[diagram.diagramUuid] = {
+                    ...diagrams[diagram.diagramUuid],
+                };
+                return newDiagrams;
+            });
+            let errorMessage: string;
+            if (error.status === 404) {
+                errorMessage = diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
+            } else if (error.status === 403) {
+                errorMessage = error.message;
+                snackError({
+                    headerId: errorMessage,
+                });
+            } else {
+                errorMessage = 'svgLoadingFail';
+                snackError({
+                    headerId: errorMessage,
+                });
+            }
+            setDiagramErrors((diagramErrors) => {
+                return {
+                    ...diagramErrors,
+                    [diagram.diagramUuid]: errorMessage,
+                };
+            });
+        },
+        [snackError]
+    );
+
+    const handleFetchFinally = useCallback((diagram: Diagram) => {
+        setLoadingDiagrams((loadingDiagrams) => {
+            return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
+        });
+    }, []);
+
     const fetchDiagramSvg = useCallback(
         (diagram: Diagram) => {
             // make url from type
@@ -240,102 +336,28 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 }
                 return [...loadingDiagrams, diagram.diagramUuid];
             });
-            // fetch the svg
+
             fetchSvg(url, fetchOptions)
                 .then((data) => {
                     if (data == null) {
                         return;
                     }
-                    setDiagrams((diagrams) => {
-                        if (!diagrams[diagram.diagramUuid]) {
-                            console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                            return diagrams;
-                        }
-                        const newDiagrams = { ...diagrams };
-                        const vlIdsFromSvg =
-                            (data.additionalMetadata as DiagramAdditionalMetadata)?.voltageLevels?.map(
-                                (vl: any) => vl.id
-                            ) ?? [];
-
-                        newDiagrams[diagram.diagramUuid] = {
-                            ...diagrams[diagram.diagramUuid],
-                            svg: data,
-                            name: getDiagramTitle(diagram, data),
-                            ...(diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && {
-                                voltageLevelToExpandIds: [],
-                                voltageLevelIds: [
-                                    ...new Set([
-                                        ...(diagrams[diagram.diagramUuid] as NetworkAreaDiagram).voltageLevelIds,
-                                        ...vlIdsFromSvg,
-                                    ]),
-                                ],
-                                voltageLevelToOmitIds: (
-                                    diagrams[diagram.diagramUuid] as NetworkAreaDiagram
-                                ).voltageLevelToOmitIds.filter((vlId: string) => !vlIdsFromSvg.includes(vlId)),
-                                positions: mergePositions(
-                                    (diagrams[diagram.diagramUuid] as NetworkAreaDiagram).positions ?? [],
-                                    data.metadata as DiagramMetadata
-                                ),
-                            }),
-                        };
-                        return newDiagrams;
-                    });
+                    handleFetchSuccess(diagram, data);
                 })
                 .catch((error) => {
-                    console.error('Error while fetching SVG', error.message);
-                    if (error.status === 400) {
-                        // remove the failed diagram from loading list and show a snack error.
-                        setDiagrams((diagrams) => {
-                            const newDiagrams = { ...diagrams };
-                            delete newDiagrams[diagram.diagramUuid];
-                            return newDiagrams;
-                        });
-                        snackError({
-                            headerId: 'nadConfiguredPositionsModeFailed',
-                        });
-                        return;
-                    }
-                    setDiagrams((diagrams) => {
-                        if (!diagrams[diagram.diagramUuid]) {
-                            console.warn(`Diagram ${diagram.diagramUuid} not found in state`);
-                            return diagrams;
-                        }
-                        const newDiagrams = { ...diagrams };
-
-                        newDiagrams[diagram.diagramUuid] = {
-                            ...diagrams[diagram.diagramUuid],
-                        };
-                        return newDiagrams;
-                    });
-                    let errorMessage: string;
-                    if (error.status === 404) {
-                        errorMessage =
-                            diagram.type === DiagramType.SUBSTATION ? 'SubstationNotFound' : 'VoltageLevelNotFound';
-                    } else if (error.status === 403) {
-                        errorMessage = error.message;
-                        snackError({
-                            headerId: errorMessage,
-                        });
-                    } else {
-                        errorMessage = 'svgLoadingFail';
-                        snackError({
-                            headerId: errorMessage,
-                        });
-                    }
-                    setDiagramErrors((diagramErrors) => {
-                        return {
-                            ...diagramErrors,
-                            [diagram.diagramUuid]: errorMessage,
-                        };
-                    });
+                    handleFetchError(diagram, error);
                 })
                 .finally(() => {
-                    setLoadingDiagrams((loadingDiagrams) => {
-                        return loadingDiagrams.filter((id) => id !== diagram.diagramUuid);
-                    });
+                    handleFetchFinally(diagram);
                 });
         },
-        [getDiagramTitle, getUrl, snackError, networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode]
+        [
+            getUrl,
+            networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+            handleFetchSuccess,
+            handleFetchError,
+            handleFetchFinally,
+        ]
     );
 
     const findSimilarDiagram = useCallback(

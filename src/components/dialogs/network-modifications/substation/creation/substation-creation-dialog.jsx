@@ -88,17 +88,19 @@ const SubstationCreationDialog = ({
         }
     }, [reset, editData]);
 
-    // We set the default country if there is one
+    // We set the default country only in creation mode
     useEffect(() => {
-        fetchDefaultCountry().then((country) => {
-            if (country) {
-                reset({
-                    ...getValues(),
-                    [COUNTRY]: country,
-                });
-            }
-        });
-    }, [reset, getValues]);
+        if (!isUpdate) {
+            fetchDefaultCountry().then((country) => {
+                if (country) {
+                    reset({
+                        ...getValues(),
+                        [COUNTRY]: country,
+                    });
+                }
+            });
+        }
+    }, [reset, getValues, isUpdate]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);

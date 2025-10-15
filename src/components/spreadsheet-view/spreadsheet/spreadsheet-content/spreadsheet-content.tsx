@@ -14,7 +14,6 @@ import { type CurrentTreeNode } from 'components/graph/tree-node.type';
 import { type AgGridReact } from 'ag-grid-react';
 import { Alert, Box } from '@mui/material';
 import { useEquipmentModification } from './hooks/use-equipment-modification';
-import { type NodeAlias } from '../../types/node-alias.type';
 import { FormattedMessage } from 'react-intl';
 import { useSpreadsheetGlobalFilter } from './hooks/use-spreadsheet-gs-filter';
 import { useFilterSelector } from 'hooks/use-filter-selector';
@@ -24,7 +23,10 @@ import { useGridCalculations } from 'components/spreadsheet-view/spreadsheet/spr
 import { useColumnManagement } from './hooks/use-column-management';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { type RowDataUpdatedEvent } from 'ag-grid-community';
-import { useSpreadsheetEquipments } from './hooks/use-spreadsheet-equipments';
+import { useNodeAliases } from '../../hooks/use-node-aliases';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
+import { useFetchEquipment } from '../../hooks/use-fetch-equipment';
 
 const styles = {
     table: (theme) => ({
@@ -48,7 +50,6 @@ interface SpreadsheetContentProps {
     currentNode: CurrentTreeNode;
     tableDefinition: SpreadsheetTabDefinition;
     columns: CustomColDef[];
-    nodeAliases: NodeAlias[];
     disabled: boolean;
     equipmentId: string | null;
     onEquipmentScrolled: () => void;
@@ -63,7 +64,6 @@ export const SpreadsheetContent = memo(
         currentNode,
         tableDefinition,
         columns,
-        nodeAliases,
         disabled,
         equipmentId,
         onEquipmentScrolled,
@@ -72,9 +72,17 @@ export const SpreadsheetContent = memo(
         active,
     }: SpreadsheetContentProps) => {
         const [isGridReady, setIsGridReady] = useState(false);
+        const { nodeAliases } = useNodeAliases();
+        const equipments = useSelector((state: AppState) => state.spreadsheetNetwork.equipments[tableDefinition?.type]);
+        const nodesIds = useSelector((state: AppState) => state.spreadsheetNetwork.nodesIds);
+        const { fetchNodesEquipmentData } = useFetchEquipment();
 
-        // Only fetch when active
-        const { equipments, isFetching } = useSpreadsheetEquipments(tableDefinition?.type, nodeAliases, active);
+        // Initial data loading for this type when the tab is opened
+        useEffect(() => {
+            if (active && nodesIds.length > 0 && Object.keys(equipments.equipmentsByNodeId).length === 0) {
+                fetchNodesEquipmentData(tableDefinition?.type, new Set(nodesIds));
+            }
+        }, [active, nodesIds, equipments.equipmentsByNodeId, fetchNodesEquipmentData, tableDefinition?.type]);
 
         const { onModelUpdated } = useGridCalculations(gridRef, tableDefinition.uuid, columns);
 
@@ -126,14 +134,6 @@ export const SpreadsheetContent = memo(
         );
 
         const transformedRowData = useMemo(() => {
-            if (
-                !nodeAliases ||
-                !equipments?.nodesId.includes(currentNode.id) ||
-                !equipments.equipmentsByNodeId[currentNode.id]
-            ) {
-                return undefined;
-            }
-
             const currentNodeData: Record<string, Identifiable> = equipments.equipmentsByNodeId[currentNode.id];
             return Object.values(
                 Object.entries(equipments.equipmentsByNodeId).reduce(
@@ -213,7 +213,7 @@ export const SpreadsheetContent = memo(
                             rowData={transformedRowData}
                             currentNode={currentNode}
                             columnData={columns}
-                            isFetching={isFetching}
+                            isFetching={equipments.isFetching}
                             isDataEditable={isModificationDialogForEquipmentType}
                             handleColumnDrag={handleColumnDrag}
                             isExternalFilterPresent={isExternalFilterPresent}
