@@ -188,7 +188,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     const scrollDiagramIntoView = useCallback((diagramId: string) => {
         const container = responsiveGridLayoutRef.current?.elementRef?.current as HTMLElement;
         const card = container?.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement;
-        card?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        card?.scrollIntoView({ behavior: 'smooth' });
     }, []);
 
     const focusOnDiagram = useCallback(
@@ -201,7 +201,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
             // Scroll to card after a short delay to allow DOM rendering
-            setTimeout(() => scrollDiagramIntoView(diagramUuid), 150);
+            setTimeout(() => scrollDiagramIntoView(diagramUuid), 300);
         },
         [stopDiagramBlinking, scrollDiagramIntoView]
     );
