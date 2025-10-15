@@ -19,6 +19,7 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    EQUIPMENT_ID,
     IS_REMOVED,
     MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE,
 } from '../../../../utils/field-constants';
@@ -144,6 +145,36 @@ export function MoveVoltageLevelFeederBaysForm({
         [intl, isNodeBuiltValue, shouldDisableTooltip]
     );
 
+    const renderEquipmentIdCell = useCallback(
+        ({ data }: { data?: any }) => {
+            const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
+            const formIndex = watchTable?.findIndex((item) => item.equipmentId === data.equipmentId);
+
+            return (
+                <TextInput
+                    name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${EQUIPMENT_ID}`}
+                    formProps={{
+                        disabled: data.isRemoved,
+                        size: 'small',
+                        variant: 'outlined',
+                        autoFocus: true,
+                        sx: {
+                            paddingTop: '1rem',
+                            '& input': {
+                                textAlign: 'center',
+                                textOverflow: 'ellipsis',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                border: 'unset', // Remove the border
+                            },
+                        },
+                    }}
+                />
+            );
+        },
+        [getValues]
+    );
+
     const renderConnectionNameCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysInfos = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
@@ -158,13 +189,14 @@ export function MoveVoltageLevelFeederBaysForm({
                         variant: 'outlined',
                         autoFocus: true,
                         sx: {
-                            paddingTop: '8%',
+                            paddingTop: '1rem',
                             '& input': {
                                 textAlign: 'center',
                                 textOverflow: 'ellipsis',
                             },
                         },
                     }}
+                    previousValue={watchTable[formIndex]?.connectablePositionInfos?.connectionName ?? ''}
                 />
             );
         },
@@ -184,9 +216,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     name={`${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_ID}`}
                     options={busBarSectionIds}
                     size="small"
-                    sx={{ padding: '8%' }}
+                    sx={{ padding: '1rem' }}
                     disabled={data.isRemoved}
                     disableClearable
+                    previousValue={watchTable[formIndex]?.busbarSectionId}
                 />
             );
         },
@@ -220,7 +253,7 @@ export function MoveVoltageLevelFeederBaysForm({
                             size: 'small',
                             variant: 'outlined',
                             sx: {
-                                padding: '8%',
+                                padding: '1rem',
                                 '& input': { textAlign: 'center' },
                             },
                         }}
@@ -235,6 +268,17 @@ export function MoveVoltageLevelFeederBaysForm({
 
     const columnDefs = useMemo(
         () => [
+            {
+                field: EQUIPMENT_ID,
+                filter: true,
+                flex: 2,
+                cellRenderer: renderEquipmentIdCell,
+                headerComponent: HeaderWithTooltip,
+                headerComponentParams: {
+                    displayName: intl.formatMessage({ id: 'equipmentID' }),
+                    ...commonHeaderParams,
+                },
+            },
             {
                 field: CONNECTION_NAME,
                 filter: true,
@@ -281,9 +325,10 @@ export function MoveVoltageLevelFeederBaysForm({
             },
         ],
         [
+            renderEquipmentIdCell,
             intl,
-            commonHeaderParams,
             renderConnectionNameCell,
+            commonHeaderParams,
             renderBusbarSectionCell,
             renderConnectionDirectionCell,
             renderConnectionPositionCell,
@@ -314,7 +359,10 @@ export function MoveVoltageLevelFeederBaysForm({
                     </GridItem>
                 )}
             </Grid>
-            <Grid item xs paddingTop={2}>
+            <Grid item spacing={2} paddingTop={2}>
+                <FormattedMessage id={'moveFeederBaysSections'} />
+            </Grid>
+            <Grid item xs paddingTop={1}>
                 <CustomAGGrid
                     rowData={groupedRowData}
                     defaultColDef={defaultColDef}
@@ -323,7 +371,7 @@ export function MoveVoltageLevelFeederBaysForm({
                     animateRows={false}
                     domLayout="normal"
                     headerHeight={48}
-                    rowHeight={80}
+                    rowHeight={85}
                     rowStyle={{ border: 'none' }}
                     suppressRowHoverHighlight={true}
                     // group config
