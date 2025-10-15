@@ -442,6 +442,7 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+    [ComputingType.PCC_MIN]: RunningStatus;
 }
 
 export interface LoadFlowStatusParameters {
@@ -811,6 +812,7 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+        [ComputingType.PCC_MIN]: RunningStatus.IDLE,
     },
     computingStatusParameters: {
         [ComputingType.LOAD_FLOW]: null,

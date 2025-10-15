@@ -71,6 +71,7 @@ enum TAB_VALUES {
     dynamicSecurityAnalysisParamsTabValue = 'DYNAMIC_SECURITY_ANALYSIS',
     voltageInitParamsTabValue = 'VOLTAGE_INITIALIZATION',
     stateEstimationTabValue = 'STATE_ESTIMATION',
+    pccMinTabValue = 'PCC_MIN',
     networkVisualizationsParams = 'networkVisualizationsParams',
 }
 

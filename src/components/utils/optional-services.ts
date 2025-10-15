@@ -13,6 +13,7 @@ export enum OptionalServicesNames {
     ShortCircuit = 'ShortCircuit',
     VoltageInit = 'VoltageInit',
     StateEstimation = 'StateEstimation',
+    PccMin = 'PccMin',
 }
 export enum OptionalServicesStatus {
     Up = 'UP',
