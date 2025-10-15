@@ -70,6 +70,8 @@ import SelectionCreationPanel from './selection-creation-panel/selection-creatio
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 
+const INITIAL_POSITION = [0, 0] as const;
+const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
 const EMPTY_ARRAY: any[] = [];
@@ -1029,12 +1031,13 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         }, [isInDrawingMode]);
 
         const getCurrentMapState = useCallback(() => {
+            const currentMapState = networkMapRef.current?.getCurrentViewState();
             return {
-                zoom: networkMapRef.current?.getCurrentViewState()?.zoom,
+                zoom: currentMapState?.zoom ?? INITIAL_ZOOM,
                 center: [
-                    networkMapRef.current?.getCurrentViewState()?.center.lng,
-                    networkMapRef.current?.getCurrentViewState()?.center.lat,
-                ] as [number, number],
+                    currentMapState?.center.lng ?? INITIAL_POSITION[0],
+                    currentMapState?.center.lat ?? INITIAL_POSITION[1],
+                ],
                 filteredNominalVoltages: filteredNominalVoltages,
             };
         }, [filteredNominalVoltages]);
