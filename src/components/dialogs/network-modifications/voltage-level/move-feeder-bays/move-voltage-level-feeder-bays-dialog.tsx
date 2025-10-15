@@ -224,14 +224,12 @@ export default function MoveVoltageLevelFeederBaysDialog({
             const busBarSectionInfos = Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[];
             const feederBaysInfos: FeederBaysInfos = (
                 Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
-            )
-                .flatMap(([equipmentId, feederBayInfos]) =>
-                    feederBayInfos.map((feederBay) => ({
-                        equipmentId,
-                        ...feederBay,
-                    }))
-                )
-                .filter((item, index, arr) => arr.findIndex((x) => x.equipmentId === item.equipmentId) === index);
+            ).flatMap(([equipmentId, feederBayInfos]) =>
+                feederBayInfos.map((feederBay) => ({
+                    equipmentId,
+                    ...feederBay,
+                }))
+            );
             // merge row data between actual values in network and user's modification infos
             const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
             // reset default values for RHF state
