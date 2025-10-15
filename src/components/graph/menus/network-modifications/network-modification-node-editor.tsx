@@ -616,6 +616,43 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
+            id: 'GenerationLoad',
+            items: [
+                {
+                    id: 'GENERATION_AND_LOAD',
+                    label: 'GenerationAndLoad',
+                    subItems: [
+                        {
+                            id: MODIFICATION_TYPES.GENERATOR_SCALING.type,
+                            label: 'GeneratorScaling',
+                            action: () => withDefaultParams(GeneratorScalingDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.LOAD_SCALING.type,
+                            label: 'LoadScaling',
+                            action: () => withDefaultParams(LoadScalingDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+                            label: 'GenerationDispatch',
+                            action: () => withDefaultParams(GenerationDispatchDialog),
+                        },
+                        {
+                            id: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
+                            label: 'BalancesAdjustment',
+                            action: () => withDefaultParams(BalancesAdjustmentDialog),
+                        },
+                    ],
+                },
+                {
+                    id: 'VOLTAGE_INIT_MODIFICATION',
+                    label: 'VoltageInitModification',
+                    hide: true,
+                    action: () => withDefaultParams(VoltageInitModificationDialog),
+                },
+            ],
+        },
+        {
             id: 'MultipleModifications',
             items: [
                 {
@@ -655,43 +692,6 @@ const NetworkModificationNodeEditor = () => {
                             action: () => withDefaultParams(ByFilterDeletionDialog),
                         },
                     ],
-                },
-            ],
-        },
-        {
-            id: 'GenerationLoad',
-            items: [
-                {
-                    id: 'GENERATION_AND_LOAD',
-                    label: 'GenerationAndLoad',
-                    subItems: [
-                        {
-                            id: MODIFICATION_TYPES.GENERATOR_SCALING.type,
-                            label: 'GeneratorScaling',
-                            action: () => withDefaultParams(GeneratorScalingDialog),
-                        },
-                        {
-                            id: MODIFICATION_TYPES.LOAD_SCALING.type,
-                            label: 'LoadScaling',
-                            action: () => withDefaultParams(LoadScalingDialog),
-                        },
-                        {
-                            id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-                            label: 'GenerationDispatch',
-                            action: () => withDefaultParams(GenerationDispatchDialog),
-                        },
-                        {
-                            id: MODIFICATION_TYPES.BALANCES_ADJUSTMENT.type,
-                            label: 'BalancesAdjustment',
-                            action: () => withDefaultParams(BalancesAdjustmentDialog),
-                        },
-                    ],
-                },
-                {
-                    id: 'VOLTAGE_INIT_MODIFICATION',
-                    label: 'VoltageInitModification',
-                    hide: true,
-                    action: () => withDefaultParams(VoltageInitModificationDialog),
                 },
             ],
         },
