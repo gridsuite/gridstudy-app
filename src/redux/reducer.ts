@@ -346,6 +346,7 @@ import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 
 // Redux state
 export type StudyUpdated = {
@@ -1564,6 +1565,24 @@ export const reducer = createReducer(initialState, (builder) => {
             if (currentEquipment) {
                 // Format the updated equipments to match the table format
                 const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
+
+                if (equipmentType === SpreadsheetEquipmentType.BUS) {
+                    // before updating with the new buses, we must delete all the existing ones corresponding
+                    // to the updated voltage levels
+                    const vlIdsOfBusesToDelete = new Set<string>(
+                        (action.equipments as Record<EquipmentUpdateType, Identifiable[]>)[
+                            EquipmentUpdateType.VOLTAGE_LEVELS
+                        ].map((vl) => vl.id)
+                    );
+                    for (const busId in currentEquipment) {
+                        if (vlIdsOfBusesToDelete.has((currentEquipment[busId] as any)[VOLTAGE_LEVEL_ID])) {
+                            delete state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS].equipmentsByNodeId[
+                                action.nodeId
+                            ][busId];
+                        }
+                    }
+                }
+
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
