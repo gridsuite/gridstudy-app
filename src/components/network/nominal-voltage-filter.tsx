@@ -59,19 +59,15 @@ export default function NominalVoltageFilter({
     const [voltageLevelIntervals, setVoltageLevelIntervals] = useState<VoltageLevelValuesInterval[]>(
         BASE_VOLTAGES.map((interval) => ({ ...interval, vlListValues: [], isChecked: true }))
     );
-    const updateVoltageLevelIntervals = useCallback((voltageValue: number) => {
-        const intervalName = getNominalVoltageIntervalName(voltageValue);
-        setVoltageLevelIntervals((prev) =>
-            prev.map((interval) =>
-                interval.name === intervalName
-                    ? { ...interval, vlListValues: [...interval.vlListValues, voltageValue] }
-                    : interval
-            )
-        );
-    }, []);
     useEffect(() => {
-        nominalVoltages.forEach(updateVoltageLevelIntervals);
-    }, [nominalVoltages, updateVoltageLevelIntervals]);
+        const newIntervals = BASE_VOLTAGES.map((interval) => {
+            const vlListValues = nominalVoltages.filter(
+                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
+            );
+            return { ...interval, vlListValues, isChecked: true };
+        });
+        setVoltageLevelIntervals(newIntervals);
+    }, [nominalVoltages]);
 
     const handleToggle = useCallback(
         (intervalVlName: string, interval?: VoltageLevelValuesInterval) => {
