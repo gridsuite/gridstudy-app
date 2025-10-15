@@ -27,7 +27,6 @@ import {
 } from 'components/utils/field-constants';
 import {
     areArrayElementsUnique,
-    formatTemporaryLimits,
     formatToTemporaryLimitsFormInfos,
     toModificationOperation,
 } from 'components/utils/utils';
@@ -240,38 +239,18 @@ export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[])
     });
 };
 
-/**
- * extract data loaded from the map server and merge it with local data
- * in order to fill the operational limits groups modification interface
- */
-export const combineFormAndMapServerLimitsGroups = (
-    formBranchModification: LineModificationFormInfos,
+export const getOpLimitsGroupInfosFromLineModification = (
+    formBranchModification: LineModificationFormInfos
+): OperationalLimitsGroupFormInfos[] => {
+    return formBranchModification?.limits?.operationalLimitsGroups ?? [];
+};
+
+export const getOpLimitsGroupInfosFromBranchInfo = (
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
-    let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];
-
-    // updates limit values :
-    for (const opLG of updatedOpLG) {
-        const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
-            (currentLimit: CurrentLimits) =>
-                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
-        );
-        if (equivalentFromMapServer !== undefined) {
-            opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
-                opLG.currentLimits.temporaryLimits,
-                formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
-            );
-        }
-    }
-
-    // adds all the operational limits groups from mapServerBranch THAT ARE NOT DELETED by the netmod
-    mapServerBranch.currentLimits?.forEach((currentLimit: CurrentLimits) => {
-        const equivalentFromNetMod = updatedOpLG.find(
-            (opLG: OperationalLimitsGroupFormInfos) =>
-                currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
-        );
-        if (equivalentFromNetMod === undefined) {
-            updatedOpLG.push({
+    return (
+        mapServerBranch.currentLimits?.map((currentLimit: CurrentLimits) => {
+            return {
                 id: currentLimit.id + currentLimit.applicability,
                 name: currentLimit.id,
                 applicability: currentLimit.applicability,
@@ -280,11 +259,9 @@ export const combineFormAndMapServerLimitsGroups = (
                     permanentLimit: null,
                     temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
                 },
-            });
-        }
-    });
-
-    return updatedOpLG;
+            };
+        }) ?? []
+    );
 };
 
 export const addModificationTypeToTemporaryLimits = (

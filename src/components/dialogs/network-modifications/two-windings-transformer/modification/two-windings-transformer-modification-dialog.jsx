@@ -95,7 +95,8 @@ import {
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    combineFormAndMapServerLimitsGroups,
+    getOpLimitsGroupInfosFromBranchInfo,
+    getOpLimitsGroupInfosFromLineModification,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -659,10 +660,9 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ...{
                                         [LIMITS]: {
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                                formValues,
-                                                twt
-                                            ),
+                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
+                                                ? getOpLimitsGroupInfosFromLineModification(formValues)
+                                                : getOpLimitsGroupInfosFromBranchInfo(twt),
                                         },
                                     },
                                     ...getRatioTapChangerFormData({

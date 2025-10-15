@@ -57,11 +57,12 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
-    combineFormAndMapServerLimitsGroups,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
+    getOpLimitsGroupInfosFromBranchInfo,
+    getOpLimitsGroupInfosFromLineModification,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -317,10 +318,9 @@ const LineModificationDialog = ({
                                     ...{
                                         [LIMITS]: {
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                                formValues,
-                                                line
-                                            ),
+                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
+                                                ? getOpLimitsGroupInfosFromLineModification(formValues)
+                                                : getOpLimitsGroupInfosFromBranchInfo(line),
                                         },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
