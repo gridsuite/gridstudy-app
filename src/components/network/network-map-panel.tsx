@@ -69,6 +69,7 @@ import GuidancePopup from './guidance-popup';
 import SelectionCreationPanel from './selection-creation-panel/selection-creation-panel';
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
+import { getNominalVoltageColor } from 'utils/colors';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -1187,6 +1188,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                             onDrawEvent(event);
                         }}
                         shouldDisableToolTip={!visible || isInDrawingMode.value}
+                        getNominalVoltageColor={getNominalVoltageColor}
                     />
                     {mapEquipments && mapEquipments?.substations?.length > 0 && renderNominalVoltageFilter()}
                     {renderSearchEquipment()}
