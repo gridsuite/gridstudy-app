@@ -365,6 +365,7 @@
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
+    "updateSwitchStateError": "Une erreur est survenue lors de la mise à jour de l'état de l'organe de coupure dans l'image \"{diagramTitle}\"",
     "startSensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité",
     "ShortCircuitAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
     "ShortCircuitAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de court-circuit",

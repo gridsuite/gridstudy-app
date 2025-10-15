@@ -158,7 +158,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         snackError,
     ]);
 
-    const handleToggle = (value: UUID) => () => {
+    const handleToggle = (value: UUID) => {
         const newLocalColumns = localColumns.map((col) => {
             if (col.uuid === value) {
                 gridRef.current?.api.setColumnsVisible([col.id], !col.visible);
@@ -188,7 +188,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({ tableDefi
         applyColumnState(newLocalColumns);
     };
 
-    const handleClickOnLock = (value: UUID) => () => {
+    const handleClickOnLock = (value: UUID) => {
         // Early return if column is not visible
         const targetColumn = localColumns?.find((col) => col.uuid === value);
         if (!targetColumn?.visible) {
