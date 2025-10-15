@@ -396,7 +396,7 @@ export function exportNetworkFile(
     params: Record<string, any>,
     selectedFormat: string,
     fileName: string
-): Promise<void> {
+): Promise<String> {
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
@@ -413,7 +413,7 @@ export function exportNetworkFile(
 
     const suffix = urlSearchParams.toString() ? '?' + urlSearchParams.toString() : '';
 
-    return backendFetchJson(url + suffix);
+    return backendFetchText(url + suffix);
 }
 
 export function fetchSpreadsheetEquipmentTypeSchema(type: SpreadsheetEquipmentType): Promise<JSONSchema4> {
