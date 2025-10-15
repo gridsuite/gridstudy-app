@@ -56,7 +56,10 @@ export default function SpreadsheetGlobalFilter({ tableDefinition }: Readonly<Sp
 
     const filters = useMemo<GlobalFilterSelectorProps['filters']>(
         () => [
-            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ? [] : voltageLevelsFilter),
+            ...(tableDefinition.type === SpreadsheetEquipmentType.SUBSTATION ||
+            tableDefinition.type === SpreadsheetEquipmentType.HVDC_LINE
+                ? []
+                : voltageLevelsFilter),
             ...countriesFilter,
             ...propertiesFilter,
         ],
