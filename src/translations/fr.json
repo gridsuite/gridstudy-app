@@ -1633,5 +1633,8 @@
     "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
     "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
     "Length": "Nombre d'éléments",
-    "equipmentID": "ID de l'ouvrage"
+    "equipmentID": "ID de l'ouvrage",
+    "voltageLevelNominalVoltageMinMaxError" : "La tension nominale doit être comprise entre la limite de tension basse et la limite de tension haute",
+    "voltageLevelLowVoltageLimitHigherThanHighError" : "La limite de tension basse doit être inférieure à celle de tension haute",
+    "generatorMinimumActivePowerHigherThanHighError" : "La puissance active min doit être inférieure à la puissance active max"
 }

@@ -117,7 +117,11 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         [ENERGY_SOURCE]: yup.string().nullable().required(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+        [MINIMUM_ACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .max(yup.ref(MAXIMUM_ACTIVE_POWER), 'generatorMinimumActivePowerHigherThanHighError')
+            .required(),
         [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         ...getShortCircuitFormSchema(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),

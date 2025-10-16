@@ -142,8 +142,28 @@ const formSchema = yup
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [NOMINAL_V]: yup
+            .number()
+            .nullable()
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .when([LOW_VOLTAGE_LIMIT], {
+                is: (lowVoltageLimit) => lowVoltageLimit != null,
+                then: (schema) => schema.min(yup.ref(LOW_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMinMaxError'),
+            })
+            .when([HIGH_VOLTAGE_LIMIT], {
+                is: (highVoltageLimit) => highVoltageLimit != null,
+                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMinMaxError'),
+            })
+            .required(),
+        [LOW_VOLTAGE_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .when([HIGH_VOLTAGE_LIMIT], {
+                is: (highVoltageLimit) => highVoltageLimit != null,
+                then: (schema) =>
+                    schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelLowVoltageLimitHigherThanHighError'),
+            }),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
