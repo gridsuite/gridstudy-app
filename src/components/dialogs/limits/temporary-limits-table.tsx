@@ -65,12 +65,6 @@ interface TemporaryLimitsTableProps {
     createRow: () => any[];
     disabled?: boolean;
     previousValues: TemporaryLimit[];
-    disableTableCell: (
-        rowIndex: number,
-        column: ColumnText | ColumnNumeric,
-        arrayFormName: string,
-        temporaryLimits: TemporaryLimit[]
-    ) => boolean;
     getPreviousValue: (
         rowIndex: number,
         column: ColumnText | ColumnNumeric,
@@ -87,7 +81,6 @@ function TemporaryLimitsTable({
     createRow,
     disabled = false,
     previousValues,
-    disableTableCell,
     getPreviousValue,
     isValueModified,
     disableAddingRows = false,
@@ -103,9 +96,7 @@ function TemporaryLimitsTable({
                 key={rowId + column.dataKey}
                 name={name}
                 column={column}
-                disabled={
-                    disableTableCell ? disableTableCell(rowIndex, column, arrayFormName, previousValues) : disabled
-                }
+                disabled={disabled}
                 previousValue={
                     getPreviousValue ? getPreviousValue(rowIndex, column, arrayFormName, previousValues) : undefined
                 }
@@ -156,6 +147,7 @@ function TemporaryLimitsTable({
             <TableCell key={rowId + 'delete'}>
                 <IconButton
                     color="primary"
+                    disabled={disabled}
                     onClick={() => setValue(deletionMarkFormName(index), true, { shouldDirty: true })}
                 >
                     <DeleteIcon visibility={index === hoveredRowIndex ? 'visible' : 'hidden'} />

@@ -91,7 +91,7 @@ import { LimitsPane } from '../../../limits/limits-pane.tsx';
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(false),
     ...emptyProperties,
 };
 
