@@ -10,7 +10,7 @@ import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
@@ -39,7 +39,7 @@ export function startShortCircuitAnalysis(
     currentRootNetworkUuid: UUID | null,
     busId: string,
     debug?: boolean
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
