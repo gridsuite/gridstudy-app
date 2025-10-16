@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { BASE_VOLTAGES, VoltageLevelInterval } from './constants';
+import { BASE_VOLTAGES, MAX_VOLTAGE, VoltageLevelInterval } from './constants';
 import { getNominalVoltageIntervalName } from './utils/nominal-voltage-filter-utils';
 
 const styles = {
@@ -61,14 +61,9 @@ export default function NominalVoltageFilter({
     );
     useEffect(() => {
         const newIntervals = BASE_VOLTAGES.map((interval) => {
-            const vlListValues = nominalVoltages.filter((vnom) => {
-                const intervalName = getNominalVoltageIntervalName(vnom);
-                if (interval.name === 'vl300to500') {
-                    return intervalName === interval.name || intervalName === undefined; // if the voltage value is above 500 (ie intervalName undefined), it is still displayed with 400 kV
-                } else {
-                    return intervalName === interval.name;
-                }
-            });
+            const vlListValues = nominalVoltages.filter(
+                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
+            );
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
@@ -117,7 +112,10 @@ export default function NominalVoltageFilter({
                             title={
                                 <FormattedMessage
                                     id={'voltageLevelInterval'}
-                                    values={{ lowBound: interval.minValue, highBound: interval.maxValue }}
+                                    values={{
+                                        lowBound: interval.minValue,
+                                        highBound: interval.maxValue === Infinity ? MAX_VOLTAGE : interval.maxValue,
+                                    }}
                                 />
                             }
                         >
