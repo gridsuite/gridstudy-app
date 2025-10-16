@@ -26,6 +26,7 @@ import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-
 import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
 import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
 import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
+import WaitingLoader from './utils/waiting-loader';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -61,6 +62,7 @@ const StudyPane = ({
     ...props
 }) => {
     const toggleOptions = useSelector((state) => state.toggleOptions);
+    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
     const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -108,6 +110,7 @@ const StudyPane = ({
         <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
             <Box sx={styles.tabsContainer}>
+                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
                 <TabPanelLazy selected={view === StudyView.TREE}>
                     <TreeTab
                         studyUuid={studyUuid}

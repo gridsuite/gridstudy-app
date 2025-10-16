@@ -185,17 +185,19 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
     }, []);
 
+    // Retry mechanism to handle cases where the diagram card hasn't been rendered yet
+    // This can happen when a diagram is created when the grid is not visible and we immediately try to scroll to it
+    // The retry logic gives the React rendering cycle time to complete
     const scrollDiagramIntoView = useCallback((diagramId: string, retries = 10) => {
         const attemptScroll = (remainingRetries: number) => {
-            const container = responsiveGridLayoutRef.current?.elementRef?.current as HTMLElement | null;
-            const card = container?.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement | null;
+            const container = responsiveGridLayoutRef.current?.elementRef?.current;
+            const card = container?.querySelector(`[data-grid-id="${diagramId}"]`);
 
             if (card) {
-                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            } else {
-                if (remainingRetries > 0) {
-                    setTimeout(() => attemptScroll(remainingRetries - 1), 100);
-                }
+                card.scrollIntoView({ behavior: 'smooth' });
+            } else if (remainingRetries > 0) {
+                // Card not found yet, retry after a short delay to allow rendering to complete
+                setTimeout(() => attemptScroll(remainingRetries - 1), 50);
             }
         };
 
@@ -212,7 +214,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
             // Scroll to card after a short delay to allow DOM rendering
-            setTimeout(() => scrollDiagramIntoView(diagramUuid), 300);
+            scrollDiagramIntoView(diagramUuid);
         },
         [stopDiagramBlinking, scrollDiagramIntoView]
     );
