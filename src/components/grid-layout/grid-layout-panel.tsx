@@ -185,10 +185,21 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
     }, []);
 
-    const scrollDiagramIntoView = useCallback((diagramId: string) => {
-        const container = responsiveGridLayoutRef.current?.elementRef?.current as HTMLElement;
-        const card = container?.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement;
-        card?.scrollIntoView({ behavior: 'smooth' });
+    const scrollDiagramIntoView = useCallback((diagramId: string, retries = 10) => {
+        const attemptScroll = (remainingRetries: number) => {
+            const container = responsiveGridLayoutRef.current?.elementRef?.current as HTMLElement | null;
+            const card = container?.querySelector(`[data-grid-id="${diagramId}"]`) as HTMLElement | null;
+
+            if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                if (remainingRetries > 0) {
+                    setTimeout(() => attemptScroll(remainingRetries - 1), 100);
+                }
+            }
+        };
+
+        attemptScroll(retries);
     }, []);
 
     const focusOnDiagram = useCallback(

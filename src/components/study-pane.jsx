@@ -109,12 +109,7 @@ const StudyPane = ({
             <HorizontalToolbar />
             <Box sx={styles.tabsContainer}>
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
-                <div
-                    className="singlestretch-child"
-                    style={{
-                        display: view === StudyView.TREE ? null : 'none',
-                    }}
-                >
+                <TabPanelLazy selected={view === StudyView.TREE}>
                     <TreeTab
                         studyUuid={studyUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
@@ -123,7 +118,7 @@ const StudyPane = ({
                         onChangeTab={onChangeTab}
                         showGrid={showGrid}
                     />
-                </div>
+                </TabPanelLazy>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in these components,
                  and we want to reset the components at each node change*/}
                 <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>
