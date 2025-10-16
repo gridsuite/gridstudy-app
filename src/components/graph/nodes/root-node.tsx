@@ -15,6 +15,7 @@ import { type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { DeviceHub } from '@mui/icons-material';
 import NodeHandle from './node-handle';
 import { baseNodeStyles, interactiveNodeStyles } from './styles';
+import { zoomStyles } from '../zoom.styles';
 
 const styles = {
     // full node container styles
@@ -87,13 +88,25 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
     return (
         <>
             <NodeHandle type={'source'} position={Position.Bottom} />
-            <Box sx={isSelectedNode() ? styles.rootSelected : styles.root}>
+            <Box
+                sx={[
+                    isSelectedNode() ? styles.rootSelected : styles.root,
+                    (theme) => ({ borderWidth: zoomStyles.borderWidth(theme, false) }),
+                ]}
+            >
                 <Box sx={styles.iconContainer}>
                     <IconButton sx={styles.iconButton}>
                         <DeviceHub sx={styles.deviceIcon} />
                     </IconButton>
                 </Box>
-                <Box sx={styles.labelContainer}>
+                <Box
+                    sx={[
+                        styles.labelContainer,
+                        (theme) => ({
+                            display: zoomStyles.visibility.showNodeContent(theme) ? 'flex' : 'none',
+                        }),
+                    ]}
+                >
                     <OverflowableText text={currentRootNetwork?.name} sx={styles.overflowText} maxLineCount={3} />
                 </Box>
             </Box>

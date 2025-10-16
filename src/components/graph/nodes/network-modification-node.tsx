@@ -9,82 +9,24 @@ import { NodeProps, Position } from '@xyflow/react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { LIGHT_THEME, type MuiStyles } from '@gridsuite/commons-ui';
+import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 import { ModificationNode } from '../tree-node.type';
 import NodeHandle from './node-handle';
-import { baseNodeStyles, interactiveNodeStyles } from './styles';
 import NodeOverlaySpinner from './node-overlay-spinner';
 import BuildStatusChip from './build-status-chip';
-
+import React, { useCallback, useMemo } from 'react';
 import { BuildButton } from './build-button';
-import { Tooltip, Typography } from '@mui/material';
+import { Tooltip, Typography, useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { useMemo } from 'react';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import ForwardRefBox from 'components/utils/forwardRefBox';
-
-const styles = {
-    networkModificationSelected: (theme) => ({
-        ...baseNodeStyles(theme, 'column'),
-        background: theme.node.modification.selectedBackground,
-        border: theme.node.modification.selectedBorder,
-        boxShadow: theme.shadows[6],
-        ...interactiveNodeStyles(theme, 'modification'),
-    }),
-    networkModification: (theme) => ({
-        ...baseNodeStyles(theme, 'column'),
-        border: theme.node.modification.border,
-        ...interactiveNodeStyles(theme, 'modification'),
-    }),
-    contentBox: (theme) => ({
-        flexGrow: 1,
-        display: 'flex',
-        alignItems: 'flex-end',
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    }),
-    typographyText: (theme) => ({
-        color: theme.palette.text.primary,
-        fontSize: '20px',
-        fontWeight: 400,
-        lineHeight: 'normal',
-        textAlign: 'left',
-        display: '-webkit-box',
-        WebkitBoxOrient: 'vertical',
-        WebkitLineClamp: 2,
-        overflow: 'hidden',
-        width: 'auto',
-        textOverflow: 'ellipsis',
-        wordBreak: 'break-word',
-    }),
-    footerBox: (theme) => ({
-        display: 'flex',
-        justifyContent: 'flex-start',
-        marginLeft: theme.spacing(1),
-        height: '35%',
-    }),
-    buildBox: (theme) => ({
-        display: 'flex',
-        justifyContent: 'flex-end',
-        marginTop: theme.spacing(-5),
-        marginRight: theme.spacing(0),
-        height: '35%',
-    }),
-    chipFloating: (theme) => ({
-        position: 'absolute',
-        top: theme.spacing(-4),
-        left: theme.spacing(1),
-        zIndex: 2,
-    }),
-    tooltip: {
-        maxWidth: '720px',
-    },
-} as const satisfies MuiStyles;
+import { zoomStyles } from '../zoom.styles';
+import { modificationNodeStyles, getBorderWidthStyle, getNodeBaseStyle } from './network-modification-node.styles';
+import { DETAIL_LEVELS } from '../zoom.constants';
 
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -93,19 +35,29 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const intl = useIntl();
-
-    const isSelectedNode = () => {
+    const theme = useTheme();
+    const isSelectedNode = useCallback(() => {
         return props.id === currentNode?.id;
-    };
+    }, [currentNode, props.id]);
 
-    const isSelectedForCut = () => {
+    const isSelectedForCut = useCallback(() => {
         return (
             (props.id === selectionForCopy?.nodeId && selectionForCopy?.copyType === CopyType.NODE_CUT) ||
             ((props.id === selectionForCopy?.nodeId ||
                 selectionForCopy.allChildren?.map((child) => child.id)?.includes(props.id)) &&
                 selectionForCopy?.copyType === CopyType.SUBTREE_CUT)
         );
-    };
+    }, [props.id, selectionForCopy]);
+
+    const nodeOpacity = useMemo(() => {
+        if (!isSelectedForCut()) {
+            return 1;
+        }
+        return getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6;
+    }, [isSelectedForCut]);
+
+    const tooltipDelay = theme.tree?.detailLevel === DETAIL_LEVELS.MINIMAL ? 0 : TOOLTIP_DELAY;
+
     const tooltipContent = useMemo(() => {
         return (
             <Box style={{ whiteSpace: 'pre-line' }}>
@@ -123,63 +75,65 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
         );
     }, [props.data, intl]);
 
-    const getNodeOpacity = () => {
-        return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
-    };
-
     return (
         <>
             <NodeHandle type={'source'} position={Position.Bottom} />
             <NodeHandle type={'target'} position={Position.Top} />
 
-            {props.data.globalBuildStatus !== props.data.localBuildStatus && (
-                <BuildStatusChip
-                    buildStatus={props.data.globalBuildStatus}
-                    sx={styles.chipFloating}
-                    icon={<ArrowUpwardIcon style={{ fontSize: '14px' }} color="inherit" />}
-                    onClick={(e) => e.stopPropagation()}
-                />
-            )}
+            {props.data.globalBuildStatus !== props.data.localBuildStatus &&
+                zoomStyles.visibility.showGlobalBuildStatus(theme) && (
+                    <BuildStatusChip
+                        buildStatus={props.data.globalBuildStatus}
+                        sx={modificationNodeStyles.chipFloating}
+                        icon={<ArrowUpwardIcon sx={modificationNodeStyles.globalBuildStatusIcon} color="inherit" />}
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                )}
 
             <Tooltip
                 title={tooltipContent}
                 disableFocusListener
                 disableTouchListener
                 componentsProps={{
-                    tooltip: { sx: { maxWidth: '720px' } },
+                    tooltip: { sx: modificationNodeStyles.tooltip },
                 }}
                 arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
+                enterDelay={tooltipDelay}
+                enterNextDelay={tooltipDelay}
                 placement="left"
             >
                 <ForwardRefBox
                     sx={[
-                        isSelectedNode() ? styles.networkModificationSelected : styles.networkModification,
-                        { opacity: getNodeOpacity() },
+                        (theme) => getNodeBaseStyle(theme, isSelectedNode()),
+                        { opacity: nodeOpacity },
+                        (theme) => getBorderWidthStyle(theme, isSelectedNode()),
                     ]}
                 >
-                    <Box sx={styles.contentBox}>
-                        <Typography variant="body1" sx={styles.typographyText}>
+                    <Box sx={modificationNodeStyles.contentBox}>
+                        <Typography variant="body1" sx={modificationNodeStyles.typographyText}>
                             {props.data.label}
                         </Typography>
                     </Box>
 
-                    <Box sx={styles.footerBox}>
-                        {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
-                            <BuildStatusChip buildStatus={props.data.localBuildStatus} />
-                        )}
-                    </Box>
-
-                    <Box sx={styles.buildBox}>
-                        {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
-                            <BuildButton
-                                buildStatus={props.data.localBuildStatus}
-                                studyUuid={studyUuid}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
-                                nodeUuid={props.id}
-                            />
-                        )}
+                    <Box sx={modificationNodeStyles.footer}>
+                        <Box>
+                            {props.data.globalBuildStatus !== BUILD_STATUS.BUILDING && (
+                                <BuildStatusChip
+                                    buildStatus={props.data.localBuildStatus}
+                                    sx={modificationNodeStyles.chipLarge}
+                                />
+                            )}
+                        </Box>
+                        <Box sx={modificationNodeStyles.buildButtonContainer}>
+                            {props.data.localBuildStatus !== BUILD_STATUS.BUILDING && (
+                                <BuildButton
+                                    buildStatus={props.data.localBuildStatus}
+                                    studyUuid={studyUuid}
+                                    currentRootNetworkUuid={currentRootNetworkUuid}
+                                    nodeUuid={props.id}
+                                />
+                            )}
+                        </Box>
                     </Box>
 
                     {props.data.localBuildStatus === BUILD_STATUS.BUILDING && <NodeOverlaySpinner />}

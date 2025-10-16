@@ -94,7 +94,9 @@ export const BuildButton = ({
         return !buildStatus || buildStatus === BUILD_STATUS.NOT_BUILT ? (
             <PlayCircleFilled sx={styles.playColor} />
         ) : (
-            <StopCircleOutlined color="primary" />
+            <StopCircleOutlined
+                sx={{ color: (theme) => (theme.palette.mode === 'light' ? theme.palette.primary.light : undefined) }}
+            />
         );
     };
 

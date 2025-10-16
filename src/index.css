@@ -346,4 +346,5 @@ code {
 }
 .react-flow {
     --xy-edge-stroke-width-default: 1;
+    --xy-edge-stroke-selected-default: var(--xy-edge-stroke, currentColor);
 }
