@@ -38,7 +38,7 @@ import type { UUID } from 'node:crypto';
 
 export type TabularModificationEditDataType = {
     uuid: UUID;
-    type: 'TABULAR_MODIFICATION' | 'TABULAR_CREATION';
+    type: ModificationType.TABULAR_MODIFICATION | ModificationType.TABULAR_CREATION;
     properties: TabularProperty[];
     csvFilename: string;
     modificationType: ModificationType;

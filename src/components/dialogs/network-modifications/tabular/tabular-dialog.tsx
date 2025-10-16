@@ -49,12 +49,12 @@ import { NetworkModificationDialogProps } from '../../../graph/menus/network-mod
 function convertCreations(creations: Modification[]): Modification[] {
     return creations.map((creat: Modification) => {
         let creation: Modification = {};
-        Object.keys(formatModification(creat)).forEach((key) => {
+        for (const key of Object.keys(formatModification(creat))) {
             const entry = convertCreationFieldFromBackToFront(key, creat[key]);
-            (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
+            for (const item of Array.isArray(entry) ? entry : [entry]) {
                 creation[item.key] = item.value;
-            });
-        });
+            }
+        }
         creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
         return creation;
     });
@@ -106,9 +106,9 @@ export function TabularDialog({
                 ) {
                     modification = convertGeneratorOrBatteryModificationFromBackToFront(modification);
                 } else {
-                    Object.keys(modification).forEach((key) => {
+                    for (const key of Object.keys(modification)) {
                         modification[key] = convertInputValues(getFieldType(modificationType, key), modif[key]);
-                    });
+                    }
                 }
                 modification = addPropertiesFromBack(modification, modif?.[TABULAR_PROPERTIES]);
                 return modification;
@@ -184,12 +184,15 @@ export function TabularDialog({
                 const propertiesModifications = transformProperties(row);
 
                 // then transform all other fields
-                Object.keys(row).forEach((key) => {
+                for (const key of Object.keys(row)) {
                     const entry = convertCreationFieldFromFrontToBack(key, row[key]);
                     creation[entry.key] = entry.value;
-                });
+                }
                 // For now, we do not manage reactive limits by diagram
-                if (modificationType === 'GENERATOR_CREATION' || modificationType === 'BATTERY_CREATION') {
+                if (
+                    modificationType === ModificationType.GENERATOR_CREATION ||
+                    modificationType === ModificationType.BATTERY_CREATION
+                ) {
                     convertReactiveCapabilityCurvePointsFromFrontToBack(creation);
                 }
 
