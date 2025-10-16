@@ -108,7 +108,6 @@ const StudyPane = ({
         <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
             <Box sx={styles.tabsContainer}>
-                {/*Rendering the map is slow, do it once and keep it display:none*/}
                 <TabPanelLazy selected={view === StudyView.TREE}>
                     <TreeTab
                         studyUuid={studyUuid}
