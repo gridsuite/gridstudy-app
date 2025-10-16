@@ -70,38 +70,37 @@ export default function NominalVoltageFilter({
     }, [nominalVoltages]);
 
     const handleToggle = useCallback(
-        (intervalVlName: string, interval?: VoltageLevelValuesInterval) => {
+        (interval: VoltageLevelValuesInterval) => {
             let newFiltered: number[];
-            if (intervalVlName === 'all') {
-                newFiltered = [...nominalVoltages];
-                setVoltageLevelIntervals((prev) => prev.map((i) => ({ ...i, isChecked: true })));
-            } else if (intervalVlName === 'none') {
-                newFiltered = [];
-                setVoltageLevelIntervals((prev) => prev.map((i) => ({ ...i, isChecked: false })));
-            } else {
-                if (interval === undefined) {
-                    return;
+
+            // we "inverse" the selection for vlListValues
+            newFiltered = [...filteredNominalVoltages];
+            interval.vlListValues.forEach((vnom) => {
+                const currentIndex = newFiltered.indexOf(vnom);
+                if (currentIndex === -1) {
+                    newFiltered.push(vnom); //not previously present, we add it
+                } else {
+                    newFiltered.splice(currentIndex, 1); // previously present, we remove it
                 }
-                // we "inverse" the selection for vlListValues
-                newFiltered = [...filteredNominalVoltages];
-                interval.vlListValues.forEach((vnom) => {
-                    const currentIndex = newFiltered.indexOf(vnom);
-                    if (currentIndex === -1) {
-                        newFiltered.push(vnom); //not previously present, we add it
-                    } else {
-                        newFiltered.splice(currentIndex, 1); // previously present, we remove it
-                    }
-                });
-                setVoltageLevelIntervals((prev) =>
-                    prev.map((i) => (i.name === interval.name ? { ...i, isChecked: !i.isChecked } : i))
-                );
-            }
+            });
+            setVoltageLevelIntervals((prev) =>
+                prev.map((i) => (i.name === interval.name ? { ...i, isChecked: !i.isChecked } : i))
+            );
+
             onChange(newFiltered); // update filteredNominalVoltages
         },
-        [filteredNominalVoltages, nominalVoltages, onChange]
+        [filteredNominalVoltages, onChange]
     );
-    const handleSelectAll = useCallback(() => handleToggle('all'), [handleToggle]);
-    const handleSelectNone = useCallback(() => handleToggle('none'), [handleToggle]);
+    const handleToggleCheckAll = useCallback(
+        (check: boolean) => {
+            // if check is true, we check all; otherwise we uncheck all
+            setVoltageLevelIntervals((prev) => prev.map((interval) => ({ ...interval, isChecked: check })));
+            onChange(check ? [...nominalVoltages] : []); // update filteredNominalVoltages
+        },
+        [nominalVoltages, onChange]
+    );
+    const handleSelectAll = useCallback(() => handleToggleCheckAll(true), [handleToggleCheckAll]);
+    const handleSelectNone = useCallback(() => handleToggleCheckAll(false), [handleToggleCheckAll]);
 
     const nominalVoltagesList = useMemo(
         () =>
@@ -109,28 +108,33 @@ export default function NominalVoltageFilter({
                 .filter((interval) => interval.vlListValues.length > 0)
                 .map((interval) => (
                     <ListItem sx={styles.nominalVoltageItem} key={interval.name}>
-                        <ListItemButton
-                            role={undefined}
-                            dense
-                            onClick={() => handleToggle(interval.name, interval)}
-                            disabled={!filteredNominalVoltages}
+                        <Tooltip
+                            title={
+                                <FormattedMessage
+                                    id={'voltageLevelInterval'}
+                                    values={{ lowBound: interval.minValue, highBound: interval.maxValue }}
+                                />
+                            }
                         >
-                            <Checkbox color="default" sx={styles.nominalVoltageCheck} checked={interval.isChecked} />
-                            <Tooltip
-                                title={
-                                    <FormattedMessage
-                                        id={'voltageLevelInterval'}
-                                        values={{ lowBound: interval.minValue, highBound: interval.maxValue }}
-                                    />
-                                }
+                            <ListItemButton
+                                role={undefined}
+                                dense
+                                onClick={() => handleToggle(interval)}
+                                disabled={!filteredNominalVoltages}
                             >
+                                <Checkbox
+                                    color="default"
+                                    sx={styles.nominalVoltageCheck}
+                                    checked={interval.isChecked}
+                                />
+
                                 <ListItemText
                                     sx={styles.nominalVoltageText}
                                     disableTypography
                                     primary={`${interval.vlValue} kV`}
                                 ></ListItemText>
-                            </Tooltip>
-                        </ListItemButton>
+                            </ListItemButton>
+                        </Tooltip>
                     </ListItem>
                 )),
         [filteredNominalVoltages, handleToggle, voltageLevelIntervals]
