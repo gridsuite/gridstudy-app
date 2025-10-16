@@ -23,7 +23,6 @@ import { MapEquipment } from '../../../../menus/base-equipment-menu';
 import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
-import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { ComputingType, EquipmentType, mergeSx, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
@@ -54,6 +53,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramId: UUID;
     readonly visible: boolean;
     readonly onNextVoltageLevelClick: (voltageLevelId: string) => void;
+    readonly diagramTitle: string;
 }
 
 type BusMenuState = {
@@ -83,7 +83,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
-    const [errorMessage, setErrorMessage] = useState('');
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
@@ -121,6 +120,15 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         [setShouldDisplayTooltip]
     );
 
+    const toggleBreakerDomClasses = useCallback((elementId?: string | null) => {
+        const breakerToSwitchDom: HTMLElement | null = document.getElementById(elementId ?? '');
+        if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
+            breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
+        } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {
+            breakerToSwitchDom.classList.replace('sld-open', 'sld-closed');
+        }
+    }, []);
+
     const handleBreakerClick: OnBreakerCallbackType = useCallback(
         // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-network-viewer/pull/106/ is merged
         (breakerId, newSwitchState, switchElement: any) => {
@@ -129,12 +137,19 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 setLocallySwitchedBreaker(switchElement?.id);
 
                 updateSwitchState(studyUuid, currentNode?.id, breakerId, newSwitchState).catch((error) => {
-                    console.error(error.message);
-                    setErrorMessage(error.message);
+                    snackError({
+                        headerId: 'updateSwitchStateError',
+                        headerValues: { diagramTitle: props.diagramTitle },
+                        messageTxt: error.message,
+                    });
+                    setLocallySwitchedBreaker(undefined);
+                    // revert the DOM visual state of the breaker
+                    toggleBreakerDomClasses(switchElement?.id);
+                    setModificationInProgress(false);
                 });
             }
         },
-        [studyUuid, currentNode, modificationInProgress]
+        [modificationInProgress, studyUuid, currentNode?.id, snackError, toggleBreakerDomClasses, props.diagramTitle]
     );
 
     const [busMenu, setBusMenu] = useState<BusMenuState>(defaultBusMenuState);
@@ -329,12 +344,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker) {
-                const breakerToSwitchDom: HTMLElement | null = document.getElementById(locallySwitchedBreaker);
-                if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
-                    breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
-                } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {
-                    breakerToSwitchDom.classList.replace('sld-open', 'sld-closed');
-                }
+                toggleBreakerDomClasses(locallySwitchedBreaker);
             }
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
@@ -371,6 +381,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         diagramSizeSetter,
         handleTogglePopover,
         computationStarting,
+        toggleBreakerDomClasses,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -397,7 +408,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 )}
                 {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
-            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Box
                 ref={svgRef}
                 sx={mergeSx(
