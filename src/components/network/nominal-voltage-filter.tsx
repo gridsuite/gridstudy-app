@@ -61,9 +61,14 @@ export default function NominalVoltageFilter({
     );
     useEffect(() => {
         const newIntervals = BASE_VOLTAGES.map((interval) => {
-            const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
-            );
+            const vlListValues = nominalVoltages.filter((vnom) => {
+                const intervalName = getNominalVoltageIntervalName(vnom);
+                if (interval.name === 'vl300to500') {
+                    return intervalName === interval.name || intervalName === undefined;
+                } else {
+                    return intervalName === interval.name;
+                }
+            });
             return { ...interval, vlListValues, isChecked: true };
         });
         setVoltageLevelIntervals(newIntervals);
@@ -78,7 +83,7 @@ export default function NominalVoltageFilter({
             interval.vlListValues.forEach((vnom) => {
                 const currentIndex = newFiltered.indexOf(vnom);
                 if (currentIndex === -1) {
-                    newFiltered.push(vnom); //not previously present, we add it
+                    newFiltered.push(vnom); // not previously present, we add it
                 } else {
                     newFiltered.splice(currentIndex, 1); // previously present, we remove it
                 }
