@@ -211,8 +211,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 return [...oldBlinkingDiagrams, diagramUuid];
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
-            // Scroll to focused diagram
-            scrollDiagramIntoView(diagramUuid);
+            // Scroll to card after a short delay to allow DOM rendering
+            setTimeout(() => scrollDiagramIntoView(diagramUuid), 300);
         },
         [stopDiagramBlinking, scrollDiagramIntoView]
     );
