@@ -64,7 +64,7 @@ export default function NominalVoltageFilter({
             const vlListValues = nominalVoltages.filter((vnom) => {
                 const intervalName = getNominalVoltageIntervalName(vnom);
                 if (interval.name === 'vl300to500') {
-                    return intervalName === interval.name || intervalName === undefined;
+                    return intervalName === interval.name || intervalName === undefined; // if the voltage value is above 500 (ie intervalName undefined), it is still displayed with 400 kV
                 } else {
                     return intervalName === interval.name;
                 }
