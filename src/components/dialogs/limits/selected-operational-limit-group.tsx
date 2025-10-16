@@ -29,7 +29,7 @@ export const SelectedOperationalLimitGroup = ({
     previousValue,
     isABranchModif,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
-    const optionsValues: OperationalLimitsGroupFormInfos[] = useWatch({
+    const optionsValues = useWatch({
         name: optionsFormName,
     });
     const intl = useIntl();

@@ -50,7 +50,7 @@ export function LimitsPane({
 
     const myRef: any = useRef<any>(null);
 
-    const limitsGroups: OperationalLimitsGroupFormInfos[] = useWatch({
+    const limitsGroups = useWatch({
         name: `${id}.${OPERATIONAL_LIMITS_GROUPS}`,
     });
     const olgEditable: boolean = useWatch({
@@ -84,7 +84,7 @@ export function LimitsPane({
 
             // checks if limit sets with that name already exist
             const sameNameInLs: OperationalLimitsGroupFormInfos[] = limitsGroups
-                .filter((_ls, index: number) => index !== indexSelectedLimitSet)
+                .filter((_ls: OperationalLimitsGroupFormInfos, index: number) => index !== indexSelectedLimitSet)
                 .filter(
                     (limitsGroup: OperationalLimitsGroupFormInfos) =>
                         limitsGroup.name.trim() === editedLimitGroupName.trim()

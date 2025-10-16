@@ -11,7 +11,7 @@ import { FixedSizeList } from 'react-window';
 export const useTreeViewScroll = (
     highlightedReportId: string | undefined,
     nodes: ReportItem[],
-    listRef: RefObject<FixedSizeList>
+    listRef: RefObject<FixedSizeList | null>
 ) => {
     const scrollLocked = useRef(false);
 

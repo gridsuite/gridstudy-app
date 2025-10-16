@@ -46,7 +46,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface ColumnsConfigProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: React.RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 }

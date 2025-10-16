@@ -20,13 +20,13 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface GlobalFilterProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     disabled?: boolean;
 }
 
 export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps, ref) => {
     const intl = useIntl();
-    const inputRef = useRef<any>();
+    const inputRef = useRef<any>(null);
 
     const applyQuickFilter = useCallback(
         (filterValue: string) => {

@@ -42,7 +42,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
     const svgDraw = useRef<SingleLineDiagramViewer | null>(null);
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
-    const svgRef = useRef<HTMLDivElement>();
+    const svgRef = useRef<HTMLDivElement>(null);
     const { svgType, disabled } = props;
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
