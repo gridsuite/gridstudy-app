@@ -32,14 +32,12 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
         return itemCount * itemSize;
     };
 
-    //console.log(children);
-
     return (
         <div ref={ref} {...otherProps}>
             <List
                 rowProps={{ itemData }}
                 rowHeight={itemSize}
-                style={{ height: getHeight() + 2 * LISTBOX_PADDING }}
+                style={{ height: getHeight() + 2 / LISTBOX_PADDING }}
                 overscanCount={5}
                 rowCount={itemCount}
                 rowComponent={VirtualizedListItem}
