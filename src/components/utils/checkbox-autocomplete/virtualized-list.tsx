@@ -27,7 +27,7 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
 
     const getHeight = () => {
         if (itemCount > 8) {
-            return 8 * itemSize;
+            return 7 * itemSize;
         }
         return itemCount * itemSize;
     };
@@ -37,7 +37,7 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
             <List
                 rowProps={{ itemData }}
                 rowHeight={itemSize}
-                style={{ height: getHeight() + 2 / LISTBOX_PADDING }}
+                style={{ height: getHeight()}}
                 overscanCount={5}
                 rowCount={itemCount}
                 rowComponent={VirtualizedListItem}
