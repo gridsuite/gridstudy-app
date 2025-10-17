@@ -23,7 +23,7 @@ import {
     SENSITIVITY_AT_NODE,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result.type';
-import useGlobalFilters from '../common/global-filter/use-global-filters';
+import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
@@ -47,7 +47,7 @@ function SensitivityAnalysisResultTab({
         (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const { globalFilters, handleGlobalFilterChange, getGlobalFilterParameter } = useGlobalFilters({});
+    const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
     const handleSensiNOrNkIndexChange = (event: SyntheticEvent, newNOrNKIndex: number) => {
@@ -104,7 +104,7 @@ function SensitivityAnalysisResultTab({
                             csvHeaders={csvHeaders}
                             nOrNkIndex={nOrNkIndex}
                             sensiKind={sensiTab}
-                            globalFilters={getGlobalFilterParameter(globalFilters)}
+                            globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                             disabled={isCsvButtonDisabled}
                         />
                     </Box>
@@ -116,7 +116,7 @@ function SensitivityAnalysisResultTab({
                         currentRootNetworkUuid={currentRootNetworkUuid}
                         setCsvHeaders={setCsvHeaders}
                         setIsCsvButtonDisabled={setIsCsvButtonDisabled}
-                        globalFilters={getGlobalFilterParameter(globalFilters)}
+                        globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                     />
                 </>
             )}
