@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { Writable } from 'type-fest';
 import {
     type Coordinate,
     DRAW_EVENT,
@@ -1030,14 +1029,17 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             setShouldOpenSelectionCreationPanel(false);
         }, [isInDrawingMode]);
 
-        const getCurrentMapState = useCallback(() => {
+        const getCurrentMapState = useCallback((): MapState => {
             const currentMapState = networkMapRef.current?.getCurrentViewState();
+
+            const center: [number, number] = [
+                currentMapState?.center.lng ?? INITIAL_POSITION[0],
+                currentMapState?.center.lat ?? INITIAL_POSITION[1],
+            ];
+
             return {
                 zoom: currentMapState?.zoom ?? INITIAL_ZOOM,
-                center: [
-                    currentMapState?.center.lng ?? INITIAL_POSITION[0],
-                    currentMapState?.center.lat ?? INITIAL_POSITION[1],
-                ],
+                center,
                 filteredNominalVoltages: filteredNominalVoltages,
             };
         }, [filteredNominalVoltages]);
