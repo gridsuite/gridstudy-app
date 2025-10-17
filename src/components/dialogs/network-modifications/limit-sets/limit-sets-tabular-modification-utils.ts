@@ -49,7 +49,7 @@ type OperationalLimitGroup = {
     modificationType: string;
     temporaryLimitsModificationType: string;
     selectedOperationalLimitsGroupId: string;
-    applicability: string;
+    applicability?: string;
     currentLimits: CurrentLimits;
     type: string;
 };
