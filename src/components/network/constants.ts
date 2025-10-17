@@ -210,3 +210,22 @@ export const REGULATING_TERMINAL_TYPES = [
 export const NUMBER = 'number';
 export const ENUM = 'enum';
 export const BOOLEAN = 'boolean';
+
+export interface VoltageLevelInterval {
+    name: string;
+    vlValue: number;
+    minValue: number;
+    maxValue: number;
+}
+
+export const BASE_VOLTAGES: VoltageLevelInterval[] = [
+    { name: 'vl300to500', vlValue: 400, minValue: 300, maxValue: Infinity },
+    { name: 'vl180to300', vlValue: 225, minValue: 180, maxValue: 300 },
+    { name: 'vl120to180', vlValue: 150, minValue: 120, maxValue: 180 },
+    { name: 'vl70to120', vlValue: 90, minValue: 70, maxValue: 120 },
+    { name: 'vl50to70', vlValue: 63, minValue: 50, maxValue: 70 },
+    { name: 'vl30to50', vlValue: 45, minValue: 30, maxValue: 50 },
+    { name: 'vl0to30', vlValue: 20, minValue: 0, maxValue: 30 },
+];
+
+export const MAX_VOLTAGE = 500;
