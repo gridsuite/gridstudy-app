@@ -132,6 +132,15 @@ export default class GSMapEquipments extends MapEquipments {
         this.initEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid);
     }
 
+    // Quick hack: Duplicate from newMapEquipmentForUpdate in MapEquipments
+    // using it is broken in @powsybl/network-map-layers v2.0.0 because of return type
+    // typeof this which is no longer in the exported d.ts since https://github.com/powsybl/powsybl-network-viewer/pull/174
+    // TODO clean this when a better fix is found.
+    newGSMapEquipmentForUpdate(): GSMapEquipments {
+        /* shallow clone of the map-equipment https://stackoverflow.com/a/44782052 */
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+    }
+
     reloadImpactedSubstationsEquipments(
         studyUuid: UUID,
         currentNode: any,
