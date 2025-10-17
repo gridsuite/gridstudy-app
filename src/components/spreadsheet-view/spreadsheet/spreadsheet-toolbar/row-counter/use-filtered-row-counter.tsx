@@ -40,7 +40,6 @@ export function useFilteredRowCounterInfo({
     const [isLoading, setIsLoading] = useState(true);
     const [isAnyFilterPresent, setIsAnyFilterPresent] = useState(false);
 
-    const equipments = useSelector((state: AppState) => state.spreadsheetNetwork[tableDefinition?.type]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
@@ -61,10 +60,10 @@ export function useFilteredRowCounterInfo({
                 }
                 const api = gridRef.current.api;
                 setDisplayedRows(api.getDisplayedRowCount());
-                setTotalRows(Object.values(equipments.equipmentsByNodeId[currentNode.id] ?? {}).length ?? 0);
+                setTotalRows(api.getGridOption('rowData')?.length ?? 0);
                 setIsLoading(false);
             }, 600),
-        [gridRef, currentNode, disabled, equipments.equipmentsByNodeId]
+        [gridRef, currentNode, disabled]
     );
 
     const onFilterChanged = useCallback((event: FilterChangedEvent) => {

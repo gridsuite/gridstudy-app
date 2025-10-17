@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';
@@ -18,11 +18,15 @@ import TreeTab from './tree-tab';
 import { StudyView } from './utils/utils';
 import { DiagramType } from './grid-layout/cards/diagrams/diagram.type';
 import HorizontalToolbar from './horizontal-toolbar';
-import { openDiagram, setToggleOptions } from '../redux/actions.js';
+import { openDiagram, setToggleOptions } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './network-modification.type';
-import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases.js';
-import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification.js';
+import { useNodeAliases } from './spreadsheet-view/hooks/use-node-aliases';
+import { useUpdateEquipmentsOnNotification } from './spreadsheet-view/hooks/use-update-equipments-on-notification';
+import { useResetSpreadsheetOnRootNetwork } from './spreadsheet-view/hooks/use-reset-spreadsheet-on-root-network';
+import { useNodeAliasesUpdateOnNotification } from './spreadsheet-view/hooks/use-node-aliases-update-on-notification';
+import { useSpreadsheetEquipments } from './spreadsheet-view/hooks/use-spreadsheet-equipments';
+import WaitingLoader from './utils/waiting-loader';
 
 const styles = {
     tabsContainer: (theme) => {
@@ -58,6 +62,7 @@ const StudyPane = ({
     ...props
 }) => {
     const toggleOptions = useSelector((state) => state.toggleOptions);
+    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
     const dispatch = useDispatch();
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -91,20 +96,22 @@ const StudyPane = ({
 
     const handleTableEquipmentChanged = useCallback((newTableEquipment) => setTableEquipment(newTableEquipment), []);
 
-    const { nodeAliases } = useNodeAliases();
-    useUpdateEquipmentsOnNotification(nodeAliases);
+    const { fetchNodeAliases } = useNodeAliases();
+    // Initializing node aliases from backend fetch
+    useEffect(() => {
+        fetchNodeAliases();
+    }, [fetchNodeAliases]);
+    useUpdateEquipmentsOnNotification();
+    useNodeAliasesUpdateOnNotification();
+    useResetSpreadsheetOnRootNetwork();
+    useSpreadsheetEquipments();
 
     return (
         <Box sx={styles.paneContainer}>
             <HorizontalToolbar />
             <Box sx={styles.tabsContainer}>
-                {/*Rendering the map is slow, do it once and keep it display:none*/}
-                <div
-                    className="singlestretch-child"
-                    style={{
-                        display: view === StudyView.TREE ? null : 'none',
-                    }}
-                >
+                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
+                <TabPanelLazy selected={view === StudyView.TREE}>
                     <TreeTab
                         studyUuid={studyUuid}
                         currentRootNetworkUuid={currentRootNetworkUuid}
@@ -113,7 +120,7 @@ const StudyPane = ({
                         onChangeTab={onChangeTab}
                         showGrid={showGrid}
                     />
-                </div>
+                </TabPanelLazy>
                 {/* using a key in these TabPanelLazy because we can change the nodeUuid in these components,
                  and we want to reset the components at each node change*/}
                 <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={view === StudyView.SPREADSHEET}>

@@ -59,21 +59,6 @@ export function getSensitivityAnalysisRunningStatus(sensitivityAnalysisStatus: s
     }
 }
 
-export function getNonEvacuatedEnergyRunningStatus(nonEvacuatedEnergyStatus: string | null): RunningStatus {
-    switch (nonEvacuatedEnergyStatus) {
-        case 'COMPLETED':
-            return RunningStatus.SUCCEED;
-        case 'RUNNING':
-            return RunningStatus.RUNNING;
-        case 'NOT_DONE':
-            return RunningStatus.IDLE;
-        case 'FAILED':
-            return RunningStatus.FAILED;
-        default:
-            return RunningStatus.IDLE;
-    }
-}
-
 export function getShortCircuitAnalysisRunningStatus(shortCircuitAnalysisStatus: string | null): RunningStatus {
     switch (shortCircuitAnalysisStatus) {
         case 'COMPLETED':

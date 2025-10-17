@@ -168,10 +168,10 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = useCallback((diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
-        // TODO adapt the layout w and h considering those values
+        // TODO adapt the layout w and h considering those values.
     }, []);
 
-    const handleVoltageLevelClick = useCallback(
+    const handleNadVoltageLevelClick = useCallback(
         (vlId: string): void => {
             createDiagram({
                 diagramUuid: v4() as UUID,
@@ -181,6 +181,27 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
             });
         },
         [createDiagram]
+    );
+
+    const handleSldVoltageLevelClick = useCallback(
+        (vlId: string, event: MouseEvent): void => {
+            if (event.ctrlKey) {
+                createDiagram({
+                    diagramUuid: v4() as UUID,
+                    type: DiagramType.VOLTAGE_LEVEL,
+                    voltageLevelId: vlId,
+                    name: '',
+                });
+            } else {
+                updateDiagram({
+                    ...diagram,
+                    type: DiagramType.VOLTAGE_LEVEL,
+                    voltageLevelId: vlId,
+                    name: '',
+                });
+            }
+        },
+        [diagram, createDiagram, updateDiagram]
     );
 
     const cardTitle = useMemo((): string => {
@@ -214,7 +235,8 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             loadingState={loading}
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
-                            onNextVoltageLevelClick={handleVoltageLevelClick}
+                            onNextVoltageLevelClick={handleSldVoltageLevelClick}
+                            diagramTitle={diagram.name}
                         />
                     )}
                     {diagram.type === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -245,7 +267,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             onHideVoltageLevel={handleHideVoltageLevelId}
                             onMoveNode={handleMoveNode}
                             onMoveTextnode={handleMoveTextnode}
-                            onVoltageLevelClick={handleVoltageLevelClick}
+                            onVoltageLevelClick={handleNadVoltageLevelClick}
                             customPositions={diagram.positions}
                         />
                     )}
