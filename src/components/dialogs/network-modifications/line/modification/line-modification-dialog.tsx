@@ -62,7 +62,7 @@ import {
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
     getOpLimitsGroupInfosFromBranchInfo,
-    getOpLimitsGroupInfosFromLineModification,
+    getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -319,7 +319,7 @@ const LineModificationDialog = ({
                                         [LIMITS]: {
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
-                                                ? getOpLimitsGroupInfosFromLineModification(formValues)
+                                                ? getOpLimitsGroupInfosFromBranchModification(formValues)
                                                 : getOpLimitsGroupInfosFromBranchInfo(line),
                                         },
                                     },

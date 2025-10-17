@@ -215,7 +215,7 @@ export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[])
     });
 };
 
-export const getOpLimitsGroupInfosFromLineModification = (
+export const getOpLimitsGroupInfosFromBranchModification = (
     formBranchModification: LineModificationFormInfos
 ): OperationalLimitsGroupFormInfos[] => {
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
