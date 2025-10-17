@@ -12,7 +12,8 @@ import {
     PREFIX_STUDY_QUERIES,
 } from './index';
 
-import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
+import { getRequestParamFromList } from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { DynamicSimulationParametersFetchReturn, DynamicSimulationParametersInfos } from './dynamic-simulation.type';
 import {
@@ -41,7 +42,7 @@ export function startDynamicSimulation({
     currentRootNetworkUuid: UUID;
     dynamicSimulationConfiguration?: DynamicSimulationParametersInfos;
     debug: boolean;
-}): Promise<void> {
+}): Promise<Response> {
     console.info(
         `Running dynamic simulation on study '${studyUuid}', on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );

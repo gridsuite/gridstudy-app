@@ -6,9 +6,8 @@
  */
 
 import { ContingencyList } from './study/contingency-list';
-import { backendFetch } from './utils';
 import type { UUID } from 'node:crypto';
-import { ElementType } from '@gridsuite/commons-ui';
+import { backendFetch, ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetCollection, SpreadsheetConfig } from 'components/spreadsheet-view/types/spreadsheet.type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';

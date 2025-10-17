@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import type { GeoDataLine, GeoDataSubstation } from '@powsybl/network-viewer';
-import { backendFetchJson } from '../utils';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 export function fetchSubstationPositions(

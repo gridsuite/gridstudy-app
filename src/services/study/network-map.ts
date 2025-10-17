@@ -6,9 +6,11 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
+import { getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import {
+    backendFetchJson,
+    backendFetchText,
     createFilter,
     EquipmentInfos,
     EquipmentType,

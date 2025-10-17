@@ -5,10 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
+import { getRequestParamFromList } from '../utils';
 import type { UUID } from 'node:crypto';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
-import { EquipmentType, ExtendedEquipmentType, Parameter, ComputingType } from '@gridsuite/commons-ui';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    EquipmentType,
+    ExtendedEquipmentType,
+    Parameter,
+    ComputingType,
+} from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modifications/network-modification-menu.type';
 import type { Svg } from 'components/grid-layout/cards/diagrams/diagram.type';
 

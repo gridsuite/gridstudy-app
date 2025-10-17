@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { backendFetchJson } from './utils';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 
 const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-conversion';
 

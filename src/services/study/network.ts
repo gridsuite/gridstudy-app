@@ -6,11 +6,19 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { EquipmentType, ExtendedEquipmentType, type GsLang, type Identifiable } from '@gridsuite/commons-ui';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    EquipmentType,
+    ExtendedEquipmentType,
+    type GsLang,
+    type Identifiable,
+} from '@gridsuite/commons-ui';
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
-import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
+import { getQueryParamsList, getUrlWithToken } from '../utils';
 import { SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';

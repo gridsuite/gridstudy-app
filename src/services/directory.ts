@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from './utils';
-import { ElementAttributes } from '@gridsuite/commons-ui';
+import { getRequestParamFromList } from './utils';
+import { backendFetchJson, ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';

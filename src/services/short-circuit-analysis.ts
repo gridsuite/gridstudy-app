@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { backendFetch } from './utils';
+import { backendFetch } from '@gridsuite/commons-ui';
 
 const PREFIX_SHORT_CIRCUIT_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
 

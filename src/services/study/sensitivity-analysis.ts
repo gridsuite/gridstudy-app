@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import {
     CsvConfig,
@@ -25,7 +25,7 @@ export function startSensitivityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running sensi on ${studyUuid} for root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );

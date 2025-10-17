@@ -7,7 +7,7 @@
 
 import type { UUID } from 'node:crypto';
 import { PREFIX_STUDY_QUERIES, getStudyUrl } from '.';
-import { backendFetch, backendFetchJson } from '../utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 
 interface BasicStudyInfos {
     uniqueId: string;
@@ -35,7 +35,7 @@ export const recreateStudyNetworkFromExistingCase = (
     studyUuid: UUID,
     currentRootNetworkUuid: UUID,
     importParameters: Record<string, any>
-): Promise<BasicStudyInfos> => {
+): Promise<Response> => {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('caseUuid', caseUuid);
 
@@ -57,7 +57,7 @@ export const recreateStudyNetworkFromExistingCase = (
     });
 };
 
-export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<BasicStudyInfos> => {
+export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> => {
     const recreateStudyNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -74,7 +74,7 @@ export const recreateStudyNetwork = (studyUuid: UUID, currentRootNetworkUuid: UU
     });
 };
 
-export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> => {
+export const reindexAllRootNetwork = (studyUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> => {
     const reindexAllRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +

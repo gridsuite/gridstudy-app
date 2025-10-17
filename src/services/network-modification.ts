@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from './utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { LineTypeInfo } from '../components/dialogs/line-types-catalog/line-catalog.type';
 
