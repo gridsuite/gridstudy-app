@@ -403,9 +403,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             // Update the resized item in all breakpoints
             for (const [breakpoint, layoutItems] of Object.entries(newLayouts)) {
-                const itemIndex = (layoutItems as Layout[]).findIndex((item) => item.i === newItem.i);
+                const itemIndex = layoutItems.findIndex((item) => item.i === newItem.i);
                 if (itemIndex !== -1) {
-                    const items = layoutItems as Layout[];
+                    const items = layoutItems;
                     newLayouts[breakpoint] = [
                         ...items.slice(0, itemIndex),
                         { ...items[itemIndex], w: newItem.w, h: newItem.h },
