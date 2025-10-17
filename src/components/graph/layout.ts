@@ -220,6 +220,36 @@ function getMaximumColumnByRows(
     return getColumnsByRows(nodes, placements, nodeMap, true);
 }
 
+// Simple function for security group compression without security row merging
+// We needed a simpler column calculation for scoped compression within security groups
+// that doesn't apply the complex security row merging logic, allowing for tighter internal packing
+function getSimpleColumnsByRows(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    getMax: boolean
+): Map<number, number> {
+    const columnsByRow: Map<number, number> = new Map();
+
+    nodes.forEach((node) => {
+        const nodePlacement = placements.getPlacement(node.id);
+        if (!nodePlacement) {
+            return;
+        }
+
+        const row = nodePlacement.row;
+        const col = nodePlacement.column;
+        const currentValue = columnsByRow.get(row);
+
+        if (currentValue === undefined) {
+            columnsByRow.set(row, col);
+        } else {
+            columnsByRow.set(row, getMax ? Math.max(currentValue, col) : Math.min(currentValue, col));
+        }
+    });
+
+    return columnsByRow;
+}
+
 /**
  * For each matching rows in the two provided maps, we compare their column values to calculate
  * the empty usable space between them.
@@ -282,26 +312,27 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
  * @param nodeMap nodeId to index in tree and node info map
  * @param childrenMap nodeId to list of children map
+ * @param subTreeSizeMap pre-computed subtree sizes to avoid recalculation
+ * @param scopeSet optional set of node IDs to limit compression to (for security group compression)
  */
 function compressTreePlacements(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
     nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
-    childrenMap: Map<string, CurrentTreeNode[]>
+    childrenMap: Map<string, CurrentTreeNode[]>,
+    subTreeSizeMap: Map<string, number>,
+    scopeSet?: Set<string> // scope limiting for security groups
 ) {
-    // Calculate subtree sizes in a single pass (bottom-up) to have the children nodes sizes ready
-    const subTreeSizeMap = new Map<string, number>();
-
-    for (let i = nodes.length - 1; i >= 0; i--) {
-        const node = nodes[i];
-        const children = childrenMap.get(node.id) || [];
-        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) ?? 0), 0);
-        subTreeSizeMap.set(node.id, 1 + childrenSize);
-    }
-
-    // We find all the nodes that start a branch and that have a sibling to their left.
     const nonEldestSiblingsIds = nodes
-        .filter((node) => node.parentId && childrenMap.get(node.parentId)![0].id !== node.id)
+        .filter((node) => {
+            if (!node.parentId || (scopeSet && !scopeSet.has(node.id))) {
+                // Scope filtering
+                return false;
+            }
+            const siblings = childrenMap.get(node.parentId) || [];
+            const relevantSiblings = scopeSet ? siblings.filter((s) => scopeSet.has(s.id)) : siblings; // Scope-aware sibling filtering
+            return relevantSiblings.length > 0 && relevantSiblings[0].id !== node.id;
+        })
         .map((node) => node.id);
 
     // For each of those nodes's branches, we will calculate how much space available there is to
@@ -314,15 +345,23 @@ function compressTreePlacements(
         const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
         const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
 
-        const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
+        const currentBranchNodes = nodes
+            .slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize)
+            .filter((n) => !scopeSet || scopeSet.has(n.id)); // Scope filtering
 
         // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
         // cases other branches could go under the left neighbor and make edges cross.
-        const leftNodes = nodes.slice(0, currentNodeIndex);
+        const leftNodes = nodes.slice(0, currentNodeIndex).filter((n) => !scopeSet || scopeSet.has(n.id)); // Scope filtering
 
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
+        // Use simple column calculation for scoped compression, original for global
+        // Security groups need tighter packing internally without security row merging
+        const currentBranchMinimumColumnByRow = scopeSet
+            ? getSimpleColumnsByRows(currentBranchNodes, placements, false)
+            : getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
 
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
+        const leftBranchMaximumColumnByRow = scopeSet
+            ? getSimpleColumnsByRows(leftNodes, placements, true)
+            : getMaximumColumnByRows(leftNodes, placements, nodeMap);
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
@@ -332,6 +371,29 @@ function compressTreePlacements(
     });
 
     return placements;
+}
+
+// Applies compression within security groups for tighter internal layout
+function compressSecurityGroups(
+    nodes: CurrentTreeNode[],
+    placements: PlacementGrid,
+    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    childrenMap: Map<string, CurrentTreeNode[]>,
+    subTreeSizeMap: Map<string, number>
+) {
+    const isTopLevelSecurityNode = (node: CurrentTreeNode) =>
+        node.data?.nodeType === NetworkModificationNodeType.SECURITY &&
+        (!node.parentId || nodeMap.get(node.parentId)?.node.data?.nodeType !== NetworkModificationNodeType.SECURITY);
+
+    nodes.filter(isTopLevelSecurityNode).forEach((node) => {
+        const subTreeSize = subTreeSizeMap.get(node.id) ?? 1;
+        if (subTreeSize > 1) {
+            const rootIdx = nodeMap.get(node.id)!.index;
+            const descendants = nodes.slice(rootIdx + 1, rootIdx + subTreeSize);
+            const scopeSet = new Set(descendants.map((n) => n.id));
+            compressTreePlacements(nodes, placements, nodeMap, childrenMap, subTreeSizeMap, scopeSet);
+        }
+    });
 }
 
 function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
@@ -453,6 +515,23 @@ function computeSecurityGroupNodes(
     }));
 }
 
+// Calculate subtree sizes for all nodes
+function calculateSubTreeSizes(
+    nodes: CurrentTreeNode[],
+    childrenMap: Map<string, CurrentTreeNode[]>
+): Map<string, number> {
+    const subTreeSizeMap = new Map<string, number>();
+
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        const node = nodes[i];
+        const children = childrenMap.get(node.id) || [];
+        const childrenSize = children.reduce((sum, child) => sum + (subTreeSizeMap.get(child.id) ?? 0), 0);
+        subTreeSizeMap.set(node.id, 1 + childrenSize);
+    }
+
+    return subTreeSizeMap;
+}
+
 /**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
  */
@@ -462,7 +541,22 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
 
     const uncompressedNodePlacements = getNodePlacements(newNodes);
 
-    const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements, nodeMap, childrenMap);
+    // Calculate subtree sizes once to avoid recalculation during compression passes
+    const subTreeSizeMap = calculateSubTreeSizes(newNodes, childrenMap);
+
+    // First pass: compress inside SECURITY groups for better internal layout
+    // Apply tighter compression within security groups before global compression
+    // This allows nodes within security groups to be packed more densely
+    compressSecurityGroups(newNodes, uncompressedNodePlacements, nodeMap, childrenMap, subTreeSizeMap);
+
+    // Global pass: standard compression across the entire tree
+    const nodePlacements = compressTreePlacements(
+        newNodes,
+        uncompressedNodePlacements,
+        nodeMap,
+        childrenMap,
+        subTreeSizeMap
+    );
 
     const securityGroupsNodes = computeSecurityGroupNodes(newNodes, nodePlacements, nodeMap);
 
