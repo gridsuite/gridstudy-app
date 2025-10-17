@@ -62,6 +62,7 @@ import {
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
+    getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -317,10 +318,9 @@ const LineModificationDialog = ({
                                     ...{
                                         [LIMITS]: {
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
-                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                                formValues,
-                                                line
-                                            ),
+                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
+                                                ? getOpLimitsGroupInfosFromBranchModification(formValues)
+                                                : combineFormAndMapServerLimitsGroups(formValues, line),
                                         },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
