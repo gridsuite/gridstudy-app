@@ -32,14 +32,6 @@ import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import PositionDiagramPane from '../../../../grid-layout/cards/diagrams/singleLineDiagram/positionDiagram/position-diagram-pane';
 import SeparatorCellRenderer from '../topology-modification/separator-cell-renderer';
 
-const getFormIndex = (watchTable: FeederBaysFormInfos[], data: any): number => {
-    return (
-        watchTable?.findIndex(
-            (item) => item.equipmentId === data.equipmentId && item.connectionPosition === data.connectionPosition
-        ) ?? -1
-    );
-};
-
 const defaultColDef = {
     sortable: false,
     resizable: true,
@@ -156,7 +148,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const renderEquipmentIdCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-            const formIndex = getFormIndex(watchTable, data);
+            const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
 
             return (
                 <TextInput
@@ -186,7 +178,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const renderConnectionNameCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-            const formIndex = getFormIndex(watchTable, data);
+            const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
 
             return (
                 <TextInput
@@ -214,7 +206,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const renderBusbarSectionCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-            const formIndex = getFormIndex(watchTable, data);
+            const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
             const busBarSectionIds = getValues(
                 `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${BUSBAR_SECTION_IDS}`
             );
@@ -237,7 +229,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const renderConnectionDirectionCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-            const formIndex = getFormIndex(watchTable, data);
+            const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
 
             return FeederBayDirectionCellRenderer({
                 name: `${MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE}[${formIndex}].${CONNECTION_DIRECTION}`,
@@ -250,7 +242,7 @@ export function MoveVoltageLevelFeederBaysForm({
     const renderConnectionPositionCell = useCallback(
         ({ data }: { data?: any }) => {
             const watchTable: FeederBaysFormInfos[] = getValues(MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE);
-            const formIndex = getFormIndex(watchTable, data);
+            const formIndex = watchTable?.findIndex((item) => item.rowId === data.rowId) ?? -1;
             return (
                 <div style={{ position: 'relative' }}>
                     <IntegerInput
