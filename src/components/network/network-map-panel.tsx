@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { Writable } from 'type-fest';
 import {
     type Coordinate,
     DRAW_EVENT,
@@ -71,8 +70,6 @@ import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getNominalVoltageColor } from 'utils/colors';
 
-const INITIAL_POSITION = [0, 0] as const;
-const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
 const EMPTY_ARRAY: any[] = [];
@@ -1121,8 +1118,6 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         filteredNominalVoltages={filteredNominalVoltages}
                         labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
                         arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-                        initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
-                        initialZoom={INITIAL_ZOOM}
                         lineFullPath={lineFullPath}
                         lineParallelPath={lineParallelPath}
                         lineFlowMode={lineFlowMode}
