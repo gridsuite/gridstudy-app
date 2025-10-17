@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { Writable } from 'type-fest';
 import {
     type Coordinate,
     DRAW_EVENT,
@@ -45,7 +44,13 @@ import {
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import {
+    openDiagram,
+    resetMapEquipment,
+    setMapDataLoading,
+    setMapState,
+    setReloadMapNeeded,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -57,7 +62,7 @@ import RunningStatus from 'components/utils/running-status';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import type { UUID } from 'node:crypto';
-import { AppState } from 'redux/reducer';
+import { AppState, MapState } from 'redux/reducer';
 import { isReactFlowRootNodeData } from 'redux/utils';
 import { isLoadflowResultNotification, isRootNetworksUpdatedNotification } from 'types/notification-types';
 import { CurrentTreeNode } from 'components/graph/tree-node.type';
@@ -70,6 +75,7 @@ import SelectionCreationPanel from './selection-creation-panel/selection-creatio
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getNominalVoltageColor } from 'utils/colors';
+import { getNominalVoltageIntervalName } from './utils/nominal-voltage-filter-utils';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -133,6 +139,7 @@ type NetworkMapPanelProps = {
 
 export type NetworkMapPanelRef = {
     leaveDrawingMode: () => void;
+    getCurrentMapState: () => MapState;
 };
 
 export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelProps>(
@@ -167,6 +174,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         const isNetworkModificationTreeUpToDate = useSelector(
             (state: AppState) => state.isNetworkModificationTreeModelUpToDate
         );
+        const mapState = useSelector((state: AppState) => state.mapState);
         const theme = useTheme();
         const { snackInfo } = useSnackMessage();
 
@@ -183,7 +191,8 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
 
         const { snackError } = useSnackMessage();
 
-        const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
+        const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>([]);
+        const [hasInitializedFilters, setHasInitializedFilters] = useState(false);
         const [geoData, setGeoData] = useState<GeoData>();
         const geoDataRef = useRef<any>();
 
@@ -546,10 +555,15 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             updateSubstationsTemporaryGeoData,
             updateLinesTemporaryGeoData,
         ]);
-        const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>((newValues) => {
-            setFilteredNominalVoltages(newValues);
-            setNominalVoltages(newValues);
-        }, []);
+        const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>(
+            (newValues) => {
+                setFilteredNominalVoltages(newValues);
+                setNominalVoltages(newValues);
+                // Store filters in Redux immediately
+                dispatch(setMapState({ filteredNominalVoltages: newValues }));
+            },
+            [dispatch]
+        );
         // loads all root node geo-data then saves them in redux
         // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
         const loadRootNodeGeoData = useCallback(() => {
@@ -704,13 +718,21 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                 });
                 return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(
                     () => {
-                        if (isFullReload) {
+                        if (isFullReload && !mapState?.filteredNominalVoltages) {
+                            // Only reset filters if no saved state exists
                             handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                         }
                     }
                 );
             },
-            [currentNode, handleFilteredNominalVoltagesChange, currentRootNetworkUuid, mapEquipments, studyUuid]
+            [
+                currentNode,
+                handleFilteredNominalVoltagesChange,
+                currentRootNetworkUuid,
+                mapEquipments,
+                studyUuid,
+                mapState?.filteredNominalVoltages,
+            ]
         );
 
         const updateMapEquipments = useCallback(
@@ -850,7 +872,13 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (previousCurrentRootNetworkUuid && previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
                 setInitialized(false);
                 setIsRootNodeGeoDataLoaded(false);
+                setHasInitializedFilters(false);
                 dispatch(resetMapEquipment());
+                if (refIsMapManualRefreshEnabled.current) {
+                    dispatch(setReloadMapNeeded(true)); // Trigger map reload in manual refresh mode
+                    setHasInitializedFilters(false);
+                    setFilteredNominalVoltages([]);
+                }
                 return;
             }
             if (disabled) {
@@ -860,6 +888,16 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (isNodeEdited(previousCurrentNode, currentNode)) {
                 return;
             }
+
+            // when current node changes (and it's not just a rename), set reload needed
+            if (
+                previousCurrentNode &&
+                previousCurrentNode.id !== currentNode?.id &&
+                refIsMapManualRefreshEnabled.current
+            ) {
+                dispatch(setReloadMapNeeded(true));
+            }
+
             // when switching of root network, networkModificationTree takes some time to load
             // we need to wait for the request to respond to load data, in order to have up to date nodes build status
             if (!isNetworkModificationTreeUpToDate) {
@@ -880,6 +918,9 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (!isMapEquipmentsInitialized) {
                 // load default node map equipments
                 loadMapEquipments();
+                // Reset filters when loading new map equipments
+                setHasInitializedFilters(false);
+                setFilteredNominalVoltages([]);
             }
             if (!isRootNodeGeoDataLoaded) {
                 // load root node geodata
@@ -913,7 +954,8 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             // we check if equipments are done initializing because they are checked to fetch accurate missing geo data
             if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized && !isInitialized) {
                 // when root networks are changed, mapEquipments are recreated. when they are done recreating, the map is zoomed around the new network
-                if (mapEquipments) {
+                if (mapEquipments && !mapState?.filteredNominalVoltages) {
+                    // Only initialize filters if no saved state exists
                     handleFilteredNominalVoltagesChange(mapEquipments.getNominalVoltages());
                 }
                 if (currentNodeRef.current && !isReactFlowRootNodeData(currentNodeRef.current)) {
@@ -932,6 +974,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             isInitialized,
             loadMissingGeoData,
             dispatch,
+            mapState?.filteredNominalVoltages,
         ]);
 
         // Reload geo data (if necessary) when we switch on full path
@@ -1017,12 +1060,28 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             setShouldOpenSelectionCreationPanel(false);
         }, [isInDrawingMode]);
 
+        const getCurrentMapState = useCallback((): MapState => {
+            const currentMapState = networkMapRef.current?.getCurrentViewState();
+
+            const center: [number, number] = [
+                currentMapState?.center.lng ?? INITIAL_POSITION[0],
+                currentMapState?.center.lat ?? INITIAL_POSITION[1],
+            ];
+
+            return {
+                zoom: currentMapState?.zoom ?? INITIAL_ZOOM,
+                center,
+                filteredNominalVoltages: filteredNominalVoltages,
+            };
+        }, [filteredNominalVoltages]);
+
         useImperativeHandle(
             ref,
             () => ({
                 leaveDrawingMode,
+                getCurrentMapState,
             }),
-            [leaveDrawingMode]
+            [leaveDrawingMode, getCurrentMapState]
         );
 
         const handleDrawingModeChange = useCallback(
@@ -1121,8 +1180,9 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         filteredNominalVoltages={filteredNominalVoltages}
                         labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
                         arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-                        initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
-                        initialZoom={INITIAL_ZOOM}
+                        // Use saved state for initial position and zoom
+                        initialPosition={mapState?.center}
+                        initialZoom={mapState?.zoom}
                         lineFullPath={lineFullPath}
                         lineParallelPath={lineParallelPath}
                         lineFlowMode={lineFlowMode}
@@ -1175,7 +1235,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         //   programmatically
                         // - changing visible when the map provider is changed in the settings because
                         //   it causes a render with the map container having display:none
-                        onManualRefreshClick={loadMapManually}
+                        onManualRefreshClick={isNetworkModificationTreeUpToDate ? loadMapManually : undefined}
                         triggerMapResizeOnChange={[visible]}
                         renderPopover={renderLinePopover}
                         mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
@@ -1216,17 +1276,45 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         );
 
         // Set up filteredNominalVoltages once at map initialization
-        // TODO: how do we must manage case where voltages change (like when changing node), as filters are already initialized?
         const nominalVoltagesFromMapEquipments = mapEquipments?.getNominalVoltages();
+
         useEffect(() => {
+            // Only initialize once when mapEquipments are loaded
             if (
                 nominalVoltagesFromMapEquipments !== undefined &&
                 nominalVoltagesFromMapEquipments.length > 0 &&
-                filteredNominalVoltages === undefined
+                !hasInitializedFilters
             ) {
-                handleFilteredNominalVoltagesChange(nominalVoltagesFromMapEquipments);
+                setHasInitializedFilters(true);
+
+                // Check if we have saved state to restore
+                if (mapState?.filteredNominalVoltages && mapState.filteredNominalVoltages.length > 0) {
+                    // Get intervals from saved voltages
+                    const savedIntervals = new Set(
+                        mapState.filteredNominalVoltages
+                            .map((v) => getNominalVoltageIntervalName(v))
+                            .filter((interval): interval is string => interval !== undefined)
+                    );
+
+                    // Filter current voltages by matching intervals
+                    const voltagesMatchingIntervals = nominalVoltagesFromMapEquipments.filter((v) => {
+                        const interval = getNominalVoltageIntervalName(v);
+                        return interval && savedIntervals.has(interval);
+                    });
+
+                    if (voltagesMatchingIntervals.length > 0) {
+                        // Restore voltages from matching intervals
+                        setFilteredNominalVoltages(voltagesMatchingIntervals);
+                    } else {
+                        // No matching intervals found, initialize with all
+                        setFilteredNominalVoltages(nominalVoltagesFromMapEquipments);
+                    }
+                } else {
+                    // No saved state, initialize with all voltages
+                    setFilteredNominalVoltages(nominalVoltagesFromMapEquipments);
+                }
             }
-        }, [filteredNominalVoltages, handleFilteredNominalVoltagesChange, nominalVoltagesFromMapEquipments]);
+        }, [nominalVoltagesFromMapEquipments, mapState?.filteredNominalVoltages, hasInitializedFilters]);
 
         function renderNominalVoltageFilter() {
             return (

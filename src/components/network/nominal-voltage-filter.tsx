@@ -64,17 +64,17 @@ export default function NominalVoltageFilter({
             const vlListValues = nominalVoltages.filter(
                 (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
             );
-            return { ...interval, vlListValues, isChecked: true };
+            // Check if all voltages in this interval are present in filteredNominalVoltages
+            const isChecked = vlListValues.length > 0 && vlListValues.every((v) => filteredNominalVoltages.includes(v));
+            return { ...interval, vlListValues, isChecked };
         });
         setVoltageLevelIntervals(newIntervals);
-    }, [nominalVoltages]);
+    }, [nominalVoltages, filteredNominalVoltages]);
 
     const handleToggle = useCallback(
         (interval: VoltageLevelValuesInterval) => {
-            let newFiltered: number[];
-
-            // we "inverse" the selection for vlListValues
-            newFiltered = [...filteredNominalVoltages];
+            // Toggle all voltages in this interval
+            const newFiltered = [...filteredNominalVoltages];
             for (const vnom of interval.vlListValues) {
                 const currentIndex = newFiltered.indexOf(vnom);
                 if (currentIndex === -1) {
@@ -83,11 +83,9 @@ export default function NominalVoltageFilter({
                     newFiltered.splice(currentIndex, 1); // previously present, we remove it
                 }
             }
-            setVoltageLevelIntervals((prev) =>
-                prev.map((i) => (i.name === interval.name ? { ...i, isChecked: !i.isChecked } : i))
-            );
 
-            onChange(newFiltered); // update filteredNominalVoltages
+            // Update parent state - the useEffect will handle updating voltageLevelIntervals
+            onChange(newFiltered);
         },
         [filteredNominalVoltages, onChange]
     );
