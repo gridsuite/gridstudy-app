@@ -44,7 +44,13 @@ import {
     type UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeEdited, isSameNodeAndBuilt } from '../graph/util/model-functions';
-import { openDiagram, resetMapEquipment, setMapDataLoading, setReloadMapNeeded } from '../../redux/actions';
+import {
+    openDiagram,
+    resetMapEquipment,
+    setMapDataLoading,
+    setMapState,
+    setReloadMapNeeded,
+} from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import { Box, Button, LinearProgress, Tooltip, useTheme } from '@mui/material';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -549,10 +555,15 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             updateSubstationsTemporaryGeoData,
             updateLinesTemporaryGeoData,
         ]);
-        const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>((newValues) => {
-            setFilteredNominalVoltages(newValues);
-            setNominalVoltages(newValues);
-        }, []);
+        const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>(
+            (newValues) => {
+                setFilteredNominalVoltages(newValues);
+                setNominalVoltages(newValues);
+                // Store filters in Redux immediately
+                dispatch(setMapState({ filteredNominalVoltages: newValues }));
+            },
+            [dispatch]
+        );
         // loads all root node geo-data then saves them in redux
         // it will be considered as the source of truth to check whether we need to fetch geo-data for a specific equipment or not
         const loadRootNodeGeoData = useCallback(() => {
@@ -863,6 +874,11 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                 setIsRootNodeGeoDataLoaded(false);
                 setHasInitializedFilters(false);
                 dispatch(resetMapEquipment());
+                if (refIsMapManualRefreshEnabled.current) {
+                    dispatch(setReloadMapNeeded(true)); // Trigger map reload in manual refresh mode
+                    setHasInitializedFilters(false);
+                    setFilteredNominalVoltages([]);
+                }
                 return;
             }
             if (disabled) {
@@ -872,6 +888,16 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (isNodeEdited(previousCurrentNode, currentNode)) {
                 return;
             }
+
+            // when current node changes (and it's not just a rename), set reload needed
+            if (
+                previousCurrentNode &&
+                previousCurrentNode.id !== currentNode?.id &&
+                refIsMapManualRefreshEnabled.current
+            ) {
+                dispatch(setReloadMapNeeded(true));
+            }
+
             // when switching of root network, networkModificationTree takes some time to load
             // we need to wait for the request to respond to load data, in order to have up to date nodes build status
             if (!isNetworkModificationTreeUpToDate) {
@@ -892,6 +918,9 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (!isMapEquipmentsInitialized) {
                 // load default node map equipments
                 loadMapEquipments();
+                // Reset filters when loading new map equipments
+                setHasInitializedFilters(false);
+                setFilteredNominalVoltages([]);
             }
             if (!isRootNodeGeoDataLoaded) {
                 // load root node geodata
@@ -1206,7 +1235,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
                         //   programmatically
                         // - changing visible when the map provider is changed in the settings because
                         //   it causes a render with the map container having display:none
-                        onManualRefreshClick={loadMapManually}
+                        onManualRefreshClick={isNetworkModificationTreeUpToDate ? loadMapManually : undefined}
                         triggerMapResizeOnChange={[visible]}
                         renderPopover={renderLinePopover}
                         mapLibrary={networkVisuParams.mapParameters.mapBaseMap}
