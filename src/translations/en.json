@@ -366,6 +366,7 @@
     "ShortCircuitAnalysis": "Short circuit analysis",
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "startShortCircuitError": "An error occurred while starting the short circuit analysis",
+    "updateSwitchStateError": "An error occurred while updating the switch state in diagram \"{diagramTitle}\"",
     "ShortCircuitAnalysisError": "An error occurred while executing the short circuit analysis",
     "ShortCircuitAnalysisResultsError": "An error occurred while retrieving short circuit analysis result",
     "ShortCircuitAnalysisTabOneBus": "One bus",
@@ -1635,5 +1636,6 @@
     "DuplicatedPositionsError": "Duplicated number",
     "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)",
     "moveFeederBaysSections": "Feeder bay will be connected onto the selected busbar section",
+    "Length": "Amount of elements",
     "equipmentID": "Equipment ID"
 }

@@ -8,11 +8,9 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { Box, useTheme } from '@mui/material';
 import { Panel, PanelGroup } from 'react-resizable-panels';
-import { useSelector } from 'react-redux';
 import { useMemo, useCallback } from 'react';
 
 import NetworkModificationTreePane from './network-modification-tree-pane';
-import WaitingLoader from './utils/waiting-loader';
 import GridLayoutPanel from './grid-layout/grid-layout-panel';
 import NodeEditor from './graph/menus/network-modifications/node-editor';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
@@ -37,7 +35,6 @@ const TreeTab = ({
     showGrid,
 }) => {
     const theme = useTheme();
-    const isNetworkModificationTreeModelUpToDate = useSelector((state) => state.isNetworkModificationTreeModelUpToDate);
 
     const { refs, state, handlers } = usePanelManager();
 
@@ -61,7 +58,6 @@ const TreeTab = ({
     return (
         <Box sx={styles.table}>
             <Box sx={styles.gridAndTreeContainer}>
-                <WaitingLoader message="LoadingRemoteData" loading={!isNetworkModificationTreeModelUpToDate} />
                 <PanelGroup autoSaveId={`study-panels-${studyUuid}`} direction="horizontal">
                     {/* Left Panel Group */}
                     <Panel
