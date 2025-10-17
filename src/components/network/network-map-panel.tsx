@@ -69,6 +69,7 @@ import SelectionCreationPanel from './selection-creation-panel/selection-creatio
 import { useEquipmentMenu } from '../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { getNominalVoltageColor } from 'utils/colors';
+import { getNominalVoltageIntervalName } from './utils/nominal-voltage-filter-utils';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -184,9 +185,8 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
 
         const { snackError } = useSnackMessage();
 
-        const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>(
-            mapState?.filteredNominalVoltages ?? []
-        );
+        const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>([]);
+        const [hasInitializedFilters, setHasInitializedFilters] = useState(false);
         const [geoData, setGeoData] = useState<GeoData>();
         const geoDataRef = useRef<any>();
 
@@ -861,6 +861,7 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
             if (previousCurrentRootNetworkUuid && previousCurrentRootNetworkUuid !== currentRootNetworkUuid) {
                 setInitialized(false);
                 setIsRootNodeGeoDataLoaded(false);
+                setHasInitializedFilters(false);
                 dispatch(resetMapEquipment());
                 return;
             }
@@ -1246,23 +1247,45 @@ export const NetworkMapPanel = forwardRef<NetworkMapPanelRef, NetworkMapPanelPro
         );
 
         // Set up filteredNominalVoltages once at map initialization
-        // TODO: how do we must manage case where voltages change (like when changing node), as filters are already initialized?
         const nominalVoltagesFromMapEquipments = mapEquipments?.getNominalVoltages();
+
         useEffect(() => {
+            // Only initialize once when mapEquipments are loaded
             if (
                 nominalVoltagesFromMapEquipments !== undefined &&
                 nominalVoltagesFromMapEquipments.length > 0 &&
-                filteredNominalVoltages.length === 0 &&
-                !mapState?.filteredNominalVoltages // Only initialize if no saved map state exists
+                !hasInitializedFilters
             ) {
-                handleFilteredNominalVoltagesChange(nominalVoltagesFromMapEquipments);
+                setHasInitializedFilters(true);
+
+                // Check if we have saved state to restore
+                if (mapState?.filteredNominalVoltages && mapState.filteredNominalVoltages.length > 0) {
+                    // Get intervals from saved voltages
+                    const savedIntervals = new Set(
+                        mapState.filteredNominalVoltages
+                            .map((v) => getNominalVoltageIntervalName(v))
+                            .filter((interval): interval is string => interval !== undefined)
+                    );
+
+                    // Filter current voltages by matching intervals
+                    const voltagesMatchingIntervals = nominalVoltagesFromMapEquipments.filter((v) => {
+                        const interval = getNominalVoltageIntervalName(v);
+                        return interval && savedIntervals.has(interval);
+                    });
+
+                    if (voltagesMatchingIntervals.length > 0) {
+                        // Restore voltages from matching intervals
+                        setFilteredNominalVoltages(voltagesMatchingIntervals);
+                    } else {
+                        // No matching intervals found, initialize with all
+                        setFilteredNominalVoltages(nominalVoltagesFromMapEquipments);
+                    }
+                } else {
+                    // No saved state, initialize with all voltages
+                    setFilteredNominalVoltages(nominalVoltagesFromMapEquipments);
+                }
             }
-        }, [
-            filteredNominalVoltages,
-            handleFilteredNominalVoltagesChange,
-            nominalVoltagesFromMapEquipments,
-            mapState?.filteredNominalVoltages,
-        ]);
+        }, [nominalVoltagesFromMapEquipments, mapState?.filteredNominalVoltages, hasInitializedFilters]);
 
         function renderNominalVoltageFilter() {
             return (
