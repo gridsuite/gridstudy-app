@@ -161,6 +161,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
                     connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
                     isRemoved: false,
+                    rowId: null,
                 }));
             } else if (editData?.uuid && isNodeBuiltValue && editData?.feederBays && editData?.feederBays?.length > 0) {
                 const feederBaysEditData = editData.feederBays;
@@ -175,6 +176,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
                             connectionPosition: bay.connectablePositionInfos.connectionPosition || '0',
                             isRemoved: false,
+                            rowId: null,
                         });
                     });
                     const deletedFeederBays = feederBaysEditData.filter(
@@ -193,6 +195,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                                 connectionDirection: bay.connectionDirection,
                                 connectionPosition: bay.connectionPosition,
                                 isRemoved: true,
+                                rowId: null,
                             });
                         });
                     }
@@ -212,6 +215,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionDirection: bay.connectionDirection,
                     connectionPosition: bay.connectionPosition,
                     isRemoved: false,
+                    rowId: null,
                 }));
             }
             return mergedRowData;
@@ -224,21 +228,23 @@ export default function MoveVoltageLevelFeederBaysDialog({
             const busBarSectionInfos = Object.values(voltageLevel?.busBarSectionInfos || {}).flat() as string[];
             const feederBaysInfos: FeederBaysInfos = (
                 Object.entries(voltageLevel?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
-            )
-                .flatMap(([equipmentId, feederBayInfos]) =>
-                    feederBayInfos.map((feederBay) => ({
-                        equipmentId,
-                        ...feederBay,
-                    }))
-                )
-                .filter((item, index, arr) => arr.findIndex((x) => x.equipmentId === item.equipmentId) === index);
+            ).flatMap(([equipmentId, feederBayInfos]) =>
+                feederBayInfos.map((feederBay) => ({
+                    equipmentId,
+                    ...feederBay,
+                }))
+            );
             // merge row data between actual values in network and user's modification infos
             const mergedRowData = mergeRowData(feederBaysInfos, busBarSectionInfos);
-
+            // Enrich rows with unique identifiers to track form rows
+            const mergedRowDataWithKeys = mergedRowData.map((item, index) => ({
+                ...item,
+                rowId: `${item.equipmentId}-${index}`,
+            }));
             // reset default values for RHF state
             reset(
                 {
-                    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: mergedRowData,
+                    [MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE]: mergedRowDataWithKeys,
                 },
                 { keepDirty: true }
             );
@@ -337,7 +343,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
                 onClear={clear}
                 fullWidth
                 onSave={onSubmit}
-                maxWidth={'md'}
+                maxWidth={'lg'}
                 titleId="MOVE_VOLTAGE_LEVEL_FEEDER_BAYS"
                 open={open}
                 keepMounted={true}

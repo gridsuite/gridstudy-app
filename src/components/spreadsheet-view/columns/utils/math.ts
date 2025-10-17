@@ -39,6 +39,14 @@ instance.import(
         match: function (expr: string, variable: string, flags: string = '') {
             return RegExp(expr, flags).test(variable);
         },
+        length: function (obj: unknown) {
+            if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+                return Object.keys(obj).length;
+            } else if (Array.isArray(obj)) {
+                return obj.length;
+            }
+            throw new Error('length() expects an array or object');
+        },
         unitToKiloUnit,
         unitToMicroUnit,
     },

@@ -26,6 +26,9 @@
 
     "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
+    "CopiedModificationInvalidationMessageFromAnotherStudy": "Suite à un changement des modifications dans une autre étude, le contenu du presse papier a été supprimé",
+    "CopiedModificationUpdateMessageFromAnotherStudy": "Suite à la copie de modifications dans une autre étude, le presse papier a été modifié",
+    "CopiedModificationInvalidationMessageAfterTabClosure": "Suite à la fermeture de l'onglet d'une autre étude, le presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "download.fileName": "Nom de fichier",
@@ -75,6 +78,7 @@
     "openVoltageLevel": "Ouvrir le poste",
     "CBAll": "Tous",
     "CBNone": "Aucun",
+    "voltageLevelInterval": "[{lowBound} kV; {highBound} kV[",
     "Map": "Carte",
     "Tree": "Arbre",
     "modifications": "Modifications",
@@ -361,6 +365,7 @@
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
+    "updateSwitchStateError": "Une erreur est survenue lors de la mise à jour de l'état de l'organe de coupure dans l'image \"{diagramTitle}\"",
     "startSensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité",
     "ShortCircuitAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
     "ShortCircuitAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de court-circuit",
@@ -1609,7 +1614,7 @@
     "PHASE_TAP": "Déphaseur",
     "RATIO_TAP": "Régleur",
     "Insert": "Insérer",
-    "String": "Chaîne de caractère",
+    "String": "Texte",
     "Number": "Nombre",
     "Object": "Objet",
     "Array": "Tableau",
@@ -1626,5 +1631,8 @@
     "TOP": "Haut",
     "BOTTOM": "Bas",
     "DuplicatedPositionsError": "Numéro en doublon",
-    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)"
+    "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
+    "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
+    "Length": "Nombre d'éléments",
+    "equipmentID": "ID de l'ouvrage"
 }

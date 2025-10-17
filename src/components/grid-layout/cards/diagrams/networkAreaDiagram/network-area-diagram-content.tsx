@@ -71,7 +71,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter, visible, diagramParams, onVoltageLevelClick, onNadChange } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
-    const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>();
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [showLabels, setShowLabels] = useState(true);
@@ -354,6 +354,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const handleReplaceNad = useCallback(
         (elementUuid: UUID, elementType: ElementType, elementName: string) => {
+            // Since we want to replace the NAD with a new one, we ditch the previous diagram
+            // viewer reference because we do not want to use an obsolete viewbox on the new NAD.
+            diagramViewerRef.current = null;
             onNadChange({
                 ...diagramParams,
                 name: elementName,
@@ -374,7 +377,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg && svgRef.current) {
+        if (props.svg && svgRef.current && !props.loadingState) {
             const nadViewerParameters: NadViewerParametersOptions = {
                 minWidth: MIN_WIDTH,
                 minHeight: MIN_HEIGHT,
@@ -418,6 +421,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     }
                 });
             }
+            // We keep a reference of the diagram viewer to get its viewbox for the next render.
             diagramViewerRef.current = diagramViewer;
         }
     }, [
@@ -433,6 +437,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         handleMoveTextnode,
         handleNodeLeftClick,
         handleToggleHover,
+        props.loadingState,
     ]);
 
     const closeMenu = () => {
