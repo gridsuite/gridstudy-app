@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {forwardRef, HTMLAttributes} from 'react';
+import { forwardRef, HTMLAttributes } from 'react';
 import VirtualizedListItem, { LISTBOX_PADDING, VirtualizedItem } from './virtualized-list-item';
 import { List } from 'react-window';
 
@@ -27,7 +27,7 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
 
     const getHeight = () => {
         if (itemCount > 8) {
-            return 7 * itemSize;
+            return 8 * itemSize;
         }
         return itemCount * itemSize;
     };
@@ -37,7 +37,7 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
             <List
                 rowProps={{ itemData }}
                 rowHeight={itemSize}
-                style={{ height: getHeight()}}
+                style={{ height: getHeight() }}
                 overscanCount={5}
                 rowCount={itemCount}
                 rowComponent={VirtualizedListItem}

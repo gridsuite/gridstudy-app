@@ -29,6 +29,8 @@ const VirtualizedListItem = ({
     itemData: VirtualizedItem[];
 }) => {
     const [option, selected, getOptionLabel, itemProps] = itemData[index];
+
+    const { key, ...restItemProps } = itemProps ?? {};
     return (
         <CheckboxItem
             option={option}
@@ -36,9 +38,9 @@ const VirtualizedListItem = ({
             getOptionLabel={getOptionLabel}
             style={{
                 ...style,
-                top: Number(style.top) + LISTBOX_PADDING,
             }}
-            {...itemProps}
+            key={itemProps?.key}
+            {...restItemProps}
         />
     );
 };
