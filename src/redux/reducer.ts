@@ -997,7 +997,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
         //if it's not initialised yet we take the empty one given in action
-        const newMapEquipments = (state.mapEquipments ?? action.mapEquipments).newMapEquipmentForUpdate();
+        const newMapEquipments = (state.mapEquipments ?? action.mapEquipments).newGSMapEquipmentForUpdate();
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos([]);
