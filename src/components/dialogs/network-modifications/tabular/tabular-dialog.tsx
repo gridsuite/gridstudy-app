@@ -48,6 +48,20 @@ import {
 } from './tabular-creation-utils';
 import { NetworkModificationDialogProps } from '../../../graph/menus/network-modifications/network-modification-menu.type';
 
+function convertCreations(creations: Modification[]): Modification[] {
+    return creations.map((creat: Modification) => {
+        let creation: Modification = {};
+        Object.keys(formatModification(creat)).forEach((key) => {
+            const entry = convertCreationFieldFromBackToFront(key, creat[key]);
+            (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
+                creation[item.key] = item.value;
+            });
+        });
+        creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
+        return creation;
+    });
+}
+
 type TabularDialogProps = NetworkModificationDialogProps & {
     editData: TabularModificationEditDataType;
     dialogMode: TabularModificationType;
@@ -114,17 +128,7 @@ export function TabularDialog({
     const initTabularCreationData = useCallback(
         (editData: TabularModificationCreationType) => {
             const equipmentType = getEquipmentTypeFromCreationType(editData?.creationType);
-            const creations = editData?.creations.map((creat: Modification) => {
-                let creation: Modification = {};
-                Object.keys(formatModification(creat)).forEach((key) => {
-                    const entry = convertCreationFieldFromBackToFront(key, creat[key]);
-                    (Array.isArray(entry) ? entry : [entry]).forEach((item) => {
-                        creation[item.key] = item.value;
-                    });
-                });
-                creation = addPropertiesFromBack(creation, creat?.[TABULAR_PROPERTIES]);
-                return creation;
-            });
+            const creations = convertCreations(editData?.creations);
             reset({
                 [TYPE]: equipmentType,
                 [MODIFICATIONS_TABLE]: creations,
