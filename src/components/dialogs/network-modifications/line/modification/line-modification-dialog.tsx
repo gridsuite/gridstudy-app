@@ -62,7 +62,6 @@ import {
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    getOpLimitsGroupInfosFromBranchInfo,
     getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
 import {

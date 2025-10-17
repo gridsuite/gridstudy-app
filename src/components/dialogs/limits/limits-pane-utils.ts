@@ -292,26 +292,6 @@ export const getOpLimitsGroupInfosFromBranchModification = (
 ): OperationalLimitsGroupFormInfos[] => {
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
 };
-
-export const getOpLimitsGroupInfosFromBranchInfo = (
-    mapServerBranch: BranchInfos
-): OperationalLimitsGroupFormInfos[] => {
-    return (
-        mapServerBranch.currentLimits?.map((currentLimit: CurrentLimits) => {
-            return {
-                id: currentLimit.id + currentLimit.applicability,
-                name: currentLimit.id,
-                applicability: currentLimit.applicability,
-                currentLimits: {
-                    id: currentLimit.id,
-                    permanentLimit: null,
-                    temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
-                },
-            };
-        }) ?? []
-    );
-};
-
 export const addModificationTypeToTemporaryLimits = (
     formTemporaryLimits: TemporaryLimitFormInfos[]
 ): TemporaryLimit[] => {
