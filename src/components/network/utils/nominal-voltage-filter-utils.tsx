@@ -12,5 +12,4 @@ export const getNominalVoltageIntervalName = (voltageValue: number): string | un
             return interval.name;
         }
     }
-    return;
 };

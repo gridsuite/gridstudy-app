@@ -75,14 +75,14 @@ export default function NominalVoltageFilter({
 
             // we "inverse" the selection for vlListValues
             newFiltered = [...filteredNominalVoltages];
-            interval.vlListValues.forEach((vnom) => {
+            for (const vnom of interval.vlListValues) {
                 const currentIndex = newFiltered.indexOf(vnom);
                 if (currentIndex === -1) {
                     newFiltered.push(vnom); // not previously present, we add it
                 } else {
                     newFiltered.splice(currentIndex, 1); // previously present, we remove it
                 }
-            });
+            }
             setVoltageLevelIntervals((prev) =>
                 prev.map((i) => (i.name === interval.name ? { ...i, isChecked: !i.isChecked } : i))
             );
