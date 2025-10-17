@@ -10,11 +10,10 @@ import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
-import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { GsLang, backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
-import { GsLang } from '@gridsuite/commons-ui';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
