@@ -24,10 +24,11 @@ export const getOptionLabel = (option: GlobalFilter, translate: (arg: string) =>
     return '';
 };
 
-export async function fetchSubstationPropertiesGlobalFilters(): Promise<{
+export async function fetchSubstationPropertiesGlobalFilters(signal?: AbortSignal): Promise<{
     substationPropertiesGlobalFilters?: Map<string, string[]>;
 }> {
-    const { substationPropertiesGlobalFilters } = await fetchStudyMetadata();
+    const { substationPropertiesGlobalFilters } = await fetchStudyMetadata(/*TODO signal*/);
+    signal?.throwIfAborted();
     const definedSubstationPropertiesGlobalFilters: Map<string, string[]> = substationPropertiesGlobalFilters
         ? new Map(Object.entries(substationPropertiesGlobalFilters))
         : new Map<string, string[]>();
