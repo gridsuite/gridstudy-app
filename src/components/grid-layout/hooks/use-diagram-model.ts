@@ -493,22 +493,25 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
 
     useDiagramParamsInitialization({ onLoadDiagramParams: createDiagram });
 
-    const updateAllDiagrams = useCallback(() => {
-        if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
-            return null;
-        }
-        setDiagramErrors({});
-        setGlobalError(undefined);
-        setDiagrams((oldDiagrams) => {
-            Object.values(oldDiagrams).forEach((diagram) => {
-                diagram.svg = null; // reset svg
+    const updateAllDiagrams = useCallback(
+        (type: DiagramType[] | null = null) => {
+            if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
+                return null;
+            }
+            setDiagramErrors({});
+            setGlobalError(undefined);
+            setDiagrams((oldDiagrams) => {
+                Object.values(oldDiagrams)
+                    .filter((d) => (type ? type.includes(d.type) : true))
+                    .forEach((diagram) => {
+                        diagram.svg = null; // reset svg
+                        fetchDiagramSvg(diagram);
+                    });
+                return oldDiagrams;
             });
-            return oldDiagrams;
-        });
-        Object.values(diagrams).forEach((diagram) => {
-            fetchDiagramSvg(diagram);
-        });
-    }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
+        },
+        [currentNode, currentRootNetworkUuid, fetchDiagramSvg, studyUuid]
+    );
 
     useDiagramEventListener({ createDiagram: createDiagramWithFocus, removeDiagram });
     useDiagramNotificationsListener({ updateAllDiagrams });
@@ -544,6 +547,17 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         prevCurrentRootNetworkUuid.current = currentRootNetworkUuid;
         updateAllDiagrams();
     }, [currentRootNetworkUuid, updateAllDiagrams]);
+
+    useEffect(() => {
+        // when the network visu params change, update all diagrams
+        updateAllDiagrams([DiagramType.VOLTAGE_LEVEL, DiagramType.SUBSTATION]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+        networkVisuParams.singleLineDiagramParameters.centerLabel,
+        networkVisuParams.singleLineDiagramParameters.substationLayout,
+        networkVisuParams.singleLineDiagramParameters.componentLibrary,
+    ]);
 
     return {
         diagrams,
