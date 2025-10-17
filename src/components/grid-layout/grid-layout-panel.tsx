@@ -220,13 +220,17 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     );
 
     // Grid operations
-    const addLayoutItem = useCallback((diagram: Diagram) => {
-        lastModifiedBreakpointRef.current = currentBreakpointRef.current;
-        setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
-        setDisableStoreButton(false);
-    }, []);
+    const addLayoutItem = useCallback(
+        (diagram: Diagram) => {
+            lastModifiedBreakpointRef.current = currentBreakpointRef.current;
+            setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
+            setDisableStoreButton(false);
+            focusOnDiagram(diagram.diagramUuid);
+        },
+        [focusOnDiagram]
+    );
 
-    const removeLayoutItem = useCallback((cardUuid: UUID | string) => {
+    const removeLayoutItem = useCallback((cardUuid: UUID) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => {
             const newLayouts: Layouts = {};
@@ -261,35 +265,19 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setIsMapOpen(false);
     }, []);
 
-    const {
-        diagrams,
-        loadingDiagrams,
-        diagramErrors,
-        globalError,
-        removeDiagram,
-        createDiagramWithFocus,
-        updateDiagram,
-        updateDiagramPositions,
-    } = useDiagramModel({
-        diagramTypes: diagramTypes,
-        onAddDiagram: addLayoutItem,
-        focusOnDiagram,
-    });
+    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
+        useDiagramModel({
+            diagramTypes: diagramTypes,
+            onAddDiagram: addLayoutItem,
+            onDiagramAlreadyExists: focusOnDiagram,
+        });
 
     const handleUpdateDiagram = useCallback(
-        (diagram: Diagram) => {
+        (diagram: DiagramParams, fetch?: boolean) => {
             setDisableStoreButton(false);
-            updateDiagram(diagram);
+            updateDiagram(diagram, fetch);
         },
         [updateDiagram]
-    );
-
-    const handleUpdateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            setDisableStoreButton(false);
-            updateDiagramPositions(diagramParams);
-        },
-        [updateDiagramPositions]
     );
 
     const onRemoveCard = useCallback(
@@ -322,10 +310,10 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             if (diagram) {
                 showGrid();
-                createDiagramWithFocus(diagram);
+                createDiagram(diagram);
             }
         },
-        [createDiagramWithFocus, showGrid]
+        [createDiagram, showGrid]
     );
 
     const handleLoadNad = useCallback(
@@ -341,9 +329,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 voltageLevelToOmitIds: [],
                 positions: [],
             };
-            createDiagramWithFocus(diagram);
+            createDiagram(diagram);
         },
-        [createDiagramWithFocus]
+        [createDiagram]
     );
 
     /**
@@ -411,9 +399,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             // Update the resized item in all breakpoints
             for (const [breakpoint, layoutItems] of Object.entries(newLayouts)) {
-                const itemIndex = (layoutItems as Layout[]).findIndex((item) => item.i === newItem.i);
+                const itemIndex = layoutItems.findIndex((item) => item.i === newItem.i);
                 if (itemIndex !== -1) {
-                    const items = layoutItems as Layout[];
+                    const items = layoutItems;
                     newLayouts[breakpoint] = [
                         ...items.slice(0, itemIndex),
                         { ...items[itemIndex], w: newItem.w, h: newItem.h },
@@ -554,9 +542,8 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             errorMessage={globalError || diagramErrors[diagram.diagramUuid]}
                             onClose={() => onRemoveCard(diagram.diagramUuid)}
                             showInSpreadsheet={showInSpreadsheet}
-                            createDiagram={createDiagramWithFocus}
+                            createDiagram={createDiagram}
                             updateDiagram={handleUpdateDiagram}
-                            updateDiagramPositions={handleUpdateDiagramPositions}
                         />
                     );
                 })}

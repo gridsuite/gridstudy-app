@@ -36,10 +36,13 @@ import { DiagramMetadata } from '@powsybl/network-viewer';
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
     onAddDiagram: (diagram: Diagram) => void;
-    focusOnDiagram?: (diagramUuid: UUID) => void;
+    onDiagramAlreadyExists?: (diagramUuid: UUID) => void;
 };
 
-export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: UseDiagramModelProps) => {
+export type CreateDiagramFuncType = (diagramParams: DiagramParams) => void;
+export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;
+
+export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
     const { snackInfo, snackError } = useSnackMessage();
     // context
@@ -95,7 +98,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
     );
 
     const createPendingDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
+        (diagramParams: DiagramParams, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
                 svg: null,
@@ -105,7 +108,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
                 newDiagrams[pendingDiagram.diagramUuid] = pendingDiagram;
                 return newDiagrams;
             });
-            onAddDiagram(pendingDiagram);
+            if (!disableOnAddCallback) {
+                onAddDiagram(pendingDiagram);
+            }
             return pendingDiagram;
         },
         [onAddDiagram]
@@ -388,62 +393,61 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         [diagrams]
     );
 
-    const createDiagramInternal = useCallback(
-        (diagramParams: DiagramParams, shouldFocus: boolean) => {
+    const isCreationRequestValid = useCallback(
+        (diagramParams: DiagramParams): boolean => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
                 });
-                return;
+                return false;
             }
 
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance don't manage this type of diagram
-                return;
+                return false;
             }
             if (diagramAlreadyExists(diagramParams)) {
-                // blink and focus on similar diagram
                 const similarDiagram = findSimilarDiagram(diagramParams);
                 if (similarDiagram) {
-                    focusOnDiagram?.(similarDiagram.diagramUuid);
+                    onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
                 }
-                return;
+                return false;
             }
-            const diagram = createPendingDiagram(diagramParams);
-            if (shouldFocus) {
-                focusOnDiagram?.(diagram.diagramUuid);
-            }
-            fetchDiagramSvg(diagram);
+            return true;
         },
         [
             diagrams,
             filterDiagramParams,
             diagramAlreadyExists,
-            createPendingDiagram,
-            fetchDiagramSvg,
             snackInfo,
             intl,
             findSimilarDiagram,
-            focusOnDiagram,
+            onDiagramAlreadyExists,
         ]
     );
 
-    const createDiagram = useCallback(
+    const initDiagram = useCallback(
         (diagramParams: DiagramParams) => {
-            createDiagramInternal(diagramParams, false);
+            if (!isCreationRequestValid(diagramParams)) {
+                return;
+            }
+            fetchDiagramSvg(createPendingDiagram(diagramParams, true));
         },
-        [createDiagramInternal]
+        [createPendingDiagram, fetchDiagramSvg, isCreationRequestValid]
     );
 
-    const createDiagramWithFocus = useCallback(
+    const createDiagram: CreateDiagramFuncType = useCallback(
         (diagramParams: DiagramParams) => {
-            createDiagramInternal(diagramParams, true);
+            if (!isCreationRequestValid(diagramParams)) {
+                return;
+            }
+            fetchDiagramSvg(createPendingDiagram(diagramParams));
         },
-        [createDiagramInternal]
+        [isCreationRequestValid, createPendingDiagram, fetchDiagramSvg]
     );
 
-    const updateDiagramAndFetch = useCallback(
-        (diagramParams: DiagramParams, fetch: boolean) => {
+    const updateDiagram: UpdateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams, fetch: boolean = true) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance doesn't manage this type of diagram
                 return;
@@ -466,20 +470,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         [diagrams, fetchDiagramSvg, filterDiagramParams]
     );
 
-    const updateDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, true);
-        },
-        [updateDiagramAndFetch]
-    );
-
-    const updateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, false);
-        },
-        [updateDiagramAndFetch]
-    );
-
     const removeDiagram = useCallback((id: UUID) => {
         setDiagrams((oldDiagrams) => {
             if (oldDiagrams[id]) {
@@ -491,7 +481,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         });
     }, []);
 
-    useDiagramParamsInitialization({ onLoadDiagramParams: createDiagram });
+    useDiagramParamsInitialization({ onLoadDiagramParams: initDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
@@ -510,7 +500,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         });
     }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
 
-    useDiagramEventListener({ createDiagram: createDiagramWithFocus, removeDiagram });
+    useDiagramEventListener({ createDiagram, removeDiagram });
     useDiagramNotificationsListener({ updateAllDiagrams });
 
     useEffect(() => {
@@ -552,8 +542,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         globalError,
         removeDiagram,
         createDiagram,
-        createDiagramWithFocus,
         updateDiagram,
-        updateDiagramPositions,
     };
 };
