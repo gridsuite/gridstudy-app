@@ -98,7 +98,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const createPendingDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
+        (diagramParams: DiagramParams, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
                 svg: null,
@@ -108,7 +108,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 newDiagrams[pendingDiagram.diagramUuid] = pendingDiagram;
                 return newDiagrams;
             });
-            onAddDiagram(pendingDiagram);
+            if (!disableOnAddCallback) {
+                onAddDiagram(pendingDiagram);
+            }
             return pendingDiagram;
         },
         [onAddDiagram]
@@ -391,40 +393,57 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagrams]
     );
 
-    const createDiagram: CreateDiagramFuncType = useCallback(
-        (diagramParams: DiagramParams) => {
+    const isCreationRequestValid = useCallback(
+        (diagramParams: DiagramParams): boolean => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
                 });
-                return;
+                return false;
             }
 
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance don't manage this type of diagram
-                return;
+                return false;
             }
             if (diagramAlreadyExists(diagramParams)) {
                 const similarDiagram = findSimilarDiagram(diagramParams);
                 if (similarDiagram) {
                     onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
                 }
-                return;
+                return false;
             }
-            const diagram = createPendingDiagram(diagramParams);
-            fetchDiagramSvg(diagram);
+            return true;
         },
         [
             diagrams,
             filterDiagramParams,
             diagramAlreadyExists,
-            createPendingDiagram,
-            fetchDiagramSvg,
             snackInfo,
             intl,
             findSimilarDiagram,
             onDiagramAlreadyExists,
         ]
+    );
+
+    const initDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (!isCreationRequestValid(diagramParams)) {
+                return;
+            }
+            fetchDiagramSvg(createPendingDiagram(diagramParams, true));
+        },
+        [createPendingDiagram, fetchDiagramSvg, isCreationRequestValid]
+    );
+
+    const createDiagram: CreateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (!isCreationRequestValid(diagramParams)) {
+                return;
+            }
+            fetchDiagramSvg(createPendingDiagram(diagramParams));
+        },
+        [isCreationRequestValid, createPendingDiagram, fetchDiagramSvg]
     );
 
     const updateDiagram: UpdateDiagramFuncType = useCallback(
@@ -462,7 +481,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         });
     }, []);
 
-    useDiagramParamsInitialization({ onLoadDiagramParams: createDiagram });
+    useDiagramParamsInitialization({ onLoadDiagramParams: initDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {

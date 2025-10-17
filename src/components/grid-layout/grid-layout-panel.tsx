@@ -220,11 +220,15 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
     );
 
     // Grid operations
-    const addLayoutItem = useCallback((diagram: Diagram) => {
-        lastModifiedBreakpointRef.current = currentBreakpointRef.current;
-        setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
-        setDisableStoreButton(false);
-    }, []);
+    const addLayoutItem = useCallback(
+        (diagram: Diagram) => {
+            lastModifiedBreakpointRef.current = currentBreakpointRef.current;
+            setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
+            setDisableStoreButton(false);
+            focusOnDiagram(diagram.diagramUuid);
+        },
+        [focusOnDiagram]
+    );
 
     const removeLayoutItem = useCallback((cardUuid: UUID) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
@@ -268,14 +272,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
             onDiagramAlreadyExists: focusOnDiagram,
         });
 
-    const createDiagramWithFocus = useCallback(
-        (diagramParams: DiagramParams) => {
-            createDiagram(diagramParams);
-            focusOnDiagram(diagramParams.diagramUuid);
-        },
-        [createDiagram, focusOnDiagram]
-    );
-
     const handleUpdateDiagram = useCallback(
         (diagram: DiagramParams, fetch?: boolean) => {
             setDisableStoreButton(false);
@@ -314,10 +310,10 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             if (diagram) {
                 showGrid();
-                createDiagramWithFocus(diagram);
+                createDiagram(diagram);
             }
         },
-        [createDiagramWithFocus, showGrid]
+        [createDiagram, showGrid]
     );
 
     const handleLoadNad = useCallback(
@@ -333,9 +329,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 voltageLevelToOmitIds: [],
                 positions: [],
             };
-            createDiagramWithFocus(diagram);
+            createDiagram(diagram);
         },
-        [createDiagramWithFocus]
+        [createDiagram]
     );
 
     /**
@@ -546,7 +542,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             errorMessage={globalError || diagramErrors[diagram.diagramUuid]}
                             onClose={() => onRemoveCard(diagram.diagramUuid)}
                             showInSpreadsheet={showInSpreadsheet}
-                            createDiagram={createDiagramWithFocus}
+                            createDiagram={createDiagram}
                             updateDiagram={handleUpdateDiagram}
                         />
                     );
