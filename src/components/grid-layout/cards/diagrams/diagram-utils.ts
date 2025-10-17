@@ -62,6 +62,7 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG:
         case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER:
+        case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER_LEG:
             return { equipmentType: EquipmentType.TWO_WINDINGS_TRANSFORMER };
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER:
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG:

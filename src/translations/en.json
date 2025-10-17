@@ -78,6 +78,7 @@
     "openVoltageLevel": "Open the voltage level",
     "CBAll": "All",
     "CBNone": "None",
+    "voltageLevelInterval": "[{lowBound} kV, {highBound} kV)",
     "Map": "Map",
     "Tree": "Tree",
     "modifications": "Modifications",
