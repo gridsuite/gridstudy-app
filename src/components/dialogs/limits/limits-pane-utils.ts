@@ -200,6 +200,30 @@ export const sanitizeLimitNames = (temporaryLimitList: TemporaryLimitFormInfos[]
             ...temporaryLimit,
             name: sanitizeString(name) ?? '',
         })) || [];
+
+const findTemporaryLimitForm = (temporaryLimits: TemporaryLimitFormInfos[], limit: TemporaryLimit) =>
+    temporaryLimits?.find(
+        (l: TemporaryLimitFormInfos) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration
+    );
+
+export const updateTemporaryLimits = (
+    temporaryLimitsFormInfos: TemporaryLimitFormInfos[],
+    temporaryLimitsToModify: TemporaryLimit[] // from map server
+) => {
+    let updatedTemporaryLimits = temporaryLimitsFormInfos ?? [];
+    //add temporary limits from map server that are not in the form values
+    temporaryLimitsToModify?.forEach((limit: TemporaryLimit) => {
+        if (findTemporaryLimitForm(updatedTemporaryLimits, limit) === undefined) {
+            updatedTemporaryLimits?.push(temporaryLimitToTemporaryLimitFormInfos(limit));
+        }
+    });
+
+    //remove deleted temporary limits from current and previous modifications
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter((limit: TemporaryLimitFormInfos) => !limit[DELETION_MARK]);
+
+    return updatedTemporaryLimits;
+};
+
 export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[]) => {
     return currentLimits?.map((currentLimit: CurrentLimits) => {
         return {
@@ -297,4 +321,13 @@ export const addModificationTypeToOpLimitsGroups = (
             temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
         };
     });
+};
+
+export const temporaryLimitToTemporaryLimitFormInfos = (temporaryLimit: TemporaryLimit): TemporaryLimitFormInfos => {
+    return {
+        [TEMPORARY_LIMIT_NAME]: temporaryLimit.name,
+        [TEMPORARY_LIMIT_DURATION]: temporaryLimit.acceptableDuration,
+        [TEMPORARY_LIMIT_VALUE]: temporaryLimit.value,
+        [DELETION_MARK]: false,
+    };
 };
