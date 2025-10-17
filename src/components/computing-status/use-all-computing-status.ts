@@ -10,6 +10,7 @@ import {
     getDynamicSecurityAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getLoadFlowRunningStatus,
+    getPccMinRunningStatus,
     getSecurityAnalysisRunningStatus,
     getSensitivityAnalysisRunningStatus,
     getShortCircuitAnalysisRunningStatus,
@@ -33,6 +34,7 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { fetchStateEstimationStatus } from '../../services/study/state-estimation';
 import { fetchDynamicSecurityAnalysisStatus } from '../../services/study/dynamic-security-analysis';
 import { NotificationType } from 'types/notification-types';
+import { fetchPccMinStatus } from 'services/study/pcc-min';
 
 // status invalidations
 const loadFlowStatusInvalidations = [NotificationType.LOADFLOW_STATUS, NotificationType.LOADFLOW_FAILED];
@@ -65,6 +67,7 @@ const stateEstimationStatusInvalidations = [
     NotificationType.STATE_ESTIMATION_STATUS,
     NotificationType.STATE_ESTIMATION_FAILED,
 ];
+const pccMinStatusInvalidations = [NotificationType.PCC_MIN_STATUS, NotificationType.PCC_MIN_FAILED];
 
 // status completions
 const loadFlowStatusCompletions = [NotificationType.LOADFLOW_RESULT, NotificationType.LOADFLOW_FAILED];
@@ -97,6 +100,7 @@ const stateEstimationStatusCompletions = [
     NotificationType.STATE_ESTIMATION_RESULT,
     NotificationType.STATE_ESTIMATION_FAILED,
 ];
+const pccMinStatusCompletions = [NotificationType.PCC_MIN_RESULT, NotificationType.PCC_MIN_FAILED];
 
 // result invalidations
 export const loadflowResultInvalidations = [NotificationType.LOADFLOW_RESULT];
@@ -115,6 +119,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     useComputingStatus(
         studyUuid,
@@ -230,5 +235,18 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID, cu
         ComputingType.STATE_ESTIMATION,
         undefined,
         stateEstimationAvailability
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        fetchPccMinStatus,
+        pccMinStatusInvalidations,
+        pccMinStatusCompletions,
+        getPccMinRunningStatus,
+        ComputingType.PCC_MIN,
+        undefined,
+        pccMinAvailability
     );
 };
