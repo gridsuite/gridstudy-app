@@ -282,6 +282,7 @@ const ParametersTabs: FunctionComponent<ParametersTabsProps> = ({ view }) => {
                         studyUuid={studyUuid}
                         setHaveDirtyFields={setDirtyFields}
                         shortCircuitParameters={shortCircuitParameters}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
