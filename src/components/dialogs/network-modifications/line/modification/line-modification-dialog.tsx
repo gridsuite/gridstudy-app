@@ -57,6 +57,7 @@ import { ModificationDialog } from '../../../commons/modificationDialog';
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
+    combineFormAndMapServerLimitsGroups,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
@@ -320,7 +321,7 @@ const LineModificationDialog = ({
                                             [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
                                             [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
                                                 ? getOpLimitsGroupInfosFromBranchModification(formValues)
-                                                : getOpLimitsGroupInfosFromBranchInfo(line),
+                                                : combineFormAndMapServerLimitsGroups(formValues, line),
                                         },
                                     },
                                     [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
