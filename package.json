@@ -46,7 +46,7 @@
         "react-resizable-panels": "^3.0.6",
         "react-router": "^7.8.2",
         "react-virtualized-auto-sizer": "^1.0.26",
-        "react-window": "^1.8.11",
+        "react-window": "^2.2.1",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
