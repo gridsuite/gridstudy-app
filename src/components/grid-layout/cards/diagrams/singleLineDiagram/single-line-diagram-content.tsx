@@ -20,7 +20,12 @@ import {
 } from '../diagram-utils';
 import { styles } from '../diagram-styles';
 import { MapEquipment } from '../../../../menus/base-equipment-menu';
-import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
+import {
+    OnBreakerCallbackType,
+    OnNextVoltageCallbackType,
+    SingleLineDiagramViewer,
+    SLDMetadata,
+} from '@powsybl/network-viewer';
 import { isNodeReadOnly } from '../../../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../../../utils/is-any-node-building-hook';
 import { useTheme } from '@mui/material/styles';
@@ -52,7 +57,7 @@ interface SingleLineDiagramContentProps {
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
     readonly visible: boolean;
-    readonly onNextVoltageLevelClick: (voltageLevelId: string) => void;
+    readonly onNextVoltageLevelClick: OnNextVoltageCallbackType;
     readonly diagramTitle: string;
 }
 

@@ -78,6 +78,7 @@
     "openVoltageLevel": "Ouvrir le poste",
     "CBAll": "Tous",
     "CBNone": "Aucun",
+    "voltageLevelInterval": "[{lowBound} kV; {highBound} kV[",
     "Map": "Carte",
     "Tree": "Arbre",
     "modifications": "Modifications",
