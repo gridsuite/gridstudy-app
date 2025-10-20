@@ -6,6 +6,9 @@
  */
 
 import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
     EquipmentInfos,
     EquipmentType,
     MODIFICATION_TYPES,
@@ -13,7 +16,6 @@ import {
     NetworkModificationMetadata,
 } from '@gridsuite/commons-ui';
 import { toModificationOperation } from '../../components/utils/utils';
-import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
