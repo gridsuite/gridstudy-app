@@ -4,7 +4,7 @@
     "debug.header.fileError": "Computation data download failed",
     "export.message.started": "Export file started",
     "export.message.succeeded": "Export file succeeded",
-    "export.header.failed": "export file failed",
+    "export.message.failed": "export file failed",
 
     "button.delete": "Delete",
     "button.continue": "Continue",

@@ -33,7 +33,7 @@ export function useExportDownload() {
                 .catch((error: Error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'export.header.failed',
+                        headerId: 'export.message.failed',
                     });
                 });
         },

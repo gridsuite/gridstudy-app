@@ -23,19 +23,9 @@ export default function useExportNotification() {
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (isExportNetworkNotification(eventData)) {
-                const {
-                    studyUuid,
-                    node: nodeUuid,
-                    rootNetworkUuid,
-                    userId: userIdNotif,
-                    exportUuid,
-                    error,
-                } = eventData.headers;
+                const { userId: userIdNotif, exportUuid, error } = eventData.headers;
 
                 const exportIdentifierNotif = buildExportIdentifier({
-                    studyUuid,
-                    nodeUuid,
-                    rootNetworkUuid,
                     exportUuid,
                 });
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);

@@ -7,18 +7,8 @@
 import { UUID } from 'node:crypto';
 import { getExportState, saveExportState } from '../redux/session-storage/export-network-state';
 
-export function buildExportIdentifier({
-    studyUuid,
-    nodeUuid,
-    rootNetworkUuid,
-    exportUuid,
-}: {
-    studyUuid: UUID;
-    nodeUuid: UUID;
-    rootNetworkUuid: UUID;
-    exportUuid: UUID;
-}) {
-    return `${studyUuid}|${rootNetworkUuid}|${nodeUuid}|${exportUuid}`;
+export function buildExportIdentifier({ exportUuid }: { exportUuid: UUID }) {
+    return `${exportUuid}`;
 }
 
 export function isExportSubscribed(identifier: string) {

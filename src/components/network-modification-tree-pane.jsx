@@ -123,10 +123,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const { subscribeExport } = useExportSubscription({
-        studyUuid: studyUuid,
-        rootNetworkUuid: currentRootNetworkUuid,
-    });
+    const { subscribeExport } = useExportSubscription();
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -469,7 +466,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         (nodeUuid, params, selectedFormat, fileName) => {
             exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName)
                 .then((response) => {
-                    subscribeExport(nodeUuid, response);
+                    subscribeExport(response);
                 })
                 .catch((error) => {
                     snackError({

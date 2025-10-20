@@ -10,22 +10,13 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { buildExportIdentifier, setExportSubscription } from '../utils/export-network-utils';
 
-export default function useExportSubscription({
-    studyUuid,
-    rootNetworkUuid,
-}: {
-    studyUuid: UUID;
-    rootNetworkUuid: UUID;
-}) {
+export default function useExportSubscription() {
     const intl = useIntl();
     const { snackInfo } = useSnackMessage();
 
     const subscribeExport = useCallback(
-        (nodeUuid: UUID, exportUuid: UUID) => {
+        (exportUuid: UUID) => {
             const identifier = buildExportIdentifier({
-                studyUuid,
-                nodeUuid,
-                rootNetworkUuid,
                 exportUuid,
             });
             setExportSubscription(identifier);
@@ -33,7 +24,7 @@ export default function useExportSubscription({
                 messageTxt: intl.formatMessage({ id: 'export.message.started' }),
             });
         },
-        [studyUuid, rootNetworkUuid, snackInfo, intl]
+        [snackInfo, intl]
     );
 
     return { subscribeExport };
