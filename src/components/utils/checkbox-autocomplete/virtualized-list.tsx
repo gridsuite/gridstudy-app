@@ -25,13 +25,13 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
 
     const getHeight = () => {
         if (itemCount > 8) {
-            return 8 * itemSize;
+            return 7 * itemSize;
         }
         return itemCount * itemSize;
     };
 
     return (
-        <div ref={ref} {...otherProps} style={{ overflowY: 'hidden' }}>
+        <div ref={ref} {...otherProps}>
             <List
                 rowProps={{ itemData }}
                 rowHeight={itemSize}
