@@ -11,7 +11,6 @@ import { List } from 'react-window';
 
 // component VirtualizedList is customized from ListboxComponent in the MUI example
 // https://mui.com/material-ui/react-autocomplete/#virtualization
-//Migration based on https://github.com/mui/material-ui/pull/47054/
 
 // Adapter for react-window
 const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>((props, ref) => {
