@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import * as React from 'react';
-import { CSSProperties, FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { Box, Stack, styled, Typography, useTheme } from '@mui/material';
 import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
