@@ -85,6 +85,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         onNewVoltageLevelDiagram,
         showInSpreadsheet,
         loadingState,
+        svg,
+        svgMetadata,
     } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -335,14 +337,14 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg && svgRef.current) {
+        if (svg && svgRef.current) {
             const isReadyForInteraction =
                 !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
-                props.svg, //svgContent
-                props.svgMetadata ?? null, //svg metadata
+                svg, //svgContent
+                svgMetadata ?? null, //svg metadata
                 diagramParams.type, //svg type
                 MIN_WIDTH, // minWidth
                 MIN_HEIGHT, // minHeight
@@ -401,8 +403,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        props.svg,
-        props.svgMetadata,
+        svg,
+        svgMetadata,
         currentNode,
         isAnyNodeBuilding,
         showEquipmentMenu,

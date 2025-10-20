@@ -68,7 +68,19 @@ type NetworkAreaDiagramContentProps = {
 };
 
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter, visible, diagramParams, onVoltageLevelClick, onNadChange } = props;
+    const {
+        diagramSizeSetter,
+        visible,
+        diagramParams,
+        onVoltageLevelClick,
+        onNadChange,
+        svg,
+        svgMetadata,
+        svgScalingFactor,
+        svgVoltageLevels,
+        loadingState,
+        showInSpreadsheet,
+    } = props;
     const svgRef = useRef();
     const { snackError, snackInfo } = useSnackMessage();
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer | null>();
@@ -121,7 +133,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const handleNodeLeftClick: OnSelectNodeCallbackType = useCallback(
         (equipmentId, nodeId, mousePosition) => {
-            if (mousePosition && !props.loadingState) {
+            if (mousePosition && !loadingState) {
                 if (isEditNadMode) {
                     setSelectedVoltageLevelId(equipmentId);
                     setShouldDisplayMenu(true);
@@ -131,15 +143,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
         },
-        [isEditNadMode, onVoltageLevelClick, props.loadingState]
+        [isEditNadMode, onVoltageLevelClick, loadingState]
     );
 
     const handleSaveNadConfig = (directoryData: IElementCreationDialog) => {
         createDiagramConfig(
             {
-                scalingFactor: props.svgScalingFactor,
-                voltageLevelIds: props.svgVoltageLevels ?? [],
-                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+                scalingFactor: svgScalingFactor,
+                voltageLevelIds: svgVoltageLevels ?? [],
+                positions: svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : [],
             },
             directoryData.name,
             directoryData.description,
@@ -165,9 +177,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         updateDiagramConfig(
             data.id,
             {
-                scalingFactor: props.svgScalingFactor,
-                voltageLevelIds: props.svgVoltageLevels ?? [],
-                positions: props.svgMetadata ? buildPositionsFromNadMetadata(props.svgMetadata) : [],
+                scalingFactor: svgScalingFactor,
+                voltageLevelIds: svgVoltageLevels ?? [],
+                positions: svgMetadata ? buildPositionsFromNadMetadata(svgMetadata) : [],
             },
             data.name,
             data.description
@@ -207,7 +219,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         studyUuid: studyUuid!,
         disabled: false,
         onViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => {
-            props.showInSpreadsheet({
+            showInSpreadsheet({
                 equipmentId: equipmentId,
                 equipmentType: equipmentType,
             });
@@ -377,7 +389,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg && svgRef.current && !props.loadingState) {
+        if (svg && svgRef.current && !loadingState) {
             const nadViewerParameters: NadViewerParametersOptions = {
                 minWidth: MIN_WIDTH,
                 minHeight: MIN_HEIGHT,
@@ -396,8 +408,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             };
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
-                props.svg,
-                props.svgMetadata ?? null,
+                svg,
+                svgMetadata ?? null,
                 nadViewerParameters
             );
 
@@ -411,7 +423,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
             // Repositioning the nodes with specified positions
             if (diagramParams.positions.length > 0) {
-                diagramParams.positions.forEach((position) => {
+                for (const position of diagramParams.positions) {
                     if (position.xPosition !== undefined && position.yPosition !== undefined) {
                         diagramViewer.moveNodeToCoordinates(
                             position.voltageLevelId,
@@ -419,15 +431,15 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                             position.yPosition
                         );
                     }
-                });
+                }
             }
             // We keep a reference of the diagram viewer to get its viewbox for the next render.
             diagramViewerRef.current = diagramViewer;
         }
     }, [
         diagramParams.type,
-        props.svg,
-        props.svgMetadata,
+        svg,
+        svgMetadata,
         diagramParams.positions,
         diagramSizeSetter,
         isEditNadMode,
@@ -437,7 +449,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         handleMoveTextnode,
         handleNodeLeftClick,
         handleToggleHover,
-        props.loadingState,
+        loadingState,
     ]);
 
     const closeMenu = () => {
@@ -450,7 +462,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     return (
         <>
-            <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
+            <Box height={2}>{loadingState && <LinearProgress />}</Box>
             {visible && shouldDisplayTooltip && (
                 <EquipmentPopover
                     studyUuid={studyUuid}
@@ -491,7 +503,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 onAddVoltageLevel={handleAddVoltageLevel}
                 onToggleShowLabels={handleToggleShowLabels}
                 isShowLabels={showLabels}
-                isDiagramLoading={props.loadingState}
+                isDiagramLoading={loadingState}
             />
             {renderEquipmentMenu()}
             {renderModificationDialog()}
