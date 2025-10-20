@@ -12,13 +12,12 @@ import { ReactElement } from 'react';
 // VirtualizedListItem component is customized from renderRow in the MUI example
 // https://mui.com/material-ui/react-autocomplete/#virtualization
 
-export type VirtualizedItem = {
-    option: string;
-    selected: boolean;
-    getOptionLabel: (option: string) => string;
-    itemProps?: ReactElement;
-    children?: VirtualizedItem[];
-};
+export type VirtualizedItem = [
+    option: string,
+    selected: boolean,
+    getOptionLabel: (option: string) => string,
+    itemProps?: ReactElement,
+];
 
 const VirtualizedListItem = ({
     index,
@@ -27,7 +26,7 @@ const VirtualizedListItem = ({
 }: RowComponentProps & {
     itemData: VirtualizedItem[];
 }) => {
-    const { option, selected, getOptionLabel, itemProps } = itemData[index];
+    const [option, selected, getOptionLabel, itemProps] = itemData[index];
 
     const { key, ...restItemProps } = itemProps ?? {};
     return (

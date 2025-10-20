@@ -18,7 +18,6 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
     const itemData: VirtualizedItem[] = [];
     for (const item of children as VirtualizedItem[]) {
         itemData.push(item);
-        itemData.push(...(item.children ?? []));
     }
 
     const itemCount = itemData.length;
@@ -32,7 +31,7 @@ const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>(
     };
 
     return (
-        <div ref={ref} {...otherProps}>
+        <div ref={ref} {...otherProps} style={{ overflowY: 'hidden' }}>
             <List
                 rowProps={{ itemData }}
                 rowHeight={itemSize}
