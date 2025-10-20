@@ -125,6 +125,7 @@ export type AppActions =
     | SetRootNetworkIndexationStatusAction
     | SetOptionalServicesAction
     | SetOneBusShortcircuitAnalysisDiagramAction
+    | ResetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
     | RemoveFromRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
@@ -959,22 +960,27 @@ export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCU
 export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
     Action<typeof SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
 > &
-    (OneBusShortCircuitAnalysisDiagram | { diagramId: null });
-
-export function setOneBusShortcircuitAnalysisDiagram(diagramId: null): SetOneBusShortcircuitAnalysisDiagramAction;
+    OneBusShortCircuitAnalysisDiagram;
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
-    nodeId: OneBusShortCircuitAnalysisDiagram['nodeId']
-): SetOneBusShortcircuitAnalysisDiagramAction;
-export function setOneBusShortcircuitAnalysisDiagram(
-    diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'] | null,
-    nodeId?: OneBusShortCircuitAnalysisDiagram['nodeId']
+    nodeId: OneBusShortCircuitAnalysisDiagram['nodeId'],
+    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid']
 ): SetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
-        // @ts-expect-error: function overload protect call
         nodeId: nodeId,
+        rootNetworkUuid: rootNetworkUuid,
+    };
+}
+
+export const RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+export type ResetOneBusShortcircuitAnalysisDiagramAction = Readonly<
+    Action<typeof RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM>
+>;
+export function resetOneBusShortcircuitAnalysisDiagram(): ResetOneBusShortcircuitAnalysisDiagramAction {
+    return {
+        type: RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     };
 }
 
