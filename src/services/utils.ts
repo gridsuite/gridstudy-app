@@ -67,23 +67,27 @@ const safeFetch = (url: string, initCopy: RequestInit) => {
     return fetch(url, initCopy).then((response: any) => (response.ok ? response : handleError(response)));
 };
 
-export const backendFetch = (url: string, init?: RequestInit, token?: string) => {
+export const backendFetch = (url: string, init?: RequestInit, token?: string, signal?: AbortSignal) => {
     const initCopy = prepareRequest(init, token);
+    initCopy.signal = signal;
     return safeFetch(url, initCopy);
 };
 
-export const backendFetchText = (url: string, init?: RequestInit, token?: string) => {
+export const backendFetchText = (url: string, init?: RequestInit, token?: string, signal?: AbortSignal) => {
     const initCopy = prepareRequest(init, token);
+    initCopy.signal = signal;
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 };
 
-export const backendFetchJson = (url: string, init?: RequestInit, token?: string) => {
+export const backendFetchJson = (url: string, init?: RequestInit, token?: string, signal?: AbortSignal) => {
     const initCopy = prepareRequest(init, token);
+    initCopy.signal = signal;
     return safeFetch(url, initCopy).then((safeResponse) => (safeResponse.status === 204 ? null : safeResponse.json()));
 };
 
-export const backendFetchFile = (url: string, init: RequestInit, token?: string) => {
+export const backendFetchFile = (url: string, init: RequestInit, token?: string, signal?: AbortSignal) => {
     const initCopy = prepareRequest(init, token);
+    initCopy.signal = signal;
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.blob());
 };
 

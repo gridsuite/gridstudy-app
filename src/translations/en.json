@@ -320,6 +320,7 @@
     "FetchCountryError": "An error occurred while fetching countries",
     "FetchNominalVoltagesError": "An error occurred while fetching nominal voltages",
     "FetchVoltageLevelsError": "An error occurred while fetching voltage levels",
+    "FetchSubstationPropertiesError": "An error occurred while fetching substations properties",
     "DynamicSimulationEventPropertyTEvent": "Event Time",
     "DynamicSimulationEventPropertySide": "Only Side",
     "DynamicSimulationEventPropertyNodeFaultDuration": "Node Fault Duration",
