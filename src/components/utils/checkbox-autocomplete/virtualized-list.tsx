@@ -6,7 +6,7 @@
  */
 
 import { forwardRef, HTMLAttributes } from 'react';
-import VirtualizedListItem, { VirtualizedItem } from './virtualized-list-item';
+import VirtualizedListItem, { type VirtualizedItem } from './virtualized-list-item';
 import { List } from 'react-window';
 
 // component VirtualizedList is customized from ListboxComponent in the MUI example
