@@ -12,13 +12,12 @@ import { ReactElement } from 'react';
 // VirtualizedListItem component is customized from renderRow in the MUI example
 // https://mui.com/material-ui/react-autocomplete/#virtualization
 
-export const LISTBOX_PADDING = 8; // px
-
 export type VirtualizedItem = [
     option: string,
     selected: boolean,
     getOptionLabel: (option: string) => string,
     itemProps?: ReactElement,
+    children?: VirtualizedItem[],
 ];
 
 const VirtualizedListItem = ({

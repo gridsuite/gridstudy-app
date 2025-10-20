@@ -16,10 +16,10 @@ import { List } from 'react-window';
 const VirtualizedList = forwardRef<HTMLDivElement, HTMLAttributes<HTMLElement>>((props, ref) => {
     const { children, ...otherProps } = props;
     const itemData: VirtualizedItem[] = [];
-    (children as VirtualizedItem[]).forEach((item: VirtualizedItem & { children?: VirtualizedItem[] }) => {
+    for (const item of children as VirtualizedItem[]) {
         itemData.push(item);
         itemData.push(...(item.children ?? []));
-    });
+    }
 
     const itemCount = itemData.length;
     const itemSize = 48;
