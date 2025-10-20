@@ -6,8 +6,9 @@
  */
 
 import type { NonEmptyTuple } from 'type-fest';
+import { backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { backendFetchJson, getRequestParamFromList } from '../utils';
+import { getRequestParamFromList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';

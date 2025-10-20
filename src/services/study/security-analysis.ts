@@ -6,17 +6,17 @@
  */
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
-import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
+import { getRequestParamFromList } from '../utils';
 import type { UUID } from 'node:crypto';
 import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
-import { GsLang } from '@gridsuite/commons-ui';
+import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, GsLang } from '@gridsuite/commons-ui';
 
 export function startSecurityAnalysis(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     contingencyListUuids: UUID[]
-): Promise<void> {
+): Promise<Response> {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
