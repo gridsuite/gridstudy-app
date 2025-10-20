@@ -75,28 +75,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [diagramTypes]
     );
 
-    const diagramAlreadyExists = useCallback(
-        (diagramParams: DiagramParams) => {
-            switch (diagramParams.type) {
-                case DiagramType.VOLTAGE_LEVEL:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
-                        .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
-                case DiagramType.SUBSTATION:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
-                        .some((d) => d.substationId === diagramParams.substationId);
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-                        .some((d) => d.diagramUuid === diagramParams.diagramUuid);
-                default:
-                    return false;
-            }
-        },
-        [diagrams]
-    );
-
     const createPendingDiagram = useCallback(
         (diagramParams: DiagramParams, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
@@ -380,12 +358,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                             diagram.type === DiagramType.SUBSTATION &&
                             diagram.substationId === diagramParams.substationId
                     );
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return Object.values(diagrams).find(
-                        (diagram) =>
-                            diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
-                            diagram.diagramUuid === diagramParams.diagramUuid
-                    );
+                case DiagramType.NETWORK_AREA_DIAGRAM: // no good criteria to get similar NAD for now
                 default:
                     return undefined;
             }
@@ -406,24 +379,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                 // this hook instance don't manage this type of diagram
                 return false;
             }
-            if (diagramAlreadyExists(diagramParams)) {
-                const similarDiagram = findSimilarDiagram(diagramParams);
-                if (similarDiagram) {
-                    onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
-                }
+            const similarDiagram = findSimilarDiagram(diagramParams);
+            if (similarDiagram) {
+                onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
                 return false;
             }
             return true;
         },
-        [
-            diagrams,
-            filterDiagramParams,
-            diagramAlreadyExists,
-            snackInfo,
-            intl,
-            findSimilarDiagram,
-            onDiagramAlreadyExists,
-        ]
+        [diagrams, filterDiagramParams, snackInfo, intl, findSimilarDiagram, onDiagramAlreadyExists]
     );
 
     const initDiagram = useCallback(
@@ -490,14 +453,14 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         setDiagramErrors({});
         setGlobalError(undefined);
         setDiagrams((oldDiagrams) => {
-            Object.values(oldDiagrams).forEach((diagram) => {
+            for (const diagram of Object.values(oldDiagrams)) {
                 diagram.svg = null; // reset svg
-            });
+            }
             return oldDiagrams;
         });
-        Object.values(diagrams).forEach((diagram) => {
+        for (const diagram of Object.values(diagrams)) {
             fetchDiagramSvg(diagram);
-        });
+        }
     }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
 
     useDiagramEventListener({ createDiagram, removeDiagram });
