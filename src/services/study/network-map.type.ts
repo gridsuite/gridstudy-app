@@ -18,9 +18,9 @@ export type TopologyInfos = {
     busbarCount: number;
     sectionCount: number;
     switchKinds: string[];
-    isRetrievedBusbarSections: boolean;
-    isBusbarSectionPositionFound: boolean;
-    busBarSectionInfos: Map<string, string[]>;
+    isSymmetrical: boolean;
+    isBusbarSectionPositionExtensionFound: boolean;
+    busBarSectionsInfos: Map<string, string[]>;
     feederBaysInfos: Map<string, FeederBayInfos[]>;
 };
 

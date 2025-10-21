@@ -155,14 +155,15 @@ export default function CreateVoltageLevelSectionDialog({
                 fetchVoltageLevelTopology(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId)
                     .then((topology: TopologyInfos) => {
                         if (topology) {
-                            setBusBarSectionInfos(topology?.busBarSectionInfos || new Map());
+                            setBusBarSectionInfos(topology?.busBarSectionsInfos || new Map());
                             setAllBusbarSectionsList(
-                                Object.values(topology?.busBarSectionInfos || new Map()).flat() as string[]
+                                Object.values(topology?.busBarSectionsInfos || new Map()).flat() as string[]
                             );
                             setIsExtensionNotFoundOrNotSupportedTopology(
-                                !topology.isBusbarSectionPositionFound || topology?.topologyKind !== 'NODE_BREAKER'
+                                !topology.isBusbarSectionPositionExtensionFound ||
+                                    topology?.topologyKind !== 'NODE_BREAKER'
                             );
-                            setIsSymmetricalNbBusBarSections(topology.isRetrievedBusbarSections);
+                            setIsSymmetricalNbBusBarSections(topology.isSymmetrical);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
                     })
