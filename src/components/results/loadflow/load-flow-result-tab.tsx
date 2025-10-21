@@ -30,7 +30,7 @@ import {
 } from './load-flow-result-utils';
 import { LimitViolationResult } from './limit-violation-result';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import { ComputingType, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { ComputingType, mergeSx, OverflowableText, type MuiStyles } from '@gridsuite/commons-ui';
 import { LOADFLOW_RESULT_SORT_STORE } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
@@ -182,11 +182,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },
