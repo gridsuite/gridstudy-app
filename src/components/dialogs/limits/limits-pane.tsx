@@ -71,6 +71,17 @@ export function LimitsPane({
         return null;
     };
 
+    const getCurrentLimitsIgnoreApplicability = (
+        equipmentToModify: any,
+        operationalLimitsGroupName: string
+    ): CurrentLimits | null => {
+        if (equipmentToModify?.currentLimits) {
+            return equipmentToModify.currentLimits.find(
+                (currentLimit: CurrentLimits) => currentLimit.id === operationalLimitsGroupName
+            );
+        }
+        return null;
+    };
     /**
      * returns an error message id if :
      * - there are more than 2 limit sets with the same name
@@ -202,7 +213,11 @@ export function LimitsPane({
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
                                             getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
-                                                ?.permanentLimit
+                                                ?.permanentLimit ??
+                                            getCurrentLimitsIgnoreApplicability(
+                                                equipmentToModify,
+                                                operationalLimitsGroup.name
+                                            )?.permanentLimit
                                         }
                                         temporaryLimitsPreviousValues={
                                             getCurrentLimits(equipmentToModify, operationalLimitsGroup.id)
