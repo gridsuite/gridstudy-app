@@ -12,7 +12,7 @@ import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import {
     RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,

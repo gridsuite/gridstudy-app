@@ -48,7 +48,7 @@ import GlobalFilterSelector from '../common/global-filter/global-filter-selector
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { ICellRendererParams } from 'ag-grid-community';
-import { Button, Tooltip } from '@mui/material';
+import { Button } from '@mui/material';
 import { resultsStyles } from '../common/utils';
 import { useLoadFlowResultColumnActions } from './use-load-flow-result-column-actions';
 
