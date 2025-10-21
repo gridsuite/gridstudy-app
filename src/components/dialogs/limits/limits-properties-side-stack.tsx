@@ -6,12 +6,12 @@
  */
 import { LimitsTagChip } from './limits-tag-chip';
 import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { AddCircle, Delete } from '@mui/icons-material';
-import { LimitsPropertyName } from './limits-constants';
 import { useIntl } from 'react-intl';
 import { LimitsProperty } from '../../../services/network-modification-types';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { usePredefinedProperties } from '@gridsuite/commons-ui';
 
 export interface LimitsPropertiesSideStackProps {
     formName: string;
@@ -27,6 +27,11 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
     const [propertyValue, setPropertyValue] = useState<string>('');
     const [editorError, setEditorError] = useState<string>('');
     const intl = useIntl();
+
+    const [predefinedProperties] = usePredefinedProperties('limitsGroup');
+    const predefinedPropertiesNames = useMemo(() => {
+        return Object.keys(predefinedProperties ?? {}).sort((a, b) => a.localeCompare(b));
+    }, [predefinedProperties]);
 
     const handleKeyPress = useCallback(
         (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -94,7 +99,7 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                     onMouseLeave={() => setHovered(false)}
                 >
                     <Autocomplete
-                        options={Object.values(LimitsPropertyName)}
+                        options={Object.values(predefinedPropertiesNames)}
                         size="small"
                         onChange={(event, value) => handleOnChange(value ?? '')}
                         renderInput={(params: AutocompleteRenderInputParams) => (
