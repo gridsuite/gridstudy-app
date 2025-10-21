@@ -6,9 +6,7 @@
  */
 
 export enum LimitsPropertyName {
-    LIMITS_TYPE = 'LimitsType',
-    ASSOCIATION = 'association',
-    ORIGIN = 'origin',
+    LIMITS_TYPE = 'Limit type',
 }
 
 export function getPropertyAvatar(type: string): string {
@@ -16,8 +14,6 @@ export function getPropertyAvatar(type: string): string {
 
     const descriptions: Record<LimitsPropertyName, string> = {
         [LimitsPropertyName.LIMITS_TYPE]: 'Ty',
-        [LimitsPropertyName.ASSOCIATION]: 'As',
-        [LimitsPropertyName.ORIGIN]: 'Pr',
     };
 
     return descriptions[transformedType] ?? transformedType.substring(0, 2);

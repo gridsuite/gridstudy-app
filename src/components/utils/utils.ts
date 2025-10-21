@@ -155,7 +155,7 @@ export const formatToTemporaryLimitsFormInfos = (temporaryLimits: TemporaryLimit
 export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsData[]) => {
     const formattedCompleteLimitsGroups: OperationalLimitsGroup[] = [];
     if (completeLimitsGroups) {
-        completeLimitsGroups.forEach((elt: CurrentLimitsData) => {
+        for (const elt of completeLimitsGroups) {
             if (isNotBlankOrEmpty(elt.id)) {
                 formattedCompleteLimitsGroups.push({
                     [ID]: elt.id + elt.applicability,
@@ -169,7 +169,7 @@ export const formatCompleteCurrentLimit = (completeLimitsGroups: CurrentLimitsDa
                     },
                 });
             }
-        });
+        }
     }
     return formattedCompleteLimitsGroups;
 };

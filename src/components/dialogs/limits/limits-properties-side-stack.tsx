@@ -36,8 +36,8 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                 }
                 if (!limitsProperties?.length) {
                     setValue(formName, [{ name: propertyName, value: propertyValue }]);
-                } else if (limitsProperties.find((l) => l.name === propertyName)) {
-                    setEditorError(intl.formatMessage({ id: 'UsedPropertyName' }));
+                } else if (limitsProperties.some((l) => l.name === propertyName)) {
+                    setEditorError(intl.formatMessage({ id: 'NameUnique' }));
                     return;
                 } else {
                     setValue(formName, [...limitsProperties, { name: propertyName, value: propertyValue }]);
@@ -74,7 +74,7 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                         disabled={disabled}
                     />
                 ))}
-                {!isEditing ? (
+                {!isEditing && (
                     <IconButton
                         color="primary"
                         sx={{ verticalAlign: 'center' }}
@@ -83,8 +83,6 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                     >
                         <AddCircle />
                     </IconButton>
-                ) : (
-                    ''
                 )}
             </Stack>
             {isEditing && !disabled ? (
@@ -117,12 +115,18 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                     <TextField
                         size="small"
                         label={intl.formatMessage({ id: 'PropertyValue' })}
-                        sx={{ flex: 1 }}
+                        sx={{ flex: 1, verticalAlign: 'center' }}
                         onKeyDown={handleKeyPress}
                         onChange={(event) => setPropertyValue(event.target.value)}
                     />
                     {hovered && (
-                        <IconButton sx={{ verticalAlign: 'center' }} onClick={() => setIsEditing(false)}>
+                        <IconButton
+                            sx={{ verticalAlign: 'center' }}
+                            onClick={() => {
+                                setIsEditing(false);
+                                setEditorError('');
+                            }}
+                        >
                             <Delete />
                         </IconButton>
                     )}
