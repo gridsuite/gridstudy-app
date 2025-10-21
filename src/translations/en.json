@@ -5,6 +5,8 @@
     "export.message.started": "Export file started",
     "export.message.succeeded": "Export file succeeded",
     "export.message.failed": "export file failed",
+    "export.message.fileNotFound": "export file is not found",
+    "export.message.fileError": "export file error",
 
     "button.delete": "Delete",
     "button.continue": "Continue",
