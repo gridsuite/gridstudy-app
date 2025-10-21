@@ -28,6 +28,7 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
+    ENABLE_OLG_MODIFICATION,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_NAME,
@@ -90,11 +91,12 @@ import {
 import {
     addModificationTypeToOpLimitsGroups,
     addOperationTypeToSelectedOpLG,
+    combineFormAndMapServerLimitsGroups,
     formatOpLimitGroupsToFormInfos,
     getAllLimitsFormData,
     getLimitsEmptyFormData,
     getLimitsValidationSchema,
-    combineFormAndMapServerLimitsGroups,
+    getOpLimitsGroupInfosFromBranchModification,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -249,7 +251,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getAllLimitsFormData(
                     formatOpLimitGroupsToFormInfos(twtModification.operationalLimitsGroups),
                     twtModification.selectedOperationalLimitsGroup1?.value ?? null,
-                    twtModification.selectedOperationalLimitsGroup2?.value ?? null
+                    twtModification.selectedOperationalLimitsGroup2?.value ?? null,
+                    twtModification[ENABLE_OLG_MODIFICATION]
                 ),
                 ...getRatioTapChangerFormData({
                     enabled: twtModification?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
@@ -483,7 +486,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedS: toModificationOperation(characteristics[RATED_S]),
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
-                operationalLimitsGroups: addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS]),
+                operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    : [],
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
                     intl.formatMessage({
@@ -496,6 +501,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         id: 'None',
                     })
                 ),
+                [ENABLE_OLG_MODIFICATION]: limits[ENABLE_OLG_MODIFICATION],
                 ratioTapChanger: computeRatioTapForSubmit(twt),
                 phaseTapChanger: computePhaseTapForSubmit(twt),
                 voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
@@ -653,10 +659,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                     ...formValues,
                                     ...{
                                         [LIMITS]: {
-                                            [OPERATIONAL_LIMITS_GROUPS]: combineFormAndMapServerLimitsGroups(
-                                                formValues,
-                                                twt
-                                            ),
+                                            [ENABLE_OLG_MODIFICATION]: formValues.limits[ENABLE_OLG_MODIFICATION],
+                                            [OPERATIONAL_LIMITS_GROUPS]: formValues.limits[ENABLE_OLG_MODIFICATION]
+                                                ? getOpLimitsGroupInfosFromBranchModification(formValues)
+                                                : combineFormAndMapServerLimitsGroups(formValues, twt),
                                         },
                                     },
                                     ...getRatioTapChangerFormData({

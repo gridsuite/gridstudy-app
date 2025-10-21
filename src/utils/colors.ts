@@ -8,9 +8,9 @@
 export function getNominalVoltageColor(nominalVoltage: number): number[] {
     if (nominalVoltage >= 300) {
         return [255, 0, 0];
-    } else if (nominalVoltage >= 170 && nominalVoltage < 300) {
+    } else if (nominalVoltage >= 180 && nominalVoltage < 300) {
         return [34, 139, 34];
-    } else if (nominalVoltage >= 120 && nominalVoltage < 170) {
+    } else if (nominalVoltage >= 120 && nominalVoltage < 180) {
         return [1, 175, 175];
     } else if (nominalVoltage >= 70 && nominalVoltage < 120) {
         return [204, 85, 0];

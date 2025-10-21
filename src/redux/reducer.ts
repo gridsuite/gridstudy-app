@@ -344,6 +344,7 @@ import { Layouts } from 'react-grid-layout';
 import { type DiagramConfigPosition } from '../services/explore';
 import { BASE_NAVIGATION_KEYS } from 'constants/study-navigation-sync-constants';
 import { NodeAlias } from '../components/spreadsheet-view/types/node-alias.type';
+import { VOLTAGE_LEVEL_ID } from '../components/utils/field-constants';
 
 // Redux state
 export type StudyUpdated = {
@@ -435,7 +436,6 @@ export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
     [ComputingType.SHORT_CIRCUIT]: RunningStatus;
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
@@ -579,7 +579,6 @@ export interface AppState extends CommonStoreState, AppConfigState {
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
     notificationIdList: UUID[];
-    nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: GlobalFilter[];
     mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramDepth: number;
@@ -666,7 +665,6 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
 };
 
 const initialLogsPaginationState: LogsPaginationState = {
@@ -680,7 +678,6 @@ const initialLogsPaginationState: LogsPaginationState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
 };
 
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
@@ -808,7 +805,6 @@ const initialState: AppState = {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.SHORT_CIRCUIT]: RunningStatus.IDLE,
         [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
         [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
@@ -999,7 +995,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
         //if it's not initialised yet we take the empty one given in action
-        const newMapEquipments = (state.mapEquipments ?? action.mapEquipments).newMapEquipmentForUpdate();
+        const newMapEquipments = (state.mapEquipments ?? action.mapEquipments).newGSMapEquipmentForUpdate();
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos([]);
@@ -1559,6 +1555,24 @@ export const reducer = createReducer(initialState, (builder) => {
             if (currentEquipment) {
                 // Format the updated equipments to match the table format
                 const formattedEquipments = mapSpreadsheetEquipments(equipmentType, updatedEquipments);
+
+                if (equipmentType === SpreadsheetEquipmentType.BUS) {
+                    // before updating with the new buses, we must delete all the existing ones corresponding
+                    // to the updated voltage levels
+                    const vlIdsOfBusesToDelete = new Set<string>(
+                        (action.equipments as Record<EquipmentUpdateType, Identifiable[]>)[
+                            EquipmentUpdateType.VOLTAGE_LEVELS
+                        ].map((vl) => vl.id)
+                    );
+                    for (const busId in currentEquipment) {
+                        if (vlIdsOfBusesToDelete.has((currentEquipment[busId] as any)[VOLTAGE_LEVEL_ID])) {
+                            delete state.spreadsheetNetwork.equipments[SpreadsheetEquipmentType.BUS].equipmentsByNodeId[
+                                action.nodeId
+                            ][busId];
+                        }
+                    }
+                }
+
                 //since substations data contains voltage level ones, they have to be treated separately
                 if (equipmentType === SpreadsheetEquipmentType.SUBSTATION) {
                     const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(

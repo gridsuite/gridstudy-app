@@ -84,6 +84,7 @@ export function FloatingPopoverTreeviewWrapper({
                     formMethods={formMethods}
                     setAnchorEl={setAnchorEl}
                     inputRef={quickSearchRef}
+                    equipmentType={spreadsheetEquipmentType}
                 />
             </Popover>
         </>

@@ -15,6 +15,7 @@ import { Filter } from '../components/dialogs/network-modifications/by-filter/co
 import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-type';
 import { ReactiveCapabilityCurvePoints } from '../components/dialogs/reactive-limits/reactive-limits.type';
 import { ModificationType } from '@gridsuite/commons-ui';
+import { ENABLE_OLG_MODIFICATION } from '../components/utils/field-constants';
 
 export enum OperationType {
     SET = 'SET',
@@ -79,6 +80,8 @@ export interface BatteryModificationInfos {
     connectionPosition: AttributeModification<number> | null;
     terminalConnected: AttributeModification<boolean> | null;
     properties: Property[] | null;
+    directTransX: AttributeModification<number> | null;
+    stepUpTransformerX: AttributeModification<number> | null;
 }
 
 export interface LoadCreationInfo {
@@ -236,6 +239,7 @@ export interface TwoWindingsTransformerModificationInfo {
     operationalLimitsGroups: OperationalLimitsGroup[];
     selectedLimitsGroup1: string;
     selectedLimitsGroup2: string;
+    [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1?: string;
     busOrBusbarSectionId1?: string;
     voltageLevelId2?: string;
@@ -438,6 +442,8 @@ export interface BatteryCreationInfos {
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoints[] | null;
+    directTransX: number | null;
+    stepUpTransformerX: number | null;
     participate: boolean | null;
     droop: number | null;
     maxQ: number | null;
@@ -555,6 +561,7 @@ export interface LineModificationInfos {
     operationalLimitsGroups: OperationalLimitsGroup[];
     selectedOperationalLimitsGroup1: AttributeModification<string> | null;
     selectedOperationalLimitsGroup2: AttributeModification<string> | null;
+    [ENABLE_OLG_MODIFICATION]: boolean;
     voltageLevelId1: string;
     busOrBusbarSectionId1: string;
     voltageLevelId2: string;
