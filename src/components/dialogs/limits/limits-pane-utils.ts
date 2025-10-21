@@ -14,6 +14,7 @@ import {
     ID,
     LIMIT_SETS_MODIFICATION_TYPE,
     LIMITS,
+    LIMITS_PROPERTIES,
     NAME,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
@@ -24,6 +25,7 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
+    VALUE,
 } from 'components/utils/field-constants';
 import {
     areArrayElementsUnique,
@@ -53,6 +55,7 @@ const limitsGroupValidationSchema = (isModification: boolean) => ({
     [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
     [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+    [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
 });
 
 const temporaryLimitsValidationSchema = () => {
@@ -66,6 +69,12 @@ const temporaryLimitsValidationSchema = () => {
                 is: (limitValue: number | null, limitDuration: number | null) => limitValue || limitDuration,
                 then: () => yup.string().nullable().required(),
             }),
+    });
+};
+const limitsPropertyValidationSchema = () => {
+    return yup.object().shape({
+        [NAME]: yup.string().nullable(),
+        [VALUE]: yup.string().nullable(),
     });
 };
 

@@ -10,7 +10,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { AddCircle, Delete } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { LimitsProperty } from '../../../services/network-modification-types';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
 
 export interface LimitsPropertiesSideStackProps {
@@ -18,8 +18,11 @@ export interface LimitsPropertiesSideStackProps {
     disabled?: boolean;
 }
 export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<LimitsPropertiesSideStackProps>) {
-    const { setValue } = useFormContext();
-    const limitsProperties: LimitsProperty[] = useWatch({ name: formName });
+    const {
+        fields: limitsProperties,
+        append,
+        remove,
+    } = useFieldArray<{ [key: string]: LimitsProperty[] }>({ name: formName });
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [hovered, setHovered] = useState<boolean>(false);
@@ -39,18 +42,17 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
                 if (!propertyName.trim() || !propertyValue.trim()) {
                     return;
                 }
-                if (!limitsProperties?.length) {
-                    setValue(formName, [{ name: propertyName, value: propertyValue }]);
-                } else if (limitsProperties.some((l) => l.name === propertyName)) {
+
+                if (limitsProperties.some((l) => l.name === propertyName)) {
                     setEditorError(intl.formatMessage({ id: 'NameUnique' }));
                     return;
                 } else {
-                    setValue(formName, [...limitsProperties, { name: propertyName, value: propertyValue }]);
+                    append({ name: propertyName, value: propertyValue });
                 }
                 setIsEditing(false);
             }
         },
-        [formName, intl, limitsProperties, propertyName, propertyValue, setValue]
+        [append, intl, limitsProperties, propertyName, propertyValue]
     );
 
     const handleOnChange = useCallback((value: string) => {
@@ -63,9 +65,9 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
             if (limitsProperties?.length <= index) {
                 return;
             }
-            setValue(formName, [...limitsProperties.slice(0, index), ...limitsProperties.slice(index + 1)]);
+            remove(index);
         },
-        [formName, limitsProperties, setValue]
+        [limitsProperties?.length, remove]
     );
 
     return (
