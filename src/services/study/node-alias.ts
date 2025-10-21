@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { backendFetch, backendFetchJson } from '../utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import { getStudyUrl } from './index';
 import { NodeAlias } from '../../components/spreadsheet-view/types/node-alias.type';
 
@@ -13,7 +13,7 @@ function getNodeAliasUrl(studyUuid: UUID) {
     return getStudyUrl(studyUuid) + '/node-aliases';
 }
 
-export function updateNodeAliases(studyUuid: UUID, nodeAliases: NodeAlias[]): Promise<void> {
+export function updateNodeAliases(studyUuid: UUID, nodeAliases: NodeAlias[]): Promise<Response> {
     console.info(`Update node aliases from study ${studyUuid}`);
     const changeUrl = getNodeAliasUrl(studyUuid);
     console.debug(changeUrl);

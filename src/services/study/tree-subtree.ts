@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrl } from './index';
-import { backendFetch, backendFetchJson } from '../utils';
+import { backendFetch, backendFetchJson } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { AbstractNode, NodeType, StashedNodeProperties } from '../../components/graph/tree-node.type';
 import { BUILD_STATUS } from '../../components/network/constants';
