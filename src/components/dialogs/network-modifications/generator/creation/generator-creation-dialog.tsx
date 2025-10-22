@@ -120,7 +120,7 @@ const formSchema = yup
         [MINIMUM_ACTIVE_POWER]: yup
             .number()
             .nullable()
-            .max(yup.ref(MAXIMUM_ACTIVE_POWER), 'generatorMinimumActivePowerHigherThanHighError')
+            .max(yup.ref(MAXIMUM_ACTIVE_POWER), 'generatorMinimumActivePowerMaxValueError')
             .required(),
         [RATED_NOMINAL_POWER]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         ...getShortCircuitFormSchema(),
