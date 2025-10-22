@@ -1135,7 +1135,10 @@ export type StudyUpdateEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData;
 
 export type StudyUpdateNotification = {
     eventData: StudyUpdateEventData;
