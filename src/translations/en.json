@@ -857,7 +857,6 @@
     "DISCONNECTOR": "Disconnector",
     "SameHorizAndVertPos": "At least two bus bar sections have same horizontal and vertical position",
     "DuplicateId": "Duplicate id",
-    "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
     "AddCouplingDeviceError": "Error while creating a coupling device",
     "BusBarSectionID1": "Bus bar section / bus 1",

@@ -850,7 +850,6 @@
     "DISCONNECTOR": "Sectionneur",
     "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
-    "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
     "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
     "AddCouplingDeviceError": "Erreur lors de l'ajout d'un omnibus/couplage",
     "BusBarSectionID1": "SJB / Nœud 1",
