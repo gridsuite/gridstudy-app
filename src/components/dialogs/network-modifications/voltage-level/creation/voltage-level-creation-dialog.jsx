@@ -161,8 +161,7 @@ const formSchema = yup
             .min(0, 'mustBeGreaterOrEqualToZero')
             .when([HIGH_VOLTAGE_LIMIT], {
                 is: (highVoltageLimit) => highVoltageLimit != null,
-                then: (schema) =>
-                    schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
+                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
             }),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
