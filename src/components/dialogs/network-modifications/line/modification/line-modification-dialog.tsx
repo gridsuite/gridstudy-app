@@ -232,7 +232,6 @@ const LineModificationDialog = ({
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits: LimitsDialogFormInfos = line[LIMITS];
-            console.log('LimitsDialogFormInfos-----------------------', limits);
 
             modifyLine({
                 studyUuid: studyUuid,

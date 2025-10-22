@@ -865,7 +865,6 @@ export function modifyLine({
     q2MeasurementValue,
     q2MeasurementValidity,
 }: LineModificationInfos) {
-    console.log('operationalLimitsGroups : ', operationalLimitsGroups);
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     const isUpdate = !!modificationUuid;
     if (isUpdate) {

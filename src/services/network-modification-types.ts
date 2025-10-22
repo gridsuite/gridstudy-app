@@ -529,39 +529,6 @@ export interface ShuntCompensatorCreationInfo {
     properties: Property[] | null;
 }
 
-export interface ShuntCompensatorCreationInfo {}
-
-export interface LineFormInfos {
-    studyUuid: string;
-    nodeUuid: UUID;
-    lineId: string;
-    lineName: string | null;
-    r: number;
-    x: number;
-    g1: number;
-    b1: number;
-    g2: number;
-    b2: number;
-    voltageLevelId1: string;
-    busOrBusbarSectionId1: string;
-    voltageLevelId2: string;
-    busOrBusbarSectionId2: string;
-    limitsGroups: CurrentLimitsData[];
-    selectedLimitsGroup1: string;
-    selectedLimitsGroup2: string;
-    isUpdate: boolean;
-    modificationUuid: string;
-    connectionName1: string | null;
-    connectionDirection1: string | null;
-    connectionName2: string | null;
-    connectionDirection2: string | null;
-    connectionPosition1: string | null;
-    connectionPosition2: string | null;
-    connected1: boolean;
-    connected2: boolean;
-    properties: Property[] | null;
-}
-
 export interface LineCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
