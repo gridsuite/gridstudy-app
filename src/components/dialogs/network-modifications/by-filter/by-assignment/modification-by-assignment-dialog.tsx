@@ -86,8 +86,10 @@ const ModificationByAssignmentDialog: FC<any> = ({
                     const field = FieldType[fieldKey];
                     const value = assignment[VALUE_FIELD];
                     let valueConverted = convertInputValue(field, value);
-                    if (!valueConverted || valueConverted === '') {
-                        valueConverted = emptyValueStr;
+                    if (valueConverted !== 0) {
+                        if (!valueConverted || valueConverted === '') {
+                            valueConverted = emptyValueStr;
+                        }
                     }
                     return {
                         ...assignment,
