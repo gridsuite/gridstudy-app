@@ -51,7 +51,6 @@ import { useForm } from 'react-hook-form';
 import { ModificationDialog } from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -142,8 +141,27 @@ const formSchema = yup
         [SUBSTATION_NAME]: yup.string().nullable(),
         [COUNTRY]: yup.string().nullable(),
         [SUBSTATION_CREATION]: creationPropertiesSchema,
-        [NOMINAL_V]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero').required(),
-        [LOW_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
+        [NOMINAL_V]: yup
+            .number()
+            .nullable()
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .when([LOW_VOLTAGE_LIMIT], {
+                is: (lowVoltageLimit) => lowVoltageLimit != null,
+                then: (schema) => schema.min(yup.ref(LOW_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMinValueError'),
+            })
+            .when([HIGH_VOLTAGE_LIMIT], {
+                is: (highVoltageLimit) => highVoltageLimit != null,
+                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
+            })
+            .required(),
+        [LOW_VOLTAGE_LIMIT]: yup
+            .number()
+            .nullable()
+            .min(0, 'mustBeGreaterOrEqualToZero')
+            .when([HIGH_VOLTAGE_LIMIT], {
+                is: (highVoltageLimit) => highVoltageLimit != null,
+                then: (schema) => schema.max(yup.ref(HIGH_VOLTAGE_LIMIT), 'voltageLevelNominalVoltageMaxValueError'),
+            }),
         [HIGH_VOLTAGE_LIMIT]: yup.number().nullable().min(0, 'mustBeGreaterOrEqualToZero'),
         [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
@@ -167,17 +185,16 @@ const formSchema = yup
                 is: (sectionCount) => sectionCount > 1,
                 then: (schema) => schema.required(),
             }),
-        [COUPLING_OMNIBUS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-                    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
-                })
-            )
-            .test('coupling-omnibus-between-sections', (values) =>
-                controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
-            ),
+        [COUPLING_OMNIBUS]: yup.array().of(
+            yup.object().shape({
+                [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                [BUS_BAR_SECTION_ID2]: yup
+                    .string()
+                    .nullable()
+                    .required()
+                    .notOneOf([yup.ref(BUS_BAR_SECTION_ID1), null], 'CreateCouplingDeviceIdenticalBusBar'),
+            })
+        ),
     })
     .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({
