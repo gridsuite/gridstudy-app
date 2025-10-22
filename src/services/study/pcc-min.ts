@@ -7,7 +7,6 @@
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
- 
 
 import type { UUID } from 'node:crypto';
 
