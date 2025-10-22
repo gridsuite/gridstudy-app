@@ -60,6 +60,7 @@ export type NetworkModificationNodeData = AbstractNode & {
     sensitivityAnalysisResultUuid?: UUID;
     dynamicSimulationResultUuid?: UUID;
     stateEstimationResultUuid?: UUID;
+    pccMinResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;
     nodeType?: NetworkModificationNodeType;
 };

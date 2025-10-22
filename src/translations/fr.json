@@ -1637,5 +1637,9 @@
     "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
     "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
     "Length": "Nombre d'éléments",
-    "equipmentID": "ID de l'ouvrage"
+    "equipmentID": "ID de l'ouvrage",
+    "PccMinTri": "Pcc min (MVA) ",
+    "IccMin": "Icc min (kA)",
+    "rOhm": "r (Ohm)",
+    "xOhm":"x (Ohm)"
 }
