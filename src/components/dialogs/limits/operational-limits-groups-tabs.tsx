@@ -60,7 +60,6 @@ export interface OperationalLimitsGroupsTabsProps {
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
-    isAModification: boolean;
     editable: boolean;
     currentLimitsToModify: CurrentLimits[];
 }
@@ -90,7 +89,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
             setIndexSelectedLimitSet,
             indexSelectedLimitSet,
             checkLimitSetUnicity,
-            isAModification,
             editable,
             currentLimitsToModify,
         },
@@ -367,7 +365,6 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
-                    isModification={isAModification}
                     currentLimitsToModify={currentLimitsToModify}
                 />
             </>

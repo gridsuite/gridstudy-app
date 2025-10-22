@@ -37,7 +37,6 @@ export interface LimitsGroupsContextualMenuProps {
     startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
-    isModification: boolean;
     currentLimitsToModify: CurrentLimits[];
 }
 
@@ -51,7 +50,6 @@ export function LimitsGroupsContextualMenu({
     startEditingLimitsGroup,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
-    isModification,
     currentLimitsToModify,
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
@@ -111,28 +109,37 @@ export function LimitsGroupsContextualMenu({
         startEditingLimitsGroup(getValues(operationalLimitsGroupsFormName).length - 1, newName);
     };
 
+    const handleRenameTab = () => {
+        const renammedLimits: OperationalLimitsGroupFormInfos = getValues(
+            `${operationalLimitsGroupsFormName}[${indexSelectedLimitSet}]`
+        );
+        // if the permanent limit is undefined in the form we try to get the previous value of the corresponding current limit
+        if (!renammedLimits[CURRENT_LIMITS][PERMANENT_LIMIT]) {
+            renammedLimits[CURRENT_LIMITS][PERMANENT_LIMIT] =
+                currentLimitsToModify.find(
+                    (cl: CurrentLimits) =>
+                        cl.id === renammedLimits[NAME] && cl.applicability === renammedLimits[APPLICABIlITY]
+                )?.permanentLimit ?? null;
+        }
+        activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null);
+    };
+
     return (
         <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
-            {!isModification /* TODO : Remove this when the removal of operational limits groups will be possible in powsybl network store */ && (
-                <>
-                    <MenuItem
-                        onClick={() =>
-                            activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null)
-                        }
-                    >
-                        <ListItemIcon>
-                            <Edit fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
-                    </MenuItem>
-                    <MenuItem onClick={handleDeleteTab}>
-                        <ListItemIcon>
-                            <Delete fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
-                    </MenuItem>
-                </>
-            )}
+            <>
+                <MenuItem onClick={handleRenameTab}>
+                    <ListItemIcon>
+                        <Edit fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>{intl.formatMessage({ id: 'Rename' })}</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleDeleteTab}>
+                    <ListItemIcon>
+                        <Delete fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>{intl.formatMessage({ id: 'DeleteFromMenu' })}</ListItemText>
+                </MenuItem>
+            </>
             <MenuItem onClick={handleDuplicateTab}>
                 <ListItemIcon>
                     <ContentCopy fontSize="small" />

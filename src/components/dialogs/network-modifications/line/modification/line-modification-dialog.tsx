@@ -232,7 +232,6 @@ const LineModificationDialog = ({
             const characteristics = line[CHARACTERISTICS];
             const stateEstimationData = line[STATE_ESTIMATION];
             const limits: LimitsDialogFormInfos = line[LIMITS];
-
             modifyLine({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
@@ -246,7 +245,7 @@ const LineModificationDialog = ({
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
                 operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
-                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS], lineToModify)
                     : [],
                 selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
@@ -289,7 +288,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
+        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError, lineToModify]
     );
 
     const clear = useCallback(() => {
