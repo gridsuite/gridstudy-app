@@ -41,6 +41,8 @@ const getOptionalServiceByServerName = (serverName: string): OptionalServicesNam
             return OptionalServicesNames.VoltageInit;
         case 'state-estimation-server':
             return OptionalServicesNames.StateEstimation;
+        case 'pcc-min-server':
+            return OptionalServicesNames.PccMin;
         default:
             return;
     }
