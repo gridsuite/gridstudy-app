@@ -1527,7 +1527,7 @@
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
     "CreateVoltageLevelSection": "Ajouter un tronçon ou une section",
     "CreateCouplingDeviceDiagramButton": "Voir le poste",
-    "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre 1 et 2 doivent être différentes",
+    "CreateCouplingDeviceIdenticalBusBar": "Les SJB / Nœuds 1 et 2 doivent être différents",
     "builtNodeTooltipForDiagram": "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram": "Diagramme du dernier nœud réalisé de la branche courante",
     "CouplingDeviceText": "Sections de jeu de barre",

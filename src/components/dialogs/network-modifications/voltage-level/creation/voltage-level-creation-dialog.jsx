@@ -167,17 +167,16 @@ const formSchema = yup
                 is: (sectionCount) => sectionCount > 1,
                 then: (schema) => schema.required(),
             }),
-        [COUPLING_OMNIBUS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
-                    [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
-                })
-            )
-            .test('coupling-omnibus-between-sections', (values) =>
-                controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
-            ),
+        [COUPLING_OMNIBUS]: yup.array().of(
+            yup.object().shape({
+                [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                [BUS_BAR_SECTION_ID2]: yup
+                    .string()
+                    .nullable()
+                    .required()
+                    .notOneOf([yup.ref(BUS_BAR_SECTION_ID1), null], 'CreateCouplingDeviceIdenticalBusBar'),
+            })
+        ),
     })
     .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({

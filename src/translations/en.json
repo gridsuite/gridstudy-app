@@ -1528,7 +1528,7 @@
     "CREATE_COUPLING_DEVICE": "Add a coupling device",
     "CreateVoltageLevelSection": "Add busbar section",
     "CreateCouplingDeviceDiagramButton": "Show voltage level",
-    "CreateCouplingDeviceIdenticalBusBar": "Busbar section 1 and 2 must be different",
+    "CreateCouplingDeviceIdenticalBusBar": "Bus bar section / bus 1 and 2 must be different",
     "builtNodeTooltipForDiagram": "Current diagram taking into account all applied modifications",
     "notBuiltNodeTooltipForDiagram": "Diagram from last build node in current branch",
     "CouplingDeviceText": "Bus bar sections",
