@@ -6,12 +6,12 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchText } from '../utils';
+import { backendFetch, backendFetchText } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 
-export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<void> {
+export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> {
     console.info(
-        `Running pccMin on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+        `Running pcc min on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/pcc-min/run';
@@ -22,7 +22,7 @@ export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootN
 
 export function stopPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Stopping pccMin on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+        `Stopping pcc min on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
@@ -35,7 +35,7 @@ export function stopPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNe
 
 export function fetchPccMinStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Fetching pccMin status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+        `Fetching pcc min status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
