@@ -8,8 +8,7 @@ import { DiagramConfigPosition } from '../../../../services/explore';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
-import { Diagram, DiagramType, Svg } from './diagram.type';
-import type { UUID } from 'node:crypto';
+import { type Svg } from './diagram.type';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;
@@ -69,33 +68,6 @@ export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): 
             return { equipmentType: EquipmentType.THREE_WINDINGS_TRANSFORMER };
         default: {
             console.log('bad feeder type ', feederType);
-            return null;
-        }
-    }
-}
-
-export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentType | null {
-    switch (equipmentType) {
-        case EquipmentType.SUBSTATION:
-        case EquipmentType.VOLTAGE_LEVEL:
-        case EquipmentType.LINE:
-        case EquipmentType.LOAD:
-        case EquipmentType.BATTERY:
-        case EquipmentType.TIE_LINE:
-        case EquipmentType.DANGLING_LINE:
-        case EquipmentType.GENERATOR:
-        case EquipmentType.HVDC_LINE:
-        case EquipmentType.SHUNT_COMPENSATOR:
-        case EquipmentType.STATIC_VAR_COMPENSATOR:
-        case EquipmentType.TWO_WINDINGS_TRANSFORMER:
-        case EquipmentType.THREE_WINDINGS_TRANSFORMER:
-            return equipmentType;
-
-        case EquipmentType.VSC_CONVERTER_STATION:
-        case EquipmentType.LCC_CONVERTER_STATION:
-            return EquipmentType.HVDC_CONVERTER_STATION;
-        default: {
-            console.info('Unrecognized equipment type encountered ', equipmentType);
             return null;
         }
     }
@@ -177,12 +149,3 @@ export function mergePositions(
     // Convert map back to array
     return Array.from(positionsMap.values());
 }
-
-const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
-
-export const isThereTooManyOpenedNadDiagrams = (diagrams: Record<UUID, Diagram>) => {
-    return (
-        Object.values(diagrams).filter((diagram) => diagram?.type === DiagramType.NETWORK_AREA_DIAGRAM).length >=
-        MAX_NUMBER_OF_NAD_DIAGRAMS
-    );
-};

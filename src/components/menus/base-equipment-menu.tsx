@@ -14,7 +14,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { getCommonEquipmentType } from 'components/grid-layout/cards/diagrams/diagram-utils';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import {
     CustomMenuItem,
@@ -25,6 +24,7 @@ import {
     type MuiStyles,
 } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
+import { getCommonEquipmentType } from './menus-utils';
 
 const styles = {
     menuItem: {

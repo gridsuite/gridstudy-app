@@ -8,7 +8,7 @@
 import { Box } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useMemo } from 'react';
 import CustomCardHeader from '../custom-card-header';
-import { Diagram, DiagramAdditionalMetadata, DiagramType } from './diagram.type';
+import { type Diagram, DiagramAdditionalMetadata, type DiagramParams, DiagramType } from './diagram.type';
 import type { UUID } from 'node:crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
@@ -17,7 +17,7 @@ import { EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { useIntl } from 'react-intl';
 import { cardStyles } from '../card-styles';
-import { CreateDiagramFuncType, UpdateDiagramFuncType } from 'components/grid-layout/hooks/use-diagram-model';
+import { type CreateDiagramFuncType, type UpdateDiagramFuncType } from '../../hooks/diagram-model.types';
 
 interface ReactGridLayoutCustomChildComponentProps {
     style?: React.CSSProperties;
@@ -37,7 +37,7 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
-    createDiagram: CreateDiagramFuncType;
+    createDiagram: CreateDiagramFuncType<DiagramParams>;
     updateDiagram: UpdateDiagramFuncType;
     key: string; // Required for React Grid Layout to identify the component
 }

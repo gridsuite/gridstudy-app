@@ -15,6 +15,9 @@ export enum DiagramType {
     NETWORK_AREA_DIAGRAM = 'network-area-diagram',
 }
 
+// type helper to transform required property into optional one
+type WithOptionalProperty<Type, Key extends keyof Type> = Omit<Type, Key> & Partial<Pick<Type, Key>>;
+
 // Create diagram parameters
 type DiagramBaseParams = {
     diagramUuid: UUID;
@@ -42,7 +45,7 @@ export type NetworkAreaDiagramParams = DiagramBaseParams & {
 };
 
 export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramParams;
-
+export type DiagramParamsWithoutId<Type extends DiagramParams> = WithOptionalProperty<Type, 'diagramUuid'>;
 // diagrams model
 export type DiagramBase = {
     diagramUuid: UUID;

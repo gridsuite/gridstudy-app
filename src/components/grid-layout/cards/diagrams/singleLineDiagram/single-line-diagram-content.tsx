@@ -46,7 +46,7 @@ import { DiagramType, type SubstationDiagramParams, type VoltageLevelDiagramPara
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import useComputationDebug from '../../../../../hooks/use-computation-debug';
-import { v4 } from 'uuid';
+import { type CreateDiagramFuncType } from '../../../hooks/diagram-model.types';
 
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
@@ -58,7 +58,7 @@ interface SingleLineDiagramContentProps {
     readonly visible: boolean;
     readonly diagramParams: VoltageLevelDiagramParams | SubstationDiagramParams;
     readonly onNextVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
-    readonly onNewVoltageLevelDiagram?: (diagramParams: VoltageLevelDiagramParams) => void;
+    readonly onNewVoltageLevelDiagram?: CreateDiagramFuncType<VoltageLevelDiagramParams>;
 }
 
 type BusMenuState = {
@@ -195,7 +195,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         (vlId, event) => {
             if (event.ctrlKey) {
                 onNewVoltageLevelDiagram?.({
-                    diagramUuid: v4() as UUID,
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: vlId,
                     name: '',
