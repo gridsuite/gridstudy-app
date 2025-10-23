@@ -36,10 +36,13 @@ import { DiagramMetadata } from '@powsybl/network-viewer';
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
     onAddDiagram: (diagram: Diagram) => void;
-    focusOnDiagram?: (diagramUuid: UUID) => void;
+    onDiagramAlreadyExists?: (diagramUuid: UUID) => void;
 };
 
-export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: UseDiagramModelProps) => {
+export type CreateDiagramFuncType = (diagramParams: DiagramParams) => void;
+export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;
+
+export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
     const { snackInfo, snackError } = useSnackMessage();
     // context
@@ -72,30 +75,8 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         [diagramTypes]
     );
 
-    const diagramAlreadyExists = useCallback(
-        (diagramParams: DiagramParams) => {
-            switch (diagramParams.type) {
-                case DiagramType.VOLTAGE_LEVEL:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.VOLTAGE_LEVEL)
-                        .some((d) => d.voltageLevelId === diagramParams.voltageLevelId);
-                case DiagramType.SUBSTATION:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.SUBSTATION)
-                        .some((d) => d.substationId === diagramParams.substationId);
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return Object.values(diagrams)
-                        .filter((diagram) => diagram.type === DiagramType.NETWORK_AREA_DIAGRAM)
-                        .some((d) => d.diagramUuid === diagramParams.diagramUuid);
-                default:
-                    return false;
-            }
-        },
-        [diagrams]
-    );
-
     const createPendingDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
+        (diagramParams: DiagramParams, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
                 ...diagramParams,
                 svg: null,
@@ -105,7 +86,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
                 newDiagrams[pendingDiagram.diagramUuid] = pendingDiagram;
                 return newDiagrams;
             });
-            onAddDiagram(pendingDiagram);
+            if (!disableOnAddCallback) {
+                onAddDiagram(pendingDiagram);
+            }
             return pendingDiagram;
         },
         [onAddDiagram]
@@ -375,12 +358,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
                             diagram.type === DiagramType.SUBSTATION &&
                             diagram.substationId === diagramParams.substationId
                     );
-                case DiagramType.NETWORK_AREA_DIAGRAM:
-                    return Object.values(diagrams).find(
-                        (diagram) =>
-                            diagram.type === DiagramType.NETWORK_AREA_DIAGRAM &&
-                            diagram.diagramUuid === diagramParams.diagramUuid
-                    );
+                case DiagramType.NETWORK_AREA_DIAGRAM: // no good criteria to get similar NAD for now
                 default:
                     return undefined;
             }
@@ -388,62 +366,51 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         [diagrams]
     );
 
-    const createDiagramInternal = useCallback(
-        (diagramParams: DiagramParams, shouldFocus: boolean) => {
+    const isCreationRequestValid = useCallback(
+        (diagramParams: DiagramParams): boolean => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
                 });
-                return;
+                return false;
             }
 
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance don't manage this type of diagram
+                return false;
+            }
+            const similarDiagram = findSimilarDiagram(diagramParams);
+            if (similarDiagram) {
+                onDiagramAlreadyExists?.(similarDiagram.diagramUuid);
+                return false;
+            }
+            return true;
+        },
+        [diagrams, filterDiagramParams, snackInfo, intl, findSimilarDiagram, onDiagramAlreadyExists]
+    );
+
+    const initDiagram = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (!isCreationRequestValid(diagramParams)) {
                 return;
             }
-            if (diagramAlreadyExists(diagramParams)) {
-                // blink and focus on similar diagram
-                const similarDiagram = findSimilarDiagram(diagramParams);
-                if (similarDiagram) {
-                    focusOnDiagram?.(similarDiagram.diagramUuid);
-                }
+            fetchDiagramSvg(createPendingDiagram(diagramParams, true));
+        },
+        [createPendingDiagram, fetchDiagramSvg, isCreationRequestValid]
+    );
+
+    const createDiagram: CreateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams) => {
+            if (!isCreationRequestValid(diagramParams)) {
                 return;
             }
-            const diagram = createPendingDiagram(diagramParams);
-            if (shouldFocus) {
-                focusOnDiagram?.(diagram.diagramUuid);
-            }
-            fetchDiagramSvg(diagram);
+            fetchDiagramSvg(createPendingDiagram(diagramParams));
         },
-        [
-            diagrams,
-            filterDiagramParams,
-            diagramAlreadyExists,
-            createPendingDiagram,
-            fetchDiagramSvg,
-            snackInfo,
-            intl,
-            findSimilarDiagram,
-            focusOnDiagram,
-        ]
+        [isCreationRequestValid, createPendingDiagram, fetchDiagramSvg]
     );
 
-    const createDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
-            createDiagramInternal(diagramParams, false);
-        },
-        [createDiagramInternal]
-    );
-
-    const createDiagramWithFocus = useCallback(
-        (diagramParams: DiagramParams) => {
-            createDiagramInternal(diagramParams, true);
-        },
-        [createDiagramInternal]
-    );
-
-    const updateDiagramAndFetch = useCallback(
-        (diagramParams: DiagramParams, fetch: boolean) => {
+    const updateDiagram: UpdateDiagramFuncType = useCallback(
+        (diagramParams: DiagramParams, fetch: boolean = true) => {
             if (filterDiagramParams([diagramParams]).length === 0) {
                 // this hook instance doesn't manage this type of diagram
                 return;
@@ -466,20 +433,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         [diagrams, fetchDiagramSvg, filterDiagramParams]
     );
 
-    const updateDiagram = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, true);
-        },
-        [updateDiagramAndFetch]
-    );
-
-    const updateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            return updateDiagramAndFetch(diagramParams, false);
-        },
-        [updateDiagramAndFetch]
-    );
-
     const removeDiagram = useCallback((id: UUID) => {
         setDiagrams((oldDiagrams) => {
             if (oldDiagrams[id]) {
@@ -491,7 +444,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         });
     }, []);
 
-    useDiagramParamsInitialization({ onLoadDiagramParams: createDiagram });
+    useDiagramParamsInitialization({ onLoadDiagramParams: initDiagram });
 
     const updateAllDiagrams = useCallback(() => {
         if (studyUuid === null || currentNode === null || currentRootNetworkUuid === null) {
@@ -500,17 +453,17 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         setDiagramErrors({});
         setGlobalError(undefined);
         setDiagrams((oldDiagrams) => {
-            Object.values(oldDiagrams).forEach((diagram) => {
+            for (const diagram of Object.values(oldDiagrams)) {
                 diagram.svg = null; // reset svg
-            });
+            }
             return oldDiagrams;
         });
-        Object.values(diagrams).forEach((diagram) => {
+        for (const diagram of Object.values(diagrams)) {
             fetchDiagramSvg(diagram);
-        });
+        }
     }, [currentNode, currentRootNetworkUuid, diagrams, fetchDiagramSvg, studyUuid]);
 
-    useDiagramEventListener({ createDiagram: createDiagramWithFocus, removeDiagram });
+    useDiagramEventListener({ createDiagram, removeDiagram });
     useDiagramNotificationsListener({ updateAllDiagrams });
 
     useEffect(() => {
@@ -552,8 +505,6 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, focusOnDiagram }: 
         globalError,
         removeDiagram,
         createDiagram,
-        createDiagramWithFocus,
         updateDiagram,
-        updateDiagramPositions,
     };
 };
