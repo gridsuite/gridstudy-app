@@ -59,7 +59,7 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusSh
         if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
             return;
         }
-        dispatch(setOneBusShortcircuitAnalysisDiagram(diagramId, currentNode?.id, rootNetworkUuid));
+        dispatch(setOneBusShortcircuitAnalysisDiagram(diagramId, studyUuid, rootNetworkUuid, currentNode?.id));
     }, [currentNode?.id, diagramId, dispatch, rootNetworkUuid, studyUuid]);
 
     const resetOneBusShortcircuitAnalysisLoader = useCallback(() => {
@@ -73,15 +73,17 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusSh
 
         return (
             diagramId === oneBusShortCircuitAnalysisDiagram?.diagramId &&
-            currentNode?.id === oneBusShortCircuitAnalysisDiagram?.nodeId &&
-            rootNetworkUuid === oneBusShortCircuitAnalysisDiagram?.rootNetworkUuid
+            studyUuid === oneBusShortCircuitAnalysisDiagram?.studyUuid &&
+            rootNetworkUuid === oneBusShortCircuitAnalysisDiagram?.rootNetworkUuid &&
+            currentNode?.id === oneBusShortCircuitAnalysisDiagram?.nodeId
         );
     }, [
         currentNode?.id,
         diagramId,
         oneBusShortCircuitAnalysisDiagram?.diagramId,
-        oneBusShortCircuitAnalysisDiagram?.nodeId,
+        oneBusShortCircuitAnalysisDiagram?.studyUuid,
         oneBusShortCircuitAnalysisDiagram?.rootNetworkUuid,
+        oneBusShortCircuitAnalysisDiagram?.nodeId,
         rootNetworkUuid,
         studyUuid,
     ]);

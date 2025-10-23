@@ -431,8 +431,9 @@ export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
-    nodeId: UUID;
+    studyUuid: UUID;
     rootNetworkUuid: UUID;
+    nodeId: UUID;
 }
 
 export interface ComputingStatus {
@@ -1733,8 +1734,9 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: SetOneBusShortcircuitAnalysisDiagramAction) => {
             state.oneBusShortCircuitAnalysisDiagram = {
                 diagramId: action.diagramId,
-                nodeId: action.nodeId,
+                studyUuid: action.studyUuid,
                 rootNetworkUuid: action.rootNetworkUuid,
+                nodeId: action.nodeId,
             };
         }
     );

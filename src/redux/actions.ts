@@ -963,14 +963,16 @@ export type SetOneBusShortcircuitAnalysisDiagramAction = Readonly<
     OneBusShortCircuitAnalysisDiagram;
 export function setOneBusShortcircuitAnalysisDiagram(
     diagramId: OneBusShortCircuitAnalysisDiagram['diagramId'],
-    nodeId: OneBusShortCircuitAnalysisDiagram['nodeId'],
-    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid']
+    studyUuid: OneBusShortCircuitAnalysisDiagram['studyUuid'],
+    rootNetworkUuid: OneBusShortCircuitAnalysisDiagram['rootNetworkUuid'],
+    nodeId: OneBusShortCircuitAnalysisDiagram['nodeId']
 ): SetOneBusShortcircuitAnalysisDiagramAction {
     return {
         type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         diagramId: diagramId,
-        nodeId: nodeId,
+        studyUuid: studyUuid,
         rootNetworkUuid: rootNetworkUuid,
+        nodeId: nodeId,
     };
 }
 
