@@ -36,7 +36,7 @@ export enum NotificationType {
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
-    NETWORK_EXPORT_SUCCEEDED = 'networkExportSucceeded',
+    NETWORK_EXPORT_FINISHED = 'networkExportFinished',
     // Modifications
     MODIFICATIONS_CREATION_IN_PROGRESS = 'creatingInProgress',
     MODIFICATIONS_UPDATING_IN_PROGRESS = 'updatingInProgress',
@@ -498,7 +498,7 @@ interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDa
 }
 
 interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
-    updateType: NotificationType.NETWORK_EXPORT_SUCCEEDED;
+    updateType: NotificationType.NETWORK_EXPORT_FINISHED;
     rootNetworkUuid: UUID;
     node: UUID;
     userId: string;
@@ -949,7 +949,7 @@ export function isNodSubTreeCreatedNotification(notif: unknown): notif is Subtre
 }
 
 export function isExportNetworkNotification(notif: unknown): notif is ExportNetworkEventData {
-    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_SUCCEEDED;
+    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
 }
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
