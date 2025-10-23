@@ -44,7 +44,7 @@ import {
 } from '@gridsuite/commons-ui';
 import DiagramControls from './diagram-controls';
 import { createDiagramConfig, updateDiagramConfig } from 'services/explore';
-import { DiagramType, NetworkAreaDiagramParams } from '../diagram.type';
+import { DiagramType, type NetworkAreaDiagramParams, type VoltageLevelDiagramParams } from '../diagram.type';
 import NodeContextMenu from './node-context-menu';
 import useEquipmentMenu from 'hooks/use-equipment-menu';
 import { MapEquipment } from 'components/menus/base-equipment-menu';
@@ -52,6 +52,7 @@ import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import { styles } from '../diagram-styles';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+import { v4 } from 'uuid';
 
 type NetworkAreaDiagramContentProps = {
     readonly diagramParams: NetworkAreaDiagramParams;
@@ -63,7 +64,7 @@ type NetworkAreaDiagramContentProps = {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly visible: boolean;
-    readonly onVoltageLevelClick: (vlId: string) => void;
+    readonly onVoltageLevelClick: (diagramParams: VoltageLevelDiagramParams) => void;
     readonly onNadChange: (nadParams: NetworkAreaDiagramParams, fetch?: boolean) => void;
 };
 
@@ -139,7 +140,12 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     setShouldDisplayMenu(true);
                     setMenuAnchorPosition(mousePosition ? { mouseX: mousePosition.x, mouseY: mousePosition.y } : null);
                 } else {
-                    onVoltageLevelClick(equipmentId);
+                    onVoltageLevelClick({
+                        diagramUuid: v4() as UUID,
+                        type: DiagramType.VOLTAGE_LEVEL,
+                        voltageLevelId: equipmentId,
+                        name: '',
+                    });
                 }
             }
         },

@@ -42,7 +42,7 @@ import { setComputationStarting, setComputingStatus, setLogsFilter } from '../..
 import { AppState } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
 import { useParameterState } from 'components/dialogs/parameters/use-parameters-state';
-import { DiagramType, SubstationDiagramParams, VoltageLevelDiagramParams } from '../diagram.type';
+import { DiagramType, type SubstationDiagramParams, type VoltageLevelDiagramParams } from '../diagram.type';
 import { useEquipmentMenu } from '../../../../../hooks/use-equipment-menu';
 import useEquipmentDialogs from 'hooks/use-equipment-dialogs';
 import useComputationDebug from '../../../../../hooks/use-computation-debug';

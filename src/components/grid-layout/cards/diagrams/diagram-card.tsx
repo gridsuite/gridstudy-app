@@ -17,7 +17,6 @@ import { EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { useIntl } from 'react-intl';
 import { cardStyles } from '../card-styles';
-import { v4 } from 'uuid';
 import { CreateDiagramFuncType, UpdateDiagramFuncType } from 'components/grid-layout/hooks/use-diagram-model';
 
 interface ReactGridLayoutCustomChildComponentProps {
@@ -66,18 +65,6 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         console.log('TODO setDiagramSize', diagramId, diagramType, width, height);
         // TODO adapt the layout w and h considering those values.
     }, []);
-
-    const handleNadVoltageLevelClick = useCallback(
-        (vlId: string): void => {
-            createDiagram({
-                diagramUuid: v4() as UUID,
-                type: DiagramType.VOLTAGE_LEVEL,
-                voltageLevelId: vlId,
-                name: '',
-            });
-        },
-        [createDiagram]
-    );
 
     const cardTitle = useMemo((): string => {
         if (loading) {
@@ -131,7 +118,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             loadingState={loading}
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
-                            onVoltageLevelClick={handleNadVoltageLevelClick}
+                            onVoltageLevelClick={createDiagram}
                             onNadChange={updateDiagram}
                         />
                     )}

@@ -90,7 +90,8 @@ export interface NumericCellRendererProps extends CustomCellRendererProps {
 }
 
 export const NumericCellRenderer = (props: NumericCellRendererProps) => {
-    const cellValue = formatNumericCell(props.value, props.fractionDigits);
+    const numericalValue = typeof props.value === 'number' ? props.value : Number.parseFloat(props.value);
+    const cellValue = formatNumericCell(numericalValue, props.fractionDigits);
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
