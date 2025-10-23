@@ -69,9 +69,7 @@ const temporaryLimitsValidationSchema = () => {
 };
 
 const currentLimitsValidationSchema = (isModification = false) => ({
-    [PERMANENT_LIMIT]: isModification
-        ? yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero')
-        : yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
+    [PERMANENT_LIMIT]: yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(temporaryLimitsValidationSchema())
@@ -233,7 +231,7 @@ export const mapServerLimitsGroupsToFormInfos = (currentLimits: CurrentLimits[])
             applicability: currentLimit.applicability,
             currentLimits: {
                 id: currentLimit.id,
-                permanentLimit: null,
+                permanentLimit: currentLimit.permanentLimit,
                 temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
             },
         };
@@ -257,6 +255,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 currentLimit.id === opLG.name && currentLimit.applicability === opLG[APPLICABIlITY]
         );
         if (equivalentFromMapServer !== undefined) {
+            opLG.currentLimits.permanentLimit = equivalentFromMapServer.permanentLimit;
             opLG.currentLimits.temporaryLimits = updateTemporaryLimits(
                 opLG.currentLimits.temporaryLimits,
                 formatTemporaryLimits(equivalentFromMapServer.temporaryLimits)
@@ -277,7 +276,7 @@ export const combineFormAndMapServerLimitsGroups = (
                 applicability: currentLimit.applicability,
                 currentLimits: {
                     id: currentLimit.id,
-                    permanentLimit: null,
+                    permanentLimit: currentLimit.permanentLimit,
                     temporaryLimits: formatToTemporaryLimitsFormInfos(currentLimit.temporaryLimits),
                 },
             });
