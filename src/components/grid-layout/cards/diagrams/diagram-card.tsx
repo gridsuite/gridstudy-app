@@ -67,18 +67,6 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
         // TODO adapt the layout w and h considering those values.
     }, []);
 
-    const handleNadVoltageLevelClick = useCallback(
-        (vlId: string): void => {
-            createDiagram({
-                diagramUuid: v4() as UUID,
-                type: DiagramType.VOLTAGE_LEVEL,
-                voltageLevelId: vlId,
-                name: '',
-            });
-        },
-        [createDiagram]
-    );
-
     const cardTitle = useMemo((): string => {
         if (loading) {
             return intl.formatMessage({ id: 'loadingOptions' });
@@ -131,7 +119,7 @@ export const DiagramCard = forwardRef((props: DiagramCardProps, ref: Ref<HTMLDiv
                             loadingState={loading}
                             diagramSizeSetter={setDiagramSize}
                             visible={visible}
-                            onVoltageLevelClick={handleNadVoltageLevelClick}
+                            onVoltageLevelClick={createDiagram}
                             onNadChange={updateDiagram}
                         />
                     )}
