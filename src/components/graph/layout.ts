@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NodePlacement } from './layout.type';
+import { NodeMap, NodePlacement, SecurityGroupMembersMap } from './layout.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
-import { CurrentTreeNode, isSecurityModificationNode, NetworkModificationNodeType } from './tree-node.type';
+import { CurrentTreeNode, isSecurityModificationNode } from './tree-node.type';
 
 const widthSpacing = 70;
 const heightSpacing = 90;
@@ -131,22 +131,19 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
  * @param nodes The nodes to process
  * @param placements The grid placements
  * @param nodeMap The map used to find a node's parent
+ * @param securityGroupMembersMap The map used to find members of a security group
+ * @param currentSecurityNode The current (if not null) security group of the node we are calling this function for
  * @param getMax If true, returns maximum columns, if false returns minimum columns
  */
 function getColumnsByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
+    nodeMap: NodeMap,
+    securityGroupMembersMap: SecurityGroupMembersMap,
+    currentSecurityNode: string | null,
     getMax: boolean
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
-
-    // These two variables are used to process the groups of security nodes, to make them all match the same value.
-    // When in a security group, we store the extreme value in currentExtremeValue, and the rows of the current
-    // security group in rowsToRetroactivelyUpdate.
-    // When we find a new extreme in a security group, we update all its rows with the new value.
-    let currentExtremeValue: number;
-    let rowsToRetroactivelyUpdate = [];
 
     function isExtreme(contender: number, competition: number | undefined): boolean {
         if (competition === undefined) {
@@ -155,48 +152,28 @@ function getColumnsByRows(
         return getMax ? contender > competition : contender < competition;
     }
 
-    function resetSecurityGroupContext() {
-        rowsToRetroactivelyUpdate.length = 0;
-        currentExtremeValue = getMax ? -Infinity : Infinity;
-    }
-
-    resetSecurityGroupContext();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (!nodePlacement || !node.parentId) {
             return;
         }
-        // Security nodes are grouped together and enclosed in a rectangle. Each of those rectangles
-        // must not be overlapped by the compression algorithm. To do so, when we are in a security
-        // group of nodes, we consider that every row of this security group has the extreme value
-        // of the whole group, and when we assign a new extreme, we do so to all the rows of the group.
 
-        if (isSecurityModificationNode(node)) {
-            // This test determines if we changed from a security group to another. If this is the case,
-            // we reset the currentExtremeValue to only update rows for the new group and not the old one.
-            if (!isSecurityModificationNode(nodeMap.get(node.parentId)?.node)) {
-                resetSecurityGroupContext();
-            }
-
-            // We mark each row of a security group in order to update them all when we find a new extreme.
-            rowsToRetroactivelyUpdate.push(nodePlacement.row);
-
-            const contender = getMax
-                ? Math.max(currentExtremeValue, nodePlacement.column)
-                : Math.min(currentExtremeValue, nodePlacement.column);
-
-            if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
-                rowsToRetroactivelyUpdate.forEach((row) => {
-                    columnsByRow.set(row, contender);
+        const contender = nodePlacement.column;
+        if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+            const securityGroupToUpdate = nodeMap.get(node.id)?.belongsToSecurityGroupId;
+            // If the affected node belongs to a different security group, we update the whole group.
+            // Note : we do not update it this way if we are currently in the same security group (currentSecurityNode)
+            // as this would prevent the compression algorithm from working correctly.
+            if (securityGroupToUpdate !== null && securityGroupToUpdate !== currentSecurityNode) {
+                // Because security groups must share the same lowest or highest value, we set a new extreme to the whole group.
+                securityGroupMembersMap.get(securityGroupToUpdate).forEach((member) => {
+                    const rowToUpdate = placements.getPlacement(member)?.row;
+                    if (rowToUpdate) {
+                        columnsByRow.set(rowToUpdate, contender);
+                    }
                 });
-            }
-
-            currentExtremeValue = contender;
-        } else {
-            resetSecurityGroupContext();
-
-            const contender = nodePlacement.column;
-            if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+            } else {
+                // Not in a security group, or in the same security group, so we only update the current row.
                 columnsByRow.set(nodePlacement.row, contender);
             }
         }
@@ -207,17 +184,21 @@ function getColumnsByRows(
 function getMinimumColumnByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+    nodeMap: NodeMap,
+    securityGroupMembersMap: SecurityGroupMembersMap,
+    currentSecurityNode: string | null
 ): Map<number, number> {
-    return getColumnsByRows(nodes, placements, nodeMap, false);
+    return getColumnsByRows(nodes, placements, nodeMap, securityGroupMembersMap, currentSecurityNode, false);
 }
 
 function getMaximumColumnByRows(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
+    nodeMap: NodeMap,
+    securityGroupMembersMap: SecurityGroupMembersMap,
+    currentSecurityNode: string | null
 ): Map<number, number> {
-    return getColumnsByRows(nodes, placements, nodeMap, true);
+    return getColumnsByRows(nodes, placements, nodeMap, securityGroupMembersMap, currentSecurityNode, true);
 }
 
 /**
@@ -282,12 +263,14 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
  * @param nodeMap nodeId to index in tree and node info map
  * @param childrenMap nodeId to list of children map
+ * @param securityGroupMembersMap The map used to find members of a security group
  */
 function compressTreePlacements(
     nodes: CurrentTreeNode[],
     placements: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>,
-    childrenMap: Map<string, CurrentTreeNode[]>
+    nodeMap: NodeMap,
+    childrenMap: Map<string, CurrentTreeNode[]>,
+    securityGroupMembersMap: SecurityGroupMembersMap
 ) {
     // Calculate subtree sizes in a single pass (bottom-up) to have the children nodes sizes ready
     const subTreeSizeMap = new Map<string, number>();
@@ -313,6 +296,7 @@ function compressTreePlacements(
 
         const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
         const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
+        const currentSecurityNode = nodeMap.get(currentNodeId)!.belongsToSecurityGroupId;
 
         const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
 
@@ -320,9 +304,21 @@ function compressTreePlacements(
         // cases other branches could go under the left neighbor and make edges cross.
         const leftNodes = nodes.slice(0, currentNodeIndex);
 
-        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements, nodeMap);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(
+            leftNodes,
+            placements,
+            nodeMap,
+            securityGroupMembersMap,
+            currentSecurityNode
+        );
 
-        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(leftNodes, placements, nodeMap);
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(
+            currentBranchNodes,
+            placements,
+            nodeMap,
+            securityGroupMembersMap,
+            currentSecurityNode
+        );
 
         const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
 
@@ -330,127 +326,87 @@ function compressTreePlacements(
             shiftPlacementsToTheLeft(currentBranchNodes, placements, availableSpace);
         }
     });
-
     return placements;
 }
 
-function createNodeAndChildrenMap(nodes: CurrentTreeNode[]) {
-    // Create a node lookup map and parent-children relationship map
-    const nodeMap = new Map<string, { index: number; node: CurrentTreeNode }>();
+function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
+    // Create a node lookup map
+    const nodeMap = new Map<
+        string,
+        { index: number; node: CurrentTreeNode; belongsToSecurityGroupId: string | null }
+    >();
+    // Create a parent/children relationship map
     const childrenMap = new Map<string, CurrentTreeNode[]>();
+    // Create a security group/member of the group map
+    const securityGroupMembersMap = new Map<string, string[]>();
 
+    function addMember(map: SecurityGroupMembersMap, key: string, member: string) {
+        const group = map.get(key);
+        if (group) {
+            group.push(member);
+        } else {
+            map.set(key, [member]);
+        }
+    }
+
+    let currentSecurityGroupFirstNodeId: string | null = null;
     nodes.forEach((node, index) => {
-        nodeMap.set(node.id, { index, node });
         if (node.parentId) {
             const children = childrenMap.get(node.parentId) || [];
             children.push(node);
             childrenMap.set(node.parentId, children);
+
+            if (isSecurityModificationNode(node)) {
+                if (nodeMap.get(node.parentId)?.belongsToSecurityGroupId === null) {
+                    // We entered a new security group
+                    currentSecurityGroupFirstNodeId = node.id;
+                }
+                addMember(securityGroupMembersMap, currentSecurityGroupFirstNodeId, node.id);
+            } else {
+                currentSecurityGroupFirstNodeId = null;
+            }
         }
+        nodeMap.set(node.id, { index, node, belongsToSecurityGroupId: currentSecurityGroupFirstNodeId });
     });
-
-    return [nodeMap, childrenMap] as const;
+    return [nodeMap, childrenMap, securityGroupMembersMap] as const;
 }
-
-type SecurityGroupBuilder =
-    | {
-          isInSecurityGroup: false;
-      }
-    | {
-          isInSecurityGroup: true;
-          securityGroupTopLeftPosition: NodePlacement;
-          currentSecurityGroupMaxX: number;
-          currentSecurityGroupMaxY: number;
-          groupFirstNodeId: string;
-      };
 
 /**
  * In order to draw labeled group borders, we need to compute SECURITY node groups positions (top-left corner and bottom-right corner since it's a rectangle)
  */
-function computeSecurityGroupNodes(
-    nodes: CurrentTreeNode[],
-    placementGrid: PlacementGrid,
-    nodeMap: Map<string, { index: number; node: CurrentTreeNode }>
-) {
-    const securityGroupsPlacements: { firstNodeId: string; topLeft: NodePlacement; bottomRight: NodePlacement }[] = [];
-    let securityGroupBuilder: SecurityGroupBuilder = {
-        isInSecurityGroup: false,
-    } as SecurityGroupBuilder;
-    nodes.forEach((node) => {
-        const nodePlacement = placementGrid.getPlacement(node.id);
-        if (!node.parentId || !nodePlacement) {
-            return;
-        }
-
-        // If currently in a security group, if current node has a parent node which is not of type SECURITY
-        // then : the current security group is closed, then saved in securityGroupsPlacements
-        // otherwise : the current security group max positions are updated
-        if (securityGroupBuilder.isInSecurityGroup) {
-            if (nodeMap.get(node.parentId)?.node.data.nodeType !== NetworkModificationNodeType.SECURITY) {
-                securityGroupsPlacements.push({
-                    firstNodeId: securityGroupBuilder.groupFirstNodeId,
-                    topLeft: securityGroupBuilder.securityGroupTopLeftPosition,
-                    bottomRight: {
-                        row: securityGroupBuilder.currentSecurityGroupMaxY,
-                        column: securityGroupBuilder.currentSecurityGroupMaxX,
-                    },
-                });
-
-                securityGroupBuilder = {
-                    isInSecurityGroup: false,
-                };
-            } else {
-                securityGroupBuilder.currentSecurityGroupMaxX = Math.max(
-                    securityGroupBuilder.currentSecurityGroupMaxX,
-                    nodePlacement.column
-                );
-                securityGroupBuilder.currentSecurityGroupMaxY = Math.max(
-                    securityGroupBuilder.currentSecurityGroupMaxY,
-                    nodePlacement.row
-                );
+function createSecurityGroupNodes(placementGrid: PlacementGrid, securityGroupMembersMap: SecurityGroupMembersMap) {
+    return Array.from(securityGroupMembersMap.entries()).map(([group, members]) => {
+        let bottomRightX = 0;
+        let bottomRightY = 0;
+        for (const member of members) {
+            const memberPlacement = placementGrid.getPlacement(member);
+            if (memberPlacement) {
+                if (memberPlacement.row > bottomRightX) {
+                    bottomRightX = memberPlacement.row;
+                }
+                if (memberPlacement.column > bottomRightY) {
+                    bottomRightY = memberPlacement.column;
+                }
             }
         }
-
-        // If currently not in a security group, and a security node is found, we initiate securityGroupBuilder
-        if (!securityGroupBuilder.isInSecurityGroup && isSecurityModificationNode(node)) {
-            securityGroupBuilder = {
-                isInSecurityGroup: true,
-                securityGroupTopLeftPosition: nodePlacement,
-                groupFirstNodeId: node.id,
-                currentSecurityGroupMaxX: nodePlacement.column,
-                currentSecurityGroupMaxY: nodePlacement.row,
-            };
-        }
+        return {
+            id: group + groupIdSuffix,
+            type: LABELED_GROUP_TYPE,
+            data: {
+                position: {
+                    topLeft: placementGrid.getPlacement(group),
+                    bottomRight: { row: bottomRightX, column: bottomRightY },
+                },
+            },
+            style: {
+                pointerEvents: 'none',
+                zIndex: -1,
+            },
+            position: { x: 0, y: 0 },
+            draggable: false,
+            selectable: false,
+        };
     });
-
-    // if last node was of type security, we need to add last group to the list
-    if (securityGroupBuilder.isInSecurityGroup) {
-        securityGroupsPlacements.push({
-            firstNodeId: securityGroupBuilder.groupFirstNodeId,
-            topLeft: securityGroupBuilder.securityGroupTopLeftPosition,
-            bottomRight: {
-                row: securityGroupBuilder.currentSecurityGroupMaxY,
-                column: securityGroupBuilder.currentSecurityGroupMaxX,
-            },
-        });
-    }
-
-    return securityGroupsPlacements.map((sg) => ({
-        id: sg.firstNodeId + groupIdSuffix,
-        type: LABELED_GROUP_TYPE,
-        data: {
-            position: {
-                topLeft: sg.topLeft,
-                bottomRight: sg.bottomRight,
-            },
-        },
-        style: {
-            pointerEvents: 'none',
-            zIndex: -1,
-        },
-        position: { x: 0, y: 0 },
-        draggable: false,
-        selectable: false,
-    }));
 }
 
 /**
@@ -458,13 +414,19 @@ function computeSecurityGroupNodes(
  */
 export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
-    const [nodeMap, childrenMap] = createNodeAndChildrenMap(newNodes);
+    const [nodeMap, childrenMap, securityGroupMembersMap] = createMapsForLayoutAlgorithm(newNodes);
 
     const uncompressedNodePlacements = getNodePlacements(newNodes);
 
-    const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements, nodeMap, childrenMap);
+    const nodePlacements = compressTreePlacements(
+        newNodes,
+        uncompressedNodePlacements,
+        nodeMap,
+        childrenMap,
+        securityGroupMembersMap
+    );
 
-    const securityGroupsNodes = computeSecurityGroupNodes(newNodes, nodePlacements, nodeMap);
+    const securityGroupsNodes = createSecurityGroupNodes(nodePlacements, securityGroupMembersMap);
 
     const nodesWithUpdatedPositions = newNodes.map((node) => {
         const placement = nodePlacements.getPlacement(node.id);
