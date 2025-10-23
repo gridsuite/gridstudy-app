@@ -7,18 +7,17 @@
 
 import type { UUID } from 'node:crypto';
 import { useDiagramEventListener } from './use-diagram-event-listener';
-import {
+import type {
     Diagram,
-    DiagramAdditionalMetadata,
     DiagramParams,
     DiagramParamsWithoutId,
-    DiagramType,
     NetworkAreaDiagram,
     SubstationDiagram,
     SubstationDiagramParams,
     VoltageLevelDiagram,
     VoltageLevelDiagramParams,
 } from '../cards/diagrams/diagram.type';
+import { DiagramAdditionalMetadata, DiagramType } from '../cards/diagrams/diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSvg, getNetworkAreaDiagramUrl } from 'services/study';
 import { useDiagramNotificationsListener } from './use-diagram-notifications-listener';
@@ -36,7 +35,7 @@ import { NodeType } from 'components/graph/tree-node.type';
 import { mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import { completeDiagramParamsWithId, isThereTooManyOpenedNadDiagrams } from './diagram-model-utils';
-import { type CreateDiagramFuncType, type UpdateDiagramFuncType } from './diagram-model.types';
+import type { CreateDiagramFuncType, UpdateDiagramFuncType } from './diagram-model.types';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];

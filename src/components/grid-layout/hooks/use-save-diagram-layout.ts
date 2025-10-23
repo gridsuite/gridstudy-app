@@ -6,7 +6,8 @@
  */
 
 import { Layout, Layouts } from 'react-grid-layout';
-import { Diagram, DiagramParams, DiagramType, NETWORK_AREA_DIAGRAM_DETAILS_TYPE } from '../cards/diagrams/diagram.type';
+import type { Diagram, DiagramParams } from '../cards/diagrams/diagram.type';
+import { DiagramType, NETWORK_AREA_DIAGRAM_DETAILS_TYPE } from '../cards/diagrams/diagram.type';
 import { useSelector } from 'react-redux';
 import { AppState, DiagramGridLayoutConfig } from 'redux/reducer';
 import type { UUID } from 'node:crypto';

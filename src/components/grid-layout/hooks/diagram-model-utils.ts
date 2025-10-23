@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { v4 } from 'uuid';
-import { Diagram, DiagramParams, DiagramParamsWithoutId, DiagramType } from '../cards/diagrams/diagram.type';
+import type { Diagram, DiagramParams, DiagramParamsWithoutId } from '../cards/diagrams/diagram.type';
+import { DiagramType } from '../cards/diagrams/diagram.type';
 import type { UUID } from 'node:crypto';
 
 export const completeDiagramParamsWithId = (diagramParams: DiagramParamsWithoutId<DiagramParams>): DiagramParams => {

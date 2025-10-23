@@ -7,7 +7,9 @@
 
 import { useCallback, useRef, useState, useMemo } from 'react';
 import { type ItemCallback, type Layout, type Layouts, Responsive, WidthProvider } from 'react-grid-layout';
-import { UpdateDiagramFuncType, useDiagramModel } from './hooks/use-diagram-model';
+import { useDiagramModel } from './hooks/use-diagram-model';
+import { type UpdateDiagramFuncType } from './hooks/diagram-model.types';
+
 import {
     Diagram,
     DiagramParamsWithoutId,

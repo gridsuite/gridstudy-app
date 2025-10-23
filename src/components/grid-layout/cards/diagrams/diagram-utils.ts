@@ -8,7 +8,7 @@ import { DiagramConfigPosition } from '../../../../services/explore';
 import { DiagramMetadata } from '@powsybl/network-viewer';
 import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EquipmentType, ExtendedEquipmentType } from '@gridsuite/commons-ui';
-import { type Svg } from './diagram.type';
+import type { Svg } from './diagram.type';
 
 export const MIN_WIDTH = 150;
 export const MIN_HEIGHT = 150;

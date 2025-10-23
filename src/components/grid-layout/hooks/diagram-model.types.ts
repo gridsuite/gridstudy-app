@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type DiagramParamsWithoutId, type DiagramParams } from '../cards/diagrams/diagram.type';
+import type { DiagramParamsWithoutId, DiagramParams } from '../cards/diagrams/diagram.type';
 
 export type CreateDiagramFuncType<Type extends DiagramParams> = (diagramParams: DiagramParamsWithoutId<Type>) => void;
 export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;

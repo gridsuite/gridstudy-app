@@ -8,7 +8,8 @@
 import { Box } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useMemo } from 'react';
 import CustomCardHeader from '../custom-card-header';
-import { type Diagram, DiagramAdditionalMetadata, type DiagramParams, DiagramType } from './diagram.type';
+import type { Diagram, DiagramParams } from './diagram.type';
+import { DiagramAdditionalMetadata, DiagramType } from './diagram.type';
 import type { UUID } from 'node:crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
@@ -17,7 +18,7 @@ import { EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { useIntl } from 'react-intl';
 import { cardStyles } from '../card-styles';
-import { type CreateDiagramFuncType, type UpdateDiagramFuncType } from '../../hooks/diagram-model.types';
+import type { CreateDiagramFuncType, UpdateDiagramFuncType } from '../../hooks/diagram-model.types';
 
 interface ReactGridLayoutCustomChildComponentProps {
     style?: React.CSSProperties;
