@@ -17,7 +17,6 @@ import { EquipmentType, mergeSx } from '@gridsuite/commons-ui';
 import { DiagramMetadata, SLDMetadata } from '@powsybl/network-viewer';
 import { useIntl } from 'react-intl';
 import { cardStyles } from '../card-styles';
-import { v4 } from 'uuid';
 import { CreateDiagramFuncType, UpdateDiagramFuncType } from 'components/grid-layout/hooks/use-diagram-model';
 
 interface ReactGridLayoutCustomChildComponentProps {
