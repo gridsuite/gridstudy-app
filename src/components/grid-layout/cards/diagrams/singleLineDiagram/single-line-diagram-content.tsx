@@ -112,7 +112,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(diagramParams.diagramUuid, currentNode?.id!, currentRootNetworkUuid!);
+    ] = useOneBusShortcircuitAnalysisLoader(diagramParams.diagramUuid);
 
     /**
      * DIAGRAM INTERACTIVITY
