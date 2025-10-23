@@ -8,19 +8,12 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, DiagramEvent, DiagramEventType } from 'redux/reducer';
 import type { UUID } from 'node:crypto';
-import type {
-    DiagramParams,
-    DiagramParamsWithoutId,
-    NetworkAreaDiagramParams,
-    SubstationDiagramParams,
-    VoltageLevelDiagramParams,
-} from '../cards/diagrams/diagram.type';
 import { DiagramType } from '../cards/diagrams/diagram.type';
 import { resetDiagramEvent } from 'redux/actions';
 import type { CreateDiagramFuncType } from './diagram-model.types';
 
 type UseDiagramEventListenerProps = {
-    createDiagram: CreateDiagramFuncType<DiagramParams>;
+    createDiagram: CreateDiagramFuncType;
     removeDiagram: (id: UUID) => void;
 };
 
@@ -38,13 +31,13 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     type: DiagramType.VOLTAGE_LEVEL,
                     voltageLevelId: diagramEvent.voltageLevelId,
                     name: '',
-                } as DiagramParamsWithoutId<VoltageLevelDiagramParams>);
+                });
             } else if (diagramEvent.diagramType === DiagramType.SUBSTATION) {
                 createDiagram({
                     type: DiagramType.SUBSTATION,
                     substationId: diagramEvent.substationId,
                     name: '',
-                } as DiagramParamsWithoutId<SubstationDiagramParams>);
+                });
             } else if (diagramEvent.diagramType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 createDiagram({
                     type: DiagramType.NETWORK_AREA_DIAGRAM,
@@ -55,7 +48,7 @@ export const useDiagramEventListener = ({ createDiagram, removeDiagram }: UseDia
                     voltageLevelToExpandIds: diagramEvent.voltageLevelToExpandIds,
                     voltageLevelToOmitIds: diagramEvent.voltageLevelToOmitIds,
                     positions: diagramEvent.positions,
-                } as DiagramParamsWithoutId<NetworkAreaDiagramParams>);
+                });
             }
         },
         [createDiagram]

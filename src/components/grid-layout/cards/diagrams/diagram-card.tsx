@@ -8,7 +8,7 @@
 import { Box } from '@mui/material';
 import { forwardRef, MouseEventHandler, Ref, TouchEventHandler, useCallback, useMemo } from 'react';
 import CustomCardHeader from '../custom-card-header';
-import type { Diagram, DiagramParams } from './diagram.type';
+import type { Diagram } from './diagram.type';
 import { DiagramAdditionalMetadata, DiagramType } from './diagram.type';
 import type { UUID } from 'node:crypto';
 import AlertCustomMessageNode from 'components/utils/alert-custom-message-node';
@@ -38,7 +38,7 @@ interface DiagramCardProps extends ReactGridLayoutCustomChildComponentProps {
     onClose: () => void;
     errorMessage?: string;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
-    createDiagram: CreateDiagramFuncType<DiagramParams>;
+    createDiagram: CreateDiagramFuncType;
     updateDiagram: UpdateDiagramFuncType;
     key: string; // Required for React Grid Layout to identify the component
 }

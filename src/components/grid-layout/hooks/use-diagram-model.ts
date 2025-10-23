@@ -13,9 +13,7 @@ import type {
     DiagramParamsWithoutId,
     NetworkAreaDiagram,
     SubstationDiagram,
-    SubstationDiagramParams,
     VoltageLevelDiagram,
-    VoltageLevelDiagramParams,
 } from '../cards/diagrams/diagram.type';
 import { DiagramAdditionalMetadata, DiagramType } from '../cards/diagrams/diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -65,7 +63,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
     // Note: This function is mainly used to prevent double fetch when using the PositionDiagram
     const filterDiagramParams = useCallback(
-        (diagramParams: DiagramParamsWithoutId<DiagramParams>[]): DiagramParamsWithoutId<DiagramParams>[] => {
+        (diagramParams: DiagramParamsWithoutId[]): DiagramParamsWithoutId[] => {
             return diagramParams.filter((diagramParam) => {
                 if (diagramTypes.includes(diagramParam.type)) {
                     return true;
@@ -77,7 +75,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const createPendingDiagram = useCallback(
-        (diagramParams: DiagramParamsWithoutId<DiagramParams>, disableOnAddCallback: boolean = false) => {
+        (diagramParams: DiagramParamsWithoutId, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
                 ...completeDiagramParamsWithId(diagramParams),
                 svg: null,
@@ -345,21 +343,19 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const findSimilarDiagram = useCallback(
-        (diagramParams: DiagramParamsWithoutId<DiagramParams>): Diagram | undefined => {
+        (diagramParams: DiagramParamsWithoutId): Diagram | undefined => {
             switch (diagramParams.type) {
                 case DiagramType.VOLTAGE_LEVEL:
                     return Object.values(diagrams).find(
                         (diagram) =>
                             diagram.type === DiagramType.VOLTAGE_LEVEL &&
-                            diagram.voltageLevelId ===
-                                (diagramParams as DiagramParamsWithoutId<VoltageLevelDiagramParams>).voltageLevelId
+                            diagram.voltageLevelId === diagramParams.voltageLevelId
                     );
                 case DiagramType.SUBSTATION:
                     return Object.values(diagrams).find(
                         (diagram) =>
                             diagram.type === DiagramType.SUBSTATION &&
-                            diagram.substationId ===
-                                (diagramParams as DiagramParamsWithoutId<SubstationDiagramParams>).substationId
+                            diagram.substationId === diagramParams.substationId
                     );
                 case DiagramType.NETWORK_AREA_DIAGRAM: // no good criteria to get similar NAD for now
                 default:
@@ -370,7 +366,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const isCreationRequestValid = useCallback(
-        (diagramParams: DiagramParamsWithoutId<DiagramParams>): boolean => {
+        (diagramParams: DiagramParamsWithoutId): boolean => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),

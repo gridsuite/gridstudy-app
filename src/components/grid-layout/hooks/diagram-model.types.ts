@@ -7,5 +7,7 @@
 
 import type { DiagramParamsWithoutId, DiagramParams } from '../cards/diagrams/diagram.type';
 
-export type CreateDiagramFuncType<Type extends DiagramParams> = (diagramParams: DiagramParamsWithoutId<Type>) => void;
+export type CreateDiagramFuncType<Type extends DiagramParams = DiagramParams> = (
+    diagramParams: DiagramParamsWithoutId<Type>
+) => void;
 export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;

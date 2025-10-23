@@ -10,14 +10,7 @@ import { type ItemCallback, type Layout, type Layouts, Responsive, WidthProvider
 import { useDiagramModel } from './hooks/use-diagram-model';
 import { type UpdateDiagramFuncType } from './hooks/diagram-model.types';
 
-import {
-    Diagram,
-    DiagramParamsWithoutId,
-    DiagramType,
-    NetworkAreaDiagramParams,
-    SubstationDiagramParams,
-    VoltageLevelDiagramParams,
-} from './cards/diagrams/diagram.type';
+import { Diagram, DiagramParamsWithoutId, DiagramType, NetworkAreaDiagramParams } from './cards/diagrams/diagram.type';
 import { Box, useTheme } from '@mui/material';
 import {
     ElementType,
@@ -298,29 +291,31 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
     const showVoltageLevelDiagram = useCallback(
         (element: EquipmentInfos) => {
-            let diagram:
-                | DiagramParamsWithoutId<VoltageLevelDiagramParams>
-                | DiagramParamsWithoutId<SubstationDiagramParams>
-                | null = null;
-
-            if (element.type === EquipmentType.VOLTAGE_LEVEL || element.voltageLevelId) {
-                diagram = {
-                    type: DiagramType.VOLTAGE_LEVEL,
-                    voltageLevelId: element.voltageLevelId ?? '',
-                    name: '',
-                };
-            } else if (element.type === EquipmentType.SUBSTATION) {
-                diagram = {
-                    type: DiagramType.SUBSTATION,
-                    substationId: element.id,
-                    name: '',
-                };
+            if (
+                !(
+                    element.type === EquipmentType.VOLTAGE_LEVEL ||
+                    element.voltageLevelId ||
+                    element.type === EquipmentType.SUBSTATION
+                )
+            ) {
+                return;
             }
 
-            if (diagram) {
-                showGrid();
-                createDiagram(diagram);
-            }
+            const diagram: DiagramParamsWithoutId =
+                element.type === EquipmentType.SUBSTATION && !element.voltageLevelId
+                    ? {
+                          type: DiagramType.SUBSTATION,
+                          substationId: element.id,
+                          name: '',
+                      }
+                    : {
+                          type: DiagramType.VOLTAGE_LEVEL,
+                          voltageLevelId: element.voltageLevelId ?? '',
+                          name: '',
+                      };
+
+            showGrid();
+            createDiagram(diagram);
         },
         [createDiagram, showGrid]
     );

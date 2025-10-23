@@ -9,14 +9,14 @@ import type { Diagram, DiagramParams, DiagramParamsWithoutId } from '../cards/di
 import { DiagramType } from '../cards/diagrams/diagram.type';
 import type { UUID } from 'node:crypto';
 
-export const completeDiagramParamsWithId = (diagramParams: DiagramParamsWithoutId<DiagramParams>): DiagramParams => {
+export const completeDiagramParamsWithId = (diagramParams: DiagramParamsWithoutId): DiagramParams => {
     if (diagramParams.diagramUuid) {
         return diagramParams as DiagramParams;
     }
     return {
         ...diagramParams,
         diagramUuid: v4() as UUID,
-    } as DiagramParams;
+    };
 };
 
 const MAX_NUMBER_OF_NAD_DIAGRAMS = 3;
