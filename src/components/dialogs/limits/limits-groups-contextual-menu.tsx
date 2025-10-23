@@ -110,15 +110,15 @@ export function LimitsGroupsContextualMenu({
     };
 
     const handleRenameTab = () => {
-        const renammedLimits: OperationalLimitsGroupFormInfos = getValues(
+        const renamedLimits: OperationalLimitsGroupFormInfos = getValues(
             `${operationalLimitsGroupsFormName}[${indexSelectedLimitSet}]`
         );
         // if the permanent limit is undefined in the form we try to get the previous value of the corresponding current limit
-        if (!renammedLimits[CURRENT_LIMITS][PERMANENT_LIMIT]) {
-            renammedLimits[CURRENT_LIMITS][PERMANENT_LIMIT] =
+        if (!renamedLimits[CURRENT_LIMITS][PERMANENT_LIMIT]) {
+            renamedLimits[CURRENT_LIMITS][PERMANENT_LIMIT] =
                 currentLimitsToModify.find(
                     (cl: CurrentLimits) =>
-                        cl.id === renammedLimits[NAME] && cl.applicability === renammedLimits[APPLICABIlITY]
+                        cl.id === renamedLimits[NAME] && cl.applicability === renamedLimits[APPLICABIlITY]
                 )?.permanentLimit ?? null;
         }
         activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null);
