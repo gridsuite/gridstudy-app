@@ -54,7 +54,11 @@ export function LimitsGroupsContextualMenu({
 }: Readonly<LimitsGroupsContextualMenuProps>) {
     const intl = useIntl();
     const operationalLimitsGroupsFormName: string = `${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}`;
-    const { append: appendToLimitsGroups, remove: removeLimitsGroups } = useFieldArray({
+    const {
+        append: appendToLimitsGroups,
+        remove: removeLimitsGroups,
+        update: updateLimitsGroups,
+    } = useFieldArray({
         name: operationalLimitsGroupsFormName,
     });
     const { getValues, setValue } = useFormContext();
@@ -120,6 +124,9 @@ export function LimitsGroupsContextualMenu({
                     (cl: CurrentLimits) =>
                         cl.id === renamedLimits[NAME] && cl.applicability === renamedLimits[APPLICABIlITY]
                 )?.permanentLimit ?? null;
+        }
+        if (indexSelectedLimitSet != null) {
+            updateLimitsGroups(indexSelectedLimitSet, renamedLimits);
         }
         activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null);
     };
