@@ -398,7 +398,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
         [createPendingDiagram, fetchDiagramSvg, isCreationRequestValid]
     );
 
-    const createDiagram: CreateDiagramFuncType<DiagramParams> = useCallback(
+    const createDiagram: CreateDiagramFuncType = useCallback(
         (diagramParams) => {
             if (!isCreationRequestValid(diagramParams)) {
                 return;
