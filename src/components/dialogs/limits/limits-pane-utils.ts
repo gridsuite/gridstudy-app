@@ -47,11 +47,11 @@ import {
     TemporaryLimitFormInfos,
 } from '../network-modifications/line/modification/line-modification-type';
 
-const limitsGroupValidationSchema = (isModification: boolean) => ({
+const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
     [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
 });
 
 const temporaryLimitsValidationSchema = () => {
@@ -68,7 +68,7 @@ const temporaryLimitsValidationSchema = () => {
     });
 };
 
-const currentLimitsValidationSchema = (isModification = false) => ({
+const currentLimitsValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup.number().positive('permanentCurrentLimitMustBeGreaterThanZero').required(),
     [TEMPORARY_LIMITS]: yup
         .array()
@@ -85,10 +85,10 @@ const currentLimitsValidationSchema = (isModification = false) => ({
         }),
 });
 
-const limitsValidationSchemaCreation = (id: string, isModification: boolean) => {
+const limitsValidationSchemaCreation = (id: string) => {
     const completeLimitsGroupSchema = {
         [OPERATIONAL_LIMITS_GROUPS]: yup
-            .array(yup.object().shape(limitsGroupValidationSchema(isModification)))
+            .array(yup.object().shape(limitsGroupValidationSchema()))
             .test('distinctNames', 'LimitSetApplicabilityError', (array) => {
                 const namesArray: OperationalLimitsId[] = !array
                     ? []
@@ -106,8 +106,8 @@ const limitsValidationSchemaCreation = (id: string, isModification: boolean) => 
     return { [id]: yup.object().shape(completeLimitsGroupSchema) };
 };
 
-export const getLimitsValidationSchema = (isModification: boolean = false, id: string = LIMITS) => {
-    return limitsValidationSchemaCreation(id, isModification);
+export const getLimitsValidationSchema = (id: string = LIMITS) => {
+    return limitsValidationSchemaCreation(id);
 };
 
 const limitsEmptyFormData = (isModification: boolean, id: string) => {
