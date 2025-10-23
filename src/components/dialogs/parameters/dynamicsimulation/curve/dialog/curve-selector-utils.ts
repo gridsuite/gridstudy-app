@@ -313,6 +313,9 @@ export const buildExpertRules = (
     };
 };
 
+/** @deprecated The behavior of this local builder function differs from the backend one used by others (analysis results & spreadsheet).
+ *      A new endpoint is now available to evaluate a global-filter on a network. To migrate to it.
+ */
 export const buildExpertFilter = (
     equipmentType: EQUIPMENT_TYPES,
     voltageLevelIds: string[] | undefined,
