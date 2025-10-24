@@ -17,7 +17,10 @@ import { updateTableDefinition } from 'redux/actions';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { reorderSpreadsheetColumns } from 'services/study/study-config';
 
-export function useColumnManagement(gridRef: React.RefObject<AgGridReact>, tableDefinition: SpreadsheetTabDefinition) {
+export function useColumnManagement(
+    gridRef: React.RefObject<AgGridReact | null>,
+    tableDefinition: SpreadsheetTabDefinition
+) {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

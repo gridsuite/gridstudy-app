@@ -48,9 +48,9 @@ interface LastUpdateProps {
 function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
     computingStatusFetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string | null>,
-    lastUpdateRef: RefObject<LastUpdateProps>,
-    nodeUuidRef: RefObject<UUID>,
-    rootNetworkUuidRef: RefObject<UUID>,
+    lastUpdateRef: RefObject<LastUpdateProps | null>,
+    nodeUuidRef: RefObject<UUID | null>,
+    rootNetworkUuidRef: RefObject<UUID | null>,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     invalidations: string[]

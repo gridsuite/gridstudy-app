@@ -15,7 +15,7 @@ import { AppState } from '../../../../../redux/reducer';
 import { type FilterChangedEvent, type ModelUpdatedEvent, type RowDataUpdatedEvent } from 'ag-grid-community';
 
 type UseFilteredRowCounterInfoParams = {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     disabled: boolean;
 };

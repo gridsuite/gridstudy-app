@@ -10,12 +10,12 @@ import './react-grid-layout.custom.css';
 // TODO place these css at global or directly into useStyles for RGLResponsive
 import { Responsive as RGLResponsive, ResponsiveProps } from 'react-grid-layout';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { MutableRefObject, useRef } from 'react';
+import { RefObject, useRef } from 'react';
 
 function getDimensions(
     width: number,
     height: number,
-    prevDimensionRef: MutableRefObject<{
+    prevDimensionRef: RefObject<{
         width: number;
         height: number;
     }>

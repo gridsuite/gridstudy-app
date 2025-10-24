@@ -33,7 +33,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 interface SpreadsheetToolbarProps {
-    gridRef: RefObject<AgGridReact>;
+    gridRef: RefObject<AgGridReact | null>;
     tableDefinition: SpreadsheetTabDefinition;
     rowCounterInfos: UseFilteredRowCounterInfoReturn;
     columns: CustomColDef[];

@@ -111,10 +111,10 @@ export function useNodeData<T, R = T>({
     const [result, setResult] = useState<R | undefined>(defaultValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef<UUID>();
-    const rootNetworkUuidRef = useRef<UUID>();
+    const nodeUuidRef = useRef<UUID>(undefined);
+    const rootNetworkUuidRef = useRef<UUID>(undefined);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const lastUpdateRef = useRef<LastUpdateParams<T>>();
+    const lastUpdateRef = useRef<LastUpdateParams<T>>(undefined);
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;

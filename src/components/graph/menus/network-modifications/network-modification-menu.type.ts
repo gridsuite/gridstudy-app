@@ -8,6 +8,7 @@
 import type { UUID } from 'node:crypto';
 import { CurrentTreeNode } from '../../tree-node.type';
 import { FetchStatus } from '../../../../services/utils.type';
+import { JSX } from 'react';
 export interface RootNetworkMetadata {
     rootNetworkUuid: UUID;
     originalCaseUuid: UUID;

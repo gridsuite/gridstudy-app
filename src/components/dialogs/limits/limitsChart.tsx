@@ -9,7 +9,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { useCallback, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { CurrentLimits, Limit } from '../../../services/network-modification-types';
+import { Limit, TemporaryLimit } from '../../../services/network-modification-types';
 import { BarSeriesType } from '@mui/x-charts/models/seriesType/bar';
 import { AxisValueFormatterContext } from '@mui/x-charts/models/axis';
 
@@ -43,7 +43,7 @@ const formatTempo = (tempo: number | null) => {
 };
 
 export default function LimitsChart({ limitsGroupFormName, previousPermanentLimit }: Readonly<LimitsGraphProps>) {
-    const currentLimits: CurrentLimits = useWatch({ name: `${limitsGroupFormName}` });
+    const currentLimits = useWatch({ name: `${limitsGroupFormName}` });
     const intl = useIntl();
     const permanentLimit: number | null = currentLimits.permanentLimit ?? previousPermanentLimit ?? null;
 
@@ -95,8 +95,8 @@ export default function LimitsChart({ limitsGroupFormName, previousPermanentLimi
 
         if (currentLimits?.temporaryLimits) {
             currentLimits.temporaryLimits
-                .filter((field) => field.name && (field.acceptableDuration || field.value))
-                .forEach((field) => {
+                .filter((field: TemporaryLimit) => field.name && (field.acceptableDuration || field.value))
+                .forEach((field: TemporaryLimit) => {
                     if (!field.value) {
                         noValueThresholdFound = true;
                     }
