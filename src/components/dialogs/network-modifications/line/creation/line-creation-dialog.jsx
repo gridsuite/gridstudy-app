@@ -135,7 +135,7 @@ const LineCreationDialog = ({
         .shape({
             ...getHeaderValidationSchema(),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
-            ...getLimitsValidationSchema(false),
+            ...getLimitsValidationSchema(),
         })
         .concat(creationPropertiesSchema)
         .required();

@@ -58,6 +58,7 @@ export const LIMIT_SETS_MODIFICATION_TYPE = {
     MODIFY_OR_ADD: 'MODIFY_OR_ADD', // if the opLG exists it is modified, if not it is created
     ADD: 'ADD',
     REPLACE: 'REPLACE',
+    DELETE: 'DELETE',
 } as const;
 export const TEMPORARY_LIMITS_MODIFICATION_TYPE = 'temporaryLimitsModificationType';
 export const SIDE = 'side';
