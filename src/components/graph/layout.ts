@@ -9,6 +9,7 @@ import { NodeMap, NodePlacement, SecurityGroupMembersMap } from './layout.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, isSecurityModificationNode } from './tree-node.type';
+import { addMember } from './layout-utils';
 
 const widthSpacing = 70;
 const heightSpacing = 90;
@@ -166,12 +167,13 @@ function getColumnsByRows(
             // as this would prevent the compression algorithm from working correctly.
             if (securityGroupToUpdate != null && securityGroupToUpdate !== currentSecurityNode) {
                 // Because security groups must share the same lowest or highest value, we set a new extreme to the whole group.
-                securityGroupMembersMap.get(securityGroupToUpdate)?.forEach((member) => {
-                    const rowToUpdate = placements.getPlacement(member)?.row;
-                    if (rowToUpdate) {
-                        columnsByRow.set(rowToUpdate, contender);
-                    }
-                });
+                updateSecurityGroupRows(
+                    securityGroupToUpdate,
+                    contender,
+                    columnsByRow,
+                    placements,
+                    securityGroupMembersMap
+                );
             } else {
                 // Not in a security group, or in the same security group, so we only update the current row.
                 columnsByRow.set(nodePlacement.row, contender);
@@ -179,6 +181,24 @@ function getColumnsByRows(
         }
     });
     return columnsByRow;
+}
+
+function updateSecurityGroupRows(
+    securityGroupToUpdate: string,
+    value: number,
+    columnsByRow: Map<number, number>,
+    placements: PlacementGrid,
+    securityGroupMembersMap: SecurityGroupMembersMap
+) {
+    const securityGroupMembers = securityGroupMembersMap.get(securityGroupToUpdate);
+    if (securityGroupMembers) {
+        for (const member of securityGroupMembers) {
+            const rowToUpdate = placements.getPlacement(member)?.row;
+            if (rowToUpdate) {
+                columnsByRow.set(rowToUpdate, value);
+            }
+        }
+    }
 }
 
 function getMinimumColumnByRows(
@@ -339,15 +359,6 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
     const childrenMap = new Map<string, CurrentTreeNode[]>();
     // Create a security group/member of the group map
     const securityGroupMembersMap = new Map<string, string[]>();
-
-    function addMember(map: SecurityGroupMembersMap, key: string, member: string) {
-        const group = map.get(key);
-        if (group) {
-            group.push(member);
-        } else {
-            map.set(key, [member]);
-        }
-    }
 
     let currentSecurityGroupFirstNodeId: string | null = null;
     nodes.forEach((node, index) => {
