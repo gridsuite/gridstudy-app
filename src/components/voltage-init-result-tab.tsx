@@ -63,6 +63,9 @@ export function VoltageInitResultTab({
 
     return (
         <VoltageInitResult
+            studyUuid={studyUuid}
+            nodeUuid={nodeUuid}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             result={voltageInitResultToShow}
             status={voltageInitStatus}
             handleGlobalFilterChange={handleGlobalFilterChange}
