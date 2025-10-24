@@ -54,6 +54,8 @@ export function getSensitivityAnalysisRunningStatus(sensitivityAnalysisStatus: s
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
             return RunningStatus.IDLE;
+        case 'FAILED':
+            return RunningStatus.FAILED;
         default:
             return RunningStatus.IDLE;
     }
