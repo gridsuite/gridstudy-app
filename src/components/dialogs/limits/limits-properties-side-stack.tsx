@@ -7,7 +7,7 @@
 import { LimitsTagChip } from './limits-tag-chip';
 import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
-import { AddCircle, Delete } from '@mui/icons-material';
+import { AddCircleOutlined, Delete } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { LimitsProperty } from '../../../services/network-modification-types';
 import { useFieldArray } from 'react-hook-form';
@@ -94,7 +94,7 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
                         onClick={() => setIsEditing(true)}
                         disabled={disabled}
                     >
-                        <AddCircle />
+                        <AddCircleOutlined />
                     </IconButton>
                 )}
             </Stack>

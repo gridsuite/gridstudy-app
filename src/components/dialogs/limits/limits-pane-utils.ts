@@ -73,8 +73,8 @@ const temporaryLimitsValidationSchema = () => {
 };
 const limitsPropertyValidationSchema = () => {
     return yup.object().shape({
-        [NAME]: yup.string().nullable(),
-        [VALUE]: yup.string().nullable(),
+        [NAME]: yup.string().nonNullable().required(),
+        [VALUE]: yup.string().nonNullable().required(),
     });
 };
 
