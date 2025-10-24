@@ -81,16 +81,18 @@ export const styles = {
         },
     },
     divDiagramInvalid: {
-        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-voltage polygon, & .sld-angle polygon': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
-        '& .sld-active-power text, & .sld-reactive-power text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
+        '& .sld-active-power polygon, & .sld-reactive-power polygon, & .sld-current polygon, & .sld-voltage polygon, & .sld-angle polygon':
+            {
+                opacity: INVALID_LOADFLOW_OPACITY,
+            },
+        '& .sld-active-power text, & .sld-reactive-power text, & .sld-current text, & .sld-percentage-permanent-limit text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
             {
                 fill: '#787F81',
             },
-        '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage': {
-            animation: 'none !important',
-        },
+        '& .sld-overload, & .sld-vl-overvoltage, & .sld-vl-undervoltage, & .sld-extern-cell:has(.sld-overload) .sld-current polygon':
+            {
+                animation: 'none !important',
+            },
         '& .nad-active': {
             fill: '#787F81', // Text color of the values and arrows on lines (same color in light and dark mode)
         },
