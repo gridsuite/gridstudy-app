@@ -39,7 +39,7 @@ import { APPLICABILITY } from '../../network/constants';
 import { LimitsPropertiesSideStack } from './limits-properties-side-stack';
 
 export interface LimitsSidePaneProps {
-    OplimitsGroupFormName: string;
+    opLimitsGroupFormName: string;
     limitsGroupApplicabilityName?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
@@ -53,7 +53,7 @@ export interface LimitsSidePaneProps {
 }
 
 export function LimitsSidePane({
-    OplimitsGroupFormName,
+    opLimitsGroupFormName,
     limitsGroupApplicabilityName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
@@ -68,8 +68,8 @@ export function LimitsSidePane({
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
     const limitsGroupFormName = useMemo(
-        (): string => `${OplimitsGroupFormName}.${CURRENT_LIMITS}`,
-        [OplimitsGroupFormName]
+        (): string => `${opLimitsGroupFormName}.${CURRENT_LIMITS}`,
+        [opLimitsGroupFormName]
     );
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
@@ -209,7 +209,7 @@ export function LimitsSidePane({
                 <Box>
                     {!isModification && (
                         <LimitsPropertiesSideStack
-                            formName={`${OplimitsGroupFormName}.${LIMITS_PROPERTIES}`}
+                            fieldName={`${opLimitsGroupFormName}.${LIMITS_PROPERTIES}`}
                             disabled={disabled}
                         />
                     )}

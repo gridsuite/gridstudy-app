@@ -306,7 +306,7 @@ export interface CurrentLimitsData {
     applicability?: string;
     limitsProperties?: LimitsProperty[];
     permanentLimit: number | null;
-    temporaryLimits: TemporaryLimit[];
+    temporaryLimits: TemporaryLimit[]; //FIXME : not really the convenient type (should refactor that + usage)
 }
 
 export interface SubstationModificationInfo {

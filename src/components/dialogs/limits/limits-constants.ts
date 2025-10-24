@@ -10,7 +10,7 @@ export enum LimitsPropertyName {
 }
 
 export function getPropertyAvatar(type: string): string {
-    const transformedType: LimitsPropertyName | undefined = type as LimitsPropertyName;
+    const transformedType: LimitsPropertyName = type as LimitsPropertyName;
 
     const descriptions: Record<LimitsPropertyName, string> = {
         [LimitsPropertyName.LIMITS_TYPE]: 'Ty',

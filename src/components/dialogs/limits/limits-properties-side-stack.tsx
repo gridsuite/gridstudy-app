@@ -14,15 +14,15 @@ import { useFieldArray } from 'react-hook-form';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
 
 export interface LimitsPropertiesSideStackProps {
-    formName: string;
+    fieldName: string;
     disabled?: boolean;
 }
-export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<LimitsPropertiesSideStackProps>) {
+export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<LimitsPropertiesSideStackProps>) {
     const {
         fields: limitsProperties,
         append,
         remove,
-    } = useFieldArray<{ [key: string]: LimitsProperty[] }>({ name: formName });
+    } = useFieldArray<{ [key: string]: LimitsProperty[] }>({ name: fieldName });
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [hovered, setHovered] = useState<boolean>(false);
@@ -62,12 +62,9 @@ export function LimitsPropertiesSideStack({ formName, disabled }: Readonly<Limit
 
     const handleDelete = useCallback(
         (index: number) => {
-            if (limitsProperties?.length <= index) {
-                return;
-            }
             remove(index);
         },
-        [limitsProperties?.length, remove]
+        [remove]
     );
 
     return (

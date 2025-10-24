@@ -7,28 +7,27 @@
 
 import { Avatar, Stack } from '@mui/material';
 import { LimitsProperty } from '../../../services/network-modification-types';
-import { useMemo } from 'react';
 import { LimitsTagChip } from './limits-tag-chip';
 import { useWatch } from 'react-hook-form';
 
 const MAX_PROPERTIES_TO_RENDER: number = 2;
 
 export interface LimitsPropertiesStackProps {
-    formName: string;
+    fieldName: string;
 }
-export function LimitsPropertiesStack({ formName, ...props }: Readonly<LimitsPropertiesStackProps>) {
-    const limitsProperties: LimitsProperty[] | undefined = useWatch({ name: formName });
-    const propertiesToRender: LimitsProperty[] = useMemo(() => {
-        if (!limitsProperties) {
-            return [];
-        }
-        return limitsProperties.length < MAX_PROPERTIES_TO_RENDER ? limitsProperties : limitsProperties?.slice(0, 2);
-    }, [limitsProperties]);
+
+function getLimitsPropertiesToRender(limitsProperties: LimitsProperty[]) {
+    return limitsProperties.length < MAX_PROPERTIES_TO_RENDER ? limitsProperties : limitsProperties?.slice(0, 2);
+}
+
+export function LimitsPropertiesStack({ fieldName, ...props }: Readonly<LimitsPropertiesStackProps>) {
+    const limitsProperties: LimitsProperty[] | undefined = useWatch({ name: fieldName });
+    const propertiesToRender: LimitsProperty[] = getLimitsPropertiesToRender(limitsProperties ?? []);
 
     return (
         <Stack direction="row" {...props}>
             {propertiesToRender.map((property: LimitsProperty) => (
-                <LimitsTagChip key={`${property.name}$${property.value}`} limitsProperty={property} />
+                <LimitsTagChip key={`${property.name}`} limitsProperty={property} />
             ))}
             {limitsProperties && propertiesToRender.length !== limitsProperties.length ? (
                 <Avatar>{`+${limitsProperties.length - propertiesToRender.length}`}</Avatar>

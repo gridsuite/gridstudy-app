@@ -207,7 +207,7 @@ export function LimitsPane({
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id}
-                                        OplimitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
+                                        opLimitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
