@@ -11,8 +11,8 @@ import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Button, Tooltip } from '@mui/material';
+import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import { Button } from '@mui/material';
 import {
     RESULT_TYPE,
     securityAnalysisTableNColumnsDefinition,
@@ -121,11 +121,9 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },
