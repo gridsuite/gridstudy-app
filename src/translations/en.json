@@ -857,7 +857,6 @@
     "DISCONNECTOR": "Disconnector",
     "SameHorizAndVertPos": "At least two bus bar sections have same horizontal and vertical position",
     "DuplicateId": "Duplicate id",
-    "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
     "AddCouplingDeviceError": "Error while creating a coupling device",
     "BusBarSectionID1": "Bus bar section / bus 1",
@@ -1529,7 +1528,7 @@
     "CREATE_COUPLING_DEVICE": "Add a coupling device",
     "CreateVoltageLevelSection": "Add busbar section",
     "CreateCouplingDeviceDiagramButton": "Show voltage level",
-    "CreateCouplingDeviceIdenticalBusBar": "Busbar section 1 and 2 must be different",
+    "CreateCouplingDeviceIdenticalBusBar": "Bus bar section / bus 1 and 2 must be different",
     "builtNodeTooltipForDiagram": "Current diagram taking into account all applied modifications",
     "notBuiltNodeTooltipForDiagram": "Diagram from last build node in current branch",
     "CouplingDeviceText": "Bus bar sections",
@@ -1639,5 +1638,8 @@
     "MissingConnectionsInVoltageLevel": "Missing connections in voltage level (Connections removed from list on validation)",
     "moveFeederBaysSections": "Feeder bay will be connected onto the selected busbar section",
     "Length": "Amount of elements",
-    "equipmentID": "Equipment ID"
+    "equipmentID": "Equipment ID",
+    "voltageLevelNominalVoltageMinValueError": "Nominal voltage must be greater than low voltage limit and less than high voltage limit",
+    "voltageLevelNominalVoltageMaxValueError": "Low voltage limit must be inferior to high voltage limit",
+    "generatorMinimumActivePowerMaxValueError" : "Minimum active power must be inferior to maximum active power"
 }
