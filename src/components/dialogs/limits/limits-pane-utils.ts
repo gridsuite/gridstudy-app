@@ -352,27 +352,29 @@ export const addModificationTypeToOpLimitsGroups = (
             };
         }
     );
-    networkLine?.currentLimits
-        .filter(
-            (currentLimit: CurrentLimits) =>
-                modificationLimitsGroups.find((modOpLG: OperationalLimitsGroup) => modOpLG.id === currentLimit.id) ===
+    if (networkLine?.currentLimits !== undefined) {
+        for (const currentLimit1 of networkLine?.currentLimits) {
+            if (
+                modificationLimitsGroups.some((modOpLG: OperationalLimitsGroup) => modOpLG.id === currentLimit1.id) ===
                 undefined
-        )
-        .forEach((currentLimit) => {
-            modificationLimitsGroups.push({
-                id: currentLimit.id,
-                name: currentLimit.id,
-                applicability: currentLimit.applicability,
-                // empty currentLimits because the opLG is going to be deleted anyway
-                currentLimits: {
-                    id: currentLimit.id,
-                    applicability: currentLimit.applicability,
-                    permanentLimit: null,
-                    temporaryLimits: [],
-                },
-                modificationType: LIMIT_SETS_MODIFICATION_TYPE.DELETE,
-            });
-        });
+            ) {
+                modificationLimitsGroups.push({
+                    id: currentLimit1.id,
+                    name: currentLimit1.id,
+                    applicability: currentLimit1.applicability,
+                    // empty currentLimits because the opLG is going to be deleted anyway
+                    currentLimits: {
+                        id: currentLimit1.id,
+                        applicability: currentLimit1.applicability,
+                        permanentLimit: null,
+                        temporaryLimits: [],
+                    },
+                    modificationType: LIMIT_SETS_MODIFICATION_TYPE.DELETE,
+                });
+            }
+        }
+    }
+
     return modificationLimitsGroups;
 };
 
