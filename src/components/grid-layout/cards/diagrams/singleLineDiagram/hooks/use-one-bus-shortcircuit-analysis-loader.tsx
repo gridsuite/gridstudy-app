@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { UUID } from 'node:crypto';
 import { ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { Chip, darken, lighten } from '@mui/material';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
+import { resetOneBusShortcircuitAnalysisDiagram, setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
 import { AppDispatch } from 'redux/store';
 import {
     isOneBusShortCircuitFailedNotification,
@@ -40,18 +39,16 @@ type oneBusShortcircuitAnalysisLoader = [ReactElement, boolean, () => void, () =
  * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader
  *
  * @param {string} diagramId - Identifier for the diagram which launched the computation
- * @param {UUID} nodeId - Identifier for the node which launched the computation
- * @param rootNetworkUuid
  *
  * @returns {oneBusShortcircuitAnalysisLoader} array which contains the controls necessary for the one bus
  * shortcircuit analysis loader. It also comes with a boolean to check if the loader needs to be displayed
  * and the message to display for the UI
  */
-export function useOneBusShortcircuitAnalysisLoader(
-    diagramId: string,
-    nodeId: UUID,
-    rootNetworkUuid: UUID
-): oneBusShortcircuitAnalysisLoader {
+export function useOneBusShortcircuitAnalysisLoader(diagramId: string): oneBusShortcircuitAnalysisLoader {
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const rootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const oneBusShortCircuitAnalysisDiagram = useSelector((state: AppState) => state.oneBusShortCircuitAnalysisDiagram);
 
@@ -59,19 +56,37 @@ export function useOneBusShortcircuitAnalysisLoader(
     const intl = useIntl();
 
     const displayOneBusShortcircuitAnalysisLoader = useCallback(() => {
-        dispatch(setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId));
-    }, [nodeId, diagramId, dispatch]);
+        if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
+            return;
+        }
+        dispatch(setOneBusShortcircuitAnalysisDiagram(diagramId, studyUuid, rootNetworkUuid, currentNode?.id));
+    }, [currentNode?.id, diagramId, dispatch, rootNetworkUuid, studyUuid]);
 
     const resetOneBusShortcircuitAnalysisLoader = useCallback(() => {
-        dispatch(setOneBusShortcircuitAnalysisDiagram(null));
+        dispatch(resetOneBusShortcircuitAnalysisDiagram());
     }, [dispatch]);
 
-    const isDiagramRunningOneBusShortcircuitAnalysis = useMemo(
-        () =>
+    const isDiagramRunningOneBusShortcircuitAnalysis = useMemo(() => {
+        if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
+            return false;
+        }
+
+        return (
             diagramId === oneBusShortCircuitAnalysisDiagram?.diagramId &&
-            nodeId === oneBusShortCircuitAnalysisDiagram?.nodeId,
-        [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram]
-    );
+            studyUuid === oneBusShortCircuitAnalysisDiagram?.studyUuid &&
+            rootNetworkUuid === oneBusShortCircuitAnalysisDiagram?.rootNetworkUuid &&
+            currentNode?.id === oneBusShortCircuitAnalysisDiagram?.nodeId
+        );
+    }, [
+        currentNode?.id,
+        diagramId,
+        oneBusShortCircuitAnalysisDiagram?.diagramId,
+        oneBusShortCircuitAnalysisDiagram?.studyUuid,
+        oneBusShortCircuitAnalysisDiagram?.rootNetworkUuid,
+        oneBusShortCircuitAnalysisDiagram?.nodeId,
+        rootNetworkUuid,
+        studyUuid,
+    ]);
 
     const oneBusShortcircuitAnalysisLoaderMessage = useMemo<ReactElement>(() => {
         return (
@@ -90,6 +105,9 @@ export function useOneBusShortcircuitAnalysisLoader(
     }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
 
     useEffect(() => {
+        if (!studyUuid || !currentNode?.id || !rootNetworkUuid) {
+            return;
+        }
         if (
             (studyUpdatedForce && isOneBusShortCircuitResultNotification(studyUpdatedForce.eventData)) ||
             isOneBusShortCircuitFailedNotification(studyUpdatedForce.eventData)
@@ -99,7 +117,7 @@ export function useOneBusShortcircuitAnalysisLoader(
             }
             resetOneBusShortcircuitAnalysisLoader();
         }
-    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce, rootNetworkUuid]);
+    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce, rootNetworkUuid, studyUuid, currentNode?.id]);
 
     return [
         oneBusShortcircuitAnalysisLoaderMessage,
