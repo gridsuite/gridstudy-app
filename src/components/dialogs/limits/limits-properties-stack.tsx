@@ -20,17 +20,19 @@ function getLimitsPropertiesToRender(limitsProperties: LimitsProperty[]) {
     return limitsProperties.length < MAX_PROPERTIES_TO_RENDER ? limitsProperties : limitsProperties?.slice(0, 2);
 }
 
-export function LimitsPropertiesStack({ fieldName, ...props }: Readonly<LimitsPropertiesStackProps>) {
+export function LimitsPropertiesStack({ fieldName }: Readonly<LimitsPropertiesStackProps>) {
     const limitsProperties: LimitsProperty[] | undefined = useWatch({ name: fieldName });
     const propertiesToRender: LimitsProperty[] = getLimitsPropertiesToRender(limitsProperties ?? []);
 
     return (
-        <Stack direction="row" {...props}>
+        <Stack direction="row" sx={{ alignItems: 'center' }}>
             {propertiesToRender.map((property: LimitsProperty) => (
                 <LimitsTagChip key={`${property.name}`} limitsProperty={property} />
             ))}
             {limitsProperties && propertiesToRender.length !== limitsProperties.length ? (
-                <Avatar>{`+${limitsProperties.length - propertiesToRender.length}`}</Avatar>
+                <Avatar
+                    sx={{ width: 30, height: 30 }}
+                >{`+${limitsProperties.length - propertiesToRender.length}`}</Avatar>
             ) : (
                 ''
             )}
