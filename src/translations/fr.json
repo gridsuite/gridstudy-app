@@ -850,7 +850,6 @@
     "DISCONNECTOR": "Sectionneur",
     "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
-    "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
     "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
     "AddCouplingDeviceError": "Erreur lors de l'ajout d'un omnibus/couplage",
     "BusBarSectionID1": "SJB / Nœud 1",
@@ -1530,7 +1529,7 @@
     "CREATE_COUPLING_DEVICE": "Ajouter un couplage ou un omnibus",
     "CreateVoltageLevelSection": "Ajouter un tronçon ou une section",
     "CreateCouplingDeviceDiagramButton": "Voir le poste",
-    "CreateCouplingDeviceIdenticalBusBar": "Les sections de barre 1 et 2 doivent être différentes",
+    "CreateCouplingDeviceIdenticalBusBar": "Les SJB / Nœuds 1 et 2 doivent être différents",
     "builtNodeTooltipForDiagram": "Diagramme courant prenant en compte toutes les modifications réalisées",
     "notBuiltNodeTooltipForDiagram": "Diagramme du dernier nœud réalisé de la branche courante",
     "CouplingDeviceText": "Sections de jeu de barre",
@@ -1637,5 +1636,8 @@
     "MissingConnectionsInVoltageLevel": "Départs absents du poste (Départs supprimés de la liste à la validation)",
     "moveFeederBaysSections": "Les départs déplacés sont préparés sur la section de barre sélectionnée",
     "Length": "Nombre d'éléments",
-    "equipmentID": "ID de l'ouvrage"
+    "equipmentID": "ID de l'ouvrage",
+    "voltageLevelNominalVoltageMinValueError": "La tension nominale doit être comprise entre la limite de tension basse et la limite de tension haute",
+    "voltageLevelNominalVoltageMaxValueError": "La limite de tension basse doit être inférieure à celle de tension haute",
+    "generatorMinimumActivePowerMaxValueError" : "La puissance active min doit être inférieure à la puissance active max"
 }
