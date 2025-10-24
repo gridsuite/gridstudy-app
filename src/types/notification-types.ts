@@ -36,6 +36,7 @@ export enum NotificationType {
     SUBTREE_MOVED = 'subtreeMoved',
     SUBTREE_CREATED = 'subtreeCreated',
     NODES_COLUMN_POSITION_CHANGED = 'nodesColumnPositionsChanged',
+    NETWORK_EXPORT_FINISHED = 'networkExportFinished',
     // Modifications
     MODIFICATIONS_CREATION_IN_PROGRESS = 'creatingInProgress',
     MODIFICATIONS_UPDATING_IN_PROGRESS = 'updatingInProgress',
@@ -371,6 +372,7 @@ interface ComputationResultEventDataHeaders extends CommonStudyEventDataHeaders 
     node: UUID;
     rootNetworkUuid: UUID;
 }
+
 interface ComputationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
     node: UUID;
     rootNetworkUuid: UUID;
@@ -493,6 +495,17 @@ interface StateEstimationFailedEventDataHeaders extends ComputationFailedEventDa
 
 interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
     updateType: NotificationType.STATE_ESTIMATION_STATUS;
+}
+
+interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
+    updateType: NotificationType.NETWORK_EXPORT_FINISHED;
+    rootNetworkUuid: UUID;
+    node: UUID;
+    userId: string;
+    fileName: string;
+    exportUuid: UUID;
+    format: string;
+    error: string;
 }
 
 // Payloads
@@ -820,6 +833,11 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface ExportNetworkEventData {
+    headers: ExportNetworkEventDataHeaders;
+    payload: undefined;
+}
+
 export interface SpreadsheetParametersUpdatedEventData extends Omit<CommonStudyEventData, 'payload'> {
     headers: SpreadsheetParametersUpdatedDataHeaders;
     /**
@@ -917,6 +935,7 @@ export function isEventCrudFinishedNotification(notif: unknown): notif is EventC
 export function isNodeDeletedNotification(notif: unknown): notif is NodesDeletedEventData {
     return (notif as NodesDeletedEventData).headers?.updateType === NotificationType.NODES_DELETED;
 }
+
 export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedEventData {
     return (notif as NodeCreatedEventData).headers?.updateType === NotificationType.NODE_CREATED;
 }
@@ -924,8 +943,13 @@ export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedE
 export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEventData {
     return (notif as NodeEditedEventData).headers?.updateType === NotificationType.NODE_EDITED;
 }
+
 export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
     return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
+}
+
+export function isExportNetworkNotification(notif: unknown): notif is ExportNetworkEventData {
+    return (notif as ExportNetworkEventData).headers?.updateType === NotificationType.NETWORK_EXPORT_FINISHED;
 }
 
 export function isContainingNodesInformationNotification(notif: unknown): notif is
@@ -1100,13 +1124,15 @@ export type StudyUpdateEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | ExportNetworkEventData;
 
 export type StudyUpdateNotification = {
     eventData: StudyUpdateEventData;
 };
 
 /******************* TO REMOVE LATER ****************/
+
 // Headers
 /**
  * @deprecated The type should not be used
@@ -1124,6 +1150,7 @@ export interface StudyUpdatedEventDataHeader {
     userId?: string;
     computationType?: ComputingType;
 }
+
 // EventData
 /**
  * @deprecated The type should not be used
@@ -1134,4 +1161,5 @@ export interface StudyUpdatedEventData {
     /** @see NetworkImpactsInfos */
     payload: string;
 }
+
 /******************* TO REMOVE LATER ****************/
