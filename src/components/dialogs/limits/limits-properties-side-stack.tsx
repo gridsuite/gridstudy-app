@@ -28,7 +28,8 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
     const [hovered, setHovered] = useState<boolean>(false);
     const [propertyName, setPropertyName] = useState<string>('');
     const [propertyValue, setPropertyValue] = useState<string>('');
-    const [editorError, setEditorError] = useState<string>('');
+    const [nameEditorError, setNameEditorError] = useState<string>('');
+    const [valueEditorError, setValueEditorError] = useState<string>('');
     const intl = useIntl();
 
     const [predefinedProperties] = usePredefinedProperties('limitsGroup');
@@ -39,15 +40,30 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
     const handleKeyPress = useCallback(
         (event: React.KeyboardEvent<HTMLInputElement>) => {
             if (event.key === 'Enter') {
-                if (!propertyName.trim() || !propertyValue.trim()) {
+                setNameEditorError('');
+                setValueEditorError('');
+
+                let error = false;
+                if (propertyName.trim() === '') {
+                    setNameEditorError(intl.formatMessage({ id: 'FieldNotEmpty' }));
+                    error = true;
+                }
+                if (propertyValue.trim() === '') {
+                    setValueEditorError(intl.formatMessage({ id: 'FieldNotEmpty' }));
+                    error = true;
+                }
+
+                if (error) {
                     return;
                 }
 
                 if (limitsProperties.some((l) => l.name === propertyName)) {
-                    setEditorError(intl.formatMessage({ id: 'NameUnique' }));
+                    setNameEditorError(intl.formatMessage({ id: 'UniqueName' }));
                     return;
                 } else {
                     append({ name: propertyName, value: propertyValue });
+                    setPropertyName('');
+                    setPropertyValue('');
                 }
                 setIsEditing(false);
             }
@@ -57,15 +73,8 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
 
     const handleOnChange = useCallback((value: string) => {
         setPropertyName(value);
-        setEditorError('');
+        setNameEditorError('');
     }, []);
-
-    const handleDelete = useCallback(
-        (index: number) => {
-            remove(index);
-        },
-        [remove]
-    );
 
     return (
         <Stack direction="column" spacing={2} paddingBottom={2} flexWrap="wrap">
@@ -74,7 +83,7 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
                     <LimitsTagChip
                         key={`${property.name}`}
                         limitsProperty={property}
-                        onDelete={() => handleDelete(index)}
+                        onDelete={() => remove(index)}
                         disabled={disabled}
                     />
                 ))}
@@ -108,8 +117,8 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
                                 {...params}
                                 onChange={(event) => handleOnChange(event.target.value)}
                                 fullWidth
-                                error={!!editorError?.length}
-                                helperText={editorError}
+                                error={nameEditorError !== ''}
+                                helperText={nameEditorError}
                                 onKeyDown={handleKeyPress}
                             />
                         )}
@@ -122,13 +131,15 @@ export function LimitsPropertiesSideStack({ fieldName, disabled }: Readonly<Limi
                         sx={{ flex: 1, verticalAlign: 'center' }}
                         onKeyDown={handleKeyPress}
                         onChange={(event) => setPropertyValue(event.target.value)}
+                        error={valueEditorError !== ''}
+                        helperText={valueEditorError}
                     />
                     {hovered && (
                         <IconButton
                             sx={{ verticalAlign: 'center' }}
                             onClick={() => {
                                 setIsEditing(false);
-                                setEditorError('');
+                                setNameEditorError('');
                             }}
                         >
                             <Delete />

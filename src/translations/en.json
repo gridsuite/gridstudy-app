@@ -916,6 +916,7 @@
     "SelectedOperationalLimitGroups": "Active limit sets",
     "Applicability": "Applicability",
     "UniqueName": "Name should be unique",
+    "FieldNotEmpty": "Field should not be empty",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
     "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
