@@ -164,9 +164,9 @@ function getColumnsByRows(
             // If the affected node belongs to a different security group, we update the whole group.
             // Note : we do not update it this way if we are currently in the same security group (currentSecurityNode)
             // as this would prevent the compression algorithm from working correctly.
-            if (securityGroupToUpdate !== null && securityGroupToUpdate !== currentSecurityNode) {
+            if (securityGroupToUpdate != null && securityGroupToUpdate !== currentSecurityNode) {
                 // Because security groups must share the same lowest or highest value, we set a new extreme to the whole group.
-                securityGroupMembersMap.get(securityGroupToUpdate).forEach((member) => {
+                securityGroupMembersMap.get(securityGroupToUpdate)?.forEach((member) => {
                     const rowToUpdate = placements.getPlacement(member)?.row;
                     if (rowToUpdate) {
                         columnsByRow.set(rowToUpdate, contender);
@@ -357,7 +357,7 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
             childrenMap.set(node.parentId, children);
 
             if (isSecurityModificationNode(node)) {
-                if (nodeMap.get(node.parentId)?.belongsToSecurityGroupId === null) {
+                if (nodeMap.get(node.parentId)?.belongsToSecurityGroupId === null || !currentSecurityGroupFirstNodeId) {
                     // We entered a new security group
                     currentSecurityGroupFirstNodeId = node.id;
                 }
@@ -376,16 +376,16 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
  */
 function createSecurityGroupNodes(placementGrid: PlacementGrid, securityGroupMembersMap: SecurityGroupMembersMap) {
     return Array.from(securityGroupMembersMap.entries()).map(([group, members]) => {
-        let bottomRightX = 0;
-        let bottomRightY = 0;
+        let bottomRightRow = 0;
+        let bottomRightColumn = 0;
         for (const member of members) {
             const memberPlacement = placementGrid.getPlacement(member);
             if (memberPlacement) {
-                if (memberPlacement.row > bottomRightX) {
-                    bottomRightX = memberPlacement.row;
+                if (memberPlacement.row > bottomRightRow) {
+                    bottomRightRow = memberPlacement.row;
                 }
-                if (memberPlacement.column > bottomRightY) {
-                    bottomRightY = memberPlacement.column;
+                if (memberPlacement.column > bottomRightColumn) {
+                    bottomRightColumn = memberPlacement.column;
                 }
             }
         }
@@ -394,8 +394,8 @@ function createSecurityGroupNodes(placementGrid: PlacementGrid, securityGroupMem
             type: LABELED_GROUP_TYPE,
             data: {
                 position: {
-                    topLeft: placementGrid.getPlacement(group),
-                    bottomRight: { row: bottomRightX, column: bottomRightY },
+                    topLeft: placementGrid.getPlacement(group) ?? { row: 0, column: 0 },
+                    bottomRight: { row: bottomRightRow, column: bottomRightColumn },
                 },
             },
             style: {
