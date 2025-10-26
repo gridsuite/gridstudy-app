@@ -16,9 +16,7 @@ export default function useExportSubscription() {
 
     const subscribeExport = useCallback(
         (exportUuid: UUID) => {
-            const identifier = buildExportIdentifier({
-                exportUuid,
-            });
+            const identifier = buildExportIdentifier(exportUuid);
             setExportSubscription(identifier);
             snackInfo({
                 messageTxt: intl.formatMessage({ id: 'export.message.started' }),

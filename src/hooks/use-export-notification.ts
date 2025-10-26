@@ -25,9 +25,7 @@ export default function useExportNotification() {
             if (isExportNetworkNotification(eventData)) {
                 const { userId: userIdNotif, exportUuid, error } = eventData.headers;
 
-                const exportIdentifierNotif = buildExportIdentifier({
-                    exportUuid,
-                });
+                const exportIdentifierNotif = buildExportIdentifier(exportUuid);
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
                 if (isSubscribed && userIdNotif === userId) {
                     unsetExportSubscription(exportIdentifierNotif);
