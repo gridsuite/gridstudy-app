@@ -96,7 +96,7 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
     const { snackError } = useSnackMessage();
 
-    const [disableApplyModifications, setDisableApplyModifications] = useState(!result?.modificationsGroupUuid);
+    const [disableApplyModifications, setDisableApplyModifications] = useState(false);
     const [applyingModifications, setApplyingModifications] = useState(false);
     const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState<EditData>();
