@@ -14,3 +14,19 @@ export function addMember(map: SecurityGroupMembersMap, key: string, member: str
         map.set(key, [member]);
     }
 }
+
+export function getSecurityGroupRows(
+    securityGroupId: string,
+    map: SecurityGroupMembersMap,
+    placements: PlacementGrid
+): Set<number> {
+    const rows = new Set<number>();
+    const members = map.get(securityGroupId) ?? [];
+    for (const member of members) {
+        const row = placements.getPlacement(member)?.row;
+        if (row !== undefined) {
+            rows.add(row);
+        }
+    }
+    return rows;
+}

@@ -9,7 +9,7 @@ import { NodeMap, NodePlacement, SecurityGroupMembersMap } from './layout.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, isSecurityModificationNode } from './tree-node.type';
-import { addMember } from './layout-utils';
+import { addMember, getSecurityGroupRows } from './layout-utils';
 
 const widthSpacing = 70;
 const heightSpacing = 90;
@@ -146,13 +146,6 @@ function getColumnsByRows(
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
 
-    function isExtreme(contender: number, competition: number | undefined): boolean {
-        if (competition === undefined) {
-            return true;
-        }
-        return getMax ? contender > competition : contender < competition;
-    }
-
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (!nodePlacement || !node.parentId) {
@@ -160,22 +153,25 @@ function getColumnsByRows(
         }
 
         const contender = nodePlacement.column;
-        if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+        if (isExtreme(getMax, contender, columnsByRow.get(nodePlacement.row))) {
             const securityGroupToUpdate = nodeMap.get(node.id)?.belongsToSecurityGroupId;
-            // If the affected node belongs to a different security group, we update the whole group.
-            // Note : we do not update it this way if we are currently in the same security group (currentSecurityNode)
-            // as this would prevent the compression algorithm from working correctly.
-            if (securityGroupToUpdate != null && securityGroupToUpdate !== currentSecurityNode) {
-                // Because security groups must share the same lowest or highest value, we set a new extreme to the whole group.
+
+            // Security groups should be treated as a whole, and if we find a new extreme, the whole group should be updated.
+            if (
+                securityGroupToUpdate != null &&
+                (securityGroupToUpdate === node.id || securityGroupToUpdate !== currentSecurityNode)
+            ) {
+                // We update all the security group's rows
                 updateSecurityGroupRows(
                     securityGroupToUpdate,
                     contender,
                     columnsByRow,
                     placements,
-                    securityGroupMembersMap
+                    securityGroupMembersMap,
+                    getMax
                 );
             } else {
-                // Not in a security group, or in the same security group, so we only update the current row.
+                // We only update the current row.
                 columnsByRow.set(nodePlacement.row, contender);
             }
         }
@@ -183,20 +179,26 @@ function getColumnsByRows(
     return columnsByRow;
 }
 
+function isExtreme(getMax: boolean, contender: number, competition: number | undefined): boolean {
+    if (competition === undefined) {
+        return true;
+    }
+    return getMax ? contender > competition : contender < competition;
+}
+
 function updateSecurityGroupRows(
     securityGroupToUpdate: string,
-    value: number,
+    contender: number,
     columnsByRow: Map<number, number>,
     placements: PlacementGrid,
-    securityGroupMembersMap: SecurityGroupMembersMap
+    securityGroupMembersMap: SecurityGroupMembersMap,
+    getMax: boolean
 ) {
-    const securityGroupMembers = securityGroupMembersMap.get(securityGroupToUpdate);
-    if (securityGroupMembers) {
-        for (const member of securityGroupMembers) {
-            const rowToUpdate = placements.getPlacement(member)?.row;
-            if (rowToUpdate) {
-                columnsByRow.set(rowToUpdate, value);
-            }
+    const rowsToUpdate = getSecurityGroupRows(securityGroupToUpdate, securityGroupMembersMap, placements);
+    for (const row of rowsToUpdate) {
+        // We test each row with isExtreme to prevent overwriting a previously set valid value
+        if (isExtreme(getMax, contender, columnsByRow.get(row))) {
+            columnsByRow.set(row, contender);
         }
     }
 }
