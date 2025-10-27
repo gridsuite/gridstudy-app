@@ -20,7 +20,7 @@ export const snapGrid = [10, nodeHeight]; // Used for drag and drop
 /**
  * Uses a bidirectional map to match a node ID to a NodePlacement.
  */
-class PlacementGrid {
+export class PlacementGrid {
     private readonly idToPlacement = new Map<string, NodePlacement>();
     private readonly placementToId = new Map<string, string>();
 

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { SecurityGroupMembersMap } from './layout.type';
+import { PlacementGrid } from './layout';
 
 export function addMember(map: SecurityGroupMembersMap, key: string, member: string) {
     const group = map.get(key);
