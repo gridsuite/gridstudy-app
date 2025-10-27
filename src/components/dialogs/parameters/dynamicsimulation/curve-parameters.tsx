@@ -86,7 +86,7 @@ const CurveParameters = ({ path }: { path: string }) => {
         setSelectedRowsLength(0);
     }, [remove, rowData]);
 
-    const quickFilterRef = useRef();
+    const quickFilterRef = useRef(null);
 
     // curve grid configuration
     const theme = useTheme();

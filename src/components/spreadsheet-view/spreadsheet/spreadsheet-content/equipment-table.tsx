@@ -48,7 +48,7 @@ const defaultColDef: ColDef = {
 };
 
 interface EquipmentTableProps {
-    gridRef: React.RefObject<AgGridReact>;
+    gridRef: React.RefObject<AgGridReact | null>;
     rowData: unknown[] | undefined;
     columnData: ColDef[];
     currentNode: CurrentTreeNode;
