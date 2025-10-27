@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
     ENABLE_OLG_MODIFICATION,
@@ -137,23 +137,28 @@ export function LimitsPane({
     return (
         <>
             {/* active limit sets */}
-            <Grid container item spacing={0}>
-                <Grid item xs={11}>
-                    <GridSection title="SelectedOperationalLimitGroups" />
-                </Grid>
-                <Grid item xs={1}>
-                    {/* if the user wants to switch off the modification a modal asks him to confirm */}
-                    {isAModification && (
-                        <InputWithPopupConfirmation
-                            Input={SwitchInput}
-                            name={`${id}.${ENABLE_OLG_MODIFICATION}`}
-                            label={olgEditable ? 'Edit' : 'View'}
-                            shouldOpenPopup={() => olgEditable}
-                            resetOnConfirmation={handlePopupConfirmation}
-                            message="disableOLGedition"
-                            validateButtonLabel="validate"
-                        />
-                    )}
+            <Grid container columns={6} item spacing={1} sx={{ maxWidth: '600px' }}>
+                <Grid item xs={6}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <GridSection title="SelectedOperationalLimitGroups" />
+                        {/* if the user wants to switch off the modification a modal asks him to confirm */}
+                        {isAModification && (
+                            <InputWithPopupConfirmation
+                                Input={SwitchInput}
+                                name={`${id}.${ENABLE_OLG_MODIFICATION}`}
+                                label={olgEditable ? 'Edit' : 'View'}
+                                shouldOpenPopup={() => olgEditable}
+                                resetOnConfirmation={handlePopupConfirmation}
+                                message="disableOLGedition"
+                                validateButtonLabel="validate"
+                            />
+                        )}
+                    </Box>
                 </Grid>
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
@@ -178,17 +183,21 @@ export function LimitsPane({
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={4.9} display="flex" flexDirection="row">
-                <Grid container item xs={3}>
-                    <GridSection title="LimitSets" />
-                </Grid>
-                <Grid container item xs={0.5}>
-                    <IconButton color="primary" onClick={onAddClick} disabled={!olgEditable}>
-                        <AddIcon />
-                    </IconButton>
-                </Grid>
-            </Grid>
             <Grid container item xs={12} columns={10.25}>
+                <Grid item xs={4}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <GridSection title="LimitSets" />
+                        <IconButton color="primary" onClick={onAddClick} disabled={!olgEditable}>
+                            <AddIcon />
+                        </IconButton>
+                    </Box>
+                </Grid>
+                <Grid container item xs={6.25} />
                 <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
