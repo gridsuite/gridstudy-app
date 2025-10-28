@@ -45,11 +45,8 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
     const nodePlacements = new PlacementGrid();
     let currentMaxColumn = 0;
 
-    nodes.forEach((node) => {
-        if (!node.parentId) {
-            // First node, top left.
-            nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
-        } else {
+    for (const node of nodes) {
+        if (node.parentId) {
             const parentPlacement = nodePlacements.getPlacement(node.parentId);
             if (parentPlacement) {
                 const potentialChildPlacement = {
@@ -68,8 +65,11 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
                 }
                 nodePlacements.setPlacement(node.id, potentialChildPlacement);
             }
+        } else {
+            // First node, top left.
+            nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
         }
-    });
+    }
     return nodePlacements;
 }
 
@@ -107,10 +107,10 @@ function getColumnsByRows(
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
 
-    nodes.forEach((node) => {
+    for (const node of nodes) {
         const nodePlacement = placements.getPlacement(node.id);
         if (!nodePlacement || !node.parentId) {
-            return;
+            continue;
         }
 
         const contender = nodePlacement.column;
@@ -136,7 +136,7 @@ function getColumnsByRows(
                 columnsByRow.set(nodePlacement.row, contender);
             }
         }
-    });
+    }
     return columnsByRow;
 }
 
@@ -227,12 +227,12 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
  * Will move the provided nodes' placements to the left by shiftValue amount.
  */
 function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: PlacementGrid, shiftValue: number) {
-    nodes.forEach((node) => {
+    for (const node of nodes) {
         const oldPlacement = placements.getPlacement(node.id);
         if (oldPlacement) {
             placements.setPlacement(node.id, { row: oldPlacement.row, column: oldPlacement.column - shiftValue });
         }
-    });
+    }
 }
 
 /**
@@ -272,7 +272,7 @@ function compressTreePlacements(
 
     // For each of those nodes's branches, we will calculate how much space available there is to
     // the left, for each row of the branch.
-    nonEldestSiblingsIds.forEach((currentNodeId) => {
+    for (const currentNodeId of nonEldestSiblingsIds) {
         // We have to find the minimum column placement values (per row) for the current branch, and compare them
         // to the maximum column placement values (per row) of the nodes on the left.
         // The resulting space we find represents how much we can shift the current column to the left.
@@ -308,7 +308,7 @@ function compressTreePlacements(
         if (availableSpace > 0) {
             shiftPlacementsToTheLeft(currentBranchNodes, placements, availableSpace);
         }
-    });
+    }
     return placements;
 }
 
@@ -324,7 +324,7 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
     const securityGroupMembersMap = new Map<string, string[]>();
 
     let currentSecurityGroupFirstNodeId: string | null = null;
-    nodes.forEach((node, index) => {
+    for (const [index, node] of nodes.entries()) {
         if (node.parentId) {
             const children = childrenMap.get(node.parentId) || [];
             children.push(node);
@@ -341,7 +341,7 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
             }
         }
         nodeMap.set(node.id, { index, node, belongsToSecurityGroupId: currentSecurityGroupFirstNodeId });
-    });
+    }
     return [nodeMap, childrenMap, securityGroupMembersMap] as const;
 }
 
