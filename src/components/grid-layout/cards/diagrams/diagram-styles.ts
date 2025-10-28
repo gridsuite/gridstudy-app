@@ -85,7 +85,7 @@ export const styles = {
             {
                 opacity: INVALID_LOADFLOW_OPACITY,
             },
-        '& .sld-active-power text, & .sld-reactive-power text, & .sld-current text, & .sld-percentage-permanent-limit text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
+        '& .sld-active-power text, & .sld-reactive-power text, & .sld-current text, & .sld-permanent-limit-percentage text, & .sld-voltage text, & .sld-angle text, & .sld-voltage.sld-bus-legend-info, & .sld-angle.sld-bus-legend-info':
             {
                 fill: '#787F81',
             },
