@@ -189,7 +189,6 @@ const LineModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (lineModification: LineModificationInfos) => {
-            console.log('lineModification', lineModification);
             if (lineModification?.equipmentId) {
                 setSelectedId(lineModification.equipmentId);
             }

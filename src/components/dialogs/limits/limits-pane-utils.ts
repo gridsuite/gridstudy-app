@@ -293,7 +293,6 @@ export const combineFormAndMapServerLimitsGroups = (
 export const getOpLimitsGroupInfosFromBranchModification = (
     formBranchModification: LineModificationFormInfos
 ): OperationalLimitsGroupFormInfos[] => {
-    console.log('formBranchModification', formBranchModification);
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
 };
 export const addModificationTypeToTemporaryLimits = (
