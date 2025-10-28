@@ -341,7 +341,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                             </Stack>
                                             {!isAModification && (
                                                 <LimitsPropertiesStack
-                                                    fieldName={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                                    name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
                                                 />
                                             )}
                                         </Stack>

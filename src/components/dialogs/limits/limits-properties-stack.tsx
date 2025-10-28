@@ -13,15 +13,15 @@ import { useWatch } from 'react-hook-form';
 const MAX_PROPERTIES_TO_RENDER: number = 2;
 
 export interface LimitsPropertiesStackProps {
-    fieldName: string;
+    name: string;
 }
 
 function getLimitsPropertiesToRender(limitsProperties: LimitsProperty[]) {
     return limitsProperties.length < MAX_PROPERTIES_TO_RENDER ? limitsProperties : limitsProperties?.slice(0, 2);
 }
 
-export function LimitsPropertiesStack({ fieldName }: Readonly<LimitsPropertiesStackProps>) {
-    const limitsProperties: LimitsProperty[] | undefined = useWatch({ name: fieldName });
+export function LimitsPropertiesStack({ name }: Readonly<LimitsPropertiesStackProps>) {
+    const limitsProperties: LimitsProperty[] | undefined = useWatch({ name: name });
     const propertiesToRender: LimitsProperty[] = getLimitsPropertiesToRender(limitsProperties ?? []);
 
     return (

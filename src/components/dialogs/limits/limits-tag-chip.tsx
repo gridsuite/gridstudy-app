@@ -12,18 +12,23 @@ import { LimitsProperty } from '../../../services/network-modification-types';
 
 export interface LimitTagChipProps extends ChipProps {
     limitsProperty: LimitsProperty;
+    showTooltip?: boolean;
 }
 
-export function LimitsTagChip({ limitsProperty, onDelete, ...props }: Readonly<LimitTagChipProps>) {
-    return (
-        <Tooltip title={limitsProperty.name + ' : ' + limitsProperty.value}>
-            <Chip
-                avatar={<Avatar>{getPropertyAvatar(limitsProperty.name)}</Avatar>}
-                label={limitsProperty.value}
-                sx={{ maxWidth: onDelete ? '200px' : '180px', margin: 0.5, borderRadius: '4px' }}
-                onDelete={onDelete}
-                {...props}
-            />
-        </Tooltip>
+export function LimitsTagChip({ limitsProperty, showTooltip, onDelete, ...props }: Readonly<LimitTagChipProps>) {
+    const chipContent = (
+        <Chip
+            avatar={<Avatar>{getPropertyAvatar(limitsProperty.name)}</Avatar>}
+            label={limitsProperty.value}
+            sx={{ maxWidth: onDelete ? '200px' : '180px', margin: 0.5, borderRadius: '4px' }}
+            onDelete={onDelete}
+            {...props}
+        />
+    );
+
+    return showTooltip ? (
+        <Tooltip title={limitsProperty.name + ' : ' + limitsProperty.value}>{chipContent}</Tooltip>
+    ) : (
+        chipContent
     );
 }
