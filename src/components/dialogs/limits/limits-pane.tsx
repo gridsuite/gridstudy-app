@@ -138,27 +138,29 @@ export function LimitsPane({
         <>
             {/* active limit sets */}
             <Grid container columns={6} item spacing={1} sx={{ maxWidth: '600px' }}>
-                <Grid item xs={6}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <GridSection title="SelectedOperationalLimitGroups" />
-                        {/* if the user wants to switch off the modification a modal asks him to confirm */}
-                        {isAModification && (
-                            <InputWithPopupConfirmation
-                                Input={SwitchInput}
-                                name={`${id}.${ENABLE_OLG_MODIFICATION}`}
-                                label={olgEditable ? 'Edit' : 'View'}
-                                shouldOpenPopup={() => olgEditable}
-                                resetOnConfirmation={handlePopupConfirmation}
-                                message="disableOLGedition"
-                                validateButtonLabel="validate"
-                            />
-                        )}
-                    </Box>
+                <Grid item xs={3}>
+                    <GridSection title="SelectedOperationalLimitGroups" />
+                </Grid>
+                <Grid
+                    item
+                    xs={3}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                    }}
+                >
+                    {/* if the user wants to switch off the modification a modal asks him to confirm */}
+                    {isAModification && (
+                        <InputWithPopupConfirmation
+                            Input={SwitchInput}
+                            name={`${id}.${ENABLE_OLG_MODIFICATION}`}
+                            label={olgEditable ? 'Edit' : 'View'}
+                            shouldOpenPopup={() => olgEditable}
+                            resetOnConfirmation={handlePopupConfirmation}
+                            message="disableOLGedition"
+                            validateButtonLabel="validate"
+                        />
+                    )}
                 </Grid>
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
