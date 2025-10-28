@@ -209,7 +209,7 @@ export function LimitsSidePane({
                 <Box>
                     {!isModification && (
                         <LimitsPropertiesSideStack
-                            fieldName={`${opLimitsGroupFormName}.${LIMITS_PROPERTIES}`}
+                            name={`${opLimitsGroupFormName}.${LIMITS_PROPERTIES}`}
                             disabled={disabled}
                         />
                     )}
