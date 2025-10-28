@@ -131,18 +131,23 @@ export const formatOpLimitGroupsToFormInfos = (
     if (!limitGroups) {
         return [];
     }
-    return limitGroups.map((opLimitGroup: OperationalLimitsGroup) => {
-        return {
-            id: opLimitGroup.id + opLimitGroup.applicability,
-            name: opLimitGroup.id,
-            applicability: opLimitGroup.applicability,
-            currentLimits: {
-                id: opLimitGroup.currentLimits.id,
-                permanentLimit: opLimitGroup.currentLimits.permanentLimit,
-                temporaryLimits: formatToTemporaryLimitsFormInfos(opLimitGroup.currentLimits.temporaryLimits),
-            },
-        };
-    });
+    return limitGroups
+        .filter(
+            (opLimitGroup: OperationalLimitsGroup) =>
+                opLimitGroup.modificationType !== LIMIT_SETS_MODIFICATION_TYPE.DELETE
+        )
+        .map((opLimitGroup: OperationalLimitsGroup) => {
+            return {
+                id: opLimitGroup.id + opLimitGroup.applicability,
+                name: opLimitGroup.id,
+                applicability: opLimitGroup.applicability,
+                currentLimits: {
+                    id: opLimitGroup.currentLimits.id,
+                    permanentLimit: opLimitGroup.currentLimits.permanentLimit,
+                    temporaryLimits: formatToTemporaryLimitsFormInfos(opLimitGroup.currentLimits.temporaryLimits),
+                },
+            };
+        });
 };
 
 export const getAllLimitsFormData = (
@@ -247,7 +252,6 @@ export const combineFormAndMapServerLimitsGroups = (
     mapServerBranch: BranchInfos
 ): OperationalLimitsGroupFormInfos[] => {
     let updatedOpLG: OperationalLimitsGroupFormInfos[] = formBranchModification?.limits?.operationalLimitsGroups ?? [];
-
     // updates limit values :
     for (const opLG of updatedOpLG) {
         const equivalentFromMapServer = mapServerBranch.currentLimits?.find(
@@ -289,6 +293,7 @@ export const combineFormAndMapServerLimitsGroups = (
 export const getOpLimitsGroupInfosFromBranchModification = (
     formBranchModification: LineModificationFormInfos
 ): OperationalLimitsGroupFormInfos[] => {
+    console.log('formBranchModification', formBranchModification);
     return formBranchModification?.limits?.operationalLimitsGroups ?? [];
 };
 export const addModificationTypeToTemporaryLimits = (
@@ -354,10 +359,7 @@ export const addModificationTypeToOpLimitsGroups = (
     );
     if (networkLine?.currentLimits !== undefined) {
         for (const currentLimit1 of networkLine?.currentLimits) {
-            if (
-                modificationLimitsGroups.some((modOpLG: OperationalLimitsGroup) => modOpLG.id === currentLimit1.id) ===
-                undefined
-            ) {
+            if (!modificationLimitsGroups.some((modOpLG: OperationalLimitsGroup) => modOpLG.id === currentLimit1.id)) {
                 modificationLimitsGroups.push({
                     id: currentLimit1.id,
                     name: currentLimit1.id,
