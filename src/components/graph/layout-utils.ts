@@ -4,8 +4,46 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SecurityGroupMembersMap } from './layout.type';
-import { PlacementGrid } from './layout';
+import { NodePlacement, SecurityGroupMembersMap } from './layout.type';
+
+/**
+ * Uses a bidirectional map to match a node ID to a NodePlacement.
+ */
+export class PlacementGrid {
+    private readonly idToPlacement = new Map<string, NodePlacement>();
+    private readonly placementToId = new Map<string, string>();
+
+    private nodePlacementToString(placement: NodePlacement): string {
+        return `${placement.row}_${placement.column}`;
+    }
+
+    setPlacement(nodeId: string, placement: NodePlacement) {
+        // Remove any existing mappings to ensure bidirectionality
+        if (this.idToPlacement.has(nodeId)) {
+            const oldPlacement = this.idToPlacement.get(nodeId)!;
+            this.placementToId.delete(this.nodePlacementToString(oldPlacement));
+        }
+        const placementString = this.nodePlacementToString(placement);
+        if (this.placementToId.has(placementString)) {
+            const oldId = this.placementToId.get(placementString)!;
+            this.idToPlacement.delete(oldId);
+        }
+        // Add the new mappings
+        this.idToPlacement.set(nodeId, placement);
+        this.placementToId.set(placementString, nodeId);
+    }
+
+    getPlacement(nodeId: string): NodePlacement | undefined {
+        const placement = this.idToPlacement.get(nodeId);
+        // This ensure immutability to prevent external modifications on the returned value
+        // from modifying this object's internal values.
+        return placement ? { ...placement } : undefined;
+    }
+
+    isPlacementTaken(placement: NodePlacement): boolean {
+        return this.placementToId.has(this.nodePlacementToString(placement));
+    }
+}
 
 export function addMember(map: SecurityGroupMembersMap, key: string, member: string) {
     const group = map.get(key);

@@ -5,56 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NodeMap, NodePlacement, SecurityGroupMembersMap } from './layout.type';
+import { NodeMap, SecurityGroupMembersMap } from './layout.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, isSecurityModificationNode } from './tree-node.type';
-import { addMember, getSecurityGroupRows } from './layout-utils';
+import { addMember, getSecurityGroupRows, PlacementGrid } from './layout-utils';
 
 const widthSpacing = 70;
 const heightSpacing = 90;
 export const nodeWidth = NODE_WIDTH + widthSpacing;
 export const nodeHeight = NODE_HEIGHT + heightSpacing;
 export const snapGrid = [10, nodeHeight]; // Used for drag and drop
-
-/**
- * Uses a bidirectional map to match a node ID to a NodePlacement.
- */
-export class PlacementGrid {
-    private readonly idToPlacement = new Map<string, NodePlacement>();
-    private readonly placementToId = new Map<string, string>();
-
-    private nodePlacementToString(placement: NodePlacement): string {
-        return `${placement.row}_${placement.column}`;
-    }
-
-    setPlacement(nodeId: string, placement: NodePlacement) {
-        // Remove any existing mappings to ensure bidirectionality
-        if (this.idToPlacement.has(nodeId)) {
-            const oldPlacement = this.idToPlacement.get(nodeId)!;
-            this.placementToId.delete(this.nodePlacementToString(oldPlacement));
-        }
-        const placementString = this.nodePlacementToString(placement);
-        if (this.placementToId.has(placementString)) {
-            const oldId = this.placementToId.get(placementString)!;
-            this.idToPlacement.delete(oldId);
-        }
-        // Add the new mappings
-        this.idToPlacement.set(nodeId, placement);
-        this.placementToId.set(placementString, nodeId);
-    }
-
-    getPlacement(nodeId: string): NodePlacement | undefined {
-        const placement = this.idToPlacement.get(nodeId);
-        // This ensure immutability to prevent external modifications on the returned value
-        // from modifying this object's internal values.
-        return placement ? { ...placement } : undefined;
-    }
-
-    isPlacementTaken(placement: NodePlacement): boolean {
-        return this.placementToId.has(this.nodePlacementToString(placement));
-    }
-}
 
 /**
  * Builds a bidirectional map representing the placements of nodes for the tree.
