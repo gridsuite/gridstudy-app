@@ -77,10 +77,25 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
     return (
         <>
             {modifications.map((modification) => (
-                <Box sx={styles.itemHover} key={modification.impactedEquipmentId + modification.modificationUuid}>
-                    <Typography variant="body2" onClick={() => handleClick(modification)} sx={styles.modificationLabel}>
-                        <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
+                <Box>
+                    <Typography
+                        variant="body2"
+                        onClick={() => handleClick(modification)}
+                        sx={[styles.itemHover, styles.modificationLabel]}
+                    >
+                        {getModificationLabel(modification)}
                     </Typography>
+                    <Box key={modification.impactedEquipmentIds + modification.modificationUuid}>
+                        {modification.impactedEquipmentIds.map((equipmentId) => (
+                            <Typography
+                                variant="body2"
+                                onClick={() => handleClick(modification)}
+                                sx={[styles.itemHover, styles.modificationLabel]}
+                            >
+                                <strong>{equipmentId}</strong>
+                            </Typography>
+                        ))}
+                    </Box>
                 </Box>
             ))}
         </>
