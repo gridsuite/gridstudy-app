@@ -8,7 +8,6 @@
 import { CurrentTreeNode, ModificationNode, NetworkModificationNodeType, NodeType, RootNode } from './tree-node.type';
 import { UUID } from 'node:crypto';
 import { getTreeNodesWithUpdatedPositions, nodeHeight, nodeWidth } from './layout';
-import { Node } from '@xyflow/react';
 import { groupIdSuffix } from './nodes/labeled-group-node.type';
 
 function fakeUuid(input: string): UUID {
@@ -155,15 +154,17 @@ function testSecurityGroupPosition(
 
 test('layout.securityNoOverride', () => {
     const nodes: CurrentTreeNode[] = [];
-    nodes.push(buildRootNode('root'));
-    nodes.push(buildNode('a', 'root'));
-    nodes.push(buildNode('b', 'a'));
-    nodes.push(buildNode('c', 'b'));
-    nodes.push(buildSecurityNode('d', 'b'));
-    nodes.push(buildNode('e', 'root'));
-    nodes.push(buildNode('f', 'e'));
-    nodes.push(buildSecurityNode('g', 'e'));
-    nodes.push(buildSecurityNode('h', 'g'));
+    nodes.push(
+        buildRootNode('root'),
+        buildNode('a', 'root'),
+        buildNode('b', 'a'),
+        buildNode('c', 'b'),
+        buildSecurityNode('d', 'b'),
+        buildNode('e', 'root'),
+        buildNode('f', 'e'),
+        buildSecurityNode('g', 'e'),
+        buildSecurityNode('h', 'g')
+    );
 
     const [updatedNodes, securityGroupsNodes] = getTreeNodesWithUpdatedPositions(nodes);
 

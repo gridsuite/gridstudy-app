@@ -20,12 +20,12 @@ export class PlacementGrid {
     setPlacement(nodeId: string, placement: NodePlacement) {
         // Remove any existing mappings to ensure bidirectionality
         if (this.idToPlacement.has(nodeId)) {
-            const oldPlacement = this.idToPlacement.get(nodeId)!;
+            const oldPlacement = this.idToPlacement.get(nodeId);
             this.placementToId.delete(this.nodePlacementToString(oldPlacement));
         }
         const placementString = this.nodePlacementToString(placement);
         if (this.placementToId.has(placementString)) {
-            const oldId = this.placementToId.get(placementString)!;
+            const oldId = this.placementToId.get(placementString);
             this.idToPlacement.delete(oldId);
         }
         // Add the new mappings
