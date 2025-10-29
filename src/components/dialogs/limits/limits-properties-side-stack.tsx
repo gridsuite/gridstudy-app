@@ -7,11 +7,12 @@
 import { LimitsTagChip } from './limits-tag-chip';
 import { Autocomplete, AutocompleteRenderInputParams, Box, Stack, TextField, IconButton } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
-import { AddCircleOutlined, Delete } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { LimitsProperty } from '../../../services/network-modification-types';
 import { useFieldArray } from 'react-hook-form';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
+import AddIcon from '@mui/icons-material/ControlPoint';
 
 export interface LimitsPropertiesSideStackProps {
     name: string;
@@ -95,7 +96,7 @@ export function LimitsPropertiesSideStack({ name, disabled }: Readonly<LimitsPro
                         onClick={() => setIsEditing(true)}
                         disabled={disabled}
                     >
-                        <AddCircleOutlined />
+                        <AddIcon />
                     </IconButton>
                 )}
             </Stack>
