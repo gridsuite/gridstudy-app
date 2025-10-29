@@ -17,11 +17,11 @@ const serverSettings: CommonServerOptions = {
     proxy: {
         '/api/gateway': {
             target: 'http://localhost:9000',
-            rewrite: (path: string) => path.replace(/^\/api\/gateway/, ''),
+            rewrite: (url: string) => url.replace(/^\/api\/gateway/, ''),
         },
         '/ws/gateway': {
             target: 'http://localhost:9000',
-            rewrite: (path: string) => path.replace(/^\/ws\/gateway/, ''),
+            rewrite: (url: string) => url.replace(/^\/ws\/gateway/, ''),
             ws: true,
         },
     },
