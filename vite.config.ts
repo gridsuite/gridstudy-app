@@ -46,7 +46,11 @@ export default defineConfig((_config) => ({
 
             // Show errors in terminal
             terminal: true,
-            enableBuild: false, // disable during build
+
+            // Disable during build because vite-plugin-checker runs checks in a parallel worker,
+            // which doesn't block the build if linting or type checking fails. To ensure build
+            // failure on errors, we use the 'prebuild' script instead (runs before 'npm run build').
+            enableBuild: false,
         }),
         svgr(), // works on every import with the pattern "**/*.svg?react"
         tsconfigPaths(), // to resolve absolute path via tsconfig cf https://stackoverflow.com/a/68250175/5092999
