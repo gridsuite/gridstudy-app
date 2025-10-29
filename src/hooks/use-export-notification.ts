@@ -31,8 +31,7 @@ export default function useExportNotification() {
                     unsetExportSubscription(exportIdentifierNotif);
                     if (error) {
                         snackError({
-                            headerId: intl.formatMessage({ id: 'export.message.failed' }),
-                            messageTxt: error,
+                            messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error: error }),
                         });
                     } else {
                         downloadExportNetworkFile(exportUuid);

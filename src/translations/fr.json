@@ -4,7 +4,7 @@
     "debug.header.fileError": "Échec du téléchargement des données de calcul",
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Export du {fileName} a réussi",
-    "export.message.failed": "Échec du téléchargement du fichier",
+    "export.message.failed": "Échec du téléchargement du fichier {error}",
 
     "button.delete": "Supprimer",
     "button.continue": "Continuer",

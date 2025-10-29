@@ -34,8 +34,7 @@ export function useExportDownload() {
                 })
                 .catch((error: Error) => {
                     snackError({
-                        headerId: intl.formatMessage({ id: 'export.message.failed' }),
-                        messageTxt: error.message,
+                        messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error: error.message }),
                     });
                 })
                 .finally(() => {
