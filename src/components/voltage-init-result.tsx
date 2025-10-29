@@ -108,6 +108,13 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
         delay: RESULTS_LOADING_DELAY,
     });
 
+    useEffect(() => {
+        if (result?.modificationsGroupUuid && status === RunningStatus.SUCCEED) {
+            // un-applied result available => dont disable
+            setDisableApplyModifications(false);
+        }
+    }, [result?.modificationsGroupUuid, status]);
+
     const gridRef = useRef<AgGridReact>(null);
     const defaultColDef = useMemo(
         () => ({
