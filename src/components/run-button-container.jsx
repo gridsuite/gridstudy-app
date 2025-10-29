@@ -48,6 +48,7 @@ import useComputationDebug from '../hooks/use-computation-debug';
 import { PaginationType } from 'types/custom-aggrid-types';
 import { usePaginationReset } from 'hooks/use-pagination-selector';
 import { useLogsPaginationResetByType } from './report-viewer/use-logs-pagination';
+import { startPccMin, stopPccMin } from 'services/study/pcc-min';
 
 const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -94,6 +95,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     );
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
     const stateEstimationStatus = useSelector((state) => state.computingStatus[ComputingType.STATE_ESTIMATION]);
+    const pccMinStatus = useSelector((state) => state.computingStatus[ComputingType.PCC_MIN]);
 
     const [showContingencyListSelector, setShowContingencyListSelector] = useState(false);
 
@@ -120,6 +122,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
+    const pccMinAvailability = useOptionalServiceStatus(OptionalServicesNames.PccMin);
 
     const resetSecurityAnalysisPagination = usePaginationReset(PaginationType.SecurityAnalysis);
     const resetSensitivityAnalysisPagination = usePaginationReset(PaginationType.SensitivityAnalysis);
@@ -489,6 +492,27 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     );
                 },
             },
+
+            [ComputingType.PCC_MIN]: {
+                messageId: 'PccMin',
+                startComputation() {
+                    startComputationAsync(
+                        ComputingType.PCC_MIN,
+                        null,
+                        () => {
+                            return startPccMin(studyUuid, currentNode?.id, currentRootNetworkUuid);
+                        },
+                        () => {},
+                        null,
+                        'startPccMinError'
+                    );
+                },
+                actionOnRunnable() {
+                    actionOnRunnables(ComputingType.PCC_MIN, () =>
+                        stopPccMin(studyUuid, currentNode?.id, currentRootNetworkUuid)
+                    );
+                },
+            },
         };
     }, [
         dispatch,
@@ -524,6 +548,8 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                     return voltageInitStatus;
                 case ComputingType.STATE_ESTIMATION:
                     return stateEstimationStatus;
+                case ComputingType.PCC_MIN:
+                    return pccMinStatus;
                 default:
                     return null;
             }
@@ -538,6 +564,7 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             dynamicSecurityAnalysisStatus,
             voltageInitStatus,
             stateEstimationStatus,
+            pccMinStatus,
         ]
     );
 
@@ -561,16 +588,18 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
             ...(stateEstimationAvailability === OptionalServicesStatus.Up && enableDeveloperMode
                 ? [ComputingType.STATE_ESTIMATION]
                 : []),
+            ...(pccMinAvailability === OptionalServicesStatus.Up && enableDeveloperMode ? [ComputingType.PCC_MIN] : []),
         ];
     }, [
-        dynamicSimulationAvailability,
-        dynamicSecurityAnalysisAvailability,
         securityAnalysisAvailability,
         sensitivityAnalysisUnavailability,
         shortCircuitAvailability,
+        dynamicSimulationAvailability,
+        enableDeveloperMode,
+        dynamicSecurityAnalysisAvailability,
         voltageInitAvailability,
         stateEstimationAvailability,
-        enableDeveloperMode,
+        pccMinAvailability,
     ]);
 
     return (
