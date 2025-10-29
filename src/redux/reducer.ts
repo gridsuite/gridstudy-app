@@ -177,6 +177,7 @@ import {
     SET_MODIFICATIONS_IN_PROGRESS,
     SET_MONO_ROOT_STUDY,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
     SET_OPEN_MAP,
     SET_OPTIONAL_SERVICES,
     SET_PARAMS_LOADED,
@@ -199,6 +200,7 @@ import {
     type SetModificationsInProgressAction,
     type SetMonoRootStudyAction,
     type SetOneBusShortcircuitAnalysisDiagramAction,
+    type ResetOneBusShortcircuitAnalysisDiagramAction,
     type SetOpenMapAction,
     type SetOptionalServicesAction,
     type SetParamsLoadedAction,
@@ -429,6 +431,8 @@ export const DEFAULT_LOGS_PAGINATION: LogsPaginationConfig = {
 
 export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
+    studyUuid: UUID;
+    rootNetworkUuid: UUID;
     nodeId: UUID;
 }
 
@@ -442,6 +446,7 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+    [ComputingType.PCC_MIN]: RunningStatus;
 }
 
 export interface LoadFlowStatusParameters {
@@ -665,6 +670,7 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: [],
 };
 
 const initialLogsPaginationState: LogsPaginationState = {
@@ -678,6 +684,7 @@ const initialLogsPaginationState: LogsPaginationState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: { ...DEFAULT_LOGS_PAGINATION },
 };
 
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
@@ -811,6 +818,7 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+        [ComputingType.PCC_MIN]: RunningStatus.IDLE,
     },
     computingStatusParameters: {
         [ComputingType.LOAD_FLOW]: null,
@@ -1728,12 +1736,19 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         (state, action: SetOneBusShortcircuitAnalysisDiagramAction) => {
-            state.oneBusShortCircuitAnalysisDiagram = action.diagramId
-                ? {
-                      diagramId: action.diagramId,
-                      nodeId: action.nodeId,
-                  }
-                : null;
+            state.oneBusShortCircuitAnalysisDiagram = {
+                diagramId: action.diagramId,
+                studyUuid: action.studyUuid,
+                rootNetworkUuid: action.rootNetworkUuid,
+                nodeId: action.nodeId,
+            };
+        }
+    );
+
+    builder.addCase(
+        RESET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+        (state, action: ResetOneBusShortcircuitAnalysisDiagramAction) => {
+            state.oneBusShortCircuitAnalysisDiagram = null;
         }
     );
 

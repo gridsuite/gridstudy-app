@@ -41,6 +41,8 @@ export function useFilteredRowCounterInfo({
     const [isAnyFilterPresent, setIsAnyFilterPresent] = useState(false);
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
+
     const globalFilterSpreadsheetState = useSelector(
         (state: AppState) => state.globalFilterSpreadsheetState[tableDefinition.uuid]
     );
@@ -65,6 +67,10 @@ export function useFilteredRowCounterInfo({
             }, 600),
         [gridRef, currentNode, disabled]
     );
+
+    useEffect(() => {
+        setIsLoading(true);
+    }, [currentRootNetworkUuid]);
 
     const onFilterChanged = useCallback((event: FilterChangedEvent) => {
         setIsAnyFilterPresent(event.api.isAnyFilterPresent());
