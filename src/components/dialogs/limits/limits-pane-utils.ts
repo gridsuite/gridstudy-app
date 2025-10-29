@@ -356,8 +356,8 @@ export const addModificationTypeToOpLimitsGroups = (
             };
         }
     );
-    if (networkLine?.currentLimits !== undefined) {
-        for (const currentLimit1 of networkLine?.currentLimits) {
+    if (networkLine?.currentLimits !== undefined && networkLine?.currentLimits !== null) {
+        for (const currentLimit1 of networkLine.currentLimits) {
             if (!modificationLimitsGroups.some((modOpLG: OperationalLimitsGroup) => modOpLG.id === currentLimit1.id)) {
                 modificationLimitsGroups.push({
                     id: currentLimit1.id,
