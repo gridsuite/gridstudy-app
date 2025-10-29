@@ -171,7 +171,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string().nullable(),
         ...getCon1andCon2WithPositionValidationSchema(true),
         ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(true),
+        ...getLimitsValidationSchema(),
         ...getStateEstimationValidationSchema(STATE_ESTIMATION),
         ...getRatioTapChangerValidationSchema(true),
         ...getPhaseTapChangerValidationSchema(true),
@@ -487,7 +487,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratedU1: toModificationOperation(characteristics[RATED_U1]),
                 ratedU2: toModificationOperation(characteristics[RATED_U2]),
                 operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
-                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS], twtToModify)
                     : [],
                 selectedLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
@@ -543,6 +543,7 @@ const TwoWindingsTransformerModificationDialog = ({
             computeRatioTapForSubmit,
             computePhaseTapForSubmit,
             snackError,
+            twtToModify,
         ]
     );
 
