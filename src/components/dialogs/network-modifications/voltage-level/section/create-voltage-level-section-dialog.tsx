@@ -32,9 +32,9 @@ import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-fo
 import { CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
-import { fetchVoltageLevelTopology } from '../../../../../services/study/network';
+import { fetchVoltageLevelBusBarSectionsInformation } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { TopologyInfos } from '../../../../../services/study/network-map.type';
+import { BusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
 const getBusBarIndexValue = ({ busbarIndex, allBusbars }: { busbarIndex: string | null; allBusbars: boolean }) => {
     if (!busbarIndex) {
@@ -152,18 +152,24 @@ export default function CreateVoltageLevelSectionDialog({
         (voltageLevelId: string) => {
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevelTopology(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId)
-                    .then((topology: TopologyInfos) => {
-                        if (topology) {
-                            setBusBarSectionInfos(topology?.busBarSectionsInfos || new Map());
+                fetchVoltageLevelBusBarSectionsInformation(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    voltageLevelId
+                )
+                    .then((busBarSectionsInfos: BusBarSectionsInfos) => {
+                        console.log('busBarSectionsInfos', busBarSectionsInfos);
+                        if (busBarSectionsInfos) {
+                            setBusBarSectionInfos(busBarSectionsInfos?.busBarSections || new Map());
                             setAllBusbarSectionsList(
-                                Object.values(topology?.busBarSectionsInfos || new Map()).flat() as string[]
+                                Object.values(busBarSectionsInfos?.busBarSections || new Map()).flat() as string[]
                             );
                             setIsExtensionNotFoundOrNotSupportedTopology(
-                                !topology.isBusbarSectionPositionExtensionFound ||
-                                    topology?.topologyKind !== 'NODE_BREAKER'
+                                !busBarSectionsInfos.isBusbarSectionPositionFound ||
+                                    busBarSectionsInfos?.topologyKind !== 'NODE_BREAKER'
                             );
-                            setIsSymmetricalNbBusBarSections(topology.isSymmetrical);
+                            setIsSymmetricalNbBusBarSections(busBarSectionsInfos.isSymmetrical);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
                     })

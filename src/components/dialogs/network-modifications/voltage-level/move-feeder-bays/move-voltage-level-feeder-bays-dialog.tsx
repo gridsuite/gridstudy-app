@@ -33,13 +33,13 @@ import {
     MoveFeederBayInfos,
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
-import { fetchVoltageLevelTopology } from '../../../../../services/study/network';
+import { fetchVoltageLevelFeederBaysBusBarSectionsInformation } from '../../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
 import { AnyObject, TestFunction } from 'yup';
-import { TopologyInfos } from '../../../../../services/study/network-map.type';
+import { FeederBaysBusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
 const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved;
 const checkConnectionPositionField: TestFunction<string | undefined, AnyObject> = (currentPosition, context) => {
@@ -224,10 +224,12 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const handleVoltageLevelDataFetch = useCallback(
-        (topology: TopologyInfos) => {
-            const busBarSectionInfos = Object.values(topology?.busBarSectionsInfos || {}).flat() as string[];
+        (feederBaysBusBarSectionInfo: FeederBaysBusBarSectionsInfos) => {
+            const busBarSectionInfos = Object.values(
+                feederBaysBusBarSectionInfo?.busBarSectionsInfos || {}
+            ).flat() as string[];
             const feederBaysInfos: FeederBaysInfos = (
-                Object.entries(topology?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
+                Object.entries(feederBaysBusBarSectionInfo?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
             ).flatMap(([equipmentId, feederBayInfos]) =>
                 feederBayInfos.map((feederBay) => ({
                     equipmentId,
@@ -258,10 +260,15 @@ export default function MoveVoltageLevelFeederBaysDialog({
         (voltageLevelId: string) => {
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevelTopology(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId)
-                    .then((topology) => {
-                        if (topology) {
-                            handleVoltageLevelDataFetch(topology);
+                fetchVoltageLevelFeederBaysBusBarSectionsInformation(
+                    studyUuid,
+                    currentNodeUuid,
+                    currentRootNetworkUuid,
+                    voltageLevelId
+                )
+                    .then((feederBaysBusBarSectionInfo) => {
+                        if (feederBaysBusBarSectionInfo) {
+                            handleVoltageLevelDataFetch(feederBaysBusBarSectionInfo);
                         }
                     })
                     .catch(() => {

@@ -13,15 +13,18 @@ export type SwitchInfos = {
     open: boolean;
 };
 
-export type TopologyInfos = {
+export type BusBarSectionsInfos = {
     topologyKind: string;
     busbarCount: number;
     sectionCount: number;
-    switchKinds: string[];
     isSymmetrical: boolean;
-    isBusbarSectionPositionExtensionFound: boolean;
-    busBarSectionsInfos: Map<string, string[]>;
+    isBusbarSectionPositionFound: boolean;
+    busBarSections: Map<string, string[]>;
+};
+
+export type FeederBaysBusBarSectionsInfos = {
     feederBaysInfos: Map<string, FeederBayInfos[]>;
+    busBarSectionsInfos: BusBarSectionsInfos;
 };
 
 export type BranchInfos = Equipment & {
