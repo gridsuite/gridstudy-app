@@ -24,274 +24,211 @@ export const lightThemeCssVars = {
     '.sld-vl0to30, .nad-vl0to30, .sld-extern-cell:has(.sld-wire.sld-vl0to30) .sld-current': {
         '--vl-color': '#ABAE28',
     },
-    '.sld-vl0to30.sld-bus-1, .nad-vl0to30.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#69701B',
-        },
-    '.sld-vl0to30.sld-bus-2, .nad-vl0to30.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#D8D20A',
-        },
-    '.sld-vl0to30.sld-bus-3, .nad-vl0to30.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#A156AA',
-        },
-    '.sld-vl0to30.sld-bus-4, .nad-vl0to30.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#CB3DDD',
-        },
-    '.sld-vl0to30.sld-bus-5, .nad-vl0to30.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#A684BC',
-        },
-    '.sld-vl0to30.sld-bus-6, .nad-vl0to30.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#62188B',
-        },
-    '.sld-vl0to30.sld-bus-7, .nad-vl0to30.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#885CA8',
-        },
-    '.sld-vl0to30.sld-bus-8, .nad-vl0to30.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#A020F0',
-        },
-    '.sld-vl0to30.sld-bus-9, .nad-vl0to30.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#CC80FF',
-        },
+    '.sld-vl0to30.sld-bus-1, .nad-vl0to30.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-1) .sld-current': {
+        '--vl-color': '#69701B',
+    },
+    '.sld-vl0to30.sld-bus-2, .nad-vl0to30.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-2) .sld-current': {
+        '--vl-color': '#D8D20A',
+    },
+    '.sld-vl0to30.sld-bus-3, .nad-vl0to30.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-3) .sld-current': {
+        '--vl-color': '#A156AA',
+    },
+    '.sld-vl0to30.sld-bus-4, .nad-vl0to30.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-4) .sld-current': {
+        '--vl-color': '#CB3DDD',
+    },
+    '.sld-vl0to30.sld-bus-5, .nad-vl0to30.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-5) .sld-current': {
+        '--vl-color': '#A684BC',
+    },
+    '.sld-vl0to30.sld-bus-6, .nad-vl0to30.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-6) .sld-current': {
+        '--vl-color': '#62188B',
+    },
+    '.sld-vl0to30.sld-bus-7, .nad-vl0to30.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-7) .sld-current': {
+        '--vl-color': '#885CA8',
+    },
+    '.sld-vl0to30.sld-bus-8, .nad-vl0to30.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-8) .sld-current': {
+        '--vl-color': '#A020F0',
+    },
+    '.sld-vl0to30.sld-bus-9, .nad-vl0to30.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl0to30.sld-bus-9) .sld-current': {
+        '--vl-color': '#CC80FF',
+    },
     '.sld-vl30to50, .nad-vl30to50, .sld-extern-cell:has(.sld-wire.sld-vl30to50) .sld-current': {
         '--vl-color': '#FF8290',
     },
-    '.sld-vl30to50.sld-bus-1, .nad-vl30to50.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#E7173E',
-        },
-    '.sld-vl30to50.sld-bus-2, .nad-vl30to50.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#DAA8AD',
-        },
-    '.sld-vl30to50.sld-bus-3, .nad-vl30to50.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#459C63',
-        },
-    '.sld-vl30to50.sld-bus-4, .nad-vl30to50.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#00E266',
-        },
-    '.sld-vl30to50.sld-bus-5, .nad-vl30to50.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#A7B368',
-        },
-    '.sld-vl30to50.sld-bus-6, .nad-vl30to50.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#1A4D1B',
-        },
-    '.sld-vl30to50.sld-bus-7, .nad-vl30to50.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#C2CB92',
-        },
-    '.sld-vl30to50.sld-bus-8, .nad-vl30to50.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#218B21',
-        },
-    '.sld-vl30to50.sld-bus-9, .nad-vl30to50.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#58D058',
-        },
+    '.sld-vl30to50.sld-bus-1, .nad-vl30to50.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-1) .sld-current': {
+        '--vl-color': '#E7173E',
+    },
+    '.sld-vl30to50.sld-bus-2, .nad-vl30to50.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-2) .sld-current': {
+        '--vl-color': '#DAA8AD',
+    },
+    '.sld-vl30to50.sld-bus-3, .nad-vl30to50.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-3) .sld-current': {
+        '--vl-color': '#459C63',
+    },
+    '.sld-vl30to50.sld-bus-4, .nad-vl30to50.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-4) .sld-current': {
+        '--vl-color': '#00E266',
+    },
+    '.sld-vl30to50.sld-bus-5, .nad-vl30to50.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-5) .sld-current': {
+        '--vl-color': '#A7B368',
+    },
+    '.sld-vl30to50.sld-bus-6, .nad-vl30to50.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-6) .sld-current': {
+        '--vl-color': '#1A4D1B',
+    },
+    '.sld-vl30to50.sld-bus-7, .nad-vl30to50.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-7) .sld-current': {
+        '--vl-color': '#C2CB92',
+    },
+    '.sld-vl30to50.sld-bus-8, .nad-vl30to50.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-8) .sld-current': {
+        '--vl-color': '#218B21',
+    },
+    '.sld-vl30to50.sld-bus-9, .nad-vl30to50.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl30to50.sld-bus-9) .sld-current': {
+        '--vl-color': '#58D058',
+    },
     '.sld-vl50to70, .nad-vl50to70, .sld-extern-cell:has(.sld-wire.sld-vl50to70) .sld-current': {
         '--vl-color': '#A020F0',
     },
-    '.sld-vl50to70.sld-bus-1, .nad-vl50to70.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#62188B',
-        },
-    '.sld-vl50to70.sld-bus-2, .nad-vl50to70.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#AC8AC2',
-        },
-    '.sld-vl50to70.sld-bus-3, .nad-vl50to70.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#1F7620',
-        },
-    '.sld-vl50to70.sld-bus-4, .nad-vl50to70.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#C5ED3B',
-        },
-    '.sld-vl50to70.sld-bus-5, .nad-vl50to70.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#A7B368',
-        },
-    '.sld-vl50to70.sld-bus-6, .nad-vl50to70.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#55591B',
-        },
-    '.sld-vl50to70.sld-bus-7, .nad-vl50to70.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#E5E845',
-        },
-    '.sld-vl50to70.sld-bus-8, .nad-vl50to70.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#ABAE28',
-        },
-    '.sld-vl50to70.sld-bus-9, .nad-vl50to70.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#DAD971',
-        },
+    '.sld-vl50to70.sld-bus-1, .nad-vl50to70.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-1) .sld-current': {
+        '--vl-color': '#62188B',
+    },
+    '.sld-vl50to70.sld-bus-2, .nad-vl50to70.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-2) .sld-current': {
+        '--vl-color': '#AC8AC2',
+    },
+    '.sld-vl50to70.sld-bus-3, .nad-vl50to70.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-3) .sld-current': {
+        '--vl-color': '#1F7620',
+    },
+    '.sld-vl50to70.sld-bus-4, .nad-vl50to70.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-4) .sld-current': {
+        '--vl-color': '#C5ED3B',
+    },
+    '.sld-vl50to70.sld-bus-5, .nad-vl50to70.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-5) .sld-current': {
+        '--vl-color': '#A7B368',
+    },
+    '.sld-vl50to70.sld-bus-6, .nad-vl50to70.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-6) .sld-current': {
+        '--vl-color': '#55591B',
+    },
+    '.sld-vl50to70.sld-bus-7, .nad-vl50to70.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-7) .sld-current': {
+        '--vl-color': '#E5E845',
+    },
+    '.sld-vl50to70.sld-bus-8, .nad-vl50to70.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-8) .sld-current': {
+        '--vl-color': '#ABAE28',
+    },
+    '.sld-vl50to70.sld-bus-9, .nad-vl50to70.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl50to70.sld-bus-9) .sld-current': {
+        '--vl-color': '#DAD971',
+    },
     '.sld-vl70to120, .nad-vl70to120, .sld-extern-cell:has(.sld-wire.sld-vl70to120) .sld-current': {
         '--vl-color': '#FF9D00',
     },
-    '.sld-vl70to120.sld-bus-1, .nad-vl70to120.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#7E3109',
-        },
-    '.sld-vl70to120.sld-bus-2, .nad-vl70to120.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#C50',
-        },
-    '.sld-vl70to120.sld-bus-3, .nad-vl70to120.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#25699D',
-        },
-    '.sld-vl70to120.sld-bus-4, .nad-vl70to120.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#0057F9',
-        },
-    '.sld-vl70to120.sld-bus-5, .nad-vl70to120.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#74AFEA',
-        },
-    '.sld-vl70to120.sld-bus-6, .nad-vl70to120.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#1B3459',
-        },
-    '.sld-vl70to120.sld-bus-7, .nad-vl70to120.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#458BE8',
-        },
-    '.sld-vl70to120.sld-bus-8, .nad-vl70to120.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#2862AE',
-        },
-    '.sld-vl70to120.sld-bus-9, .nad-vl70to120.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#B0D4FE',
-        },
+    '.sld-vl70to120.sld-bus-1, .nad-vl70to120.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-1) .sld-current': {
+        '--vl-color': '#7E3109',
+    },
+    '.sld-vl70to120.sld-bus-2, .nad-vl70to120.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-2) .sld-current': {
+        '--vl-color': '#C50',
+    },
+    '.sld-vl70to120.sld-bus-3, .nad-vl70to120.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-3) .sld-current': {
+        '--vl-color': '#25699D',
+    },
+    '.sld-vl70to120.sld-bus-4, .nad-vl70to120.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-4) .sld-current': {
+        '--vl-color': '#0057F9',
+    },
+    '.sld-vl70to120.sld-bus-5, .nad-vl70to120.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-5) .sld-current': {
+        '--vl-color': '#74AFEA',
+    },
+    '.sld-vl70to120.sld-bus-6, .nad-vl70to120.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-6) .sld-current': {
+        '--vl-color': '#1B3459',
+    },
+    '.sld-vl70to120.sld-bus-7, .nad-vl70to120.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-7) .sld-current': {
+        '--vl-color': '#458BE8',
+    },
+    '.sld-vl70to120.sld-bus-8, .nad-vl70to120.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-8) .sld-current': {
+        '--vl-color': '#2862AE',
+    },
+    '.sld-vl70to120.sld-bus-9, .nad-vl70to120.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl70to120.sld-bus-9) .sld-current': {
+        '--vl-color': '#B0D4FE',
+    },
     '.sld-vl120to180, .nad-vl120to180, .sld-extern-cell:has(.sld-wire.sld-vl120to180) .sld-current': {
         '--vl-color': '#00AFAE',
     },
-    '.sld-vl120to180.sld-bus-1, .nad-vl120to180.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#0A6365',
-        },
-    '.sld-vl120to180.sld-bus-2, .nad-vl120to180.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#79CED4',
-        },
-    '.sld-vl120to180.sld-bus-3, .nad-vl120to180.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#A30E32',
-        },
-    '.sld-vl120to180.sld-bus-4, .nad-vl120to180.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#FF8290',
-        },
-    '.sld-vl120to180.sld-bus-5, .nad-vl120to180.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#DAA8AD',
-        },
-    '.sld-vl120to180.sld-bus-6, .nad-vl120to180.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#C30D33',
-        },
-    '.sld-vl120to180.sld-bus-7, .nad-vl120to180.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#E3BEC0',
-        },
-    '.sld-vl120to180.sld-bus-8, .nad-vl120to180.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#FF8290',
-        },
-    '.sld-vl120to180.sld-bus-9, .nad-vl120to180.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#FFCCD0',
-        },
+    '.sld-vl120to180.sld-bus-1, .nad-vl120to180.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-1) .sld-current': {
+        '--vl-color': '#0A6365',
+    },
+    '.sld-vl120to180.sld-bus-2, .nad-vl120to180.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-2) .sld-current': {
+        '--vl-color': '#79CED4',
+    },
+    '.sld-vl120to180.sld-bus-3, .nad-vl120to180.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-3) .sld-current': {
+        '--vl-color': '#A30E32',
+    },
+    '.sld-vl120to180.sld-bus-4, .nad-vl120to180.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-4) .sld-current': {
+        '--vl-color': '#FF8290',
+    },
+    '.sld-vl120to180.sld-bus-5, .nad-vl120to180.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-5) .sld-current': {
+        '--vl-color': '#DAA8AD',
+    },
+    '.sld-vl120to180.sld-bus-6, .nad-vl120to180.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-6) .sld-current': {
+        '--vl-color': '#C30D33',
+    },
+    '.sld-vl120to180.sld-bus-7, .nad-vl120to180.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-7) .sld-current': {
+        '--vl-color': '#E3BEC0',
+    },
+    '.sld-vl120to180.sld-bus-8, .nad-vl120to180.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-8) .sld-current': {
+        '--vl-color': '#FF8290',
+    },
+    '.sld-vl120to180.sld-bus-9, .nad-vl120to180.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl120to180.sld-bus-9) .sld-current': {
+        '--vl-color': '#FFCCD0',
+    },
     '.sld-vl180to300, .nad-vl180to300, .sld-extern-cell:has(.sld-wire.sld-vl180to300) .sld-current': {
         '--vl-color': '#32B532',
     },
-    '.sld-vl180to300.sld-bus-1, .nad-vl180to300.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#1E5D1F',
-        },
-    '.sld-vl180to300.sld-bus-2, .nad-vl180to300.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#A7B368',
-        },
-    '.sld-vl180to300.sld-bus-3, .nad-vl180to300.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#E47400',
-        },
-    '.sld-vl180to300.sld-bus-4, .nad-vl180to300.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#6B3A26',
-        },
-    '.sld-vl180to300.sld-bus-5, .nad-vl180to300.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#D69A88',
-        },
-    '.sld-vl180to300.sld-bus-6, .nad-vl180to300.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#7E3109',
-        },
-    '.sld-vl180to300.sld-bus-7, .nad-vl180to300.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#B78B58',
-        },
-    '.sld-vl180to300.sld-bus-8, .nad-vl180to300.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#C94119',
-        },
-    '.sld-vl180to300.sld-bus-9, .nad-vl180to300.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#FFC019',
-        },
+    '.sld-vl180to300.sld-bus-1, .nad-vl180to300.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-1) .sld-current': {
+        '--vl-color': '#1E5D1F',
+    },
+    '.sld-vl180to300.sld-bus-2, .nad-vl180to300.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-2) .sld-current': {
+        '--vl-color': '#A7B368',
+    },
+    '.sld-vl180to300.sld-bus-3, .nad-vl180to300.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-3) .sld-current': {
+        '--vl-color': '#E47400',
+    },
+    '.sld-vl180to300.sld-bus-4, .nad-vl180to300.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-4) .sld-current': {
+        '--vl-color': '#6B3A26',
+    },
+    '.sld-vl180to300.sld-bus-5, .nad-vl180to300.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-5) .sld-current': {
+        '--vl-color': '#D69A88',
+    },
+    '.sld-vl180to300.sld-bus-6, .nad-vl180to300.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-6) .sld-current': {
+        '--vl-color': '#7E3109',
+    },
+    '.sld-vl180to300.sld-bus-7, .nad-vl180to300.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-7) .sld-current': {
+        '--vl-color': '#B78B58',
+    },
+    '.sld-vl180to300.sld-bus-8, .nad-vl180to300.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-8) .sld-current': {
+        '--vl-color': '#C94119',
+    },
+    '.sld-vl180to300.sld-bus-9, .nad-vl180to300.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl180to300.sld-bus-9) .sld-current': {
+        '--vl-color': '#FFC019',
+    },
     '.sld-vl300to500, .nad-vl300to500, .sld-extern-cell:has(.sld-wire.sld-vl300to500) .sld-current': {
         '--vl-color': '#F00',
     },
-    '.sld-vl300to500.sld-bus-1, .nad-vl300to500.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-1) .sld-current':
-        {
-            '--vl-color': '#920A0A',
-        },
-    '.sld-vl300to500.sld-bus-2, .nad-vl300to500.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-2) .sld-current':
-        {
-            '--vl-color': '#FF9494',
-        },
-    '.sld-vl300to500.sld-bus-3, .nad-vl300to500.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-3) .sld-current':
-        {
-            '--vl-color': '#25699D',
-        },
-    '.sld-vl300to500.sld-bus-4, .nad-vl300to500.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-4) .sld-current':
-        {
-            '--vl-color': '#0057F9',
-        },
-    '.sld-vl300to500.sld-bus-5, .nad-vl300to500.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-5) .sld-current':
-        {
-            '--vl-color': '#74AFEA',
-        },
-    '.sld-vl300to500.sld-bus-6, .nad-vl300to500.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-6) .sld-current':
-        {
-            '--vl-color': '#1B3459',
-        },
-    '.sld-vl300to500.sld-bus-7, .nad-vl300to500.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-7) .sld-current':
-        {
-            '--vl-color': '#458BE8',
-        },
-    '.sld-vl300to500.sld-bus-8, .nad-vl300to500.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-8) .sld-current':
-        {
-            '--vl-color': '#2862AE',
-        },
-    '.sld-vl300to500.sld-bus-9, .nad-vl300to500.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-9) .sld-current':
-        {
-            '--vl-color': '#B0D4FE',
-        },
+    '.sld-vl300to500.sld-bus-1, .nad-vl300to500.nad-bus-1, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-1) .sld-current': {
+        '--vl-color': '#920A0A',
+    },
+    '.sld-vl300to500.sld-bus-2, .nad-vl300to500.nad-bus-2, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-2) .sld-current': {
+        '--vl-color': '#FF9494',
+    },
+    '.sld-vl300to500.sld-bus-3, .nad-vl300to500.nad-bus-3, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-3) .sld-current': {
+        '--vl-color': '#25699D',
+    },
+    '.sld-vl300to500.sld-bus-4, .nad-vl300to500.nad-bus-4, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-4) .sld-current': {
+        '--vl-color': '#0057F9',
+    },
+    '.sld-vl300to500.sld-bus-5, .nad-vl300to500.nad-bus-5, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-5) .sld-current': {
+        '--vl-color': '#74AFEA',
+    },
+    '.sld-vl300to500.sld-bus-6, .nad-vl300to500.nad-bus-6, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-6) .sld-current': {
+        '--vl-color': '#1B3459',
+    },
+    '.sld-vl300to500.sld-bus-7, .nad-vl300to500.nad-bus-7, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-7) .sld-current': {
+        '--vl-color': '#458BE8',
+    },
+    '.sld-vl300to500.sld-bus-8, .nad-vl300to500.nad-bus-8, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-8) .sld-current': {
+        '--vl-color': '#2862AE',
+    },
+    '.sld-vl300to500.sld-bus-9, .nad-vl300to500.nad-bus-9, .sld-extern-cell:has(.sld-wire.sld-vl300to500.sld-bus-9) .sld-current': {
+        '--vl-color': '#B0D4FE',
+    },
 };
