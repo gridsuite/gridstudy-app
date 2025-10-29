@@ -133,3 +133,16 @@ export function getStateEstimationRunningStatus(stateEstimationStatus: string | 
             return RunningStatus.IDLE;
     }
 }
+
+export function getPccMinRunningStatus(pccMinStatus: string | null): RunningStatus {
+    switch (pccMinStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
