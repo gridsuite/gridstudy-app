@@ -10,7 +10,7 @@ import { getPropertyAvatar } from './limits-constants';
 import * as React from 'react';
 import { LimitsProperty } from '../../../services/network-modification-types';
 
-export interface LimitTagChipProps extends ChipProps {
+export interface LimitTagChipProps extends Omit<ChipProps, 'sx' | 'variant' | 'label' | 'avatar'> {
     limitsProperty: LimitsProperty;
     showTooltip?: boolean;
 }
@@ -20,6 +20,7 @@ export function LimitsTagChip({ limitsProperty, showTooltip, onDelete, ...props 
         <Chip
             avatar={<Avatar>{getPropertyAvatar(limitsProperty.name)}</Avatar>}
             label={limitsProperty.value}
+            variant="outlined"
             sx={{ maxWidth: onDelete ? '200px' : '180px', margin: 0.5, borderRadius: '4px' }}
             onDelete={onDelete}
             {...props}
