@@ -4,21 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'crypto';
+import { UUID } from 'node:crypto';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { downloadZipFile } from '../services/utils';
 import { fetchExportNetworkFile } from '../services/network-conversion';
+import { useIntl } from 'react-intl';
 
 export function useExportDownload() {
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
+    const intl = useIntl();
 
     const downloadExportNetworkFile = useCallback(
         (exportUuid: UUID) => {
+            let filename = 'export.zip';
             fetchExportNetworkFile(exportUuid)
                 .then(async (response) => {
                     const contentDisposition = response.headers.get('Content-Disposition');
-                    let filename = 'export.zip';
                     if (contentDisposition?.includes('filename=')) {
                         const regex = /filename="?([^"]+)"?/;
                         const match = regex.exec(contentDisposition);
@@ -32,12 +34,17 @@ export function useExportDownload() {
                 })
                 .catch((error: Error) => {
                     snackError({
+                        headerId: intl.formatMessage({ id: 'export.message.failed' }),
                         messageTxt: error.message,
-                        headerId: 'export.message.failed',
+                    });
+                })
+                .finally(() => {
+                    snackInfo({
+                        messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
                     });
                 });
         },
-        [snackError]
+        [intl, snackError, snackInfo]
     );
     return { downloadExportNetworkFile };
 }

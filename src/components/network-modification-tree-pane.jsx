@@ -466,7 +466,7 @@ export const NetworkModificationTreePane = ({ studyUuid, currentRootNetworkUuid 
         (nodeUuid, params, selectedFormat, fileName) => {
             exportNetworkFile(studyUuid, nodeUuid, currentRootNetworkUuid, params, selectedFormat, fileName)
                 .then((response) => {
-                    subscribeExport(response);
+                    subscribeExport(response, fileName);
                 })
                 .catch((error) => {
                     snackError({

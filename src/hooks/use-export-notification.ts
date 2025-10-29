@@ -15,7 +15,7 @@ import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } fr
 
 export default function useExportNotification() {
     const intl = useIntl();
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const { downloadExportNetworkFile } = useExportDownload();
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
@@ -31,18 +31,16 @@ export default function useExportNotification() {
                     unsetExportSubscription(exportIdentifierNotif);
                     if (error) {
                         snackError({
-                            messageTxt: intl.formatMessage({ id: 'export.message.failed' }),
+                            headerId: intl.formatMessage({ id: 'export.message.failed' }),
+                            messageTxt: error,
                         });
                     } else {
                         downloadExportNetworkFile(exportUuid);
-                        snackInfo({
-                            messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }),
-                        });
                     }
                 }
             }
         },
-        [userId, snackError, downloadExportNetworkFile, snackInfo, intl]
+        [userId, snackError, downloadExportNetworkFile, intl]
     );
 
     useNotificationsListener(NotificationsUrlKeys.STUDY, { listenerCallbackMessage: handleExportNotification });

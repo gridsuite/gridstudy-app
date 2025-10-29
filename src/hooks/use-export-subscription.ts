@@ -15,11 +15,11 @@ export default function useExportSubscription() {
     const { snackInfo } = useSnackMessage();
 
     const subscribeExport = useCallback(
-        (exportUuid: UUID) => {
+        (exportUuid: UUID, fileName: string) => {
             const identifier = buildExportIdentifier(exportUuid);
             setExportSubscription(identifier);
             snackInfo({
-                messageTxt: intl.formatMessage({ id: 'export.message.started' }),
+                messageTxt: intl.formatMessage({ id: 'export.message.started' }, { fileName: fileName }),
             });
         },
         [snackInfo, intl]
