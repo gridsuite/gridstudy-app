@@ -9,8 +9,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { BASE_VOLTAGES, MAX_VOLTAGE, VoltageLevelInterval } from './constants';
-import { getNominalVoltageIntervalName } from './utils/nominal-voltage-filter-utils';
+import { getNominalVoltageIntervalName } from 'utils/constants';
+import { BASE_VOLTAGES, MAX_VOLTAGE, VoltageLevelInterval } from 'utils/constants';
 
 const styles = {
     nominalVoltageZone: {
@@ -134,7 +134,7 @@ export default function NominalVoltageFilter({
                                 <ListItemText
                                     sx={styles.nominalVoltageText}
                                     disableTypography
-                                    primary={`${interval.vlValue} kV`}
+                                    primary={interval.label}
                                 ></ListItemText>
                             </ListItemButton>
                         </Tooltip>
