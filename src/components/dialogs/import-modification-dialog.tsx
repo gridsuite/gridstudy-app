@@ -33,12 +33,14 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
-        const copyInfos = {
-            copyType: NetworkModificationCopyType.INSERT,
-        };
         const modificationUuidList = selectedElements.map((e) => e.id);
         // import selected modifications
         if (modificationUuidList.length > 0 && studyUuid && currentNode) {
+            const copyInfos = {
+                copyType: NetworkModificationCopyType.INSERT,
+                originStudyUuid: studyUuid,
+                originNodeUuid: currentNode.id,
+            };
             copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,

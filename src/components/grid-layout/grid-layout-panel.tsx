@@ -185,7 +185,26 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setBlinkingDiagrams((old_blinking_diagrams) => old_blinking_diagrams.filter((uuid) => uuid !== diagramUuid));
     }, []);
 
-    const onDiagramAlreadyExists = useCallback(
+    // Retry mechanism to handle cases where the diagram card hasn't been rendered yet
+    // This can happen when a diagram is created when the grid is not visible and we immediately try to scroll to it
+    // The retry logic gives the React rendering cycle time to complete
+    const scrollDiagramIntoView = useCallback((diagramId: string, retries = 10) => {
+        const attemptScroll = (remainingRetries: number) => {
+            const container = responsiveGridLayoutRef.current?.elementRef?.current;
+            const card = container?.querySelector(`[data-grid-id="${diagramId}"]`);
+
+            if (card) {
+                card.scrollIntoView({ behavior: 'smooth' });
+            } else if (remainingRetries > 0) {
+                // Card not found yet, retry after a short delay to allow rendering to complete
+                setTimeout(() => attemptScroll(remainingRetries - 1), 50);
+            }
+        };
+
+        attemptScroll(retries);
+    }, []);
+
+    const focusOnDiagram = useCallback(
         (diagramUuid: UUID) => {
             setBlinkingDiagrams((oldBlinkingDiagrams) => {
                 if (oldBlinkingDiagrams.includes(diagramUuid)) {
@@ -194,18 +213,24 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                 return [...oldBlinkingDiagrams, diagramUuid];
             });
             setTimeout(() => stopDiagramBlinking(diagramUuid), BLINK_LENGTH_MS);
+            // Scroll to card after a short delay to allow DOM rendering
+            scrollDiagramIntoView(diagramUuid);
         },
-        [stopDiagramBlinking]
+        [stopDiagramBlinking, scrollDiagramIntoView]
     );
 
     // Grid operations
-    const addLayoutItem = useCallback((diagram: Diagram) => {
-        lastModifiedBreakpointRef.current = currentBreakpointRef.current;
-        setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
-        setDisableStoreButton(false);
-    }, []);
+    const addLayoutItem = useCallback(
+        (diagram: Diagram) => {
+            lastModifiedBreakpointRef.current = currentBreakpointRef.current;
+            setLayouts((currentLayouts) => createLayoutItem(diagram.diagramUuid, currentLayouts));
+            setDisableStoreButton(false);
+            focusOnDiagram(diagram.diagramUuid);
+        },
+        [focusOnDiagram]
+    );
 
-    const removeLayoutItem = useCallback((cardUuid: UUID | string) => {
+    const removeLayoutItem = useCallback((cardUuid: UUID) => {
         lastModifiedBreakpointRef.current = currentBreakpointRef.current;
         setLayouts((currentLayouts) => {
             const newLayouts: Layouts = {};
@@ -240,35 +265,19 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
         setIsMapOpen(false);
     }, []);
 
-    const {
-        diagrams,
-        loadingDiagrams,
-        diagramErrors,
-        globalError,
-        removeDiagram,
-        createDiagram,
-        updateDiagram,
-        updateDiagramPositions,
-    } = useDiagramModel({
-        diagramTypes: diagramTypes,
-        onAddDiagram: addLayoutItem,
-        onDiagramAlreadyExists,
-    });
+    const { diagrams, loadingDiagrams, diagramErrors, globalError, removeDiagram, createDiagram, updateDiagram } =
+        useDiagramModel({
+            diagramTypes: diagramTypes,
+            onAddDiagram: addLayoutItem,
+            onDiagramAlreadyExists: focusOnDiagram,
+        });
 
     const handleUpdateDiagram = useCallback(
-        (diagram: Diagram) => {
+        (diagram: DiagramParams, fetch?: boolean) => {
             setDisableStoreButton(false);
-            updateDiagram(diagram);
+            updateDiagram(diagram, fetch);
         },
         [updateDiagram]
-    );
-
-    const handleUpdateDiagramPositions = useCallback(
-        (diagramParams: DiagramParams) => {
-            setDisableStoreButton(false);
-            updateDiagramPositions(diagramParams);
-        },
-        [updateDiagramPositions]
     );
 
     const onRemoveCard = useCallback(
@@ -390,9 +399,9 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
 
             // Update the resized item in all breakpoints
             for (const [breakpoint, layoutItems] of Object.entries(newLayouts)) {
-                const itemIndex = (layoutItems as Layout[]).findIndex((item) => item.i === newItem.i);
+                const itemIndex = layoutItems.findIndex((item) => item.i === newItem.i);
                 if (itemIndex !== -1) {
-                    const items = layoutItems as Layout[];
+                    const items = layoutItems;
                     newLayouts[breakpoint] = [
                         ...items.slice(0, itemIndex),
                         { ...items[itemIndex], w: newItem.w, h: newItem.h },
@@ -526,6 +535,7 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             key={diagram.diagramUuid}
                             studyUuid={studyUuid}
                             visible={visible}
+                            data-grid-id={diagram.diagramUuid}
                             diagram={diagram}
                             blinking={blinkingDiagrams.includes(diagram.diagramUuid)}
                             loading={loadingDiagrams.includes(diagram.diagramUuid)}
@@ -534,7 +544,6 @@ function GridLayoutPanel({ studyUuid, showInSpreadsheet, showGrid, visible }: Re
                             showInSpreadsheet={showInSpreadsheet}
                             createDiagram={createDiagram}
                             updateDiagram={handleUpdateDiagram}
-                            updateDiagramPositions={handleUpdateDiagramPositions}
                         />
                     );
                 })}
