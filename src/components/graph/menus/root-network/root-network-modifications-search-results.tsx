@@ -35,10 +35,14 @@ const styles = {
 
 interface RootNetworkModificationsSearchResultsProps {
     results: ModificationsSearchResult[];
+    showResultsCount: boolean;
+    isLoading: boolean;
 }
 
 export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModificationsSearchResultsProps> = ({
     results,
+    showResultsCount,
+    isLoading,
 }) => {
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
     //get the name based on the node uuid from the node tree
@@ -60,7 +64,12 @@ export const RootNetworkModificationsSearchResults: React.FC<RootNetworkModifica
                         <DeviceHubIcon style={styles.iconMinSize} />
                         <OverflowableText text={getName(result.nodeUuid)} sx={styles.text} maxLineCount={1} />
                     </Box>
-                    <ModificationResults modifications={result.modifications} nodeUuid={result.nodeUuid} />
+                    <ModificationResults
+                        modifications={result.modifications}
+                        nodeUuid={result.nodeUuid}
+                        showResultsCount={showResultsCount}
+                        isLoading={isLoading}
+                    />
                     <Divider sx={{ mt: 2 }} />
                 </Box>
             ))}

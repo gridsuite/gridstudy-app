@@ -30,7 +30,12 @@ interface RootNetworkSearchPanelProps {
 }
 
 function getModificationResultsCount(results: ModificationsSearchResult[]): number {
-    return results.reduce((sum, r) => sum + r.modifications.length, 0);
+    return results.reduce((sum, node) => {
+        const countForNode = node.modifications.reduce((innerSum, modif) => {
+            return innerSum + modif.impactedEquipmentIds.length;
+        }, 0);
+        return sum + countForNode;
+    }, 0);
 }
 
 function getNodeResultsCount(results: string[]): number {
@@ -139,23 +144,36 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
 
             {isLoading && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {intl.formatMessage({ id: 'rootNetwork.loading' })}
+                    <FormattedMessage id="rootNetwork.loading" />
                 </Typography>
             )}
             {showResultsCount && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    <FormattedMessage
-                        id="rootNetwork.results"
-                        values={{
-                            count: isNodeTab(tabValue)
-                                ? getNodeResultsCount(nodesSearch.results)
-                                : getModificationResultsCount(modificationsSearch.results),
-                        }}
-                    />
+                    {isNodeTab(tabValue) ? (
+                        <FormattedMessage
+                            id="rootNetwork.nodeResults"
+                            values={{
+                                count: getNodeResultsCount(nodesSearch.results),
+                            }}
+                        />
+                    ) : (
+                        <FormattedMessage
+                            id="rootNetwork.modificationResults"
+                            values={{
+                                count: getModificationResultsCount(modificationsSearch.results),
+                            }}
+                        />
+                    )}
                 </Typography>
             )}
 
-            {!isNodeTab(tabValue) && <RootNetworkModificationsSearchResults results={modificationsSearch.results} />}
+            {!isNodeTab(tabValue) && (
+                <RootNetworkModificationsSearchResults
+                    results={modificationsSearch.results}
+                    showResultsCount={showResultsCount}
+                    isLoading={isLoading}
+                />
+            )}
             {isNodeTab(tabValue) && <RootNetworkNodesSearchResults results={nodesSearch.results} />}
         </Box>
     );

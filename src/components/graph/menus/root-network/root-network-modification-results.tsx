@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Modification } from './root-network.types';
@@ -19,6 +19,8 @@ import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 interface ModificationResultsProps {
     modifications: Modification[];
     nodeUuid: UUID;
+    showResultsCount: boolean;
+    isLoading: boolean;
 }
 
 const styles = {
@@ -29,14 +31,25 @@ const styles = {
             backgroundColor: theme.aggrid.highlightColor,
         },
     }),
-    modificationLabel: {
+    modifiedEquipmentLabel: {
         cursor: 'pointer',
         pt: 0.5,
+        pb: 0.5,
+        pl: 1.5,
+    },
+    modificationLabel: {
+        cursor: 'pointer',
+        pt: 1.5,
         pb: 0.5,
         pl: 0.5,
     },
 };
-export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications, nodeUuid }) => {
+export const ModificationResults: React.FC<ModificationResultsProps> = ({
+    modifications,
+    nodeUuid,
+    showResultsCount,
+    isLoading,
+}) => {
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
@@ -84,13 +97,32 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
                         sx={[styles.itemHover, styles.modificationLabel]}
                     >
                         {getModificationLabel(modification)}
+                        {isLoading && (
+                            <Box display="inline" sx={{ color: 'gray' }}>
+                                {' ('}
+                                <FormattedMessage id="rootNetwork.loading" />
+                                {')'}
+                            </Box>
+                        )}
+                        {showResultsCount && (
+                            <Box display="inline" sx={{ color: 'gray' }}>
+                                {' ('}
+                                <FormattedMessage
+                                    id="rootNetwork.modificationResults"
+                                    values={{
+                                        count: modification.impactedEquipmentIds.length,
+                                    }}
+                                />
+                                {')'}
+                            </Box>
+                        )}
                     </Typography>
                     <Box key={modification.impactedEquipmentIds + modification.modificationUuid}>
                         {modification.impactedEquipmentIds.map((equipmentId) => (
                             <Typography
                                 variant="body2"
                                 onClick={() => handleClick(modification)}
-                                sx={[styles.itemHover, styles.modificationLabel]}
+                                sx={[styles.itemHover, styles.modifiedEquipmentLabel]}
                             >
                                 <strong>{equipmentId}</strong>
                             </Typography>
