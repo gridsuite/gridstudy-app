@@ -31,15 +31,13 @@ export function useExportDownload() {
 
                     const blob = await response.blob();
                     downloadZipFile(blob, filename);
+                    snackInfo({
+                        messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
+                    });
                 })
                 .catch((error: Error) => {
                     snackError({
                         messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error: error.message }),
-                    });
-                })
-                .finally(() => {
-                    snackInfo({
-                        messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
                     });
                 });
         },
