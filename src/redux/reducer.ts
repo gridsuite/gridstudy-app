@@ -134,6 +134,7 @@ import {
     RESET_SECURITY_ANALYSIS_PAGINATION,
     RESET_SENSITIVITY_ANALYSIS_PAGINATION,
     RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+    RESET_PCCMIN_ANALYSIS_PAGINATION,
     type ResetAllSpreadsheetGlobalFiltersAction,
     type ResetDiagramEventAction,
     type ResetEquipmentsAction,
@@ -145,6 +146,7 @@ import {
     ResetSecurityAnalysisPaginationAction,
     ResetSensitivityAnalysisPaginationAction,
     ResetShortcircuitAnalysisPaginationAction,
+    ResetPccminAnalysisPaginationAction,
     SAVE_SPREADSHEET_GS_FILTER,
     type SaveSpreadSheetGlobalFilterAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -211,6 +213,10 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_PAGINATION,
     type ShortcircuitAnalysisResultFilterAction,
     ShortcircuitAnalysisResultPaginationAction,
+    PCCMIN_ANALYSIS_RESULT_FILTER,
+    PCCMIN_ANALYSIS_RESULT_PAGINATION,
+    type PccminAnalysisResultFilterAction,
+    PccminAnalysisResultPaginationAction,
     SPREADSHEET_FILTER,
     type SpreadsheetFilterAction,
     STATEESTIMATION_RESULT_FILTER,
@@ -276,6 +282,10 @@ import {
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
     ONE_BUS,
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
+    PCCMIN_ANALYSIS_RESULT_SORT_STORE,
+    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
+    PCCMIN_RESULT,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -326,6 +336,8 @@ import {
     FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
+    PCCMIN_ANALYSIS_TABS,
+    PccminTab,
     SECURITY_ANALYSIS_TABS,
     SecurityAnalysisTab,
     SENSITIVITY_ANALYSIS_TABS,
@@ -462,6 +474,7 @@ export type TableSort = {
     [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
     [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
+    [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
 };
 export type TableSortKeysType = keyof TableSort;
 
@@ -632,6 +645,9 @@ export interface AppState extends CommonStoreState, AppConfigState {
         [ONE_BUS]: FilterConfig[];
         [ALL_BUSES]: FilterConfig[];
     };
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
+        [PCCMIN_RESULT]: FilterConfig[];
+    };
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: FilterConfig[];
     };
@@ -642,6 +658,8 @@ export interface AppState extends CommonStoreState, AppConfigState {
     [SECURITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SecurityAnalysisTab, PaginationConfig>;
     [SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD]: Record<SensitivityAnalysisTab, PaginationConfig>;
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: Record<ShortcircuitAnalysisTab, PaginationConfig>;
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: Record<PccminTab, PaginationConfig>;
+
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -861,6 +879,10 @@ const initialState: AppState = {
         [ONE_BUS]: [],
         [ALL_BUSES]: [],
     },
+
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: {
+        [PCCMIN_RESULT]: [],
+    },
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
@@ -879,6 +901,9 @@ const initialState: AppState = {
     [SHORTCIRCUIT_ANALYSIS_PAGINATION_STORE_FIELD]: {
         [ONE_BUS]: { ...DEFAULT_PAGINATION },
         [ALL_BUSES]: { ...DEFAULT_PAGINATION },
+    },
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: {
+        [PCCMIN_RESULT]: { ...DEFAULT_PAGINATION },
     },
     [STATEESTIMATION_RESULT_STORE_FIELD]: {
         [STATEESTIMATION_QUALITY_CRITERION]: [],
@@ -941,6 +966,9 @@ const initialState: AppState = {
         [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: {
             [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
+        },
+        [PCCMIN_ANALYSIS_RESULT_SORT_STORE]: {
+            [PCCMIN_RESULT]: [{ colId: 'busId', sort: SortWay.ASC }],
         },
         [STATEESTIMATION_RESULT_SORT_STORE]: {
             [STATEESTIMATION_QUALITY_CRITERION]: [
@@ -1791,6 +1819,9 @@ export const reducer = createReducer(initialState, (builder) => {
             action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
     });
 
+    builder.addCase(PCCMIN_ANALYSIS_RESULT_FILTER, (state, action: PccminAnalysisResultFilterAction) => {
+        state[PCCMIN_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
+    });
     builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     });
@@ -1858,6 +1889,21 @@ export const reducer = createReducer(initialState, (builder) => {
             });
         }
     );
+    builder.addCase(PCCMIN_ANALYSIS_RESULT_PAGINATION, (state, action: PccminAnalysisResultPaginationAction) => {
+        state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][action.paginationTab] =
+            action[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD];
+    });
+
+    builder.addCase(RESET_PCCMIN_ANALYSIS_PAGINATION, (state, _action: ResetPccminAnalysisPaginationAction) => {
+        // Reset all shortcircuit analysis tabs to page 0 but keep their rowsPerPage
+        PCCMIN_ANALYSIS_TABS.forEach((tab) => {
+            const currentPagination = state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab];
+            state[PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD][tab] = {
+                page: 0,
+                rowsPerPage: currentPagination.rowsPerPage,
+            };
+        });
+    });
 
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];

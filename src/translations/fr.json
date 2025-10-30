@@ -1639,7 +1639,7 @@
     "Length": "Nombre d'éléments",
     "equipmentID": "ID de l'ouvrage",
     "PccMinTri": "Pcc min (MVA) ",
-    "IccMin": "Icc min (kA)",
-    "rOhm": "r (Ohm)",
-    "xOhm":"x (Ohm)"
+    "IccMinTri": "Icc min (kA)",
+    "rOhm": "r (Ω)",
+    "xOhm":"x (Ω)"
 }

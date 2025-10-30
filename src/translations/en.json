@@ -1643,7 +1643,7 @@
     "Length": "Amount of elements",
     "equipmentID": "Equipment ID",
     "PccMinTri": "Pcc min (MVA) ",
-    "IccMin": "Icc min (kA)",
+    "IccMinTri": "Icc min (kA)",
     "rOhm": "r (Ohm)",
     "xOhm":"x (Ohm)"   
 }
