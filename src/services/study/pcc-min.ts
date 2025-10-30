@@ -58,4 +58,3 @@ export function fetchPccMinResult(studyUuid: UUID, currentNodeUuid: UUID, curren
     console.debug(url);
     return backendFetchJson(url);
 }
-
