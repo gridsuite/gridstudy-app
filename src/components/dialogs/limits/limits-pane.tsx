@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS,
     ENABLE_OLG_MODIFICATION,
@@ -24,7 +24,6 @@ import { tabStyles } from 'components/utils/tab-utils';
 import IconButton from '@mui/material/IconButton';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import GridSection from '../commons/grid-section';
-import { styles } from '../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
@@ -138,8 +137,31 @@ export function LimitsPane({
     return (
         <>
             {/* active limit sets */}
-            <GridSection title="SelectedOperationalLimitGroups" />
-            <Grid container item xs={8} columns={10.25} spacing={0}>
+            <Grid container columns={6} item spacing={1} sx={{ maxWidth: '600px' }}>
+                <Grid item xs={3}>
+                    <GridSection title="SelectedOperationalLimitGroups" />
+                </Grid>
+                <Grid
+                    item
+                    xs={3}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                    }}
+                >
+                    {/* if the user wants to switch off the modification a modal asks him to confirm */}
+                    {isAModification && (
+                        <InputWithPopupConfirmation
+                            Input={SwitchInput}
+                            name={`${id}.${ENABLE_OLG_MODIFICATION}`}
+                            label={olgEditable ? 'Edit' : 'View'}
+                            shouldOpenPopup={() => olgEditable}
+                            resetOnConfirmation={handlePopupConfirmation}
+                            message="disableOLGedition"
+                            validateButtonLabel="validate"
+                        />
+                    )}
+                </Grid>
                 <Grid item xs={3}>
                     <SelectedOperationalLimitGroup
                         selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
@@ -160,34 +182,24 @@ export function LimitsPane({
                         isABranchModif={!!equipmentToModify}
                     />
                 </Grid>
-                <Grid item xs={3}>
-                    {/* if the user wants to switch off the modification a modal asks him to confirm */}
-                    {isAModification && (
-                        <InputWithPopupConfirmation
-                            Input={SwitchInput}
-                            name={`${id}.${ENABLE_OLG_MODIFICATION}`}
-                            label={olgEditable ? 'Edit' : 'View'}
-                            shouldOpenPopup={() => olgEditable}
-                            resetOnConfirmation={handlePopupConfirmation}
-                            message="disableOLGedition"
-                            validateButtonLabel="button.changeType"
-                        />
-                    )}
-                </Grid>
             </Grid>
 
             {/* limits */}
-            <Grid container item xs={4.9} display="flex" flexDirection="row">
-                <Grid container item xs={3}>
-                    <GridSection title="LimitSets" />
-                </Grid>
-                <Grid container item xs={0.5}>
-                    <IconButton color="primary" sx={styles.button} onClick={onAddClick} disabled={!olgEditable}>
-                        <AddIcon />
-                    </IconButton>
-                </Grid>
-            </Grid>
             <Grid container item xs={12} columns={10.25}>
+                <Grid item xs={4}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <GridSection title="LimitSets" />
+                        <IconButton color="primary" onClick={onAddClick} disabled={!olgEditable}>
+                            <AddIcon />
+                        </IconButton>
+                    </Box>
+                </Grid>
+                <Grid container item xs={6.25} />
                 <Grid item xs={4}>
                     <OperationalLimitsGroupsTabs
                         ref={myRef}
