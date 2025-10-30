@@ -7,7 +7,6 @@
 
 import { Box, Grid } from '@mui/material';
 import {
-    CURRENT_LIMITS,
     ENABLE_OLG_MODIFICATION,
     LIMITS,
     OPERATIONAL_LIMITS_GROUPS,
@@ -220,7 +219,7 @@ export function LimitsPane({
                                 index === indexSelectedLimitSet && (
                                     <LimitsSidePane
                                         key={operationalLimitsGroup.id}
-                                        limitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${CURRENT_LIMITS}`}
+                                        opLimitsGroupFormName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         limitsGroupApplicabilityName={`${id}.${OPERATIONAL_LIMITS_GROUPS}[${index}]`}
                                         clearableFields={clearableFields}
                                         permanentCurrentLimitPreviousValue={
@@ -239,6 +238,7 @@ export function LimitsPane({
                                         selectedLimitSetName={operationalLimitsGroup.name}
                                         checkLimitSetUnicity={checkLimitSetUnicity}
                                         disabled={!olgEditable}
+                                        isModification={isAModification}
                                     />
                                 )
                         )}
