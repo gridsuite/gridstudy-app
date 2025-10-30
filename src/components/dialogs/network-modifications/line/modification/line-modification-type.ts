@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-
 import { LimitsProperty, OperationalLimitsGroup } from '../../../../../services/network-modification-types';
 import type { UUID } from 'node:crypto';
 import { Property } from '../../common/properties/property-utils';
