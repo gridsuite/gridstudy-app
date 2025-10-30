@@ -446,6 +446,7 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
+    [ComputingType.PCC_MIN]: RunningStatus;
 }
 
 export interface LoadFlowStatusParameters {
@@ -669,6 +670,7 @@ const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: [],
 };
 
 const initialLogsPaginationState: LogsPaginationState = {
@@ -682,6 +684,7 @@ const initialLogsPaginationState: LogsPaginationState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SECURITY_ANALYSIS]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: { ...DEFAULT_LOGS_PAGINATION },
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: { ...DEFAULT_LOGS_PAGINATION },
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.PCC_MIN]: { ...DEFAULT_LOGS_PAGINATION },
 };
 
 const emptySpreadsheetEquipmentsByNodes: SpreadsheetEquipmentsByNodes = {
@@ -815,6 +818,7 @@ const initialState: AppState = {
         [ComputingType.DYNAMIC_SECURITY_ANALYSIS]: RunningStatus.IDLE,
         [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+        [ComputingType.PCC_MIN]: RunningStatus.IDLE,
     },
     computingStatusParameters: {
         [ComputingType.LOAD_FLOW]: null,
