@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { Modification } from './root-network.types';
@@ -20,7 +20,6 @@ interface ModificationResultsProps {
     modifications: Modification[];
     nodeUuid: UUID;
     showResultsCount: boolean;
-    isLoading: boolean;
 }
 
 const styles = {
@@ -48,7 +47,6 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({
     modifications,
     nodeUuid,
     showResultsCount,
-    isLoading,
 }) => {
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -97,24 +95,8 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({
                         sx={[styles.itemHover, styles.modificationLabel]}
                     >
                         {getModificationLabel(modification)}
-                        {isLoading && (
-                            <Box display="inline" sx={{ color: 'gray' }}>
-                                {' ('}
-                                <FormattedMessage id="rootNetwork.loading" />
-                                {')'}
-                            </Box>
-                        )}
                         {showResultsCount && (
-                            <Box display="inline" sx={{ color: 'gray' }}>
-                                {' ('}
-                                <FormattedMessage
-                                    id="rootNetwork.modificationResults"
-                                    values={{
-                                        count: modification.impactedEquipmentIds.length,
-                                    }}
-                                />
-                                {')'}
-                            </Box>
+                            <Box display="inline">{` (${modification.impactedEquipmentIds.length})`}</Box>
                         )}
                     </Typography>
                     <Box key={modification.impactedEquipmentIds + modification.modificationUuid}>

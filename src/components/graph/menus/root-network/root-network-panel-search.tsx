@@ -171,7 +171,6 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
                 <RootNetworkModificationsSearchResults
                     results={modificationsSearch.results}
                     showResultsCount={showResultsCount}
-                    isLoading={isLoading}
                 />
             )}
             {isNodeTab(tabValue) && <RootNetworkNodesSearchResults results={nodesSearch.results} />}
