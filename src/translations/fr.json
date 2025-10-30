@@ -900,6 +900,8 @@
     "operationalLimitsGroup1WithProperties": "Jeu de limites actif côté 1 ayant la propriété",
     "operationalLimitsGroup2WithProperties": "Jeu de limites actif côté 2 ayant la propriété",
     "Applicability": "Applicable sur",
+    "UniqueName": "Le nom doit être unique",
+    "FieldNotEmpty": "le champs ne doit pas être vide",
 
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
