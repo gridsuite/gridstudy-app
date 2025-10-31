@@ -5,56 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NodeMap, NodePlacement, SecurityGroupMembersMap } from './layout.type';
+import { NodeMap, SecurityGroupMembersMap } from './layout.type';
 import { NODE_HEIGHT, NODE_WIDTH } from './nodes/constants';
 import { groupIdSuffix, LABELED_GROUP_TYPE } from './nodes/labeled-group-node.type';
 import { CurrentTreeNode, isSecurityModificationNode } from './tree-node.type';
-import { addMember } from './layout-utils';
+import { addMember, getSecurityGroupRows, PlacementGrid } from './layout-utils';
 
 const widthSpacing = 70;
 const heightSpacing = 90;
 export const nodeWidth = NODE_WIDTH + widthSpacing;
 export const nodeHeight = NODE_HEIGHT + heightSpacing;
 export const snapGrid = [10, nodeHeight]; // Used for drag and drop
-
-/**
- * Uses a bidirectional map to match a node ID to a NodePlacement.
- */
-class PlacementGrid {
-    private readonly idToPlacement = new Map<string, NodePlacement>();
-    private readonly placementToId = new Map<string, string>();
-
-    private nodePlacementToString(placement: NodePlacement): string {
-        return `${placement.row}_${placement.column}`;
-    }
-
-    setPlacement(nodeId: string, placement: NodePlacement) {
-        // Remove any existing mappings to ensure bidirectionality
-        if (this.idToPlacement.has(nodeId)) {
-            const oldPlacement = this.idToPlacement.get(nodeId)!;
-            this.placementToId.delete(this.nodePlacementToString(oldPlacement));
-        }
-        const placementString = this.nodePlacementToString(placement);
-        if (this.placementToId.has(placementString)) {
-            const oldId = this.placementToId.get(placementString)!;
-            this.idToPlacement.delete(oldId);
-        }
-        // Add the new mappings
-        this.idToPlacement.set(nodeId, placement);
-        this.placementToId.set(placementString, nodeId);
-    }
-
-    getPlacement(nodeId: string): NodePlacement | undefined {
-        const placement = this.idToPlacement.get(nodeId);
-        // This ensure immutability to prevent external modifications on the returned value
-        // from modifying this object's internal values.
-        return placement ? { ...placement } : undefined;
-    }
-
-    isPlacementTaken(placement: NodePlacement): boolean {
-        return this.placementToId.has(this.nodePlacementToString(placement));
-    }
-}
 
 /**
  * Builds a bidirectional map representing the placements of nodes for the tree.
@@ -84,11 +45,8 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
     const nodePlacements = new PlacementGrid();
     let currentMaxColumn = 0;
 
-    nodes.forEach((node) => {
-        if (!node.parentId) {
-            // First node, top left.
-            nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
-        } else {
+    for (const node of nodes) {
+        if (node.parentId) {
             const parentPlacement = nodePlacements.getPlacement(node.parentId);
             if (parentPlacement) {
                 const potentialChildPlacement = {
@@ -107,8 +65,11 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
                 }
                 nodePlacements.setPlacement(node.id, potentialChildPlacement);
             }
+        } else {
+            // First node, top left.
+            nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
         }
-    });
+    }
     return nodePlacements;
 }
 
@@ -146,57 +107,59 @@ function getColumnsByRows(
 ): Map<number, number> {
     const columnsByRow: Map<number, number> = new Map();
 
-    function isExtreme(contender: number, competition: number | undefined): boolean {
-        if (competition === undefined) {
-            return true;
-        }
-        return getMax ? contender > competition : contender < competition;
-    }
-
-    nodes.forEach((node) => {
+    for (const node of nodes) {
         const nodePlacement = placements.getPlacement(node.id);
         if (!nodePlacement || !node.parentId) {
-            return;
+            continue;
         }
 
         const contender = nodePlacement.column;
-        if (isExtreme(contender, columnsByRow.get(nodePlacement.row))) {
+        if (isExtreme(getMax, contender, columnsByRow.get(nodePlacement.row))) {
             const securityGroupToUpdate = nodeMap.get(node.id)?.belongsToSecurityGroupId;
-            // If the affected node belongs to a different security group, we update the whole group.
-            // Note : we do not update it this way if we are currently in the same security group (currentSecurityNode)
-            // as this would prevent the compression algorithm from working correctly.
-            if (securityGroupToUpdate != null && securityGroupToUpdate !== currentSecurityNode) {
-                // Because security groups must share the same lowest or highest value, we set a new extreme to the whole group.
+
+            // Security groups should be treated as a whole, and if we find a new extreme, the whole group should be updated.
+            if (
+                securityGroupToUpdate != null &&
+                (securityGroupToUpdate === node.id || securityGroupToUpdate !== currentSecurityNode)
+            ) {
+                // We update all the security group's rows
                 updateSecurityGroupRows(
                     securityGroupToUpdate,
                     contender,
                     columnsByRow,
                     placements,
-                    securityGroupMembersMap
+                    securityGroupMembersMap,
+                    getMax
                 );
             } else {
-                // Not in a security group, or in the same security group, so we only update the current row.
+                // We only update the current row.
                 columnsByRow.set(nodePlacement.row, contender);
             }
         }
-    });
+    }
     return columnsByRow;
+}
+
+function isExtreme(getMax: boolean, contender: number, competition: number | undefined): boolean {
+    if (competition === undefined) {
+        return true;
+    }
+    return getMax ? contender > competition : contender < competition;
 }
 
 function updateSecurityGroupRows(
     securityGroupToUpdate: string,
-    value: number,
+    contender: number,
     columnsByRow: Map<number, number>,
     placements: PlacementGrid,
-    securityGroupMembersMap: SecurityGroupMembersMap
+    securityGroupMembersMap: SecurityGroupMembersMap,
+    getMax: boolean
 ) {
-    const securityGroupMembers = securityGroupMembersMap.get(securityGroupToUpdate);
-    if (securityGroupMembers) {
-        for (const member of securityGroupMembers) {
-            const rowToUpdate = placements.getPlacement(member)?.row;
-            if (rowToUpdate) {
-                columnsByRow.set(rowToUpdate, value);
-            }
+    const rowsToUpdate = getSecurityGroupRows(securityGroupToUpdate, securityGroupMembersMap, placements);
+    for (const row of rowsToUpdate) {
+        // We test each row with isExtreme to prevent overwriting a previously set valid value
+        if (isExtreme(getMax, contender, columnsByRow.get(row))) {
+            columnsByRow.set(row, contender);
         }
     }
 }
@@ -264,12 +227,12 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
  * Will move the provided nodes' placements to the left by shiftValue amount.
  */
 function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: PlacementGrid, shiftValue: number) {
-    nodes.forEach((node) => {
+    for (const node of nodes) {
         const oldPlacement = placements.getPlacement(node.id);
         if (oldPlacement) {
             placements.setPlacement(node.id, { row: oldPlacement.row, column: oldPlacement.column - shiftValue });
         }
-    });
+    }
 }
 
 /**
@@ -309,7 +272,7 @@ function compressTreePlacements(
 
     // For each of those nodes's branches, we will calculate how much space available there is to
     // the left, for each row of the branch.
-    nonEldestSiblingsIds.forEach((currentNodeId) => {
+    for (const currentNodeId of nonEldestSiblingsIds) {
         // We have to find the minimum column placement values (per row) for the current branch, and compare them
         // to the maximum column placement values (per row) of the nodes on the left.
         // The resulting space we find represents how much we can shift the current column to the left.
@@ -345,7 +308,7 @@ function compressTreePlacements(
         if (availableSpace > 0) {
             shiftPlacementsToTheLeft(currentBranchNodes, placements, availableSpace);
         }
-    });
+    }
     return placements;
 }
 
@@ -361,7 +324,7 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
     const securityGroupMembersMap = new Map<string, string[]>();
 
     let currentSecurityGroupFirstNodeId: string | null = null;
-    nodes.forEach((node, index) => {
+    for (const [index, node] of nodes.entries()) {
         if (node.parentId) {
             const children = childrenMap.get(node.parentId) || [];
             children.push(node);
@@ -378,7 +341,7 @@ function createMapsForLayoutAlgorithm(nodes: CurrentTreeNode[]) {
             }
         }
         nodeMap.set(node.id, { index, node, belongsToSecurityGroupId: currentSecurityGroupFirstNodeId });
-    });
+    }
     return [nodeMap, childrenMap, securityGroupMembersMap] as const;
 }
 
