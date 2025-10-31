@@ -7,16 +7,18 @@
 import { Box, Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    DndColumnType,
     ColumnNumeric,
     ColumnText,
     DndColumn,
+    DndColumnType,
     FloatInput,
-    SelectInput,
     Option,
+    SelectInput,
 } from '@gridsuite/commons-ui';
 import {
     APPLICABIlITY,
+    CURRENT_LIMITS,
+    LIMITS_PROPERTIES,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -34,9 +36,10 @@ import TemporaryLimitsTable from './temporary-limits-table';
 import LimitsChart from './limitsChart';
 import { CurrentTreeNode } from '../../graph/tree-node.type';
 import { APPLICABILITY } from '../../network/constants';
+import { LimitsPropertiesSideStack } from './limits-properties-side-stack';
 
 export interface LimitsSidePaneProps {
-    limitsGroupFormName: string;
+    opLimitsGroupFormName: string;
     limitsGroupApplicabilityName?: string;
     permanentCurrentLimitPreviousValue: number | null | undefined;
     temporaryLimitsPreviousValues: TemporaryLimit[];
@@ -46,10 +49,11 @@ export interface LimitsSidePaneProps {
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
     disabled: boolean;
+    isModification?: boolean;
 }
 
 export function LimitsSidePane({
-    limitsGroupFormName,
+    opLimitsGroupFormName,
     limitsGroupApplicabilityName,
     permanentCurrentLimitPreviousValue,
     temporaryLimitsPreviousValues,
@@ -59,9 +63,14 @@ export function LimitsSidePane({
     selectedLimitSetName,
     checkLimitSetUnicity,
     disabled,
+    isModification,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
+    const limitsGroupFormName = useMemo(
+        (): string => `${opLimitsGroupFormName}.${CURRENT_LIMITS}`,
+        [opLimitsGroupFormName]
+    );
     const columnsDefinition: ((ColumnText | ColumnNumeric) & { initialValue: string | null })[] = useMemo(() => {
         return [
             {
@@ -197,34 +206,42 @@ export function LimitsSidePane({
     return (
         <Box sx={{ p: 2 }}>
             {limitsGroupApplicabilityName && (
-                <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
-                    <Grid item xs={2}>
-                        <FormattedMessage id="Applicability" />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <SelectInput
-                            options={Object.values(APPLICABILITY)}
-                            name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
-                            previousValue={applicabilityPreviousValue}
-                            sx={{ flexGrow: 1 }}
-                            disableClearable
-                            size="small"
+                <Box>
+                    {!isModification && (
+                        <LimitsPropertiesSideStack
+                            name={`${opLimitsGroupFormName}.${LIMITS_PROPERTIES}`}
                             disabled={disabled}
-                            onCheckNewValue={(value: Option | null) => {
-                                if (value) {
-                                    const errorMessage: string = checkLimitSetUnicity(
-                                        selectedLimitSetName ?? '',
-                                        typeof value === 'string' ? value : value.id
-                                    );
-                                    setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
-                                        message: errorMessage,
-                                    });
-                                }
-                                return true;
-                            }}
                         />
+                    )}
+                    <Grid container justifyContent="flex-start" alignItems="center" sx={{ paddingBottom: '15px' }}>
+                        <Grid item xs={2}>
+                            <FormattedMessage id="Applicability" />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <SelectInput
+                                options={Object.values(APPLICABILITY)}
+                                name={`${limitsGroupApplicabilityName}.${APPLICABIlITY}`}
+                                previousValue={applicabilityPreviousValue}
+                                sx={{ flexGrow: 1 }}
+                                disableClearable
+                                size="small"
+                                disabled={disabled}
+                                onCheckNewValue={(value: Option | null) => {
+                                    if (value) {
+                                        const errorMessage: string = checkLimitSetUnicity(
+                                            selectedLimitSetName ?? '',
+                                            typeof value === 'string' ? value : value.id
+                                        );
+                                        setError(`${limitsGroupApplicabilityName}.${APPLICABIlITY}`, {
+                                            message: errorMessage,
+                                        });
+                                    }
+                                    return true;
+                                }}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Box>
             )}
             <Box>
                 <LimitsChart
