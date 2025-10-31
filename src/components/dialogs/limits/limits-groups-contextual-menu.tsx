@@ -22,18 +22,22 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import { ContentCopy, Delete, Edit } from '@mui/icons-material';
 import ListItemText from '@mui/material/ListItemText';
 import { useIntl } from 'react-intl';
-import { PopoverProps } from '@mui/material/Popover';
 import { APPLICABILITY } from '../../network/constants';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
 import { CurrentLimits } from '../../../services/network-modification-types';
+
+export interface ContextMenuCoordinates {
+    x: null | number;
+    y: null | number;
+    tabIndex: null | number;
+}
 
 export interface LimitsGroupsContextualMenuProps {
     parentFormName: string;
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
-    menuAnchorEl: PopoverProps['anchorEl'];
     handleCloseMenu: () => void;
-    activatedByMenuTabIndex: number | null;
+    contextMenuCoordinates: ContextMenuCoordinates;
     startEditingLimitsGroup: (index: number, name: string | null) => void;
     selectedLimitsGroups1: string;
     selectedLimitsGroups2: string;
@@ -45,9 +49,8 @@ export function LimitsGroupsContextualMenu({
     parentFormName,
     indexSelectedLimitSet,
     setIndexSelectedLimitSet,
-    menuAnchorEl,
     handleCloseMenu,
-    activatedByMenuTabIndex,
+    contextMenuCoordinates,
     startEditingLimitsGroup,
     selectedLimitsGroups1,
     selectedLimitsGroups2,
@@ -112,12 +115,22 @@ export function LimitsGroupsContextualMenu({
     };
 
     return (
-        <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleCloseMenu}>
+        <Menu
+            open={contextMenuCoordinates.tabIndex != null}
+            onClose={handleCloseMenu}
+            anchorReference="anchorPosition"
+            anchorPosition={
+                contextMenuCoordinates.y !== null && contextMenuCoordinates.x !== null
+                    ? { top: contextMenuCoordinates.y, left: contextMenuCoordinates.x }
+                    : undefined
+            }
+        >
             {!isModification /* TODO : Remove this when the removal of operational limits groups will be possible in powsybl network store */ && (
                 <>
                     <MenuItem
                         onClick={() =>
-                            activatedByMenuTabIndex != null && startEditingLimitsGroup(activatedByMenuTabIndex, null)
+                            contextMenuCoordinates.tabIndex != null &&
+                            startEditingLimitsGroup(contextMenuCoordinates.tabIndex, null)
                         }
                     >
                         <ListItemIcon>
