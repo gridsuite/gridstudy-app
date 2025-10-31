@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
@@ -25,8 +24,7 @@ import {
 } from '../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
-import MenuIcon from '@mui/icons-material/Menu';
-import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
+import { ContextMenuCoordinates, LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
 import { FormattedMessage } from 'react-intl';
 import { tabStyles } from 'components/utils/tab-utils';
@@ -98,10 +96,12 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         },
         ref
     ) => {
-        const [hoveredRowIndex, setHoveredRowIndex] = useState(-1);
         const [editingTabIndex, setEditingTabIndex] = useState<number>(-1);
-        const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
-        const [activatedByMenuTabIndex, setActivatedByMenuTabIndex] = useState<number | null>(null);
+        const [contextMenuCoordinates, setContextMenuCoordinates] = useState<ContextMenuCoordinates>({
+            x: null,
+            y: null,
+            tabIndex: null,
+        });
         const [editedLimitGroupName, setEditedLimitGroupName] = useState('');
         const [editionError, setEditionError] = useState<string>('');
         const { setValue, getValues } = useFormContext();
@@ -135,19 +135,26 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
         );
 
         const handleOpenMenu = useCallback(
-            (event: React.MouseEvent<HTMLButtonElement>, index: number): void => {
+            (event: React.MouseEvent<HTMLDivElement>, index: number): void => {
+                event.preventDefault();
                 event.stopPropagation();
-                setMenuAnchorEl(event.currentTarget);
                 setIndexSelectedLimitSet(index);
-                setActivatedByMenuTabIndex(index);
+                setContextMenuCoordinates({
+                    x: event.clientX,
+                    y: event.clientY,
+                    tabIndex: index,
+                });
             },
-            [setMenuAnchorEl, setIndexSelectedLimitSet, setActivatedByMenuTabIndex]
+            [setIndexSelectedLimitSet, setContextMenuCoordinates]
         );
 
         const handleCloseMenu = useCallback(() => {
-            setMenuAnchorEl(null);
-            setActivatedByMenuTabIndex(null);
-        }, [setMenuAnchorEl, setActivatedByMenuTabIndex]);
+            setContextMenuCoordinates({
+                x: null,
+                y: null,
+                tabIndex: null,
+            });
+        }, [setContextMenuCoordinates]);
 
         const startEditingLimitsGroup = useCallback(
             (index: number, name: string | null) => {
@@ -295,8 +302,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                 >
                     {limitsGroups.map((opLg: OperationalLimitsGroupFormInfos, index: number) => (
                         <Tab
-                            onMouseEnter={() => setHoveredRowIndex(index)}
-                            onMouseLeave={() => setHoveredRowIndex(-1)}
+                            onContextMenu={(e) => handleOpenMenu(e, index)}
                             key={opLg.id + index}
                             label={
                                 editingTabIndex === index ? (
@@ -314,51 +320,29 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                         fullWidth
                                     />
                                 ) : (
-                                    <Box
-                                        sx={{
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            boxSizing: 'inherit',
-                                            justifyContent: 'space-between',
-                                        }}
-                                    >
-                                        <Stack direction="row" spacing={1}>
-                                            <Stack spacing={0}>
-                                                {opLg.name}
-                                                {opLg?.applicability ? (
-                                                    <Typography noWrap align="left" color={grey[500]}>
-                                                        <FormattedMessage
-                                                            id={
-                                                                Object.values(APPLICABILITY).find(
-                                                                    (item) => item.id === opLg.applicability
-                                                                )?.label
-                                                            }
-                                                        />
-                                                    </Typography>
-                                                ) : (
-                                                    ''
-                                                )}
-                                            </Stack>
-                                            {!isAModification && (
-                                                <LimitsPropertiesStack
-                                                    name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
-                                                />
+                                    <Stack direction="row" spacing={1}>
+                                        <Stack spacing={0}>
+                                            {opLg.name}
+                                            {opLg?.applicability ? (
+                                                <Typography noWrap align="left" color={grey[500]}>
+                                                    <FormattedMessage
+                                                        id={
+                                                            Object.values(APPLICABILITY).find(
+                                                                (item) => item.id === opLg.applicability
+                                                            )?.label
+                                                        }
+                                                    />
+                                                </Typography>
+                                            ) : (
+                                                ''
                                             )}
                                         </Stack>
-
-                                        {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
-                                            <IconButton
-                                                size="small"
-                                                onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                                                    handleOpenMenu(e, index)
-                                                }
-                                                // during the naming of a limit set no other limit set manipulation is allowed :
-                                                disabled={!editable || editingTabIndex !== -1}
-                                            >
-                                                <MenuIcon fontSize="small" />
-                                            </IconButton>
+                                        {!isAModification && (
+                                            <LimitsPropertiesStack
+                                                name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
+                                            />
                                         )}
-                                    </Box>
+                                    </Stack>
                                 )
                             }
                             sx={limitsStyles.limitsBackground}
@@ -369,9 +353,8 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     parentFormName={parentFormName}
                     indexSelectedLimitSet={indexSelectedLimitSet}
                     setIndexSelectedLimitSet={setIndexSelectedLimitSet}
-                    menuAnchorEl={menuAnchorEl}
                     handleCloseMenu={handleCloseMenu}
-                    activatedByMenuTabIndex={activatedByMenuTabIndex}
+                    contextMenuCoordinates={contextMenuCoordinates}
                     startEditingLimitsGroup={startEditingLimitsGroup}
                     selectedLimitsGroups1={selectedLimitsGroups1}
                     selectedLimitsGroups2={selectedLimitsGroups2}
