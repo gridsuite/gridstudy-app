@@ -29,7 +29,7 @@ import yup from '../../../../utils/yup-config';
 import { FetchStatus } from 'services/utils';
 import { EquipmentIdSelector } from 'components/dialogs/equipment-id/equipment-id-selector';
 import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-form';
-import { CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
+import { BusBarSections, CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
 import { fetchVoltageLevelBusBarSectionsInfos } from '../../../../../services/study/network';
@@ -131,7 +131,7 @@ export default function CreateVoltageLevelSectionDialog({
     const [isExtensionNotFoundOrNotSupportedTopology, setIsExtensionNotFoundOrNotSupportedTopology] =
         useState<boolean>(false);
     const [isSymmetricalNbBusBarSections, setIsSymmetricalNbBusBarSections] = useState<boolean>(false);
-    const [busBarSectionInfos, setBusBarSectionInfos] = useState<Map<string, string[]>>();
+    const [busBarSectionInfos, setBusBarSectionInfos] = useState<BusBarSections>();
     const [allBusbarSectionsList, setAllBusbarSectionsList] = useState<string[]>([]);
     const [dataFetchStatus, setDataFetchStatus] = useState<string>(FetchStatus.IDLE);
     const { snackError } = useSnackMessage();
@@ -157,7 +157,7 @@ export default function CreateVoltageLevelSectionDialog({
                         if (busBarSectionsInfos) {
                             setBusBarSectionInfos(busBarSectionsInfos?.busBarSections || []);
                             setAllBusbarSectionsList(
-                                Object.values(busBarSectionsInfos?.busBarSections || []).flat() as string[]
+                                Object.values(busBarSectionsInfos?.busBarSections || {}).flat() as string[]
                             );
                             setIsExtensionNotFoundOrNotSupportedTopology(
                                 !busBarSectionsInfos.isBusbarSectionPositionFound ||
@@ -225,11 +225,8 @@ export default function CreateVoltageLevelSectionDialog({
 
     const findBusbarKeyForSection = useCallback(
         (sectionId: string) => {
-            const infos = busBarSectionInfos;
-            return (
-                Object.keys(infos || {}).find((key) => infos !== undefined && infos.get(key)?.includes(sectionId)) ||
-                null
-            );
+            const infos = busBarSectionInfos as unknown as BusBarSections;
+            return Object.keys(infos || {}).find((key) => infos[key]?.includes(sectionId)) || null;
         },
         [busBarSectionInfos]
     );
