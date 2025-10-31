@@ -42,5 +42,6 @@ export enum FilterType {
 export const resultsStyles = {
     sldLink: {
         color: 'node.background',
+        width: '100%',
     },
 } as const satisfies MuiStyles;
