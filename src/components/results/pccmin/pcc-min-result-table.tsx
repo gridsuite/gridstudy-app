@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -24,16 +24,12 @@ import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
-import { SinglePccMinResultInfos } from './pcc-min-result.type';
+import { PccMinResultTableProps, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
-
-interface PccMinResultTableProps {
-    result: SinglePccMinResultInfos[];
-    isFetching: boolean;
-    onFilter: () => void;
-    filters: FilterConfig[];
-}
+import { RESULTS_LOADING_DELAY } from 'components/network/constants';
+import RunningStatus from 'components/utils/running-status';
+import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
     const intl = useIntl();
@@ -179,21 +175,26 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
     const rowsToShow = getRows(rows, pccMinStatus);
     const gridRef = useRef<AgGridReact>(null);
 
+    const openLoader = useOpenLoaderShortWait({
+        isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
+        delay: RESULTS_LOADING_DELAY,
+    });
     return (
-        <Box sx={{ flexGrow: 3 }}>
-            <RenderTableAndExportCsv
-                gridRef={gridRef}
-                columns={columns}
-                defaultColDef={defaultColDef}
-                tableName={intl.formatMessage({
-                    id: 'Results',
-                })}
-                rows={rowsToShow}
-                onRowDataUpdated={onRowDataUpdated}
-                onGridReady={onGridReady}
-                overlayNoRowsTemplate={message}
-                skipColumnHeaders={false}
-            />
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ flex: 1, minHeight: 0 }}>
+                <RenderTableAndExportCsv
+                    gridRef={gridRef}
+                    columns={columns}
+                    defaultColDef={defaultColDef}
+                    tableName={intl.formatMessage({ id: 'Results' })}
+                    rows={rowsToShow}
+                    onRowDataUpdated={onRowDataUpdated}
+                    onGridReady={onGridReady}
+                    overlayNoRowsTemplate={message}
+                    skipColumnHeaders={false}
+                    showLinearProgress={openLoader}
+                />
+            </Box>
         </Box>
     );
 };

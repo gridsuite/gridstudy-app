@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2025, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -11,7 +11,7 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
 import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
-import { FROM_COLUMN_TO_FIELD_PCC_MIN, SCAPagedResults, SinglePccMinResultInfos } from './pcc-min-result.type';
+import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
 import { useFilterSelector } from 'hooks/use-filter-selector';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
@@ -111,7 +111,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
             selector,
             globalFilters,
         })
-            .then((result: SCAPagedResults | null) => {
+            .then((result: PagedPccMinResults | null) => {
                 if (active) {
                     const { content = [], totalElements = 0 } = result || {};
                     updateResult(content);
@@ -153,15 +153,8 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
             return;
         }
     }, [pccMinStatus, intl, snackError, studyUuid, nodeUuid, currentRootNetworkUuid]);
-
-    const openLoader = useOpenLoaderShortWait({
-        isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
-        delay: RESULTS_LOADING_DELAY,
-    });
-
     return (
-        <>
-            <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <PccMinResultTable
                 result={result}
                 isFetching={isFetching}
@@ -177,6 +170,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 {...customTablePaginationProps}
             />
-        </>
+        </Box>
     );
 };

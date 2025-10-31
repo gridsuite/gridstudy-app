@@ -9,7 +9,7 @@ import { FunctionComponent, RefObject } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid, CsvExport, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { Box } from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import { AGGRID_LOCALES } from '../../translations/not-intl/aggrid-locales';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
@@ -36,6 +36,7 @@ interface RenderTableAndExportCsvProps {
     defaultColDef: ColDef;
     tableName: string;
     rows: any[];
+    showLinearProgress?: boolean;
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onGridReady: ((event: GridReadyEvent) => void) | undefined;
     getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
@@ -54,6 +55,7 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
     getRowStyle,
     overlayNoRowsTemplate,
     skipColumnHeaders = false,
+    showLinearProgress = false,
 }) => {
     const isRowsEmpty = !rows || rows.length === 0;
     const language = useSelector((state: AppState) => state.computedLanguage);
@@ -71,6 +73,9 @@ export const RenderTableAndExportCsv: FunctionComponent<RenderTableAndExportCsvP
                     exportDataAsCsv={(params) => gridRef.current?.api?.exportDataAsCsv(params)}
                 />
             </Box>
+
+            {showLinearProgress && <LinearProgress sx={{ height: 4 }} />}
+
             {rows && (
                 <Box sx={styles.grid}>
                     <CustomAGGrid

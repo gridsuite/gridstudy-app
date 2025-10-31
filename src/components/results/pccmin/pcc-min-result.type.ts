@@ -5,16 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community';
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { Page, Selector } from '../common/utils';
 
-export interface PccMinResult {
-    resultUuid: UUID;
-    writeTimeStamp: Date;
-    singlePccMinResultInfos: SinglePccMinResultInfos[];
-}
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
     busId: String;
@@ -24,66 +19,27 @@ export interface SinglePccMinResultInfos {
     r: number;
 }
 
-type Pageable = {
-    sort: {
-        sorted: boolean;
-        empty: boolean;
-        unsorted: boolean;
-    };
-    pageNumber: number;
-    pageSize: number;
-    offset: number;
-    paged: boolean;
-    unpaged: boolean;
-};
-
-interface Page<ResultType> {
-    content: ResultType[];
-    pageable: Pageable;
-    last: boolean;
-    totalPages: number;
-    totalElements: number;
-    first: boolean;
-    size: number;
-    number: number;
-    sort: {
-        sorted: boolean;
-        empty: boolean;
-        unsorted: boolean;
-    };
-    numberOfElements: number;
-    empty: boolean;
-}
-
 export interface PccMinResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
     currentRootNetworkUuid: UUID;
 }
-export type SCAPagedResults = Page<SinglePccMinResultInfos>;
+export type PagedPccMinResults = Page<SinglePccMinResultInfos>;
 
 export interface PccMinResultTableProps {
-    isLoadingResult: boolean;
-    columnDefs: ColDef<any>[];
-    tableName: string;
+    result: SinglePccMinResultInfos[];
+    isFetching: boolean;
+    onFilter: () => void;
+    filters: FilterConfig[];
 }
 
-export interface PccMinResultStatusProps {
-    result: PccMinResult;
-}
 interface PccMinResults {
     studyUuid: UUID | null;
     currentNodeUuid?: UUID;
     currentRootNetworkUuid?: UUID;
     globalFilters?: GlobalFilters;
 }
-export interface PccMinResultProps extends PccMinResultTableProps, PccMinResultStatusProps {}
-interface Selector {
-    page: number;
-    size: number;
-    filter: FilterConfig[] | null;
-    sort: SortConfig[];
-}
+
 export interface PccMinPagedResults extends PccMinResults {
     selector: Partial<Selector>;
 }
