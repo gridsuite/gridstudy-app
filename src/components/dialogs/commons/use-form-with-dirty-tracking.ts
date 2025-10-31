@@ -16,7 +16,6 @@ export function useFormWithDirtyTracking<T extends FieldValues>(props: UseFormPr
     // React Hook Form's performance optimization that only subscribes to form state
     // that is explicitly destructured/accessed in the component.
     const {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         formState: { isDirty },
     } = methods;
     return methods;
