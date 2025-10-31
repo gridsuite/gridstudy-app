@@ -31,7 +31,6 @@ const styles = {
     },
     treeviewContainer: {
         flex: 1,
-        minHeight: 0,
         position: 'relative',
     },
 } as const satisfies MuiStyles;
