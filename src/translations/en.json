@@ -1451,7 +1451,7 @@
     "rootNetwork.modificationTab": "Modifications",
     "rootNetwork.nodeTab": "Nodes",
     "rootNetwork.nodeResults": "{count, plural, =0 {No result} =1 {# result} other {# results}}",
-    "rootNetwork.modificationResults": "{count, plural, =0 {No result} =1 {# equipment found} other {# equipments found}}",
+    "rootNetwork.modificationResults": "{count, plural, =0 {No equipment found} =1 {# equipment found} other {# equipments found}}",
     "rootNetwork.loading": "Loading...",
     "rootNetwork.originalNotFound": "The original case was not found",
     "rootNetwork.unknownPath": "<Unknown>",
