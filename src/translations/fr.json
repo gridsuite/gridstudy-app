@@ -1641,5 +1641,9 @@
     "equipmentID": "ID de l'ouvrage",
     "voltageLevelNominalVoltageMinValueError": "La tension nominale doit être comprise entre la limite de tension basse et la limite de tension haute",
     "voltageLevelNominalVoltageMaxValueError": "La limite de tension basse doit être inférieure à celle de tension haute",
-    "generatorMinimumActivePowerMaxValueError" : "La puissance active min doit être inférieure à la puissance active max"
+    "generatorMinimumActivePowerMaxValueError" : "La puissance active min doit être inférieure à la puissance active max",
+    "PccMinTri": "Pcc min (MVA) ",
+    "IccMin": "Icc min (kA)",
+    "rOhm": "r (Ohm)",
+    "xOhm":"x (Ohm)"
 }
