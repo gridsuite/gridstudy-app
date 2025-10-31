@@ -900,6 +900,8 @@
     "operationalLimitsGroup1WithProperties": "Jeu de limites actif côté 1 ayant la propriété",
     "operationalLimitsGroup2WithProperties": "Jeu de limites actif côté 2 ayant la propriété",
     "Applicability": "Applicable sur",
+    "UniqueName": "Le nom doit être unique",
+    "FieldNotEmpty": "le champs ne doit pas être vide",
 
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
     "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
@@ -1393,6 +1395,9 @@
     "StateEstimation": "Estimation d'état",
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
+    "PccMin": "Pcc min N-1",
+    "startPccMinError": "Une erreur est survenue lors du lancement de pccMin",
+    "pccMinError": "Une erreur est survenue lors de l'exécution de pccMin",
     "NoFilter": "Aucun filtre",
     "searchPlaceholder": "Recherche",
     "searchPlaceholderLog": "Rechercher dans les Logs",
