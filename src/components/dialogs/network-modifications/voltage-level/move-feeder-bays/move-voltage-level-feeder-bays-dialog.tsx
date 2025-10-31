@@ -39,27 +39,6 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipm
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
 import { moveVoltageLevelFeederBays } from '../../../../../services/study/network-modifications';
-import { AnyObject, TestFunction } from 'yup';
-
-const isActiveRow = (row: FeederBaysFormInfos) => row && !row.isRemoved;
-const checkConnectionPositionField: TestFunction<string | undefined, AnyObject> = (currentPosition, context) => {
-    // access to rows
-    const rows: FeederBaysFormInfos[] = context.from?.[1]?.value?.[MOVE_VOLTAGE_LEVEL_FEEDER_BAYS_TABLE];
-    if (!Array.isArray(rows)) {
-        return true;
-    }
-    // take only active rows
-    const activeRows = rows.filter(isActiveRow);
-    // counting duplication
-    let count = 0;
-    for (const row of activeRows) {
-        // convert to string because the initial value is a number, not a string
-        if (`${currentPosition}` === `${row.connectionPosition}`) {
-            count = count + 1;
-        }
-    }
-    return count <= 1;
-};
 
 function requiredWhenActive<T extends yup.Schema>(schema: T) {
     return schema.when([IS_REMOVED, IS_SEPARATOR], ([isRemoved, isSeparator], schema) => {
@@ -76,11 +55,7 @@ const formSchema = yup.object().shape({
             [CONNECTION_SIDE]: yup.string().nullable(),
             [CONNECTION_NAME]: requiredWhenActive(yup.string()),
             [CONNECTION_DIRECTION]: requiredWhenActive(yup.string()),
-            [CONNECTION_POSITION]: requiredWhenActive(yup.string()).test(
-                'checkUniquePositions',
-                'DuplicatedPositionsError',
-                checkConnectionPositionField
-            ),
+            [CONNECTION_POSITION]: yup.string().nullable(),
             [IS_REMOVED]: yup.boolean(),
             [IS_SEPARATOR]: yup.boolean(),
         })
