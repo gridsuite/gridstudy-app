@@ -38,7 +38,7 @@ interface RenderTableAndExportCsvProps {
     rows: any[];
     onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onGridReady: ((event: GridReadyEvent) => void) | undefined;
-    getRowStyle: (params: RowClassParams) => RowStyle | undefined;
+    getRowStyle?: (params: RowClassParams) => RowStyle | undefined;
     overlayNoRowsTemplate: string | undefined;
     skipColumnHeaders: boolean;
 }

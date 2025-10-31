@@ -60,8 +60,6 @@ export function fetchPccMinPagedResults({
 
     const urlSearchParams = new URLSearchParams();
 
-    urlSearchParams.append('paged', 'true');
-
     const { page = 0, sort, size, filter } = selector;
 
     urlSearchParams.append('page', String(page));

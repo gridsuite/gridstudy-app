@@ -23,7 +23,6 @@ import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filt
 import { useGlobalFilterOptions } from '../common/global-filter/use-global-filter-options';
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
-import { ShortCircuitExportButton } from '../shortcircuit/shortcircuit-analysis-export-button';
 
 const getDisplayedColumns = (params: GridReadyEvent) => {
     return (
@@ -95,8 +94,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
             <Box
                 sx={{
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-end',
                 }}
             >
                 <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
@@ -105,23 +102,14 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX && (
                     <>
-                        <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
-                            filterableEquipmentTypes={filterableEquipmentTypes}
-                            genericFiltersStrictMode={true}
-                        />
-
-                        <Box sx={{ flexGrow: 1 }} />
-
-                        <ShortCircuitExportButton
-                            studyUuid={studyUuid}
-                            nodeUuid={nodeUuid}
-                            currentRootNetworkUuid={currentRootNetworkUuid}
-                            csvHeaders={csvHeaders}
-                            analysisType={0}
-                            disabled={isCsvButtonDisabled}
-                        />
+                        <Box sx={{ flexGrow: 0 }}>
+                            <GlobalFilterSelector
+                                onChange={handleGlobalFilterChange}
+                                filters={globalFilterOptions}
+                                filterableEquipmentTypes={filterableEquipmentTypes}
+                                genericFiltersStrictMode={true}
+                            />
+                        </Box>
                     </>
                 )}
             </Box>
@@ -131,19 +119,16 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                     onRowDataUpdated={handleRowDataUpdated}
                     globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                     customTablePaginationProps={{
-                        labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPageAllBusesSCA',
+                        labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
                     }}
                 />
             )}
             {resultOrLogIndex === LOGS_TAB_INDEX && (
                 <>
                     <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
-                    (loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={ComputingType.LOAD_FLOW} />
-                    {pccMinStatus === RunningStatus.SUCCEED ||
-                        (pccMinStatus === RunningStatus.FAILED && (
-                            <ComputationReportViewer reportType={ComputingType.PCC_MIN} />
-                        ))}
+                    {(pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED) && (
+                        <ComputationReportViewer reportType={ComputingType.PCC_MIN} />
+                    )}
                 </>
             )}
         </>

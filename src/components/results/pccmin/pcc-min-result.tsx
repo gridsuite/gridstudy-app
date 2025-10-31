@@ -115,7 +115,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
             globalFilters,
         })
             .then((result: SCAPagedResults | null) => {
-                console.log('selector  ', selector);
                 if (active) {
                     const { content = [], totalElements = 0 } = result || {};
                     updateResult(content);
@@ -125,7 +124,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ShortCircuitAnalysisResultsError',
+                    headerId: 'PccMinResultsError',
                 })
             )
             .finally(() => {
@@ -173,7 +172,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 onGridColumnsChanged={onGridColumnsChanged}
                 onRowDataUpdated={onRowDataUpdated}
                 filters={filters}
-                //  openVoltageLevelDiagram={openVoltageLevelDiagram}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
