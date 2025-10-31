@@ -18,6 +18,7 @@ import { reportStyles } from './report.styles';
 const styles = {
     treeItem: {
         whiteSpace: 'nowrap',
+        minHeight: '100%',
     },
     labelIcon: (theme) => ({
         marginRight: theme.spacing(1),
