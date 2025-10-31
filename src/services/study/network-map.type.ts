@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CurrentLimits } from '../network-modification-types';
+import { CurrentLimitsData } from '../network-modification-types';
 import { Equipment } from '../../components/dialogs/network-modifications/common/properties/property-utils';
 import { FeederBayInfos } from '../../components/dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays.type';
 
@@ -33,7 +33,7 @@ export type BranchInfos = Equipment & {
     voltageLevelId2: string;
     busOrBusbarSectionId1: string;
     busOrBusbarSectionId2: string;
-    currentLimits: CurrentLimits[];
+    currentLimits: CurrentLimitsData[];
     selectedOperationalLimitsGroup1: string;
     selectedOperationalLimitsGroup2: string;
 };
