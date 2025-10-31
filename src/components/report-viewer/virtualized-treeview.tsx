@@ -18,11 +18,22 @@ import { reportStyles } from './report.styles';
 const styles = {
     treeItem: {
         whiteSpace: 'nowrap',
-        height: '100%',
     },
     labelIcon: (theme) => ({
         marginRight: theme.spacing(1),
     }),
+    listContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    treeviewContainer: {
+        flex: 1,
+        minHeight: 0,
+        position: 'relative',
+    },
 } as const satisfies MuiStyles;
 
 export interface TreeViewProps {
@@ -171,23 +182,25 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
                 placeholder="searchPlaceholderLogsTreeStructure"
                 inputRef={inputRef}
             />
-            <Box sx={{ flex: 1 }}>
-                <List
-                    listRef={listRef}
-                    style={styles.treeItem}
-                    rowCount={nodes.length}
-                    rowHeight={32}
-                    rowProps={{
-                        nodes,
-                        onSelectedItem,
-                        onExpandItem,
-                        highlightedReportId,
-                        searchTerm,
-                        currentResultIndex,
-                        searchResults,
-                    }}
-                    rowComponent={TreeviewItem}
-                />
+            <Box sx={styles.treeviewContainer}>
+                <Box sx={styles.listContainer}>
+                    <List
+                        listRef={listRef}
+                        style={styles.treeItem}
+                        rowCount={nodes.length}
+                        rowHeight={32}
+                        rowProps={{
+                            nodes,
+                            onSelectedItem,
+                            onExpandItem,
+                            highlightedReportId,
+                            searchTerm,
+                            currentResultIndex,
+                            searchResults,
+                        }}
+                        rowComponent={TreeviewItem}
+                    />
+                </Box>
             </Box>
         </Box>
     );
