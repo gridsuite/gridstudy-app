@@ -19,7 +19,6 @@ import { useTreeNodeFocus } from 'hooks/use-tree-node-focus';
 interface ModificationResultsProps {
     modifications: Modification[];
     nodeUuid: UUID;
-    showResultsCount: boolean;
 }
 
 const styles = {
@@ -30,24 +29,20 @@ const styles = {
             backgroundColor: theme.aggrid.highlightColor,
         },
     }),
-    modifiedEquipmentLabel: {
+    modifiedEquipmentLabel: (theme: Theme) => ({
         cursor: 'pointer',
-        pt: 0.5,
-        pb: 0.5,
-        pl: 1.5,
-    },
-    modificationLabel: {
+        pt: theme.spacing(0.5),
+        pb: theme.spacing(0.5),
+        pl: theme.spacing(1.5),
+    }),
+    modificationLabel: (theme: Theme) => ({
         cursor: 'pointer',
-        pt: 1.5,
-        pb: 0.5,
-        pl: 0.5,
-    },
+        pt: theme.spacing(1.5),
+        pb: theme.spacing(0.5),
+        pl: theme.spacing(0.5),
+    }),
 };
-export const ModificationResults: React.FC<ModificationResultsProps> = ({
-    modifications,
-    nodeUuid,
-    showResultsCount,
-}) => {
+export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications, nodeUuid }) => {
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
     const treeNodes = useSelector((state: AppState) => state.networkModificationTreeModel?.treeNodes);
@@ -88,20 +83,19 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({
     return (
         <>
             {modifications.map((modification) => (
-                <Box>
+                <Box key={modification.modificationUuid}>
                     <Typography
                         variant="body2"
                         onClick={() => handleClick(modification)}
                         sx={[styles.itemHover, styles.modificationLabel]}
                     >
                         {getModificationLabel(modification)}
-                        {showResultsCount && (
-                            <Box display="inline">{` (${modification.impactedEquipmentIds.length})`}</Box>
-                        )}
+                        {` (${modification.impactedEquipmentIds.length})`}
                     </Typography>
-                    <Box key={modification.impactedEquipmentIds + modification.modificationUuid}>
+                    <Box key={modification.modificationUuid}>
                         {modification.impactedEquipmentIds.map((equipmentId) => (
                             <Typography
+                                key={equipmentId}
                                 variant="body2"
                                 onClick={() => handleClick(modification)}
                                 sx={[styles.itemHover, styles.modifiedEquipmentLabel]}
