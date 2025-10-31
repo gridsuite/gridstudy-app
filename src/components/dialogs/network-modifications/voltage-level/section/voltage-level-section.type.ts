@@ -14,3 +14,5 @@ export type CreateVoltageLevelSectionDialogSchemaForm = {
     allBusbarSections?: boolean;
     newSwitchStates?: boolean;
 };
+
+export type BusBarSections = Record<string, string[]>;

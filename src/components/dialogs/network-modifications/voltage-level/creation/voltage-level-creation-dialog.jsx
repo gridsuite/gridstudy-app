@@ -283,7 +283,7 @@ const VoltageLevelCreationDialog = ({
             } else {
                 setValue(ADD_SUBSTATION_CREATION, false);
             }
-            if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
+            if (!voltageLevel.isSymmetrical && fromCopy) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });

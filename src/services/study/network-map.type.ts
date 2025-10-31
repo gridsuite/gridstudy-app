@@ -6,6 +6,7 @@
  */
 import { CurrentLimitsData } from '../network-modification-types';
 import { Equipment } from '../../components/dialogs/network-modifications/common/properties/property-utils';
+import { BusBarSections } from '../../components/dialogs/network-modifications/voltage-level/section/voltage-level-section.type';
 import { FeederBayInfos } from '../../components/dialogs/network-modifications/voltage-level/move-feeder-bays/move-voltage-level-feeder-bays.type';
 
 export type SwitchInfos = {
@@ -19,11 +20,11 @@ export type BusBarSectionsInfos = {
     sectionCount: number;
     isSymmetrical: boolean;
     isBusbarSectionPositionFound: boolean;
-    busBarSections: Map<string, string[]>;
+    busBarSections: BusBarSections;
 };
 
 export type FeederBaysBusBarSectionsInfos = {
-    feederBaysInfos: Map<string, FeederBayInfos[]>;
+    feederBaysInfos: Record<string, FeederBayInfos[]>;
     busBarSectionsInfos: BusBarSectionsInfos;
 };
 
