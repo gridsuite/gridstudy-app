@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
-import { GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, SCAPagedResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
@@ -26,18 +26,20 @@ import PccMinResultTable from './pcc-min-result-table';
 import { FilterType, PaginationType, PccminTab } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
+import { UUID } from 'crypto';
 
 interface PccMinResultProps {
-    onGridColumnsChanged: (params: GridReadyEvent) => void;
-    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     globalFilters?: GlobalFilters;
     customTablePaginationProps: any;
-    openVoltageLevelDiagram?: (id: string) => void;
 }
 
 export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
-    onGridColumnsChanged,
-    onRowDataUpdated,
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
     customTablePaginationProps,
     globalFilters,
 }) => {
@@ -54,10 +56,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
 
     const [count, setCount] = useState<number>(0);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetworkUuid);
 
     const sortConfig = useSelector(
         (state: AppState) => state.tableSort[PCCMIN_ANALYSIS_RESULT_SORT_STORE][PCCMIN_RESULT]
@@ -86,7 +84,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         dispatchPagination({ ...pagination, page: 0 });
     }, [pagination, dispatchPagination]);
 
-    // Effects
     useEffect(() => {
         if (pccMinStatus !== RunningStatus.SUCCEED) {
             return;
@@ -109,7 +106,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
 
         fetchPccMinPagedResults({
             studyUuid,
-            currentNodeUuid: currentNode?.id,
+            currentNodeUuid: nodeUuid,
             currentRootNetworkUuid,
             selector,
             globalFilters,
@@ -143,7 +140,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         pccMinStatus,
         updateResult,
         studyUuid,
-        currentNode?.id,
+        nodeUuid,
         currentRootNetworkUuid,
         intl,
         filters,
@@ -152,10 +149,10 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     ]);
 
     useEffect(() => {
-        if (pccMinStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
+        if (pccMinStatus !== RunningStatus.SUCCEED || !studyUuid || !nodeUuid || !currentRootNetworkUuid) {
             return;
         }
-    }, [pccMinStatus, intl, snackError, studyUuid, currentNode?.id, currentRootNetworkUuid]);
+    }, [pccMinStatus, intl, snackError, studyUuid, nodeUuid, currentRootNetworkUuid]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
@@ -169,8 +166,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 result={result}
                 isFetching={isFetching}
                 onFilter={memoizedSetPageCallback}
-                onGridColumnsChanged={onGridColumnsChanged}
-                onRowDataUpdated={onRowDataUpdated}
                 filters={filters}
             />
             <CustomTablePagination

@@ -31,21 +31,11 @@ import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv'
 interface PccMinResultTableProps {
     result: SinglePccMinResultInfos[];
     isFetching: boolean;
-    onGridColumnsChanged: (params: GridReadyEvent) => void;
-    onRowDataUpdated: (event: RowDataUpdatedEvent) => void;
     onFilter: () => void;
     filters: FilterConfig[];
-    openVoltageLevelDiagram?: (id: string) => void;
 }
 
-const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
-    result,
-    isFetching,
-    onGridColumnsChanged,
-    onRowDataUpdated,
-    onFilter,
-    filters,
-}) => {
+const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
     const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
 
@@ -172,24 +162,15 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({
         []
     );
 
-    const onGridReady = useCallback(
-        (params: GridReadyEvent) => {
-            if (params?.api) {
-                params.api.sizeColumnsToFit();
-                onGridColumnsChanged && onGridColumnsChanged(params);
-            }
-        },
-        [onGridColumnsChanged]
-    );
+    const onGridReady = useCallback((params: GridReadyEvent) => {
+        if (params?.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
 
-    const handleRowDataUpdated = useCallback(
-        (event: RowDataUpdatedEvent) => {
-            if (event?.api) {
-                onRowDataUpdated(event);
-            }
-        },
-        [onRowDataUpdated]
-    );
+    const onRowDataUpdated = useCallback((params: RowDataUpdatedEvent) => {
+        params.api.sizeColumnsToFit();
+    }, []);
 
     const rows: SinglePccMinResultInfos[] = useMemo(() => {
         return result;

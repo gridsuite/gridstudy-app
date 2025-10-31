@@ -24,23 +24,11 @@ import { useGlobalFilterOptions } from '../common/global-filter/use-global-filte
 import { PccMinResultTabProps } from './pcc-min-result.type';
 import { PccMinResult } from './pcc-min-result';
 
-const getDisplayedColumns = (params: GridReadyEvent) => {
-    return (
-        (params.api
-            ?.getColumnDefs()
-            ?.filter((col: ColDef) => !col.hide)
-            ?.map((col) => col.headerName) as string[]) ?? []
-    );
-};
-
 export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     studyUuid,
     nodeUuid,
     currentRootNetworkUuid,
 }) => {
-    const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
-    const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
-
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
@@ -62,18 +50,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
         isLoading: pccMinStatus === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
     });
-
-    const handleGridColumnsChanged = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            setCsvHeaders(getDisplayedColumns(params));
-        }
-    }, []);
-
-    const handleRowDataUpdated = useCallback((event: RowDataUpdatedEvent) => {
-        if (event?.api) {
-            setIsCsvButtonDisabled(event.api.getDisplayedRowCount() === 0);
-        }
-    }, []);
 
     const filterableEquipmentTypes: EQUIPMENT_TYPES[] = useMemo(() => {
         return [EQUIPMENT_TYPES.VOLTAGE_LEVEL];
@@ -115,8 +91,9 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
             </Box>
             {resultOrLogIndex === RESULTS_TAB_INDEX && (
                 <PccMinResult
-                    onGridColumnsChanged={handleGridColumnsChanged}
-                    onRowDataUpdated={handleRowDataUpdated}
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
                     customTablePaginationProps={{
                         labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
