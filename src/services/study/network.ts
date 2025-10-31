@@ -161,7 +161,7 @@ export function fetchSwitchesOfVoltageLevel(
     return backendFetchJson(fetchSwitchesUrl);
 }
 
-export function fetchVoltageLevelBusBarSectionsInformation(
+export function fetchVoltageLevelBusBarSectionsInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,
@@ -185,7 +185,7 @@ export function fetchVoltageLevelBusBarSectionsInformation(
     return backendFetchJson(fetchTopologyUrl);
 }
 
-export function fetchVoltageLevelFeederBaysBusBarSectionsInformation(
+export function fetchVoltageLevelFeederBaysBusBarSectionsInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     currentRootNetworkUuid: UUID,

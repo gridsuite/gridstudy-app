@@ -234,7 +234,6 @@ const VoltageLevelCreationDialog = ({
                 voltageLevel.switchKinds?.map((switchKind) => ({
                     [SWITCH_KIND]: switchKind,
                 })) || [];
-
             const switchesBetweenSections =
                 voltageLevel.switchKinds?.map((switchKind) => intl.formatMessage({ id: switchKind })).join(' / ') || '';
 
