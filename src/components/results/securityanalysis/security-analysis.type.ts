@@ -12,6 +12,7 @@ import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../../types/custom-aggrid-types';
 import { TablePaginationProps } from '@mui/material';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
+import { Pageable, Sort } from '../common/utils';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -89,21 +90,6 @@ export interface PreContingencyResult {
 }
 
 export type QueryParamsType = Record<string, string | number | SortConfig[] | FilterConfig[] | GlobalFilters>;
-
-type Sort = {
-    empty?: boolean;
-    sorted?: boolean;
-    unsorted?: boolean;
-};
-
-type Pageable = {
-    offset?: number;
-    pageNumber?: number;
-    pageSize?: number;
-    paged?: boolean;
-    sort?: Sort;
-    unpaged?: boolean;
-};
 
 export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 

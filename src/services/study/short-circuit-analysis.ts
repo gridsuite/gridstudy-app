@@ -14,6 +14,7 @@ import { GsLang, backendFetch, backendFetchJson, backendFetchText } from '@grids
 import type { UUID } from 'node:crypto';
 import { FilterConfig, SortConfig } from '../../types/custom-aggrid-types';
 import { GlobalFilters } from '../../components/results/common/global-filter/global-filter-types';
+import { Selector } from 'components/results/common/utils';
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
@@ -21,12 +22,6 @@ interface ShortCircuitAnalysisResult {
     currentRootNetworkUuid?: UUID;
     type: ShortCircuitAnalysisType;
     globalFilters?: GlobalFilters;
-}
-interface Selector {
-    page: number;
-    size: number;
-    filter: FilterConfig[] | null;
-    sort: SortConfig[];
 }
 interface ShortCircuitAnalysisPagedResults extends ShortCircuitAnalysisResult {
     selector: Partial<Selector>;

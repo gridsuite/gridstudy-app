@@ -6,8 +6,9 @@
  */
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
-import { backendFetch, backendFetchText } from '@gridsuite/commons-ui';
-import type { UUID } from 'node:crypto';
+import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
+import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
+import { UUID } from 'crypto';
 
 export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> {
     console.info(
@@ -44,4 +45,43 @@ export function fetchPccMinStatus(studyUuid: UUID, currentNodeUuid: UUID, curren
     )}/pcc-min/status`;
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function fetchPccMinPagedResults({
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    selector = {},
+    globalFilters,
+}: PccMinPagedResults) {
+    console.info(
+        `Fetching pcc min result on '${studyUuid}' , node '${currentNodeUuid}' and root network '${currentRootNetworkUuid}'...`
+    );
+
+    const urlSearchParams = new URLSearchParams();
+
+    const { page = 0, sort, size, filter } = selector;
+
+    urlSearchParams.append('page', String(page));
+
+    sort?.map((value) => urlSearchParams.append('sort', `${value.colId},${value.sort}`));
+
+    if (size) {
+        urlSearchParams.append('size', String(size));
+    }
+
+    if (filter?.length) {
+        urlSearchParams.append('filters', JSON.stringify(filter));
+    }
+
+    if (globalFilters && Object.keys(globalFilters).length > 0) {
+        urlSearchParams.append('globalFilters', JSON.stringify(globalFilters));
+    }
+
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/pcc-min/result?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetchJson(url);
 }

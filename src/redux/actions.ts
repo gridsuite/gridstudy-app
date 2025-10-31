@@ -44,6 +44,8 @@ import {
     LOADFLOW_RESULT_STORE_FIELD,
     LOGS_PAGINATION_STORE_FIELD,
     LOGS_STORE_FIELD,
+    PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD,
+    PCCMIN_ANALYSIS_RESULT_STORE_FIELD,
     SECURITY_ANALYSIS_PAGINATION_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_PAGINATION_STORE_FIELD,
@@ -67,6 +69,7 @@ import {
     FilterConfig,
     LogsPaginationConfig,
     PaginationConfig,
+    PccminTab,
     SecurityAnalysisTab,
     SensitivityAnalysisTab,
     ShortcircuitAnalysisTab,
@@ -1092,6 +1095,23 @@ export function setShortcircuitAnalysisResultFilter(
     };
 }
 
+export const PCCMIN_ANALYSIS_RESULT_FILTER = 'PCCMIN_ANALYSIS_RESULT_FILTER';
+export type PccminAnalysisResultFilterAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_FILTER>> & {
+    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD];
+    [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: FilterConfig[];
+};
+
+export function setPccminAnalysisResultFilter(
+    filterTab: keyof AppState[typeof PCCMIN_ANALYSIS_RESULT_STORE_FIELD],
+    pccminAnalysisResultFilter: FilterConfig[]
+): PccminAnalysisResultFilterAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_FILTER,
+        filterTab: filterTab,
+        [PCCMIN_ANALYSIS_RESULT_STORE_FIELD]: pccminAnalysisResultFilter,
+    };
+}
+
 export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
 export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
     filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
@@ -1188,6 +1208,32 @@ export type ResetShortcircuitAnalysisPaginationAction = Readonly<Action<typeof R
 export function resetShortcircuitAnalysisPagination(): ResetShortcircuitAnalysisPaginationAction {
     return {
         type: RESET_SHORTCIRCUIT_ANALYSIS_PAGINATION,
+    };
+}
+
+export const RESET_PCCMIN_ANALYSIS_PAGINATION = 'RESET_PCCMIN_ANALYSIS_PAGINATION';
+export type ResetPccminAnalysisPaginationAction = Readonly<Action<typeof RESET_PCCMIN_ANALYSIS_PAGINATION>>;
+
+export function resetPccminAnalysisPagination(): ResetPccminAnalysisPaginationAction {
+    return {
+        type: RESET_PCCMIN_ANALYSIS_PAGINATION,
+    };
+}
+
+export const PCCMIN_ANALYSIS_RESULT_PAGINATION = 'PCCMIN_ANALYSIS_RESULT_PAGINATION';
+export type PccminAnalysisResultPaginationAction = Readonly<Action<typeof PCCMIN_ANALYSIS_RESULT_PAGINATION>> & {
+    paginationTab: PccminTab;
+    [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: PaginationConfig;
+};
+
+export function setPccminAnalysisResultPagination(
+    paginationTab: PccminTab,
+    pccminAnalysisPagination: PaginationConfig
+): PccminAnalysisResultPaginationAction {
+    return {
+        type: PCCMIN_ANALYSIS_RESULT_PAGINATION,
+        paginationTab: paginationTab,
+        [PCCMIN_ANALYSIS_PAGINATION_STORE_FIELD]: pccminAnalysisPagination,
     };
 }
 
