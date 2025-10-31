@@ -79,6 +79,7 @@ export const RATED_U1 = 'ratedU1';
 export const RATED_U2 = 'ratedU2';
 export const OPERATIONAL_LIMITS_GROUPS = 'operationalLimitsGroups';
 export const CURRENT_LIMITS = 'currentLimits';
+export const LIMITS_PROPERTIES = 'limitsProperties';
 export const ENABLE_OLG_MODIFICATION = 'enableOLGModification';
 export const SELECTED_LIMITS_GROUP_1 = 'selectedOperationalLimitsGroup1';
 export const SELECTED_LIMITS_GROUP_2 = 'selectedOperationalLimitsGroup2';
