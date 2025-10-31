@@ -33,7 +33,7 @@ import {
     MoveFeederBayInfos,
     MoveVoltageLevelFeederBaysInfos,
 } from '../../../../../services/network-modification-types';
-import { fetchVoltageLevelFeederBaysBusBarSectionsInformation } from '../../../../../services/study/network';
+import { fetchVoltageLevelFeederBaysBusBarSectionsInfos } from '../../../../../services/study/network';
 import { EquipmentModificationDialogProps } from '../../../../graph/menus/network-modifications/network-modification-menu.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { FeederBayInfos, FeederBaysFormInfos, FeederBaysInfos } from './move-voltage-level-feeder-bays.type';
@@ -224,12 +224,12 @@ export default function MoveVoltageLevelFeederBaysDialog({
     );
 
     const handleVoltageLevelDataFetch = useCallback(
-        (feederBaysBusBarSectionInfo: FeederBaysBusBarSectionsInfos) => {
+        (feederBaysBusBarSectionsInfo: FeederBaysBusBarSectionsInfos) => {
             const busBarSectionInfos = Object.values(
-                feederBaysBusBarSectionInfo?.busBarSectionsInfos.busBarSections || {}
+                feederBaysBusBarSectionsInfo?.busBarSectionsInfos.busBarSections || {}
             ).flat() as string[];
             const feederBaysInfos: FeederBaysInfos = (
-                Object.entries(feederBaysBusBarSectionInfo?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
+                Object.entries(feederBaysBusBarSectionsInfo?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
             ).flatMap(([equipmentId, feederBayInfos]) =>
                 feederBayInfos.map((feederBay) => ({
                     equipmentId,
@@ -260,7 +260,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
         (voltageLevelId: string) => {
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevelFeederBaysBusBarSectionsInformation(
+                fetchVoltageLevelFeederBaysBusBarSectionsInfos(
                     studyUuid,
                     currentNodeUuid,
                     currentRootNetworkUuid,

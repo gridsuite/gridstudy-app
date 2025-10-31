@@ -32,7 +32,7 @@ import { CreateVoltageLevelSectionForm } from './create-voltage-level-section-fo
 import { CreateVoltageLevelSectionDialogSchemaForm } from './voltage-level-section.type';
 import { CreateVoltageLevelSectionInfos } from '../../../../../services/network-modification-types';
 import { createVoltageLevelSection } from '../../../../../services/study/network-modifications';
-import { fetchVoltageLevelBusBarSectionsInformation } from '../../../../../services/study/network';
+import { fetchVoltageLevelBusBarSectionsInfos } from '../../../../../services/study/network';
 import { DeepNullable } from '../../../../utils/ts-utils';
 import { BusBarSectionsInfos } from '../../../../../services/study/network-map.type';
 
@@ -152,18 +152,12 @@ export default function CreateVoltageLevelSectionDialog({
         (voltageLevelId: string) => {
             if (voltageLevelId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevelBusBarSectionsInformation(
-                    studyUuid,
-                    currentNodeUuid,
-                    currentRootNetworkUuid,
-                    voltageLevelId
-                )
+                fetchVoltageLevelBusBarSectionsInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId)
                     .then((busBarSectionsInfos: BusBarSectionsInfos) => {
-                        console.log('busBarSectionsInfos', busBarSectionsInfos);
                         if (busBarSectionsInfos) {
-                            setBusBarSectionInfos(busBarSectionsInfos?.busBarSections || new Map());
+                            setBusBarSectionInfos(busBarSectionsInfos?.busBarSections || []);
                             setAllBusbarSectionsList(
-                                Object.values(busBarSectionsInfos?.busBarSections || new Map()).flat() as string[]
+                                Object.values(busBarSectionsInfos?.busBarSections || []).flat() as string[]
                             );
                             setIsExtensionNotFoundOrNotSupportedTopology(
                                 !busBarSectionsInfos.isBusbarSectionPositionFound ||
