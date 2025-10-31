@@ -196,9 +196,6 @@ code {
 .sld-reactive-power {
     fill: blue;
 }
-.sld-current {
-        fill: var(--vl-color);
-}
 .sld-frame {
     fill: var(--sld-background-color, transparent);
 }
@@ -244,7 +241,7 @@ code {
 .sld-reactive-power .sld-label {
     dominant-baseline: middle;
 }
-.sld-current .sld-label {
+.sld-current-value .sld-label {
     dominant-baseline: middle;
 }
 .sld-permanent-limit-percentage {
@@ -255,13 +252,6 @@ code {
     50% {
         stroke: #F50057;
         stroke-width: 4;
-    }
-}
-@keyframes sld-overload-blink-arrow-animation {
-    50% {
-        stroke: #F50057;
-        stroke-width: 4;
-        fill: #F50057;
     }
 }
 @keyframes sld-overvoltage-blink-animation {
@@ -278,9 +268,6 @@ code {
 }
 .sld-overload {
     animation: sld-overload-blink-animation 0.75s infinite steps(1, start);
-}
-.sld-extern-cell:has(.sld-overload) .sld-current polygon {
-    animation: sld-overload-blink-arrow-animation 0.75s infinite steps(1, start);
 }
 .sld-vl-overvoltage {
     animation: sld-overvoltage-blink-animation 0.75s infinite steps(1, start);
