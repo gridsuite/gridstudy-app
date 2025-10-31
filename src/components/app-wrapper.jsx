@@ -63,6 +63,8 @@ import {
     parametersFr,
     useUniqueNameValidationEn,
     useUniqueNameValidationFr,
+    filterEn,
+    filterFr,
     NotificationsProvider,
     MAP_BASEMAP_MAPBOX,
     MAP_BASEMAP_CARTO,
@@ -400,6 +402,7 @@ const messages = {
         ...spreadsheet_locale_en,
         ...parametersEn,
         ...useUniqueNameValidationEn,
+        ...filterEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -435,6 +438,7 @@ const messages = {
         ...spreadsheet_locale_fr,
         ...parametersFr,
         ...useUniqueNameValidationFr,
+        ...filterFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
