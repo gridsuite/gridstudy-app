@@ -7,15 +7,15 @@
 
 import type { UUID } from 'node:crypto';
 import { useDiagramEventListener } from './use-diagram-event-listener';
-import {
+import type {
     Diagram,
-    DiagramAdditionalMetadata,
     DiagramParams,
-    DiagramType,
+    DiagramParamsWithoutId,
     NetworkAreaDiagram,
     SubstationDiagram,
     VoltageLevelDiagram,
 } from '../cards/diagrams/diagram.type';
+import { DiagramAdditionalMetadata, DiagramType } from '../cards/diagrams/diagram.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchSvg, getNetworkAreaDiagramUrl } from 'services/study';
 import { useDiagramNotificationsListener } from './use-diagram-notifications-listener';
@@ -30,17 +30,16 @@ import { useIntl } from 'react-intl';
 import { useDiagramTitle } from './use-diagram-title';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
-import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
+import { mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
+import { completeDiagramParamsWithId, isThereTooManyOpenedNadDiagrams } from './diagram-model-utils';
+import type { CreateDiagramFuncType, UpdateDiagramFuncType } from './diagram-model.types';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
     onAddDiagram: (diagram: Diagram) => void;
     onDiagramAlreadyExists?: (diagramUuid: UUID) => void;
 };
-
-export type CreateDiagramFuncType = (diagramParams: DiagramParams) => void;
-export type UpdateDiagramFuncType = (diagramParams: DiagramParams, fetch?: boolean) => void;
 
 export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyExists }: UseDiagramModelProps) => {
     const intl = useIntl();
@@ -64,7 +63,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
 
     // Note: This function is mainly used to prevent double fetch when using the PositionDiagram
     const filterDiagramParams = useCallback(
-        (diagramParams: DiagramParams[]): DiagramParams[] => {
+        (diagramParams: DiagramParamsWithoutId[]): DiagramParamsWithoutId[] => {
             return diagramParams.filter((diagramParam) => {
                 if (diagramTypes.includes(diagramParam.type)) {
                     return true;
@@ -76,9 +75,9 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const createPendingDiagram = useCallback(
-        (diagramParams: DiagramParams, disableOnAddCallback: boolean = false) => {
+        (diagramParams: DiagramParamsWithoutId, disableOnAddCallback: boolean = false) => {
             const pendingDiagram: Diagram = {
-                ...diagramParams,
+                ...completeDiagramParamsWithId(diagramParams),
                 svg: null,
             };
             setDiagrams((diagrams) => {
@@ -344,7 +343,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const findSimilarDiagram = useCallback(
-        (diagramParams: DiagramParams): Diagram | undefined => {
+        (diagramParams: DiagramParamsWithoutId): Diagram | undefined => {
             switch (diagramParams.type) {
                 case DiagramType.VOLTAGE_LEVEL:
                     return Object.values(diagrams).find(
@@ -367,7 +366,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const isCreationRequestValid = useCallback(
-        (diagramParams: DiagramParams): boolean => {
+        (diagramParams: DiagramParamsWithoutId): boolean => {
             if (diagramParams.type === DiagramType.NETWORK_AREA_DIAGRAM && isThereTooManyOpenedNadDiagrams(diagrams)) {
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'MaxNumberOfNadDiagramsReached' }),
@@ -400,7 +399,7 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
     );
 
     const createDiagram: CreateDiagramFuncType = useCallback(
-        (diagramParams: DiagramParams) => {
+        (diagramParams) => {
             if (!isCreationRequestValid(diagramParams)) {
                 return;
             }

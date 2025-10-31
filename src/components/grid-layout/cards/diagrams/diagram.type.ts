@@ -15,6 +15,13 @@ export enum DiagramType {
     NETWORK_AREA_DIAGRAM = 'network-area-diagram',
 }
 
+// type helper to transform required property into optional one
+// Notes: "Type extends unknown ? ... : never" forces a distributive conditional type:
+//        when Type is a union A | B it evaluates the right-hand expression for each member
+//        (A and B) and returns a union of results.
+type WithOptionalProperty<Type, Key extends keyof Type> = Type extends unknown
+    ? Omit<Type, Key> & Partial<Pick<Type, Key>>
+    : never;
 // Create diagram parameters
 type DiagramBaseParams = {
     diagramUuid: UUID;
@@ -42,7 +49,10 @@ export type NetworkAreaDiagramParams = DiagramBaseParams & {
 };
 
 export type DiagramParams = VoltageLevelDiagramParams | SubstationDiagramParams | NetworkAreaDiagramParams;
-
+export type DiagramParamsWithoutId<Type extends DiagramParams = DiagramParams> = WithOptionalProperty<
+    Type,
+    'diagramUuid'
+>;
 // diagrams model
 export type DiagramBase = {
     diagramUuid: UUID;
