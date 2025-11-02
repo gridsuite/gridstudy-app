@@ -26,7 +26,12 @@ import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
-import { FilterConfig, FilterType as AgGridFilterType } from '../../../types/custom-aggrid-types';
+import {
+    FilterConfig,
+    FilterType as AgGridFilterType,
+    textFilterParams,
+    numericFilterParams,
+} from '../../../types/custom-aggrid-types';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import {
     ColumnContext,
@@ -74,19 +79,9 @@ export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
     distributedActivePower: 'distributedActivePower',
 };
 
-const textFilterParams = {
-    dataType: FILTER_DATA_TYPES.TEXT,
-    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-};
-
 const translatedFilterParams = {
     dataType: FILTER_DATA_TYPES.TEXT,
     comparators: [FILTER_TEXT_COMPARATORS.EQUALS],
-};
-
-const numericFilterParams = {
-    dataType: FILTER_DATA_TYPES.NUMBER,
-    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
 };
 
 export const mappingFields = (index: number): Record<string, string> => {

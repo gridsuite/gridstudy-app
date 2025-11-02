@@ -6,6 +6,11 @@
  */
 import { GridApi } from 'ag-grid-community';
 import {
+    FILTER_DATA_TYPES,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+import {
     ALL_BUSES,
     ONE_BUS,
     PCCMIN_RESULT,
@@ -71,6 +76,16 @@ export type PaginationConfig = {
 export type LogsPaginationConfig = {
     page: number;
     rowsPerPage: number;
+};
+
+export const textFilterParams = {
+    dataType: FILTER_DATA_TYPES.TEXT,
+    comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+};
+
+export const numericFilterParams = {
+    dataType: FILTER_DATA_TYPES.NUMBER,
+    comparators: Object.values(FILTER_NUMBER_COMPARATORS),
 };
 
 export enum PaginationType {

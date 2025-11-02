@@ -17,13 +17,12 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-a
 import { ComputingType } from '@gridsuite/commons-ui';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from '../../../utils/store-sort-filter-fields';
-import { FilterType as AgGridFilterType, FilterConfig } from '../../../types/custom-aggrid-types';
 import {
-    ColumnContext,
-    FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
+    FilterType as AgGridFilterType,
+    numericFilterParams,
+    textFilterParams,
+} from '../../../types/custom-aggrid-types';
+import { ColumnContext } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { PccMinResultTableProps, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
@@ -32,8 +31,10 @@ import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
-    const intl = useIntl();
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
+
+    const intl = useIntl();
+    const gridRef = useRef<AgGridReact>(null);
 
     const columns = useMemo(() => {
         const data = <T,>(data: T, defaultData: T | undefined = {} as T) => data;
@@ -47,16 +48,6 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
             type: AgGridFilterType.PccMin,
             tab: PCCMIN_RESULT,
             updateFilterCallback: onFilter,
-        };
-
-        const textFilterParams = {
-            dataType: FILTER_DATA_TYPES.TEXT,
-            comparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-        };
-
-        const numericFilterParams = {
-            dataType: FILTER_DATA_TYPES.NUMBER,
-            comparators: Object.values(FILTER_NUMBER_COMPARATORS),
         };
 
         const inputFilterParams = (
@@ -171,11 +162,11 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
     const rows: SinglePccMinResultInfos[] = useMemo(() => {
         return result;
     }, [result]);
+
     const message = getNoRowsMessage(messages, rows, pccMinStatus, !isFetching);
     const rowsToShow = getRows(rows, pccMinStatus);
-    const gridRef = useRef<AgGridReact>(null);
 
-    const openLoader = useOpenLoaderShortWait({
+    const openPccMinLoader = useOpenLoaderShortWait({
         isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -192,7 +183,7 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
                     onGridReady={onGridReady}
                     overlayNoRowsTemplate={message}
                     skipColumnHeaders={false}
-                    showLinearProgress={openLoader}
+                    showLinearProgress={openPccMinLoader}
                 />
             </Box>
         </Box>
