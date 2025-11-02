@@ -36,7 +36,6 @@ import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggri
 import {
     ColumnContext,
     FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
     FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';

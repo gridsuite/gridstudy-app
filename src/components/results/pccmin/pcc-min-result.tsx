@@ -23,7 +23,7 @@ import PccMinResultTable from './pcc-min-result-table';
 import { FilterType, PaginationType, PccminTab } from 'types/custom-aggrid-types';
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { fetchPccMinPagedResults } from 'services/study/pcc-min';
-import { UUID } from 'crypto';
+import { UUID } from 'node:crypto';
 
 interface PccMinResultProps {
     studyUuid: UUID;
@@ -70,7 +70,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
 
     const handleChangeRowsPerPage = useCallback(
         (event: any) => {
-            const newRowsPerPage = parseInt(event.target.value, 10);
+            const newRowsPerPage = Number.parseInt(event.target.value, 10);
             dispatchPagination({ page: 0, rowsPerPage: newRowsPerPage });
         },
         [dispatchPagination]
@@ -91,12 +91,10 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         setIsFetching(true);
         updateResult(null);
 
-        const updatedFilters = filters ? filters : null;
-
         const selector = {
             page,
             size: rowsPerPage as number,
-            filter: updatedFilters ? mapFieldsToColumnsFilter(updatedFilters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null,
+            filter: filters ? mapFieldsToColumnsFilter(filters, FROM_COLUMN_TO_FIELD_PCC_MIN) : null,
             sort: sortConfig,
         };
 

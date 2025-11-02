@@ -8,7 +8,7 @@
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '@gridsuite/commons-ui';
 import { PccMinPagedResults } from 'components/results/pccmin/pcc-min-result.type';
-import { UUID } from 'crypto';
+import { UUID } from 'node:crypto';
 
 export function startPccMin(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID): Promise<Response> {
     console.info(

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Page, Pageable } from '../common/utils';
+import { Page } from '../common/utils';
 
 export interface SCAFault {
     id: string;

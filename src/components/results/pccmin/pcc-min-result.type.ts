@@ -6,15 +6,15 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { FilterConfig, SortConfig } from 'types/custom-aggrid-types';
+import { FilterConfig } from 'types/custom-aggrid-types';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { Page, Selector } from '../common/utils';
 
 export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
-    busId: String;
+    busId: string;
     pccMinTri: number;
-    limitingEquipment: String;
+    limitingEquipment: string;
     x: number;
     r: number;
 }

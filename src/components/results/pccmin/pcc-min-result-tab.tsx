@@ -65,51 +65,49 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     );
 
     return (
-        <>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, mb: 1 }}>
-                    <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
-                        <Tab label={<FormattedMessage id="Results" />} />
-                        <Tab label={<FormattedMessage id="ComputationResultsLogs" />} />
-                    </Tabs>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, mb: 1 }}>
+                <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
+                    <Tab label={<FormattedMessage id="Results" />} />
+                    <Tab label={<FormattedMessage id="ComputationResultsLogs" />} />
+                </Tabs>
 
-                    <Box sx={{ flex: 1 }}>
-                        <GlobalFilterSelector
-                            onChange={handleGlobalFilterChange}
-                            filters={globalFilterOptions}
-                            filterableEquipmentTypes={filterableEquipmentTypes}
-                            genericFiltersStrictMode
-                        />
-                    </Box>
-                </Box>
-
-                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-                    {resultOrLogIndex === RESULTS_TAB_INDEX && (
-                        <Box sx={{ flex: 1, minHeight: 0 }}>
-                            <PccMinResult
-                                studyUuid={studyUuid}
-                                nodeUuid={nodeUuid}
-                                currentRootNetworkUuid={currentRootNetworkUuid}
-                                globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
-                                customTablePaginationProps={{
-                                    labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
-                                }}
-                            />
-                        </Box>
-                    )}
-
-                    {resultOrLogIndex === LOGS_TAB_INDEX && (
-                        <>
-                            {openLoader && <LinearProgress sx={{ height: 4, flexShrink: 0 }} />}
-                            {(pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED) && (
-                                <Box sx={{ flex: 1, minHeight: 0 }}>
-                                    <ComputationReportViewer reportType={ComputingType.PCC_MIN} />
-                                </Box>
-                            )}
-                        </>
-                    )}
+                <Box sx={{ flex: 1 }}>
+                    <GlobalFilterSelector
+                        onChange={handleGlobalFilterChange}
+                        filters={globalFilterOptions}
+                        filterableEquipmentTypes={filterableEquipmentTypes}
+                        genericFiltersStrictMode
+                    />
                 </Box>
             </Box>
-        </>
+
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                {resultOrLogIndex === RESULTS_TAB_INDEX && (
+                    <Box sx={{ flex: 1, minHeight: 0 }}>
+                        <PccMinResult
+                            studyUuid={studyUuid}
+                            nodeUuid={nodeUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                            globalFilters={isGlobalFilterParameter(globalFilters) ? globalFilters : undefined}
+                            customTablePaginationProps={{
+                                labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPage',
+                            }}
+                        />
+                    </Box>
+                )}
+
+                {resultOrLogIndex === LOGS_TAB_INDEX && (
+                    <>
+                        {openLoader && <LinearProgress sx={{ height: 4, flexShrink: 0 }} />}
+                        {(pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED) && (
+                            <Box sx={{ flex: 1, minHeight: 0 }}>
+                                <ComputationReportViewer reportType={ComputingType.PCC_MIN} />
+                            </Box>
+                        )}
+                    </>
+                )}
+            </Box>
+        </Box>
     );
 };
