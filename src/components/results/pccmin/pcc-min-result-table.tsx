@@ -31,13 +31,12 @@ import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
-    const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
-
     const intl = useIntl();
+    const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
     const gridRef = useRef<AgGridReact>(null);
 
     const columns = useMemo(() => {
-        const data = <T,>(data: T, defaultData: T | undefined = {} as T) => data;
+        const data = <T,>(value: T) => value;
 
         const sortParams: ColumnContext['sortParams'] = {
             table: PCCMIN_ANALYSIS_RESULT_SORT_STORE,
@@ -162,9 +161,8 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
     const rows: SinglePccMinResultInfos[] = useMemo(() => {
         return result;
     }, [result]);
-
-    const message = getNoRowsMessage(messages, rows, pccMinStatus, !isFetching);
     const rowsToShow = getRows(rows, pccMinStatus);
+    const message = getNoRowsMessage(messages, rows, pccMinStatus, !isFetching);
 
     const openPccMinLoader = useOpenLoaderShortWait({
         isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,

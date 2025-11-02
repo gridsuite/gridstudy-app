@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { ComputingType, useSnackMessage } from '@gridsuite/commons-ui';
-import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import { GlobalFilters } from '../common/global-filter/global-filter-types';
 import { FROM_COLUMN_TO_FIELD_PCC_MIN, PagedPccMinResults, SinglePccMinResultInfos } from './pcc-min-result.type';
 import { useIntl } from 'react-intl';
@@ -17,9 +16,7 @@ import { useFilterSelector } from 'hooks/use-filter-selector';
 import { usePaginationSelector } from 'hooks/use-pagination-selector';
 import RunningStatus from 'components/utils/running-status';
 import { mapFieldsToColumnsFilter } from 'utils/aggrid-headers-utils';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
-import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
-import { Box, LinearProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { PAGE_OPTIONS } from '../securityanalysis/security-analysis-result-utils';
 import CustomTablePagination from 'components/utils/custom-table-pagination';
 import PccMinResultTable from './pcc-min-result-table';
@@ -43,10 +40,9 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     customTablePaginationProps,
     globalFilters,
 }) => {
-    const intl = useIntl();
-    const { snackError } = useSnackMessage();
-
     const pccMinStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.PCC_MIN]);
+    const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [result, setResult] = useState<SinglePccMinResultInfos[]>([]);
 
@@ -148,11 +144,6 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         globalFilters,
     ]);
 
-    useEffect(() => {
-        if (pccMinStatus !== RunningStatus.SUCCEED || !studyUuid || !nodeUuid || !currentRootNetworkUuid) {
-            return;
-        }
-    }, [pccMinStatus, intl, snackError, studyUuid, nodeUuid, currentRootNetworkUuid]);
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <PccMinResultTable

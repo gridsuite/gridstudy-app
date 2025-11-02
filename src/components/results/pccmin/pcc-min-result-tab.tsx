@@ -16,7 +16,6 @@ import { ComputingType } from '@gridsuite/commons-ui';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ColDef, GridReadyEvent, RowDataUpdatedEvent } from 'ag-grid-community';
 import GlobalFilterSelector from '../common/global-filter/global-filter-selector';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import useGlobalFilters, { isGlobalFilterParameter } from '../common/global-filter/use-global-filters';
@@ -74,7 +73,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                         <Tab label={<FormattedMessage id="ComputationResultsLogs" />} />
                     </Tabs>
 
-                    {/* Global filter */}
                     <Box sx={{ flex: 1 }}>
                         <GlobalFilterSelector
                             onChange={handleGlobalFilterChange}
@@ -85,7 +83,6 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                     </Box>
                 </Box>
 
-                {/* Tab panel content */}
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                     {resultOrLogIndex === RESULTS_TAB_INDEX && (
                         <Box sx={{ flex: 1, minHeight: 0 }}>
@@ -103,10 +100,7 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
 
                     {resultOrLogIndex === LOGS_TAB_INDEX && (
                         <>
-                            {/* Loader */}
                             {openLoader && <LinearProgress sx={{ height: 4, flexShrink: 0 }} />}
-
-                            {/* Logs viewer */}
                             {(pccMinStatus === RunningStatus.SUCCEED || pccMinStatus === RunningStatus.FAILED) && (
                                 <Box sx={{ flex: 1, minHeight: 0 }}>
                                     <ComputationReportViewer reportType={ComputingType.PCC_MIN} />
