@@ -49,7 +49,6 @@ export interface LimitsSidePaneProps {
     selectedLimitSetName?: string;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
     disabled: boolean;
-    isModification?: boolean;
 }
 
 export function LimitsSidePane({
@@ -63,7 +62,6 @@ export function LimitsSidePane({
     selectedLimitSetName,
     checkLimitSetUnicity,
     disabled,
-    isModification,
 }: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { setError, getValues } = useFormContext();
