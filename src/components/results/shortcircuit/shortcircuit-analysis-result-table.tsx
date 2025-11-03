@@ -7,7 +7,7 @@
 
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Button, Tooltip, useTheme } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/utils/custom-aggrid-header-utils';
-import { CustomAGGrid, unitToKiloUnit, ComputingType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, unitToKiloUnit, ComputingType, OverflowableText } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
@@ -108,11 +108,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             };
             if (value) {
                 return (
-                    <Tooltip title={value}>
-                        <Button sx={resultsStyles.sldLink} onClick={onClick}>
-                            {value}
-                        </Button>
-                    </Tooltip>
+                    <Button sx={resultsStyles.sldLink} onClick={onClick}>
+                        <OverflowableText text={value} />
+                    </Button>
                 );
             }
         },
