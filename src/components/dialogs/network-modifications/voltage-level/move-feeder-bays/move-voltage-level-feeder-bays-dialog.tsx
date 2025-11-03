@@ -154,6 +154,7 @@ export default function MoveVoltageLevelFeederBaysDialog({
         (feederBaysInfos: FeederBaysInfos, busBarSectionInfos: string[]) => {
             let mergedRowData: FeederBaysFormInfos[] = [];
             if (!editData?.uuid && feederBaysInfos.length > 0) {
+                console.log('================feederBaysInfos', feederBaysInfos);
                 mergedRowData = feederBaysInfos.filter(Boolean).map((bay) => ({
                     equipmentId: bay.equipmentId,
                     busbarSectionId: bay.busbarSectionId || null,
@@ -161,7 +162,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
                     connectionSide: bay.connectionSide || null,
                     connectionName: bay.connectablePositionInfos.connectionName || null,
                     connectionDirection: bay.connectablePositionInfos.connectionDirection || null,
-                    connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
+                    connectionPosition:
+                        bay.connectablePositionInfos.connectionPosition !== undefined
+                            ? String(bay.connectablePositionInfos.connectionPosition)
+                            : null,
                     isRemoved: false,
                     rowId: null,
                 }));
@@ -176,7 +180,10 @@ export default function MoveVoltageLevelFeederBaysDialog({
                             connectionSide: bay.connectionSide,
                             connectionName: bay.connectablePositionInfos.connectionName || null,
                             connectionDirection: bay.connectablePositionInfos.connectionDirection,
-                            connectionPosition: bay.connectablePositionInfos.connectionPosition || null,
+                            connectionPosition:
+                                bay.connectablePositionInfos.connectionPosition !== undefined
+                                    ? String(bay.connectablePositionInfos.connectionPosition)
+                                    : null,
                             isRemoved: false,
                             rowId: null,
                         });
