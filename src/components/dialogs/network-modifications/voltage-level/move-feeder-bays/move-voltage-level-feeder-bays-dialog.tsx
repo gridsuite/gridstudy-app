@@ -225,9 +225,9 @@ export default function MoveVoltageLevelFeederBaysDialog({
 
     const handleVoltageLevelDataFetch = useCallback(
         (feederBaysBusBarSectionsInfo: FeederBaysBusBarSectionsInfos) => {
-            const busBarSectionInfos = Object.values(
+            const busBarSectionInfos: string[] = Object.values(
                 feederBaysBusBarSectionsInfo?.busBarSectionsInfos.busBarSections || {}
-            ).flat() as string[];
+            ).flat();
             const feederBaysInfos: FeederBaysInfos = (
                 Object.entries(feederBaysBusBarSectionsInfo?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
             ).flatMap(([equipmentId, feederBayInfos]) =>
