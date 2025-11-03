@@ -49,6 +49,6 @@ export const FROM_COLUMN_TO_FIELD_PCC_MIN: Record<string, string> = {
     pccMinTri: 'pccMinTri',
     iccMinTri: 'iccMinTri',
     limitingEquipment: 'limitingEquipment',
-    x: 'xOhm',
-    r: 'rOhm',
+    x: 'x',
+    r: 'r',
 };
