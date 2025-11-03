@@ -87,7 +87,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
         if (!currentRootNetworkUuid) {
             return;
         }
-        let active = true;
+        let isMounted = true; // prevents state updates if the component has unmounted
         setIsFetching(true);
         updateResult(null);
 
@@ -106,7 +106,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
             globalFilters,
         })
             .then((result: PagedPccMinResults | null) => {
-                if (active) {
+                if (isMounted) {
                     const { content = [], totalElements = 0 } = result || {};
                     updateResult(content);
                     setCount(totalElements);
@@ -119,13 +119,13 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
                 })
             )
             .finally(() => {
-                if (active) {
+                if (isMounted) {
                     setIsFetching(false);
                 }
             });
 
         return () => {
-            active = false;
+            isMounted = false;
         };
     }, [
         page,

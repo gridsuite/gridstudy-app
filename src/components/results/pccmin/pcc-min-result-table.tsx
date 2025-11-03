@@ -67,28 +67,26 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
         };
 
         return [
-            {
-                ...makeAgGridCustomHeaderColumn({
-                    headerName: intl.formatMessage({ id: 'Bus' }),
-                    colId: 'busId',
-                    field: 'busId',
-                    context: {
-                        ...data({ sortParams, ...inputFilterParams(textFilterParams) }),
-                    },
-                }),
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'Bus' }),
+                colId: 'busId',
+                field: 'busId',
+                context: {
+                    ...data({ sortParams, ...inputFilterParams(textFilterParams) }),
+                },
                 minWidth: 180,
-            },
-            {
-                ...makeAgGridCustomHeaderColumn({
-                    headerName: intl.formatMessage({ id: 'Contingency' }),
-                    colId: 'limitingEquipment',
-                    field: 'limitingEquipment',
-                    context: {
-                        ...data({ sortParams, ...inputFilterParams(textFilterParams) }),
-                    },
-                }),
+            }),
+
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'Contingency' }),
+                colId: 'limitingEquipment',
+                field: 'limitingEquipment',
+                context: {
+                    ...data({ sortParams, ...inputFilterParams(textFilterParams) }),
+                },
+
                 minWidth: 180,
-            },
+            }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PccMinTri' }),
                 colId: 'pccMinTri',
@@ -158,11 +156,8 @@ const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, 
         params.api.sizeColumnsToFit();
     }, []);
 
-    const rows: SinglePccMinResultInfos[] = useMemo(() => {
-        return result;
-    }, [result]);
-    const rowsToShow = getRows(rows, pccMinStatus);
-    const message = getNoRowsMessage(messages, rows, pccMinStatus, !isFetching);
+    const rowsToShow = getRows(result, pccMinStatus);
+    const message = getNoRowsMessage(messages, result, pccMinStatus, !isFetching);
 
     const openPccMinLoader = useOpenLoaderShortWait({
         isLoading: pccMinStatus === RunningStatus.RUNNING || isFetching,

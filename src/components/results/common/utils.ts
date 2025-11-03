@@ -70,19 +70,15 @@ export type Sort = {
 };
 
 export interface Page<ResultType> {
-    content: ResultType[];
-    pageable: Pageable;
-    last: boolean;
-    totalPages: number;
-    totalElements: number;
-    first: boolean;
-    size: number;
-    number: number;
-    sort: {
-        sorted: boolean;
-        empty: boolean;
-        unsorted: boolean;
-    };
-    numberOfElements: number;
-    empty: boolean;
+    content?: ResultType[];
+    pageable?: Pageable;
+    last?: boolean;
+    totalPages?: number;
+    totalElements?: number;
+    first?: boolean;
+    size?: number;
+    number?: number;
+    sort?: Sort;
+    numberOfElements?: number;
+    empty?: boolean;
 }

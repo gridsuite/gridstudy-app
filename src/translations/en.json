@@ -1650,6 +1650,6 @@
     "generatorMinimumActivePowerMaxValueError" : "Minimum active power must be inferior to maximum active power",
     "PccMinTri": "Pcc min (MVA) ",
     "IccMinTri": "Icc min (kA)",
-    "rOhm": "r (Ohm)",
-    "xOhm":"x (Ohm)"   
+    "rOhm": "r ((Ω))",
+    "xOhm":"x ((Ω))"   
  }
