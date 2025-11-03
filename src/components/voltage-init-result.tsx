@@ -292,9 +292,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     onRowDataUpdated={onRowDataUpdated}
                     onGridReady={onGridReady}
                     skipColumnHeaders={false}
-                    getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
-                        return undefined;
-                    }}
                     overlayNoRowsTemplate={undefined}
                 />
             </>
@@ -333,9 +330,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                     onRowDataUpdated={onRowDataUpdated}
                     onGridReady={onGridReady}
                     skipColumnHeaders={false}
-                    getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
-                        return undefined;
-                    }}
                     overlayNoRowsTemplate={undefined}
                 />
             </>
@@ -384,9 +378,6 @@ export const VoltageInitResult: FunctionComponent<VoltageInitResultProps> = ({
                 onRowDataUpdated={onRowDataUpdated}
                 onGridReady={onGridReady}
                 skipColumnHeaders={false}
-                getRowStyle={function (_params: RowClassParams): RowStyle | undefined {
-                    return undefined;
-                }}
                 overlayNoRowsTemplate={undefined}
             />
         );
