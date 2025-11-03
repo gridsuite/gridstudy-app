@@ -156,9 +156,7 @@ export default function CreateVoltageLevelSectionDialog({
                     .then((busBarSectionsInfos: BusBarSectionsInfos) => {
                         if (busBarSectionsInfos) {
                             setBusBarSectionInfos(busBarSectionsInfos?.busBarSections || []);
-                            setAllBusbarSectionsList(
-                                Object.values(busBarSectionsInfos?.busBarSections || {}).flat() as string[]
-                            );
+                            setAllBusbarSectionsList(Object.values(busBarSectionsInfos?.busBarSections || {}).flat());
                             setIsExtensionNotFoundOrNotSupportedTopology(
                                 !busBarSectionsInfos.isBusbarSectionPositionFound ||
                                     busBarSectionsInfos?.topologyKind !== 'NODE_BREAKER'

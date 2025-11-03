@@ -228,8 +228,8 @@ export default function MoveVoltageLevelFeederBaysDialog({
             const busBarSectionInfos: string[] = Object.values(
                 feederBaysBusBarSectionsInfo?.busBarSectionsInfos.busBarSections || {}
             ).flat();
-            const feederBaysInfos: FeederBaysInfos = (
-                Object.entries(feederBaysBusBarSectionsInfo?.feederBaysInfos || {}) as [string, FeederBayInfos[]][]
+            const feederBaysInfos: FeederBaysInfos = Object.entries(
+                feederBaysBusBarSectionsInfo?.feederBaysInfos || {}
             ).flatMap(([equipmentId, feederBayInfos]) =>
                 feederBayInfos.map((feederBay) => ({
                     equipmentId,
