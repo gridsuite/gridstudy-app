@@ -71,15 +71,16 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
                     <Tab label={<FormattedMessage id="Results" />} />
                     <Tab label={<FormattedMessage id="ComputationResultsLogs" />} />
                 </Tabs>
-
-                <Box sx={{ flex: 1 }}>
-                    <GlobalFilterSelector
-                        onChange={handleGlobalFilterChange}
-                        filters={globalFilterOptions}
-                        filterableEquipmentTypes={filterableEquipmentTypes}
-                        genericFiltersStrictMode
-                    />
-                </Box>
+                {resultOrLogIndex === RESULTS_TAB_INDEX && (
+                    <Box sx={{ flex: 1 }}>
+                        <GlobalFilterSelector
+                            onChange={handleGlobalFilterChange}
+                            filters={globalFilterOptions}
+                            filterableEquipmentTypes={filterableEquipmentTypes}
+                            genericFiltersStrictMode
+                        />
+                    </Box>
+                )}
             </Box>
 
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
