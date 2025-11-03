@@ -54,7 +54,7 @@ const limitsGroupValidationSchema = () => ({
     [ID]: yup.string().nonNullable().required(),
     [NAME]: yup.string().nonNullable().required(),
     [APPLICABIlITY]: yup.string().nonNullable().required(),
-    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema(isModification)),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
     [LIMITS_PROPERTIES]: yup.array().of(limitsPropertyValidationSchema()),
 });
 
@@ -340,59 +340,33 @@ export function addOperationTypeToSelectedOpLG(
  * note : for now only MODIFY_OR_ADD is handled, the others have been disabled for various reasons
  *
  * @param limitsGroupsForm current data from the form
- * @param networkLine data of the line modified by the network modification
  */
 export const addModificationTypeToOpLimitsGroups = (
-    limitsGroupsForm: OperationalLimitsGroupFormInfos[],
-    networkLine: BranchInfos | null
+    limitsGroupsForm: OperationalLimitsGroupFormInfos[]
 ): OperationalLimitsGroup[] => {
     let modificationLimitsGroupsForm: OperationalLimitsGroupFormInfos[] = sanitizeLimitsGroups(limitsGroupsForm);
 
-    const modificationLimitsGroups: OperationalLimitsGroup[] = modificationLimitsGroupsForm.map(
-        (limitsGroupForm: OperationalLimitsGroupFormInfos) => {
-            const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(limitsGroupForm[CURRENT_LIMITS]?.[TEMPORARY_LIMITS])
-            );
-            const currentLimits: CurrentLimits = {
-                id: limitsGroupForm[CURRENT_LIMITS][ID],
-                applicability: limitsGroupForm?.[APPLICABIlITY],
-                permanentLimit: limitsGroupForm[CURRENT_LIMITS]?.[PERMANENT_LIMIT] ?? null,
-                temporaryLimits: temporaryLimits ?? [],
-            };
+    return modificationLimitsGroupsForm.map((limitsGroupForm: OperationalLimitsGroupFormInfos) => {
+        const temporaryLimits: TemporaryLimit[] = addModificationTypeToTemporaryLimits(
+            sanitizeLimitNames(limitsGroupForm[CURRENT_LIMITS]?.[TEMPORARY_LIMITS])
+        );
+        const currentLimits: CurrentLimits = {
+            id: limitsGroupForm[CURRENT_LIMITS][ID],
+            applicability: limitsGroupForm?.[APPLICABIlITY],
+            permanentLimit: limitsGroupForm[CURRENT_LIMITS]?.[PERMANENT_LIMIT] ?? null,
+            temporaryLimits: temporaryLimits ?? [],
+        };
 
-            return {
-                id: limitsGroupForm.id,
-                name: limitsGroupForm.name,
-                applicability: limitsGroupForm.applicability,
-                limitsProperties: limitsGroupForm.limitsProperties,
-                currentLimits: currentLimits,
-                modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
-                temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
-            };
-        }
-    );
-    if (networkLine?.currentLimits !== undefined && networkLine?.currentLimits !== null) {
-        for (const currentLimit1 of networkLine.currentLimits) {
-            if (!modificationLimitsGroups.some((modOpLG: OperationalLimitsGroup) => modOpLG.id === currentLimit1.id)) {
-                modificationLimitsGroups.push({
-                    id: currentLimit1.id,
-                    name: currentLimit1.id,
-                    applicability: currentLimit1.applicability,
-                    limitsProperties: limitsGroupForm.limitsProperties,
-                    // empty currentLimits because the opLG is going to be deleted anyway
-                    currentLimits: {
-                        id: currentLimit1.id,
-                        applicability: currentLimit1.applicability,
-                        permanentLimit: null,
-                        temporaryLimits: [],
-                    },
-                    modificationType: LIMIT_SETS_MODIFICATION_TYPE.DELETE,
-                });
-            }
-        }
-    }
-
-    return modificationLimitsGroups;
+        return {
+            id: limitsGroupForm.id,
+            name: limitsGroupForm.name,
+            applicability: limitsGroupForm.applicability,
+            limitsProperties: limitsGroupForm.limitsProperties,
+            currentLimits: currentLimits,
+            modificationType: LIMIT_SETS_MODIFICATION_TYPE.MODIFY_OR_ADD,
+            temporaryLimitsModificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.REPLACE,
+        };
+    });
 };
 
 export const temporaryLimitToTemporaryLimitFormInfos = (temporaryLimit: TemporaryLimit): TemporaryLimitFormInfos => {

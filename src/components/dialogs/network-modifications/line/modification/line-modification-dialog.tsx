@@ -245,7 +245,7 @@ const LineModificationDialog = ({
                 g2: convertOutputValue(FieldType.G2, characteristics[G2]),
                 b2: convertOutputValue(FieldType.B2, characteristics[B2]),
                 operationalLimitsGroups: limits[ENABLE_OLG_MODIFICATION]
-                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS], lineToModify)
+                    ? addModificationTypeToOpLimitsGroups(limits[OPERATIONAL_LIMITS_GROUPS])
                     : [],
                 selectedOperationalLimitsGroup1: addOperationTypeToSelectedOpLG(
                     limits[SELECTED_LIMITS_GROUP_1],
@@ -288,7 +288,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError, lineToModify]
+        [studyUuid, currentNodeUuid, editData, selectedId, intl, snackError]
     );
 
     const clear = useCallback(() => {
