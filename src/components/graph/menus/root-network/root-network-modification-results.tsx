@@ -29,12 +29,18 @@ const styles = {
             backgroundColor: theme.aggrid.highlightColor,
         },
     }),
-    modificationLabel: {
+    modifiedEquipmentLabel: (theme: Theme) => ({
         cursor: 'pointer',
-        pt: 0.5,
-        pb: 0.5,
-        pl: 0.5,
-    },
+        pt: theme.spacing(0.5),
+        pb: theme.spacing(0.5),
+        pl: theme.spacing(1.5),
+    }),
+    modificationLabel: (theme: Theme) => ({
+        cursor: 'pointer',
+        pt: theme.spacing(1.5),
+        pb: theme.spacing(0.5),
+        pl: theme.spacing(0.5),
+    }),
 };
 export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifications, nodeUuid }) => {
     const intl = useIntl();
@@ -77,10 +83,27 @@ export const ModificationResults: React.FC<ModificationResultsProps> = ({ modifi
     return (
         <>
             {modifications.map((modification) => (
-                <Box sx={styles.itemHover} key={modification.impactedEquipmentId + modification.modificationUuid}>
-                    <Typography variant="body2" onClick={() => handleClick(modification)} sx={styles.modificationLabel}>
-                        <strong>{modification.impactedEquipmentId + ' - '}</strong> {getModificationLabel(modification)}
+                <Box key={modification.modificationUuid}>
+                    <Typography
+                        variant="body2"
+                        onClick={() => handleClick(modification)}
+                        sx={[styles.itemHover, styles.modificationLabel]}
+                    >
+                        {getModificationLabel(modification)}
+                        {` (${modification.impactedEquipmentIds.length})`}
                     </Typography>
+                    <Box key={modification.modificationUuid}>
+                        {modification.impactedEquipmentIds.map((equipmentId) => (
+                            <Typography
+                                key={equipmentId}
+                                variant="body2"
+                                onClick={() => handleClick(modification)}
+                                sx={[styles.itemHover, styles.modifiedEquipmentLabel]}
+                            >
+                                <strong>{equipmentId}</strong>
+                            </Typography>
+                        ))}
+                    </Box>
                 </Box>
             ))}
         </>
