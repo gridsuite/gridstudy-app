@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Stack, Tab, Tabs, TextField, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
     APPLICABIlITY,
     CURRENT_LIMITS,
     ID,
+    LIMITS_PROPERTIES,
     OPERATIONAL_LIMITS_GROUPS,
     PERMANENT_LIMIT,
     SELECTED,
@@ -23,7 +24,7 @@ import {
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import { CurrentLimits, OperationalLimitsGroup } from '../../../services/network-modification-types';
+import { CurrentLimitsData, OperationalLimitsGroup } from '../../../services/network-modification-types';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LimitsGroupsContextualMenu } from './limits-groups-contextual-menu';
 import { isBlankOrEmpty } from '../../utils/validation-functions';
@@ -33,6 +34,7 @@ import { APPLICABILITY } from '../../network/constants';
 import { type MuiStyles, NAME } from '@gridsuite/commons-ui';
 import { grey } from '@mui/material/colors';
 import { OperationalLimitsGroupFormInfos } from '../network-modifications/line/modification/line-modification-type';
+import { LimitsPropertiesStack } from './limits-properties-stack';
 
 const limitsStyles = {
     limitsBackground: {
@@ -60,8 +62,8 @@ export interface OperationalLimitsGroupsTabsProps {
     indexSelectedLimitSet: number | null;
     setIndexSelectedLimitSet: React.Dispatch<React.SetStateAction<number | null>>;
     checkLimitSetUnicity: (editedLimitGroupName: string, newSelectedApplicability: string) => string;
+    currentLimitsToModify: CurrentLimitsData[];
     editable: boolean;
-    currentLimitsToModify: CurrentLimits[];
 }
 
 function generateUniqueId(baseName: string, names: string[]): string {
@@ -194,6 +196,7 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                     [ID]: name + APPLICABILITY.EQUIPMENT.id,
                     [NAME]: name,
                     [APPLICABIlITY]: APPLICABILITY.EQUIPMENT.id,
+                    [LIMITS_PROPERTIES]: [],
                     [CURRENT_LIMITS]: {
                         [ID]: name,
                         [TEMPORARY_LIMITS]: [emptyTemporaryLimit],
@@ -328,24 +331,29 @@ export const OperationalLimitsGroupsTabs = forwardRef<any, OperationalLimitsGrou
                                             justifyContent: 'space-between',
                                         }}
                                     >
-                                        {opLg.name}
-                                        {opLg?.applicability ? (
-                                            <Typography
-                                                noWrap
-                                                align="right"
-                                                color={grey[500] /*TODO : ask designer for exact color for 2 themes*/}
-                                            >
-                                                <FormattedMessage
-                                                    id={
-                                                        Object.values(APPLICABILITY).find(
-                                                            (item) => item.id === opLg.applicability
-                                                        )?.label
-                                                    }
+                                        <Stack direction="row" spacing={1}>
+                                            <Stack spacing={0}>
+                                                {opLg.name}
+                                                {opLg?.applicability ? (
+                                                    <Typography noWrap align="left" color={grey[500]}>
+                                                        <FormattedMessage
+                                                            id={
+                                                                Object.values(APPLICABILITY).find(
+                                                                    (item) => item.id === opLg.applicability
+                                                                )?.label
+                                                            }
+                                                        />
+                                                    </Typography>
+                                                ) : (
+                                                    ''
+                                                )}
+                                            </Stack>
+                                            {!isAModification && (
+                                                <LimitsPropertiesStack
+                                                    name={`${parentFormName}.${OPERATIONAL_LIMITS_GROUPS}[${index}].${LIMITS_PROPERTIES}`}
                                                 />
-                                            </Typography>
-                                        ) : (
-                                            ''
-                                        )}
+                                            )}
+                                        </Stack>
 
                                         {(index === hoveredRowIndex || index === activatedByMenuTabIndex) && (
                                             <IconButton
