@@ -80,6 +80,9 @@ export enum NotificationType {
     STATE_ESTIMATION_RESULT = 'stateEstimationResult',
     STATE_ESTIMATION_FAILED = 'stateEstimation_failed',
     STATE_ESTIMATION_STATUS = 'stateEstimation_status',
+    PCC_MIN_RESULT = 'pccMinResult',
+    PCC_MIN_FAILED = 'pccMin_failed',
+    PCC_MIN_STATUS = 'pccMin_status',
 
     // spreadsheets
     SPREADSHEET_NODE_ALIASES_UPDATED = 'nodeAliasesUpdated',
@@ -127,7 +130,7 @@ export const MODIFYING_NODE_NOTIFICATION_TYPES = [
     NotificationType.NODE_BUILD_FAILED,
 ] as NotificationType[];
 
-export const COMPUTATION_NOTIFIACTION_TYPES = [
+export const COMPUTATION_NOTIFICATION_TYPES = [
     NotificationType.LOADFLOW_RESULT,
     NotificationType.LOADFLOW_FAILED,
     NotificationType.LOADFLOW_STATUS,
@@ -156,6 +159,9 @@ export const COMPUTATION_NOTIFIACTION_TYPES = [
     NotificationType.STATE_ESTIMATION_RESULT,
     NotificationType.STATE_ESTIMATION_FAILED,
     NotificationType.STATE_ESTIMATION_STATUS,
+    NotificationType.PCC_MIN_RESULT,
+    NotificationType.PCC_MIN_FAILED,
+    NotificationType.PCC_MIN_STATUS,
 ] as NotificationType[];
 
 export enum RootNetworkIndexationStatus {
@@ -372,7 +378,6 @@ interface ComputationResultEventDataHeaders extends CommonStudyEventDataHeaders 
     node: UUID;
     rootNetworkUuid: UUID;
 }
-
 interface ComputationStatusEventDataHeaders extends CommonStudyEventDataHeaders {
     node: UUID;
     rootNetworkUuid: UUID;
@@ -496,7 +501,16 @@ interface StateEstimationFailedEventDataHeaders extends ComputationFailedEventDa
 interface StateEstimationStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
     updateType: NotificationType.STATE_ESTIMATION_STATUS;
 }
+interface PccMinStatusEventDataHeaders extends ComputationStatusEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_STATUS;
+}
+interface PccMinResultEventDataHeaders extends ComputationResultEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_RESULT;
+}
 
+interface PccMinFailedEventDataHeaders extends ComputationFailedEventDataHeaders {
+    updateType: NotificationType.PCC_MIN_FAILED;
+}
 interface ExportNetworkEventDataHeaders extends CommonStudyEventDataHeaders {
     updateType: NotificationType.NETWORK_EXPORT_FINISHED;
     userId: string;
@@ -829,6 +843,19 @@ export interface StateEstimationStatusEventData {
     payload: undefined;
 }
 
+export interface PccMinResultEventData {
+    headers: PccMinResultEventDataHeaders;
+    payload: undefined;
+}
+export interface PccMinFailedEventData {
+    headers: PccMinFailedEventDataHeaders;
+    payload: undefined;
+}
+
+export interface PccMinStatusEventData {
+    headers: PccMinStatusEventDataHeaders;
+    payload: undefined;
+}
 export interface ExportNetworkEventData {
     headers: ExportNetworkEventDataHeaders;
     payload: undefined;
@@ -862,6 +889,10 @@ export function isLoadflowResultNotification(notif: unknown): notif is LoadflowR
 
 export function isStateEstimationResultNotification(notif: unknown): notif is StateEstimationResultEventData {
     return (notif as StateEstimationResultEventData).headers?.updateType === NotificationType.STATE_ESTIMATION_RESULT;
+}
+
+export function isPccMinResultNotification(notif: unknown): notif is PccMinResultEventData {
+    return (notif as PccMinResultEventData).headers?.updateType === NotificationType.PCC_MIN_RESULT;
 }
 
 export function isRootNetworkDeletionStartedNotification(notif: unknown): notif is RootNetworkDeletionStartedEventData {
@@ -931,7 +962,6 @@ export function isEventCrudFinishedNotification(notif: unknown): notif is EventC
 export function isNodeDeletedNotification(notif: unknown): notif is NodesDeletedEventData {
     return (notif as NodesDeletedEventData).headers?.updateType === NotificationType.NODES_DELETED;
 }
-
 export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedEventData {
     return (notif as NodeCreatedEventData).headers?.updateType === NotificationType.NODE_CREATED;
 }
@@ -939,7 +969,6 @@ export function isNodeCreatedNotification(notif: unknown): notif is NodeCreatedE
 export function isNodeEditedNotification(notif: unknown): notif is NodeEditedEventData {
     return (notif as NodeEditedEventData).headers?.updateType === NotificationType.NODE_EDITED;
 }
-
 export function isNodSubTreeCreatedNotification(notif: unknown): notif is SubtreeCreatedEventData {
     return (notif as SubtreeCreatedEventData).headers?.updateType === NotificationType.SUBTREE_CREATED;
 }
@@ -1032,10 +1061,13 @@ export type ComputationEventData =
     | VoltageInitStatusEventData
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
-    | StateEstimationStatusEventData;
+    | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData;
 
 export function isComputationNotification(notif: unknown): notif is ComputationEventData {
-    return COMPUTATION_NOTIFIACTION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
+    return COMPUTATION_NOTIFICATION_TYPES.includes((notif as CommonStudyEventData).headers?.updateType);
 }
 
 export function isIndexationStatusNotification(notif: unknown): notif is IndexationStatusEventData {
@@ -1121,6 +1153,9 @@ export type StudyUpdateEventData =
     | StateEstimationResultEventData
     | StateEstimationFailedEventData
     | StateEstimationStatusEventData
+    | PccMinResultEventData
+    | PccMinFailedEventData
+    | PccMinStatusEventData
     | ExportNetworkEventData;
 
 export type StudyUpdateNotification = {
@@ -1128,7 +1163,6 @@ export type StudyUpdateNotification = {
 };
 
 /******************* TO REMOVE LATER ****************/
-
 // Headers
 /**
  * @deprecated The type should not be used
@@ -1146,7 +1180,6 @@ export interface StudyUpdatedEventDataHeader {
     userId?: string;
     computationType?: ComputingType;
 }
-
 // EventData
 /**
  * @deprecated The type should not be used
@@ -1157,5 +1190,4 @@ export interface StudyUpdatedEventData {
     /** @see NetworkImpactsInfos */
     payload: string;
 }
-
 /******************* TO REMOVE LATER ****************/
