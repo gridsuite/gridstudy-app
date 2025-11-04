@@ -9,8 +9,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type MuiStyles } from '@gridsuite/commons-ui';
-import { getNominalVoltageIntervalName } from 'utils/constants';
-import { BASE_VOLTAGES, MAX_VOLTAGE, VoltageLevelInterval } from 'utils/constants';
+import {
+    BASE_VOLTAGES,
+    MAX_VOLTAGE,
+    VoltageLevelInterval,
+    getNominalVoltageIntervalNameByVoltageValue,
+} from 'utils/constants';
 
 const styles = {
     nominalVoltageZone: {
@@ -62,7 +66,7 @@ export default function NominalVoltageFilter({
     useEffect(() => {
         const newIntervals = BASE_VOLTAGES.map((interval) => {
             const vlListValues = nominalVoltages.filter(
-                (vnom) => getNominalVoltageIntervalName(vnom) === interval.name
+                (vnom) => getNominalVoltageIntervalNameByVoltageValue(vnom) === interval.name
             );
             return { ...interval, vlListValues, isChecked: true };
         });

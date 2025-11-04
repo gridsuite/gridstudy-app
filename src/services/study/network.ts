@@ -80,6 +80,7 @@ export function getVoltageLevelSingleLineDiagram({
     if (componentLibrary !== null) {
         queryParams.append('componentLibrary', String(componentLibrary));
     }
+    //baseVoltagesConfig
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
@@ -237,6 +238,7 @@ export function getSubstationSingleLineDiagram({
     if (componentLibrary !== null) {
         queryParams.append('componentLibrary', String(componentLibrary));
     }
+    //baseVoltagesConfig
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/substations/' +
