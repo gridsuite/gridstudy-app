@@ -8,6 +8,7 @@
 import { ColumnState } from 'ag-grid-community';
 
 export const ROW_INDEX_COLUMN_ID = 'rowIndex';
+export const MAX_FORMULA_CHARACTERS = 1000;
 
 export const ROW_INDEX_COLUMN_STATE: ColumnState = {
     colId: ROW_INDEX_COLUMN_ID,
