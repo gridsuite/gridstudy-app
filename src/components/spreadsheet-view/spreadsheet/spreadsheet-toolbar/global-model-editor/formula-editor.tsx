@@ -10,6 +10,8 @@ import { useTheme } from '@mui/material/styles';
 import { useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useFormulaSearch } from './formula-search-context';
+import { isFormulaContentSizeOk } from 'components/spreadsheet-view/columns/utils/formula-validator';
+import { MAX_FORMULA_CHARACTERS } from '../../../constants';
 
 const styles = {
     container: {
@@ -104,7 +106,15 @@ export default function FormulaEditor({ name }: Readonly<ExpandingTextFieldProps
             <Box aria-hidden sx={overlaySx}>
                 {highlighted}
             </Box>
-            <ExpandingTextField name={name} label="" minRows={3} rows={3} sx={styles.textField} />
+            <ExpandingTextField
+                name={name}
+                label=""
+                minRows={3}
+                rows={3}
+                maxCharactersNumber={MAX_FORMULA_CHARACTERS}
+                sx={styles.textField}
+                acceptValue={isFormulaContentSizeOk}
+            />
         </Box>
     );
 }
