@@ -32,6 +32,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { NodeType } from 'components/graph/tree-node.type';
 import { isThereTooManyOpenedNadDiagrams, mergePositions } from '../cards/diagrams/diagram-utils';
 import { DiagramMetadata } from '@powsybl/network-viewer';
+import { getBaseVoltagesConfigInfos } from 'utils/constants';
 
 type UseDiagramModelProps = {
     diagramTypes: DiagramType[];
@@ -304,11 +305,20 @@ export const useDiagramModel = ({ diagramTypes, onAddDiagram, onDiagramAlreadyEx
                     positions: diagram.positions,
                     nadPositionsGenerationMode:
                         networkVisuParams.networkAreaDiagramParameters.nadPositionsGenerationMode,
+                    baseVoltagesConfigInfos: getBaseVoltagesConfigInfos(),
                 };
                 fetchOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(nadRequestInfos),
+                };
+            }
+            if (diagram.type === DiagramType.SUBSTATION || diagram.type === DiagramType.VOLTAGE_LEVEL) {
+                const sldRequestInfos = { baseVoltagesConfigInfos: getBaseVoltagesConfigInfos() };
+                fetchOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sldRequestInfos),
                 };
             }
 
