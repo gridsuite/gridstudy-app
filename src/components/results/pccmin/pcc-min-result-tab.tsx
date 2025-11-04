@@ -38,12 +38,9 @@ export const PccMinResultTab: FunctionComponent<PccMinResultTabProps> = ({
     const { globalFilters, handleGlobalFilterChange } = useGlobalFilters();
     const { countriesFilter, voltageLevelsFilter, propertiesFilter } = useGlobalFilterOptions();
 
-    const handleSubTabChange = useCallback(
-        (event: React.SyntheticEvent, newIndex: number) => {
-            setResultOrLogIndex(newIndex);
-        },
-        [setResultOrLogIndex]
-    );
+    const handleSubTabChange = useCallback((event: React.SyntheticEvent, newIndex: number) => {
+        setResultOrLogIndex(newIndex);
+    }, []);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: pccMinStatus === RunningStatus.RUNNING,
