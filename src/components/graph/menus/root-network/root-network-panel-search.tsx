@@ -30,12 +30,7 @@ interface RootNetworkSearchPanelProps {
 }
 
 function getModificationResultsCount(results: ModificationsSearchResult[]): number {
-    return results.reduce((sum, node) => {
-        const countForNode = node.modifications.reduce((innerSum, modif) => {
-            return innerSum + modif.impactedEquipmentIds.length;
-        }, 0);
-        return sum + countForNode;
-    }, 0);
+    return results.reduce((sum, r) => sum + r.modifications.length, 0);
 }
 
 function getNodeResultsCount(results: string[]): number {
@@ -132,11 +127,14 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
             <Box sx={styles.searchField}>
                 <SearchBar
                     placeholder={intl.formatMessage({
-                        id: isNodeTab(tabValue)
-                            ? 'rootNetwork.searchPlaceholder.nodes'
-                            : 'rootNetwork.searchPlaceholder.modifications',
+                        id: 'searchPlaceholder',
                     })}
                     value={searchTerm}
+                    label={intl.formatMessage({
+                        id: isNodeTab(tabValue)
+                            ? 'rootNetwork.searchLabel.nodes'
+                            : 'rootNetwork.searchLabel.modifications',
+                    })}
                     onChange={handleOnChange}
                     onClear={leaveSearch}
                 />
@@ -149,21 +147,14 @@ const RootNetworkSearchPanel: React.FC<RootNetworkSearchPanelProps> = ({ setIsSe
             )}
             {showResultsCount && (
                 <Typography variant="body2" sx={{ mt: 1, color: 'gray' }}>
-                    {isNodeTab(tabValue) ? (
-                        <FormattedMessage
-                            id="rootNetwork.nodeResults"
-                            values={{
-                                count: getNodeResultsCount(nodesSearch.results),
-                            }}
-                        />
-                    ) : (
-                        <FormattedMessage
-                            id="rootNetwork.modificationResults"
-                            values={{
-                                count: getModificationResultsCount(modificationsSearch.results),
-                            }}
-                        />
-                    )}
+                    <FormattedMessage
+                        id="rootNetwork.results"
+                        values={{
+                            count: isNodeTab(tabValue)
+                                ? getNodeResultsCount(nodesSearch.results)
+                                : getModificationResultsCount(modificationsSearch.results),
+                        }}
+                    />
                 </Typography>
             )}
 

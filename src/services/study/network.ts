@@ -18,11 +18,11 @@ import {
 import type { MapHvdcLine, MapLine, MapSubstation, MapTieLine } from '@powsybl/network-viewer';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, type VoltageLevel } from '../../components/utils/equipment-types';
-import { SwitchInfos } from './network-map.type';
+import { getQueryParamsList } from '../utils';
+import { BusBarSectionsInfos, FeederBaysBusBarSectionsInfos, SwitchInfos } from './network-map.type';
 import type { SpreadsheetEquipmentType } from '../../components/spreadsheet-view/types/spreadsheet.type';
 import { JSONSchema4 } from 'json-schema';
 import { isBlankOrEmpty } from '../../components/utils/validation-functions';
-import { getQueryParamsList } from '../utils';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -160,6 +160,54 @@ export function fetchSwitchesOfVoltageLevel(
 
     console.debug(fetchSwitchesUrl);
     return backendFetchJson(fetchSwitchesUrl);
+}
+
+export function fetchVoltageLevelBusBarSectionsInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<BusBarSectionsInfos> {
+    console.info(
+        `Fetching bus bar sections information of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchTopologyUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/bus-bar-sections' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchTopologyUrl);
+    return backendFetchJson(fetchTopologyUrl);
+}
+
+export function fetchVoltageLevelFeederBaysBusBarSectionsInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+): Promise<FeederBaysBusBarSectionsInfos> {
+    console.info(
+        `Fetching feeder bays and bus bar sections information of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+    );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+
+    const fetchTopologyUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/feeder-bays-and-bus-bar-sections' +
+        '?' +
+        urlSearchParams.toString();
+
+    console.debug(fetchTopologyUrl);
+    return backendFetchJson(fetchTopologyUrl);
 }
 
 /* substations */
