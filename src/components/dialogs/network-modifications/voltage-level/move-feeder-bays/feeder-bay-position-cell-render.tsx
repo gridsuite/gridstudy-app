@@ -7,7 +7,7 @@
 
 import { useController, useFormContext } from 'react-hook-form';
 import { IntegerInput } from '@gridsuite/commons-ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
