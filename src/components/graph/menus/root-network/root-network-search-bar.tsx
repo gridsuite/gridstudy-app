@@ -13,11 +13,12 @@ import React from 'react';
 interface SearchBarProps {
     readonly placeholder: string;
     readonly value: string;
+    readonly label?: string;
     readonly onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     readonly onClear: () => void;
 }
 
-export default function SearchBar({ placeholder, value, onChange, onClear }: SearchBarProps) {
+export default function SearchBar({ placeholder, value, label, onChange, onClear }: SearchBarProps) {
     return (
         <>
             <TextField
@@ -25,6 +26,7 @@ export default function SearchBar({ placeholder, value, onChange, onClear }: Sea
                 variant="outlined"
                 placeholder={placeholder}
                 value={value}
+                label={label}
                 onChange={onChange}
                 size="small"
                 InputProps={{
