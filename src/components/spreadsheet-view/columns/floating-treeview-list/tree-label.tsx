@@ -32,7 +32,6 @@ function highlightText(text: string, query?: string, active?: boolean) {
         return text;
     }
     const safeInput = escapeRegExp(query);
-    console.log(safeInput);
     return text.split(new RegExp(`(${safeInput})`, 'gi')).map((part, index) =>
         part.toLowerCase() === safeInput.toLowerCase() ? (
             <span key={index} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
