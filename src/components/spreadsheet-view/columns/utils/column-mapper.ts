@@ -19,7 +19,13 @@ import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsh
 import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
 import { ErrorCellRenderer } from '../../../custom-aggrid/cell-renderers';
-import { IntlShape } from 'react-intl';
+import { IntlShape, useIntl } from 'react-intl';
+import { useMemo } from 'react';
+
+export const useColumnDefinitions = (tableDefinition: SpreadsheetTabDefinition) => {
+    const intl = useIntl();
+    return useMemo(() => addFormulaErrorsRenderer(intl, mapColumns(tableDefinition)), [intl, tableDefinition]);
+};
 
 const createValueGetter =
     (colDef: ColumnDefinition) =>
@@ -90,7 +96,7 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
         };
     });
 
-export const addFormulaErrorsRenderer = (columns: CustomColDef[], intl: IntlShape): CustomColDef[] => {
+export const addFormulaErrorsRenderer = (intl: IntlShape, columns: CustomColDef[]): CustomColDef[] => {
     return columns.map((col) => ({
         ...col,
         cellRendererSelector: (params) =>
