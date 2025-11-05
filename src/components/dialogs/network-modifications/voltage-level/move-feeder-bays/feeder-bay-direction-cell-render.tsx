@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { IconButton, ToggleButton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -17,6 +17,17 @@ import { CONNECTION_DIRECTIONS_VALUES } from './move-voltage-level-feeder-bays.t
 type FeederBayDirectionCellRendererProps = {
     name: string;
     disabled: boolean;
+};
+
+const DIRECTION_CYCLE: Record<string, string> = {
+    [CONNECTION_DIRECTIONS_VALUES.TOP.id]: CONNECTION_DIRECTIONS_VALUES.BOTTOM.id,
+    [CONNECTION_DIRECTIONS_VALUES.BOTTOM.id]: CONNECTION_DIRECTIONS_VALUES.UNDEFINED.id,
+    [CONNECTION_DIRECTIONS_VALUES.UNDEFINED.id]: CONNECTION_DIRECTIONS_VALUES.TOP.id,
+};
+
+const DIRECTION_ICONS: Record<string, ReactNode> = {
+    [CONNECTION_DIRECTIONS_VALUES.TOP.id]: <ArrowUpwardIcon />,
+    [CONNECTION_DIRECTIONS_VALUES.BOTTOM.id]: <ArrowDownwardIcon />,
 };
 
 export default function FeederBayDirectionCellRenderer({
@@ -36,12 +47,7 @@ export default function FeederBayDirectionCellRenderer({
     }, [intl, value]);
 
     const handleClick = useCallback(() => {
-        const newValue =
-            value === CONNECTION_DIRECTIONS_VALUES.TOP.id
-                ? CONNECTION_DIRECTIONS_VALUES.BOTTOM.id
-                : value === CONNECTION_DIRECTIONS_VALUES.BOTTOM.id
-                  ? CONNECTION_DIRECTIONS_VALUES.UNDEFINED.id
-                  : CONNECTION_DIRECTIONS_VALUES.TOP.id; // from null or UNDEFINED, go to TOP
+        const newValue = DIRECTION_CYCLE[value] || CONNECTION_DIRECTIONS_VALUES.TOP.id; // from null or UNDEFINED, go to TOP
         setValue(name, newValue, {
             shouldDirty: true,
             shouldTouch: true,
@@ -68,13 +74,7 @@ export default function FeederBayDirectionCellRenderer({
             }}
         >
             <IconButton onClick={handleClick} size="small" disabled={disabled}>
-                {value === CONNECTION_DIRECTIONS_VALUES.TOP.id ? (
-                    <ArrowUpwardIcon />
-                ) : value === CONNECTION_DIRECTIONS_VALUES.BOTTOM.id ? (
-                    <ArrowDownwardIcon />
-                ) : (
-                    <HorizontalRule />
-                )}
+                {DIRECTION_ICONS[value] || <HorizontalRule />}
             </IconButton>
             <span>{translatedLabel}</span>
         </ToggleButton>
