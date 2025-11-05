@@ -49,11 +49,11 @@ export interface LoadflowResultTap {
     tableName: string;
 }
 
-export interface LoadflowResultProps extends LoadflowResultTap {
+export interface LoadflowResultProps extends LoadflowResultTap, LoadFlowTabProps {
     result: LoadFlowResult;
 }
 
-export interface LimitViolationResultProps extends LoadflowResultTap {
+export interface LimitViolationResultProps extends LoadflowResultTap, LoadFlowTabProps {
     result: OverloadedEquipment[];
 }
 

@@ -25,6 +25,9 @@ import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from 'redux/reducer';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
     result,
     isLoadingResult,
     columnDefs,
@@ -95,6 +98,9 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
             <>
                 <Box sx={{ height: '4px' }}>{openLoaderTab && <LinearProgress />}</Box>
                 <RenderTableAndExportCsv
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     gridRef={gridRef}
                     columns={columnDefs}
                     defaultColDef={defaultColDef}

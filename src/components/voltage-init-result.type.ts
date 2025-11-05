@@ -10,6 +10,9 @@ import type { UUID } from 'node:crypto';
 import { GlobalFilter } from './results/common/global-filter/global-filter-types';
 
 export interface VoltageInitResultProps {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     result: any;
     status: RunningStatus;
     handleGlobalFilterChange: (value: GlobalFilter[]) => void;
