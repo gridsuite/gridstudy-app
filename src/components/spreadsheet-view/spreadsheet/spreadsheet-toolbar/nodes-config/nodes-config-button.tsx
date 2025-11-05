@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 import { useNodeAliases, validAlias } from '../../../hooks/use-node-aliases';
 import NodesConfigDialog from './nodes-config-dialog';
 import { PolylineOutlined } from '@mui/icons-material';
+import { spreadsheetStyles } from '../../../spreadsheet.style';
 
 const styles = {
     badgeStyle: (theme) => ({
@@ -21,10 +22,6 @@ const styles = {
             fontSize: theme.typography.caption.fontSize,
             padding: theme.spacing(0, 0.5),
         },
-    }),
-    nodesConfigButton: (theme) => ({
-        color: theme.palette.primary.main,
-        minWidth: '100%',
     }),
 } as const satisfies MuiStyles;
 
@@ -37,10 +34,7 @@ export default function NodesConfigButton({ disabled }: Readonly<NodesConfigButt
 
     const { nodeAliases, updateNodeAliases } = useNodeAliases();
 
-    const showWarning = useMemo(
-        () => nodeAliases !== undefined && nodeAliases.length > 0 && nodeAliases.some((n) => !validAlias(n)),
-        [nodeAliases]
-    );
+    const showWarning = useMemo(() => nodeAliases?.length && nodeAliases.some((n) => !validAlias(n)), [nodeAliases]);
 
     const badgeText = useMemo(() => {
         if (nodeAliases?.length && !showWarning) {
@@ -63,7 +57,7 @@ export default function NodesConfigButton({ disabled }: Readonly<NodesConfigButt
                 <Tooltip title={<FormattedMessage id="spreadsheet/parameter_aliases/button_tooltip" />}>
                     <span>
                         <Button
-                            sx={styles.nodesConfigButton}
+                            sx={spreadsheetStyles.toolbarButton}
                             size={'small'}
                             onClick={() => dialogOpen.setTrue()}
                             disabled={disabled}
