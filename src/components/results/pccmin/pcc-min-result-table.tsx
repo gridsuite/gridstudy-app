@@ -14,13 +14,12 @@ import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../custom-aggrid/cell-renderers';
 import { ComputingType } from '@gridsuite/commons-ui';
 
-import { PccMinResultTableProps } from './pcc-min-result.type';
+import { getPccMinColumns, PccMinResultTableProps } from './pcc-min-result.type';
 import { AgGridReact } from 'ag-grid-react';
 import { RenderTableAndExportCsv } from 'components/utils/renderTable-ExportCsv';
 import { RESULTS_LOADING_DELAY } from 'components/network/constants';
 import RunningStatus from 'components/utils/running-status';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
-import { getPccMinColumns } from '../pcc-min-columns-utils';
 
 const PccMinResultTable: FunctionComponent<PccMinResultTableProps> = ({ result, isFetching, onFilter, filters }) => {
     const intl = useIntl();
