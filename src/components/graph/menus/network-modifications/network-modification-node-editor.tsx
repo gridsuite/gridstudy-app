@@ -21,7 +21,7 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, CircularProgress, Toolbar, Tooltip } from '@mui/material';
+import { Box, CircularProgress, debounce, Toolbar, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -1193,7 +1193,7 @@ const NetworkModificationNodeEditor = () => {
     const renderNetworkModificationsTable = () => {
         return (
             <NetworkModificationsTable
-                handleCellClick={handleCellClick}
+                handleCellClick={debounce(handleCellClick, 300)}
                 modifications={modifications}
                 setModifications={setModifications}
                 onRowDragStart={onRowDragStart}
