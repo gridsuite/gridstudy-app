@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useMemo, useRef } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { rowIndexColumnDefinition } from '../columns/common-column-definitions';
 import { SpreadsheetTabDefinition } from '../types/spreadsheet.type';
@@ -13,10 +13,12 @@ import { CurrentTreeNode } from 'components/graph/tree-node.type';
 import { AgGridReact } from 'ag-grid-react';
 import { SpreadsheetContent } from './spreadsheet-content/spreadsheet-content';
 import { SpreadsheetToolbar } from './spreadsheet-toolbar/spreadsheet-toolbar';
-import { mapColumns } from '../columns/utils/column-mapper';
+import { decorateWithErrorRenderer, mapColumns } from '../columns/utils/column-mapper';
 import { DiagramType } from 'components/grid-layout/cards/diagrams/diagram.type';
 import { useFilteredRowCounterInfo } from './spreadsheet-toolbar/row-counter/use-filtered-row-counter';
 import { useIntl } from 'react-intl';
+import { isValidationError } from '../columns/utils/formula-validator';
+import { ErrorCellRenderer } from '../../custom-aggrid/cell-renderers';
 
 interface SpreadsheetProps {
     currentNode: CurrentTreeNode;
@@ -41,7 +43,10 @@ export const Spreadsheet = memo(
         const gridRef = useRef<AgGridReact>(null);
         const intl = useIntl();
 
-        const columnsDefinitions = useMemo(() => mapColumns(tableDefinition, intl), [intl, tableDefinition]);
+        const columnsDefinitions = useMemo(
+            () => decorateWithErrorRenderer(mapColumns(tableDefinition), intl),
+            [intl, tableDefinition]
+        );
         const rowCounterInfos = useFilteredRowCounterInfo({
             gridRef,
             tableDefinition,

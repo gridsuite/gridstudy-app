@@ -14,7 +14,7 @@ import {
     numberColumnDefinition,
     textColumnDefinition,
 } from '../common-column-definitions';
-import { isValidationResult, validateFormulaResult } from './formula-validator';
+import { isValidationError, isValidationResult, validateFormulaResult } from './formula-validator';
 import { ColumnDefinition, SpreadsheetTabDefinition } from '../../types/spreadsheet.type';
 import { CustomColDef } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-filter.type';
 import { isCalculationRow } from '../../utils/calculation-utils';
@@ -47,7 +47,7 @@ const createValueGetter =
         }
     };
 
-export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, intl?: IntlShape) =>
+export const mapColumns = (tableDefinition: SpreadsheetTabDefinition) =>
     tableDefinition?.columns.map((colDef): CustomColDef => {
         let baseDefinition: ColDef;
 
@@ -87,9 +87,13 @@ export const mapColumns = (tableDefinition: SpreadsheetTabDefinition, intl?: Int
             hide: !colDef.visible,
             editable: false,
             enableCellChangeFlash: true,
-            cellRendererSelector: (params) =>
-                isValidationResult(params.value) && !params.value.isValid
-                    ? { component: ErrorCellRenderer, params: { intl } }
-                    : { component: baseDefinition.cellRenderer },
         };
     });
+
+export const decorateWithErrorRenderer = (columns: CustomColDef[], intl: IntlShape): CustomColDef[] => {
+    return columns.map((col) => ({
+        ...col,
+        cellRendererSelector: (params) =>
+            isValidationError(params.value) ? { component: ErrorCellRenderer, params: { intl } } : undefined, //Returning undefined make it so the originally defined renderer is used
+    }));
+};

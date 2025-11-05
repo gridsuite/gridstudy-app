@@ -18,6 +18,10 @@ export function isValidationResult(value: unknown): value is ValidationResult {
     );
 }
 
+export function isValidationError(value: unknown): value is ValidationResult {
+    return isValidationResult(value) && !value.isValid;
+}
+
 export const formatValidationResult = (isValid: boolean, messageId?: string): ValidationResult => {
     return { isValid: isValid, error: messageId };
 };
