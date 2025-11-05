@@ -23,7 +23,7 @@ type TreeLabelProps = {
 };
 
 //Escapes regex special characters to avoid misinterpreting user prompts
-function escapeRegExp(string: string): string {
+export function escapeRegExp(string: string): string {
     return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
