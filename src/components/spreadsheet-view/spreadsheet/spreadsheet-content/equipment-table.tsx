@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useMemo } from 'react';
-import { ListItemIcon, ListItemText, Menu, MenuItem, useTheme } from '@mui/material';
+import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
