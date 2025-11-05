@@ -7,7 +7,7 @@
 
 import { useController, useFormContext } from 'react-hook-form';
 import { IntegerInput } from '@gridsuite/commons-ui';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FeederBaysFormInfos } from './move-voltage-level-feeder-bays.type';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -27,14 +27,11 @@ export default function FeederBayPositionCellRenderer({
     const {
         field: { value },
     } = useController({ name, control });
-    const [isDuplicate, setIsDuplicate] = useState(false);
-    useEffect(() => {
-        if (value != null && watchTable?.length) {
-            const count = watchTable.filter((item) => !item.isRemoved && item?.connectionPosition === value).length;
-            setIsDuplicate(count > 1);
-        } else {
-            setIsDuplicate(false);
-        }
+
+    const isDuplicate = useMemo(() => {
+        if (value == null || !watchTable?.length) return false;
+        const count = watchTable.filter((item) => !item.isRemoved && item.connectionPosition === value).length;
+        return count > 1;
     }, [value, watchTable]);
 
     return (
