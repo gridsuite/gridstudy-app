@@ -22,12 +22,19 @@ type TreeLabelProps = {
     active?: boolean;
 };
 
+//Escapes regex special characters to avoid misinterpreting user prompts
+function escapeRegExp(string: string): string {
+    return string.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function highlightText(text: string, query?: string, active?: boolean) {
     if (!query) {
         return text;
     }
-    return text.split(new RegExp(`(${query})`, 'gi')).map((part, index) =>
-        part.toLowerCase() === query.toLowerCase() ? (
+    const safeInput = escapeRegExp(query);
+    console.log(safeInput);
+    return text.split(new RegExp(`(${safeInput})`, 'gi')).map((part, index) =>
+        part.toLowerCase() === safeInput.toLowerCase() ? (
             <span key={index} style={{ backgroundColor: active ? 'orange' : 'yellow' }}>
                 {part}
             </span>
