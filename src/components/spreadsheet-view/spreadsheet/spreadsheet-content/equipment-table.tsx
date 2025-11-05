@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useMemo } from 'react';
-import { useTheme, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { ListItemIcon, ListItemText, Menu, MenuItem, useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ColDef, ColumnMovedEvent, GetRowIdParams, GridOptions, RowClassParams, RowStyle } from 'ag-grid-community';
@@ -87,7 +87,6 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     const theme = useTheme();
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const language = useSelector((state: AppState) => state.computedLanguage);
 
     const isEditDisabled = currentNode?.type === NodeType.ROOT || !isDataEditable;
 
