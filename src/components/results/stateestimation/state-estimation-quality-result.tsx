@@ -9,7 +9,7 @@ import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, useTheme } from '@mui/material';
-import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
+import { RowClassParams } from 'ag-grid-community';
 
 import { ComputingType } from '@gridsuite/commons-ui';
 import { AppState } from '../../../redux/reducer';

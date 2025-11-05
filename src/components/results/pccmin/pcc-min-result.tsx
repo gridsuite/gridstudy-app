@@ -58,7 +58,7 @@ export const PccMinResult: FunctionComponent<PccMinResultProps> = ({
     );
 
     const { filters } = useFilterSelector(FilterType.PccMin, PCCMIN_RESULT);
-    const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT as PccminTab);
+    const { pagination, dispatchPagination } = usePaginationSelector(PaginationType.PccMin, PCCMIN_RESULT);
     const { page, rowsPerPage } = pagination;
 
     const handleChangePage = useCallback(
