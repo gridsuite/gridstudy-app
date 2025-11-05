@@ -10,6 +10,7 @@ import { CustomAggridComparatorFilter } from 'components/custom-aggrid/custom-ag
 import { PCCMIN_ANALYSIS_RESULT_SORT_STORE, PCCMIN_RESULT } from 'utils/store-sort-filter-fields';
 import { IntlShape } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/utils/custom-aggrid-header-utils';
+import { FROM_COLUMN_TO_FIELD_PCC_MIN } from './pccmin/pcc-min-result.type';
 
 export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => void) => {
     const sortParams: ColumnContext['sortParams'] = {
@@ -23,12 +24,17 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
         updateFilterCallback: onFilter,
     };
 
-    const inputPccMinFilterParams = (
+    const createFilterContext = (
         filterDefinition: Pick<
             Required<ColumnContext>['filterComponentParams']['filterParams'],
             'dataType' | 'comparators'
-        >
+        >,
+        numeric?: boolean,
+        fractionDigits?: number
     ) => ({
+        sortParams,
+        ...pccMinFilterParams,
+        ...(numeric ? { numeric: true, fractionDigits } : {}),
         filterComponent: CustomAggridComparatorFilter,
         filterComponentParams: {
             filterParams: {
@@ -38,44 +44,34 @@ export const getPccMinColumns = (intl: IntlShape, onFilter: (filters: any) => vo
         },
     });
 
-    return [
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Bus' }),
-            colId: 'busId',
-            field: 'busId',
-            context: { sortParams, ...inputPccMinFilterParams(textFilterParams) },
-            minWidth: 180,
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'Contingency' }),
-            colId: 'limitingEquipment',
-            field: 'limitingEquipment',
-            context: { sortParams, ...inputPccMinFilterParams(textFilterParams) },
-            minWidth: 180,
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'PccMinTri' }),
+    let columnsMeta = [
+        { colId: 'busId', headerKey: 'Bus', filterDef: textFilterParams },
+        { colId: 'limitingEquipment', headerKey: 'Contingency', filterDef: textFilterParams },
+        {
             colId: 'pccMinTri',
-            field: 'pccMinTri',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'IccMinTri' }),
+            headerKey: 'PccMinTri',
+            filterDef: numericFilterParams,
+            numeric: true,
+            fractionDigits: 2,
+        },
+        {
             colId: 'iccMinTri',
-            field: 'iccMinTri',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'xOhm' }),
-            colId: 'x',
-            field: 'x',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
-        }),
-        makeAgGridCustomHeaderColumn({
-            headerName: intl.formatMessage({ id: 'rOhm' }),
-            colId: 'r',
-            field: 'r',
-            context: { numeric: true, fractionDigits: 2, sortParams, ...inputPccMinFilterParams(numericFilterParams) },
-        }),
+            headerKey: 'IccMinTri',
+            filterDef: numericFilterParams,
+            numeric: true,
+            fractionDigits: 2,
+        },
+        { colId: 'x', headerKey: 'xOhm', filterDef: numericFilterParams, numeric: true, fractionDigits: 2 },
+        { colId: 'r', headerKey: 'rOhm', filterDef: numericFilterParams, numeric: true, fractionDigits: 2 },
     ];
+
+    return columnsMeta.map(({ colId, headerKey, filterDef, numeric, fractionDigits }) =>
+        makeAgGridCustomHeaderColumn({
+            colId,
+            field: FROM_COLUMN_TO_FIELD_PCC_MIN[colId],
+            headerName: intl.formatMessage({ id: headerKey }),
+            context: createFilterContext(filterDef, numeric, fractionDigits),
+            minWidth: numeric ? undefined : 180,
+        })
+    );
 };

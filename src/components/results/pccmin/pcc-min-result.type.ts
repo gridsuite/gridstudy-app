@@ -14,6 +14,7 @@ export interface SinglePccMinResultInfos {
     singlePccMinResultUuid: string;
     busId: string;
     pccMinTri: number;
+    iccMinTri: number;
     limitingEquipment: string;
     x: number;
     r: number;
